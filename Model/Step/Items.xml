@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items>
+	<item name="ErrorID" 					id="0x1001" type="ErrorID" desc="错误代码"/>
+	<item name="AccountID" 					id="0x1002" type="AccountID" desc="账户代码"/>
+	<item name="PrimaryAccountID" 			id="0x1003" type="AccountID" desc="主账户代码"/>
+	<item name="UserID"						id="0x1004" type="UserID" desc="用户代码"/>
+	<item name="ExchangeID" 				id="0x1005" type="ExchangeID" desc="交易所代码"/>
+	<item name="ProductID" 					id="0x1006" type="ProductID" desc="品种代码"/>
+	<item name="InstrumentID" 				id="0x1007" type="InstrumentID" desc="合约代码"/>
+	<item name="CurrencyID" 				id="0x1008" type="CurrencyID" desc="币种代码"/>
+	<item name="OrderID" 					id="0x1009" type="OrderID" desc="委托编号"/>
+	<item name="OrderSysID" 				id="0x100A" type="OrderSysID" desc="系统委托编号"/>
+	<item name="ClientOrderID" 				id="0x100B" type="ClientOrderID" desc="客户端委托编号"/>
+	<item name="ClientCancelOrderID" 		id="0x100C" type="ClientOrderID" desc="客户端撤单委托编号"/>
+	<item name="RequestID" 					id="0x100D" type="RequestID" desc="客户端请求编号"/>
+	<item name="TradeID" 					id="0x100E" type="TradeID" desc="成交编号"/>
+	<item name="OfferID" 					id="0x100F" type="OfferID" desc="报盘代码"/>
+	<item name="SessionID" 					id="0x1010" type="SessionID" desc="会话编号"/>
+	<item name="RiskID" 					id="0x1011" type="RiskID" desc="风控代码"/>
+	<item name="RiskRuleID" 				id="0x1012" type="RiskRuleID" desc="风控规则代码"/>
+	<item name="TradeGroupID"				id="0x1013" type="GroupID" desc="交易组代码"/>
+	<item name="RiskGroupID" 				id="0x1014" type="GroupID" desc="交易组代码"/>
+	<item name="CommissionGroupID" 			id="0x1015" type="GroupID" desc="交易组代码"/>
+	<item name="RiskClassID" 				id="0x1016" type="RiskClassID" desc="风控类别代码"/>
+	<item name="MoneyTransferID" 			id="0x1017" type="SequenceNo" desc="出入金编号"/>
+	<item name="TransferDirection" 			id="0x1018" type="TransferDirection" desc="转移方向"/>
+	<item name="TransferAmount" 			id="0x1019" type="Money" desc="转移金额"/>
+	<item name="RiskRuleItemID" 			id="0x101A" type="RiskRuleItemID" desc="风控规则分项编号"/>
+	<item name="RiskIndexID" 				id="0x101B" type="RiskIndexID" desc="风控指标代码"/>
+	<item name="InstrumentGroupID" 			id="0x101C" type="GroupID" desc="合约组代码"/>
+	<item name="ExchangeInstID" 			id="0x101D" type="InstrumentID" desc="交易所合约代码"/>
+	<item name="HolderAccountID" 			id="0x101E" type="AccountID" desc="股东账户代码"/>
+	<item name="UnderlyingInstrumentID" 	id="0x101F" type="InstrumentID" desc="标的合约代码"/>
+	<item name="AdminUserID" 				id="0x1020" type="UserID" desc="管理用户代码"/>
+	<item name="RiskUserID" 				id="0x1021" type="UserID" desc="风控用户代码"/>
+	<item name="MdUserID" 					id="0x1021" type="UserID" desc="行情用户代码"/>
+	
+	<item name="AccountName" 				id="0x2001" type="AccountName" desc="账户名称"/>
+	<item name="PrimaryAccountName"			id="0x2002" type="AccountName" desc="主账户名称"/>
+	<item name="UserName"					id="0x2003" type="UserName" desc="用户名称"/>
+	<item name="InstrumentName" 			id="0x2004" type="InstrumentName" desc="合约名称"/>
+	<item name="CommissionGroupName"		id="0x2005" type="GroupName" desc="手续费组名称"/>
+	<item name="OfferName"					id="0x2006" type="OfferName" desc="报盘名称"/>
+	<item name="RiskName"					id="0x2007" type="RiskName" desc="风控名称"/>
+	<item name="TradeGroupName" 			id="0x2008" type="GroupName" desc="交易组名称"/>
+	<item name="RiskGroupName" 				id="0x2009" type="GroupName" desc="风控组名称"/>
+	<item name="RiskUserName" 				id="0x200A" type="UserName" desc="风控用户名称"/>
+	
+	<item name="ErrorMsg" 					id="0x2401" type="Message" desc="错误信息"/>
+	<item name="StatusMsg" 					id="0x2402" type="Message" desc="状态信息"/>
+	<item name="RiskMessage" 				id="0x2403" type="Message" desc="风控信息"/>
+	<item name="FormatRiskMessage" 			id="0x2404" type="Message" desc="带格式的风控信息"/>
+	<item name="InfoMessage" 				id="0x2405" type="Message" desc="备注信息"/>
+	
+	<item name="Password" 					id="0x2801" type="Password" desc="密码"/>
+	<item name="BrokerPassword" 			id="0x2802" type="Password" desc="经纪公司密码"/>
+	<item name="OfferPassword"				id="0x2803" type="Password" desc="报盘密码"/>
+	
+	
+	<item name="TradingDay" 				id="0x3001" type="Date" desc="交易日"/>
+	<item name="LoginDate" 					id="0x3002" type="Date" desc="登录日期"/>
+	<item name="OrderDate" 					id="0x3003" type="Date" desc="委托日期"/>
+	<item name="CancelDate" 				id="0x3004" type="Date" desc="撤单日期"/>
+	<item name="TradeDate" 					id="0x3005" type="Date" desc="成交日期"/>
+	<item name="OpenDate" 					id="0x3006" type="Date" desc="开仓日期"/>
+	<item name="OpenTradingDay" 			id="0x3007" type="Date" desc="开仓交易日"/>
+	<item name="GTDDate" 					id="0x3008" type="Date" desc="GTD日期"/>
+	<item name="ExpireDate" 				id="0x3009" type="Date" desc="到期日"/>
+	<item name="NotifyDate" 				id="0x300A" type="Date" desc="通知日期"/>
+	<item name="LastNotifyDate" 			id="0x300B" type="Date" desc="上次通知日期"/>
+	<item name="TransferDate" 				id="0x300C" type="Date" desc="操作日期"/>
+	<item name="ExpiringDate" 				id="0x300D" type="Date" desc="到期日"/>
+	<item name="ExchangeDate" 				id="0x300E" type="Date" desc="交易所日期"/>
+	
+	<item name="LoginTime" 					id="0x3801" type="Time" desc="登录时间"/>
+	<item name="OrderTime" 					id="0x3802" type="Time" desc="委托时间"/>
+	<item name="CancelTime" 				id="0x3803" type="Time" desc="撤单时间"/>
+	<item name="TradeTime" 					id="0x3804" type="Time" desc="成交时间"/>
+	<item name="NotifyTime" 				id="0x3805" type="Time" desc="通知时间"/>
+	<item name="LastNotifyTime" 			id="0x3806" type="Time" desc="上次通知时间"/>
+	<item name="TransferTime" 				id="0x3807" type="Time" desc="操作时间"/>
+	
+	
+	<item name="Volume" 					id="0x4001" type="Volume" desc="委托数量"/>
+	<item name="VolumeTraded" 				id="0x4002" type="Volume" desc="成交数量"/>
+	<item name="VolumeTotal" 				id="0x4003" type="Volume" desc="剩余数量"/>
+	<item name="MinVolume" 					id="0x4004" type="Volume" desc="最小成交量"/>
+	<item name="TotalPosition" 				id="0x4005" type="Volume" desc="持仓数量"/>
+	<item name="PositionFrozen" 			id="0x4006" type="Volume" desc="冻结持仓"/>
+	<item name="OpenFrozen" 				id="0x4007" type="Volume" desc="开仓冻结"/>
+	<item name="TodayPosition" 				id="0x4008" type="Volume" desc="今日持仓"/>
+	<item name="MaxLimitOrderVolume" 		id="0x4009" type="Volume" desc="限价最大下单数量"/>
+	<item name="MaxMarketOrderVolume" 		id="0x400A" type="Volume" desc="市价最大下单数量"/>
+	
+	
+	<item name="CurrencyRate" 				id="0x5001" type="Rate" desc="币种汇率"/>
+	<item name="OpenStampTaxByMoney" 		id="0x5002" type="Rate" desc="开仓印花税率"/>
+	<item name="CloseStampTaxByMoney" 		id="0x5003" type="Rate" desc="平仓印花税率"/>
+	<item name="OpenTransferFeeByMoney" 	id="0x5004" type="Rate" desc="开仓过户费率"/>
+	<item name="CloseTransferFeeByMoney"	id="0x5005" type="Rate" desc="平仓过户费率"/>
+	<item name="OpenBuyByMoney" 			id="0x5006" type="Rate" desc="买开仓费率"/>
+	<item name="OpenSellByMoney" 			id="0x5007" type="Rate" desc="卖开仓费率"/>
+	<item name="CloseBuyByMoney" 			id="0x5008" type="Rate" desc="买平仓费率"/>
+	<item name="CloseSellByMoney" 			id="0x5009" type="Rate" desc="卖平仓费率"/>
+	<item name="OpenBuyByVolume" 			id="0x500A" type="Rate" desc="每手买开仓费用"/>
+	<item name="OpenSellByVolume" 			id="0x500B" type="Rate" desc="每手卖开仓费用"/>
+	<item name="CloseBuyByVolume" 			id="0x500C" type="Rate" desc="每手买平仓费用"/>
+	<item name="CloseSellByVolume" 			id="0x500D" type="Rate" desc="每手卖平仓费用"/>
+	
+	
+	
+	<item name="Price" 						id="0x6001" type="Price" desc="委托价格"/>
+	<item name="StopPrice" 					id="0x6002" type="Price" desc="止损价格"/>
+	<item name="OpenPrice" 					id="0x6003" type="Price" desc="开仓价"/>
+	<item name="PositionPrice" 				id="0x6004" type="Price" desc="持仓价"/>
+	<item name="AvgOpenPrice" 				id="0x6005" type="Price" desc="开仓均价"/>
+	<item name="AvgPositionPrice" 			id="0x6006" type="Price" desc="持仓均价"/>
+	<item name="TotalCostPrice" 			id="0x6007" type="Price" desc="总成本价"/>
+	<item name="TodayCostPrice" 			id="0x6008" type="Price" desc="当日成本价"/>
+	<item name="LastPrice" 					id="0x6009" type="Price" desc="最新价"/>
+	<item name="ClosePrice" 				id="0x600A" type="Price" desc="收盘价"/>
+	<item name="SettlementPrice" 			id="0x600B" type="Price" desc="结算价"/>
+	<item name="PrePrice" 					id="0x600C" type="Price" desc="昨收盘价或昨结算价"/>
+	<item name="PreClosePrice" 				id="0x600D" type="Price" desc="昨收盘价"/>
+	<item name="PreSettlementPrice" 		id="0x600E" type="Price" desc="昨结算价"/>
+	<item name="ExecutePrice" 				id="0x600F" type="Price" desc="行权价"/>
+	<item name="PriceTick" 					id="0x6010" type="Price" desc="最小变动价位"/>
+	<item name="UpperLimitPrice" 			id="0x6011" type="Price" desc="涨停板价"/>
+	<item name="LowerLimitPrice" 			id="0x6012" type="Price" desc="跌停板价"/>
+	
+	<item name="Balance" 					id="0x7001" type="Money" desc="权益"/>
+	<item name="PreBalance" 				id="0x7002" type="Money" desc="上日权益"/>
+	<item name="Asset" 						id="0x7003" type="Money" desc="总资产"/>
+	<item name="PreAsset" 					id="0x7004" type="Money" desc="上日总资产"/>
+	<item name="CashAsset" 					id="0x7005" type="Money" desc="现金资产"/>
+	<item name="PreCashAsset" 				id="0x7006" type="Money" desc="上日现金资产"/>
+	<item name="Available" 					id="0x7007" type="Money" desc="可用资金"/>
+	<item name="Margin" 					id="0x7008" type="Money" desc="保证金"/>
+	<item name="FrozenMargin" 				id="0x7009" type="Money" desc="冻结保证金"/>
+	<item name="Commission" 				id="0x700A" type="Money" desc="手续费"/>
+	<item name="FrozenCommission" 			id="0x700B" type="Money" desc="冻结手续费"/>
+	<item name="MinCommission" 				id="0x700C" type="Money" desc="最低手续费"/>
+	<item name="MaxCommission" 				id="0x700D" type="Money" desc="最高手续费"/>
+	<item name="PositionProfitFloat" 		id="0x700E" type="Money" desc="逐笔持仓盈亏"/>
+	<item name="PositionProfit" 			id="0x700F" type="Money" desc="逐日持仓盈亏"/>
+	<item name="CloseProfitFloat" 			id="0x7010" type="Money" desc="逐笔平仓盈亏"/>
+	<item name="CloseProfit" 				id="0x7011" type="Money" desc="逐日平仓盈亏"/>
+	<item name="Deposit" 					id="0x7012" type="Money" desc="入金"/>
+	<item name="Withdraw" 					id="0x7013" type="Money" desc="出金"/>
+	<item name="TradeAmount" 				id="0x7014" type="Money" desc="成交金额"/>
+	<item name="CashIn" 					id="0x7015" type="Money" desc="现金收入"/>
+	<item name="CashOut" 					id="0x7016" type="Money" desc="现金支出"/>
+	<item name="FrozenCash" 				id="0x7017" type="Money" desc="冻结资金"/>
+	<item name="StampTax" 					id="0x7018" type="Money" desc="印花税"/>
+	<item name="FrozenStampTax" 			id="0x7019" type="Money" desc="冻结印花税"/>
+	<item name="TransferFee" 				id="0x701A" type="Money" desc="过户费"/>
+	<item name="FrozenTransferFee"			id="0x701B" type="Money" desc="冻结过户费"/>
+	<item name="MarketValue"				id="0x701C" type="Money" desc="市值"/>
+	<item name="TotalCost" 					id="0x701D" type="Money" desc="总成本"/>
+	<item name="TodayCost" 					id="0x701E" type="Money" desc="当日成本"/>
+	<item name="TotalProfit" 				id="0x701F" type="Money" desc="总盈亏"/>
+	<item name="TodayProfit" 				id="0x7020" type="Money" desc="当日盈亏"/>
+	<item name="UnitMargin" 				id="0x7021" type="Money" desc="单位保证金"/>
+	
+	<item name="IsAllowLogin" 				id="0x8001" type="Bool" desc="是否允许登陆"/>
+	<item name="T1Valid" 					id="0x8002" type="Bool" desc="T+1标志"/>
+	<item name="IsAutoAudit" 				id="0x8002" type="Bool" desc="是否自动审核"/>
+	<item name="IsForceClose" 				id="0x8003" type="Bool" desc="是否强平单"/>
+	<item name="IsSimulateAccount" 			id="0x8004" type="Bool" desc="是否模拟账号"/>
+	
+	
+	<item name="NotifySequenceNo" 			id="0x8401" type="SequenceNo" desc="通知序号"/>
+	<item name="LastNotifySequenceNo" 		id="0x8402" type="SequenceNo" desc="上次通知序号"/>
+	<item name="VolumeMultiple" 			id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
+	
+	<item name="CurrencyGroup" 				id="0x8801" type="CurrencyGroup" desc="币种分组"/>
+	<item name="BrokerAddress"				id="0x8802" type="ProtocolAddress" desc="经纪公司地址"/>
+	
+	
+	<item name="SecurityType" 				id="0x9001" type="SecurityType" desc="证券类别"/>
+	<item name="AccountType" 				id="0x9002" type="AccountType" desc="账户类型"/>
+	<item name="AccountStatus" 				id="0x9003" type="AccountStatus" desc="账户状态"/>
+	<item name="PosiDirection" 				id="0x9004" type="PosiDirection" desc="持仓方向"/>
+	<item name="Direction" 					id="0x9005" type="Direction" desc="买卖方向"/>
+	<item name="OffsetFlag" 				id="0x9006" type="OffsetFlag" desc="开平标志"/>
+	<item name="HedgeFlag" 					id="0x9007" type="HedgeFlag" desc="投保标志"/>
+	<item name="OrderPriceType" 			id="0x9008" type="OrderPriceType" desc="委托价格类型"/>
+	<item name="VolumeCondition" 			id="0x9009" type="VolumeCondition" desc="成交量类型"/>
+	<item name="TimeCondition" 				id="0x900A" type="TimeCondition" desc="有效期类型"/>
+	<item name="ContingentCondition" 		id="0x900B" type="ContingentCondition" desc="触发条件"/>
+	<item name="OrderStatus" 				id="0x900C" type="OrderStatus" desc="委托状态"/>
+	<item name="RiskStatus" 				id="0x900D" type="RiskStatus" desc="风控状态"/>	
+	<item name="RiskRuleStyle" 				id="0x900E" type="RiskRuleStyle" desc="风控类型"/>
+	<item name="RiskIndexType" 				id="0x900F" type="RiskIndexType" desc="风控指标类型"/>
+	<item name="LogicParamType1" 			id="0x9010" type="ParamType" desc="逻辑函数参数类型1"/>
+	<item name="LogicParamType2" 			id="0x9011" type="ParamType" desc="逻辑函数参数类型2"/>
+	<item name="TradeScopeType" 			id="0x9012" type="TradeScopeType" desc="交易范围类别"/>
+	<item name="AccountClass" 				id="0x9013" type="AccountClass" desc="账户类别"/>
+	<item name="PrimaryFlag" 				id="0x9014" type="Bool" desc="主账号标志"/>
+	<item name="OptionType" 				id="0x9015" type="OptionType" desc="期权类型"/>
+	<item name="AuditStatus" 				id="0x9016" type="AuditStatus" desc="审核状态"/>
+	<item name="ExchangeStatus" 			id="0x9017" type="ExchangeStatus" desc="交易所状态"/>
+	<item name="OfferType" 					id="0x9018" type="OfferType" desc="报盘类型"/>
+	
+	
+	
+	<item name="LogicFunc" 					id="0xA001" type="LogicFunc" desc="逻辑函数"/>
+	<item name="IndexParam1" 				id="0xA002" type="ParamValue" desc="指标参数1"/>
+	<item name="IndexParam2" 				id="0xA003" type="ParamValue" desc="指标参数2"/>
+	<item name="IndexParam3" 				id="0xA004" type="ParamValue" desc="指标参数3"/>
+	<item name="IndexParam4" 				id="0xA005" type="ParamValue" desc="指标参数4"/>
+	<item name="IndexParam5" 				id="0xA006" type="ParamValue" desc="指标参数5"/>
+	<item name="IndexParam6" 				id="0xA007" type="ParamValue" desc="指标参数6"/>
+	<item name="LogicParam1" 				id="0xA008" type="ParamValue" desc="逻辑函数参数1"/>
+	<item name="LogicParam2" 				id="0xA009" type="ParamValue" desc="逻辑函数参数2"/>
+	<item name="RiskIndexTextRef" 			id="0xA00A" type="RiskTextRef" desc="风控指标文本引用序号"/>
+	<item name="LogicParam1TextRef" 		id="0xA00B" type="RiskTextRef" desc="逻辑参数1文本引用序号"/>
+	<item name="LogicParam2TextRef" 		id="0xA00C" type="RiskTextRef" desc="逻辑参数2文本引用序号"/>
+	<item name="Param1" 					id="0xA00D" type="Rate" desc="参数1"/>
+	<item name="Param2" 					id="0xA00E" type="Rate" desc="参数2"/>
+</items>
