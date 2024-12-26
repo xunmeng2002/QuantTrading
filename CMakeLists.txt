@@ -71,6 +71,12 @@ endmacro(include_package)
 string(TIMESTAMP BUILD_TIMESTAMP "%Y%m%d-%H%M%S")
 message("Build timestamp is ${BUILD_TIMESTAMP}")
  
+include_package(PersonalLibHeader ${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/include)
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	link_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/win64)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	link_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/linux)
+endif()
 
 add_subdirectory(Target)
 add_subdirectory(Test)

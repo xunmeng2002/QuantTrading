@@ -40,6 +40,7 @@
 			<field name="ExchangeID"/>
 			<field name="ProductID"/>
 		</primarykey>
+		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
 	<table name="Instrument" 					tid="0x0004" desc="合约">
@@ -56,8 +57,8 @@
 			<field name="MaxLimitOrderVolume" type="Volume" desc="限价单最大下单量"/>
 			<field name="MinLimitOrderVolume" type="Volume" desc="限价单最小下单量"/>
 			<field name="SessionName" type="SessionName" desc="交易节名称"/>
-			<field name="DeliveryYear" type="Year" desc="交割年份"/>
-			<field name="DeliveryMonth" type="Month" desc="交割月"/>
+			<field name="DeliveryYear" type="Int" desc="交割年份"/>
+			<field name="DeliveryMonth" type="Int" desc="交割月"/>
 		</fields>
 		<primarykey>
 			<field name="ExchangeID"/>
@@ -93,9 +94,9 @@
 			<field name="AccountID" type="AccountID" desc="账户代码"/>
 			<field name="ExchangeID" type="ExchangeID" desc="交易所代码"/>
 			<field name="InstrumentID" type="InstrumentID" desc="合约代码"/>
-			<field name="ProductClass" type="CProductClassType" desc="产品类型"/>
+			<field name="ProductClass" type="ProductClass" desc="产品类型"/>
 			<field name="PosiDirection" type="PosiDirection" desc="持仓方向"/>
-			<field name="Position" type="Volume" desc="持仓数量"/>
+			<field name="TotalPosition" type="Volume" desc="总持仓数量"/>
 			<field name="TodayPosition" type="Volume" desc="今仓"/>
 			<field name="FrozenPosition" type="Volume" desc="冻结持仓"/>
 			<field name="CloseProfitByDate" type="Money" desc="逐日盯市平仓盈亏"/>
