@@ -75,9 +75,17 @@ namespace mdb
 		t_Trade->Dump(dir);
 		t_MdTick->Dump(dir);
 	}
-	void Mdb::Clear()
+	void Mdb::TruncateTables()
 	{
-
+		t_TradingDay->TruncateTable();
+		t_Exchange->TruncateTable();
+		t_Product->TruncateTable();
+		t_Instrument->TruncateTable();
+		t_Account->TruncateTable();
+		t_Position->TruncateTable();
+		t_Order->TruncateTable();
+		t_Trade->TruncateTable();
+		t_MdTick->TruncateTable();
 	}
 	
 	void Mdb::OnDBConnected()

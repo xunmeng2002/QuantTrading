@@ -1,0 +1,17 @@
+﻿
+DELIMITER ;;
+
+CREATE PROCEDURE `TruncateTables`()
+BEGIN
+	TRUNCATE TABLE `t_TradingDay`;
+	TRUNCATE TABLE `t_Exchange`;
+	TRUNCATE TABLE `t_Product`;
+	TRUNCATE TABLE `t_Instrument`;
+	TRUNCATE TABLE `t_Account`;
+	TRUNCATE TABLE `t_Position`;
+	TRUNCATE TABLE `t_Order`;
+	TRUNCATE TABLE `t_Trade`;
+	TRUNCATE TABLE `t_MdTick`;
+END;;
+
+DELIMITER ;

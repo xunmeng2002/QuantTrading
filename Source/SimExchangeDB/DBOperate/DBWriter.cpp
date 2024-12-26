@@ -607,7 +607,13 @@ void DBWriter::HandleTableOperate()
 				BatchUpdateRecords(tableOperate);
 				break;
 			}
+			case DBOperateType::Truncate:
+			{
+				TruncateTable(tableOperate);
+				break;
+			}
 			default:
+				WriteLog(LogLevel::Warning, "Unknown DBOperateType:%d", tableOperate->Operate);
 				break;
 			}
 			tableOperate->Free();

@@ -15,7 +15,7 @@ namespace mdb
 		void InitDB();
 		void SetInitStatus(bool initStatus);
 		void Dump(const char* dir);
-		void Clear();
+		void TruncateTables();
 		
 		virtual void OnDBConnected() override;
 		virtual void OnDBDisConnected() override;
