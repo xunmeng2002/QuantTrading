@@ -8,10 +8,9 @@ using namespace std;
 using namespace mdb;
 
 
-DBWriter::DBWriter(const std::string& host, const std::string& user, const std::string& passwd)
-	:ThreadBase("DBWriter"), m_Host(host), m_User(user), m_Passwd(passwd), m_DBSubscriber(nullptr)
+DBWriter::DBWriter(DB* db)
+	:ThreadBase("DBWriter"), m_DB(db), m_DBSubscriber(nullptr)
 {
-	m_DB = new DB(host, user, passwd);
 }
 DBWriter::~DBWriter()
 {

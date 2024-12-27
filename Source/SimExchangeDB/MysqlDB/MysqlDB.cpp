@@ -1,5 +1,5 @@
 ﻿#pragma warning(disable: 4311)
-#include "DB.h"
+#include "MysqlDB.h"
 #include "Constant.h"
 #include "Logger.h"
 #include "Utility.h"
@@ -11,7 +11,7 @@ using namespace mdb;
 using namespace std;
 using namespace std::chrono;
 
-DB::DB(const std::string& host, const std::string& user, const std::string& passwd)
+MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::string& passwd)
 {
 	m_Host = host;
 	m_User = user;
@@ -86,7 +86,7 @@ DB::DB(const std::string& host, const std::string& user, const std::string& pass
 	m_MdTickTruncateStatement = nullptr;
 
 }
-DB::~DB()
+MysqlDB::~MysqlDB()
 {
 	delete[] m_SqlBuff;
 	DisConnect();
@@ -95,7 +95,7 @@ DB::~DB()
 		m_DBConnection->close();
 	}
 }
-bool DB::Connect()
+bool MysqlDB::Connect()
 {
 	try
 	{
@@ -108,14 +108,14 @@ bool DB::Connect()
 			m_DBConnection = m_Driver->connect(m_Host, m_User, m_Passwd);
 			if (m_DBConnection == nullptr)
 			{
-				WriteLog(LogLevel::Info, "DB Connect Failed");
+				WriteLog(LogLevel::Info, "MysqlDB Connect Failed");
 				return false;
 			}
 		}
 		else
 		{
 			auto result = m_DBConnection->reconnect();
-			WriteLog(LogLevel::Info, "DB Reconnect Result:[%d]", result);
+			WriteLog(LogLevel::Info, "MysqlDB Reconnect Result:[%d]", result);
 			if (!result)
 			{
 				m_Driver = nullptr;
@@ -127,12 +127,12 @@ bool DB::Connect()
 	}
 	catch (std::exception e)
 	{
-		WriteLog(LogLevel::Warning, "Connect DB Failed. Msg:", e.what());
+		WriteLog(LogLevel::Warning, "Connect MysqlDB Failed. Msg:", e.what());
 		return false;
 	}
 	return true;
 }
-void DB::DisConnect()
+void MysqlDB::DisConnect()
 {
 	if (m_Statement != nullptr)
 	{
@@ -410,7 +410,37 @@ void DB::DisConnect()
 		m_MdTickTruncateStatement = nullptr;
 	}
 }
-void DB::TruncateTables()
+void MysqlDB::InitDB()
+{
+	m_Statement->executeUpdate("Truncate Table t_TradingDay;");
+	m_Statement->executeUpdate("Insert Into t_TradingDay select * from Init.t_TradingDay;");
+	m_Statement->executeUpdate("Truncate Table t_Exchange;");
+	m_Statement->executeUpdate("Insert Into t_Exchange select * from Init.t_Exchange;");
+	m_Statement->executeUpdate("Truncate Table t_Product;");
+	m_Statement->executeUpdate("Insert Into t_Product select * from Init.t_Product;");
+	m_Statement->executeUpdate("Truncate Table t_Instrument;");
+	m_Statement->executeUpdate("Insert Into t_Instrument select * from Init.t_Instrument;");
+	m_Statement->executeUpdate("Truncate Table t_Account;");
+	m_Statement->executeUpdate("Insert Into t_Account select * from Init.t_Account;");
+	m_Statement->executeUpdate("Truncate Table t_Position;");
+	m_Statement->executeUpdate("Insert Into t_Position select * from Init.t_Position;");
+	m_Statement->executeUpdate("Truncate Table t_Order;");
+	m_Statement->executeUpdate("Insert Into t_Order select * from Init.t_Order;");
+	m_Statement->executeUpdate("Truncate Table t_Trade;");
+	m_Statement->executeUpdate("Insert Into t_Trade select * from Init.t_Trade;");
+	m_Statement->executeUpdate("Truncate Table t_MdTick;");
+	m_Statement->executeUpdate("Insert Into t_MdTick select * from Init.t_MdTick;");
+}
+void MysqlDB::TruncateSessionTables()
+{
+	auto start = steady_clock::now();
+	m_Statement->executeUpdate("Truncate Table t_TradeOfferLoginSession;");
+	m_Statement->executeUpdate("Truncate Table t_AccountLoginSession;");
+	m_Statement->executeUpdate("Truncate Table t_RiskUserLoginSession;");
+	m_Statement->executeUpdate("Truncate Table t_AdminUserLoginSession;");
+	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::TruncateTables()
 {
 	TruncateTradingDay();
 	TruncateExchange();
@@ -422,7 +452,7 @@ void DB::TruncateTables()
 	TruncateMdTick();
 }
 
-void DB::InsertTradingDay(TradingDay* record)
+void MysqlDB::InsertTradingDay(TradingDay* record)
 {
 	auto start = steady_clock::now();
 	if (m_TradingDayInsertStatement == nullptr)
@@ -438,7 +468,7 @@ void DB::InsertTradingDay(TradingDay* record)
 		WriteLog(LogLevel::Warning, "InsertTradingDay Spend:%lldms", duration);
 	}
 }
-void DB::DeleteTradingDay(TradingDay* record)
+void MysqlDB::DeleteTradingDay(TradingDay* record)
 {
 	auto start = steady_clock::now();
 	if (m_TradingDayDeleteStatement == nullptr)
@@ -453,7 +483,7 @@ void DB::DeleteTradingDay(TradingDay* record)
 		WriteLog(LogLevel::Warning, "DeleteTradingDay Spend:%lldms", duration);
 	}
 }
-void DB::UpdateTradingDay(TradingDay* record)
+void MysqlDB::UpdateTradingDay(TradingDay* record)
 {
 	auto start = steady_clock::now();
 	if (m_TradingDayUpdateStatement == nullptr)
@@ -468,7 +498,7 @@ void DB::UpdateTradingDay(TradingDay* record)
 		WriteLog(LogLevel::Warning, "UpdateTradingDay Spend:%lldms", duration);
 	}
 }
-void DB::ReplaceTradingDay(TradingDay* record)
+void MysqlDB::ReplaceTradingDay(TradingDay* record)
 {
 	auto start = steady_clock::now();
 	if (m_TradingDayReplaceStatement == nullptr)
@@ -483,7 +513,7 @@ void DB::ReplaceTradingDay(TradingDay* record)
 		WriteLog(LogLevel::Warning, "ReplaceTradingDay Spend:%lldms", duration);
 	}
 }
-void DB::SelectTradingDay(std::vector<TradingDay*>& records)
+void MysqlDB::SelectTradingDay(std::vector<TradingDay*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_TradingDaySelectStatement == nullptr)
@@ -501,7 +531,7 @@ void DB::SelectTradingDay(std::vector<TradingDay*>& records)
 		WriteLog(LogLevel::Warning, "SelectTradingDay Spend:%lldms", duration);
 	}
 }
-void DB::TruncateTradingDay()
+void MysqlDB::TruncateTradingDay()
 {
 	auto start = steady_clock::now();
 	if (m_TradingDayTruncateStatement == nullptr)
@@ -511,7 +541,7 @@ void DB::TruncateTradingDay()
 	m_TradingDayTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateTradingDay Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DB::InsertExchange(Exchange* record)
+void MysqlDB::InsertExchange(Exchange* record)
 {
 	auto start = steady_clock::now();
 	if (m_ExchangeInsertStatement == nullptr)
@@ -527,7 +557,7 @@ void DB::InsertExchange(Exchange* record)
 		WriteLog(LogLevel::Warning, "InsertExchange Spend:%lldms", duration);
 	}
 }
-void DB::DeleteExchange(Exchange* record)
+void MysqlDB::DeleteExchange(Exchange* record)
 {
 	auto start = steady_clock::now();
 	if (m_ExchangeDeleteStatement == nullptr)
@@ -542,7 +572,7 @@ void DB::DeleteExchange(Exchange* record)
 		WriteLog(LogLevel::Warning, "DeleteExchange Spend:%lldms", duration);
 	}
 }
-void DB::UpdateExchange(Exchange* record)
+void MysqlDB::UpdateExchange(Exchange* record)
 {
 	auto start = steady_clock::now();
 	if (m_ExchangeUpdateStatement == nullptr)
@@ -557,7 +587,7 @@ void DB::UpdateExchange(Exchange* record)
 		WriteLog(LogLevel::Warning, "UpdateExchange Spend:%lldms", duration);
 	}
 }
-void DB::ReplaceExchange(Exchange* record)
+void MysqlDB::ReplaceExchange(Exchange* record)
 {
 	auto start = steady_clock::now();
 	if (m_ExchangeReplaceStatement == nullptr)
@@ -572,7 +602,7 @@ void DB::ReplaceExchange(Exchange* record)
 		WriteLog(LogLevel::Warning, "ReplaceExchange Spend:%lldms", duration);
 	}
 }
-void DB::SelectExchange(std::vector<Exchange*>& records)
+void MysqlDB::SelectExchange(std::vector<Exchange*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_ExchangeSelectStatement == nullptr)
@@ -590,7 +620,7 @@ void DB::SelectExchange(std::vector<Exchange*>& records)
 		WriteLog(LogLevel::Warning, "SelectExchange Spend:%lldms", duration);
 	}
 }
-void DB::TruncateExchange()
+void MysqlDB::TruncateExchange()
 {
 	auto start = steady_clock::now();
 	if (m_ExchangeTruncateStatement == nullptr)
@@ -600,7 +630,7 @@ void DB::TruncateExchange()
 	m_ExchangeTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateExchange Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DB::InsertProduct(Product* record)
+void MysqlDB::InsertProduct(Product* record)
 {
 	auto start = steady_clock::now();
 	if (m_ProductInsertStatement == nullptr)
@@ -616,7 +646,7 @@ void DB::InsertProduct(Product* record)
 		WriteLog(LogLevel::Warning, "InsertProduct Spend:%lldms", duration);
 	}
 }
-void DB::DeleteProduct(Product* record)
+void MysqlDB::DeleteProduct(Product* record)
 {
 	auto start = steady_clock::now();
 	if (m_ProductDeleteStatement == nullptr)
@@ -631,7 +661,7 @@ void DB::DeleteProduct(Product* record)
 		WriteLog(LogLevel::Warning, "DeleteProduct Spend:%lldms", duration);
 	}
 }
-void DB::UpdateProduct(Product* record)
+void MysqlDB::UpdateProduct(Product* record)
 {
 	auto start = steady_clock::now();
 	if (m_ProductUpdateStatement == nullptr)
@@ -646,7 +676,7 @@ void DB::UpdateProduct(Product* record)
 		WriteLog(LogLevel::Warning, "UpdateProduct Spend:%lldms", duration);
 	}
 }
-void DB::ReplaceProduct(Product* record)
+void MysqlDB::ReplaceProduct(Product* record)
 {
 	auto start = steady_clock::now();
 	if (m_ProductReplaceStatement == nullptr)
@@ -661,7 +691,7 @@ void DB::ReplaceProduct(Product* record)
 		WriteLog(LogLevel::Warning, "ReplaceProduct Spend:%lldms", duration);
 	}
 }
-void DB::SelectProduct(std::vector<Product*>& records)
+void MysqlDB::SelectProduct(std::vector<Product*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_ProductSelectStatement == nullptr)
@@ -679,7 +709,7 @@ void DB::SelectProduct(std::vector<Product*>& records)
 		WriteLog(LogLevel::Warning, "SelectProduct Spend:%lldms", duration);
 	}
 }
-void DB::TruncateProduct()
+void MysqlDB::TruncateProduct()
 {
 	auto start = steady_clock::now();
 	if (m_ProductTruncateStatement == nullptr)
@@ -689,7 +719,7 @@ void DB::TruncateProduct()
 	m_ProductTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateProduct Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DB::InsertInstrument(Instrument* record)
+void MysqlDB::InsertInstrument(Instrument* record)
 {
 	auto start = steady_clock::now();
 	if (m_InstrumentInsertStatement == nullptr)
@@ -705,7 +735,7 @@ void DB::InsertInstrument(Instrument* record)
 		WriteLog(LogLevel::Warning, "InsertInstrument Spend:%lldms", duration);
 	}
 }
-void DB::DeleteInstrument(Instrument* record)
+void MysqlDB::DeleteInstrument(Instrument* record)
 {
 	auto start = steady_clock::now();
 	if (m_InstrumentDeleteStatement == nullptr)
@@ -720,7 +750,7 @@ void DB::DeleteInstrument(Instrument* record)
 		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
 	}
 }
-void DB::UpdateInstrument(Instrument* record)
+void MysqlDB::UpdateInstrument(Instrument* record)
 {
 	auto start = steady_clock::now();
 	if (m_InstrumentUpdateStatement == nullptr)
@@ -735,7 +765,7 @@ void DB::UpdateInstrument(Instrument* record)
 		WriteLog(LogLevel::Warning, "UpdateInstrument Spend:%lldms", duration);
 	}
 }
-void DB::ReplaceInstrument(Instrument* record)
+void MysqlDB::ReplaceInstrument(Instrument* record)
 {
 	auto start = steady_clock::now();
 	if (m_InstrumentReplaceStatement == nullptr)
@@ -750,7 +780,7 @@ void DB::ReplaceInstrument(Instrument* record)
 		WriteLog(LogLevel::Warning, "ReplaceInstrument Spend:%lldms", duration);
 	}
 }
-void DB::SelectInstrument(std::vector<Instrument*>& records)
+void MysqlDB::SelectInstrument(std::vector<Instrument*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_InstrumentSelectStatement == nullptr)
@@ -768,7 +798,7 @@ void DB::SelectInstrument(std::vector<Instrument*>& records)
 		WriteLog(LogLevel::Warning, "SelectInstrument Spend:%lldms", duration);
 	}
 }
-void DB::TruncateInstrument()
+void MysqlDB::TruncateInstrument()
 {
 	auto start = steady_clock::now();
 	if (m_InstrumentTruncateStatement == nullptr)
@@ -778,7 +808,7 @@ void DB::TruncateInstrument()
 	m_InstrumentTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DB::InsertAccount(Account* record)
+void MysqlDB::InsertAccount(Account* record)
 {
 	auto start = steady_clock::now();
 	if (m_AccountInsertStatement == nullptr)
@@ -794,7 +824,7 @@ void DB::InsertAccount(Account* record)
 		WriteLog(LogLevel::Warning, "InsertAccount Spend:%lldms", duration);
 	}
 }
-void DB::DeleteAccount(Account* record)
+void MysqlDB::DeleteAccount(Account* record)
 {
 	auto start = steady_clock::now();
 	if (m_AccountDeleteStatement == nullptr)
@@ -809,7 +839,7 @@ void DB::DeleteAccount(Account* record)
 		WriteLog(LogLevel::Warning, "DeleteAccount Spend:%lldms", duration);
 	}
 }
-void DB::UpdateAccount(Account* record)
+void MysqlDB::UpdateAccount(Account* record)
 {
 	auto start = steady_clock::now();
 	if (m_AccountUpdateStatement == nullptr)
@@ -824,7 +854,7 @@ void DB::UpdateAccount(Account* record)
 		WriteLog(LogLevel::Warning, "UpdateAccount Spend:%lldms", duration);
 	}
 }
-void DB::ReplaceAccount(Account* record)
+void MysqlDB::ReplaceAccount(Account* record)
 {
 	auto start = steady_clock::now();
 	if (m_AccountReplaceStatement == nullptr)
@@ -839,7 +869,7 @@ void DB::ReplaceAccount(Account* record)
 		WriteLog(LogLevel::Warning, "ReplaceAccount Spend:%lldms", duration);
 	}
 }
-void DB::SelectAccount(std::vector<Account*>& records)
+void MysqlDB::SelectAccount(std::vector<Account*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_AccountSelectStatement == nullptr)
@@ -857,7 +887,7 @@ void DB::SelectAccount(std::vector<Account*>& records)
 		WriteLog(LogLevel::Warning, "SelectAccount Spend:%lldms", duration);
 	}
 }
-void DB::TruncateAccount()
+void MysqlDB::TruncateAccount()
 {
 	auto start = steady_clock::now();
 	if (m_AccountTruncateStatement == nullptr)
@@ -867,7 +897,7 @@ void DB::TruncateAccount()
 	m_AccountTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DB::InsertPosition(Position* record)
+void MysqlDB::InsertPosition(Position* record)
 {
 	auto start = steady_clock::now();
 	if (m_PositionInsertStatement == nullptr)
@@ -883,7 +913,7 @@ void DB::InsertPosition(Position* record)
 		WriteLog(LogLevel::Warning, "InsertPosition Spend:%lldms", duration);
 	}
 }
-void DB::DeletePosition(Position* record)
+void MysqlDB::DeletePosition(Position* record)
 {
 	auto start = steady_clock::now();
 	if (m_PositionDeleteStatement == nullptr)
@@ -898,7 +928,7 @@ void DB::DeletePosition(Position* record)
 		WriteLog(LogLevel::Warning, "DeletePosition Spend:%lldms", duration);
 	}
 }
-void DB::UpdatePosition(Position* record)
+void MysqlDB::UpdatePosition(Position* record)
 {
 	auto start = steady_clock::now();
 	if (m_PositionUpdateStatement == nullptr)
@@ -913,7 +943,7 @@ void DB::UpdatePosition(Position* record)
 		WriteLog(LogLevel::Warning, "UpdatePosition Spend:%lldms", duration);
 	}
 }
-void DB::ReplacePosition(Position* record)
+void MysqlDB::ReplacePosition(Position* record)
 {
 	auto start = steady_clock::now();
 	if (m_PositionReplaceStatement == nullptr)
@@ -928,7 +958,7 @@ void DB::ReplacePosition(Position* record)
 		WriteLog(LogLevel::Warning, "ReplacePosition Spend:%lldms", duration);
 	}
 }
-void DB::SelectPosition(std::vector<Position*>& records)
+void MysqlDB::SelectPosition(std::vector<Position*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_PositionSelectStatement == nullptr)
@@ -946,7 +976,7 @@ void DB::SelectPosition(std::vector<Position*>& records)
 		WriteLog(LogLevel::Warning, "SelectPosition Spend:%lldms", duration);
 	}
 }
-void DB::TruncatePosition()
+void MysqlDB::TruncatePosition()
 {
 	auto start = steady_clock::now();
 	if (m_PositionTruncateStatement == nullptr)
@@ -956,7 +986,7 @@ void DB::TruncatePosition()
 	m_PositionTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncatePosition Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DB::InsertOrder(Order* record)
+void MysqlDB::InsertOrder(Order* record)
 {
 	auto start = steady_clock::now();
 	if (m_OrderInsertStatement == nullptr)
@@ -972,7 +1002,7 @@ void DB::InsertOrder(Order* record)
 		WriteLog(LogLevel::Warning, "InsertOrder Spend:%lldms", duration);
 	}
 }
-void DB::DeleteOrder(Order* record)
+void MysqlDB::DeleteOrder(Order* record)
 {
 	auto start = steady_clock::now();
 	if (m_OrderDeleteStatement == nullptr)
@@ -987,7 +1017,7 @@ void DB::DeleteOrder(Order* record)
 		WriteLog(LogLevel::Warning, "DeleteOrder Spend:%lldms", duration);
 	}
 }
-void DB::UpdateOrder(Order* record)
+void MysqlDB::UpdateOrder(Order* record)
 {
 	auto start = steady_clock::now();
 	if (m_OrderUpdateStatement == nullptr)
@@ -1002,7 +1032,7 @@ void DB::UpdateOrder(Order* record)
 		WriteLog(LogLevel::Warning, "UpdateOrder Spend:%lldms", duration);
 	}
 }
-void DB::ReplaceOrder(Order* record)
+void MysqlDB::ReplaceOrder(Order* record)
 {
 	auto start = steady_clock::now();
 	if (m_OrderReplaceStatement == nullptr)
@@ -1017,7 +1047,7 @@ void DB::ReplaceOrder(Order* record)
 		WriteLog(LogLevel::Warning, "ReplaceOrder Spend:%lldms", duration);
 	}
 }
-void DB::SelectOrder(std::vector<Order*>& records)
+void MysqlDB::SelectOrder(std::vector<Order*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_OrderSelectStatement == nullptr)
@@ -1035,7 +1065,7 @@ void DB::SelectOrder(std::vector<Order*>& records)
 		WriteLog(LogLevel::Warning, "SelectOrder Spend:%lldms", duration);
 	}
 }
-void DB::TruncateOrder()
+void MysqlDB::TruncateOrder()
 {
 	auto start = steady_clock::now();
 	if (m_OrderTruncateStatement == nullptr)
@@ -1045,7 +1075,7 @@ void DB::TruncateOrder()
 	m_OrderTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateOrder Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DB::InsertTrade(Trade* record)
+void MysqlDB::InsertTrade(Trade* record)
 {
 	auto start = steady_clock::now();
 	if (m_TradeInsertStatement == nullptr)
@@ -1061,7 +1091,7 @@ void DB::InsertTrade(Trade* record)
 		WriteLog(LogLevel::Warning, "InsertTrade Spend:%lldms", duration);
 	}
 }
-void DB::DeleteTrade(Trade* record)
+void MysqlDB::DeleteTrade(Trade* record)
 {
 	auto start = steady_clock::now();
 	if (m_TradeDeleteStatement == nullptr)
@@ -1076,7 +1106,7 @@ void DB::DeleteTrade(Trade* record)
 		WriteLog(LogLevel::Warning, "DeleteTrade Spend:%lldms", duration);
 	}
 }
-void DB::UpdateTrade(Trade* record)
+void MysqlDB::UpdateTrade(Trade* record)
 {
 	auto start = steady_clock::now();
 	if (m_TradeUpdateStatement == nullptr)
@@ -1091,7 +1121,7 @@ void DB::UpdateTrade(Trade* record)
 		WriteLog(LogLevel::Warning, "UpdateTrade Spend:%lldms", duration);
 	}
 }
-void DB::ReplaceTrade(Trade* record)
+void MysqlDB::ReplaceTrade(Trade* record)
 {
 	auto start = steady_clock::now();
 	if (m_TradeReplaceStatement == nullptr)
@@ -1106,7 +1136,7 @@ void DB::ReplaceTrade(Trade* record)
 		WriteLog(LogLevel::Warning, "ReplaceTrade Spend:%lldms", duration);
 	}
 }
-void DB::SelectTrade(std::vector<Trade*>& records)
+void MysqlDB::SelectTrade(std::vector<Trade*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_TradeSelectStatement == nullptr)
@@ -1124,7 +1154,7 @@ void DB::SelectTrade(std::vector<Trade*>& records)
 		WriteLog(LogLevel::Warning, "SelectTrade Spend:%lldms", duration);
 	}
 }
-void DB::TruncateTrade()
+void MysqlDB::TruncateTrade()
 {
 	auto start = steady_clock::now();
 	if (m_TradeTruncateStatement == nullptr)
@@ -1134,7 +1164,7 @@ void DB::TruncateTrade()
 	m_TradeTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateTrade Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DB::InsertMdTick(MdTick* record)
+void MysqlDB::InsertMdTick(MdTick* record)
 {
 	auto start = steady_clock::now();
 	if (m_MdTickInsertStatement == nullptr)
@@ -1150,7 +1180,7 @@ void DB::InsertMdTick(MdTick* record)
 		WriteLog(LogLevel::Warning, "InsertMdTick Spend:%lldms", duration);
 	}
 }
-void DB::DeleteMdTick(MdTick* record)
+void MysqlDB::DeleteMdTick(MdTick* record)
 {
 	auto start = steady_clock::now();
 	if (m_MdTickDeleteStatement == nullptr)
@@ -1165,7 +1195,7 @@ void DB::DeleteMdTick(MdTick* record)
 		WriteLog(LogLevel::Warning, "DeleteMdTick Spend:%lldms", duration);
 	}
 }
-void DB::UpdateMdTick(MdTick* record)
+void MysqlDB::UpdateMdTick(MdTick* record)
 {
 	auto start = steady_clock::now();
 	if (m_MdTickUpdateStatement == nullptr)
@@ -1180,7 +1210,7 @@ void DB::UpdateMdTick(MdTick* record)
 		WriteLog(LogLevel::Warning, "UpdateMdTick Spend:%lldms", duration);
 	}
 }
-void DB::ReplaceMdTick(MdTick* record)
+void MysqlDB::ReplaceMdTick(MdTick* record)
 {
 	auto start = steady_clock::now();
 	if (m_MdTickReplaceStatement == nullptr)
@@ -1195,7 +1225,7 @@ void DB::ReplaceMdTick(MdTick* record)
 		WriteLog(LogLevel::Warning, "ReplaceMdTick Spend:%lldms", duration);
 	}
 }
-void DB::SelectMdTick(std::vector<MdTick*>& records)
+void MysqlDB::SelectMdTick(std::vector<MdTick*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_MdTickSelectStatement == nullptr)
@@ -1213,7 +1243,7 @@ void DB::SelectMdTick(std::vector<MdTick*>& records)
 		WriteLog(LogLevel::Warning, "SelectMdTick Spend:%lldms", duration);
 	}
 }
-void DB::TruncateMdTick()
+void MysqlDB::TruncateMdTick()
 {
 	auto start = steady_clock::now();
 	if (m_MdTickTruncateStatement == nullptr)
@@ -1225,23 +1255,23 @@ void DB::TruncateMdTick()
 }
 
 
-void DB::SetStatementForTradingDayRecord(sql::PreparedStatement* statement, TradingDay* record)
+void MysqlDB::SetStatementForTradingDayRecord(sql::PreparedStatement* statement, TradingDay* record)
 {
 	statement->setInt(1, record->PK);
 	statement->setString(2, record->CurrTradingDay);
 	statement->setString(3, record->PreTradingDay);
 }
-void DB::SetStatementForTradingDayRecordUpdate(sql::PreparedStatement* statement, TradingDay* record)
+void MysqlDB::SetStatementForTradingDayRecordUpdate(sql::PreparedStatement* statement, TradingDay* record)
 {
 	statement->setString(1, record->CurrTradingDay);
 	statement->setString(2, record->PreTradingDay);
 	statement->setInt(3, record->PK);
 }
-void DB::SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const IntType& PK)
+void MysqlDB::SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const IntType& PK)
 {
 	statement->setInt(1, PK);
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<TradingDay*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<TradingDay*>& records)
 {
 	TradingDay* record = TradingDay::Allocate();
 	record->PK = result->getInt(1);
@@ -1249,28 +1279,28 @@ void DB::ParseRecord(sql::ResultSet* result, std::vector<TradingDay*>& records)
 	Strcpy(record->PreTradingDay, result->getString(3).c_str());
 	records.push_back(record);
 }
-void DB::SetStatementForExchangeRecord(sql::PreparedStatement* statement, Exchange* record)
+void MysqlDB::SetStatementForExchangeRecord(sql::PreparedStatement* statement, Exchange* record)
 {
 	statement->setString(1, record->ExchangeID);
 	statement->setString(2, record->ExchangeName);
 }
-void DB::SetStatementForExchangeRecordUpdate(sql::PreparedStatement* statement, Exchange* record)
+void MysqlDB::SetStatementForExchangeRecordUpdate(sql::PreparedStatement* statement, Exchange* record)
 {
 	statement->setString(1, record->ExchangeName);
 	statement->setString(2, record->ExchangeID);
 }
-void DB::SetStatementForExchangePrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID)
+void MysqlDB::SetStatementForExchangePrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID)
 {
 	statement->setString(1, ExchangeID);
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<Exchange*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Exchange*>& records)
 {
 	Exchange* record = Exchange::Allocate();
 	Strcpy(record->ExchangeID, result->getString(1).c_str());
 	Strcpy(record->ExchangeName, result->getString(2).c_str());
 	records.push_back(record);
 }
-void DB::SetStatementForProductRecord(sql::PreparedStatement* statement, Product* record)
+void MysqlDB::SetStatementForProductRecord(sql::PreparedStatement* statement, Product* record)
 {
 	statement->setString(1, record->ExchangeID);
 	statement->setString(2, record->ProductID);
@@ -1284,7 +1314,7 @@ void DB::SetStatementForProductRecord(sql::PreparedStatement* statement, Product
 	statement->setInt(10, record->MinLimitOrderVolume);
 	statement->setString(11, record->SessionName);
 }
-void DB::SetStatementForProductRecordUpdate(sql::PreparedStatement* statement, Product* record)
+void MysqlDB::SetStatementForProductRecordUpdate(sql::PreparedStatement* statement, Product* record)
 {
 	statement->setString(1, record->ProductName);
 	statement->setInt(2, int(record->ProductClass));
@@ -1298,12 +1328,12 @@ void DB::SetStatementForProductRecordUpdate(sql::PreparedStatement* statement, P
 	statement->setString(10, record->ExchangeID);
 	statement->setString(11, record->ProductID);
 }
-void DB::SetStatementForProductPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID)
+void MysqlDB::SetStatementForProductPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID)
 {
 	statement->setString(1, ExchangeID);
 	statement->setString(2, ProductID);
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<Product*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Product*>& records)
 {
 	Product* record = Product::Allocate();
 	Strcpy(record->ExchangeID, result->getString(1).c_str());
@@ -1319,7 +1349,7 @@ void DB::ParseRecord(sql::ResultSet* result, std::vector<Product*>& records)
 	Strcpy(record->SessionName, result->getString(11).c_str());
 	records.push_back(record);
 }
-void DB::SetStatementForInstrumentRecord(sql::PreparedStatement* statement, Instrument* record)
+void MysqlDB::SetStatementForInstrumentRecord(sql::PreparedStatement* statement, Instrument* record)
 {
 	statement->setString(1, record->ExchangeID);
 	statement->setString(2, record->InstrumentID);
@@ -1336,7 +1366,7 @@ void DB::SetStatementForInstrumentRecord(sql::PreparedStatement* statement, Inst
 	statement->setInt(13, record->DeliveryYear);
 	statement->setInt(14, record->DeliveryMonth);
 }
-void DB::SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, Instrument* record)
+void MysqlDB::SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, Instrument* record)
 {
 	statement->setString(1, record->InstrumentName);
 	statement->setString(2, record->ProductID);
@@ -1353,12 +1383,12 @@ void DB::SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement
 	statement->setString(13, record->ExchangeID);
 	statement->setString(14, record->InstrumentID);
 }
-void DB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
 	statement->setString(1, ExchangeID);
 	statement->setString(2, InstrumentID);
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<Instrument*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Instrument*>& records)
 {
 	Instrument* record = Instrument::Allocate();
 	Strcpy(record->ExchangeID, result->getString(1).c_str());
@@ -1377,7 +1407,7 @@ void DB::ParseRecord(sql::ResultSet* result, std::vector<Instrument*>& records)
 	record->DeliveryMonth = result->getInt(14);
 	records.push_back(record);
 }
-void DB::SetStatementForAccountRecord(sql::PreparedStatement* statement, Account* record)
+void MysqlDB::SetStatementForAccountRecord(sql::PreparedStatement* statement, Account* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountID);
@@ -1392,7 +1422,7 @@ void DB::SetStatementForAccountRecord(sql::PreparedStatement* statement, Account
 	statement->setDouble(11, record->PremiumOut);
 	statement->setDouble(12, record->MarketValue);
 }
-void DB::SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, Account* record)
+void MysqlDB::SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, Account* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountName);
@@ -1407,11 +1437,11 @@ void DB::SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, A
 	statement->setDouble(11, record->MarketValue);
 	statement->setString(12, record->AccountID);
 }
-void DB::SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID)
+void MysqlDB::SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID)
 {
 	statement->setString(1, AccountID);
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<Account*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Account*>& records)
 {
 	Account* record = Account::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());
@@ -1428,7 +1458,7 @@ void DB::ParseRecord(sql::ResultSet* result, std::vector<Account*>& records)
 	record->MarketValue = result->getDouble(12);
 	records.push_back(record);
 }
-void DB::SetStatementForPositionRecord(sql::PreparedStatement* statement, Position* record)
+void MysqlDB::SetStatementForPositionRecord(sql::PreparedStatement* statement, Position* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountID);
@@ -1450,7 +1480,7 @@ void DB::SetStatementForPositionRecord(sql::PreparedStatement* statement, Positi
 	statement->setDouble(18, record->SettlementPrice);
 	statement->setDouble(19, record->PreSettlementPrice);
 }
-void DB::SetStatementForPositionRecordUpdate(sql::PreparedStatement* statement, Position* record)
+void MysqlDB::SetStatementForPositionRecordUpdate(sql::PreparedStatement* statement, Position* record)
 {
 	statement->setInt(1, int(record->ProductClass));
 	statement->setInt(2, record->TotalPosition);
@@ -1472,7 +1502,7 @@ void DB::SetStatementForPositionRecordUpdate(sql::PreparedStatement* statement, 
 	statement->setString(18, record->InstrumentID);
 	statement->setInt(19, int(record->PosiDirection));
 }
-void DB::SetStatementForPositionPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
+void MysqlDB::SetStatementForPositionPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
 {
 	statement->setString(1, TradingDay);
 	statement->setString(2, AccountID);
@@ -1480,7 +1510,7 @@ void DB::SetStatementForPositionPrimaryKey(sql::PreparedStatement* statement, co
 	statement->setString(4, InstrumentID);
 	statement->setInt(5, int(PosiDirection));
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<Position*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Position*>& records)
 {
 	Position* record = Position::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());
@@ -1504,7 +1534,7 @@ void DB::ParseRecord(sql::ResultSet* result, std::vector<Position*>& records)
 	record->PreSettlementPrice = result->getDouble(19);
 	records.push_back(record);
 }
-void DB::SetStatementForOrderRecord(sql::PreparedStatement* statement, Order* record)
+void MysqlDB::SetStatementForOrderRecord(sql::PreparedStatement* statement, Order* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountID);
@@ -1526,7 +1556,7 @@ void DB::SetStatementForOrderRecord(sql::PreparedStatement* statement, Order* re
 	statement->setString(18, record->CancelDate);
 	statement->setString(19, record->CancelTime);
 }
-void DB::SetStatementForOrderRecordUpdate(sql::PreparedStatement* statement, Order* record)
+void MysqlDB::SetStatementForOrderRecordUpdate(sql::PreparedStatement* statement, Order* record)
 {
 	statement->setInt(1, record->ClientOrderID);
 	statement->setInt(2, int(record->Direction));
@@ -1548,7 +1578,7 @@ void DB::SetStatementForOrderRecordUpdate(sql::PreparedStatement* statement, Ord
 	statement->setString(18, record->InstrumentID);
 	statement->setInt(19, record->OrderID);
 }
-void DB::SetStatementForOrderPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID)
+void MysqlDB::SetStatementForOrderPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID)
 {
 	statement->setString(1, TradingDay);
 	statement->setString(2, AccountID);
@@ -1556,7 +1586,7 @@ void DB::SetStatementForOrderPrimaryKey(sql::PreparedStatement* statement, const
 	statement->setString(4, InstrumentID);
 	statement->setInt(5, OrderID);
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<Order*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Order*>& records)
 {
 	Order* record = Order::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());
@@ -1580,7 +1610,7 @@ void DB::ParseRecord(sql::ResultSet* result, std::vector<Order*>& records)
 	Strcpy(record->CancelTime, result->getString(19).c_str());
 	records.push_back(record);
 }
-void DB::SetStatementForTradeRecord(sql::PreparedStatement* statement, Trade* record)
+void MysqlDB::SetStatementForTradeRecord(sql::PreparedStatement* statement, Trade* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountID);
@@ -1598,7 +1628,7 @@ void DB::SetStatementForTradeRecord(sql::PreparedStatement* statement, Trade* re
 	statement->setString(14, record->TradeDate);
 	statement->setString(15, record->TradeTime);
 }
-void DB::SetStatementForTradeRecordUpdate(sql::PreparedStatement* statement, Trade* record)
+void MysqlDB::SetStatementForTradeRecordUpdate(sql::PreparedStatement* statement, Trade* record)
 {
 	statement->setString(1, record->AccountID);
 	statement->setString(2, record->InstrumentID);
@@ -1616,14 +1646,14 @@ void DB::SetStatementForTradeRecordUpdate(sql::PreparedStatement* statement, Tra
 	statement->setString(14, record->TradeID);
 	statement->setInt(15, int(record->Direction));
 }
-void DB::SetStatementForTradePrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction)
+void MysqlDB::SetStatementForTradePrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction)
 {
 	statement->setString(1, TradingDay);
 	statement->setString(2, ExchangeID);
 	statement->setString(3, TradeID);
 	statement->setInt(4, int(Direction));
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<Trade*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Trade*>& records)
 {
 	Trade* record = Trade::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());
@@ -1643,7 +1673,7 @@ void DB::ParseRecord(sql::ResultSet* result, std::vector<Trade*>& records)
 	Strcpy(record->TradeTime, result->getString(15).c_str());
 	records.push_back(record);
 }
-void DB::SetStatementForMdTickRecord(sql::PreparedStatement* statement, MdTick* record)
+void MysqlDB::SetStatementForMdTickRecord(sql::PreparedStatement* statement, MdTick* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->ExchangeID);
@@ -1684,7 +1714,7 @@ void DB::SetStatementForMdTickRecord(sql::PreparedStatement* statement, MdTick* 
 	statement->setInt(37, record->BidVolume5);
 	statement->setDouble(38, record->AveragePrice);
 }
-void DB::SetStatementForMdTickRecordUpdate(sql::PreparedStatement* statement, MdTick* record)
+void MysqlDB::SetStatementForMdTickRecordUpdate(sql::PreparedStatement* statement, MdTick* record)
 {
 	statement->setDouble(1, record->LastPrice);
 	statement->setDouble(2, record->PreSettlementPrice);
@@ -1725,13 +1755,13 @@ void DB::SetStatementForMdTickRecordUpdate(sql::PreparedStatement* statement, Md
 	statement->setString(37, record->ExchangeID);
 	statement->setString(38, record->InstrumentID);
 }
-void DB::SetStatementForMdTickPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+void MysqlDB::SetStatementForMdTickPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
 	statement->setString(1, TradingDay);
 	statement->setString(2, ExchangeID);
 	statement->setString(3, InstrumentID);
 }
-void DB::ParseRecord(sql::ResultSet* result, std::vector<MdTick*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<MdTick*>& records)
 {
 	MdTick* record = MdTick::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());

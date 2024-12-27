@@ -3,7 +3,10 @@ project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
-add_package(DBOperate ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/DBOperate)
+add_package(DB ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/DB)
+add_package(DBOperateImpl ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/DBOperateImpl)
+add_package(DBWriter ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/DBWriter)
+add_package(MysqlDB ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/MysqlDB)
 add_package(InitMdb ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/InitMdb)
 add_package(Mdb ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/Mdb)
 

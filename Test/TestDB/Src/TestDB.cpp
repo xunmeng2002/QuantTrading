@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Mdb.h"
 #include "DB.h"
+#include "MysqlDB.h"
 #include "DBWriter.h"
 #include "InitMdbFromDB.h"
 #include "TimeUtility.h"
@@ -78,7 +79,8 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Start();
 
 	Mdb* mdb = new Mdb();
-	DBWriter* dbWriter = new DBWriter(dbHost, dbUser, dbPasswd);
+	MysqlDB* db = new MysqlDB(dbHost, dbUser, dbPasswd);
+	DBWriter* dbWriter = new DBWriter(db);
 	mdb->Subscribe(dbWriter);
 	mdb->SetInitStatus(true);
 	

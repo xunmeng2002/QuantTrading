@@ -1,9 +1,13 @@
 <pumplist>
-	<pump dest="./Source/SimExchangeDB/DBOperate/TableOperate.cpp" tpl="../Templates/Cpp/DB/DBOperate/TableOperate.cpp.tpl" model="./Model/Tables/SimExchange.xml"/>
-	<pump dest="./Source/SimExchangeDB/DBOperate/DB.h" tpl="../Templates/Cpp/DB/DBOperate/DB.h.tpl" model="./Model/Tables/SimExchange.xml"/>
-	<pump dest="./Source/SimExchangeDB/DBOperate/DB.cpp" tpl="../Templates/Cpp/DB/DBOperate/DB.cpp.tpl" model="./Model/Tables/SimExchange.xml ../Model/Types.xml"/>
-	<pump dest="./Source/SimExchangeDB/DBOperate/DBWriter.h" tpl="../Templates/Cpp/DB/DBOperate/DBWriter.h.tpl" model="./Model/Tables/SimExchange.xml"/>
-	<pump dest="./Source/SimExchangeDB/DBOperate/DBWriter.cpp" tpl="../Templates/Cpp/DB/DBOperate/DBWriter.cpp.tpl" model="./Model/Tables/SimExchange.xml"/>
+	<pump dest="./Source/SimExchangeDB/DB/DB.h" tpl="../Templates/Cpp/DB/DB/DB.h.tpl" model="./Model/Tables/SimExchange.xml"/>
+	<pump dest="./Source/SimExchangeDB/DBOperateImpl/TableOperateImpl.cpp" tpl="../Templates/Cpp/DB/DBOperateImpl/TableOperateImpl.cpp.tpl" model="./Model/Tables/SimExchange.xml"/>
+	
+	<pump dest="./Source/SimExchangeDB/DBWriter/DBWriter.h" tpl="../Templates/Cpp/DB/DBWriter/DBWriter.h.tpl" model="./Model/Tables/SimExchange.xml"/>
+	<pump dest="./Source/SimExchangeDB/DBWriter/DBWriter.cpp" tpl="../Templates/Cpp/DB/DBWriter/DBWriter.cpp.tpl" model="./Model/Tables/SimExchange.xml"/>
+
+	<pump dest="./Source/SimExchangeDB/MysqlDB/MysqlDB.h" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.h.tpl" model="./Model/Tables/SimExchange.xml"/>
+	<pump dest="./Source/SimExchangeDB/MysqlDB/MysqlDB.cpp" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.cpp.tpl" model="./Model/Tables/SimExchange.xml ../Model/Types.xml"/>
+	
 	<pump dest="./Source/SimExchangeDB/InitMdb/InitMdbFromCsv.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.h.tpl" model="./Model/Tables/SimExchange.xml"/>
 	<pump dest="./Source/SimExchangeDB/InitMdb/InitMdbFromCsv.cpp" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.cpp.tpl" model="./Model/Tables/SimExchange.xml ../Model/Types.xml"/>
 	<pump dest="./Source/SimExchangeDB/InitMdb/InitMdbFromDB.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromDB.h.tpl" model="./Model/Tables/SimExchange.xml"/>

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "MdbStructs.h"
+#include "DB.h"
 #include <jdbc/mysql_connection.h>
 #include <jdbc/mysql_driver.h>
 #include <jdbc/mysql_error.h>
@@ -11,14 +11,16 @@
 #include <list>
 
 
-class DB
+class MysqlDB : public DB
 {
 public:
-	DB(const std::string& host, const std::string& user, const std::string& passwd);
-	~DB();
-	bool Connect();
-	void DisConnect();
-	void TruncateTables();
+	MysqlDB(const std::string& host, const std::string& user, const std::string& passwd);
+	~MysqlDB();
+	virtual bool Connect() override;
+	virtual void DisConnect() override;
+	virtual void InitDB() override;
+	virtual void TruncateSessionTables() override;
+	virtual void TruncateTables() override;
 	
 	template<typename T>
 	void CustomSelectSql(const char* sql, std::vector<T*>& records)
@@ -42,68 +44,68 @@ public:
 		m_Statement->executeUpdate(sql);
 	}
 	
-	void InsertTradingDay(mdb::TradingDay* record);
-	void DeleteTradingDay(mdb::TradingDay* record);
-	void UpdateTradingDay(mdb::TradingDay* record);
-	void ReplaceTradingDay(mdb::TradingDay* record);
-	void SelectTradingDay(std::vector<mdb::TradingDay*>& records);
-	void TruncateTradingDay();
+	virtual void InsertTradingDay(mdb::TradingDay* record) override;
+	virtual void DeleteTradingDay(mdb::TradingDay* record) override;
+	virtual void UpdateTradingDay(mdb::TradingDay* record) override;
+	virtual void ReplaceTradingDay(mdb::TradingDay* record) override;
+	virtual void SelectTradingDay(std::vector<mdb::TradingDay*>& records) override;
+	virtual void TruncateTradingDay() override;
 	
-	void InsertExchange(mdb::Exchange* record);
-	void DeleteExchange(mdb::Exchange* record);
-	void UpdateExchange(mdb::Exchange* record);
-	void ReplaceExchange(mdb::Exchange* record);
-	void SelectExchange(std::vector<mdb::Exchange*>& records);
-	void TruncateExchange();
+	virtual void InsertExchange(mdb::Exchange* record) override;
+	virtual void DeleteExchange(mdb::Exchange* record) override;
+	virtual void UpdateExchange(mdb::Exchange* record) override;
+	virtual void ReplaceExchange(mdb::Exchange* record) override;
+	virtual void SelectExchange(std::vector<mdb::Exchange*>& records) override;
+	virtual void TruncateExchange() override;
 	
-	void InsertProduct(mdb::Product* record);
-	void DeleteProduct(mdb::Product* record);
-	void UpdateProduct(mdb::Product* record);
-	void ReplaceProduct(mdb::Product* record);
-	void SelectProduct(std::vector<mdb::Product*>& records);
-	void TruncateProduct();
+	virtual void InsertProduct(mdb::Product* record) override;
+	virtual void DeleteProduct(mdb::Product* record) override;
+	virtual void UpdateProduct(mdb::Product* record) override;
+	virtual void ReplaceProduct(mdb::Product* record) override;
+	virtual void SelectProduct(std::vector<mdb::Product*>& records) override;
+	virtual void TruncateProduct() override;
 	
-	void InsertInstrument(mdb::Instrument* record);
-	void DeleteInstrument(mdb::Instrument* record);
-	void UpdateInstrument(mdb::Instrument* record);
-	void ReplaceInstrument(mdb::Instrument* record);
-	void SelectInstrument(std::vector<mdb::Instrument*>& records);
-	void TruncateInstrument();
+	virtual void InsertInstrument(mdb::Instrument* record) override;
+	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void UpdateInstrument(mdb::Instrument* record) override;
+	virtual void ReplaceInstrument(mdb::Instrument* record) override;
+	virtual void SelectInstrument(std::vector<mdb::Instrument*>& records) override;
+	virtual void TruncateInstrument() override;
 	
-	void InsertAccount(mdb::Account* record);
-	void DeleteAccount(mdb::Account* record);
-	void UpdateAccount(mdb::Account* record);
-	void ReplaceAccount(mdb::Account* record);
-	void SelectAccount(std::vector<mdb::Account*>& records);
-	void TruncateAccount();
+	virtual void InsertAccount(mdb::Account* record) override;
+	virtual void DeleteAccount(mdb::Account* record) override;
+	virtual void UpdateAccount(mdb::Account* record) override;
+	virtual void ReplaceAccount(mdb::Account* record) override;
+	virtual void SelectAccount(std::vector<mdb::Account*>& records) override;
+	virtual void TruncateAccount() override;
 	
-	void InsertPosition(mdb::Position* record);
-	void DeletePosition(mdb::Position* record);
-	void UpdatePosition(mdb::Position* record);
-	void ReplacePosition(mdb::Position* record);
-	void SelectPosition(std::vector<mdb::Position*>& records);
-	void TruncatePosition();
+	virtual void InsertPosition(mdb::Position* record) override;
+	virtual void DeletePosition(mdb::Position* record) override;
+	virtual void UpdatePosition(mdb::Position* record) override;
+	virtual void ReplacePosition(mdb::Position* record) override;
+	virtual void SelectPosition(std::vector<mdb::Position*>& records) override;
+	virtual void TruncatePosition() override;
 	
-	void InsertOrder(mdb::Order* record);
-	void DeleteOrder(mdb::Order* record);
-	void UpdateOrder(mdb::Order* record);
-	void ReplaceOrder(mdb::Order* record);
-	void SelectOrder(std::vector<mdb::Order*>& records);
-	void TruncateOrder();
+	virtual void InsertOrder(mdb::Order* record) override;
+	virtual void DeleteOrder(mdb::Order* record) override;
+	virtual void UpdateOrder(mdb::Order* record) override;
+	virtual void ReplaceOrder(mdb::Order* record) override;
+	virtual void SelectOrder(std::vector<mdb::Order*>& records) override;
+	virtual void TruncateOrder() override;
 	
-	void InsertTrade(mdb::Trade* record);
-	void DeleteTrade(mdb::Trade* record);
-	void UpdateTrade(mdb::Trade* record);
-	void ReplaceTrade(mdb::Trade* record);
-	void SelectTrade(std::vector<mdb::Trade*>& records);
-	void TruncateTrade();
+	virtual void InsertTrade(mdb::Trade* record) override;
+	virtual void DeleteTrade(mdb::Trade* record) override;
+	virtual void UpdateTrade(mdb::Trade* record) override;
+	virtual void ReplaceTrade(mdb::Trade* record) override;
+	virtual void SelectTrade(std::vector<mdb::Trade*>& records) override;
+	virtual void TruncateTrade() override;
 	
-	void InsertMdTick(mdb::MdTick* record);
-	void DeleteMdTick(mdb::MdTick* record);
-	void UpdateMdTick(mdb::MdTick* record);
-	void ReplaceMdTick(mdb::MdTick* record);
-	void SelectMdTick(std::vector<mdb::MdTick*>& records);
-	void TruncateMdTick();
+	virtual void InsertMdTick(mdb::MdTick* record) override;
+	virtual void DeleteMdTick(mdb::MdTick* record) override;
+	virtual void UpdateMdTick(mdb::MdTick* record) override;
+	virtual void ReplaceMdTick(mdb::MdTick* record) override;
+	virtual void SelectMdTick(std::vector<mdb::MdTick*>& records) override;
+	virtual void TruncateMdTick() override;
 	
 
 private:

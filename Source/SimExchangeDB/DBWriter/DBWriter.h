@@ -13,7 +13,7 @@
 class DBWriter : public ThreadBase, public MdbSubscriber
 {
 public:
-	DBWriter(const std::string& host, const std::string& user, const std::string& passwd);
+	DBWriter(DB* db);
 	~DBWriter();
 	void Subscribe(DBSubscriber* dbSubscriber);
 	DB* GetDB();
@@ -93,9 +93,6 @@ private:
 	void TruncateTable(TableOperate* tableOperate);
 
 private:
-	std::string m_Host;
-	std::string m_User;
-	std::string m_Passwd;
 	DB* m_DB;
 	DBSubscriber* m_DBSubscriber;
 	std::list<TableOperate*> m_TableOperates;
