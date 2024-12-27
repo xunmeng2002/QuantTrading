@@ -1,6 +1,6 @@
 <pumplist>
 	<pump dest="./Source/SimExchangeDB/DB/DB.h" tpl="../Templates/Cpp/DB/DB/DB.h.tpl" model="./Model/Tables/SimExchange.xml"/>
-	<pump dest="./Source/SimExchangeDB/DBOperateImpl/TableOperateImpl.cpp" tpl="../Templates/Cpp/DB/DBOperateImpl/TableOperateImpl.cpp.tpl" model="./Model/Tables/SimExchange.xml"/>
+	<pump dest="./Source/SimExchangeDB/DBOperateImpl/DBOperateImpl.cpp" tpl="../Templates/Cpp/DB/DBOperateImpl/DBOperateImpl.cpp.tpl" model="./Model/Tables/SimExchange.xml"/>
 	
 	<pump dest="./Source/SimExchangeDB/DBWriter/DBWriter.h" tpl="../Templates/Cpp/DB/DBWriter/DBWriter.h.tpl" model="./Model/Tables/SimExchange.xml"/>
 	<pump dest="./Source/SimExchangeDB/DBWriter/DBWriter.cpp" tpl="../Templates/Cpp/DB/DBWriter/DBWriter.cpp.tpl" model="./Model/Tables/SimExchange.xml"/>

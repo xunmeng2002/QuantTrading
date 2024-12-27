@@ -1,19 +1,19 @@
-﻿#include "TableOperateImpl.h"
+﻿#include "DBOperateImpl.h"
 #include "MemCacheTemplateSingleton.h"
 #include "MdbStructs.h"
 #include <cstring>
 
 using namespace mdb;
 
-TableOperate* TableOperate::Allocate()
+DBOperate* DBOperate::Allocate()
 {
-	return ::Allocate<TableOperateImpl>();
+	return ::Allocate<DBOperateImpl>();
 }
-void TableOperateImpl::Free()
+void DBOperateImpl::Free()
 {
-	::Free<TableOperateImpl>(this);
+	::Free<DBOperateImpl>(this);
 }
-void TableOperateImpl::FreeRecord()
+void DBOperateImpl::FreeRecord()
 {
 	if (Operate == DBOperateType::BatchUpdate)
 	{
@@ -72,7 +72,7 @@ void TableOperateImpl::FreeRecord()
 	}
 	Record = nullptr;
 }
-void TableOperateImpl::FreeRecords()
+void DBOperateImpl::FreeRecords()
 {
 	switch(TableID)
 	{
@@ -81,7 +81,7 @@ void TableOperateImpl::FreeRecords()
 	}
 	Record = nullptr;
 }
-const char* TableOperateImpl::GetDebugString() const
+const char* DBOperateImpl::GetDebugString() const
 {
 	switch (TableID)
 	{

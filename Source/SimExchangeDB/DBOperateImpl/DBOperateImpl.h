@@ -1,7 +1,7 @@
 #pragma once
-#include "TableOperate.h"
+#include "DBOperate.h"
 
-class TableOperateImpl : public TableOperate
+class DBOperateImpl : public DBOperate
 {
 public:
 	virtual void Free() override;

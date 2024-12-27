@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "ThreadBase.h"
-#include "TableOperate.h"
+#include "DBOperate.h"
 #include "MdbSubscriber.h"
 #include "MdbStructs.h"
 #include "DB.h"
@@ -79,22 +79,22 @@ public:
 protected:
 	virtual void Run() override;
 	void CheckConnect();
-	void CheckTableOperate();
-	void HandleTableOperate();
-	TableOperate* GetTableOperate();
+	void CheckDBOperate();
+	void HandleDBOperate();
+	DBOperate* GetDBOperate();
 
 private:
-	void InsertRecord(TableOperate* tableOperate);
-	void DeleteRecord(TableOperate* tableOperate);
-	void DeleteRecordByIndex(TableOperate* tableOperate);
-	void UpdateRecord(TableOperate* tableOperate);
-	void ReplaceRecord(TableOperate* tableOperate);
-	void BatchUpdateRecords(TableOperate* tableOperate);
-	void TruncateTable(TableOperate* tableOperate);
+	void InsertRecord(DBOperate* dbOperate);
+	void DeleteRecord(DBOperate* dbOperate);
+	void DeleteRecordByIndex(DBOperate* dbOperate);
+	void UpdateRecord(DBOperate* dbOperate);
+	void ReplaceRecord(DBOperate* dbOperate);
+	void BatchUpdateRecords(DBOperate* dbOperate);
+	void TruncateTable(DBOperate* dbOperate);
 
 private:
 	DB* m_DB;
 	DBSubscriber* m_DBSubscriber;
-	std::list<TableOperate*> m_TableOperates;
+	std::list<DBOperate*> m_DBOperates;
 };
 
