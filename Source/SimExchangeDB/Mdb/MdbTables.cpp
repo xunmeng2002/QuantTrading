@@ -241,6 +241,36 @@ namespace mdb
 		}
 		return true;
 	}
+	void ExchangeTable::BatchUpdate(std::list<mdb::Exchange*>* records)
+	{
+		if (records->size() == 0)
+		{
+			delete records;
+			return;
+		}
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto it = m_PrimaryKey->m_Index.find(record);
+				if (it == m_PrimaryKey->m_Index.end())
+				{
+					auto newRecord = Exchange::Allocate();
+					memcpy(newRecord, record, sizeof(Exchange));
+					m_PrimaryKey->Insert(newRecord);
+				}
+				else
+				{
+					auto oldRecord = *it;
+					memcpy(oldRecord, record, sizeof(Exchange));
+				}
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnExchangeBatchUpdate(records);
+		}
+	}
 	void ExchangeTable::TruncateTable()
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -697,11 +727,14 @@ namespace mdb
 	{
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new PositionPrimaryKey(this);
+		m_AccountIndex = new PositionIndexAccount(this);
 	}
 	PositionTable::~PositionTable()
 	{
 		delete m_PrimaryKey;
 		m_PrimaryKey = nullptr;
+		delete m_AccountIndex;
+		m_AccountIndex = nullptr;
 	}
 	void PositionTable::Subscribe(MdbSubscriber* mdbSubscriber)
 	{
@@ -740,6 +773,7 @@ namespace mdb
 
 		m_PrimaryKey->Insert(record);
 
+		m_AccountIndex->Insert(record);
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -761,6 +795,30 @@ namespace mdb
 			record->Free();
 		}
 	}
+	int PositionTable::EraseByAccountIndex(const DateType& TradingDay, const AccountIDType& AccountID)
+	{
+		m_AccountIndex->FillCompareRecord(TradingDay, AccountID);
+		vector<Position*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_AccountIndex->m_Index.equal_range(&t_ComparePosition);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Free();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = Position::Allocate();
+			memcpy(record, &t_ComparePosition, sizeof(Position));
+			m_MdbSubscriber->OnPositionEraseByAccountIndex(record);
+		}
+		return (int)records.size();
+	}
 	bool PositionTable::Update(Position* const oldRecord, Position* const newRecord, bool updateDB)
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -772,7 +830,17 @@ namespace mdb
 			return false;
 		}
 
+		bool AccountIndexUpdate = m_AccountIndex->NeedUpdate(oldRecord, newRecord);
+		PositionIndexAccount::iterator itAccount;
+		if (AccountIndexUpdate)
+		{
+			itAccount = m_AccountIndex->FindNode(oldRecord);
+		}
 		::memcpy((void*)oldRecord, newRecord, sizeof(Position));
+		if (AccountIndexUpdate)
+		{
+			m_AccountIndex->Update(itAccount);
+		}
 
 		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -792,6 +860,7 @@ namespace mdb
 			(*it)->Free();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_AccountIndex->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
 			m_MdbSubscriber->OnPositionTruncate();
@@ -827,6 +896,7 @@ namespace mdb
 	}
 	void PositionTable::EraseIndex(Position* record)
 	{
+		m_AccountIndex->Erase(record);
 	}
 
 	OrderTable::OrderTable(Mdb* mdb)
@@ -834,11 +904,14 @@ namespace mdb
 	{
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new OrderPrimaryKey(this);
+		m_ClientOrderIDUniqueKey = new OrderUniqueKeyClientOrderID(this);
 	}
 	OrderTable::~OrderTable()
 	{
 		delete m_PrimaryKey;
 		m_PrimaryKey = nullptr;
+		delete m_ClientOrderIDUniqueKey;
+		m_ClientOrderIDUniqueKey = nullptr;
 	}
 	void OrderTable::Subscribe(MdbSubscriber* mdbSubscriber)
 	{
@@ -868,7 +941,7 @@ namespace mdb
 	bool OrderTable::Insert(Order* record)
 	{
 		std::lock_guard guard(m_SharedMutex);
-		if (!m_PrimaryKey->CheckInsert(record))
+		if (!m_PrimaryKey->CheckInsert(record) || !m_ClientOrderIDUniqueKey->CheckInsert(record))
 		{
 			WriteLog(LogLevel::Warning, "Insert Failed for Order:[%s]", record->GetString());
 			record->Free();
@@ -876,6 +949,7 @@ namespace mdb
 		}
 
 		m_PrimaryKey->Insert(record);
+		m_ClientOrderIDUniqueKey->Insert(record);
 
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
@@ -901,7 +975,7 @@ namespace mdb
 	bool OrderTable::Update(Order* const oldRecord, Order* const newRecord, bool updateDB)
 	{
 		std::lock_guard guard(m_SharedMutex);
-		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord) || !m_ClientOrderIDUniqueKey->CheckUpdate(oldRecord, newRecord))
 		{
 			WriteLog(LogLevel::Warning, "Update Failed for Order:[%s]", oldRecord->GetString());
 			WriteLog(LogLevel::Warning, "              New Order:[%s]", newRecord->GetString());
@@ -929,6 +1003,7 @@ namespace mdb
 			(*it)->Free();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_ClientOrderIDUniqueKey->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
 			m_MdbSubscriber->OnOrderTruncate();
@@ -961,6 +1036,7 @@ namespace mdb
 	void OrderTable::EraseUniqueKey(Order* record)
 	{
 		m_PrimaryKey->Erase(record);
+		m_ClientOrderIDUniqueKey->Erase(record);
 	}
 	void OrderTable::EraseIndex(Order* record)
 	{

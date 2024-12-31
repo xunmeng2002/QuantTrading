@@ -95,6 +95,19 @@ namespace mdb
 		size_t operator()(const Order* const record) const;
 	};
 	
+	struct OrderEqualForClientOrderIDUniqueKey
+	{
+		bool operator()(const Order* const left, const Order* const right) const;
+	};
+	struct OrderLessForClientOrderIDUniqueKey
+	{
+		bool operator()(const Order* const left, const Order* const right) const;
+	};
+	struct OrderHashForClientOrderIDUniqueKey
+	{
+		size_t operator()(const Order* const record) const;
+	};
+	
 	struct TradeEqualForTradePrimaryKey
 	{
 		bool operator()(const Trade* const left, const Trade* const right) const;

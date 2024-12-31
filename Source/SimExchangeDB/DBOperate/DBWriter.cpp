@@ -159,6 +159,16 @@ void DBWriter::OnExchangeReplace(mdb::Exchange* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
+void DBWriter::OnExchangeBatchUpdate(std::list<mdb::Exchange*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchUpdate;
+	dbOperate->TableID = Exchange::TableID;
+	dbOperate->Record = records;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
 void DBWriter::OnExchangeTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -350,6 +360,17 @@ void DBWriter::OnPositionErase(mdb::Position* record)
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Delete;
 	dbOperate->TableID = Position::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnPositionEraseByAccountIndex(mdb::Position* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->IndexID = PositionIndexAccount::IndexID;
 	dbOperate->Record = record;
 
 	lock_guard<mutex> guard(m_Mutex);
@@ -736,6 +757,22 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case Position::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case PositionIndexAccount::IndexID:
+		{
+			m_DB->DeletePositionByAccountIndex((Position*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((Position*)dbOperate->Record)->Free();
+		break;
+	}
 	default:
 		WriteLog(LogLevel::Error, "Incorrect TableID for DeleteRecordByIndex. TableID:0x%X", dbOperate->TableID);
 		break;
@@ -833,6 +870,18 @@ void DBWriter::BatchUpdateRecords(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case Exchange::TableID:
+	{
+		auto records = (std::list<Exchange*>*)dbOperate->Record;
+		m_DB->BatchUpdateExchange(records);
+		for (auto record : *records)
+		{
+			record->Free();
+		}
+		records->clear();
+		delete records;
+		break;
+	}
 	default:
 		WriteLog(LogLevel::Error, "Unexpected BatchUpdate TableID:0x%X", dbOperate->TableID);
 		break;

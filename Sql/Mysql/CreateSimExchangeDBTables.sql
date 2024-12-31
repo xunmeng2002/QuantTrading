@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `t_Position` (
   `SettlementPrice` decimal(24,8) COMMENT '结算价',
   `PreSettlementPrice` decimal(24,8) COMMENT '昨结算价',
 
+  INDEX Account(TradingDay, AccountID),
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='持仓';
 
@@ -111,6 +112,7 @@ CREATE TABLE IF NOT EXISTS `t_Order` (
   `CancelDate` char(9) COMMENT '撤单日期',
   `CancelTime` char(9) COMMENT '撤单时间',
 
+  UNIQUE ClientOrderID(TradingDay, AccountID, ExchangeID, InstrumentID, ClientOrderID),
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='委托';
 

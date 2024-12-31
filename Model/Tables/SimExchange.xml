@@ -1,5 +1,5 @@
 <tables prefix="" tail="">
-	<table name="TradingDay" 					tid="0x0001" desc="交易日">
+	<table name="TradingDay" 					tid="0x0001" desc="交易日" session="true">
 		<fields>
 			<field name="PK" type="Int" desc="主键"/>
 			<field name="CurrTradingDay" type="Date" desc="当前交易日"/>
@@ -11,7 +11,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Exchange" 						tid="0x0002" desc="交易所">
+	<table name="Exchange" 						tid="0x0002" desc="交易所" batch="true">
 		<fields>
 			<field name="ExchangeID" type="ExchangeID" desc="交易所代码"/>
 			<field name="ExchangeName" type="ExchangeName" desc="交易所名称"/>
@@ -118,7 +118,12 @@
 			<field name="PosiDirection"/>
 		</primarykey>
 		<uniquekeys></uniquekeys>
-		<indexes></indexes>
+		<indexes>
+			<index name="Account">
+				<field name="TradingDay"/>
+				<field name="AccountID"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="Order" 						tid="0x0007" desc="委托">
 		<fields>
@@ -149,7 +154,15 @@
 			<field name="InstrumentID"/>
 			<field name="OrderID"/>
 		</primarykey>
-		<uniquekeys></uniquekeys>
+		<uniquekeys>
+			<uniquekey name="ClientOrderID">
+				<field name="TradingDay"/>
+				<field name="AccountID"/>
+				<field name="ExchangeID"/>
+				<field name="InstrumentID"/>
+				<field name="ClientOrderID"/>
+			</uniquekey>
+		</uniquekeys>
 		<indexes></indexes>
 	</table>
 	<table name="Trade" 						tid="0x0008" desc="成交">

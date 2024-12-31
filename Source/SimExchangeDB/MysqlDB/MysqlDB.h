@@ -55,6 +55,7 @@ public:
 	virtual void DeleteExchange(mdb::Exchange* record) override;
 	virtual void UpdateExchange(mdb::Exchange* record) override;
 	virtual void ReplaceExchange(mdb::Exchange* record) override;
+	virtual void BatchUpdateExchange(std::list<mdb::Exchange*>* records) override;
 	virtual void SelectExchange(std::vector<mdb::Exchange*>& records) override;
 	virtual void TruncateExchange() override;
 	
@@ -81,6 +82,7 @@ public:
 	
 	virtual void InsertPosition(mdb::Position* record) override;
 	virtual void DeletePosition(mdb::Position* record) override;
+	virtual void DeletePositionByAccountIndex(mdb::Position* record) override;
 	virtual void UpdatePosition(mdb::Position* record) override;
 	virtual void ReplacePosition(mdb::Position* record) override;
 	virtual void SelectPosition(std::vector<mdb::Position*>& records) override;
@@ -132,6 +134,7 @@ private:
 	void SetStatementForPositionRecord(sql::PreparedStatement* statement, mdb::Position* record);
 	void SetStatementForPositionRecordUpdate(sql::PreparedStatement* statement, mdb::Position* record);
 	void SetStatementForPositionPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection);
+	void SetStatementForPositionIndexAccount(sql::PreparedStatement* statement, mdb::Position* record);
 	void ParseRecord(sql::ResultSet* result, std::vector<mdb::Position*>& records);
 	void SetStatementForOrderRecord(sql::PreparedStatement* statement, mdb::Order* record);
 	void SetStatementForOrderRecordUpdate(sql::PreparedStatement* statement, mdb::Order* record);
@@ -189,6 +192,7 @@ private:
 	sql::PreparedStatement* m_AccountTruncateStatement;
 	sql::PreparedStatement* m_PositionInsertStatement;
 	sql::PreparedStatement* m_PositionDeleteStatement;
+	sql::PreparedStatement* m_PositionDeleteByAccountIndexStatement;
 	sql::PreparedStatement* m_PositionUpdateStatement;
 	sql::PreparedStatement* m_PositionReplaceStatement;
 	sql::PreparedStatement* m_PositionSelectStatement;

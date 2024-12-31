@@ -52,6 +52,7 @@ namespace mdb
 		bool Insert(Exchange* record);
 		void Erase(Exchange* record);
 		bool Update(Exchange* const oldRecord, Exchange* const newRecord, bool updateDB = true);
+		void BatchUpdate(std::list<mdb::Exchange*>* records);
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -163,6 +164,7 @@ namespace mdb
 		void InitDB();
 		bool Insert(Position* record);
 		void Erase(Position* record);
+		int EraseByAccountIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		bool Update(Position* const oldRecord, Position* const newRecord, bool updateDB = true);
 		void TruncateTable();
 		void Dump(const char* dir);
@@ -177,6 +179,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		PositionPrimaryKey* m_PrimaryKey;
+		PositionIndexAccount* m_AccountIndex;
 	};
 
 	class OrderTable
@@ -205,6 +208,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		OrderPrimaryKey* m_PrimaryKey;
+		OrderUniqueKeyClientOrderID* m_ClientOrderIDUniqueKey;
 	};
 
 	class TradeTable

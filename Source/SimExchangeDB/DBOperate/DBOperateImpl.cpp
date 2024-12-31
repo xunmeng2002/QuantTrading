@@ -76,6 +76,17 @@ void DBOperateImpl::FreeRecords()
 {
 	switch(TableID)
 	{
+	case Exchange::TableID:
+	{
+		auto records = (std::list<mdb::Exchange*>*)Record;
+		for (auto record : *records)
+		{
+			record->Free();
+		}
+		records->clear();
+		delete records;
+		break;
+	}
 	default:
 		break;
 	}

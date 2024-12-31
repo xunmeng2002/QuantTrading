@@ -152,6 +152,24 @@ namespace mdb
 		std::unordered_set<Order*, OrderHashForOrderPrimaryKey, OrderEqualForOrderPrimaryKey> m_Index;
 	};
 
+	class OrderUniqueKeyClientOrderID
+	{
+		friend class OrderTable;
+	public:
+		OrderUniqueKeyClientOrderID(OrderTable* table, size_t buckets = 1000);
+		Order* Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& ClientOrderID);
+		
+	protected:
+		bool Insert(Order* const record);
+		void Erase(Order* const record);
+		bool CheckInsert(Order* const record);
+		bool CheckUpdate(const Order* const oldRecord, const Order* const newRecord);
+
+	private:
+		OrderTable* m_Table;
+		std::unordered_set<Order*, OrderHashForClientOrderIDUniqueKey, OrderEqualForClientOrderIDUniqueKey> m_Index;
+	};
+
 	class TradeTable;
 	class TradePrimaryKey
 	{

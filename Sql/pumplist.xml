@@ -1,5 +1,7 @@
 <pumplist>
-	<pump dest="./Sql/CreateSimExchangeDBTables.sql" tpl="../Templates/Sql/CreateTables.sql.tpl" model="./Model/Tables/SimExchange.xml ../Model/Types.xml"/>
-	<pump dest="./Sql/DropSimExchangeDBTables.sql" tpl="../Templates/Sql/DropTables.sql.tpl" model="./Model/Tables/SimExchange.xml"/>
-	<pump dest="./Sql/CreateSimExchangeDBTruncateTablesFunction.sql" tpl="../Templates/Sql/CreateTruncateTablesFunction.sql.tpl" model="./Model/Tables/SimExchange.xml"/>
+	<pump dest="./Sql/Mysql/CreateSimExchangeDBTables.sql" tpl="../Templates/Sql/Mysql/CreateTables.sql.tpl" model="./Model/Tables/SimExchange.xml ../Model/Types.xml"/>
+	<pump dest="./Sql/Mysql/DropSimExchangeDBTables.sql" tpl="../Templates/Sql/Mysql/DropTables.sql.tpl" model="./Model/Tables/SimExchange.xml"/>
+	
+	<pump dest="./Sql/Sqlite/CreateSimExchangeDBTables.sql" tpl="../Templates/Sql/Sqlite/CreateTables.sql.tpl" model="./Model/Tables/SimExchange.xml ../Model/Types.xml"/>
+	<pump dest="./Sql/Sqlite/DropSimExchangeDBTables.sql" tpl="../Templates/Sql/Sqlite/DropTables.sql.tpl" model="./Model/Tables/SimExchange.xml"/>
 </pumplist>

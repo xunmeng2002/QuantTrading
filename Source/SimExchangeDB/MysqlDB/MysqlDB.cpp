@@ -59,6 +59,7 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 
 	m_PositionInsertStatement = nullptr;
 	m_PositionDeleteStatement = nullptr;
+	m_PositionDeleteByAccountIndexStatement = nullptr;
 	m_PositionUpdateStatement = nullptr;
 	m_PositionReplaceStatement = nullptr;
 	m_PositionSelectStatement = nullptr;
@@ -299,6 +300,11 @@ void MysqlDB::DisConnect()
 		m_PositionDeleteStatement->close();
 		m_PositionDeleteStatement = nullptr;
 	}
+	if (m_PositionDeleteByAccountIndexStatement != nullptr)
+	{
+		m_PositionDeleteByAccountIndexStatement->close();
+		m_PositionDeleteByAccountIndexStatement = nullptr;
+	}
 	if (m_PositionUpdateStatement != nullptr)
 	{
 		m_PositionUpdateStatement->close();
@@ -434,10 +440,7 @@ void MysqlDB::InitDB()
 void MysqlDB::TruncateSessionTables()
 {
 	auto start = steady_clock::now();
-	m_Statement->executeUpdate("Truncate Table t_TradeOfferLoginSession;");
-	m_Statement->executeUpdate("Truncate Table t_AccountLoginSession;");
-	m_Statement->executeUpdate("Truncate Table t_RiskUserLoginSession;");
-	m_Statement->executeUpdate("Truncate Table t_AdminUserLoginSession;");
+	TruncateTradingDay();
 	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 void MysqlDB::TruncateTables()
@@ -600,6 +603,35 @@ void MysqlDB::ReplaceExchange(Exchange* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "ReplaceExchange Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchUpdateExchange(std::list<Exchange*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "replace into t_Exchange Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchUpdateExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "replace into t_Exchange Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchUpdateExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchUpdateExchange Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectExchange(std::vector<Exchange*>& records)
@@ -926,6 +958,21 @@ void MysqlDB::DeletePosition(Position* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeletePosition Spend:%lldms", duration);
+	}
+}
+void MysqlDB::DeletePositionByAccountIndex(Position* record)
+{
+	auto start = steady_clock::now();
+	if (m_PositionDeleteByAccountIndexStatement == nullptr)
+	{
+		m_PositionDeleteByAccountIndexStatement = m_DBConnection->prepareStatement("delete from t_Position where TradingDay = ? and AccountID = ?;");
+	}
+	SetStatementForPositionIndexAccount(m_PositionDeleteByAccountIndexStatement, record);
+	m_PositionDeleteByAccountIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePositionByAccountIndex Spend:%lldms", duration);
 	}
 }
 void MysqlDB::UpdatePosition(Position* record)
@@ -1509,6 +1556,11 @@ void MysqlDB::SetStatementForPositionPrimaryKey(sql::PreparedStatement* statemen
 	statement->setString(3, ExchangeID);
 	statement->setString(4, InstrumentID);
 	statement->setInt(5, int(PosiDirection));
+}
+void MysqlDB::SetStatementForPositionIndexAccount(sql::PreparedStatement* statement, Position* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->AccountID);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Position*>& records)
 {

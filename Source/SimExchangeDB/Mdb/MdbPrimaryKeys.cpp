@@ -284,6 +284,42 @@ namespace mdb
 		return OrderEqualForOrderPrimaryKey()(oldRecord, newRecord);
 	}
 
+	OrderUniqueKeyClientOrderID::OrderUniqueKeyClientOrderID(OrderTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	Order* OrderUniqueKeyClientOrderID::Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& ClientOrderID)
+	{
+		Strcpy(t_CompareOrder.TradingDay, TradingDay);
+		Strcpy(t_CompareOrder.AccountID, AccountID);
+		Strcpy(t_CompareOrder.ExchangeID, ExchangeID);
+		Strcpy(t_CompareOrder.InstrumentID, InstrumentID);
+		t_CompareOrder.ClientOrderID = ClientOrderID;
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareOrder);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	bool OrderUniqueKeyClientOrderID::Insert(Order* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void OrderUniqueKeyClientOrderID::Erase(Order* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool OrderUniqueKeyClientOrderID::CheckInsert(Order* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool OrderUniqueKeyClientOrderID::CheckUpdate(const Order* const oldRecord, const Order* const newRecord)
+	{
+		return OrderEqualForClientOrderIDUniqueKey()(oldRecord, newRecord);
+	}
+
 	TradePrimaryKey::TradePrimaryKey(TradeTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{

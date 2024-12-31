@@ -31,6 +31,7 @@ public:
 	virtual void OnExchangeErase(mdb::Exchange* record) override;
 	virtual void OnExchangeUpdate(mdb::Exchange* record) override;
 	virtual void OnExchangeReplace(mdb::Exchange* record) override;
+	virtual void OnExchangeBatchUpdate(std::list<mdb::Exchange*>* records) override;
 	virtual void OnExchangeTruncate() override;
 	
 	virtual void OnProductInsert(mdb::Product* record) override;
@@ -53,6 +54,7 @@ public:
 	
 	virtual void OnPositionInsert(mdb::Position* record) override;
 	virtual void OnPositionErase(mdb::Position* record) override;
+	virtual void OnPositionEraseByAccountIndex(mdb::Position* record) override;
 	virtual void OnPositionUpdate(mdb::Position* record) override;
 	virtual void OnPositionReplace(mdb::Position* record) override;
 	virtual void OnPositionTruncate() override;

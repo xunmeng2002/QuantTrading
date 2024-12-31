@@ -167,6 +167,39 @@ namespace mdb
 		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->AccountID) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<int>()(record->OrderID);
 	}
 
+	bool OrderEqualForClientOrderIDUniqueKey::operator()(const Order* const left, const Order* const right) const
+	{
+		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->AccountID, right->AccountID) == 0 && strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0 && left->ClientOrderID == right->ClientOrderID;
+	}
+	bool OrderLessForClientOrderIDUniqueKey::operator()(const Order* const left, const Order* const right) const
+	{
+		if (strcmp(left->TradingDay, right->TradingDay) < 0)
+			return true;
+		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
+			return false;
+		if (strcmp(left->AccountID, right->AccountID) < 0)
+			return true;
+		else if (strcmp(left->AccountID, right->AccountID) > 0)
+			return false;
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
+			return true;
+		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
+			return false;
+		if (left->ClientOrderID < right->ClientOrderID)
+			return true;
+		else if (left->ClientOrderID > right->ClientOrderID)
+			return false;
+		return false;
+	}
+	size_t OrderHashForClientOrderIDUniqueKey::operator()(const Order* const record) const
+	{
+		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->AccountID) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<int>()(record->ClientOrderID);
+	}
+
 	bool TradeEqualForTradePrimaryKey::operator()(const Trade* const left, const Trade* const right) const
 	{
 		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->TradeID, right->TradeID) == 0 && left->Direction == right->Direction;

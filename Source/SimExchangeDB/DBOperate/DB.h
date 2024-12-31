@@ -25,6 +25,7 @@ public:
 	virtual void DeleteExchange(mdb::Exchange* record) = 0;
 	virtual void UpdateExchange(mdb::Exchange* record) = 0;
 	virtual void ReplaceExchange(mdb::Exchange* record) = 0;
+	virtual void BatchUpdateExchange(std::list<mdb::Exchange*>* records) = 0;
 	virtual void SelectExchange(std::vector<mdb::Exchange*>& records) = 0;
 	virtual void TruncateExchange() = 0;
 	
@@ -51,6 +52,7 @@ public:
 	
 	virtual void InsertPosition(mdb::Position* record) = 0;
 	virtual void DeletePosition(mdb::Position* record) = 0;
+	virtual void DeletePositionByAccountIndex(mdb::Position* record) = 0;
 	virtual void UpdatePosition(mdb::Position* record) = 0;
 	virtual void ReplacePosition(mdb::Position* record) = 0;
 	virtual void SelectPosition(std::vector<mdb::Position*>& records) = 0;

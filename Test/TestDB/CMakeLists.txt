@@ -5,6 +5,7 @@ message("PROJECT_NAME:" ${PROJECT_NAME})
 add_package(Src ./Src)
 add_package(DBOperate ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/DBOperate)
 add_package(MysqlDB ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/MysqlDB)
+add_package(SqliteDB ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/SqliteDB)
 add_package(InitMdb ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/InitMdb)
 add_package(Mdb ${CMAKE_SOURCE_DIR}/Source/SimExchangeDB/Mdb)
 
