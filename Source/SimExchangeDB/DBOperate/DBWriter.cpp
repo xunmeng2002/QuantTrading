@@ -64,13 +64,20 @@ void DBWriter::TruncateTables()
 }
 void DBWriter::OnTradingDayInsert(mdb::TradingDay* record)
 {
-	TradingDay* newRecord = TradingDay::Allocate();
-	memcpy(newRecord, record, sizeof(TradingDay));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = TradingDay::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnTradingDayBatchInsert(std::list<mdb::TradingDay*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = TradingDay::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -95,16 +102,6 @@ void DBWriter::OnTradingDayUpdate(mdb::TradingDay* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
-void DBWriter::OnTradingDayReplace(mdb::TradingDay* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
-	dbOperate->TableID = TradingDay::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
 void DBWriter::OnTradingDayTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -118,13 +115,20 @@ void DBWriter::OnTradingDayTruncate()
 
 void DBWriter::OnExchangeInsert(mdb::Exchange* record)
 {
-	Exchange* newRecord = Exchange::Allocate();
-	memcpy(newRecord, record, sizeof(Exchange));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = Exchange::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnExchangeBatchInsert(std::list<mdb::Exchange*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Exchange::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -149,26 +153,6 @@ void DBWriter::OnExchangeUpdate(mdb::Exchange* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
-void DBWriter::OnExchangeReplace(mdb::Exchange* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
-	dbOperate->TableID = Exchange::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
-void DBWriter::OnExchangeBatchUpdate(std::list<mdb::Exchange*>* records)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::BatchUpdate;
-	dbOperate->TableID = Exchange::TableID;
-	dbOperate->Record = records;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
 void DBWriter::OnExchangeTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -182,13 +166,20 @@ void DBWriter::OnExchangeTruncate()
 
 void DBWriter::OnProductInsert(mdb::Product* record)
 {
-	Product* newRecord = Product::Allocate();
-	memcpy(newRecord, record, sizeof(Product));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = Product::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnProductBatchInsert(std::list<mdb::Product*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Product::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -213,16 +204,6 @@ void DBWriter::OnProductUpdate(mdb::Product* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
-void DBWriter::OnProductReplace(mdb::Product* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
-	dbOperate->TableID = Product::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
 void DBWriter::OnProductTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -236,13 +217,20 @@ void DBWriter::OnProductTruncate()
 
 void DBWriter::OnInstrumentInsert(mdb::Instrument* record)
 {
-	Instrument* newRecord = Instrument::Allocate();
-	memcpy(newRecord, record, sizeof(Instrument));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = Instrument::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Instrument::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -267,16 +255,6 @@ void DBWriter::OnInstrumentUpdate(mdb::Instrument* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
-void DBWriter::OnInstrumentReplace(mdb::Instrument* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
-	dbOperate->TableID = Instrument::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
 void DBWriter::OnInstrumentTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -290,13 +268,20 @@ void DBWriter::OnInstrumentTruncate()
 
 void DBWriter::OnAccountInsert(mdb::Account* record)
 {
-	Account* newRecord = Account::Allocate();
-	memcpy(newRecord, record, sizeof(Account));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = Account::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnAccountBatchInsert(std::list<mdb::Account*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Account::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -321,16 +306,6 @@ void DBWriter::OnAccountUpdate(mdb::Account* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
-void DBWriter::OnAccountReplace(mdb::Account* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
-	dbOperate->TableID = Account::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
 void DBWriter::OnAccountTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -344,13 +319,20 @@ void DBWriter::OnAccountTruncate()
 
 void DBWriter::OnPositionInsert(mdb::Position* record)
 {
-	Position* newRecord = Position::Allocate();
-	memcpy(newRecord, record, sizeof(Position));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = Position::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnPositionBatchInsert(std::list<mdb::Position*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -386,16 +368,6 @@ void DBWriter::OnPositionUpdate(mdb::Position* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
-void DBWriter::OnPositionReplace(mdb::Position* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
-	dbOperate->TableID = Position::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
 void DBWriter::OnPositionTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -409,13 +381,20 @@ void DBWriter::OnPositionTruncate()
 
 void DBWriter::OnOrderInsert(mdb::Order* record)
 {
-	Order* newRecord = Order::Allocate();
-	memcpy(newRecord, record, sizeof(Order));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = Order::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnOrderBatchInsert(std::list<mdb::Order*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Order::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -440,16 +419,6 @@ void DBWriter::OnOrderUpdate(mdb::Order* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
-void DBWriter::OnOrderReplace(mdb::Order* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
-	dbOperate->TableID = Order::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
 void DBWriter::OnOrderTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -463,13 +432,20 @@ void DBWriter::OnOrderTruncate()
 
 void DBWriter::OnTradeInsert(mdb::Trade* record)
 {
-	Trade* newRecord = Trade::Allocate();
-	memcpy(newRecord, record, sizeof(Trade));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = Trade::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnTradeBatchInsert(std::list<mdb::Trade*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Trade::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -494,16 +470,6 @@ void DBWriter::OnTradeUpdate(mdb::Trade* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
-void DBWriter::OnTradeReplace(mdb::Trade* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
-	dbOperate->TableID = Trade::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
 void DBWriter::OnTradeTruncate()
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -517,13 +483,20 @@ void DBWriter::OnTradeTruncate()
 
 void DBWriter::OnMdTickInsert(mdb::MdTick* record)
 {
-	MdTick* newRecord = MdTick::Allocate();
-	memcpy(newRecord, record, sizeof(MdTick));
-
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Insert;
 	dbOperate->TableID = MdTick::TableID;
-	dbOperate->Record = newRecord;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnMdTickBatchInsert(std::list<mdb::MdTick*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = MdTick::TableID;
+	dbOperate->Record = records;
 
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
@@ -542,16 +515,6 @@ void DBWriter::OnMdTickUpdate(mdb::MdTick* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Update;
-	dbOperate->TableID = MdTick::TableID;
-	dbOperate->Record = record;
-
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
-}
-void DBWriter::OnMdTickReplace(mdb::MdTick* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Replace;
 	dbOperate->TableID = MdTick::TableID;
 	dbOperate->Record = record;
 
@@ -617,14 +580,9 @@ void DBWriter::HandleDBOperate()
 				UpdateRecord(dbOperate);
 				break;
 			}
-			case DBOperateType::Replace:
+			case DBOperateType::BatchInsert:
 			{
-				ReplaceRecord(dbOperate);
-				break;
-			}
-			case DBOperateType::BatchUpdate:
-			{
-				BatchUpdateRecords(dbOperate);
+				BatchInsertRecords(dbOperate);
 				break;
 			}
 			case DBOperateType::Truncate:
@@ -671,41 +629,113 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 	{
 	case TradingDay::TableID:
 		m_DB->InsertTradingDay((TradingDay*)dbOperate->Record);
-		((TradingDay*)dbOperate->Record)->Free();
 		break;
 	case Exchange::TableID:
 		m_DB->InsertExchange((Exchange*)dbOperate->Record);
-		((Exchange*)dbOperate->Record)->Free();
 		break;
 	case Product::TableID:
 		m_DB->InsertProduct((Product*)dbOperate->Record);
-		((Product*)dbOperate->Record)->Free();
 		break;
 	case Instrument::TableID:
 		m_DB->InsertInstrument((Instrument*)dbOperate->Record);
-		((Instrument*)dbOperate->Record)->Free();
 		break;
 	case Account::TableID:
 		m_DB->InsertAccount((Account*)dbOperate->Record);
-		((Account*)dbOperate->Record)->Free();
 		break;
 	case Position::TableID:
 		m_DB->InsertPosition((Position*)dbOperate->Record);
-		((Position*)dbOperate->Record)->Free();
 		break;
 	case Order::TableID:
 		m_DB->InsertOrder((Order*)dbOperate->Record);
-		((Order*)dbOperate->Record)->Free();
 		break;
 	case Trade::TableID:
 		m_DB->InsertTrade((Trade*)dbOperate->Record);
-		((Trade*)dbOperate->Record)->Free();
 		break;
 	case MdTick::TableID:
 		m_DB->InsertMdTick((MdTick*)dbOperate->Record);
-		((MdTick*)dbOperate->Record)->Free();
 		break;
 	default:
+		break;
+	}
+}
+void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
+{
+	switch (dbOperate->TableID)
+	{
+	case TradingDay::TableID:
+	{
+		auto records = (std::list<TradingDay*>*)dbOperate->Record;
+		m_DB->BatchInsertTradingDay(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Exchange::TableID:
+	{
+		auto records = (std::list<Exchange*>*)dbOperate->Record;
+		m_DB->BatchInsertExchange(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Product::TableID:
+	{
+		auto records = (std::list<Product*>*)dbOperate->Record;
+		m_DB->BatchInsertProduct(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Instrument::TableID:
+	{
+		auto records = (std::list<Instrument*>*)dbOperate->Record;
+		m_DB->BatchInsertInstrument(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Account::TableID:
+	{
+		auto records = (std::list<Account*>*)dbOperate->Record;
+		m_DB->BatchInsertAccount(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Position::TableID:
+	{
+		auto records = (std::list<Position*>*)dbOperate->Record;
+		m_DB->BatchInsertPosition(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Order::TableID:
+	{
+		auto records = (std::list<Order*>*)dbOperate->Record;
+		m_DB->BatchInsertOrder(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Trade::TableID:
+	{
+		auto records = (std::list<Trade*>*)dbOperate->Record;
+		m_DB->BatchInsertTrade(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case MdTick::TableID:
+	{
+		auto records = (std::list<MdTick*>*)dbOperate->Record;
+		m_DB->BatchInsertMdTick(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	default:
+		WriteLog(LogLevel::Error, "Unexpected BatchInsert TableID:0x%X", dbOperate->TableID);
 		break;
 	}
 }
@@ -822,71 +852,7 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		break;
 	}
 }
-void DBWriter::ReplaceRecord(DBOperate* dbOperate)
-{
-	switch (dbOperate->TableID)
-	{
-	case TradingDay::TableID:
-		m_DB->ReplaceTradingDay((TradingDay*)dbOperate->Record);
-		((TradingDay*)dbOperate->Record)->Free();
-		break;
-	case Exchange::TableID:
-		m_DB->ReplaceExchange((Exchange*)dbOperate->Record);
-		((Exchange*)dbOperate->Record)->Free();
-		break;
-	case Product::TableID:
-		m_DB->ReplaceProduct((Product*)dbOperate->Record);
-		((Product*)dbOperate->Record)->Free();
-		break;
-	case Instrument::TableID:
-		m_DB->ReplaceInstrument((Instrument*)dbOperate->Record);
-		((Instrument*)dbOperate->Record)->Free();
-		break;
-	case Account::TableID:
-		m_DB->ReplaceAccount((Account*)dbOperate->Record);
-		((Account*)dbOperate->Record)->Free();
-		break;
-	case Position::TableID:
-		m_DB->ReplacePosition((Position*)dbOperate->Record);
-		((Position*)dbOperate->Record)->Free();
-		break;
-	case Order::TableID:
-		m_DB->ReplaceOrder((Order*)dbOperate->Record);
-		((Order*)dbOperate->Record)->Free();
-		break;
-	case Trade::TableID:
-		m_DB->ReplaceTrade((Trade*)dbOperate->Record);
-		((Trade*)dbOperate->Record)->Free();
-		break;
-	case MdTick::TableID:
-		m_DB->ReplaceMdTick((MdTick*)dbOperate->Record);
-		((MdTick*)dbOperate->Record)->Free();
-		break;
-	default:
-		break;
-	}
-}
-void DBWriter::BatchUpdateRecords(DBOperate* dbOperate)
-{
-	switch (dbOperate->TableID)
-	{
-	case Exchange::TableID:
-	{
-		auto records = (std::list<Exchange*>*)dbOperate->Record;
-		m_DB->BatchUpdateExchange(records);
-		for (auto record : *records)
-		{
-			record->Free();
-		}
-		records->clear();
-		delete records;
-		break;
-	}
-	default:
-		WriteLog(LogLevel::Error, "Unexpected BatchUpdate TableID:0x%X", dbOperate->TableID);
-		break;
-	}
-}
+
 void DBWriter::TruncateTable(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)

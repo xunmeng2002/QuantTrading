@@ -25,35 +25,30 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_TradingDayInsertStatement = nullptr;
 	m_TradingDayDeleteStatement = nullptr;
 	m_TradingDayUpdateStatement = nullptr;
-	m_TradingDayReplaceStatement = nullptr;
 	m_TradingDaySelectStatement = nullptr;
 	m_TradingDayTruncateStatement = nullptr;
 
 	m_ExchangeInsertStatement = nullptr;
 	m_ExchangeDeleteStatement = nullptr;
 	m_ExchangeUpdateStatement = nullptr;
-	m_ExchangeReplaceStatement = nullptr;
 	m_ExchangeSelectStatement = nullptr;
 	m_ExchangeTruncateStatement = nullptr;
 
 	m_ProductInsertStatement = nullptr;
 	m_ProductDeleteStatement = nullptr;
 	m_ProductUpdateStatement = nullptr;
-	m_ProductReplaceStatement = nullptr;
 	m_ProductSelectStatement = nullptr;
 	m_ProductTruncateStatement = nullptr;
 
 	m_InstrumentInsertStatement = nullptr;
 	m_InstrumentDeleteStatement = nullptr;
 	m_InstrumentUpdateStatement = nullptr;
-	m_InstrumentReplaceStatement = nullptr;
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
 
 	m_AccountInsertStatement = nullptr;
 	m_AccountDeleteStatement = nullptr;
 	m_AccountUpdateStatement = nullptr;
-	m_AccountReplaceStatement = nullptr;
 	m_AccountSelectStatement = nullptr;
 	m_AccountTruncateStatement = nullptr;
 
@@ -61,28 +56,24 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_PositionDeleteStatement = nullptr;
 	m_PositionDeleteByAccountIndexStatement = nullptr;
 	m_PositionUpdateStatement = nullptr;
-	m_PositionReplaceStatement = nullptr;
 	m_PositionSelectStatement = nullptr;
 	m_PositionTruncateStatement = nullptr;
 
 	m_OrderInsertStatement = nullptr;
 	m_OrderDeleteStatement = nullptr;
 	m_OrderUpdateStatement = nullptr;
-	m_OrderReplaceStatement = nullptr;
 	m_OrderSelectStatement = nullptr;
 	m_OrderTruncateStatement = nullptr;
 
 	m_TradeInsertStatement = nullptr;
 	m_TradeDeleteStatement = nullptr;
 	m_TradeUpdateStatement = nullptr;
-	m_TradeReplaceStatement = nullptr;
 	m_TradeSelectStatement = nullptr;
 	m_TradeTruncateStatement = nullptr;
 
 	m_MdTickInsertStatement = nullptr;
 	m_MdTickDeleteStatement = nullptr;
 	m_MdTickUpdateStatement = nullptr;
-	m_MdTickReplaceStatement = nullptr;
 	m_MdTickSelectStatement = nullptr;
 	m_MdTickTruncateStatement = nullptr;
 
@@ -155,11 +146,6 @@ void MysqlDB::DisConnect()
 		m_TradingDayUpdateStatement->close();
 		m_TradingDayUpdateStatement = nullptr;
 	}
-	if (m_TradingDayReplaceStatement != nullptr)
-	{
-		m_TradingDayReplaceStatement->close();
-		m_TradingDayReplaceStatement = nullptr;
-	}
 	if (m_TradingDaySelectStatement != nullptr)
 	{
 		m_TradingDaySelectStatement->close();
@@ -184,11 +170,6 @@ void MysqlDB::DisConnect()
 	{
 		m_ExchangeUpdateStatement->close();
 		m_ExchangeUpdateStatement = nullptr;
-	}
-	if (m_ExchangeReplaceStatement != nullptr)
-	{
-		m_ExchangeReplaceStatement->close();
-		m_ExchangeReplaceStatement = nullptr;
 	}
 	if (m_ExchangeSelectStatement != nullptr)
 	{
@@ -215,11 +196,6 @@ void MysqlDB::DisConnect()
 		m_ProductUpdateStatement->close();
 		m_ProductUpdateStatement = nullptr;
 	}
-	if (m_ProductReplaceStatement != nullptr)
-	{
-		m_ProductReplaceStatement->close();
-		m_ProductReplaceStatement = nullptr;
-	}
 	if (m_ProductSelectStatement != nullptr)
 	{
 		m_ProductSelectStatement->close();
@@ -245,11 +221,6 @@ void MysqlDB::DisConnect()
 		m_InstrumentUpdateStatement->close();
 		m_InstrumentUpdateStatement = nullptr;
 	}
-	if (m_InstrumentReplaceStatement != nullptr)
-	{
-		m_InstrumentReplaceStatement->close();
-		m_InstrumentReplaceStatement = nullptr;
-	}
 	if (m_InstrumentSelectStatement != nullptr)
 	{
 		m_InstrumentSelectStatement->close();
@@ -274,11 +245,6 @@ void MysqlDB::DisConnect()
 	{
 		m_AccountUpdateStatement->close();
 		m_AccountUpdateStatement = nullptr;
-	}
-	if (m_AccountReplaceStatement != nullptr)
-	{
-		m_AccountReplaceStatement->close();
-		m_AccountReplaceStatement = nullptr;
 	}
 	if (m_AccountSelectStatement != nullptr)
 	{
@@ -310,11 +276,6 @@ void MysqlDB::DisConnect()
 		m_PositionUpdateStatement->close();
 		m_PositionUpdateStatement = nullptr;
 	}
-	if (m_PositionReplaceStatement != nullptr)
-	{
-		m_PositionReplaceStatement->close();
-		m_PositionReplaceStatement = nullptr;
-	}
 	if (m_PositionSelectStatement != nullptr)
 	{
 		m_PositionSelectStatement->close();
@@ -339,11 +300,6 @@ void MysqlDB::DisConnect()
 	{
 		m_OrderUpdateStatement->close();
 		m_OrderUpdateStatement = nullptr;
-	}
-	if (m_OrderReplaceStatement != nullptr)
-	{
-		m_OrderReplaceStatement->close();
-		m_OrderReplaceStatement = nullptr;
 	}
 	if (m_OrderSelectStatement != nullptr)
 	{
@@ -370,11 +326,6 @@ void MysqlDB::DisConnect()
 		m_TradeUpdateStatement->close();
 		m_TradeUpdateStatement = nullptr;
 	}
-	if (m_TradeReplaceStatement != nullptr)
-	{
-		m_TradeReplaceStatement->close();
-		m_TradeReplaceStatement = nullptr;
-	}
 	if (m_TradeSelectStatement != nullptr)
 	{
 		m_TradeSelectStatement->close();
@@ -399,11 +350,6 @@ void MysqlDB::DisConnect()
 	{
 		m_MdTickUpdateStatement->close();
 		m_MdTickUpdateStatement = nullptr;
-	}
-	if (m_MdTickReplaceStatement != nullptr)
-	{
-		m_MdTickReplaceStatement->close();
-		m_MdTickReplaceStatement = nullptr;
 	}
 	if (m_MdTickSelectStatement != nullptr)
 	{
@@ -471,6 +417,35 @@ void MysqlDB::InsertTradingDay(TradingDay* record)
 		WriteLog(LogLevel::Warning, "InsertTradingDay Spend:%lldms", duration);
 	}
 }
+void MysqlDB::BatchInsertTradingDay(std::list<TradingDay*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_TradingDay Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertTradingDay: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_TradingDay Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertTradingDay: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertTradingDay Spend:%lldms", duration);
+	}
+}
 void MysqlDB::DeleteTradingDay(TradingDay* record)
 {
 	auto start = steady_clock::now();
@@ -499,21 +474,6 @@ void MysqlDB::UpdateTradingDay(TradingDay* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateTradingDay Spend:%lldms", duration);
-	}
-}
-void MysqlDB::ReplaceTradingDay(TradingDay* record)
-{
-	auto start = steady_clock::now();
-	if (m_TradingDayReplaceStatement == nullptr)
-	{
-		m_TradingDayReplaceStatement = m_DBConnection->prepareStatement("replace into t_TradingDay Values(?, ?, ?);");
-	}
-	SetStatementForTradingDayRecord(m_TradingDayReplaceStatement, record);
-	m_TradingDayReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceTradingDay Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectTradingDay(std::vector<TradingDay*>& records)
@@ -560,6 +520,35 @@ void MysqlDB::InsertExchange(Exchange* record)
 		WriteLog(LogLevel::Warning, "InsertExchange Spend:%lldms", duration);
 	}
 }
+void MysqlDB::BatchInsertExchange(std::list<Exchange*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Exchange Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Exchange Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertExchange Spend:%lldms", duration);
+	}
+}
 void MysqlDB::DeleteExchange(Exchange* record)
 {
 	auto start = steady_clock::now();
@@ -588,50 +577,6 @@ void MysqlDB::UpdateExchange(Exchange* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateExchange Spend:%lldms", duration);
-	}
-}
-void MysqlDB::ReplaceExchange(Exchange* record)
-{
-	auto start = steady_clock::now();
-	if (m_ExchangeReplaceStatement == nullptr)
-	{
-		m_ExchangeReplaceStatement = m_DBConnection->prepareStatement("replace into t_Exchange Values(?, ?);");
-	}
-	SetStatementForExchangeRecord(m_ExchangeReplaceStatement, record);
-	m_ExchangeReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceExchange Spend:%lldms", duration);
-	}
-}
-void MysqlDB::BatchUpdateExchange(std::list<Exchange*>* records)
-{
-	auto start = steady_clock::now();
-	memset(m_SqlBuff, 0, BuffSize);
-	strcpy(m_SqlBuff, "replace into t_Exchange Values");
-	int n = (int)strlen(m_SqlBuff);
-	int i = 0;
-	for (auto it = records->begin(); it != records->end(); ++it, ++i)
-	{
-		if (n > 60000)
-		{
-			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchUpdateExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
-			memset(m_SqlBuff, 0, BuffSize);
-			strcpy(m_SqlBuff, "replace into t_Exchange Values");
-			n = (int)strlen(m_SqlBuff);
-		}
-		n += (*it)->GetSqlString(m_SqlBuff + n);
-	}
-	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchUpdateExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchUpdateExchange Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectExchange(std::vector<Exchange*>& records)
@@ -678,6 +623,35 @@ void MysqlDB::InsertProduct(Product* record)
 		WriteLog(LogLevel::Warning, "InsertProduct Spend:%lldms", duration);
 	}
 }
+void MysqlDB::BatchInsertProduct(std::list<Product*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Product Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertProduct: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Product Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertProduct: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertProduct Spend:%lldms", duration);
+	}
+}
 void MysqlDB::DeleteProduct(Product* record)
 {
 	auto start = steady_clock::now();
@@ -706,21 +680,6 @@ void MysqlDB::UpdateProduct(Product* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateProduct Spend:%lldms", duration);
-	}
-}
-void MysqlDB::ReplaceProduct(Product* record)
-{
-	auto start = steady_clock::now();
-	if (m_ProductReplaceStatement == nullptr)
-	{
-		m_ProductReplaceStatement = m_DBConnection->prepareStatement("replace into t_Product Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-	}
-	SetStatementForProductRecord(m_ProductReplaceStatement, record);
-	m_ProductReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceProduct Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectProduct(std::vector<Product*>& records)
@@ -767,6 +726,35 @@ void MysqlDB::InsertInstrument(Instrument* record)
 		WriteLog(LogLevel::Warning, "InsertInstrument Spend:%lldms", duration);
 	}
 }
+void MysqlDB::BatchInsertInstrument(std::list<Instrument*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Instrument Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertInstrument: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Instrument Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertInstrument: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertInstrument Spend:%lldms", duration);
+	}
+}
 void MysqlDB::DeleteInstrument(Instrument* record)
 {
 	auto start = steady_clock::now();
@@ -795,21 +783,6 @@ void MysqlDB::UpdateInstrument(Instrument* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateInstrument Spend:%lldms", duration);
-	}
-}
-void MysqlDB::ReplaceInstrument(Instrument* record)
-{
-	auto start = steady_clock::now();
-	if (m_InstrumentReplaceStatement == nullptr)
-	{
-		m_InstrumentReplaceStatement = m_DBConnection->prepareStatement("replace into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-	}
-	SetStatementForInstrumentRecord(m_InstrumentReplaceStatement, record);
-	m_InstrumentReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceInstrument Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectInstrument(std::vector<Instrument*>& records)
@@ -856,6 +829,35 @@ void MysqlDB::InsertAccount(Account* record)
 		WriteLog(LogLevel::Warning, "InsertAccount Spend:%lldms", duration);
 	}
 }
+void MysqlDB::BatchInsertAccount(std::list<Account*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Account Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertAccount: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Account Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertAccount: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertAccount Spend:%lldms", duration);
+	}
+}
 void MysqlDB::DeleteAccount(Account* record)
 {
 	auto start = steady_clock::now();
@@ -884,21 +886,6 @@ void MysqlDB::UpdateAccount(Account* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateAccount Spend:%lldms", duration);
-	}
-}
-void MysqlDB::ReplaceAccount(Account* record)
-{
-	auto start = steady_clock::now();
-	if (m_AccountReplaceStatement == nullptr)
-	{
-		m_AccountReplaceStatement = m_DBConnection->prepareStatement("replace into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-	}
-	SetStatementForAccountRecord(m_AccountReplaceStatement, record);
-	m_AccountReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceAccount Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectAccount(std::vector<Account*>& records)
@@ -943,6 +930,35 @@ void MysqlDB::InsertPosition(Position* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "InsertPosition Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertPosition(std::list<Position*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Position Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertPosition: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Position Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertPosition: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertPosition Spend:%lldms", duration);
 	}
 }
 void MysqlDB::DeletePosition(Position* record)
@@ -990,21 +1006,6 @@ void MysqlDB::UpdatePosition(Position* record)
 		WriteLog(LogLevel::Warning, "UpdatePosition Spend:%lldms", duration);
 	}
 }
-void MysqlDB::ReplacePosition(Position* record)
-{
-	auto start = steady_clock::now();
-	if (m_PositionReplaceStatement == nullptr)
-	{
-		m_PositionReplaceStatement = m_DBConnection->prepareStatement("replace into t_Position Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-	}
-	SetStatementForPositionRecord(m_PositionReplaceStatement, record);
-	m_PositionReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplacePosition Spend:%lldms", duration);
-	}
-}
 void MysqlDB::SelectPosition(std::vector<Position*>& records)
 {
 	auto start = steady_clock::now();
@@ -1049,6 +1050,35 @@ void MysqlDB::InsertOrder(Order* record)
 		WriteLog(LogLevel::Warning, "InsertOrder Spend:%lldms", duration);
 	}
 }
+void MysqlDB::BatchInsertOrder(std::list<Order*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Order Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertOrder: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Order Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertOrder: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertOrder Spend:%lldms", duration);
+	}
+}
 void MysqlDB::DeleteOrder(Order* record)
 {
 	auto start = steady_clock::now();
@@ -1077,21 +1107,6 @@ void MysqlDB::UpdateOrder(Order* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateOrder Spend:%lldms", duration);
-	}
-}
-void MysqlDB::ReplaceOrder(Order* record)
-{
-	auto start = steady_clock::now();
-	if (m_OrderReplaceStatement == nullptr)
-	{
-		m_OrderReplaceStatement = m_DBConnection->prepareStatement("replace into t_Order Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-	}
-	SetStatementForOrderRecord(m_OrderReplaceStatement, record);
-	m_OrderReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceOrder Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectOrder(std::vector<Order*>& records)
@@ -1138,6 +1153,35 @@ void MysqlDB::InsertTrade(Trade* record)
 		WriteLog(LogLevel::Warning, "InsertTrade Spend:%lldms", duration);
 	}
 }
+void MysqlDB::BatchInsertTrade(std::list<Trade*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Trade Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertTrade: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Trade Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertTrade: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertTrade Spend:%lldms", duration);
+	}
+}
 void MysqlDB::DeleteTrade(Trade* record)
 {
 	auto start = steady_clock::now();
@@ -1166,21 +1210,6 @@ void MysqlDB::UpdateTrade(Trade* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateTrade Spend:%lldms", duration);
-	}
-}
-void MysqlDB::ReplaceTrade(Trade* record)
-{
-	auto start = steady_clock::now();
-	if (m_TradeReplaceStatement == nullptr)
-	{
-		m_TradeReplaceStatement = m_DBConnection->prepareStatement("replace into t_Trade Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-	}
-	SetStatementForTradeRecord(m_TradeReplaceStatement, record);
-	m_TradeReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceTrade Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectTrade(std::vector<Trade*>& records)
@@ -1227,6 +1256,35 @@ void MysqlDB::InsertMdTick(MdTick* record)
 		WriteLog(LogLevel::Warning, "InsertMdTick Spend:%lldms", duration);
 	}
 }
+void MysqlDB::BatchInsertMdTick(std::list<MdTick*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_MdTick Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertMdTick: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+			m_Statement->executeUpdate(m_SqlBuff);
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_MdTick Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertMdTick: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	m_Statement->executeUpdate(m_SqlBuff);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertMdTick Spend:%lldms", duration);
+	}
+}
 void MysqlDB::DeleteMdTick(MdTick* record)
 {
 	auto start = steady_clock::now();
@@ -1255,21 +1313,6 @@ void MysqlDB::UpdateMdTick(MdTick* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateMdTick Spend:%lldms", duration);
-	}
-}
-void MysqlDB::ReplaceMdTick(MdTick* record)
-{
-	auto start = steady_clock::now();
-	if (m_MdTickReplaceStatement == nullptr)
-	{
-		m_MdTickReplaceStatement = m_DBConnection->prepareStatement("replace into t_MdTick Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-	}
-	SetStatementForMdTickRecord(m_MdTickReplaceStatement, record);
-	m_MdTickReplaceStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceMdTick Spend:%lldms", duration);
 	}
 }
 void MysqlDB::SelectMdTick(std::vector<MdTick*>& records)

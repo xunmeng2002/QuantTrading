@@ -3,6 +3,7 @@
 #include "DB.h"
 #include "MysqlDB.h"
 #include "SqliteDB.h"
+#include "DuckDB.h"
 #include "DBWriter.h"
 #include "InitMdbFromDB.h"
 #include "TimeUtility.h"
@@ -14,7 +15,8 @@ using namespace mdb;
 const char* dbHost = "tcp://172.21.59.169:3306/SimExchange";
 const char* dbUser = "ams";
 const char* dbPasswd = "ams";
-const char* dbName = "C:\\SVN\\rqs\\tools\\rtd\\SHFE.sqlitedb";
+const char* sqliteDBName = "C:\\SVN\\rqs\\tools\\rtd\\SHFE.sqlitedb";
+const char* duckDBName = "C:\\Gitee\\QuantTrading\\Sql\\Duckdb\\Test.duckdb";
 
 static const char* InitTradingDay(Mdb* mdb)
 {
@@ -132,7 +134,7 @@ static void InitAccount(DB* db, const DateType tradingDay)
 	db->InsertAccount(account);
 }
 
-void TestMysql()
+static void TestMysql()
 {
 	Mdb* mdb = new Mdb();
 	MysqlDB* db = new MysqlDB(dbHost, dbUser, dbPasswd);
@@ -151,28 +153,9 @@ void TestMysql()
 	dbWriter->Stop();
 	dbWriter->Join();
 }
-void TestSqlite()
+static void TestSqliteDB()
 {
-	Mdb* mdb = new Mdb();
-	SqliteDB* db = new SqliteDB(dbName);
-	DBWriter* dbWriter = new DBWriter(db);
-	mdb->Subscribe(dbWriter);
-	mdb->SetInitStatus(true);
-
-	dbWriter->Start();
-	mdb->TruncateTables();
-
-	auto tradingDay = InitTradingDay(mdb);
-	InitExchange(mdb);
-	InitAccount(mdb, tradingDay);
-
-	this_thread::sleep_for(chrono::seconds(1));
-	dbWriter->Stop();
-	dbWriter->Join();
-}
-void TestSqliteDB()
-{
-	SqliteDB* db = new SqliteDB(dbName);
+	SqliteDB* db = new SqliteDB(sqliteDBName);
 	if (!db->Connect())
 	{
 		WriteLog(LogLevel::Warning, "Connect Failed.");
@@ -193,11 +176,38 @@ void TestSqliteDB()
 	if (!accounts.empty())
 	{
 		auto account = accounts.front();
-		strcpy(account->AccountName, "Jack01");
-		account->PremiumIn = 100;
-		db->UpdateAccount(account);
+		auto newAccount = new Account();
+		memcpy(newAccount, account, sizeof(Account));
+		strcpy(newAccount->AccountName, "Jack01");
+		newAccount->PremiumIn = 100;
+		db->UpdateAccount(newAccount);
 	}
 	accounts.clear();
+
+	vector<TradingDay*> tradingDays;
+	db->SelectTradingDay(tradingDays);
+	for (auto tradingDay : tradingDays)
+	{
+		WriteLog(LogLevel::Info, "%s", tradingDay->GetDebugString());
+
+		db->DeleteTradingDay(tradingDay);
+	}
+}
+static void TestDuckDB()
+{
+	DuckDB* db = new DuckDB(duckDBName);
+	if (!db->Connect())
+	{
+		WriteLog(LogLevel::Warning, "Connect Failed.");
+		return;
+	}
+	db->TruncateTables();
+
+	auto tradingDay = InitTradingDay(db);
+	InitExchange(db);
+	InitAccount(db, tradingDay);
+
+	std::vector<Account*> accounts;
 	db->SelectAccount(accounts);
 	for (auto account : accounts)
 	{
@@ -206,10 +216,13 @@ void TestSqliteDB()
 	if (!accounts.empty())
 	{
 		auto account = accounts.front();
-		strcpy(account->AccountName, "Lucky");
-		account->PremiumOut = 10;
-		db->ReplaceAccount(account);
+		auto newAccount = new Account();
+		memcpy(newAccount, account, sizeof(Account));
+		strcpy(newAccount->AccountName, "Jack01");
+		newAccount->PremiumIn = 100;
+		db->UpdateAccount(newAccount);
 	}
+	accounts.clear();
 
 	vector<TradingDay*> tradingDays;
 	db->SelectTradingDay(tradingDays);
@@ -221,14 +234,15 @@ void TestSqliteDB()
 	}
 }
 
-
 int main(int argc, char* argv[])
 {
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel::Info, LogLevel::Info);
 	Logger::GetInstance().Start();
 
-	TestSqliteDB();
+	//TestMysql();
+	//TestSqliteDB();
+	TestDuckDB();
 	
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

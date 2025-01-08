@@ -18,35 +18,30 @@ SqliteDB::SqliteDB(const std::string& dbName)
 	m_TradingDayInsertStatement = nullptr;
 	m_TradingDayDeleteStatement = nullptr;
 	m_TradingDayUpdateStatement = nullptr;
-	m_TradingDayReplaceStatement = nullptr;
 	m_TradingDaySelectStatement = nullptr;
 	m_TradingDayTruncateStatement = nullptr;
 
 	m_ExchangeInsertStatement = nullptr;
 	m_ExchangeDeleteStatement = nullptr;
 	m_ExchangeUpdateStatement = nullptr;
-	m_ExchangeReplaceStatement = nullptr;
 	m_ExchangeSelectStatement = nullptr;
 	m_ExchangeTruncateStatement = nullptr;
 
 	m_ProductInsertStatement = nullptr;
 	m_ProductDeleteStatement = nullptr;
 	m_ProductUpdateStatement = nullptr;
-	m_ProductReplaceStatement = nullptr;
 	m_ProductSelectStatement = nullptr;
 	m_ProductTruncateStatement = nullptr;
 
 	m_InstrumentInsertStatement = nullptr;
 	m_InstrumentDeleteStatement = nullptr;
 	m_InstrumentUpdateStatement = nullptr;
-	m_InstrumentReplaceStatement = nullptr;
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
 
 	m_AccountInsertStatement = nullptr;
 	m_AccountDeleteStatement = nullptr;
 	m_AccountUpdateStatement = nullptr;
-	m_AccountReplaceStatement = nullptr;
 	m_AccountSelectStatement = nullptr;
 	m_AccountTruncateStatement = nullptr;
 
@@ -54,28 +49,24 @@ SqliteDB::SqliteDB(const std::string& dbName)
 	m_PositionDeleteStatement = nullptr;
 	m_PositionDeleteByAccountIndexStatement = nullptr;
 	m_PositionUpdateStatement = nullptr;
-	m_PositionReplaceStatement = nullptr;
 	m_PositionSelectStatement = nullptr;
 	m_PositionTruncateStatement = nullptr;
 
 	m_OrderInsertStatement = nullptr;
 	m_OrderDeleteStatement = nullptr;
 	m_OrderUpdateStatement = nullptr;
-	m_OrderReplaceStatement = nullptr;
 	m_OrderSelectStatement = nullptr;
 	m_OrderTruncateStatement = nullptr;
 
 	m_TradeInsertStatement = nullptr;
 	m_TradeDeleteStatement = nullptr;
 	m_TradeUpdateStatement = nullptr;
-	m_TradeReplaceStatement = nullptr;
 	m_TradeSelectStatement = nullptr;
 	m_TradeTruncateStatement = nullptr;
 
 	m_MdTickInsertStatement = nullptr;
 	m_MdTickDeleteStatement = nullptr;
 	m_MdTickUpdateStatement = nullptr;
-	m_MdTickReplaceStatement = nullptr;
 	m_MdTickSelectStatement = nullptr;
 	m_MdTickTruncateStatement = nullptr;
 
@@ -121,11 +112,6 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_TradingDayUpdateStatement);
 		m_TradingDayUpdateStatement = nullptr;
 	}
-	if (m_TradingDayReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_TradingDayReplaceStatement);
-		m_TradingDayReplaceStatement = nullptr;
-	}
 	if (m_TradingDaySelectStatement != nullptr)
 	{
 		sqlite3_finalize(m_TradingDaySelectStatement);
@@ -150,11 +136,6 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_ExchangeUpdateStatement);
 		m_ExchangeUpdateStatement = nullptr;
-	}
-	if (m_ExchangeReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_ExchangeReplaceStatement);
-		m_ExchangeReplaceStatement = nullptr;
 	}
 	if (m_ExchangeSelectStatement != nullptr)
 	{
@@ -181,11 +162,6 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_ProductUpdateStatement);
 		m_ProductUpdateStatement = nullptr;
 	}
-	if (m_ProductReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_ProductReplaceStatement);
-		m_ProductReplaceStatement = nullptr;
-	}
 	if (m_ProductSelectStatement != nullptr)
 	{
 		sqlite3_finalize(m_ProductSelectStatement);
@@ -211,11 +187,6 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_InstrumentUpdateStatement);
 		m_InstrumentUpdateStatement = nullptr;
 	}
-	if (m_InstrumentReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_InstrumentReplaceStatement);
-		m_InstrumentReplaceStatement = nullptr;
-	}
 	if (m_InstrumentSelectStatement != nullptr)
 	{
 		sqlite3_finalize(m_InstrumentSelectStatement);
@@ -240,11 +211,6 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_AccountUpdateStatement);
 		m_AccountUpdateStatement = nullptr;
-	}
-	if (m_AccountReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_AccountReplaceStatement);
-		m_AccountReplaceStatement = nullptr;
 	}
 	if (m_AccountSelectStatement != nullptr)
 	{
@@ -276,11 +242,6 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_PositionUpdateStatement);
 		m_PositionUpdateStatement = nullptr;
 	}
-	if (m_PositionReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_PositionReplaceStatement);
-		m_PositionReplaceStatement = nullptr;
-	}
 	if (m_PositionSelectStatement != nullptr)
 	{
 		sqlite3_finalize(m_PositionSelectStatement);
@@ -305,11 +266,6 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_OrderUpdateStatement);
 		m_OrderUpdateStatement = nullptr;
-	}
-	if (m_OrderReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_OrderReplaceStatement);
-		m_OrderReplaceStatement = nullptr;
 	}
 	if (m_OrderSelectStatement != nullptr)
 	{
@@ -336,11 +292,6 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_TradeUpdateStatement);
 		m_TradeUpdateStatement = nullptr;
 	}
-	if (m_TradeReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_TradeReplaceStatement);
-		m_TradeReplaceStatement = nullptr;
-	}
 	if (m_TradeSelectStatement != nullptr)
 	{
 		sqlite3_finalize(m_TradeSelectStatement);
@@ -365,11 +316,6 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_MdTickUpdateStatement);
 		m_MdTickUpdateStatement = nullptr;
-	}
-	if (m_MdTickReplaceStatement != nullptr)
-	{
-		sqlite3_finalize(m_MdTickReplaceStatement);
-		m_MdTickReplaceStatement = nullptr;
 	}
 	if (m_MdTickSelectStatement != nullptr)
 	{
@@ -455,6 +401,52 @@ void SqliteDB::InsertTradingDay(TradingDay* record)
 		WriteLog(LogLevel::Warning, "InsertTradingDay Spend:%lldms", duration);
 	}
 }
+void SqliteDB::BatchInsertTradingDay(std::list<TradingDay*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_TradingDay Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertTradingDay: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertTradingDay Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_TradingDay Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertTradingDay: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertTradingDay Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertTradingDay Spend:%lldms", duration);
+	}
+}
 void SqliteDB::DeleteTradingDay(TradingDay* record)
 {
 	auto start = steady_clock::now();
@@ -497,28 +489,6 @@ void SqliteDB::UpdateTradingDay(TradingDay* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateTradingDay Spend:%lldms", duration);
-	}
-}
-void SqliteDB::ReplaceTradingDay(TradingDay* record)
-{
-	auto start = steady_clock::now();
-	if (m_TradingDayReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_TradingDay Values(?, ?, ?);", -1, &m_TradingDayReplaceStatement, nullptr);
-	}
-	SetStatementForTradingDayRecord(m_TradingDayReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_TradingDayReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceTradingDay failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_TradingDayReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceTradingDay Spend:%lldms", duration);
 	}
 }
 void SqliteDB::SelectTradingDay(std::vector<TradingDay*>& records)
@@ -580,6 +550,52 @@ void SqliteDB::InsertExchange(Exchange* record)
 		WriteLog(LogLevel::Warning, "InsertExchange Spend:%lldms", duration);
 	}
 }
+void SqliteDB::BatchInsertExchange(std::list<Exchange*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Exchange Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Exchange Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertExchange Spend:%lldms", duration);
+	}
+}
 void SqliteDB::DeleteExchange(Exchange* record)
 {
 	auto start = steady_clock::now();
@@ -622,74 +638,6 @@ void SqliteDB::UpdateExchange(Exchange* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateExchange Spend:%lldms", duration);
-	}
-}
-void SqliteDB::ReplaceExchange(Exchange* record)
-{
-	auto start = steady_clock::now();
-	if (m_ExchangeReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_Exchange Values(?, ?);", -1, &m_ExchangeReplaceStatement, nullptr);
-	}
-	SetStatementForExchangeRecord(m_ExchangeReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_ExchangeReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceExchange failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_ExchangeReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceExchange Spend:%lldms", duration);
-	}
-}
-void SqliteDB::BatchUpdateExchange(std::list<Exchange*>* records)
-{
-	auto start = steady_clock::now();
-	memset(m_SqlBuff, 0, BuffSize);
-	strcpy(m_SqlBuff, "replace into t_Exchange Values");
-	int n = (int)strlen(m_SqlBuff);
-	int i = 0;
-	char* t_ErrorMsg;
-	for (auto it = records->begin(); it != records->end(); ++it, ++i)
-	{
-		if (n > BuffSize - 1024)
-		{
-			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchUpdateExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
-			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
-			if (ret != SQLITE_OK)
-			{
-				WriteLog(LogLevel::Warning, "BatchUpdateExchange Failed. Error: %s\n", t_ErrorMsg);
-				sqlite3_free(t_ErrorMsg);
-				return;
-			}
-			
-			memset(m_SqlBuff, 0, BuffSize);
-			strcpy(m_SqlBuff, "replace into t_Exchange Values");
-			n = (int)strlen(m_SqlBuff);
-		}
-		n += (*it)->GetSqlString(m_SqlBuff + n);
-	}
-	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchUpdateExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
-	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
-	if (ret != SQLITE_OK)
-	{
-		WriteLog(LogLevel::Warning, "BatchUpdateExchange Failed. Error: %s\n", t_ErrorMsg);
-		sqlite3_free(t_ErrorMsg);
-		return;
-	}
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchUpdateExchange Spend:%lldms", duration);
 	}
 }
 void SqliteDB::SelectExchange(std::vector<Exchange*>& records)
@@ -751,6 +699,52 @@ void SqliteDB::InsertProduct(Product* record)
 		WriteLog(LogLevel::Warning, "InsertProduct Spend:%lldms", duration);
 	}
 }
+void SqliteDB::BatchInsertProduct(std::list<Product*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Product Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertProduct: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertProduct Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Product Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertProduct: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertProduct Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertProduct Spend:%lldms", duration);
+	}
+}
 void SqliteDB::DeleteProduct(Product* record)
 {
 	auto start = steady_clock::now();
@@ -793,28 +787,6 @@ void SqliteDB::UpdateProduct(Product* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateProduct Spend:%lldms", duration);
-	}
-}
-void SqliteDB::ReplaceProduct(Product* record)
-{
-	auto start = steady_clock::now();
-	if (m_ProductReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_Product Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_ProductReplaceStatement, nullptr);
-	}
-	SetStatementForProductRecord(m_ProductReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_ProductReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceProduct failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_ProductReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceProduct Spend:%lldms", duration);
 	}
 }
 void SqliteDB::SelectProduct(std::vector<Product*>& records)
@@ -876,6 +848,52 @@ void SqliteDB::InsertInstrument(Instrument* record)
 		WriteLog(LogLevel::Warning, "InsertInstrument Spend:%lldms", duration);
 	}
 }
+void SqliteDB::BatchInsertInstrument(std::list<Instrument*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Instrument Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertInstrument: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Instrument Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertInstrument: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertInstrument Spend:%lldms", duration);
+	}
+}
 void SqliteDB::DeleteInstrument(Instrument* record)
 {
 	auto start = steady_clock::now();
@@ -918,28 +936,6 @@ void SqliteDB::UpdateInstrument(Instrument* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateInstrument Spend:%lldms", duration);
-	}
-}
-void SqliteDB::ReplaceInstrument(Instrument* record)
-{
-	auto start = steady_clock::now();
-	if (m_InstrumentReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_InstrumentReplaceStatement, nullptr);
-	}
-	SetStatementForInstrumentRecord(m_InstrumentReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_InstrumentReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_InstrumentReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceInstrument Spend:%lldms", duration);
 	}
 }
 void SqliteDB::SelectInstrument(std::vector<Instrument*>& records)
@@ -1001,6 +997,52 @@ void SqliteDB::InsertAccount(Account* record)
 		WriteLog(LogLevel::Warning, "InsertAccount Spend:%lldms", duration);
 	}
 }
+void SqliteDB::BatchInsertAccount(std::list<Account*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Account Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertAccount: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertAccount Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Account Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertAccount: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertAccount Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertAccount Spend:%lldms", duration);
+	}
+}
 void SqliteDB::DeleteAccount(Account* record)
 {
 	auto start = steady_clock::now();
@@ -1043,28 +1085,6 @@ void SqliteDB::UpdateAccount(Account* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateAccount Spend:%lldms", duration);
-	}
-}
-void SqliteDB::ReplaceAccount(Account* record)
-{
-	auto start = steady_clock::now();
-	if (m_AccountReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_AccountReplaceStatement, nullptr);
-	}
-	SetStatementForAccountRecord(m_AccountReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_AccountReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_AccountReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceAccount Spend:%lldms", duration);
 	}
 }
 void SqliteDB::SelectAccount(std::vector<Account*>& records)
@@ -1124,6 +1144,52 @@ void SqliteDB::InsertPosition(Position* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "InsertPosition Spend:%lldms", duration);
+	}
+}
+void SqliteDB::BatchInsertPosition(std::list<Position*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Position Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertPosition: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertPosition Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Position Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertPosition: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertPosition Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertPosition Spend:%lldms", duration);
 	}
 }
 void SqliteDB::DeletePosition(Position* record)
@@ -1192,28 +1258,6 @@ void SqliteDB::UpdatePosition(Position* record)
 		WriteLog(LogLevel::Warning, "UpdatePosition Spend:%lldms", duration);
 	}
 }
-void SqliteDB::ReplacePosition(Position* record)
-{
-	auto start = steady_clock::now();
-	if (m_PositionReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_Position Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_PositionReplaceStatement, nullptr);
-	}
-	SetStatementForPositionRecord(m_PositionReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_PositionReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplacePosition failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_PositionReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplacePosition Spend:%lldms", duration);
-	}
-}
 void SqliteDB::SelectPosition(std::vector<Position*>& records)
 {
 	auto start = steady_clock::now();
@@ -1273,6 +1317,52 @@ void SqliteDB::InsertOrder(Order* record)
 		WriteLog(LogLevel::Warning, "InsertOrder Spend:%lldms", duration);
 	}
 }
+void SqliteDB::BatchInsertOrder(std::list<Order*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Order Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertOrder: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertOrder Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Order Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertOrder: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertOrder Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertOrder Spend:%lldms", duration);
+	}
+}
 void SqliteDB::DeleteOrder(Order* record)
 {
 	auto start = steady_clock::now();
@@ -1315,28 +1405,6 @@ void SqliteDB::UpdateOrder(Order* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateOrder Spend:%lldms", duration);
-	}
-}
-void SqliteDB::ReplaceOrder(Order* record)
-{
-	auto start = steady_clock::now();
-	if (m_OrderReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_Order Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_OrderReplaceStatement, nullptr);
-	}
-	SetStatementForOrderRecord(m_OrderReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_OrderReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceOrder failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_OrderReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceOrder Spend:%lldms", duration);
 	}
 }
 void SqliteDB::SelectOrder(std::vector<Order*>& records)
@@ -1398,6 +1466,52 @@ void SqliteDB::InsertTrade(Trade* record)
 		WriteLog(LogLevel::Warning, "InsertTrade Spend:%lldms", duration);
 	}
 }
+void SqliteDB::BatchInsertTrade(std::list<Trade*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Trade Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertTrade: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertTrade Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Trade Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertTrade: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertTrade Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertTrade Spend:%lldms", duration);
+	}
+}
 void SqliteDB::DeleteTrade(Trade* record)
 {
 	auto start = steady_clock::now();
@@ -1440,28 +1554,6 @@ void SqliteDB::UpdateTrade(Trade* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateTrade Spend:%lldms", duration);
-	}
-}
-void SqliteDB::ReplaceTrade(Trade* record)
-{
-	auto start = steady_clock::now();
-	if (m_TradeReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_Trade Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_TradeReplaceStatement, nullptr);
-	}
-	SetStatementForTradeRecord(m_TradeReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_TradeReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceTrade failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_TradeReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceTrade Spend:%lldms", duration);
 	}
 }
 void SqliteDB::SelectTrade(std::vector<Trade*>& records)
@@ -1523,6 +1615,52 @@ void SqliteDB::InsertMdTick(MdTick* record)
 		WriteLog(LogLevel::Warning, "InsertMdTick Spend:%lldms", duration);
 	}
 }
+void SqliteDB::BatchInsertMdTick(std::list<MdTick*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_MdTick Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			WriteLog(LogLevel::Info, "BatchInsertMdTick: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s\n", t_ErrorMsg);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_MdTick Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	WriteLog(LogLevel::Info, "BatchInsertMdTick: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
+	
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s\n", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertMdTick Spend:%lldms", duration);
+	}
+}
 void SqliteDB::DeleteMdTick(MdTick* record)
 {
 	auto start = steady_clock::now();
@@ -1565,28 +1703,6 @@ void SqliteDB::UpdateMdTick(MdTick* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "UpdateMdTick Spend:%lldms", duration);
-	}
-}
-void SqliteDB::ReplaceMdTick(MdTick* record)
-{
-	auto start = steady_clock::now();
-	if (m_MdTickReplaceStatement == nullptr)
-	{
-		sqlite3_prepare_v2(m_DB, "replace into t_MdTick Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_MdTickReplaceStatement, nullptr);
-	}
-	SetStatementForMdTickRecord(m_MdTickReplaceStatement, record);
-	
-	auto rc = sqlite3_step(m_MdTickReplaceStatement);
-	if (rc != SQLITE_DONE)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceMdTick failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
-	}
-	sqlite3_reset(m_MdTickReplaceStatement);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "ReplaceMdTick Spend:%lldms", duration);
 	}
 }
 void SqliteDB::SelectMdTick(std::vector<MdTick*>& records)

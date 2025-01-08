@@ -6,6 +6,7 @@
 #include "MdbSubscriber.h"
 #include <shared_mutex>
 #include <atomic>
+#include <list>
 
 
 namespace mdb
@@ -22,6 +23,7 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(TradingDay* record);
+		void BatchInsert(std::list<mdb::TradingDay*>* records);
 		void Erase(TradingDay* record);
 		bool Update(TradingDay* const oldRecord, TradingDay* const newRecord, bool updateDB = true);
 		void TruncateTable();
@@ -50,9 +52,9 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(Exchange* record);
+		void BatchInsert(std::list<mdb::Exchange*>* records);
 		void Erase(Exchange* record);
 		bool Update(Exchange* const oldRecord, Exchange* const newRecord, bool updateDB = true);
-		void BatchUpdate(std::list<mdb::Exchange*>* records);
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -79,6 +81,7 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(Product* record);
+		void BatchInsert(std::list<mdb::Product*>* records);
 		void Erase(Product* record);
 		bool Update(Product* const oldRecord, Product* const newRecord, bool updateDB = true);
 		void TruncateTable();
@@ -107,6 +110,7 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(Instrument* record);
+		void BatchInsert(std::list<mdb::Instrument*>* records);
 		void Erase(Instrument* record);
 		bool Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB = true);
 		void TruncateTable();
@@ -135,6 +139,7 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(Account* record);
+		void BatchInsert(std::list<mdb::Account*>* records);
 		void Erase(Account* record);
 		bool Update(Account* const oldRecord, Account* const newRecord, bool updateDB = true);
 		void TruncateTable();
@@ -163,6 +168,7 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(Position* record);
+		void BatchInsert(std::list<mdb::Position*>* records);
 		void Erase(Position* record);
 		int EraseByAccountIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		bool Update(Position* const oldRecord, Position* const newRecord, bool updateDB = true);
@@ -193,6 +199,7 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(Order* record);
+		void BatchInsert(std::list<mdb::Order*>* records);
 		void Erase(Order* record);
 		bool Update(Order* const oldRecord, Order* const newRecord, bool updateDB = true);
 		void TruncateTable();
@@ -222,6 +229,7 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(Trade* record);
+		void BatchInsert(std::list<mdb::Trade*>* records);
 		void Erase(Trade* record);
 		bool Update(Trade* const oldRecord, Trade* const newRecord, bool updateDB = true);
 		void TruncateTable();
@@ -250,6 +258,7 @@ namespace mdb
 		void UnlockShared();
 		void InitDB();
 		bool Insert(MdTick* record);
+		void BatchInsert(std::list<mdb::MdTick*>* records);
 		void Erase(MdTick* record);
 		bool Update(MdTick* const oldRecord, MdTick* const newRecord, bool updateDB = true);
 		void TruncateTable();

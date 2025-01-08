@@ -15,9 +15,8 @@ void DBOperateImpl::Free()
 }
 void DBOperateImpl::FreeRecord()
 {
-	if (Operate == DBOperateType::BatchUpdate)
+	if (Operate == DBOperateType::Insert || Operate == DBOperateType::BatchInsert || Operate == DBOperateType::Truncate)
 	{
-		FreeRecords();
 		return;
 	}
 	switch(TableID)
@@ -65,26 +64,6 @@ void DBOperateImpl::FreeRecord()
 	case MdTick::TableID:
 	{
 		((MdTick*)Record)->Free();
-		break;
-	}
-	default:
-		break;
-	}
-	Record = nullptr;
-}
-void DBOperateImpl::FreeRecords()
-{
-	switch(TableID)
-	{
-	case Exchange::TableID:
-	{
-		auto records = (std::list<mdb::Exchange*>*)Record;
-		for (auto record : *records)
-		{
-			record->Free();
-		}
-		records->clear();
-		delete records;
 		break;
 	}
 	default:
