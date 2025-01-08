@@ -35,3 +35,4 @@
 .vs/*
 out/*
 pumptemp.py
+*.duckdb
