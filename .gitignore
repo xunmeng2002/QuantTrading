@@ -36,3 +36,5 @@
 out/*
 pumptemp.py
 *.duckdb
+*.duckdb.wal
+*.sqlitedb

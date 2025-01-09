@@ -15,7 +15,7 @@ using namespace mdb;
 const char* dbHost = "tcp://172.21.59.169:3306/SimExchange";
 const char* dbUser = "ams";
 const char* dbPasswd = "ams";
-const char* sqliteDBName = "C:\\SVN\\rqs\\tools\\rtd\\SHFE.sqlitedb";
+const char* sqliteDBName = "C:\\Gitee\\QuantTrading\\Sql\\Sqlite\\Test.sqlitedb";
 const char* duckDBName = "C:\\Gitee\\QuantTrading\\Sql\\Duckdb\\Test.duckdb";
 
 static const char* InitTradingDay(Mdb* mdb)
@@ -108,12 +108,14 @@ static void InitExchange(DB* db)
 	strcpy(exchange6->ExchangeID, "GFE");
 	strcpy(exchange6->ExchangeName, (const char*)(u8"广州期货交易所"));
 
-	db->InsertExchange(exchange1);
-	db->InsertExchange(exchange2);
-	db->InsertExchange(exchange3);
-	db->InsertExchange(exchange4);
-	db->InsertExchange(exchange5);
-	db->InsertExchange(exchange6);
+	std::list<Exchange*>* exchanges = new std::list<Exchange*>();
+	exchanges->push_back(exchange1);
+	exchanges->push_back(exchange2);
+	exchanges->push_back(exchange3);
+	exchanges->push_back(exchange4);
+	exchanges->push_back(exchange5);
+	exchanges->push_back(exchange6);
+	db->BatchInsertExchange(exchanges);
 }
 static void InitAccount(DB* db, const DateType tradingDay)
 {
@@ -241,8 +243,8 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Start();
 
 	//TestMysql();
-	//TestSqliteDB();
-	TestDuckDB();
+	TestSqliteDB();
+	//TestDuckDB();
 	
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();
