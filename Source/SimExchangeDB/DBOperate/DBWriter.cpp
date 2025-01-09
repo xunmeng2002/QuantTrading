@@ -553,6 +553,8 @@ void DBWriter::CheckDBOperate()
 }
 void DBWriter::HandleDBOperate()
 {
+	if (!m_Connected)
+		return;
 	DBOperate* dbOperate = nullptr;
 	try
 	{

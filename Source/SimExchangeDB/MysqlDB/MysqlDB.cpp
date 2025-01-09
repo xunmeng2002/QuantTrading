@@ -117,9 +117,9 @@ bool MysqlDB::Connect()
 		}
 		m_Statement = m_DBConnection->createStatement();
 	}
-	catch (std::exception e)
+	catch (...)
 	{
-		WriteLog(LogLevel::Warning, "Connect MysqlDB Failed. Msg:", e.what());
+		WriteLog(LogLevel::Warning, "Connect MysqlDB Failed.");
 		return false;
 	}
 	return true;
