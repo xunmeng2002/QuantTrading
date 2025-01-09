@@ -414,12 +414,10 @@ void SqliteDB::BatchInsertTradingDay(std::list<TradingDay*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertTradingDay: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertTradingDay Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertTradingDay Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -431,21 +429,17 @@ void SqliteDB::BatchInsertTradingDay(std::list<TradingDay*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertTradingDay: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertTradingDay Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertTradingDay Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertTradingDay Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertTradingDay RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeleteTradingDay(TradingDay* record)
 {
@@ -563,12 +557,10 @@ void SqliteDB::BatchInsertExchange(std::list<Exchange*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -580,21 +572,17 @@ void SqliteDB::BatchInsertExchange(std::list<Exchange*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertExchange Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertExchange RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeleteExchange(Exchange* record)
 {
@@ -712,12 +700,10 @@ void SqliteDB::BatchInsertProduct(std::list<Product*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertProduct: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertProduct Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertProduct Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -729,21 +715,17 @@ void SqliteDB::BatchInsertProduct(std::list<Product*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertProduct: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertProduct Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertProduct Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertProduct Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertProduct RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeleteProduct(Product* record)
 {
@@ -861,12 +843,10 @@ void SqliteDB::BatchInsertInstrument(std::list<Instrument*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertInstrument: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -878,21 +858,17 @@ void SqliteDB::BatchInsertInstrument(std::list<Instrument*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertInstrument: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertInstrument Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeleteInstrument(Instrument* record)
 {
@@ -1010,12 +986,10 @@ void SqliteDB::BatchInsertAccount(std::list<Account*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertAccount: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertAccount Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertAccount Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -1027,21 +1001,17 @@ void SqliteDB::BatchInsertAccount(std::list<Account*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertAccount: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertAccount Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertAccount Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertAccount Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeleteAccount(Account* record)
 {
@@ -1159,12 +1129,10 @@ void SqliteDB::BatchInsertPosition(std::list<Position*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertPosition: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertPosition Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertPosition Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -1176,21 +1144,17 @@ void SqliteDB::BatchInsertPosition(std::list<Position*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertPosition: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertPosition Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertPosition Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertPosition Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertPosition RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeletePosition(Position* record)
 {
@@ -1330,12 +1294,10 @@ void SqliteDB::BatchInsertOrder(std::list<Order*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertOrder: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertOrder Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertOrder Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -1347,21 +1309,17 @@ void SqliteDB::BatchInsertOrder(std::list<Order*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertOrder: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertOrder Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertOrder Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertOrder Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeleteOrder(Order* record)
 {
@@ -1479,12 +1437,10 @@ void SqliteDB::BatchInsertTrade(std::list<Trade*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertTrade: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertTrade Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertTrade Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -1496,21 +1452,17 @@ void SqliteDB::BatchInsertTrade(std::list<Trade*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertTrade: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertTrade Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertTrade Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertTrade Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertTrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeleteTrade(Trade* record)
 {
@@ -1628,12 +1580,10 @@ void SqliteDB::BatchInsertMdTick(std::list<MdTick*>* records)
 		if (n > BuffSize - 1024)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertMdTick: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s\n", t_ErrorMsg);
+				WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
@@ -1645,21 +1595,17 @@ void SqliteDB::BatchInsertMdTick(std::list<MdTick*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertMdTick: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	
+
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s\n", t_ErrorMsg);
+		WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertMdTick Spend:%lldms", duration);
-	}
+	WriteLog(LogLevel::Warning, "BatchInsertMdTick RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void SqliteDB::DeleteMdTick(MdTick* record)
 {

@@ -597,7 +597,7 @@ void DBWriter::HandleDBOperate()
 			dbOperate->Free();
 		}
 	}
-	catch (exception e)
+	catch(exception e)
 	{
 		WriteLog(LogLevel::Warning, "HandleDBOperate Failed. TableID;0x%X, Operate:%d, Message:%s", dbOperate->TableID, (int)dbOperate->Operate, e.what());
 		DisConnect();

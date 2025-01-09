@@ -429,8 +429,14 @@ void MysqlDB::BatchInsertTradingDay(std::list<TradingDay*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertTradingDay: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertTradingDay Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_TradingDay Values");
 			n = (int)strlen(m_SqlBuff);
@@ -438,13 +444,16 @@ void MysqlDB::BatchInsertTradingDay(std::list<TradingDay*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertTradingDay: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertTradingDay Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertTradingDay Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertTradingDay RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeleteTradingDay(TradingDay* record)
 {
@@ -532,8 +541,14 @@ void MysqlDB::BatchInsertExchange(std::list<Exchange*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_Exchange Values");
 			n = (int)strlen(m_SqlBuff);
@@ -541,13 +556,16 @@ void MysqlDB::BatchInsertExchange(std::list<Exchange*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertExchange: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertExchange Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertExchange RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeleteExchange(Exchange* record)
 {
@@ -635,8 +653,14 @@ void MysqlDB::BatchInsertProduct(std::list<Product*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertProduct: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertProduct Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_Product Values");
 			n = (int)strlen(m_SqlBuff);
@@ -644,13 +668,16 @@ void MysqlDB::BatchInsertProduct(std::list<Product*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertProduct: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertProduct Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertProduct Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertProduct RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeleteProduct(Product* record)
 {
@@ -738,8 +765,14 @@ void MysqlDB::BatchInsertInstrument(std::list<Instrument*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertInstrument: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_Instrument Values");
 			n = (int)strlen(m_SqlBuff);
@@ -747,13 +780,16 @@ void MysqlDB::BatchInsertInstrument(std::list<Instrument*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertInstrument: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertInstrument Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeleteInstrument(Instrument* record)
 {
@@ -841,8 +877,14 @@ void MysqlDB::BatchInsertAccount(std::list<Account*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertAccount: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertAccount Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_Account Values");
 			n = (int)strlen(m_SqlBuff);
@@ -850,13 +892,16 @@ void MysqlDB::BatchInsertAccount(std::list<Account*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertAccount: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertAccount Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertAccount Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeleteAccount(Account* record)
 {
@@ -944,8 +989,14 @@ void MysqlDB::BatchInsertPosition(std::list<Position*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertPosition: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertPosition Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_Position Values");
 			n = (int)strlen(m_SqlBuff);
@@ -953,13 +1004,16 @@ void MysqlDB::BatchInsertPosition(std::list<Position*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertPosition: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertPosition Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertPosition Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertPosition RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeletePosition(Position* record)
 {
@@ -1062,8 +1116,14 @@ void MysqlDB::BatchInsertOrder(std::list<Order*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertOrder: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertOrder Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_Order Values");
 			n = (int)strlen(m_SqlBuff);
@@ -1071,13 +1131,16 @@ void MysqlDB::BatchInsertOrder(std::list<Order*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertOrder: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertOrder Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertOrder Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeleteOrder(Order* record)
 {
@@ -1165,8 +1228,14 @@ void MysqlDB::BatchInsertTrade(std::list<Trade*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertTrade: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertTrade Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_Trade Values");
 			n = (int)strlen(m_SqlBuff);
@@ -1174,13 +1243,16 @@ void MysqlDB::BatchInsertTrade(std::list<Trade*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertTrade: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertTrade Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertTrade Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertTrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeleteTrade(Trade* record)
 {
@@ -1268,8 +1340,14 @@ void MysqlDB::BatchInsertMdTick(std::list<MdTick*>* records)
 		if (n > 60000)
 		{
 			m_SqlBuff[n - 1] = ';';
-			WriteLog(LogLevel::Info, "BatchInsertMdTick: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-			m_Statement->executeUpdate(m_SqlBuff);
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
 			memset(m_SqlBuff, 0, BuffSize);
 			strcpy(m_SqlBuff, "Insert into t_MdTick Values");
 			n = (int)strlen(m_SqlBuff);
@@ -1277,13 +1355,16 @@ void MysqlDB::BatchInsertMdTick(std::list<MdTick*>* records)
 		n += (*it)->GetSqlString(m_SqlBuff + n);
 	}
 	m_SqlBuff[n - 1] = ';';
-	WriteLog(LogLevel::Info, "BatchInsertMdTick: len:[%d], n:[%d] Sql:[%s]", strlen(m_SqlBuff), n, m_SqlBuff);
-	m_Statement->executeUpdate(m_SqlBuff);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
+	try
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertMdTick Spend:%lldms", duration);
+		m_Statement->executeUpdate(m_SqlBuff);
 	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertMdTick RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void MysqlDB::DeleteMdTick(MdTick* record)
 {
