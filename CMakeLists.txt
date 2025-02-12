@@ -12,8 +12,8 @@ message("CMAKE_SYSTEM_NAME:" ${CMAKE_SYSTEM_NAME})
 message("CMAKE_CL_64:" ${CMAKE_CL_64})
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-	string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
-	string(REPLACE "/MDd" "/MTd" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
+	#string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+	#string(REPLACE "/MDd" "/MTd" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 	add_definitions("-DWINDOWS")
 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 	add_definitions("-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING")
@@ -70,13 +70,15 @@ endmacro(include_package)
 
 string(TIMESTAMP BUILD_TIMESTAMP "%Y%m%d-%H%M%S")
 message("Build timestamp is ${BUILD_TIMESTAMP}")
- 
+ # 配置文件，将时间戳填充到头文件中
+configure_file(
+    "${CMAKE_SOURCE_DIR}/Source/Version/BuildTime.cpp.in"
+	"${CMAKE_SOURCE_DIR}/Source/Version/BuildTime.cpp"
+    @ONLY
+)
+
 include_package(PersonalLibHeader ${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/include)
-if(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	link_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/win64)
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	link_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/linux)
-endif()
+link_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/win64)
 
 add_subdirectory(Target)
 add_subdirectory(Test)

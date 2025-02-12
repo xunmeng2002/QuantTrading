@@ -1,0 +1,19 @@
+SET(PROJECT_NAME "MdOffer")
+SET(APIVersion "6.7.2")
+project(${PROJECT_NAME})
+message("PROJECT_NAME:" ${PROJECT_NAME})
+
+add_package(Src ./Src)
+add_package(CtpGenCode ${CMAKE_SOURCE_DIR}/Source/Ctp/${APIVersion}/StructLogFunc)
+add_package(CtpGenCode ${CMAKE_SOURCE_DIR}/Source/Ctp/${APIVersion}/MdApiMiddle)
+add_package(CtpAccountInfo ${CMAKE_SOURCE_DIR}/Target/MdOffer/CtpAccountInfo)
+include_package(Ctp ${CMAKE_SOURCE_DIR}/../Libs/CTP/${APIVersion}/include)
+
+link_directories(${CMAKE_SOURCE_DIR}/../Libs/CTP/${APIVersion}/win64)
+add_executable(${PROJECT_NAME} ${all_file})
+
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	target_link_libraries(${PROJECT_NAME} PersonalLib.lib thostmduserapi_se)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	target_link_libraries(${PROJECT_NAME} PersonalLib thostmduserapi_se pthread)
+endif()

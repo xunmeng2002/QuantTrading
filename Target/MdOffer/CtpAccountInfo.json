@@ -1,0 +1,45 @@
+[
+	{
+		"AccountType": "Real",
+		"BrokerID": "8000",
+		"UserID": "71020537",
+		"Password": "Liuxing167756",
+		"UserProductInfo": "PBSDSV5400",
+		"AuthCode": "PRDCTPLZPTOFVEUE",
+		"AppID": "POBO_BYSDS_5.0.0",
+		"FrontAddrs": [ "tcp://180.168.212.75:41305", "tcp://27.115.78.155:41305", "tcp://210.5.151.246:41305", "tcp://210.5.151.248:41335" ]
+	},
+	{
+		"AccountType": "Test",
+		"BrokerID": "9999",
+		"UserID": "132924",
+		"Password": "Summer123",
+		"UserProductInfo": "",
+		"AuthCode": "0000000000000000",
+		"AppID": "simnow_client_test",
+		"TraderFrontAddrs": [ "tcp://180.168.146.187:10201", "tcp://180.168.146.187:10202" ],
+		"MdFrontAddrs": [ "tcp://180.168.146.187:10211", "tcp://180.168.146.187:10212" ]
+	},
+	{
+		"AccountType": "Test",
+		"BrokerID": "9999",
+		"UserID": "229140",
+		"Password": "@Lavande0703",
+		"UserProductInfo": "",
+		"AuthCode": "0000000000000000",
+		"AppID": "simnow_client_test",
+		"TraderFrontAddrs": [ "tcp://180.168.146.187:10201", "tcp://180.168.146.187:10202" ],
+		"MdFrontAddrs": [ "tcp://180.168.146.187:10211", "tcp://180.168.146.187:10212" ]
+	},
+	{
+		"AccountType": "Test",
+		"BrokerID": "0",
+		"UserID": "12345678005",
+		"Password": "123456",
+		"UserProductInfo": "PBSDSV5400",
+		"AuthCode": "PRDCTPLZPTOFVEUE",
+		"AppID": "POBO_BYSDS_5.0.0",
+		"TraderFrontAddrs": [ "tcp://180.168.146.187:10201", "tcp://180.168.146.187:10202" ],
+		"MdFrontAddrs": [ "tcp://180.168.146.187:10211", "tcp://180.168.146.187:10212" ]
+	}
+]

@@ -1,0 +1,1 @@
+const char* BuildTimeStamp = "@BUILD_TIMESTAMP@";
