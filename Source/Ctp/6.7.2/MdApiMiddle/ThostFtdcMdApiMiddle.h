@@ -7,21 +7,21 @@ class CThostFtdcMdApiMiddle : public CThostFtdcMdApi
 public:
 	static CThostFtdcMdApi *CreateFtdcMdApi(const char *pszFlowPath = "");
 	static const char *GetApiVersion();
-	virtual void Release();
-	virtual void Init();
-	virtual int Join();
-	virtual const char * GetTradingDay();
-	virtual void RegisterFront(char * pszFrontAddress);
-	virtual void RegisterNameServer(char * pszNsAddress);
-	virtual void RegisterFensUserInfo(CThostFtdcFensUserInfoField *pFensUserInfo);
-	virtual void RegisterSpi(CThostFtdcMdSpi *pMdSpi);
-	virtual int SubscribeMarketData(char * ppInstrumentID[], int nCount);
-	virtual int UnSubscribeMarketData(char * ppInstrumentID[], int nCount);
-	virtual int SubscribeForQuoteRsp(char * ppInstrumentID[], int nCount);
-	virtual int UnSubscribeForQuoteRsp(char * ppInstrumentID[], int nCount);
-	virtual int ReqUserLogin(CThostFtdcReqUserLoginField *pReqUserLogin, int nRequestID);
-	virtual int ReqUserLogout(CThostFtdcUserLogoutField *pUserLogout, int nRequestID);
-	virtual int ReqQryMulticastInstrument(CThostFtdcQryMulticastInstrumentField *pQryMulticastInstrument, int nRequestID);
+	virtual void Release() override;
+	virtual void Init() override;
+	virtual int Join() override;
+	virtual const char * GetTradingDay() override;
+	virtual void RegisterFront(char * pszFrontAddress) override;
+	virtual void RegisterNameServer(char * pszNsAddress) override;
+	virtual void RegisterFensUserInfo(CThostFtdcFensUserInfoField *pFensUserInfo) override;
+	virtual void RegisterSpi(CThostFtdcMdSpi *pMdSpi) override;
+	virtual int SubscribeMarketData(char * ppInstrumentID[], int nCount) override;
+	virtual int UnSubscribeMarketData(char * ppInstrumentID[], int nCount) override;
+	virtual int SubscribeForQuoteRsp(char * ppInstrumentID[], int nCount) override;
+	virtual int UnSubscribeForQuoteRsp(char * ppInstrumentID[], int nCount) override;
+	virtual int ReqUserLogin(CThostFtdcReqUserLoginField *pReqUserLogin, int nRequestID) override;
+	virtual int ReqUserLogout(CThostFtdcUserLogoutField *pUserLogout, int nRequestID) override;
+	virtual int ReqQryMulticastInstrument(CThostFtdcQryMulticastInstrumentField *pQryMulticastInstrument, int nRequestID) override;
 
 private:
 	CThostFtdcMdApi* m_MdApi;

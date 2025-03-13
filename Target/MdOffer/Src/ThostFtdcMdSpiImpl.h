@@ -1,6 +1,6 @@
 #pragma once
 #include "ThostFtdcMdSpiMiddle.h"
-#include "CtpAccountInfo.h"
+#include "Environment.h"
 #include <set>
 #include <string>
 
@@ -11,14 +11,12 @@ class CThostFtdcMdSpiImpl : public CThostFtdcMdSpiMiddle
 public:
 	CThostFtdcMdSpiImpl(CThostFtdcMdApi* MdApi);
 
-	virtual void OnFrontConnected();
-
-	virtual void OnFrontDisconnected(int nReason);
-
-	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnFrontConnected() override;
+	virtual void OnFrontDisconnected(int nReason) override;
+	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast) override;
 
 public:
-	void SetCtpAccountInfo(CtpAccountInfo* accountInfo);
+	void SetAccountInfo(AccountInfo* accountInfo);
 
 private:
 	void ReqUserLogin();
@@ -28,5 +26,5 @@ private:
 	CThostFtdcMdApi* m_MdApi;
 	int m_RequestID;
 
-	CtpAccountInfo* m_CtpAccountInfo;
+	AccountInfo* m_AccountInfo;
 };

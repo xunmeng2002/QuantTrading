@@ -6,7 +6,7 @@ message("PROJECT_NAME:" ${PROJECT_NAME})
 add_package(Src ./Src)
 add_package(CtpGenCode ${CMAKE_SOURCE_DIR}/Source/Ctp/${APIVersion}/StructLogFunc)
 add_package(CtpGenCode ${CMAKE_SOURCE_DIR}/Source/Ctp/${APIVersion}/MdApiMiddle)
-add_package(CtpAccountInfo ${CMAKE_SOURCE_DIR}/Target/MdOffer/CtpAccountInfo)
+add_package(Environment ${CMAKE_SOURCE_DIR}/Target/MdOffer/Environment)
 include_package(Ctp ${CMAKE_SOURCE_DIR}/../Libs/CTP/${APIVersion}/include)
 
 link_directories(${CMAKE_SOURCE_DIR}/../Libs/CTP/${APIVersion}/win64)

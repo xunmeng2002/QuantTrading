@@ -2,7 +2,7 @@
 #include "ThostFtdcMdApiMiddle.h"
 #include "ThostFtdcMdSpiImpl.h"
 #include "Logger.h"
-#include "CtpAccountInfo.h"
+#include "Environment.h"
 #include <iostream>
 #include <string.h>
 #ifdef LINUX
@@ -24,22 +24,23 @@ void sigusr1_handler(int signo)
 
 int main(int argc, char* argv[])
 {
-	map<string, CtpAccountInfo*> ctpAccountInfos;
-	ReadCtpAccountInfo(ctpAccountInfos);
+	map<string, Environment*> environments;
+	ReadEnvironment(environments);
 
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel::Info, LogLevel::Info);
 	Logger::GetInstance().Start();
 
-	string userID = "229140";
+	string environmentName = "SimNow";
+	auto environment = environments[environmentName];
 	CThostFtdcMdApi* mdApi = CThostFtdcMdApiMiddle::CreateFtdcMdApi();
 	cout << "API Version:" << mdApi->GetApiVersion() << endl;
 	CThostFtdcMdSpiImpl* mdSpi = new CThostFtdcMdSpiImpl(mdApi);
-	mdSpi->SetCtpAccountInfo(ctpAccountInfos[userID]);
+	mdSpi->SetAccountInfo(environment->Accounts[0]);
 	mdApi->RegisterSpi(mdSpi);
-	for (auto& mdFrontAddr : ctpAccountInfos[userID]->MdFrontAddrs)
+	for (auto frontInfo : environment->Fronts)
 	{
-		mdApi->RegisterFront((char*)mdFrontAddr.c_str());
+		mdApi->RegisterFront(frontInfo->MdFront);
 	}
 	mdApi->Init();
 

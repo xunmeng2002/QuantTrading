@@ -4,7 +4,7 @@
 
 
 CThostFtdcMdSpiImpl::CThostFtdcMdSpiImpl(CThostFtdcMdApi* MdApi)
-	:m_MdApi(MdApi), m_RequestID(0), m_CtpAccountInfo(nullptr)
+	:m_MdApi(MdApi), m_RequestID(0), m_AccountInfo(nullptr)
 {
 }
 void CThostFtdcMdSpiImpl::OnFrontConnected()
@@ -22,9 +22,9 @@ void CThostFtdcMdSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLo
 	ReqSubscribeMd();
 }
 
-void CThostFtdcMdSpiImpl::SetCtpAccountInfo(CtpAccountInfo* ctpAccountInfo)
+void CThostFtdcMdSpiImpl::SetAccountInfo(AccountInfo* accountInfo)
 {
-	m_CtpAccountInfo = ctpAccountInfo;
+	m_AccountInfo = accountInfo;
 }
 
 void CThostFtdcMdSpiImpl::ReqUserLogin()
@@ -32,10 +32,10 @@ void CThostFtdcMdSpiImpl::ReqUserLogin()
 	CThostFtdcReqUserLoginField userLogin;
 	::memset(&userLogin, 0, sizeof(userLogin));
 	strcpy(userLogin.TradingDay, "");
-	strcpy(userLogin.BrokerID, m_CtpAccountInfo->BrokerID);
-	strcpy(userLogin.UserID, m_CtpAccountInfo->UserID);
-	strcpy(userLogin.Password, m_CtpAccountInfo->Password);
-	strcpy(userLogin.UserProductInfo, m_CtpAccountInfo->UserProductInfo);
+	strcpy(userLogin.BrokerID, m_AccountInfo->BrokerID);
+	strcpy(userLogin.UserID, m_AccountInfo->InvestorID);
+	strcpy(userLogin.Password, m_AccountInfo->Password);
+	strcpy(userLogin.UserProductInfo, m_AccountInfo->UserProductInfo);
 
 	int ret = m_MdApi->ReqUserLogin(&userLogin, m_RequestID++);
 	WriteLog(LogLevel::Info, "ReqUserLogin: ret[%d]", ret);
