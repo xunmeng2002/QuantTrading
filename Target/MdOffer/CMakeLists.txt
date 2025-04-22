@@ -4,6 +4,8 @@ project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
+add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
+add_package(Packages ${CMAKE_SOURCE_DIR}/Source/Packages)
 add_package(CtpGenCode ${CMAKE_SOURCE_DIR}/Source/Ctp/${APIVersion}/StructLogFunc)
 add_package(CtpGenCode ${CMAKE_SOURCE_DIR}/Source/Ctp/${APIVersion}/MdApiMiddle)
 add_package(Environment ${CMAKE_SOURCE_DIR}/Target/MdOffer/Environment)

@@ -3,23 +3,15 @@
 #include "ThostFtdcMdSpiImpl.h"
 #include "Logger.h"
 #include "Environment.h"
+#include "MdFront.h"
+#include "MdKernel.h"
 #include <iostream>
 #include <string.h>
 #ifdef LINUX
 #include <signal.h>
 #endif // LINUX
 
-
-
 using namespace std;
-
-#ifdef LINUX
-void sigusr1_handler(int signo)
-{
-	printf("catch SIGUSR1\n");
-	printf("back to main\n");
-}
-#endif // LINUX
 
 
 int main(int argc, char* argv[])
@@ -31,34 +23,35 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().SetLogLevel(LogLevel::Info, LogLevel::Info);
 	Logger::GetInstance().Start();
 
+	MdKernel* mdKernel = new MdKernel("MdUser", "MdPassword");
+	MdFront* mdFront = new MdFront("tcp://127.0.0.1:10000", 100);
+
 	string environmentName = "SimNow";
 	auto environment = environments[environmentName];
 	CThostFtdcMdApi* mdApi = CThostFtdcMdApiMiddle::CreateFtdcMdApi();
 	cout << "API Version:" << mdApi->GetApiVersion() << endl;
-	CThostFtdcMdSpiImpl* mdSpi = new CThostFtdcMdSpiImpl(mdApi);
+	CThostFtdcMdSpiImpl* mdSpi = new CThostFtdcMdSpiImpl(mdApi, mdKernel);
 	mdSpi->SetAccountInfo(environment->Accounts[0]);
 	mdApi->RegisterSpi(mdSpi);
 	for (auto frontInfo : environment->Fronts)
 	{
 		mdApi->RegisterFront(frontInfo->MdFront);
 	}
-	mdApi->Init();
 
-#ifdef LINUX
-	struct sigaction act;
-	act.sa_handler = sigusr1_handler;
-	act.sa_flags = SA_NODEFER;
-	sigemptyset(&act.sa_mask);
-	if (sigaction(SIGUSR1, &act, NULL) == -1)
-	{
-		perror("fail to set handler for SIGUSR1");
-		exit(1);
-	}
-#endif // LINUX
-	std::this_thread::sleep_for(std::chrono::seconds(30));
+	mdKernel->SetMdFront(mdFront);
+	mdKernel->SetMdSpi(mdSpi);
+
+
+
+	mdApi->Init();
+	mdKernel->Start();
+	mdFront->Start();
+	mdKernel->Join();
+	mdFront->Join();
 
 	mdApi->Release();
-	//mdApi->Join();
+	mdKernel->Stop();
+	mdFront->Stop();
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

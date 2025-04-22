@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<apipackages>
+	<package name="NotifyConnect"/>
+	<package name="NotifyDisConnect"/>
+	<package name="ReqMdUserLogin"/>
+	<package name="RspMdUserLogin"/>
+	<package name="ReqSubMarketData"/>
+	<package name="RspSubMarketData"/>
+	<package name="ReqUnSubMarketData"/>
+	<package name="RspUnSubMarketData"/>
+	<package name="RtnDepthMarketData"/>
+	<package name="RtnBarMarketData"/>
+</apipackages>

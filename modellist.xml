@@ -1,5 +1,4 @@
 <copylist>
 	<file name="Types.xml" dest="./Model/" src="../Model/"/>
-	<file name="StepHeadID.xml" dest="./Model/Step" src="../Model/"/>
 	<file name="Items.xml" dest="./Model/Step" src="../Model/"/>
 </copylist>

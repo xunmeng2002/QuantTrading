@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<errors>
+	<error name="None" 								id="0x0000" desc="正确"/>
+	<error name="Network" 							id="0x0001" desc="网络错误"/>
+	<error name="IncorrectPassword" 				id="0x0002" desc="密码错误"/>
+	
+	
+	<error name="AccountNotExist" 					id="0x1000" desc="账户不存在"/>
+	<error name="PrimaryAccountNotExist" 			id="0x1001" desc="主账户不存在"/>
+	<error name="RiskUserNotExist" 					id="0x1002" desc="风控用户不存在"/>
+	<error name="CapitalNotExist" 					id="0x1003" desc="资金不存在"/>
+	<error name="PrimaryCapitalNotExist" 			id="0x1004" desc="主账户资金不存在"/>
+	<error name="TradeOfferNotExist" 				id="0x1005" desc="交易报盘不存在"/>
+	<error name="ExchangeNotExist" 					id="0x1006" desc="交易所不存在"/>
+	<error name="ProductNotExist" 					id="0x1007" desc="品种不存在"/>
+	<error name="InstrumentNotExist" 				id="0x1008" desc="合约不存在"/>
+	<error name="OptionInstrumentNotExist" 			id="0x1009" desc="期权合约不存在"/>
+	<error name="UnderlyingInstrumentNotExist" 		id="0x100A" desc="标的合约不存在"/>
+	<error name="BaseCommissionNotExist" 			id="0x100B" desc="基础费率不存在"/>
+	<error name="CommissionGroupNotExist"	 		id="0x100C" desc="手续费组不存在"/>
+	<error name="MarginGroupNotExist" 				id="0x100D" desc="保证金组不存在"/>
+	<error name="CurrencyRateNotExist" 				id="0x100E" desc="币种汇率不存在"/>
+	<error name="MarketDataNotExist" 				id="0x100F" desc="行情数据不存在"/>
+	<error name="UnderlyingMarketDataNotExist" 		id="0x1010" desc="标的行情数据不存在"/>
+	<error name="LastPriceNotExist" 				id="0x1011" desc="最新价不存在"/>
+	<error name="MaxSequenceNoNotExist" 			id="0x1012" desc="最大委托序号不存在"/>
+	<error name="OrderNotExist" 					id="0x1013" desc="委托不存在"/>
+	<error name="PositionNotExist"	 				id="0x1014" desc="持仓不存在"/>
+	<error name="TradeGroupNotExist" 				id="0x1015" desc="交易组不存在"/>
+	<error name="TradeGroupItemNotExist" 			id="0x1016" desc="交易组子项不存在"/>
+	<error name="RiskGroupNotExist" 				id="0x1017" desc="风控组不存在"/>
+	<error name="RiskGroupItemNotExist" 			id="0x1018" desc="风控组子项不存在"/>
+	<error name="AdminUserNotExist" 				id="0x1019" desc="管理用户不存在"/>
+	<error name="RiskNotExist" 						id="0x101A" desc="风控不存在"/>
+	<error name="AccountRiskNotExist" 				id="0x101B" desc="账户风控不存在"/>
+	<error name="OptionMarginParamNotExist" 		id="0x101C" desc="期权保证金参数不存在"/>
+	<error name="PrimaryOrderNotExist" 				id="0x101D" desc="主账号委托不存在"/>
+	<error name="SubOrderNotExist" 					id="0x101E" desc="子账号委托不存在"/>
+	<error name="SubAccountNotExist" 				id="0x101F" desc="子账号不存在"/>
+		
+	
+	<error name="PrimaryAccountAlreadyExist" 		id="0x2000" desc="主账号已存在"/>
+	<error name="AccountAlreadyExist" 				id="0x2001" desc="账户已存在"/>
+	<error name="CapitalAlreadyExist" 				id="0x2002" desc="资金账号已存在"/>
+	<error name="BaseCommissionAlreadyExist" 		id="0x2003" desc="基础费率已存在"/>
+	<error name="CommissionGroupAlreadyExist" 		id="0x2004" desc="手续费组已存在"/>
+	<error name="AdminUserAlreadyExist" 			id="0x2005" desc="管理用户已存在"/>
+	<error name="RiskUserAlreadyExist" 				id="0x2006" desc="风控用户已存在"/>
+	<error name="TradeOfferAlreadyExist" 			id="0x2007" desc="交易报盘已存在"/>
+	<error name="RiskAlreadyExist" 					id="0x2008" desc="风控已存在"/>
+	<error name="RiskRuleAlreadyExist" 				id="0x2009" desc="风控规则已存在"/>
+	<error name="RiskRuleItemAlreadyExist" 			id="0x200A" desc="风控规则子项已存在"/>
+	<error name="RiskTradeScopeAlreadyExist"		id="0x200B" desc="风控交易范围"/>
+	<error name="AccountRiskAlreadyExist" 			id="0x200C" desc="账户风控已存在"/>
+	<error name="TradeGroupAlreadyExist" 			id="0x200D" desc="交易组已存在"/>
+	<error name="TradeGroupItemAlreadyExist" 		id="0x200E" desc="交易组子项已存在"/>
+	<error name="RiskGroupAlreadyExist" 			id="0x200F" desc="风控组已存在"/>
+	<error name="RiskGroupItemAlreadyExist" 		id="0x2010" desc="风控组子项已存在"/>
+	<error name="OptionMarginParamAlreadyExist" 	id="0x2011" desc="保证金参数已存在"/>
+	<error name="OrderAlreadyExist" 				id="0x2012" desc="委托已存在"/>
+	<error name="TradeAlreadyExist" 				id="0x2013" desc="成交已存在"/>
+	<error name="AccountAlreadyLogin" 				id="0x2014" desc="账户已登录"/>
+	
+	
+	
+	
+	<error name="AccountNotLogin" 					id="0x3000" desc="账户未登录"/>
+	<error name="PrimaryAccountNotLogin" 			id="0x3001" desc="主账户未登录"/>
+	<error name="UserNotLogin" 						id="0x3002" desc="用户未登录"/>
+	<error name="TradeOfferNotLogin" 				id="0x3003" desc="交易报盘未登录"/>
+	<error name="TradeOfferAlreadyLogin" 			id="0x3004" desc="交易报盘已登录"/>
+	
+	
+	<error name="DuplicateOfferID" 					id="0x4000" desc="重复的报盘代码"/>
+	<error name="DuplicateClientOrderID" 			id="0x4001" desc="重复的客户端委托编号"/>
+	
+	
+	<error name="InvalidOrderPrice" 				id="0x5000" desc="不合法的委托价格"/>
+	<error name="InvalidOrderVolume" 				id="0x5001" desc="不合法的委托数量"/>
+	<error name="InvalidAccountClass" 				id="0x5002" desc="不合法的账户类别"/>
+	<error name="InvalidSecurityType" 				id="0x5003" desc="不合法的证券类别"/>
+	<error name="InvalidLastPrice" 					id="0x5004" desc="不合法的最新价"/>
+	<error name="InvalidSettlementPrice" 			id="0x5005" desc="不合法的结算价"/>
+	<error name="InvalidPreSettlementPrice" 		id="0x5006" desc="不合法的昨结算价"/>
+	<error name="InvalidClosePrice" 				id="0x5007" desc="不合法的收盘价"/>
+	<error name="InvalidPreClosePrice" 				id="0x5008" desc="不合法的昨收盘价"/>
+	<error name="InvalidOffsetFlag" 				id="0x5009" desc="不合法的开平标志"/>
+	<error name="InvalidDirection" 					id="0x500A" desc="不合法的买卖方向"/>
+	
+	
+	<error name="CapitalInsufficient" 				id="0x6000" desc="资金不足"/>
+	<error name="PositionInsufficient" 				id="0x6001" desc="持仓不足"/>
+	
+	
+	<error name="ReqPackageParseFailed" 			id="0x7000" desc="请求报文解析失败"/>
+	<error name="InsertOrderFailed" 				id="0x7001" desc="添加委托记录失败"/>
+	<error name="AccountRiskCheckFailed" 			id="0x7002" desc="账户风控检查失败"/>
+	<error name="PriamaryAccountRiskCheckFailed" 	id="0x7003" desc="主账户风控检查失败"/>
+	<error name="AccountGroupRiskCheckFailed" 		id="0x7004" desc="账户组风控检查失败"/>
+	
+	
+	<error name="NoAuthorityToQueryAccount"			id="0x8000" desc="没有权限查询该账户"/>
+	<error name="NoAuthorityToOperateAccount"		id="0x8001" desc="没有权限操作该账户"/>
+	<error name="NoAuthorityToTradeThisMarket"		id="0x8002" desc="没有该市场交易权限"/>
+	<error name="NoTradingTime" 					id="0x8003" desc="非交易时间"/>
+	
+	
+	<error name="AccountDeleted" 					id="0x9000" desc="账号已删除"/>
+	<error name="UserDeleted" 						id="0x9001" desc="用户已删除"/>
+	<error name="TradeOfferDeleted" 				id="0x9002" desc="交易报盘已删除"/>
+	
+	
+	<error name="PasswordChanged" 					id="0xA000" desc="密码已修改"/>
+	<error name="AccountForbidden" 					id="0xA001" desc="账号已禁用"/>
+	
+	<error name="FinalOrderStatus" 					id="0xB000" desc="委托已是最终状态"/>
+	<error name="CurrOrderStatusNeedNotAudit" 		id="0xB001" desc="当前委托状态不需要审核"/>
+	<error name="CurrOrderStatusNeedNotRiskCheck" 	id="0xB002" desc="当前委托状态不需要风控检查"/>
+	
+	<error name="TradingDayNotMatch" 				id="0xC000" desc="交易日不匹配"/>
+	<error name="MarketDataUnInitialized" 			id="0xC001" desc="行情未初始化"/>
+	<error name="PrimaryAccountUnInitialized" 		id="0xC002" desc="主账号未初始化"/>
+	
+	<error name="OfferApiNotExist" 					id="0xD000" desc="报盘API不存在"/>
+	<error name="OfferSendFailed" 					id="0xD001" desc="报盘发送失败"/>
+	<error name="AuditReject" 						id="0xD003" desc="审核拒绝"/>
+</errors>

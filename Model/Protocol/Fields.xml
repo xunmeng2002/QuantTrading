@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fields>
+	<field name="RspInfo" id="0x0001" desc="应答信息">
+		<item name="ErrorID" id="0x1009" type="ErrorID" desc="错误代码"/>
+		<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
+	</field>
+	<field name="NotifyConnect" id="0x0002" desc="连接成功通知">
+		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+		<item name="IPAddress" id="0x2901" type="IPAddress" desc="IP地址"/>
+		<item name="Port" id="0x2902" type="Int" desc="端口"/>
+	</field>
+	<field name="NotifyDisConnect" id="0x0003" desc="断开连接通知">
+		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+		<item name="IPAddress" id="0x2901" type="IPAddress" desc="IP地址"/>
+		<item name="Port" id="0x2902" type="Int" desc="端口"/>
+	</field>
+	<field name="ReqMdUserLogin" id="0x1001" desc="行情用户登录请求">
+		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+		<item name="Password" id="0x2801" type="Password" desc="密码"/>
+	</field>
+	<field name="RspMdUserLogin" id="0x1002" desc="行情用户登录应答">
+		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+		<item name="LoginDate" id="0x3002" type="Date" desc="登录日期"/>
+		<item name="LoginTime" id="0x3801" type="Time" desc="登录时间"/>
+		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+	</field>
+	<field name="ReqSubMarketData" id="0x1003" desc="订阅行情请求">
+		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+	</field>
+	<field name="RspSubMarketData" id="0x1004" desc="订阅行情应答">
+		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+	</field>
+	<field name="ReqUnSubMarketData" id="0x1005" desc="退订行情请求">
+		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+	</field>
+	<field name="RspUnSubMarketData" id="0x1006" desc="退订行情应答">
+		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+	</field>
+	<field name="DepthMarketData" id="0x1007" desc="深度行情">
+		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="LastPrice" id="0x6016" type="Price" desc="最新价"/>
+		<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
+		<item name="PreClosePrice" id="0x6021" type="Price" desc="昨收盘价"/>
+		<item name="PreOpenInterest" id="0x4021" type="Volume" desc="上日持仓量"/>
+		<item name="OpenPrice" id="0x6017" type="Price" desc="开盘价"/>
+		<item name="HighestPrice" id="0x6018" type="Price" desc="最高价"/>
+		<item name="LowestPrice" id="0x6019" type="Price" desc="最低价"/>
+		<item name="ClosePrice" id="0x601A" type="Price" desc="收盘价"/>
+		<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
+		<item name="Turnover" id="0x7022" type="Money" desc="成交金额"/>
+		<item name="OpenInterest" id="0x4020" type="Volume" desc="持仓量"/>
+		<item name="SettlementPrice" id="0x601F" type="Price" desc="结算价"/>
+		<item name="UpperLimitPrice" id="0x6025" type="Price" desc="涨停板价"/>
+		<item name="LowerLimitPrice" id="0x6026" type="Price" desc="跌停板价"/>
+		<item name="AveragePrice" id="0x6029" type="Price" desc="当日均价"/>
+		<item name="UpdateTs" id="0x4202" type="Int64" desc="更新时间戳"/>
+		<item name="AskPrice1" id="0x6001" type="Price" desc="申卖价一"/>
+		<item name="AskPrice2" id="0x6002" type="Price" desc="申卖价二"/>
+		<item name="AskPrice3" id="0x6003" type="Price" desc="申卖价三"/>
+		<item name="AskPrice4" id="0x6004" type="Price" desc="申卖价四"/>
+		<item name="AskPrice5" id="0x6005" type="Price" desc="申卖价五"/>
+		<item name="AskPrice6" id="0x6006" type="Price" desc="申卖价六"/>
+		<item name="AskPrice7" id="0x6007" type="Price" desc="申卖价七"/>
+		<item name="AskPrice8" id="0x6008" type="Price" desc="申卖价八"/>
+		<item name="AskPrice9" id="0x6009" type="Price" desc="申卖价九"/>
+		<item name="AskPrice10" id="0x600A" type="Price" desc="申卖价十"/>
+		<item name="AskVolume1" id="0x4001" type="Volume" desc="申卖量一"/>
+		<item name="AskVolume2" id="0x4002" type="Volume" desc="申卖量二"/>
+		<item name="AskVolume3" id="0x4003" type="Volume" desc="申卖量三"/>
+		<item name="AskVolume4" id="0x4004" type="Volume" desc="申卖量四"/>
+		<item name="AskVolume5" id="0x4005" type="Volume" desc="申卖量五"/>
+		<item name="AskVolume6" id="0x4006" type="Volume" desc="申卖量六"/>
+		<item name="AskVolume7" id="0x4007" type="Volume" desc="申卖量七"/>
+		<item name="AskVolume8" id="0x4008" type="Volume" desc="申卖量八"/>
+		<item name="AskVolume9" id="0x4009" type="Volume" desc="申卖量九"/>
+		<item name="AskVolume10" id="0x400A" type="Volume" desc="申卖量十"/>
+		<item name="BidPrice1" id="0x600B" type="Price" desc="申买价一"/>
+		<item name="BidPrice2" id="0x600C" type="Price" desc="申买价二"/>
+		<item name="BidPrice3" id="0x600D" type="Price" desc="申买价三"/>
+		<item name="BidPrice4" id="0x600E" type="Price" desc="申买价四"/>
+		<item name="BidPrice5" id="0x600F" type="Price" desc="申买价五"/>
+		<item name="BidPrice6" id="0x6010" type="Price" desc="申买价六"/>
+		<item name="BidPrice7" id="0x6011" type="Price" desc="申买价七"/>
+		<item name="BidPrice8" id="0x6012" type="Price" desc="申买价八"/>
+		<item name="BidPrice9" id="0x6013" type="Price" desc="申买价九"/>
+		<item name="BidPrice10" id="0x6014" type="Price" desc="申买价十"/>
+		<item name="BidVolume1" id="0x400B" type="Volume" desc="申买量一"/>
+		<item name="BidVolume2" id="0x400C" type="Volume" desc="申买量二"/>
+		<item name="BidVolume3" id="0x400D" type="Volume" desc="申买量三"/>
+		<item name="BidVolume4" id="0x400E" type="Volume" desc="申买量四"/>
+		<item name="BidVolume5" id="0x400F" type="Volume" desc="申买量五"/>
+		<item name="BidVolume6" id="0x4010" type="Volume" desc="申买量六"/>
+		<item name="BidVolume7" id="0x4011" type="Volume" desc="申买量七"/>
+		<item name="BidVolume8" id="0x4012" type="Volume" desc="申买量八"/>
+		<item name="BidVolume9" id="0x4013" type="Volume" desc="申买量九"/>
+		<item name="BidVolume10" id="0x4014" type="Volume" desc="申买量十"/>
+	</field>
+	<field name="BarMarketData" id="0x1008" desc="Bar行情">
+		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="BarPreces" id="0x901A" type="BarPreces" desc="Bar精度"/>
+		<item name="BarPeriod" id="0x1003" type="Int" desc="Bar周期"/>
+		<item name="BarTime" id="0x4201" type="Int64" desc="Bar时间"/>
+		<item name="UpdateTs" id="0x4202" type="Int64" desc="更新时间戳"/>
+		<item name="HighestPrice" id="0x6018" type="Price" desc="最高价"/>
+		<item name="LowestPrice" id="0x6019" type="Price" desc="最低价"/>
+		<item name="Open" id="0x602A" type="Price" desc="开盘价"/>
+		<item name="High" id="0x602B" type="Price" desc="最高价"/>
+		<item name="Low" id="0x602C" type="Price" desc="最低价"/>
+		<item name="Close" id="0x602D" type="Price" desc="收盘价"/>
+		<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
+		<item name="Turnover" id="0x7022" type="Money" desc="成交金额"/>
+		<item name="OpenInterest" id="0x4020" type="Volume" desc="持仓量"/>
+	</field>
+</fields>

@@ -1,6 +1,4 @@
 #!encoding:utf-8
-
-
 import xml.etree.cElementTree as ET
 import sys
 import re
