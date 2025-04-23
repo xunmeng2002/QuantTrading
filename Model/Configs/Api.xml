@@ -1,0 +1,6 @@
+<config>
+	<items>
+		<item name="LogLevel" type="int"></item>
+		<item name="ProtocolType" type="string"></item>
+	</items>
+</config>

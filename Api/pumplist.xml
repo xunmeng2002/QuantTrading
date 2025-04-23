@@ -1,0 +1,25 @@
+<pumplist>
+	<pump dest="../Libs/QuantTrading/include/Types.h" tpl="../Templates/Cpp/Types/Types.h.tpl" model="../Model/Types.xml"/>
+	
+	<pump dest="./Api/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/Api.xml"/>
+	<pump dest="./Api/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/Api.xml"/>
+
+	
+	<pump dest="./Api/MdApi/Src/MdFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdApi/Src/MdApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdApi/Src/MdApiImpl.h" tpl="../Templates/Cpp/Api/ApiImpl.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdApi/Src/MdApiImpl.cpp" tpl="../Templates/Cpp/Api/ApiImpl.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdApi/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdApi/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/MdApi/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Packages/PackageFactory.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+
+	
+	<pump dest="./Api/MdCApi/Src/MdCApi.h" tpl="../Templates/Cpp/Api/CApi.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdCApi/Src/MdCApi.cpp" tpl="../Templates/Cpp/Api/CApi.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/MdCApi/Src/MdSpiWrap.h" tpl="../Templates/Cpp/Api/SpiWrap.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdCApi/Src/MdSpiWrap.cpp" tpl="../Templates/Cpp/Api/SpiWrap.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/MdUtf8CApi/Src/MdCApi.h" tpl="../Templates/Cpp/Api/CApi.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdUtf8CApi/Src/MdCApi.cpp" tpl="../Templates/Cpp/Api/Utf8CApi.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/MdUtf8CApi/Src/MdSpiWrap.h" tpl="../Templates/Cpp/Api/SpiWrap.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="./Api/MdUtf8CApi/Src/MdSpiWrap.cpp" tpl="../Templates/Cpp/Api/Utf8SpiWrap.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
+</pumplist>
