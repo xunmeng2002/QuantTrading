@@ -46,8 +46,8 @@
 	<pump dest="./Source/Ctp/6.7.2/MdApiMiddle/ThostFtdcMdSpiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.h.tpl" model="../Libs/CTP/6.7.2/CtpMdApi.xml"/>
 	<pump dest="./Source/Ctp/6.7.2/MdApiMiddle/ThostFtdcMdSpiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.cpp.tpl" model="../Libs/CTP/6.7.2/CtpMdApi.xml"/>
 	
-	<pump dest="./Source/Packages/Fields.h" tpl="../Templates/Cpp/Packages/Fields.h.tpl" model="./Model/Protocol/Fields.xml"/>
-	<pump dest="./Source/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Protocol/Packages.xml ./Model/Protocol/FullApiPackages.xml"/>
-	<pump dest="./Source/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Protocol/Packages.xml ./Model/Protocol/FullApiPackages.xml ../Model/Types.xml"/>
-	<pump dest="./Source/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Packages/PackageFactory.cpp.tpl" model="./Model/Protocol/Packages.xml ./Model/Protocol/FullApiPackages.xml"/>
+	<pump dest="./Source/Packages/Fields.h" tpl="../Templates/Cpp/Packages/Fields.h.tpl" model="./Model/Packages/Fields.xml"/>
+	<pump dest="./Source/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/FullApiPackages.xml"/>
+	<pump dest="./Source/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/FullApiPackages.xml ../Model/Types.xml"/>
+	<pump dest="./Source/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Packages/PackageFactory.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/FullApiPackages.xml"/>
 </pumplist>
