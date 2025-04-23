@@ -13,6 +13,7 @@ MdKernel::MdKernel(const char* mdUser, const char* password)
 {
 	Strcpy(m_MdUser, mdUser);
 	Strcpy(m_MdPassword, password);
+	m_BarMdPackage = new RtnBarMarketDataPackage();
 }
 void MdKernel::SetMdFront(MdFront* mdFront)
 {
@@ -46,6 +47,14 @@ void MdKernel::OnMessage(Package* package)
 	m_RecvPackages.push_back(package);
 
 	m_ThreadConditionVariable.notify_one();
+}
+void MdKernel::OnBarMarketData(BarMarketDataField* bar)
+{
+	m_BarMdPackage->BarMarketData = bar;
+	ReqSubMarketDataField reqSubMarketData;
+	Strcpy(reqSubMarketData.ExchangeID, bar->ExchangeID);
+	Strcpy(reqSubMarketData.InstrumentID, bar->InstrumentID);
+	PushToAllSubscribed(&reqSubMarketData, m_BarMdPackage);
 }
 
 void MdKernel::Run()
@@ -164,7 +173,10 @@ int MdKernel::HandleReqSubMarketData(ReqSubMarketDataPackage* package)
 int MdKernel::HandleRtnDepthMarketData(RtnDepthMarketDataPackage* package)
 {
 	package = MdSnap::GetInstance().AddDepthMd(package);
-	PushToAllSubscribed(package);
+	ReqSubMarketDataField reqSubMarketData;
+	Strcpy(reqSubMarketData.ExchangeID, package->DepthMarketData->ExchangeID);
+	Strcpy(reqSubMarketData.InstrumentID, package->DepthMarketData->InstrumentID);
+	PushToAllSubscribed(&reqSubMarketData, package);
 	return 0;
 }
 
@@ -190,15 +202,12 @@ void MdKernel::PushToAll(Package* package)
 		}
 	}
 }
-void MdKernel::PushToAllSubscribed(RtnDepthMarketDataPackage* package)
+void MdKernel::PushToAllSubscribed(ReqSubMarketDataField* reqSubMarketData, Package* package)
 {
-	ReqSubMarketDataField reqSubMarketData;
-	Strcpy(reqSubMarketData.ExchangeID, package->DepthMarketData->ExchangeID);
-	Strcpy(reqSubMarketData.InstrumentID, package->DepthMarketData->InstrumentID);
 	for (auto& item : m_SessionSubscribeInstruments)
 	{
 		auto& instruments = item.second;
-		if (instruments.find(&reqSubMarketData) != instruments.end())
+		if (instruments.find(reqSubMarketData) != instruments.end())
 		{
 			package->Prepare(item.first, false, 0);
 			if (!m_MdFront->Send(package))

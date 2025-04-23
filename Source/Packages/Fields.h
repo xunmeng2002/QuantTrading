@@ -83,7 +83,9 @@ public:
 	PriceType HighestPrice;		//最高价
 	PriceType LowestPrice;		//最低价
 	PriceType ClosePrice;		//收盘价
+	VolumeType CurrVolume;		//当前数量
 	VolumeType Volume;		//委托数量
+	MoneyType CurrTurnover;		//当前成交金额
 	MoneyType Turnover;		//成交金额
 	VolumeType OpenInterest;		//持仓量
 	PriceType SettlementPrice;		//结算价
@@ -149,7 +151,9 @@ public:
 	PriceType High;		//最高价
 	PriceType Low;		//最低价
 	PriceType Close;		//收盘价
+	VolumeType CurrVolume;		//当前数量
 	VolumeType Volume;		//委托数量
+	MoneyType CurrTurnover;		//当前成交金额
 	MoneyType Turnover;		//成交金额
 	VolumeType OpenInterest;		//持仓量
 };

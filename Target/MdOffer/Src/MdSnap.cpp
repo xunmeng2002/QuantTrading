@@ -25,12 +25,18 @@ RtnDepthMarketDataPackage* MdSnap::AddDepthMd(RtnDepthMarketDataPackage* depthMd
 	auto it = depthMds.find(depthMd->DepthMarketData->InstrumentID);
 	if (it == depthMds.end())
 	{
+		depthMd->DepthMarketData->CurrVolume = depthMd->DepthMarketData->Volume;
+		depthMd->DepthMarketData->CurrTurnover = depthMd->DepthMarketData->Turnover;
 		depthMds[depthMd->DepthMarketData->InstrumentID] = depthMd;
 		return depthMd;
 	}
 	else
 	{
+		auto lastDepthMd = it->second->DepthMarketData;
+		depthMd->DepthMarketData->CurrVolume = depthMd->DepthMarketData->Volume - lastDepthMd->Volume;
+		depthMd->DepthMarketData->CurrTurnover = depthMd->DepthMarketData->Turnover - lastDepthMd->Turnover;
 		memcpy(it->second->DepthMarketData, depthMd->DepthMarketData, sizeof(DepthMarketDataField));
+		depthMd->Free();
 		return it->second;
 	}
 }

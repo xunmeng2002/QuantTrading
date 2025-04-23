@@ -53,7 +53,9 @@
 		<item name="HighestPrice"/>
 		<item name="LowestPrice"/>
 		<item name="ClosePrice"/>
+		<item name="CurrVolume"/>
 		<item name="Volume"/>
+		<item name="CurrTurnover"/>
 		<item name="Turnover"/>
 		<item name="OpenInterest"/>
 		<item name="SettlementPrice"/>
@@ -116,7 +118,9 @@
 		<item name="High"/>
 		<item name="Low"/>
 		<item name="Close"/>
+		<item name="CurrVolume"/>
 		<item name="Volume"/>
+		<item name="CurrTurnover"/>
 		<item name="Turnover"/>
 		<item name="OpenInterest"/>
 	</field>

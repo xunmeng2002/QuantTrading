@@ -5,7 +5,9 @@
 #include "Environment.h"
 #include "MdFront.h"
 #include "MdKernel.h"
+#include "TradeSession.h"
 #include <iostream>
+#include <fstream>
 #include <string.h>
 #ifdef LINUX
 #include <signal.h>
@@ -13,6 +15,7 @@
 
 using namespace std;
 
+const char* sessionConfigFile = "Sessions.json";
 
 int main(int argc, char* argv[])
 {
@@ -22,6 +25,10 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel::Info, LogLevel::Info);
 	Logger::GetInstance().Start();
+
+	std::ifstream inFile(sessionConfigFile);
+	TradeSessions::m_SessionJsonString = std::string((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+	TradeSessions::ParseTradeSessions();
 
 	MdKernel* mdKernel = new MdKernel("MdUser", "MdPassword");
 	MdFront* mdFront = new MdFront("tcp://127.0.0.1:10000", 100);

@@ -5,12 +5,13 @@
 #include "MdFront.h"
 #include "ThostFtdcMdSpiImpl.h"
 #include "FieldsCompare.h"
+#include "BarInterface.h"
 #include <map>
 #include <set>
 #include <list>
 
 
-class MdKernel : public ThreadBase, public ProtocolSubscriber
+class MdKernel : public ThreadBase, public ProtocolSubscriber, public BarSubscriber
 {
 public:
 	MdKernel(const char* mdUser, const char* password);
@@ -21,6 +22,8 @@ public:
 	virtual void OnProtocolConnect(SessionIDType sessionID, const char* ip, int port) override;
 	virtual void OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port) override;
 	virtual void OnMessage(Package* package) override;
+
+	virtual void OnBarMarketData(BarMarketDataField* bar) override;
 
 protected:
 	virtual void Run() override;
@@ -33,7 +36,7 @@ protected:
 
 	Package* GetPackage();
 	void PushToAll(Package* package);
-	void PushToAllSubscribed(RtnDepthMarketDataPackage* package);
+	void PushToAllSubscribed(ReqSubMarketDataField* reqSubMarketData, Package* package);
 
 private:
 	MdFront* m_MdFront;
@@ -42,6 +45,8 @@ private:
 	std::set<ReqSubMarketDataField*, std::less<ReqSubMarketDataField>> m_SubscribeInstruments;
 	std::map<SessionIDType, std::set<ReqSubMarketDataField*, std::less<ReqSubMarketDataField>>> m_SessionSubscribeInstruments;
 	std::list<Package*> m_RecvPackages;
+
+	RtnBarMarketDataPackage* m_BarMdPackage;
 
 	UserIDType m_MdUser;
 	PasswordType m_MdPassword;

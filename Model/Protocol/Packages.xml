@@ -77,7 +77,9 @@
 			<item name="HighestPrice" id="0x6018" type="Price" desc="最高价"/>
 			<item name="LowestPrice" id="0x6019" type="Price" desc="最低价"/>
 			<item name="ClosePrice" id="0x601A" type="Price" desc="收盘价"/>
+			<item name="CurrVolume" id="0x4022" type="Volume" desc="当前数量"/>
 			<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
+			<item name="CurrTurnover" id="0x7023" type="Money" desc="当前成交金额"/>
 			<item name="Turnover" id="0x7022" type="Money" desc="成交金额"/>
 			<item name="OpenInterest" id="0x4020" type="Volume" desc="持仓量"/>
 			<item name="SettlementPrice" id="0x601F" type="Price" desc="结算价"/>
@@ -142,7 +144,9 @@
 			<item name="High" id="0x602B" type="Price" desc="最高价"/>
 			<item name="Low" id="0x602C" type="Price" desc="最低价"/>
 			<item name="Close" id="0x602D" type="Price" desc="收盘价"/>
+			<item name="CurrVolume" id="0x4022" type="Volume" desc="当前数量"/>
 			<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
+			<item name="CurrTurnover" id="0x7023" type="Money" desc="当前成交金额"/>
 			<item name="Turnover" id="0x7022" type="Money" desc="成交金额"/>
 			<item name="OpenInterest" id="0x4020" type="Volume" desc="持仓量"/>
 		</field>
