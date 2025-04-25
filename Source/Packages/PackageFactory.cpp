@@ -22,6 +22,14 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	{
 		return RspMdUserLoginPackage::Allocate();
 	}
+	case ReqMdUserLogoutPackage::PackageID:
+	{
+		return ReqMdUserLogoutPackage::Allocate();
+	}
+	case RspMdUserLogoutPackage::PackageID:
+	{
+		return RspMdUserLogoutPackage::Allocate();
+	}
 	case ReqSubMarketDataPackage::PackageID:
 	{
 		return ReqSubMarketDataPackage::Allocate();

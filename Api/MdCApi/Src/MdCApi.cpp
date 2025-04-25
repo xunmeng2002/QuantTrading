@@ -62,6 +62,14 @@ int ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID)
 
 	return s_MdApi->ReqMdUserLogin(reqMdUserLogin, requestID);
 }
+int ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID)
+{
+#ifdef WINDOWS
+	TrunsferGbkUtf8(reqMdUserLogout->UserID);
+#endif
+
+	return s_MdApi->ReqMdUserLogout(reqMdUserLogout, requestID);
+}
 int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 #ifdef WINDOWS

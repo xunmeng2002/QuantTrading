@@ -629,6 +629,316 @@ const char* RspMdUserLoginPackage::GetDebugString() const
 	return t_DataStringBuffer;
 }
  
+ReqMdUserLogoutPackage* ReqMdUserLogoutPackage::Allocate()
+{
+	return ::Allocate<ReqMdUserLogoutPackage>();
+}
+void ReqMdUserLogoutPackage::Free()
+{
+	Package::Free();
+	if (ReqMdUserLogout != nullptr)
+	{
+		::Free<ReqMdUserLogoutField>(ReqMdUserLogout);
+		ReqMdUserLogout = nullptr;
+	}
+	MemCacheTemplateSingleton<ReqMdUserLogoutPackage>::GetInstance().Free(this);
+}
+void ReqMdUserLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int ReqMdUserLogoutPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (ReqMdUserLogout != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, ReqMdUserLogoutField::FieldID);
+		if (strlen(ReqMdUserLogout->UserID) >= sizeof(ReqMdUserLogout->UserID))
+		{
+			ReqMdUserLogout->UserID[sizeof(ReqMdUserLogout->UserID) - 1] = 0;
+		}
+		WriteString(ppos, Items::UserID, ReqMdUserLogout->UserID);
+		WriteHexString(ppos, Items::FieldEnd, ReqMdUserLogoutField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool ReqMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case ReqMdUserLogoutField::FieldID:
+			{
+				ReqMdUserLogout = ::Allocate<ReqMdUserLogoutField>();
+				memset(ReqMdUserLogout, 0, sizeof(*ReqMdUserLogout));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::UserID:
+						{
+							size_t len = value.length() >= sizeof(ReqMdUserLogout->UserID) ? sizeof(ReqMdUserLogout->UserID) - 1 : value.length();
+							memcpy(ReqMdUserLogout->UserID, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqMdUserLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqMdUserLogoutPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqMdUserLogoutPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int ReqMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, ReqMdUserLogout, sizeof(ReqMdUserLogoutField));
+	offset += sizeof(ReqMdUserLogoutField);
+	return offset;
+}
+bool ReqMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	ReqMdUserLogout = ::Allocate<ReqMdUserLogoutField>();
+	memcpy(ReqMdUserLogout, buff + offset, sizeof(ReqMdUserLogoutField));
+	offset += sizeof(ReqMdUserLogoutField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* ReqMdUserLogoutPackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogout:UserID:[%s]",
+		ReqMdUserLogout->UserID);
+	return t_DataStringBuffer;
+}
+ 
+RspMdUserLogoutPackage* RspMdUserLogoutPackage::Allocate()
+{
+	return ::Allocate<RspMdUserLogoutPackage>();
+}
+void RspMdUserLogoutPackage::Free()
+{
+	Package::Free();
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
+	}
+	if (RspMdUserLogout != nullptr)
+	{
+		::Free<RspMdUserLogoutField>(RspMdUserLogout);
+		RspMdUserLogout = nullptr;
+	}
+	MemCacheTemplateSingleton<RspMdUserLogoutPackage>::GetInstance().Free(this);
+}
+void RspMdUserLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RspMdUserLogoutPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (RspInfo != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
+	if (RspMdUserLogout != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspMdUserLogoutField::FieldID);
+		if (strlen(RspMdUserLogout->UserID) >= sizeof(RspMdUserLogout->UserID))
+		{
+			RspMdUserLogout->UserID[sizeof(RspMdUserLogout->UserID) - 1] = 0;
+		}
+		WriteString(ppos, Items::UserID, RspMdUserLogout->UserID);
+		WriteHexString(ppos, Items::FieldEnd, RspMdUserLogoutField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ::Allocate<RspInfoField>();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLogoutPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			case RspMdUserLogoutField::FieldID:
+			{
+				RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
+				memset(RspMdUserLogout, 0, sizeof(*RspMdUserLogout));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::UserID:
+						{
+							size_t len = value.length() >= sizeof(RspMdUserLogout->UserID) ? sizeof(RspMdUserLogout->UserID) - 1 : value.length();
+							memcpy(RspMdUserLogout->UserID, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspMdUserLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLogoutPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspMdUserLogoutPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RspMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
+	memcpy(buff + offset, RspMdUserLogout, sizeof(RspMdUserLogoutField));
+	offset += sizeof(RspMdUserLogoutField);
+	return offset;
+}
+bool RspMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	RspInfo = ::Allocate<RspInfoField>();
+	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
+	RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
+	memcpy(RspMdUserLogout, buff + offset, sizeof(RspMdUserLogoutField));
+	offset += sizeof(RspMdUserLogoutField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* RspMdUserLogoutPackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
+		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]",
+		RspMdUserLogout->UserID);
+	return t_DataStringBuffer;
+}
+ 
 ReqSubMarketDataPackage* ReqSubMarketDataPackage::Allocate()
 {
 	return ::Allocate<ReqSubMarketDataPackage>();

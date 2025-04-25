@@ -25,23 +25,29 @@
 		<item name="LoginTime"/>
 		<item name="SessionID"/>
 	</field>
-	<field name="ReqSubMarketData" 				id="0x1003" desc="订阅行情请求">
+	<field name="ReqMdUserLogout" 				id="0x1003" desc="行情用户登录请求">
+		<item name="UserID"/>
+	</field>
+	<field name="RspMdUserLogout" 				id="0x1004" desc="行情用户登录应答">
+		<item name="UserID"/>
+	</field>
+	<field name="ReqSubMarketData" 				id="0x1005" desc="订阅行情请求">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="RspSubMarketData" 				id="0x1004" desc="订阅行情应答">
+	<field name="RspSubMarketData" 				id="0x1006" desc="订阅行情应答">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="ReqUnSubMarketData" 			id="0x1005" desc="退订行情请求">
+	<field name="ReqUnSubMarketData" 			id="0x1007" desc="退订行情请求">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="RspUnSubMarketData" 			id="0x1006" desc="退订行情应答">
+	<field name="RspUnSubMarketData" 			id="0x1008" desc="退订行情应答">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="DepthMarketData" 				id="0x1007" desc="深度行情">
+	<field name="DepthMarketData" 				id="0x1009" desc="深度行情">
 		<item name="TradingDay"/>
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
@@ -104,7 +110,7 @@
 		<item name="BidVolume9"/>
 		<item name="BidVolume10"/>
 	</field>
-	<field name="BarMarketData" 				id="0x1008" desc="Bar行情">
+	<field name="BarMarketData" 				id="0x100A" desc="Bar行情">
 		<item name="TradingDay"/>
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>

@@ -4,6 +4,8 @@ project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
+add_package(Config ./Config)
+add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)
 add_package(Bar ${CMAKE_SOURCE_DIR}/Source/Bar)
 add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 add_package(FieldsCompare ${CMAKE_SOURCE_DIR}/Source/FieldsCompare)

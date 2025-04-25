@@ -1,0 +1,10 @@
+{
+	"LogLevel":2,
+	"ServerConfigPath":"../ServerConfig.json",
+	"MdUser":"MdUser",
+	"MdPassword":"123456",
+	"SessionFile":"Sessions.json",
+	"EnvironmentFile":"CtpAccountInfo.json",
+	"SelectedEnvironmentName":"SimNow"
+}
+

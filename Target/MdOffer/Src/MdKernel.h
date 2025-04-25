@@ -31,6 +31,7 @@ protected:
 	int HandlePackage();
 	int HandleNotifyDisConnect(NotifyDisConnectPackage* package);
 	int HandleReqMdUserLogin(ReqMdUserLoginPackage* package);
+	int HandleReqMdUserLogout(ReqMdUserLogoutPackage* package);
 	int HandleReqSubMarketData(ReqSubMarketDataPackage* package);
 	int HandleRtnDepthMarketData(RtnDepthMarketDataPackage* package);
 
@@ -42,6 +43,7 @@ private:
 	MdFront* m_MdFront;
 	CThostFtdcMdSpiImpl* m_MdSpi;
 
+	std::set<SessionIDType> m_LoggedSessions;
 	std::set<ReqSubMarketDataField*, std::less<ReqSubMarketDataField>> m_SubscribeInstruments;
 	std::map<SessionIDType, std::set<ReqSubMarketDataField*, std::less<ReqSubMarketDataField>>> m_SessionSubscribeInstruments;
 	std::list<Package*> m_RecvPackages;

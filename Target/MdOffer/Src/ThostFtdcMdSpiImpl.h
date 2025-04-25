@@ -3,6 +3,7 @@
 #include "Environment.h"
 #include "Fields.h"
 #include <set>
+#include <map>
 #include <string>
 
 
@@ -30,4 +31,5 @@ private:
 	MdKernel* m_MdKernel;
 	int m_RequestID;
 	AccountInfo* m_AccountInfo;
+	std::map<std::string, ReqSubMarketDataField*> m_ReqSubMds;;
 };

@@ -33,6 +33,7 @@ void MdKernel::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int
 	WriteLog(LogLevel::Info, "MdKernel: OnDisConnect SessionID:%lld, IP:%s, Port:%d", sessionID, ip, port);
 
 	NotifyDisConnectPackage* package = NotifyDisConnectPackage::Allocate();
+	package->Prepare(0, false, 0);
 	package->NotifyDisConnect = ::Allocate<NotifyDisConnectField>();
 	package->NotifyDisConnect->SessionID = sessionID;
 	Strcpy(package->NotifyDisConnect->IPAddress, ip);
@@ -100,7 +101,8 @@ int MdKernel::HandlePackage()
 }
 int MdKernel::HandleNotifyDisConnect(NotifyDisConnectPackage* package)
 {
-	m_SessionSubscribeInstruments.erase(package->SessionID);
+	m_LoggedSessions.erase(package->NotifyDisConnect->SessionID);
+	m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionID);
 	package->Free();
 	return 0;
 }
@@ -111,9 +113,18 @@ int MdKernel::HandleReqMdUserLogin(ReqMdUserLoginPackage* package)
 	{
 		errorID = ErrorIncorrectPassword;
 	}
+	else
+	{
+		m_LoggedSessions.insert(package->SessionID);
+	}
 
 	RspMdUserLoginPackage* rspPackage = RspMdUserLoginPackage::Allocate();
 	rspPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
+
+	rspPackage->RspInfo = ::Allocate<RspInfoField>();
+	rspPackage->RspInfo->ErrorID = errorID;
+	Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
+
 	rspPackage->RspMdUserLogin = ::Allocate<RspMdUserLoginField>();
 	Strcpy(rspPackage->RspMdUserLogin->UserID, package->ReqMdUserLogin->UserID);
 	rspPackage->RspMdUserLogin->SessionID = package->SessionID;
@@ -121,11 +132,33 @@ int MdKernel::HandleReqMdUserLogin(ReqMdUserLoginPackage* package)
 	{
 		GetLocalDateTime(rspPackage->RspMdUserLogin->LoginDate, rspPackage->RspMdUserLogin->LoginTime);
 	}
-	rspPackage->RspInfo = ::Allocate<RspInfoField>();
-	rspPackage->RspInfo->ErrorID = errorID;
-	Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
 
 	WriteLog(LogLevel::Info, "HandleReqMdUserLogin: ReqMdUserLoginPackage:%s, RspMdUserLoginPackage:%s", package->GetDebugString(), rspPackage->GetDebugString());
+
+	m_MdFront->Send(rspPackage);
+	rspPackage->Free();
+
+	package->Free();
+	return 0;
+}
+int MdKernel::HandleReqMdUserLogout(ReqMdUserLogoutPackage* package)
+{
+	m_LoggedSessions.erase(package->SessionID);
+	m_SessionSubscribeInstruments[package->SessionID].clear();
+
+	RspMdUserLogoutPackage* rspPackage = RspMdUserLogoutPackage::Allocate();
+	rspPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
+	
+	rspPackage->RspInfo = ::Allocate<RspInfoField>();
+	rspPackage->RspInfo->ErrorID = ErrorNone;
+	Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorNone));
+
+	rspPackage->RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
+	Strcpy(rspPackage->RspMdUserLogout->UserID, package->ReqMdUserLogout->UserID);
+
+
+
+	WriteLog(LogLevel::Info, "HandleReqMdUserLogout: ReqMdUserLogoutPackage:%s, RspMdUserLogoutPackage:%s", package->GetDebugString(), rspPackage->GetDebugString());
 
 	m_MdFront->Send(rspPackage);
 	rspPackage->Free();
@@ -137,24 +170,33 @@ int MdKernel::HandleReqSubMarketData(ReqSubMarketDataPackage* package)
 {
 	WriteLog(LogLevel::Info, "HandleReqSubMarketData: %s", package->GetDebugString());
 	auto reqSubMarketData = package->ReqSubMarketData;
-	auto it = m_SubscribeInstruments.find(reqSubMarketData);
-	if (it == m_SubscribeInstruments.end())
+	auto errorID = ErrorNone;
+	auto loggedSessionIt = m_LoggedSessions.find(package->SessionID);
+	if (loggedSessionIt == m_LoggedSessions.end())
 	{
-		m_SubscribeInstruments.insert(reqSubMarketData);
-		m_MdSpi->SubscribeMd(reqSubMarketData);
+		errorID = ErrorUserNotLogin;
 	}
-	auto& sessionSubscribeInstruments = m_SessionSubscribeInstruments[package->SessionID];
-	if (sessionSubscribeInstruments.find(reqSubMarketData) == sessionSubscribeInstruments.end())
+	else
 	{
-		sessionSubscribeInstruments.insert(reqSubMarketData);
-		package->ReqSubMarketData = nullptr;
+		auto it = m_SubscribeInstruments.find(reqSubMarketData);
+		if (it == m_SubscribeInstruments.end())
+		{
+			m_SubscribeInstruments.insert(reqSubMarketData);
+			m_MdSpi->SubscribeMd(reqSubMarketData);
+		}
+		auto& sessionSubscribeInstruments = m_SessionSubscribeInstruments[package->SessionID];
+		if (sessionSubscribeInstruments.find(reqSubMarketData) == sessionSubscribeInstruments.end())
+		{
+			sessionSubscribeInstruments.insert(reqSubMarketData);
+			package->ReqSubMarketData = nullptr;
+		}
 	}
 
 	RspSubMarketDataPackage* rspPackage = RspSubMarketDataPackage::Allocate();
 	rspPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
 	rspPackage->RspInfo = ::Allocate<RspInfoField>();
-	rspPackage->RspInfo->ErrorID = ErrorNone;
-	Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorNone));
+	rspPackage->RspInfo->ErrorID = errorID;
+	Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
 	rspPackage->RspSubMarketData = ::Allocate<RspSubMarketDataField>();
 	Strcpy(rspPackage->RspSubMarketData->ExchangeID, reqSubMarketData->ExchangeID);
 	Strcpy(rspPackage->RspSubMarketData->InstrumentID, reqSubMarketData->InstrumentID);

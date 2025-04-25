@@ -19,13 +19,13 @@ void PrintEnvironment(Environment* environment)
 			account->BrokerID, account->InvestorID, account->Password, account->Phone, account->UserProductInfo, account->AuthCode, account->AppID);
 	}
 }
-void ReadEnvironment(std::map<std::string, Environment*>& environments)
+void ReadEnvironment(const char* environmentFile, std::map<std::string, Environment*>& environments)
 {
 	Json::Reader reader;
 	Json::FastWriter writer;
 	Json::Value root;
 
-	ifstream in_file("CtpAccountInfo.json", ios::binary);
+	ifstream in_file(environmentFile, ios::binary);
 	if (!reader.parse(in_file, root))
 	{
 		std::cout << "Parse Config Failed." << std::endl;

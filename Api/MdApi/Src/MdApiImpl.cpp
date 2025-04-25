@@ -2,12 +2,11 @@
 #include "Items.h"
 #include "Packages.h"
 #include "MemCacheTemplateSingleton.h"
-#include "Logger.h"
 #include "Error.h"
 #include <cstring>
 
 
-MdApi* MdApi::CreateMdApi(const char* logPath)
+MdApi* MdApi::CreateMdApi()
 {
 	return new MdApiImpl();
 }
@@ -22,6 +21,11 @@ void MdApiImpl::OnMessage(Package* package)
 	case RspMdUserLoginPackage::PackageID:
 	{
 		m_MdSpi->OnRspMdUserLogin(((RspMdUserLoginPackage*)package)->RspInfo, ((RspMdUserLoginPackage*)package)->RspMdUserLogin, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		break;
+	}
+	case RspMdUserLogoutPackage::PackageID:
+	{
+		m_MdSpi->OnRspMdUserLogout(((RspMdUserLogoutPackage*)package)->RspInfo, ((RspMdUserLogoutPackage*)package)->RspMdUserLogout, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspSubMarketDataPackage::PackageID:
@@ -57,6 +61,17 @@ int MdApiImpl::ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID
 	reqPackage->Prepare(m_SessionID, false, requestID);
 	reqPackage->ReqMdUserLogin = Allocate<ReqMdUserLoginField>();
 	memcpy(reqPackage->ReqMdUserLogin, reqMdUserLogin, sizeof(ReqMdUserLoginField));
+	
+	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	reqPackage->Free();
+	return result;
+}
+int MdApiImpl::ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID)
+{
+	ReqMdUserLogoutPackage* reqPackage = ReqMdUserLogoutPackage::Allocate();
+	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->ReqMdUserLogout = Allocate<ReqMdUserLogoutField>();
+	memcpy(reqPackage->ReqMdUserLogout, reqMdUserLogout, sizeof(ReqMdUserLogoutField));
 	
 	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Free();

@@ -1,0 +1,4 @@
+<pumplist>
+	<pump dest="./Target/MdOffer/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/MdOffer.xml"/>
+	<pump dest="./Target/MdOffer/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/MdOffer.xml"/>
+</pumplist>

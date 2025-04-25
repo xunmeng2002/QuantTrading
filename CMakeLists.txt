@@ -77,9 +77,6 @@ configure_file(
     @ONLY
 )
 
-include_package(PersonalLibHeader ${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/include)
-link_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/win64)
-
 add_subdirectory(Api)
 add_subdirectory(Target)
 add_subdirectory(Test)

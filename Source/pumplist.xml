@@ -2,6 +2,9 @@
 	<pump dest="./Source/Error/Error.h" tpl="../Templates/Cpp/Error/Error.h.tpl" model="./Model/Error/Error.xml"/>
 	<pump dest="./Source/Error/Error.cpp" tpl="../Templates/Cpp/Error/Error.cpp.tpl" model="./Model/Error/Error.xml"/>
 	
+	<pump dest="./Source/ServerConfig/ServerConfig.h" tpl="../Templates/Cpp/Config/ServerConfig.h.tpl" model="./Model/ServerConfig.xml"/>
+	<pump dest="./Source/ServerConfig/ServerConfig.cpp" tpl="../Templates/Cpp/Config/ServerConfig.cpp.tpl" model="./Model/ServerConfig.xml"/>
+	
 	<pump dest="./Source/SimExchangeDB/DBOperate/DB.h" tpl="../Templates/Cpp/DB/DBOperate/DB.h.tpl" model="./Model/Tables/SimExchange.xml"/>
 	<pump dest="./Source/SimExchangeDB/DBOperate/DBOperateImpl.cpp" tpl="../Templates/Cpp/DB/DBOperate/DBOperateImpl.cpp.tpl" model="./Model/Tables/SimExchange.xml"/>
 	<pump dest="./Source/SimExchangeDB/DBOperate/DBWriter.h" tpl="../Templates/Cpp/DB/DBOperate/DBWriter.h.tpl" model="./Model/Tables/SimExchange.xml"/>

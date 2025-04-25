@@ -40,38 +40,50 @@ public:
 	TimeType LoginTime;		//登录时间
 	SessionIDType SessionID;		//会话编号
 };
-class ReqSubMarketDataField
+class ReqMdUserLogoutField
 {
 public:
 	static constexpr UShortType FieldID = 0x1003;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	UserIDType UserID;		//用户代码
 };
-class RspSubMarketDataField
+class RspMdUserLogoutField
 {
 public:
 	static constexpr UShortType FieldID = 0x1004;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	UserIDType UserID;		//用户代码
 };
-class ReqUnSubMarketDataField
+class ReqSubMarketDataField
 {
 public:
 	static constexpr UShortType FieldID = 0x1005;
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
 };
-class RspUnSubMarketDataField
+class RspSubMarketDataField
 {
 public:
 	static constexpr UShortType FieldID = 0x1006;
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
 };
-class DepthMarketDataField
+class ReqUnSubMarketDataField
 {
 public:
 	static constexpr UShortType FieldID = 0x1007;
+	ExchangeIDType ExchangeID;		//交易所代码
+	InstrumentIDType InstrumentID;		//合约代码
+};
+class RspUnSubMarketDataField
+{
+public:
+	static constexpr UShortType FieldID = 0x1008;
+	ExchangeIDType ExchangeID;		//交易所代码
+	InstrumentIDType InstrumentID;		//合约代码
+};
+class DepthMarketDataField
+{
+public:
+	static constexpr UShortType FieldID = 0x1009;
 	DateType TradingDay;		//交易日
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
@@ -137,7 +149,7 @@ public:
 class BarMarketDataField
 {
 public:
-	static constexpr UShortType FieldID = 0x1008;
+	static constexpr UShortType FieldID = 0x100A;
 	DateType TradingDay;		//交易日
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码

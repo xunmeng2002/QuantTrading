@@ -4,6 +4,8 @@
 	<package name="NotifyDisConnect"/>
 	<package name="ReqMdUserLogin"/>
 	<package name="RspMdUserLogin"/>
+	<package name="ReqMdUserLogout"/>
+	<package name="RspMdUserLogout"/>
 	<package name="ReqSubMarketData"/>
 	<package name="RspSubMarketData"/>
 	<package name="ReqUnSubMarketData"/>

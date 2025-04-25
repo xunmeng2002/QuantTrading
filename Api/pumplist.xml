@@ -1,10 +1,9 @@
 <pumplist>
-	<pump dest="../Libs/QuantTrading/include/Types.h" tpl="../Templates/Cpp/Types/Types.h.tpl" model="../Model/Types.xml"/>
-	
 	<pump dest="./Api/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/Api.xml"/>
 	<pump dest="./Api/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/Api.xml"/>
 
-	
+	<pump dest="../Libs/QuantTrading/include/MdFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
+	<pump dest="../Libs/QuantTrading/include/MdApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>	
 	<pump dest="./Api/MdApi/Src/MdFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
 	<pump dest="./Api/MdApi/Src/MdApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
 	<pump dest="./Api/MdApi/Src/MdApiImpl.h" tpl="../Templates/Cpp/Api/ApiImpl.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>

@@ -19,6 +19,7 @@ extern "C"
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnConnected)();
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnDisConnected)();
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspMdUserLogin)(RspInfoField* rspInfo, RspMdUserLoginField* rspMdUserLogin, int requestID, bool isLast);
+	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspMdUserLogout)(RspInfoField* rspInfo, RspMdUserLogoutField* rspMdUserLogout, int requestID, bool isLast);
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspSubMarketData)(RspInfoField* rspInfo, RspSubMarketDataField* rspSubMarketData, int requestID, bool isLast);
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspUnSubMarketData)(RspInfoField* rspInfo, RspUnSubMarketDataField* rspUnSubMarketData, int requestID, bool isLast);
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRtnDepthMarketData)(DepthMarketDataField* depthMarketData);
@@ -30,6 +31,7 @@ extern "C"
 		OnConnected OnConnected;
 		OnDisConnected OnDisConnected;
 		OnRspMdUserLogin OnRspMdUserLogin;
+		OnRspMdUserLogout OnRspMdUserLogout;
 		OnRspSubMarketData OnRspSubMarketData;
 		OnRspUnSubMarketData OnRspUnSubMarketData;
 		OnRtnDepthMarketData OnRtnDepthMarketData;
@@ -44,6 +46,7 @@ extern "C"
 	MD_CAPI_EXPORT void MD_CAPI_CALL RegisterFront(const char* address);
 	MD_CAPI_EXPORT void MD_CAPI_CALL RegisterSpi(MdCSpi* spi);
 	MD_CAPI_EXPORT int MD_CAPI_CALL ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID);
+	MD_CAPI_EXPORT int MD_CAPI_CALL ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID);
 	MD_CAPI_EXPORT int MD_CAPI_CALL ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID);
 	MD_CAPI_EXPORT int MD_CAPI_CALL ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID);
 }

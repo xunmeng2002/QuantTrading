@@ -24,23 +24,29 @@
 		<item name="LoginTime" id="0x3801" type="Time" desc="登录时间"/>
 		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 	</field>
-	<field name="ReqSubMarketData" id="0x1003" desc="订阅行情请求">
+	<field name="ReqMdUserLogout" id="0x1003" desc="行情用户登录请求">
+		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+	</field>
+	<field name="RspMdUserLogout" id="0x1004" desc="行情用户登录应答">
+		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+	</field>
+	<field name="ReqSubMarketData" id="0x1005" desc="订阅行情请求">
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 	</field>
-	<field name="RspSubMarketData" id="0x1004" desc="订阅行情应答">
+	<field name="RspSubMarketData" id="0x1006" desc="订阅行情应答">
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 	</field>
-	<field name="ReqUnSubMarketData" id="0x1005" desc="退订行情请求">
+	<field name="ReqUnSubMarketData" id="0x1007" desc="退订行情请求">
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 	</field>
-	<field name="RspUnSubMarketData" id="0x1006" desc="退订行情应答">
+	<field name="RspUnSubMarketData" id="0x1008" desc="退订行情应答">
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 	</field>
-	<field name="DepthMarketData" id="0x1007" desc="深度行情">
+	<field name="DepthMarketData" id="0x1009" desc="深度行情">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
@@ -103,7 +109,7 @@
 		<item name="BidVolume9" id="0x4013" type="Volume" desc="申买量九"/>
 		<item name="BidVolume10" id="0x4014" type="Volume" desc="申买量十"/>
 	</field>
-	<field name="BarMarketData" id="0x1008" desc="Bar行情">
+	<field name="BarMarketData" id="0x100A" desc="Bar行情">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>

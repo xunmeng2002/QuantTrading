@@ -1,0 +1,4 @@
+<copylist>
+	<file name="MdApi.dll" dest="../Libs/QuantTrading/" src="./out/build/x64-Debug/Api/MdApi/"/>
+	<file name="MdApi.lib" dest="../Libs/QuantTrading/" src="./out/build/x64-Debug/Api/MdApi/"/>
+</copylist>

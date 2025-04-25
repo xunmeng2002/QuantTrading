@@ -29,6 +29,13 @@ void MdSpiWrap::OnRspMdUserLogin(RspInfoField* rspInfo, RspMdUserLoginField* rsp
 		m_MdCSpi->OnRspMdUserLogin(rspInfo, rspMdUserLogin, requestID, isLast);
 	}
 }
+void MdSpiWrap::OnRspMdUserLogout(RspInfoField* rspInfo, RspMdUserLogoutField* rspMdUserLogout, int requestID, bool isLast)
+{
+	if (m_MdCSpi != nullptr)
+	{
+		m_MdCSpi->OnRspMdUserLogout(rspInfo, rspMdUserLogout, requestID, isLast);
+	}
+}
 void MdSpiWrap::OnRspSubMarketData(RspInfoField* rspInfo, RspSubMarketDataField* rspSubMarketData, int requestID, bool isLast)
 {
 	if (m_MdCSpi != nullptr)

@@ -28,6 +28,6 @@ struct Environment
 };
 
 void PrintEnvironment(Environment* environment);
-void ReadEnvironment(std::map<std::string, Environment*>& environments);
+void ReadEnvironment(const char* environmentFile, std::map<std::string, Environment*>& environments);
 
 

@@ -18,6 +18,7 @@ public:
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
 	virtual void OnRspMdUserLogin(RspInfoField* rspInfo, RspMdUserLoginField* rspMdUserLogin, int requestID, bool isLast) {}
+	virtual void OnRspMdUserLogout(RspInfoField* rspInfo, RspMdUserLogoutField* rspMdUserLogout, int requestID, bool isLast) {}
 	virtual void OnRspSubMarketData(RspInfoField* rspInfo, RspSubMarketDataField* rspSubMarketData, int requestID, bool isLast) {}
 	virtual void OnRspUnSubMarketData(RspInfoField* rspInfo, RspUnSubMarketDataField* rspUnSubMarketData, int requestID, bool isLast) {}
 	virtual void OnRtnDepthMarketData(DepthMarketDataField* depthMarketData) {}
@@ -27,7 +28,7 @@ public:
 class MD_API_EXPORT MdApi
 {
 public:
-	static MdApi* CreateMdApi(const char* logPath = "");
+	static MdApi* CreateMdApi();
 	static const char* GetApiVersion();
 	virtual void Init() = 0;
 	virtual void Join() = 0;
@@ -36,6 +37,7 @@ public:
 	virtual void RegisterSpi(MdSpi* pSpi) = 0;
 	
 	virtual int ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID) = 0;
+	virtual int ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID) = 0;
 	virtual int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID) = 0;
 	virtual int ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID) = 0;
 };

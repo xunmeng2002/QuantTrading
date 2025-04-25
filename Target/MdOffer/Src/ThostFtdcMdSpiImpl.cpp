@@ -25,16 +25,25 @@ void CThostFtdcMdSpiImpl::OnFrontDisconnected(int nReason)
 void CThostFtdcMdSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
 	CThostFtdcMdSpiMiddle::OnRspUserLogin(pRspUserLogin, pRspInfo, nRequestID, bIsLast);
-	ReqSubscribeMd();
+	//ReqSubscribeMd();
 }
 void CThostFtdcMdSpiImpl::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData)
 {
+	CThostFtdcMdSpiMiddle::OnRtnDepthMarketData(pDepthMarketData);
 	RtnDepthMarketDataPackage* package = RtnDepthMarketDataPackage::Allocate();
+	package->Prepare(0, false, 0);
 	package->DepthMarketData = ::Allocate<DepthMarketDataField>();
 	memset(package->DepthMarketData, 0, sizeof(DepthMarketDataField));
 	Strcpy(package->DepthMarketData->TradingDay, pDepthMarketData->ActionDay);
-	Strcpy(package->DepthMarketData->ExchangeID, pDepthMarketData->ExchangeID);
 	Strcpy(package->DepthMarketData->InstrumentID, pDepthMarketData->InstrumentID);
+	if (strlen(pDepthMarketData->ExchangeID) != 0)
+	{
+		Strcpy(package->DepthMarketData->ExchangeID, pDepthMarketData->ExchangeID);
+	}
+	else
+	{
+		Strcpy(package->DepthMarketData->ExchangeID, m_ReqSubMds[package->DepthMarketData->InstrumentID]->ExchangeID);
+	}
 	package->DepthMarketData->LastPrice = pDepthMarketData->LastPrice;
 	package->DepthMarketData->PreSettlementPrice = pDepthMarketData->PreSettlementPrice;
 	package->DepthMarketData->PreClosePrice = pDepthMarketData->PreClosePrice;
@@ -84,6 +93,7 @@ void CThostFtdcMdSpiImpl::SetAccountInfo(AccountInfo* accountInfo)
 }
 void CThostFtdcMdSpiImpl::SubscribeMd(ReqSubMarketDataField* reqSubMd)
 {
+	m_ReqSubMds[reqSubMd->InstrumentID] = reqSubMd;
 	vector<char*> instruments;
 	instruments.push_back(reqSubMd->InstrumentID);
 	int ret = m_MdApi->SubscribeMarketData(instruments.data(), instruments.size());
@@ -106,9 +116,15 @@ void CThostFtdcMdSpiImpl::ReqUserLogin()
 void CThostFtdcMdSpiImpl::ReqSubscribeMd()
 {
 	vector<const char*> instruments;
-	instruments.push_back("IC2603");
-	instruments.push_back("IC2509");
+	//instruments.push_back("IC2603");
+	//instruments.push_back("IC2509");
 	instruments.push_back("IC25012");
+	//instruments.push_back("IM2603");
+	//instruments.push_back("IM2509");
+	instruments.push_back("IM25012");
+	//instruments.push_back("IF2603");
+	//instruments.push_back("IF2509");
+	instruments.push_back("IF25012");
 
 	int ret = m_MdApi->SubscribeMarketData((char**)instruments.data(), instruments.size());
 	WriteLog(LogLevel::Info, "SubscribeMarketData: ret[%d]", ret);
