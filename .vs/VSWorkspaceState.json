@@ -1,0 +1,18 @@
+{
+  "OutputFoldersPerTargetSystem": {
+    "Local Machine": [
+      "out\\build\\x64-Debug",
+      "out\\install\\x64-Debug"
+    ]
+  },
+  "ExpandedNodes": [
+    "",
+    "\\Source",
+    "\\Source\\Bar",
+    "\\Target",
+    "\\Target\\MdOffer",
+    "\\Target\\MdOffer\\Src"
+  ],
+  "SelectedNode": "\\Source\\Bar\\BarUtility.cpp",
+  "PreviewInSolutionExplorer": false
+}

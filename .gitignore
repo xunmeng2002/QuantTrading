@@ -38,3 +38,5 @@ pumptemp.py
 *.duckdb
 *.duckdb.wal
 *.sqlitedb
+
+!.vs/*.json
