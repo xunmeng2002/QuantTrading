@@ -56,8 +56,8 @@ void RegisterSpi(MdCSpi* spi)
 int ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID)
 {
 #ifdef WINDOWS
-	TrunsferGbkUtf8(reqMdUserLogin->UserID);
-	TrunsferGbkUtf8(reqMdUserLogin->Password);
+	TrunsferGbkToUtf8(reqMdUserLogin->UserID);
+	TrunsferGbkToUtf8(reqMdUserLogin->Password);
 #endif
 
 	return s_MdApi->ReqMdUserLogin(reqMdUserLogin, requestID);
@@ -65,7 +65,7 @@ int ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID)
 int ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID)
 {
 #ifdef WINDOWS
-	TrunsferGbkUtf8(reqMdUserLogout->UserID);
+	TrunsferGbkToUtf8(reqMdUserLogout->UserID);
 #endif
 
 	return s_MdApi->ReqMdUserLogout(reqMdUserLogout, requestID);
@@ -73,8 +73,8 @@ int ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID)
 int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 #ifdef WINDOWS
-	TrunsferGbkUtf8(reqSubMarketData->ExchangeID);
-	TrunsferGbkUtf8(reqSubMarketData->InstrumentID);
+	TrunsferGbkToUtf8(reqSubMarketData->ExchangeID);
+	TrunsferGbkToUtf8(reqSubMarketData->InstrumentID);
 #endif
 
 	return s_MdApi->ReqSubMarketData(reqSubMarketData, requestID);
@@ -82,8 +82,8 @@ int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
 int ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
 {
 #ifdef WINDOWS
-	TrunsferGbkUtf8(reqUnSubMarketData->ExchangeID);
-	TrunsferGbkUtf8(reqUnSubMarketData->InstrumentID);
+	TrunsferGbkToUtf8(reqUnSubMarketData->ExchangeID);
+	TrunsferGbkToUtf8(reqUnSubMarketData->InstrumentID);
 #endif
 
 	return s_MdApi->ReqUnSubMarketData(reqUnSubMarketData, requestID);

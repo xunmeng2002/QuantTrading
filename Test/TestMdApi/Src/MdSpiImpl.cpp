@@ -20,9 +20,9 @@ void MdSpiImpl::OnDisConnected()
 {
 	MdSpiMiddle::OnDisConnected();
 }
-void MdSpiImpl::OnRspMdUserLogin(RspInfoField* rspInfo, RspMdUserLoginField* rspMdUserLogin, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	MdSpiMiddle::OnRspMdUserLogin(rspInfo, rspMdUserLogin, requestID, isLast);
+	MdSpiMiddle::OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
 	ReqSubscribeMd();
 }
 void MdSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)

@@ -18,10 +18,10 @@ extern "C"
 {
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnConnected)();
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnDisConnected)();
-	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspMdUserLogin)(RspInfoField* rspInfo, RspMdUserLoginField* rspMdUserLogin, int requestID, bool isLast);
-	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspMdUserLogout)(RspInfoField* rspInfo, RspMdUserLogoutField* rspMdUserLogout, int requestID, bool isLast);
-	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspSubMarketData)(RspInfoField* rspInfo, RspSubMarketDataField* rspSubMarketData, int requestID, bool isLast);
-	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspUnSubMarketData)(RspInfoField* rspInfo, RspUnSubMarketDataField* rspUnSubMarketData, int requestID, bool isLast);
+	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspMdUserLogin)(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspMdUserLogout)(RspMdUserLogoutField* rspMdUserLogout, RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspSubMarketData)(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRspUnSubMarketData)(RspUnSubMarketDataField* rspUnSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast);
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRtnDepthMarketData)(DepthMarketDataField* depthMarketData);
 	typedef MD_CAPI_EXPORT void (MD_CAPI_CALL *OnRtnBarMarketData)(BarMarketDataField* barMarketData);
 	

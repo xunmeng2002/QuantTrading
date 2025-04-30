@@ -21,4 +21,25 @@
 	<pump dest="./Api/MdUtf8CApi/Src/MdCApi.cpp" tpl="../Templates/Cpp/Api/Utf8CApi.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
 	<pump dest="./Api/MdUtf8CApi/Src/MdSpiWrap.h" tpl="../Templates/Cpp/Api/SpiWrap.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
 	<pump dest="./Api/MdUtf8CApi/Src/MdSpiWrap.cpp" tpl="../Templates/Cpp/Api/Utf8SpiWrap.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
+	
+	
+	<pump dest="../Libs/QuantTrading/include/TradeFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="../Libs/QuantTrading/include/TradeApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>	
+	<pump dest="./Api/TradeApi/Src/TradeFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeApi/Src/TradeApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeApi/Src/TradeApiImpl.h" tpl="../Templates/Cpp/Api/ApiImpl.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeApi/Src/TradeApiImpl.cpp" tpl="../Templates/Cpp/Api/ApiImpl.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeApi/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeApi/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/TradeApi/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Packages/PackageFactory.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+
+	
+	<pump dest="./Api/TradeCApi/Src/TradeCApi.h" tpl="../Templates/Cpp/Api/CApi.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeCApi/Src/TradeCApi.cpp" tpl="../Templates/Cpp/Api/CApi.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/TradeCApi/Src/TradeSpiWrap.h" tpl="../Templates/Cpp/Api/SpiWrap.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeCApi/Src/TradeSpiWrap.cpp" tpl="../Templates/Cpp/Api/SpiWrap.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/TradeUtf8CApi/Src/TradeCApi.h" tpl="../Templates/Cpp/Api/CApi.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeUtf8CApi/Src/TradeCApi.cpp" tpl="../Templates/Cpp/Api/Utf8CApi.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/TradeUtf8CApi/Src/TradeSpiWrap.h" tpl="../Templates/Cpp/Api/SpiWrap.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
+	<pump dest="./Api/TradeUtf8CApi/Src/TradeSpiWrap.cpp" tpl="../Templates/Cpp/Api/Utf8SpiWrap.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml ../Model/Types.xml"/>
 </pumplist>

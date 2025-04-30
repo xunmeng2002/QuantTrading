@@ -12,18 +12,9 @@ void MdSpiMiddle::OnDisConnected()
 	WriteLog(LogLevel::Info, "OnDisConnected");
 }
 
-void MdSpiMiddle::OnRspMdUserLogin(RspInfoField* rspInfo, RspMdUserLoginField* rspMdUserLogin, int requestID, bool isLast)
+void MdSpiMiddle::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspMdUserLogin: RequestID:%d, IsLast:%d", requestID, isLast);
-	if (rspInfo != nullptr)
-	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
-	}
-	else
-	{
-		WriteLog(LogLevel::Info, "rspInfo is nullptr");
-	}
 	if (rspMdUserLogin != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspMdUserLoginField:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]",
@@ -33,10 +24,6 @@ void MdSpiMiddle::OnRspMdUserLogin(RspInfoField* rspInfo, RspMdUserLoginField* r
 	{
 		WriteLog(LogLevel::Info, "rspMdUserLogin is nullptr");
 	}
-}
-void MdSpiMiddle::OnRspMdUserLogout(RspInfoField* rspInfo, RspMdUserLogoutField* rspMdUserLogout, int requestID, bool isLast)
-{
-	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspInfo != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
@@ -46,6 +33,10 @@ void MdSpiMiddle::OnRspMdUserLogout(RspInfoField* rspInfo, RspMdUserLogoutField*
 	{
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
+}
+void MdSpiMiddle::OnRspMdUserLogout(RspMdUserLogoutField* rspMdUserLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspMdUserLogout != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspMdUserLogoutField:UserID:[%s]",
@@ -55,10 +46,6 @@ void MdSpiMiddle::OnRspMdUserLogout(RspInfoField* rspInfo, RspMdUserLogoutField*
 	{
 		WriteLog(LogLevel::Info, "rspMdUserLogout is nullptr");
 	}
-}
-void MdSpiMiddle::OnRspSubMarketData(RspInfoField* rspInfo, RspSubMarketDataField* rspSubMarketData, int requestID, bool isLast)
-{
-	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspInfo != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
@@ -68,6 +55,10 @@ void MdSpiMiddle::OnRspSubMarketData(RspInfoField* rspInfo, RspSubMarketDataFiel
 	{
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
+}
+void MdSpiMiddle::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspSubMarketDataField:ExchangeID:[%s], InstrumentID:[%s]",
@@ -77,10 +68,6 @@ void MdSpiMiddle::OnRspSubMarketData(RspInfoField* rspInfo, RspSubMarketDataFiel
 	{
 		WriteLog(LogLevel::Info, "rspSubMarketData is nullptr");
 	}
-}
-void MdSpiMiddle::OnRspUnSubMarketData(RspInfoField* rspInfo, RspUnSubMarketDataField* rspUnSubMarketData, int requestID, bool isLast)
-{
-	WriteLog(LogLevel::Info, "OnRspUnSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspInfo != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
@@ -90,6 +77,10 @@ void MdSpiMiddle::OnRspUnSubMarketData(RspInfoField* rspInfo, RspUnSubMarketData
 	{
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
+}
+void MdSpiMiddle::OnRspUnSubMarketData(RspUnSubMarketDataField* rspUnSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	WriteLog(LogLevel::Info, "OnRspUnSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspUnSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspUnSubMarketDataField:ExchangeID:[%s], InstrumentID:[%s]",
@@ -98,6 +89,15 @@ void MdSpiMiddle::OnRspUnSubMarketData(RspInfoField* rspInfo, RspUnSubMarketData
 	else
 	{
 		WriteLog(LogLevel::Info, "rspUnSubMarketData is nullptr");
+	}
+	if (rspInfo != nullptr)
+	{
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorID, rspInfo->ErrorMsg);
+	}
+	else
+	{
+		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
 void MdSpiMiddle::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)

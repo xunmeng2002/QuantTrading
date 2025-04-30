@@ -22,76 +22,76 @@ void MdSpiWrap::OnDisConnected()
 	}
 }
 
-void MdSpiWrap::OnRspMdUserLogin(RspInfoField* rspInfo, RspMdUserLoginField* rspMdUserLogin, int requestID, bool isLast)
+void MdSpiWrap::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_MdCSpi != nullptr)
 	{
 #ifdef WINDOWS
-		if (rspInfo != nullptr)
-		{
-			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
-		}
 		if (rspMdUserLogin != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspMdUserLogin->UserID);
 			TrunsferUtf8ToGbk(rspMdUserLogin->LoginDate);
 			TrunsferUtf8ToGbk(rspMdUserLogin->LoginTime);
 		}
-#endif
-		m_MdCSpi->OnRspMdUserLogin(rspInfo, rspMdUserLogin, requestID, isLast);
-	}
-}
-void MdSpiWrap::OnRspMdUserLogout(RspInfoField* rspInfo, RspMdUserLogoutField* rspMdUserLogout, int requestID, bool isLast)
-{
-	if (m_MdCSpi != nullptr)
-	{
-#ifdef WINDOWS
 		if (rspInfo != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
+#endif
+		m_MdCSpi->OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
+	}
+}
+void MdSpiWrap::OnRspMdUserLogout(RspMdUserLogoutField* rspMdUserLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	if (m_MdCSpi != nullptr)
+	{
+#ifdef WINDOWS
 		if (rspMdUserLogout != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspMdUserLogout->UserID);
 		}
-#endif
-		m_MdCSpi->OnRspMdUserLogout(rspInfo, rspMdUserLogout, requestID, isLast);
-	}
-}
-void MdSpiWrap::OnRspSubMarketData(RspInfoField* rspInfo, RspSubMarketDataField* rspSubMarketData, int requestID, bool isLast)
-{
-	if (m_MdCSpi != nullptr)
-	{
-#ifdef WINDOWS
 		if (rspInfo != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
+#endif
+		m_MdCSpi->OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
+	}
+}
+void MdSpiWrap::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	if (m_MdCSpi != nullptr)
+	{
+#ifdef WINDOWS
 		if (rspSubMarketData != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspSubMarketData->ExchangeID);
 			TrunsferUtf8ToGbk(rspSubMarketData->InstrumentID);
 		}
-#endif
-		m_MdCSpi->OnRspSubMarketData(rspInfo, rspSubMarketData, requestID, isLast);
-	}
-}
-void MdSpiWrap::OnRspUnSubMarketData(RspInfoField* rspInfo, RspUnSubMarketDataField* rspUnSubMarketData, int requestID, bool isLast)
-{
-	if (m_MdCSpi != nullptr)
-	{
-#ifdef WINDOWS
 		if (rspInfo != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
+#endif
+		m_MdCSpi->OnRspSubMarketData(rspSubMarketData, rspInfo, requestID, isLast);
+	}
+}
+void MdSpiWrap::OnRspUnSubMarketData(RspUnSubMarketDataField* rspUnSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	if (m_MdCSpi != nullptr)
+	{
+#ifdef WINDOWS
 		if (rspUnSubMarketData != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspUnSubMarketData->ExchangeID);
 			TrunsferUtf8ToGbk(rspUnSubMarketData->InstrumentID);
 		}
+		if (rspInfo != nullptr)
+		{
+			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
+		}
 #endif
-		m_MdCSpi->OnRspUnSubMarketData(rspInfo, rspUnSubMarketData, requestID, isLast);
+		m_MdCSpi->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)

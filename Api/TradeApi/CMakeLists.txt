@@ -1,4 +1,4 @@
-SET(PROJECT_NAME "MdApi")
+SET(PROJECT_NAME "TradeApi")
 project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
@@ -11,7 +11,7 @@ add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 
 include_package(OpensslLib ${CMAKE_SOURCE_DIR}/../Libs/openssl/3.0.5/include)
 
-add_definitions(-DLIB_MD_API_EXPORT)
+add_definitions(-DLIB_TRADE_API_EXPORT)
 
 
 if(${CMAKE_CL_64})

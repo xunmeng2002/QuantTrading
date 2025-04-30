@@ -13,7 +13,7 @@ public:
 
 	virtual void OnConnected() override;
 	virtual void OnDisConnected() override;
-	virtual void OnRspMdUserLogin(RspInfoField* rspInfo, RspMdUserLoginField* rspMdUserLogin, int requestID, bool isLast) override;
+	virtual void OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast) override;
 	virtual void OnRtnDepthMarketData(DepthMarketDataField* depthMarketData) override;
 
 private:

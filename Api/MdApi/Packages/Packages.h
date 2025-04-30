@@ -31,8 +31,8 @@ public:
 	virtual const char* GetDebugString() const override;
 public:
 	static constexpr UShortType PackageID = 0x1002;
-	RspInfoField* RspInfo = nullptr;
 	RspMdUserLoginField* RspMdUserLogin = nullptr;
+	RspInfoField* RspInfo = nullptr;
 };
 class ReqMdUserLogoutPackage : public Package
 {
@@ -62,8 +62,8 @@ public:
 	virtual const char* GetDebugString() const override;
 public:
 	static constexpr UShortType PackageID = 0x1004;
-	RspInfoField* RspInfo = nullptr;
 	RspMdUserLogoutField* RspMdUserLogout = nullptr;
+	RspInfoField* RspInfo = nullptr;
 };
 class ReqSubMarketDataPackage : public Package
 {
@@ -93,8 +93,8 @@ public:
 	virtual const char* GetDebugString() const override;
 public:
 	static constexpr UShortType PackageID = 0x1006;
-	RspInfoField* RspInfo = nullptr;
 	RspSubMarketDataField* RspSubMarketData = nullptr;
+	RspInfoField* RspInfo = nullptr;
 };
 class ReqUnSubMarketDataPackage : public Package
 {
@@ -124,8 +124,8 @@ public:
 	virtual const char* GetDebugString() const override;
 public:
 	static constexpr UShortType PackageID = 0x1008;
-	RspInfoField* RspInfo = nullptr;
 	RspUnSubMarketDataField* RspUnSubMarketData = nullptr;
+	RspInfoField* RspInfo = nullptr;
 };
 class RtnDepthMarketDataPackage : public Package
 {

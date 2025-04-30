@@ -151,15 +151,15 @@ RspMdUserLoginPackage* RspMdUserLoginPackage::Allocate()
 void RspMdUserLoginPackage::Free()
 {
 	Package::Free();
-	if (RspInfo != nullptr)
-	{
-		::Free<RspInfoField>(RspInfo);
-		RspInfo = nullptr;
-	}
 	if (RspMdUserLogin != nullptr)
 	{
 		::Free<RspMdUserLoginField>(RspMdUserLogin);
 		RspMdUserLogin = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
 	}
 	MemCacheTemplateSingleton<RspMdUserLoginPackage>::GetInstance().Free(this);
 }
@@ -171,17 +171,6 @@ void RspMdUserLoginPackage::Prepare(SessionIDType sessionID, bool messageChain, 
 int RspMdUserLoginPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (RspInfo != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
-		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
-		{
-			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
-	}
 	if (RspMdUserLogin != nullptr)
 	{
 		WriteHexString(ppos, Items::FieldStart, RspMdUserLoginField::FieldID);
@@ -203,6 +192,17 @@ int RspMdUserLoginPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::SessionID, RspMdUserLogin->SessionID);
 		WriteHexString(ppos, Items::FieldEnd, RspMdUserLoginField::FieldID);
 	}
+	if (RspInfo != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
 	return int(ppos - buff);
 }
 bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIndex)
@@ -217,47 +217,6 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case RspInfoField::FieldID:
-			{
-				RspInfo = ::Allocate<RspInfoField>();
-				memset(RspInfo, 0, sizeof(*RspInfo));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::ErrorID:
-						{
-							RspInfo->ErrorID = atoi(value.c_str());
-							break;
-						}
-						case Items::ErrorMsg:
-						{
-							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
-							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLoginPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
 			case RspMdUserLoginField::FieldID:
 			{
 				RspMdUserLogin = ::Allocate<RspMdUserLoginField>();
@@ -311,6 +270,47 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 				}
 				break;
 			}
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ::Allocate<RspInfoField>();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLoginPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
 			default:
 				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
 				return false;
@@ -328,21 +328,21 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 int RspMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
 	memcpy(buff + offset, RspMdUserLogin, sizeof(RspMdUserLoginField));
 	offset += sizeof(RspMdUserLoginField);
+	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	return offset;
 }
 bool RspMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
 	RspMdUserLogin = ::Allocate<RspMdUserLoginField>();
 	memcpy(RspMdUserLogin, buff + offset, sizeof(RspMdUserLoginField));
 	offset += sizeof(RspMdUserLoginField);
+	RspInfo = ::Allocate<RspInfoField>();
+	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	if (offset != endIndex)
 	{
 		return false;
@@ -352,10 +352,10 @@ bool RspMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* RspMdUserLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
 	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]",
 		RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
+		RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -489,15 +489,15 @@ RspMdUserLogoutPackage* RspMdUserLogoutPackage::Allocate()
 void RspMdUserLogoutPackage::Free()
 {
 	Package::Free();
-	if (RspInfo != nullptr)
-	{
-		::Free<RspInfoField>(RspInfo);
-		RspInfo = nullptr;
-	}
 	if (RspMdUserLogout != nullptr)
 	{
 		::Free<RspMdUserLogoutField>(RspMdUserLogout);
 		RspMdUserLogout = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
 	}
 	MemCacheTemplateSingleton<RspMdUserLogoutPackage>::GetInstance().Free(this);
 }
@@ -509,6 +509,16 @@ void RspMdUserLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain,
 int RspMdUserLogoutPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
+	if (RspMdUserLogout != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspMdUserLogoutField::FieldID);
+		if (strlen(RspMdUserLogout->UserID) >= sizeof(RspMdUserLogout->UserID))
+		{
+			RspMdUserLogout->UserID[sizeof(RspMdUserLogout->UserID) - 1] = 0;
+		}
+		WriteString(ppos, Items::UserID, RspMdUserLogout->UserID);
+		WriteHexString(ppos, Items::FieldEnd, RspMdUserLogoutField::FieldID);
+	}
 	if (RspInfo != nullptr)
 	{
 		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
@@ -519,16 +529,6 @@ int RspMdUserLogoutPackage::ToStepStream(char* buff, int size) const
 		}
 		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
 		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
-	}
-	if (RspMdUserLogout != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, RspMdUserLogoutField::FieldID);
-		if (strlen(RspMdUserLogout->UserID) >= sizeof(RspMdUserLogout->UserID))
-		{
-			RspMdUserLogout->UserID[sizeof(RspMdUserLogout->UserID) - 1] = 0;
-		}
-		WriteString(ppos, Items::UserID, RspMdUserLogout->UserID);
-		WriteHexString(ppos, Items::FieldEnd, RspMdUserLogoutField::FieldID);
 	}
 	return int(ppos - buff);
 }
@@ -544,6 +544,42 @@ bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
+			case RspMdUserLogoutField::FieldID:
+			{
+				RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
+				memset(RspMdUserLogout, 0, sizeof(*RspMdUserLogout));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::UserID:
+						{
+							size_t len = value.length() >= sizeof(RspMdUserLogout->UserID) ? sizeof(RspMdUserLogout->UserID) - 1 : value.length();
+							memcpy(RspMdUserLogout->UserID, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspMdUserLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLogoutPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
 			case RspInfoField::FieldID:
 			{
 				RspInfo = ::Allocate<RspInfoField>();
@@ -585,42 +621,6 @@ bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 				}
 				break;
 			}
-			case RspMdUserLogoutField::FieldID:
-			{
-				RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
-				memset(RspMdUserLogout, 0, sizeof(*RspMdUserLogout));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::UserID:
-						{
-							size_t len = value.length() >= sizeof(RspMdUserLogout->UserID) ? sizeof(RspMdUserLogout->UserID) - 1 : value.length();
-							memcpy(RspMdUserLogout->UserID, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspMdUserLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLogoutPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
 			default:
 				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
 				return false;
@@ -638,21 +638,21 @@ bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 int RspMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
 	memcpy(buff + offset, RspMdUserLogout, sizeof(RspMdUserLogoutField));
 	offset += sizeof(RspMdUserLogoutField);
+	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	return offset;
 }
 bool RspMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
 	RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
 	memcpy(RspMdUserLogout, buff + offset, sizeof(RspMdUserLogoutField));
 	offset += sizeof(RspMdUserLogoutField);
+	RspInfo = ::Allocate<RspInfoField>();
+	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	if (offset != endIndex)
 	{
 		return false;
@@ -662,10 +662,10 @@ bool RspMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 const char* RspMdUserLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
 	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]",
 		RspMdUserLogout->UserID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
+		RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -810,15 +810,15 @@ RspSubMarketDataPackage* RspSubMarketDataPackage::Allocate()
 void RspSubMarketDataPackage::Free()
 {
 	Package::Free();
-	if (RspInfo != nullptr)
-	{
-		::Free<RspInfoField>(RspInfo);
-		RspInfo = nullptr;
-	}
 	if (RspSubMarketData != nullptr)
 	{
 		::Free<RspSubMarketDataField>(RspSubMarketData);
 		RspSubMarketData = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
 	}
 	MemCacheTemplateSingleton<RspSubMarketDataPackage>::GetInstance().Free(this);
 }
@@ -830,17 +830,6 @@ void RspSubMarketDataPackage::Prepare(SessionIDType sessionID, bool messageChain
 int RspSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (RspInfo != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
-		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
-		{
-			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
-	}
 	if (RspSubMarketData != nullptr)
 	{
 		WriteHexString(ppos, Items::FieldStart, RspSubMarketDataField::FieldID);
@@ -856,6 +845,17 @@ int RspSubMarketDataPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::InstrumentID, RspSubMarketData->InstrumentID);
 		WriteHexString(ppos, Items::FieldEnd, RspSubMarketDataField::FieldID);
 	}
+	if (RspInfo != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
 	return int(ppos - buff);
 }
 bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int endIndex)
@@ -870,47 +870,6 @@ bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case RspInfoField::FieldID:
-			{
-				RspInfo = ::Allocate<RspInfoField>();
-				memset(RspInfo, 0, sizeof(*RspInfo));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::ErrorID:
-						{
-							RspInfo->ErrorID = atoi(value.c_str());
-							break;
-						}
-						case Items::ErrorMsg:
-						{
-							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
-							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspSubMarketDataPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
 			case RspSubMarketDataField::FieldID:
 			{
 				RspSubMarketData = ::Allocate<RspSubMarketDataField>();
@@ -953,6 +912,47 @@ bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 				}
 				break;
 			}
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ::Allocate<RspInfoField>();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSubMarketDataPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
 			default:
 				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
 				return false;
@@ -970,21 +970,21 @@ bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 int RspSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
 	memcpy(buff + offset, RspSubMarketData, sizeof(RspSubMarketDataField));
 	offset += sizeof(RspSubMarketDataField);
+	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	return offset;
 }
 bool RspSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
 	RspSubMarketData = ::Allocate<RspSubMarketDataField>();
 	memcpy(RspSubMarketData, buff + offset, sizeof(RspSubMarketDataField));
 	offset += sizeof(RspSubMarketDataField);
+	RspInfo = ::Allocate<RspInfoField>();
+	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	if (offset != endIndex)
 	{
 		return false;
@@ -994,10 +994,10 @@ bool RspSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RspSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
 	offset += sprintf(t_DataStringBuffer + offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
 		RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
+		RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -1142,15 +1142,15 @@ RspUnSubMarketDataPackage* RspUnSubMarketDataPackage::Allocate()
 void RspUnSubMarketDataPackage::Free()
 {
 	Package::Free();
-	if (RspInfo != nullptr)
-	{
-		::Free<RspInfoField>(RspInfo);
-		RspInfo = nullptr;
-	}
 	if (RspUnSubMarketData != nullptr)
 	{
 		::Free<RspUnSubMarketDataField>(RspUnSubMarketData);
 		RspUnSubMarketData = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
 	}
 	MemCacheTemplateSingleton<RspUnSubMarketDataPackage>::GetInstance().Free(this);
 }
@@ -1162,17 +1162,6 @@ void RspUnSubMarketDataPackage::Prepare(SessionIDType sessionID, bool messageCha
 int RspUnSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (RspInfo != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
-		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
-		{
-			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
-	}
 	if (RspUnSubMarketData != nullptr)
 	{
 		WriteHexString(ppos, Items::FieldStart, RspUnSubMarketDataField::FieldID);
@@ -1188,6 +1177,17 @@ int RspUnSubMarketDataPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::InstrumentID, RspUnSubMarketData->InstrumentID);
 		WriteHexString(ppos, Items::FieldEnd, RspUnSubMarketDataField::FieldID);
 	}
+	if (RspInfo != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
 	return int(ppos - buff);
 }
 bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int endIndex)
@@ -1202,47 +1202,6 @@ bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case RspInfoField::FieldID:
-			{
-				RspInfo = ::Allocate<RspInfoField>();
-				memset(RspInfo, 0, sizeof(*RspInfo));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::ErrorID:
-						{
-							RspInfo->ErrorID = atoi(value.c_str());
-							break;
-						}
-						case Items::ErrorMsg:
-						{
-							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
-							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspUnSubMarketDataPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
 			case RspUnSubMarketDataField::FieldID:
 			{
 				RspUnSubMarketData = ::Allocate<RspUnSubMarketDataField>();
@@ -1285,6 +1244,47 @@ bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 				}
 				break;
 			}
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ::Allocate<RspInfoField>();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspUnSubMarketDataPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
 			default:
 				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
 				return false;
@@ -1302,21 +1302,21 @@ bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 int RspUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
 	memcpy(buff + offset, RspUnSubMarketData, sizeof(RspUnSubMarketDataField));
 	offset += sizeof(RspUnSubMarketDataField);
+	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	return offset;
 }
 bool RspUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
 	RspUnSubMarketData = ::Allocate<RspUnSubMarketDataField>();
 	memcpy(RspUnSubMarketData, buff + offset, sizeof(RspUnSubMarketDataField));
 	offset += sizeof(RspUnSubMarketDataField);
+	RspInfo = ::Allocate<RspInfoField>();
+	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	if (offset != endIndex)
 	{
 		return false;
@@ -1326,10 +1326,10 @@ bool RspUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 const char* RspUnSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
 	offset += sprintf(t_DataStringBuffer + offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
 		RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
+		RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  

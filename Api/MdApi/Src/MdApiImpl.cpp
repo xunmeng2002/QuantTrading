@@ -2,6 +2,7 @@
 #include "Items.h"
 #include "Packages.h"
 #include "MemCacheTemplateSingleton.h"
+#include "Logger.h"
 #include "Error.h"
 #include <cstring>
 
@@ -20,22 +21,22 @@ void MdApiImpl::OnMessage(Package* package)
 	{
 	case RspMdUserLoginPackage::PackageID:
 	{
-		m_MdSpi->OnRspMdUserLogin(((RspMdUserLoginPackage*)package)->RspInfo, ((RspMdUserLoginPackage*)package)->RspMdUserLogin, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		m_MdSpi->OnRspMdUserLogin(((RspMdUserLoginPackage*)package)->RspMdUserLogin, ((RspMdUserLoginPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspMdUserLogoutPackage::PackageID:
 	{
-		m_MdSpi->OnRspMdUserLogout(((RspMdUserLogoutPackage*)package)->RspInfo, ((RspMdUserLogoutPackage*)package)->RspMdUserLogout, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		m_MdSpi->OnRspMdUserLogout(((RspMdUserLogoutPackage*)package)->RspMdUserLogout, ((RspMdUserLogoutPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspSubMarketDataPackage::PackageID:
 	{
-		m_MdSpi->OnRspSubMarketData(((RspSubMarketDataPackage*)package)->RspInfo, ((RspSubMarketDataPackage*)package)->RspSubMarketData, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		m_MdSpi->OnRspSubMarketData(((RspSubMarketDataPackage*)package)->RspSubMarketData, ((RspSubMarketDataPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspUnSubMarketDataPackage::PackageID:
 	{
-		m_MdSpi->OnRspUnSubMarketData(((RspUnSubMarketDataPackage*)package)->RspInfo, ((RspUnSubMarketDataPackage*)package)->RspUnSubMarketData, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		m_MdSpi->OnRspUnSubMarketData(((RspUnSubMarketDataPackage*)package)->RspUnSubMarketData, ((RspUnSubMarketDataPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RtnDepthMarketDataPackage::PackageID:

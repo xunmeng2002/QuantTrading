@@ -130,4 +130,258 @@
 		<item name="Turnover"/>
 		<item name="OpenInterest"/>
 	</field>
+	
+	<field name="ReqAccountLogin" 				id="0x2001" desc="账户登录请求">
+		<item name="AccountID"/>
+		<item name="Password"/>
+	</field>
+	<field name="RspAccountLogin" 				id="0x2002" desc="账户登录应答">
+		<item name="AccountID"/>
+		<item name="LoginDate"/>
+		<item name="LoginTime"/>
+		<item name="SessionID"/>
+	</field>
+	<field name="ReqAccountLogout" 				id="0x2003" desc="账户登出请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="RspAccountLogout" 				id="0x2004" desc="账户登出应答">
+		<item name="AccountID"/>
+	</field>
+	<field name="AccountLogout" 				id="0x2005" desc="账户登出">
+		<item name="AccountID"/>
+		<item name="ErrorID"/>
+		<item name="ErrorMsg"/>
+	</field>
+	<field name="ReqQryAccount" 				id="0x2006" desc="查询账户请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="Account" 						id="0x2007" desc="账户">
+		<item name="AccountID"/>
+		<item name="AccountType"/>
+		<item name="AccountStatus"/>
+		<item name="TradeGroupID"/>
+		<item name="RiskGroupID"/>
+		<item name="CommissionGroupID"/>
+	</field>
+	<field name="ReqQryHolderAccount" 			id="0x2008" desc="查询股东账户请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="HolderAccount" 				id="0x2009" desc="股东账户">
+		<item name="ExchangeID"/>
+		<item name="HolderAccountID"/>
+		<item name="PrimaryFlag"/>
+	</field>
+	<field name="ReqQryCapital" 				id="0x200A" desc="查询资金请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="Capital" 						id="0x200B" desc="资金">
+		<item name="TradingDay"/>
+		<item name="AccountID"/>
+		<item name="AccountType"/>
+		<item name="Asset"/>
+		<item name="PreAsset"/>
+		<item name="CashAsset"/>
+		<item name="PreCashAsset"/>
+		<item name="Available"/>
+		<item name="CashIn"/>
+		<item name="CashOut"/>
+		<item name="Margin"/>
+		<item name="Commission"/>
+		<item name="StampTax"/>
+		<item name="TransferFee"/>
+		<item name="FrozenCash"/>
+		<item name="FrozenMargin"/>
+		<item name="FrozenCommission"/>
+		<item name="FrozenStampTax"/>
+		<item name="FrozenTransferFee"/>
+		<item name="MarketValue"/>
+		<item name="TotalProfit"/>
+		<item name="TodayProfit"/>
+		<item name="Deposit"/>
+		<item name="Withdraw"/>
+	</field>
+	<field name="ReqQryPosition" 				id="0x200C" desc="查询持仓请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="Position" 						id="0x200D" desc="持仓">
+		<item name="TradingDay"/>
+		<item name="AccountID"/>
+		<item name="AccountType"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="SecurityType"/>
+		<item name="PosiDirection"/>
+		<item name="TotalPosition"/>
+		<item name="PositionFrozen"/>
+		<item name="TodayPosition"/>
+		<item name="TotalCostPrice"/>
+		<item name="TodayCostPrice"/>
+		<item name="CashIn"/>
+		<item name="CashOut"/>
+		<item name="Margin"/>
+		<item name="Commission"/>
+		<item name="StampTax"/>
+		<item name="TransferFee"/>
+		<item name="MarketValue"/>
+		<item name="VolumeMultiple"/>
+		<item name="TotalCost"/>
+		<item name="TodayCost"/>
+		<item name="TotalProfit"/>
+		<item name="TodayProfit"/>
+		<item name="LastPrice"/>
+		<item name="PrePrice"/>
+	</field>
+	<field name="ReqQryOrder" 					id="0x200E" desc="查询委托请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="Order" 						id="0x200F" desc="委托">
+		<item name="TradingDay"/>
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="SecurityType"/>
+		<item name="OrderID"/>
+		<item name="OrderSysID"/>
+		<item name="Direction"/>
+		<item name="OffsetFlag"/>
+		<item name="OrderPriceType"/>
+		<item name="Price"/>
+		<item name="Volume"/>
+		<item name="VolumeTotal"/>
+		<item name="VolumeTraded"/>
+		<item name="VolumeMultiple"/>
+		<item name="OrderStatus"/>
+		<item name="StatusMsg"/>
+		<item name="OrderDate"/>
+		<item name="OrderTime"/>
+		<item name="CancelDate"/>
+		<item name="CancelTime"/>
+		<item name="SessionID"/>
+		<item name="ClientOrderID"/>
+		<item name="RequestID"/>
+		<item name="FrozenCash"/>
+		<item name="FrozenMargin"/>
+		<item name="FrozenCommission"/>
+		<item name="FrozenStampTax"/>
+		<item name="FrozenTransferFee"/>
+	</field>
+	<field name="ReqQryTrade" 					id="0x2010" desc="查询成交请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="Trade" 						id="0x2011" desc="成交">
+		<item name="TradingDay"/>
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="SecurityType"/>
+		<item name="OrderID"/>
+		<item name="OrderSysID"/>
+		<item name="TradeID"/>
+		<item name="Direction"/>
+		<item name="OffsetFlag"/>
+		<item name="Price"/>
+		<item name="Volume"/>
+		<item name="VolumeMultiple"/>
+		<item name="TradeAmount"/>
+		<item name="Commission"/>
+		<item name="StampTax"/>
+		<item name="TransferFee"/>
+		<item name="TradeDate"/>
+		<item name="TradeTime"/>
+	</field>
+	<field name="ReqQryInstrument" 				id="0x2012" desc="查询合约请求">
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+	</field>
+	<field name="Instrument" 					id="0x2013" desc="合约">
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="ExchangeInstID"/>
+		<item name="InstrumentName"/>
+		<item name="VolumeMultiple"/>
+		<item name="SecurityType"/>
+	</field>
+	<field name="ReqQryOptionInstrument" 		id="0x2014" desc="查询期权合约请求">
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+	</field>
+	<field name="OptionInstrument" 				id="0x2015" desc="期权合约">
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="ExchangeInstID"/>
+		<item name="InstrumentName"/>
+		<item name="VolumeMultiple"/>
+		<item name="OptionType"/>
+		<item name="UnderlyingInstrumentID"/>
+		<item name="ExecutePrice"/>
+		<item name="UnitMargin"/>
+		<item name="PriceTick"/>
+		<item name="MaxLimitOrderVolume"/>
+		<item name="MaxMarketOrderVolume"/>
+		<item name="ExpiringDate"/>
+	</field>
+	<field name="ReqQryCommissionRate" 			id="0x2016" desc="查询手续费率请求">
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="SecurityType"/>
+	</field>
+	<field name="CommissionRate" 				id="0x2017" desc="手续费率">
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="SecurityType"/>
+		<item name="OpenBuyByMoney"/>
+		<item name="OpenSellByMoney"/>
+		<item name="CloseBuyByMoney"/>
+		<item name="CloseSellByMoney"/>
+		<item name="OpenBuyByVolume"/>
+		<item name="OpenSellByVolume"/>
+		<item name="CloseBuyByVolume"/>
+		<item name="CloseSellByVolume"/>
+		<item name="MinCommission"/>
+		<item name="MaxCommission"/>
+	</field>
+	<field name="ReqQryMoneyTransfer" 			id="0x2018" desc="出入金查询请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="MoneyTransfer" 				id="0x2019" desc="出入金">
+		<item name="TradingDay"/>
+		<item name="AccountID"/>
+		<item name="MoneyTransferID"/>
+		<item name="AccountType"/>
+		<item name="TransferDirection"/>
+		<item name="TransferAmount"/>
+		<item name="InfoMessage"/>
+		<item name="UserID"/>
+		<item name="TransferDate"/>
+		<item name="TransferTime"/>
+	</field>
+	<field name="ReqInsertOrder" 				id="0x201A" desc="委托请求">
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="Direction"/>
+		<item name="OffsetFlag"/>
+		<item name="OrderPriceType"/>
+		<item name="Price"/>
+		<item name="Volume"/>
+		<item name="ClientOrderID"/>
+	</field>
+	<field name="ReqCancelOrder" 				id="0x201B" desc="撤单请求">
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="ClientCancelOrderID"/>
+		<item name="OrderID"/>
+		<item name="OrderSysID"/>
+		<item name="ClientOrderID"/>
+	</field>
+	<field name="CancelOrder" 					id="0x201C" desc="撤单">
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="ClientCancelOrderID"/>
+		<item name="OrderID"/>
+		<item name="OrderSysID"/>
+		<item name="ClientOrderID"/>
+	</field>
 </fields>

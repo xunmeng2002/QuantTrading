@@ -10,14 +10,6 @@ public:
 	PasswordType Password;		//密码
 };
 
-class RspInfoField
-{
-public:
-	static constexpr UShortType FieldID = 0x0001;
-	ErrorIDType ErrorID;		//错误代码
-	MessageType ErrorMsg;		//错误信息
-};
-
 class RspMdUserLoginField
 {
 public:
@@ -26,6 +18,14 @@ public:
 	DateType LoginDate;		//登录日期
 	TimeType LoginTime;		//登录时间
 	SessionIDType SessionID;		//会话编号
+};
+
+class RspInfoField
+{
+public:
+	static constexpr UShortType FieldID = 0x0001;
+	ErrorIDType ErrorID;		//错误代码
+	MessageType ErrorMsg;		//错误信息
 };
 
 class ReqMdUserLogoutField

@@ -1,16 +1,19 @@
-SET(PROJECT_NAME "MdApi")
+SET(PROJECT_NAME "MdUtf8CApi")
 project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
-add_package(Packages ./Packages)
 add_package(ApiBase ../ApiBase)
 add_package(Config ../Config)
+add_package(MdApi ../MdApi/Src)
+add_package(Packages ../MdApi/Packages)
 add_package(Version ${CMAKE_SOURCE_DIR}/Source/Version)
 add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 
+
 include_package(OpensslLib ${CMAKE_SOURCE_DIR}/../Libs/openssl/3.0.5/include)
 
+add_definitions(-DLIB_MD_CAPI_EXPORT)
 add_definitions(-DLIB_MD_API_EXPORT)
 
 
@@ -19,7 +22,6 @@ if(${CMAKE_CL_64})
 else(${CMAKE_CL_64})
 	link_directories(${CMAKE_SOURCE_DIR}/../Libs/openssl/3.0.5/win32_2022)
 endif(${CMAKE_CL_64})
-
 add_library(${PROJECT_NAME} SHARED ${all_file})
 
 

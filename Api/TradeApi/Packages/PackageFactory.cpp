@@ -6,54 +6,6 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 {
 	switch (packageID)
 	{
-	case NotifyConnectPackage::PackageID:
-	{
-		return NotifyConnectPackage::Allocate();
-	}
-	case NotifyDisConnectPackage::PackageID:
-	{
-		return NotifyDisConnectPackage::Allocate();
-	}
-	case ReqMdUserLoginPackage::PackageID:
-	{
-		return ReqMdUserLoginPackage::Allocate();
-	}
-	case RspMdUserLoginPackage::PackageID:
-	{
-		return RspMdUserLoginPackage::Allocate();
-	}
-	case ReqMdUserLogoutPackage::PackageID:
-	{
-		return ReqMdUserLogoutPackage::Allocate();
-	}
-	case RspMdUserLogoutPackage::PackageID:
-	{
-		return RspMdUserLogoutPackage::Allocate();
-	}
-	case ReqSubMarketDataPackage::PackageID:
-	{
-		return ReqSubMarketDataPackage::Allocate();
-	}
-	case RspSubMarketDataPackage::PackageID:
-	{
-		return RspSubMarketDataPackage::Allocate();
-	}
-	case ReqUnSubMarketDataPackage::PackageID:
-	{
-		return ReqUnSubMarketDataPackage::Allocate();
-	}
-	case RspUnSubMarketDataPackage::PackageID:
-	{
-		return RspUnSubMarketDataPackage::Allocate();
-	}
-	case RtnDepthMarketDataPackage::PackageID:
-	{
-		return RtnDepthMarketDataPackage::Allocate();
-	}
-	case RtnBarMarketDataPackage::PackageID:
-	{
-		return RtnBarMarketDataPackage::Allocate();
-	}
 	case ReqAccountLoginPackage::PackageID:
 	{
 		return ReqAccountLoginPackage::Allocate();
@@ -69,14 +21,6 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	case RspAccountLogoutPackage::PackageID:
 	{
 		return RspAccountLogoutPackage::Allocate();
-	}
-	case ReqQryAccountPackage::PackageID:
-	{
-		return ReqQryAccountPackage::Allocate();
-	}
-	case RspQryAccountPackage::PackageID:
-	{
-		return RspQryAccountPackage::Allocate();
 	}
 	case ReqQryHolderAccountPackage::PackageID:
 	{
