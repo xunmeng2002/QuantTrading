@@ -8,11 +8,15 @@
   "ExpandedNodes": [
     "",
     "\\Source",
-    "\\Source\\Bar",
+    "\\Source\\DB",
+    "\\Source\\DB\\DBOperate",
     "\\Target",
-    "\\Target\\MdOffer",
-    "\\Target\\MdOffer\\Src"
+    "\\Target\\BackTest\\DB\\DBOperate",
+    "\\Target\\BackTest\\DB\\DuckDB",
+    "\\Target\\BackTest\\DB\\InitMdb",
+    "\\Target\\BackTest\\DB\\MysqlDB",
+    "\\Target\\BackTest\\DB\\SqliteDB"
   ],
-  "SelectedNode": "\\Source\\Bar\\BarUtility.cpp",
+  "SelectedNode": "\\Target\\BackTest",
   "PreviewInSolutionExplorer": false
 }
