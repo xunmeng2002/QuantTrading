@@ -61,7 +61,7 @@ def GetTables(tableFile, items, tables):
             for indexNode in indexesNode.getElementsByTagName("index"):
                 indexName = indexNode.getAttribute("name")
                 table.Indexes[indexName] = []
-                for itemNode in indexNode.getElementsByTagName("index"):
+                for itemNode in indexNode.getElementsByTagName("item"):
                     itemName = itemNode.getAttribute("name")
                     table.Indexes[indexName].append(items[itemName])
         tables.append(table)

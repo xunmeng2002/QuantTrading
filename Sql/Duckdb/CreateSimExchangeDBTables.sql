@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS t_PrimaryAccount (
   InitStatus int,  -- '初始化状态'
   PRIMARY KEY(PrimaryAccountID)
 );  -- '主账户'
-  CREATE INDEX OfferID ON t_PrimaryAccount();
+  CREATE INDEX OfferID ON t_PrimaryAccount(OfferID);
 
 
 CREATE TABLE IF NOT EXISTS t_Account (
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS t_Position (
   PrePrice double,  -- '昨收盘价或昨结算价'
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)
 );  -- '持仓'
-  CREATE INDEX Account ON t_Position();
+  CREATE INDEX Account ON t_Position(TradingDay, AccountID);
 
 
 CREATE TABLE IF NOT EXISTS t_Order (

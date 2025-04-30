@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `t_PrimaryAccount` (
   `LoginStatus` int COMMENT '登录状态',
   `InitStatus` int COMMENT '初始化状态',
 
-  INDEX OfferID(),
+  INDEX OfferID(OfferID),
   PRIMARY KEY(PrimaryAccountID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='主账户';
 
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `t_Position` (
   `LastPrice` decimal(24,8) COMMENT '最新价',
   `PrePrice` decimal(24,8) COMMENT '昨收盘价或昨结算价',
 
-  INDEX Account(),
+  INDEX Account(TradingDay, AccountID),
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='持仓';
 

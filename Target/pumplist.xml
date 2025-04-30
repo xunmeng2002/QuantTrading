@@ -1,4 +1,40 @@
 <pumplist>
 	<pump dest="./Target/MdOffer/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/MdOffer.xml"/>
 	<pump dest="./Target/MdOffer/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/MdOffer.xml"/>
+	
+	<pump dest="./Target/BackTest/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/BackTest.xml"/>
+	<pump dest="./Target/BackTest/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/BackTest.xml"/>
+
+	<pump dest="./Target/BackTest/DB/DBOperate/DB.h" tpl="../Templates/Cpp/DB/DBOperate/DB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/DBOperate/DBOperateImpl.h" tpl="../Templates/Cpp/DB/DBOperate/DBOperateImpl.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/DBOperate/DBOperateImpl.cpp" tpl="../Templates/Cpp/DB/DBOperate/DBOperateImpl.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/DBOperate/DBWriter.h" tpl="../Templates/Cpp/DB/DBOperate/DBWriter.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/DBOperate/DBWriter.cpp" tpl="../Templates/Cpp/DB/DBOperate/DBWriter.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+
+	<pump dest="./Target/BackTest/DB/MysqlDB/MysqlDB.h" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/MysqlDB/MysqlDB.cpp" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/SqliteDB/SqliteDB.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/SqliteDB/SqliteDB.cpp" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/DuckDB/DuckDB.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/DuckDB/DuckDB.cpp" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	
+	<pump dest="./Target/BackTest/DB/InitMdb/InitMdbFromCsv.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/InitMdb/InitMdbFromCsv.cpp" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/InitMdb/InitMdbFromDB.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/InitMdb/InitMdbFromDB.cpp" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbSubscriber.h" tpl="../Templates/Cpp/DB/Mdb/MdbSubscriber.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbStructs.h" tpl="../Templates/Cpp/DB/Mdb/MdbStructs.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbStructs.cpp" tpl="../Templates/Cpp/DB/Mdb/MdbStructs.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbTables.h" tpl="../Templates/Cpp/DB/Mdb/MdbTables.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbTables.cpp" tpl="../Templates/Cpp/DB/Mdb/MdbTables.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/Mdb.h" tpl="../Templates/Cpp/DB/Mdb/Mdb.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/Mdb.cpp" tpl="../Templates/Cpp/DB/Mdb/Mdb.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbPrimaryKeyComp.h" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeyComp.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbPrimaryKeyComp.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeyComp.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbPrimaryKeys.h" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeys.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbPrimaryKeys.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeys.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbIndexComp.h" tpl="../Templates/Cpp/DB/Mdb/Index/IndexComp.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbIndexComp.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/IndexComp.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbIndexes.h" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
+	<pump dest="./Target/BackTest/DB/Mdb/MdbIndexes.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
 </pumplist>

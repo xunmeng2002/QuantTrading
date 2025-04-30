@@ -1,5 +1,5 @@
 <tables>
-	<table name="TradingDay" 					tid="0x0001" desc="交易日">
+	<table name="TradingDay" 					id="0x0001" desc="交易日">
 		<items>
 			<item name="PK"/>
 			<item name="CurrTradingDay"/>
@@ -11,7 +11,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Exchange" 						tid="0x0002" desc="交易所">
+	<table name="Exchange" 						id="0x0002" desc="交易所">
 		<items>
 			<item name="ExchangeID"/>
 			<item name="ExchangeName"/>
@@ -22,7 +22,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Product" 						tid="0x0003" desc="品种表">
+	<table name="Product" 						id="0x0003" desc="品种表">
 		<items>
 			<item name="ExchangeID"/>
 			<item name="ProductID"/>
@@ -43,7 +43,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Instrument" 					tid="0x0004" desc="合约" batch="true">
+	<table name="Instrument" 					id="0x0004" desc="合约" batch="true">
 		<items>
 			<item name="TradingDay"/>
 			<item name="ExchangeID"/>
@@ -68,7 +68,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="PrimaryAccount" 				tid="0x0005" desc="主账户">
+	<table name="PrimaryAccount" 				id="0x0005" desc="主账户">
 		<items>
 			<item name="TradingDay"/>
 			<item name="PrimaryAccountID"/>
@@ -91,7 +91,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Account" 						tid="0x0006" desc="账户">
+	<table name="Account" 						id="0x0006" desc="账户">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountID"/>
@@ -109,7 +109,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Capital" 						tid="0x0007" desc="资金">
+	<table name="Capital" 						id="0x0007" desc="资金">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountID"/>
@@ -142,7 +142,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Position" 						tid="0x0008" desc="持仓">
+	<table name="Position" 						id="0x0008" desc="持仓">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountID"/>
@@ -189,7 +189,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Order" 						tid="0x0009" desc="委托">
+	<table name="Order" 						id="0x0009" desc="委托">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountID"/>
@@ -247,7 +247,7 @@
 		</uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Trade" 						tid="0x000A" desc="成交">
+	<table name="Trade" 						id="0x000A" desc="成交">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountID"/>
@@ -280,7 +280,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="DepthMarketData" 				tid="0x000B" desc="深度行情">
+	<table name="DepthMarketData" 				id="0x000B" desc="深度行情">
 		<items>
 			<item name="TradingDay"/>
 			<item name="ExchangeID"/>

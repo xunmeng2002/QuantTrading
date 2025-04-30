@@ -1,0 +1,11 @@
+<config>
+	<items>
+		<item name="LogLevel" type="int"></item>
+		<item name="ServerConfigPath" type="string"></item>
+		<item name="MdUser" type="string"></item>
+		<item name="MdPassword" type="string"></item>
+		<item name="SessionFile" type="string"></item>
+		<item name="EnvironmentFile" type="string"></item>
+		<item name="SelectedEnvironmentName" type="string"></item>
+	</items>
+</config>

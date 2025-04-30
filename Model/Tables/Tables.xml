@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
-	<table name="TradingDay" id="" desc="交易日" batch="" session="">
+	<table name="TradingDay" id="0x0001" desc="交易日" batch="" session="">
 		<items>
 			<item name="PK" id="0x1023" type="UserID" desc="主键"/>
 			<item name="CurrTradingDay" id="0x300F" type="Date" desc="当前交易日"/>
@@ -12,7 +12,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Exchange" id="" desc="交易所" batch="" session="">
+	<table name="Exchange" id="0x0002" desc="交易所" batch="" session="">
 		<items>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="ExchangeName" id="0x200B" type="ExchangeName" desc="交易所名称"/>
@@ -23,7 +23,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Product" id="" desc="品种表" batch="" session="">
+	<table name="Product" id="0x0003" desc="品种表" batch="" session="">
 		<items>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
@@ -44,7 +44,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Instrument" id="" desc="合约" batch="true" session="">
+	<table name="Instrument" id="0x0004" desc="合约" batch="true" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
@@ -69,7 +69,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="PrimaryAccount" id="" desc="主账户" batch="" session="">
+	<table name="PrimaryAccount" id="0x0005" desc="主账户" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
@@ -87,10 +87,12 @@
 		</primarykey>
 		<uniquekeys/>
 		<indexes>
-			<index name="OfferID"/>
+			<index name="OfferID">
+				<item name="OfferID" id="0x1011" type="OfferID" desc="报盘代码"/>
+			</index>
 		</indexes>
 	</table>
-	<table name="Account" id="" desc="账户" batch="" session="">
+	<table name="Account" id="0x0006" desc="账户" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -108,7 +110,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Capital" id="" desc="资金" batch="" session="">
+	<table name="Capital" id="0x0007" desc="资金" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -141,7 +143,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Position" id="" desc="持仓" batch="" session="">
+	<table name="Position" id="0x0008" desc="持仓" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -182,10 +184,13 @@
 		</primarykey>
 		<uniquekeys/>
 		<indexes>
-			<index name="Account"/>
+			<index name="Account">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+			</index>
 		</indexes>
 	</table>
-	<table name="Order" id="" desc="委托" batch="" session="">
+	<table name="Order" id="0x0009" desc="委托" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -243,7 +248,7 @@
 		</uniquekeys>
 		<indexes/>
 	</table>
-	<table name="Trade" id="" desc="成交" batch="" session="">
+	<table name="Trade" id="0x000A" desc="成交" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -276,7 +281,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="DepthMarketData" id="" desc="深度行情" batch="" session="">
+	<table name="DepthMarketData" id="0x000B" desc="深度行情" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
