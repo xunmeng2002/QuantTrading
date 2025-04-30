@@ -41,9 +41,19 @@ void DBOperateImpl::FreeRecord()
 		((Instrument*)Record)->Free();
 		break;
 	}
+	case PrimaryAccount::TableID:
+	{
+		((PrimaryAccount*)Record)->Free();
+		break;
+	}
 	case Account::TableID:
 	{
 		((Account*)Record)->Free();
+		break;
+	}
+	case Capital::TableID:
+	{
+		((Capital*)Record)->Free();
 		break;
 	}
 	case Position::TableID:
@@ -61,9 +71,9 @@ void DBOperateImpl::FreeRecord()
 		((Trade*)Record)->Free();
 		break;
 	}
-	case MdTick::TableID:
+	case DepthMarketData::TableID:
 	{
-		((MdTick*)Record)->Free();
+		((DepthMarketData*)Record)->Free();
 		break;
 	}
 	default:
@@ -91,9 +101,17 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Instrument*)Record)->GetDebugString();
 	}
+	case PrimaryAccount::TableID:
+	{
+		return ((PrimaryAccount*)Record)->GetDebugString();
+	}
 	case Account::TableID:
 	{
 		return ((Account*)Record)->GetDebugString();
+	}
+	case Capital::TableID:
+	{
+		return ((Capital*)Record)->GetDebugString();
 	}
 	case Position::TableID:
 	{
@@ -107,9 +125,9 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Trade*)Record)->GetDebugString();
 	}
-	case MdTick::TableID:
+	case DepthMarketData::TableID:
 	{
-		return ((MdTick*)Record)->GetDebugString();
+		return ((DepthMarketData*)Record)->GetDebugString();
 	}
 	default:
 		break;

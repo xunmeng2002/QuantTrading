@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 namespace mdb
 {
 	void InitMdbFromDB::LoadTablesWithTradingDay(Mdb* mdb, DB* db, const DateType& tradingDay)
@@ -49,6 +48,15 @@ namespace mdb
 			mdb->t_Instrument->Insert(record);
 		}
 	}
+	void InitMdbFromDB::LoadPrimaryAccountTable(Mdb* mdb, DB* db)
+	{
+		vector<PrimaryAccount*> records;
+		db->SelectPrimaryAccount(records);
+		for (auto record : records)
+		{
+			mdb->t_PrimaryAccount->Insert(record);
+		}
+	}
 	void InitMdbFromDB::LoadAccountTable(Mdb* mdb, DB* db)
 	{
 		vector<Account*> records;
@@ -56,6 +64,15 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_Account->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadCapitalTable(Mdb* mdb, DB* db)
+	{
+		vector<Capital*> records;
+		db->SelectCapital(records);
+		for (auto record : records)
+		{
+			mdb->t_Capital->Insert(record);
 		}
 	}
 	void InitMdbFromDB::LoadPositionTable(Mdb* mdb, DB* db)
@@ -85,13 +102,13 @@ namespace mdb
 			mdb->t_Trade->Insert(record);
 		}
 	}
-	void InitMdbFromDB::LoadMdTickTable(Mdb* mdb, DB* db)
+	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
 	{
-		vector<MdTick*> records;
-		db->SelectMdTick(records);
+		vector<DepthMarketData*> records;
+		db->SelectDepthMarketData(records);
 		for (auto record : records)
 		{
-			mdb->t_MdTick->Insert(record);
+			mdb->t_DepthMarketData->Insert(record);
 		}
 	}
 }

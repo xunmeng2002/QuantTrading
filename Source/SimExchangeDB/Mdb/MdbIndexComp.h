@@ -3,6 +3,21 @@
 
 namespace mdb
 {
+
+
+
+
+	struct PrimaryAccountEqualForOfferIDIndex
+	{
+		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
+	};
+	struct PrimaryAccountLessForOfferIDIndex
+	{
+		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
+	};
+
+
+
 	struct PositionEqualForAccountIndex
 	{
 		bool operator()(const Position* const left, const Position* const right) const;
@@ -11,5 +26,8 @@ namespace mdb
 	{
 		bool operator()(const Position* const left, const Position* const right) const;
 	};
+
+
+
 
 }

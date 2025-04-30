@@ -36,11 +36,24 @@ public:
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) {}
 	virtual void OnInstrumentTruncate() {}
 	
+	virtual void OnPrimaryAccountInsert(mdb::PrimaryAccount* record) {}
+	virtual void OnPrimaryAccountBatchInsert(std::list<mdb::PrimaryAccount*>* records) {}
+	virtual void OnPrimaryAccountErase(mdb::PrimaryAccount* record) {}
+	virtual void OnPrimaryAccountEraseByOfferIDIndex(mdb::PrimaryAccount* record) {}
+	virtual void OnPrimaryAccountUpdate(mdb::PrimaryAccount* record) {}
+	virtual void OnPrimaryAccountTruncate() {}
+	
 	virtual void OnAccountInsert(mdb::Account* record) {}
 	virtual void OnAccountBatchInsert(std::list<mdb::Account*>* records) {}
 	virtual void OnAccountErase(mdb::Account* record) {}
 	virtual void OnAccountUpdate(mdb::Account* record) {}
 	virtual void OnAccountTruncate() {}
+	
+	virtual void OnCapitalInsert(mdb::Capital* record) {}
+	virtual void OnCapitalBatchInsert(std::list<mdb::Capital*>* records) {}
+	virtual void OnCapitalErase(mdb::Capital* record) {}
+	virtual void OnCapitalUpdate(mdb::Capital* record) {}
+	virtual void OnCapitalTruncate() {}
 	
 	virtual void OnPositionInsert(mdb::Position* record) {}
 	virtual void OnPositionBatchInsert(std::list<mdb::Position*>* records) {}
@@ -61,11 +74,11 @@ public:
 	virtual void OnTradeUpdate(mdb::Trade* record) {}
 	virtual void OnTradeTruncate() {}
 	
-	virtual void OnMdTickInsert(mdb::MdTick* record) {}
-	virtual void OnMdTickBatchInsert(std::list<mdb::MdTick*>* records) {}
-	virtual void OnMdTickErase(mdb::MdTick* record) {}
-	virtual void OnMdTickUpdate(mdb::MdTick* record) {}
-	virtual void OnMdTickTruncate() {}
+	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) {}
+	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataTruncate() {}
 	
 
 public:

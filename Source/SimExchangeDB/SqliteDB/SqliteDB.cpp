@@ -39,11 +39,24 @@ SqliteDB::SqliteDB(const std::string& dbName)
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
 
+	m_PrimaryAccountInsertStatement = nullptr;
+	m_PrimaryAccountDeleteStatement = nullptr;
+	m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	m_PrimaryAccountUpdateStatement = nullptr;
+	m_PrimaryAccountSelectStatement = nullptr;
+	m_PrimaryAccountTruncateStatement = nullptr;
+
 	m_AccountInsertStatement = nullptr;
 	m_AccountDeleteStatement = nullptr;
 	m_AccountUpdateStatement = nullptr;
 	m_AccountSelectStatement = nullptr;
 	m_AccountTruncateStatement = nullptr;
+
+	m_CapitalInsertStatement = nullptr;
+	m_CapitalDeleteStatement = nullptr;
+	m_CapitalUpdateStatement = nullptr;
+	m_CapitalSelectStatement = nullptr;
+	m_CapitalTruncateStatement = nullptr;
 
 	m_PositionInsertStatement = nullptr;
 	m_PositionDeleteStatement = nullptr;
@@ -64,11 +77,11 @@ SqliteDB::SqliteDB(const std::string& dbName)
 	m_TradeSelectStatement = nullptr;
 	m_TradeTruncateStatement = nullptr;
 
-	m_MdTickInsertStatement = nullptr;
-	m_MdTickDeleteStatement = nullptr;
-	m_MdTickUpdateStatement = nullptr;
-	m_MdTickSelectStatement = nullptr;
-	m_MdTickTruncateStatement = nullptr;
+	m_DepthMarketDataInsertStatement = nullptr;
+	m_DepthMarketDataDeleteStatement = nullptr;
+	m_DepthMarketDataUpdateStatement = nullptr;
+	m_DepthMarketDataSelectStatement = nullptr;
+	m_DepthMarketDataTruncateStatement = nullptr;
 
 }
 SqliteDB::~SqliteDB()
@@ -197,6 +210,36 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_InstrumentTruncateStatement);
 		m_InstrumentTruncateStatement = nullptr;
 	}
+	if (m_PrimaryAccountInsertStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountInsertStatement);
+		m_PrimaryAccountInsertStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountDeleteStatement);
+		m_PrimaryAccountDeleteStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountDeleteByOfferIDIndexStatement);
+		m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	}
+	if (m_PrimaryAccountUpdateStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountUpdateStatement);
+		m_PrimaryAccountUpdateStatement = nullptr;
+	}
+	if (m_PrimaryAccountSelectStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountSelectStatement);
+		m_PrimaryAccountSelectStatement = nullptr;
+	}
+	if (m_PrimaryAccountTruncateStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountTruncateStatement);
+		m_PrimaryAccountTruncateStatement = nullptr;
+	}
 	if (m_AccountInsertStatement != nullptr)
 	{
 		sqlite3_finalize(m_AccountInsertStatement);
@@ -221,6 +264,31 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_AccountTruncateStatement);
 		m_AccountTruncateStatement = nullptr;
+	}
+	if (m_CapitalInsertStatement != nullptr)
+	{
+		sqlite3_finalize(m_CapitalInsertStatement);
+		m_CapitalInsertStatement = nullptr;
+	}
+	if (m_CapitalDeleteStatement != nullptr)
+	{
+		sqlite3_finalize(m_CapitalDeleteStatement);
+		m_CapitalDeleteStatement = nullptr;
+	}
+	if (m_CapitalUpdateStatement != nullptr)
+	{
+		sqlite3_finalize(m_CapitalUpdateStatement);
+		m_CapitalUpdateStatement = nullptr;
+	}
+	if (m_CapitalSelectStatement != nullptr)
+	{
+		sqlite3_finalize(m_CapitalSelectStatement);
+		m_CapitalSelectStatement = nullptr;
+	}
+	if (m_CapitalTruncateStatement != nullptr)
+	{
+		sqlite3_finalize(m_CapitalTruncateStatement);
+		m_CapitalTruncateStatement = nullptr;
 	}
 	if (m_PositionInsertStatement != nullptr)
 	{
@@ -302,30 +370,30 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_TradeTruncateStatement);
 		m_TradeTruncateStatement = nullptr;
 	}
-	if (m_MdTickInsertStatement != nullptr)
+	if (m_DepthMarketDataInsertStatement != nullptr)
 	{
-		sqlite3_finalize(m_MdTickInsertStatement);
-		m_MdTickInsertStatement = nullptr;
+		sqlite3_finalize(m_DepthMarketDataInsertStatement);
+		m_DepthMarketDataInsertStatement = nullptr;
 	}
-	if (m_MdTickDeleteStatement != nullptr)
+	if (m_DepthMarketDataDeleteStatement != nullptr)
 	{
-		sqlite3_finalize(m_MdTickDeleteStatement);
-		m_MdTickDeleteStatement = nullptr;
+		sqlite3_finalize(m_DepthMarketDataDeleteStatement);
+		m_DepthMarketDataDeleteStatement = nullptr;
 	}
-	if (m_MdTickUpdateStatement != nullptr)
+	if (m_DepthMarketDataUpdateStatement != nullptr)
 	{
-		sqlite3_finalize(m_MdTickUpdateStatement);
-		m_MdTickUpdateStatement = nullptr;
+		sqlite3_finalize(m_DepthMarketDataUpdateStatement);
+		m_DepthMarketDataUpdateStatement = nullptr;
 	}
-	if (m_MdTickSelectStatement != nullptr)
+	if (m_DepthMarketDataSelectStatement != nullptr)
 	{
-		sqlite3_finalize(m_MdTickSelectStatement);
-		m_MdTickSelectStatement = nullptr;
+		sqlite3_finalize(m_DepthMarketDataSelectStatement);
+		m_DepthMarketDataSelectStatement = nullptr;
 	}
-	if (m_MdTickTruncateStatement != nullptr)
+	if (m_DepthMarketDataTruncateStatement != nullptr)
 	{
-		sqlite3_finalize(m_MdTickTruncateStatement);
-		m_MdTickTruncateStatement = nullptr;
+		sqlite3_finalize(m_DepthMarketDataTruncateStatement);
+		m_DepthMarketDataTruncateStatement = nullptr;
 	}
 }
 void SqliteDB::InitDB()
@@ -338,21 +406,24 @@ void SqliteDB::InitDB()
 	Exec("Insert Into t_Product select * from Init.t_Product;");
 	Exec("Truncate Table t_Instrument;");
 	Exec("Insert Into t_Instrument select * from Init.t_Instrument;");
+	Exec("Truncate Table t_PrimaryAccount;");
+	Exec("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
 	Exec("Truncate Table t_Account;");
 	Exec("Insert Into t_Account select * from Init.t_Account;");
+	Exec("Truncate Table t_Capital;");
+	Exec("Insert Into t_Capital select * from Init.t_Capital;");
 	Exec("Truncate Table t_Position;");
 	Exec("Insert Into t_Position select * from Init.t_Position;");
 	Exec("Truncate Table t_Order;");
 	Exec("Insert Into t_Order select * from Init.t_Order;");
 	Exec("Truncate Table t_Trade;");
 	Exec("Insert Into t_Trade select * from Init.t_Trade;");
-	Exec("Truncate Table t_MdTick;");
-	Exec("Insert Into t_MdTick select * from Init.t_MdTick;");
+	Exec("Truncate Table t_DepthMarketData;");
+	Exec("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 }
 void SqliteDB::TruncateSessionTables()
 {
 	auto start = steady_clock::now();
-	TruncateTradingDay();
 	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 void SqliteDB::TruncateTables()
@@ -360,11 +431,13 @@ void SqliteDB::TruncateTables()
 	TruncateTradingDay();
 	TruncateExchange();
 	TruncateProduct();
+	TruncatePrimaryAccount();
 	TruncateAccount();
+	TruncateCapital();
 	TruncatePosition();
 	TruncateOrder();
 	TruncateTrade();
-	TruncateMdTick();
+	TruncateDepthMarketData();
 }
 bool SqliteDB::Exec(const char* sql)
 {
@@ -754,7 +827,7 @@ void SqliteDB::UpdateProduct(Product* record)
 	auto start = steady_clock::now();
 	if (m_ProductUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Product set ProductName = ?, ProductClass = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and ProductID = ?;", -1, &m_ProductUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Product set ProductName = ?, SecurityType = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and ProductID = ?;", -1, &m_ProductUpdateStatement, nullptr);
 	}
 	SetStatementForProductRecordUpdate(m_ProductUpdateStatement, record);
 	
@@ -813,7 +886,7 @@ void SqliteDB::InsertInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_InstrumentInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_InstrumentInsertStatement, nullptr);
 	}
 	SetStatementForInstrumentRecord(m_InstrumentInsertStatement, record);
 	
@@ -897,7 +970,7 @@ void SqliteDB::UpdateInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Instrument set InstrumentName = ?, ProductID = ?, ProductClass = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ?, DeliveryYear = ?, DeliveryMonth = ? where ExchangeID = ? and InstrumentID = ?;", -1, &m_InstrumentUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Instrument set TradingDay = ?, ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, SecurityType = ?, SecurityDetailType = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;", -1, &m_InstrumentUpdateStatement, nullptr);
 	}
 	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
 	
@@ -951,12 +1024,177 @@ void SqliteDB::TruncateInstrument()
 	
 	WriteLog(LogLevel::Info, "TruncateInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
+void SqliteDB::InsertPrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountInsertStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "insert into t_PrimaryAccount Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_PrimaryAccountInsertStatement, nullptr);
+	}
+	SetStatementForPrimaryAccountRecord(m_PrimaryAccountInsertStatement, record);
+	
+	auto rc = sqlite3_step(m_PrimaryAccountInsertStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "InsertPrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountInsertStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void SqliteDB::BatchInsertPrimaryAccount(std::list<PrimaryAccount*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void SqliteDB::DeletePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_PrimaryAccount where PrimaryAccountID = ?;", -1, &m_PrimaryAccountDeleteStatement, nullptr);
+	}
+	SetStatementForPrimaryAccountPrimaryKey(m_PrimaryAccountDeleteStatement, record->PrimaryAccountID);
+
+	auto rc = sqlite3_step(m_PrimaryAccountDeleteStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountDeleteStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void SqliteDB::DeletePrimaryAccountByOfferIDIndex(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_PrimaryAccount where ;", -1, &m_PrimaryAccountDeleteByOfferIDIndexStatement, nullptr);
+	}
+	SetStatementForPrimaryAccountIndexOfferID(m_PrimaryAccountDeleteByOfferIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_PrimaryAccountDeleteByOfferIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountDeleteByOfferIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex Spend:%lldms", duration);
+	}
+}
+void SqliteDB::UpdatePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountUpdateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "update t_PrimaryAccount set TradingDay = ?, PrimaryAccountName = ?, AccountClass = ?, BrokerPassword = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;", -1, &m_PrimaryAccountUpdateStatement, nullptr);
+	}
+	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
+	
+	auto rc = sqlite3_step(m_PrimaryAccountUpdateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountUpdateStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void SqliteDB::SelectPrimaryAccount(std::vector<PrimaryAccount*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountSelectStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "select * from t_PrimaryAccount;", -1, &m_PrimaryAccountSelectStatement, nullptr);
+	}
+
+	while (sqlite3_step(m_PrimaryAccountSelectStatement) == SQLITE_ROW)
+	{
+		ParseRecord(m_PrimaryAccountSelectStatement, records);
+	}
+	sqlite3_reset(m_PrimaryAccountSelectStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void SqliteDB::TruncatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountTruncateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_PrimaryAccount;", -1, &m_PrimaryAccountTruncateStatement, nullptr);
+	}
+
+	auto rc = sqlite3_step(m_PrimaryAccountTruncateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "TruncatePrimaryAccount failed, ErrorMsg:%s", sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountTruncateStatement);
+	
+	WriteLog(LogLevel::Info, "TruncatePrimaryAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
 void SqliteDB::InsertAccount(Account* record)
 {
 	auto start = steady_clock::now();
 	if (m_AccountInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_AccountInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_AccountInsertStatement, nullptr);
 	}
 	SetStatementForAccountRecord(m_AccountInsertStatement, record);
 	
@@ -1040,7 +1278,7 @@ void SqliteDB::UpdateAccount(Account* record)
 	auto start = steady_clock::now();
 	if (m_AccountUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Account set TradingDay = ?, AccountName = ?, Password = ?, PreBalance = ?, Balance = ?, CloseProfitByDate = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, PremiumIn = ?, PremiumOut = ?, MarketValue = ? where AccountID = ?;", -1, &m_AccountUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Account set TradingDay = ?, AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;", -1, &m_AccountUpdateStatement, nullptr);
 	}
 	SetStatementForAccountRecordUpdate(m_AccountUpdateStatement, record);
 	
@@ -1094,12 +1332,155 @@ void SqliteDB::TruncateAccount()
 	
 	WriteLog(LogLevel::Info, "TruncateAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
+void SqliteDB::InsertCapital(Capital* record)
+{
+	auto start = steady_clock::now();
+	if (m_CapitalInsertStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "insert into t_Capital Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_CapitalInsertStatement, nullptr);
+	}
+	SetStatementForCapitalRecord(m_CapitalInsertStatement, record);
+	
+	auto rc = sqlite3_step(m_CapitalInsertStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "InsertCapital failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_CapitalInsertStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertCapital Spend:%lldms", duration);
+	}
+}
+void SqliteDB::BatchInsertCapital(std::list<Capital*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Capital Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertCapital Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Capital Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertCapital Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertCapital RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void SqliteDB::DeleteCapital(Capital* record)
+{
+	auto start = steady_clock::now();
+	if (m_CapitalDeleteStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_Capital where AccountID = ?;", -1, &m_CapitalDeleteStatement, nullptr);
+	}
+	SetStatementForCapitalPrimaryKey(m_CapitalDeleteStatement, record->AccountID);
+
+	auto rc = sqlite3_step(m_CapitalDeleteStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteCapital failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_CapitalDeleteStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteCapital Spend:%lldms", duration);
+	}
+}
+void SqliteDB::UpdateCapital(Capital* record)
+{
+	auto start = steady_clock::now();
+	if (m_CapitalUpdateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "update t_Capital set TradingDay = ?, AccountType = ?, Asset = ?, PreAsset = ?, CashAsset = ?, PreCashAsset = ?, Available = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, StampTax = ?, TransferFee = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, FrozenStampTax = ?, FrozenTransferFee = ?, MarketValue = ?, TotalProfit = ?, TodayProfit = ?, Deposit = ?, Withdraw = ? where AccountID = ?;", -1, &m_CapitalUpdateStatement, nullptr);
+	}
+	SetStatementForCapitalRecordUpdate(m_CapitalUpdateStatement, record);
+	
+	auto rc = sqlite3_step(m_CapitalUpdateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "UpdateCapital failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_CapitalUpdateStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateCapital Spend:%lldms", duration);
+	}
+}
+void SqliteDB::SelectCapital(std::vector<Capital*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_CapitalSelectStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "select * from t_Capital;", -1, &m_CapitalSelectStatement, nullptr);
+	}
+
+	while (sqlite3_step(m_CapitalSelectStatement) == SQLITE_ROW)
+	{
+		ParseRecord(m_CapitalSelectStatement, records);
+	}
+	sqlite3_reset(m_CapitalSelectStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectCapital Spend:%lldms", duration);
+	}
+}
+void SqliteDB::TruncateCapital()
+{
+	auto start = steady_clock::now();
+	if (m_CapitalTruncateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_Capital;", -1, &m_CapitalTruncateStatement, nullptr);
+	}
+
+	auto rc = sqlite3_step(m_CapitalTruncateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "TruncateCapital failed, ErrorMsg:%s", sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_CapitalTruncateStatement);
+	
+	WriteLog(LogLevel::Info, "TruncateCapital Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
 void SqliteDB::InsertPosition(Position* record)
 {
 	auto start = steady_clock::now();
 	if (m_PositionInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_Position Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_PositionInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_Position Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_PositionInsertStatement, nullptr);
 	}
 	SetStatementForPositionRecord(m_PositionInsertStatement, record);
 	
@@ -1183,7 +1564,7 @@ void SqliteDB::DeletePositionByAccountIndex(Position* record)
 	auto start = steady_clock::now();
 	if (m_PositionDeleteByAccountIndexStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "delete from t_Position where TradingDay = ? and AccountID = ?;", -1, &m_PositionDeleteByAccountIndexStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "delete from t_Position where ;", -1, &m_PositionDeleteByAccountIndexStatement, nullptr);
 	}
 	SetStatementForPositionIndexAccount(m_PositionDeleteByAccountIndexStatement, record);
 	
@@ -1205,7 +1586,7 @@ void SqliteDB::UpdatePosition(Position* record)
 	auto start = steady_clock::now();
 	if (m_PositionUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Position set ProductClass = ?, TotalPosition = ?, TodayPosition = ?, FrozenPosition = ?, CloseProfitByDate = ?, CloseProfitByTrade = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, PremiumIn = ?, PremiumOut = ?, MarketValue = ?, VolumeMultiple = ?, SettlementPrice = ?, PreSettlementPrice = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and PosiDirection = ?;", -1, &m_PositionUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Position set AccountType = ?, SecurityType = ?, TotalPosition = ?, PositionFrozen = ?, TodayPosition = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, StampTax = ?, TransferFee = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, FrozenStampTax = ?, FrozenTransferFee = ?, MarketValue = ?, VolumeMultiple = ?, CloseProfit = ?, CloseProfitFloat = ?, PositionProfit = ?, PositionProfitFloat = ?, LastPrice = ?, PrePrice = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and PosiDirection = ?;", -1, &m_PositionUpdateStatement, nullptr);
 	}
 	SetStatementForPositionRecordUpdate(m_PositionUpdateStatement, record);
 	
@@ -1264,7 +1645,7 @@ void SqliteDB::InsertOrder(Order* record)
 	auto start = steady_clock::now();
 	if (m_OrderInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_Order Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_OrderInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_Order Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_OrderInsertStatement, nullptr);
 	}
 	SetStatementForOrderRecord(m_OrderInsertStatement, record);
 	
@@ -1348,7 +1729,7 @@ void SqliteDB::UpdateOrder(Order* record)
 	auto start = steady_clock::now();
 	if (m_OrderUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Order set ClientOrderID = ?, Direction = ?, OffsetFlag = ?, OrderPriceType = ?, Price = ?, Volume = ?, VolumeRemain = ?, VolumeTraded = ?, VolumeMultiple = ?, OrderStatus = ?, OrderDate = ?, OrderTime = ?, CancelDate = ?, CancelTime = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;", -1, &m_OrderUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Order set PrimaryAccountID = ?, AccountType = ?, SecurityType = ?, OrderSysID = ?, Direction = ?, OffsetFlag = ?, OrderPriceType = ?, Price = ?, Volume = ?, VolumeTotal = ?, VolumeTraded = ?, VolumeMultiple = ?, OrderStatus = ?, OrderDate = ?, OrderTime = ?, CancelDate = ?, CancelTime = ?, SessionID = ?, ClientOrderID = ?, RequestID = ?, OfferID = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, FrozenStampTax = ?, FrozenTransferFee = ?, RebuildMark = ?, IsForceClose = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;", -1, &m_OrderUpdateStatement, nullptr);
 	}
 	SetStatementForOrderRecordUpdate(m_OrderUpdateStatement, record);
 	
@@ -1407,7 +1788,7 @@ void SqliteDB::InsertTrade(Trade* record)
 	auto start = steady_clock::now();
 	if (m_TradeInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_Trade Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_TradeInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_Trade Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_TradeInsertStatement, nullptr);
 	}
 	SetStatementForTradeRecord(m_TradeInsertStatement, record);
 	
@@ -1491,7 +1872,7 @@ void SqliteDB::UpdateTrade(Trade* record)
 	auto start = steady_clock::now();
 	if (m_TradeUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Trade set AccountID = ?, InstrumentID = ?, OrderID = ?, OffsetFlag = ?, Price = ?, Volume = ?, TradeAmount = ?, PremiumIn = ?, PremiumOut = ?, TradeDate = ?, TradeTime = ? where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;", -1, &m_TradeUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Trade set AccountID = ?, PrimaryAccountID = ?, AccountType = ?, InstrumentID = ?, SecurityType = ?, OrderID = ?, OrderSysID = ?, OffsetFlag = ?, Price = ?, Volume = ?, VolumeMultiple = ?, TradeAmount = ?, Commission = ?, StampTax = ?, TransferFee = ?, TradeDate = ?, TradeTime = ? where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;", -1, &m_TradeUpdateStatement, nullptr);
 	}
 	SetStatementForTradeRecordUpdate(m_TradeUpdateStatement, record);
 	
@@ -1545,33 +1926,33 @@ void SqliteDB::TruncateTrade()
 	
 	WriteLog(LogLevel::Info, "TruncateTrade Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void SqliteDB::InsertMdTick(MdTick* record)
+void SqliteDB::InsertDepthMarketData(DepthMarketData* record)
 {
 	auto start = steady_clock::now();
-	if (m_MdTickInsertStatement == nullptr)
+	if (m_DepthMarketDataInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_MdTick Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_MdTickInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_DepthMarketData Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_DepthMarketDataInsertStatement, nullptr);
 	}
-	SetStatementForMdTickRecord(m_MdTickInsertStatement, record);
+	SetStatementForDepthMarketDataRecord(m_DepthMarketDataInsertStatement, record);
 	
-	auto rc = sqlite3_step(m_MdTickInsertStatement);
+	auto rc = sqlite3_step(m_DepthMarketDataInsertStatement);
 	if (rc != SQLITE_DONE)
 	{
-		WriteLog(LogLevel::Warning, "InsertMdTick failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+		WriteLog(LogLevel::Warning, "InsertDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
 	}
-	sqlite3_reset(m_MdTickInsertStatement);
+	sqlite3_reset(m_DepthMarketDataInsertStatement);
 
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "InsertMdTick Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "InsertDepthMarketData Spend:%lldms", duration);
 	}
 }
-void SqliteDB::BatchInsertMdTick(std::list<MdTick*>* records)
+void SqliteDB::BatchInsertDepthMarketData(std::list<DepthMarketData*>* records)
 {
 	auto start = steady_clock::now();
 	memset(m_SqlBuff, 0, BuffSize);
-	strcpy(m_SqlBuff, "Insert into t_MdTick Values");
+	strcpy(m_SqlBuff, "Insert into t_DepthMarketData Values");
 	int n = (int)strlen(m_SqlBuff);
 	int i = 0;
 	char* t_ErrorMsg;
@@ -1583,13 +1964,13 @@ void SqliteDB::BatchInsertMdTick(std::list<MdTick*>* records)
 			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 			if (ret != SQLITE_OK)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+				WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 				sqlite3_free(t_ErrorMsg);
 				return;
 			}
 			
 			memset(m_SqlBuff, 0, BuffSize);
-			strcpy(m_SqlBuff, "Insert into t_MdTick Values");
+			strcpy(m_SqlBuff, "Insert into t_DepthMarketData Values");
 			n = (int)strlen(m_SqlBuff);
 		}
 		n += (*it)->GetSqlString(m_SqlBuff + n);
@@ -1599,100 +1980,100 @@ void SqliteDB::BatchInsertMdTick(std::list<MdTick*>* records)
 	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
 	if (ret != SQLITE_OK)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+		WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
 		sqlite3_free(t_ErrorMsg);
 		return;
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertMdTick RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
-void SqliteDB::DeleteMdTick(MdTick* record)
+void SqliteDB::DeleteDepthMarketData(DepthMarketData* record)
 {
 	auto start = steady_clock::now();
-	if (m_MdTickDeleteStatement == nullptr)
+	if (m_DepthMarketDataDeleteStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "delete from t_MdTick where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;", -1, &m_MdTickDeleteStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "delete from t_DepthMarketData where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;", -1, &m_DepthMarketDataDeleteStatement, nullptr);
 	}
-	SetStatementForMdTickPrimaryKey(m_MdTickDeleteStatement, record->TradingDay, record->ExchangeID, record->InstrumentID);
+	SetStatementForDepthMarketDataPrimaryKey(m_DepthMarketDataDeleteStatement, record->TradingDay, record->ExchangeID, record->InstrumentID);
 
-	auto rc = sqlite3_step(m_MdTickDeleteStatement);
+	auto rc = sqlite3_step(m_DepthMarketDataDeleteStatement);
 	if (rc != SQLITE_DONE)
 	{
-		WriteLog(LogLevel::Warning, "DeleteMdTick failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+		WriteLog(LogLevel::Warning, "DeleteDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
 	}
-	sqlite3_reset(m_MdTickDeleteStatement);
+	sqlite3_reset(m_DepthMarketDataDeleteStatement);
 
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "DeleteMdTick Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "DeleteDepthMarketData Spend:%lldms", duration);
 	}
 }
-void SqliteDB::UpdateMdTick(MdTick* record)
+void SqliteDB::UpdateDepthMarketData(DepthMarketData* record)
 {
 	auto start = steady_clock::now();
-	if (m_MdTickUpdateStatement == nullptr)
+	if (m_DepthMarketDataUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_MdTick set LastPrice = ?, PreSettlementPrice = ?, PreClosePrice = ?, PreOpenInterest = ?, OpenPrice = ?, HighestPrice = ?, LowestPrice = ?, Volume = ?, Turnover = ?, OpenInterest = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, UpdateTime = ?, UpdateMillisec = ?, AskPrice1 = ?, AskPrice2 = ?, AskPrice3 = ?, AskPrice4 = ?, AskPrice5 = ?, AskVolume1 = ?, AskVolume2 = ?, AskVolume3 = ?, AskVolume4 = ?, AskVolume5 = ?, BidPrice1 = ?, BidPrice2 = ?, BidPrice3 = ?, BidPrice4 = ?, BidPrice5 = ?, BidVolume1 = ?, BidVolume2 = ?, BidVolume3 = ?, BidVolume4 = ?, BidVolume5 = ?, AveragePrice = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;", -1, &m_MdTickUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_DepthMarketData set LastPrice = ?, PreSettlementPrice = ?, PreClosePrice = ?, PreOpenInterest = ?, OpenPrice = ?, HighestPrice = ?, LowestPrice = ?, ClosePrice = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ?, SettlementPrice = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, AveragePrice = ?, UpdateTs = ?, AskPrice1 = ?, AskPrice2 = ?, AskPrice3 = ?, AskPrice4 = ?, AskPrice5 = ?, AskPrice6 = ?, AskPrice7 = ?, AskPrice8 = ?, AskPrice9 = ?, AskPrice10 = ?, AskVolume1 = ?, AskVolume2 = ?, AskVolume3 = ?, AskVolume4 = ?, AskVolume5 = ?, AskVolume6 = ?, AskVolume7 = ?, AskVolume8 = ?, AskVolume9 = ?, AskVolume10 = ?, BidPrice1 = ?, BidPrice2 = ?, BidPrice3 = ?, BidPrice4 = ?, BidPrice5 = ?, BidPrice6 = ?, BidPrice7 = ?, BidPrice8 = ?, BidPrice9 = ?, BidPrice10 = ?, BidVolume1 = ?, BidVolume2 = ?, BidVolume3 = ?, BidVolume4 = ?, BidVolume5 = ?, BidVolume6 = ?, BidVolume7 = ?, BidVolume8 = ?, BidVolume9 = ?, BidVolume10 = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;", -1, &m_DepthMarketDataUpdateStatement, nullptr);
 	}
-	SetStatementForMdTickRecordUpdate(m_MdTickUpdateStatement, record);
+	SetStatementForDepthMarketDataRecordUpdate(m_DepthMarketDataUpdateStatement, record);
 	
-	auto rc = sqlite3_step(m_MdTickUpdateStatement);
+	auto rc = sqlite3_step(m_DepthMarketDataUpdateStatement);
 	if (rc != SQLITE_DONE)
 	{
-		WriteLog(LogLevel::Warning, "UpdateMdTick failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+		WriteLog(LogLevel::Warning, "UpdateDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
 	}
-	sqlite3_reset(m_MdTickUpdateStatement);
+	sqlite3_reset(m_DepthMarketDataUpdateStatement);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "UpdateMdTick Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
 	}
 }
-void SqliteDB::SelectMdTick(std::vector<MdTick*>& records)
+void SqliteDB::SelectDepthMarketData(std::vector<DepthMarketData*>& records)
 {
 	auto start = steady_clock::now();
-	if (m_MdTickSelectStatement == nullptr)
+	if (m_DepthMarketDataSelectStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "select * from t_MdTick;", -1, &m_MdTickSelectStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "select * from t_DepthMarketData;", -1, &m_DepthMarketDataSelectStatement, nullptr);
 	}
 
-	while (sqlite3_step(m_MdTickSelectStatement) == SQLITE_ROW)
+	while (sqlite3_step(m_DepthMarketDataSelectStatement) == SQLITE_ROW)
 	{
-		ParseRecord(m_MdTickSelectStatement, records);
+		ParseRecord(m_DepthMarketDataSelectStatement, records);
 	}
-	sqlite3_reset(m_MdTickSelectStatement);
+	sqlite3_reset(m_DepthMarketDataSelectStatement);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "SelectMdTick Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "SelectDepthMarketData Spend:%lldms", duration);
 	}
 }
-void SqliteDB::TruncateMdTick()
+void SqliteDB::TruncateDepthMarketData()
 {
 	auto start = steady_clock::now();
-	if (m_MdTickTruncateStatement == nullptr)
+	if (m_DepthMarketDataTruncateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "delete from t_MdTick;", -1, &m_MdTickTruncateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "delete from t_DepthMarketData;", -1, &m_DepthMarketDataTruncateStatement, nullptr);
 	}
 
-	auto rc = sqlite3_step(m_MdTickTruncateStatement);
+	auto rc = sqlite3_step(m_DepthMarketDataTruncateStatement);
 	if (rc != SQLITE_DONE)
 	{
-		WriteLog(LogLevel::Warning, "TruncateMdTick failed, ErrorMsg:%s", sqlite3_errmsg(m_DB));
+		WriteLog(LogLevel::Warning, "TruncateDepthMarketData failed, ErrorMsg:%s", sqlite3_errmsg(m_DB));
 	}
-	sqlite3_reset(m_MdTickTruncateStatement);
+	sqlite3_reset(m_DepthMarketDataTruncateStatement);
 	
-	WriteLog(LogLevel::Info, "TruncateMdTick Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+	WriteLog(LogLevel::Info, "TruncateDepthMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 
 
 void SqliteDB::SetStatementForTradingDayRecord(sqlite3_stmt* statement, TradingDay* record)
 {
-	sqlite3_bind_int(statement, 1, record->PK);
+	sqlite3_bind_text(statement, 1, record->PK, sizeof(record->PK), nullptr);
 	sqlite3_bind_text(statement, 2, record->CurrTradingDay, sizeof(record->CurrTradingDay), nullptr);
 	sqlite3_bind_text(statement, 3, record->PreTradingDay, sizeof(record->PreTradingDay), nullptr);
 }
@@ -1700,16 +2081,16 @@ void SqliteDB::SetStatementForTradingDayRecordUpdate(sqlite3_stmt* statement, Tr
 {
 	sqlite3_bind_text(statement, 1, record->CurrTradingDay, sizeof(record->CurrTradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->PreTradingDay, sizeof(record->PreTradingDay), nullptr);
-	sqlite3_bind_int(statement, 3, record->PK);
+	sqlite3_bind_text(statement, 3, record->PK, sizeof(record->PK), nullptr);
 }
-void SqliteDB::SetStatementForTradingDayPrimaryKey(sqlite3_stmt* statement, const IntType& PK)
+void SqliteDB::SetStatementForTradingDayPrimaryKey(sqlite3_stmt* statement, const UserIDType& PK)
 {
-	sqlite3_bind_int(statement, 1, PK);
+	sqlite3_bind_text(statement, 1, PK, sizeof(PK), nullptr);
 }
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<TradingDay*>& records)
 {
 	TradingDay* record = TradingDay::Allocate();
-	record->PK = sqlite3_column_int(statement, 0);
+	Strcpy(record->PK, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->CurrTradingDay, (const char*)sqlite3_column_text(statement, 1));
 	Strcpy(record->PreTradingDay, (const char*)sqlite3_column_text(statement, 2));
 	records.push_back(record);
@@ -1740,7 +2121,7 @@ void SqliteDB::SetStatementForProductRecord(sqlite3_stmt* statement, Product* re
 	sqlite3_bind_text(statement, 1, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
 	sqlite3_bind_text(statement, 2, record->ProductID, sizeof(record->ProductID), nullptr);
 	sqlite3_bind_text(statement, 3, record->ProductName, sizeof(record->ProductName), nullptr);
-	sqlite3_bind_int(statement, 4, int(record->ProductClass));
+	sqlite3_bind_int(statement, 4, int(record->SecurityType));
 	sqlite3_bind_int(statement, 5, record->VolumeMultiple);
 	sqlite3_bind_double(statement, 6, record->PriceTick);
 	sqlite3_bind_int64(statement, 7, record->MaxMarketOrderVolume);
@@ -1752,7 +2133,7 @@ void SqliteDB::SetStatementForProductRecord(sqlite3_stmt* statement, Product* re
 void SqliteDB::SetStatementForProductRecordUpdate(sqlite3_stmt* statement, Product* record)
 {
 	sqlite3_bind_text(statement, 1, record->ProductName, sizeof(record->ProductName), nullptr);
-	sqlite3_bind_int(statement, 2, int(record->ProductClass));
+	sqlite3_bind_int(statement, 2, int(record->SecurityType));
 	sqlite3_bind_int(statement, 3, record->VolumeMultiple);
 	sqlite3_bind_double(statement, 4, record->PriceTick);
 	sqlite3_bind_int64(statement, 5, record->MaxMarketOrderVolume);
@@ -1774,7 +2155,7 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<Product*>& recor
 	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->ProductID, (const char*)sqlite3_column_text(statement, 1));
 	Strcpy(record->ProductName, (const char*)sqlite3_column_text(statement, 2));
-	record->ProductClass = ProductClassType(sqlite3_column_int(statement, 3));
+	record->SecurityType = SecurityTypeType(sqlite3_column_int(statement, 3));
 	record->VolumeMultiple = sqlite3_column_int(statement, 4);
 	record->PriceTick = sqlite3_column_double(statement, 5);
 	record->MaxMarketOrderVolume = sqlite3_column_int64(statement, 6);
@@ -1786,37 +2167,39 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<Product*>& recor
 }
 void SqliteDB::SetStatementForInstrumentRecord(sqlite3_stmt* statement, Instrument* record)
 {
-	sqlite3_bind_text(statement, 1, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 2, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_text(statement, 3, record->InstrumentName, sizeof(record->InstrumentName), nullptr);
-	sqlite3_bind_text(statement, 4, record->ProductID, sizeof(record->ProductID), nullptr);
-	sqlite3_bind_int(statement, 5, int(record->ProductClass));
-	sqlite3_bind_int(statement, 6, record->VolumeMultiple);
-	sqlite3_bind_double(statement, 7, record->PriceTick);
-	sqlite3_bind_int64(statement, 8, record->MaxMarketOrderVolume);
-	sqlite3_bind_int64(statement, 9, record->MinMarketOrderVolume);
-	sqlite3_bind_int64(statement, 10, record->MaxLimitOrderVolume);
-	sqlite3_bind_int64(statement, 11, record->MinLimitOrderVolume);
-	sqlite3_bind_text(statement, 12, record->SessionName, sizeof(record->SessionName), nullptr);
-	sqlite3_bind_int(statement, 13, record->DeliveryYear);
-	sqlite3_bind_int(statement, 14, record->DeliveryMonth);
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 3, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_text(statement, 4, record->ExchangeInstID, sizeof(record->ExchangeInstID), nullptr);
+	sqlite3_bind_text(statement, 5, record->InstrumentName, sizeof(record->InstrumentName), nullptr);
+	sqlite3_bind_text(statement, 6, record->ProductID, sizeof(record->ProductID), nullptr);
+	sqlite3_bind_int(statement, 7, int(record->SecurityType));
+	sqlite3_bind_int(statement, 8, int(record->SecurityDetailType));
+	sqlite3_bind_int(statement, 9, record->VolumeMultiple);
+	sqlite3_bind_double(statement, 10, record->PriceTick);
+	sqlite3_bind_int64(statement, 11, record->MaxMarketOrderVolume);
+	sqlite3_bind_int64(statement, 12, record->MinMarketOrderVolume);
+	sqlite3_bind_int64(statement, 13, record->MaxLimitOrderVolume);
+	sqlite3_bind_int64(statement, 14, record->MinLimitOrderVolume);
+	sqlite3_bind_text(statement, 15, record->SessionName, sizeof(record->SessionName), nullptr);
 }
 void SqliteDB::SetStatementForInstrumentRecordUpdate(sqlite3_stmt* statement, Instrument* record)
 {
-	sqlite3_bind_text(statement, 1, record->InstrumentName, sizeof(record->InstrumentName), nullptr);
-	sqlite3_bind_text(statement, 2, record->ProductID, sizeof(record->ProductID), nullptr);
-	sqlite3_bind_int(statement, 3, int(record->ProductClass));
-	sqlite3_bind_int(statement, 4, record->VolumeMultiple);
-	sqlite3_bind_double(statement, 5, record->PriceTick);
-	sqlite3_bind_int64(statement, 6, record->MaxMarketOrderVolume);
-	sqlite3_bind_int64(statement, 7, record->MinMarketOrderVolume);
-	sqlite3_bind_int64(statement, 8, record->MaxLimitOrderVolume);
-	sqlite3_bind_int64(statement, 9, record->MinLimitOrderVolume);
-	sqlite3_bind_text(statement, 10, record->SessionName, sizeof(record->SessionName), nullptr);
-	sqlite3_bind_int(statement, 11, record->DeliveryYear);
-	sqlite3_bind_int(statement, 12, record->DeliveryMonth);
-	sqlite3_bind_text(statement, 13, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 14, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->ExchangeInstID, sizeof(record->ExchangeInstID), nullptr);
+	sqlite3_bind_text(statement, 3, record->InstrumentName, sizeof(record->InstrumentName), nullptr);
+	sqlite3_bind_text(statement, 4, record->ProductID, sizeof(record->ProductID), nullptr);
+	sqlite3_bind_int(statement, 5, int(record->SecurityType));
+	sqlite3_bind_int(statement, 6, int(record->SecurityDetailType));
+	sqlite3_bind_int(statement, 7, record->VolumeMultiple);
+	sqlite3_bind_double(statement, 8, record->PriceTick);
+	sqlite3_bind_int64(statement, 9, record->MaxMarketOrderVolume);
+	sqlite3_bind_int64(statement, 10, record->MinMarketOrderVolume);
+	sqlite3_bind_int64(statement, 11, record->MaxLimitOrderVolume);
+	sqlite3_bind_int64(statement, 12, record->MinLimitOrderVolume);
+	sqlite3_bind_text(statement, 13, record->SessionName, sizeof(record->SessionName), nullptr);
+	sqlite3_bind_text(statement, 14, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 15, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
 }
 void SqliteDB::SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
@@ -1826,20 +2209,69 @@ void SqliteDB::SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, cons
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<Instrument*>& records)
 {
 	Instrument* record = Instrument::Allocate();
-	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 0));
-	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 1));
-	Strcpy(record->InstrumentName, (const char*)sqlite3_column_text(statement, 2));
-	Strcpy(record->ProductID, (const char*)sqlite3_column_text(statement, 3));
-	record->ProductClass = ProductClassType(sqlite3_column_int(statement, 4));
-	record->VolumeMultiple = sqlite3_column_int(statement, 5);
-	record->PriceTick = sqlite3_column_double(statement, 6);
-	record->MaxMarketOrderVolume = sqlite3_column_int64(statement, 7);
-	record->MinMarketOrderVolume = sqlite3_column_int64(statement, 8);
-	record->MaxLimitOrderVolume = sqlite3_column_int64(statement, 9);
-	record->MinLimitOrderVolume = sqlite3_column_int64(statement, 10);
-	Strcpy(record->SessionName, (const char*)sqlite3_column_text(statement, 11));
-	record->DeliveryYear = sqlite3_column_int(statement, 12);
-	record->DeliveryMonth = sqlite3_column_int(statement, 13);
+	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
+	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 1));
+	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 2));
+	Strcpy(record->ExchangeInstID, (const char*)sqlite3_column_text(statement, 3));
+	Strcpy(record->InstrumentName, (const char*)sqlite3_column_text(statement, 4));
+	Strcpy(record->ProductID, (const char*)sqlite3_column_text(statement, 5));
+	record->SecurityType = SecurityTypeType(sqlite3_column_int(statement, 6));
+	record->SecurityDetailType = SecurityDetailTypeType(sqlite3_column_int(statement, 7));
+	record->VolumeMultiple = sqlite3_column_int(statement, 8);
+	record->PriceTick = sqlite3_column_double(statement, 9);
+	record->MaxMarketOrderVolume = sqlite3_column_int64(statement, 10);
+	record->MinMarketOrderVolume = sqlite3_column_int64(statement, 11);
+	record->MaxLimitOrderVolume = sqlite3_column_int64(statement, 12);
+	record->MinLimitOrderVolume = sqlite3_column_int64(statement, 13);
+	Strcpy(record->SessionName, (const char*)sqlite3_column_text(statement, 14));
+	records.push_back(record);
+}
+void SqliteDB::SetStatementForPrimaryAccountRecord(sqlite3_stmt* statement, PrimaryAccount* record)
+{
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
+	sqlite3_bind_text(statement, 3, record->PrimaryAccountName, sizeof(record->PrimaryAccountName), nullptr);
+	sqlite3_bind_int(statement, 4, int(record->AccountClass));
+	sqlite3_bind_text(statement, 5, record->BrokerPassword, sizeof(record->BrokerPassword), nullptr);
+	sqlite3_bind_int(statement, 6, record->OfferID);
+	sqlite3_bind_int(statement, 7, record->IsAllowLogin);
+	sqlite3_bind_int(statement, 8, record->IsSimulateAccount);
+	sqlite3_bind_int(statement, 9, int(record->LoginStatus));
+	sqlite3_bind_int(statement, 10, int(record->InitStatus));
+}
+void SqliteDB::SetStatementForPrimaryAccountRecordUpdate(sqlite3_stmt* statement, PrimaryAccount* record)
+{
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->PrimaryAccountName, sizeof(record->PrimaryAccountName), nullptr);
+	sqlite3_bind_int(statement, 3, int(record->AccountClass));
+	sqlite3_bind_text(statement, 4, record->BrokerPassword, sizeof(record->BrokerPassword), nullptr);
+	sqlite3_bind_int(statement, 5, record->OfferID);
+	sqlite3_bind_int(statement, 6, record->IsAllowLogin);
+	sqlite3_bind_int(statement, 7, record->IsSimulateAccount);
+	sqlite3_bind_int(statement, 8, int(record->LoginStatus));
+	sqlite3_bind_int(statement, 9, int(record->InitStatus));
+	sqlite3_bind_text(statement, 10, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
+}
+void SqliteDB::SetStatementForPrimaryAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& PrimaryAccountID)
+{
+	sqlite3_bind_text(statement, 1, PrimaryAccountID, sizeof(PrimaryAccountID), nullptr);
+}
+void SqliteDB::SetStatementForPrimaryAccountIndexOfferID(sqlite3_stmt* statement, PrimaryAccount* record)
+{
+}
+void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<PrimaryAccount*>& records)
+{
+	PrimaryAccount* record = PrimaryAccount::Allocate();
+	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
+	Strcpy(record->PrimaryAccountID, (const char*)sqlite3_column_text(statement, 1));
+	Strcpy(record->PrimaryAccountName, (const char*)sqlite3_column_text(statement, 2));
+	record->AccountClass = AccountClassType(sqlite3_column_int(statement, 3));
+	Strcpy(record->BrokerPassword, (const char*)sqlite3_column_text(statement, 4));
+	record->OfferID = sqlite3_column_int(statement, 5);
+	record->IsAllowLogin = sqlite3_column_int(statement, 6);
+	record->IsSimulateAccount = sqlite3_column_int(statement, 7);
+	record->LoginStatus = LoginStatusType(sqlite3_column_int(statement, 8));
+	record->InitStatus = InitStatusType(sqlite3_column_int(statement, 9));
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForAccountRecord(sqlite3_stmt* statement, Account* record)
@@ -1847,30 +2279,24 @@ void SqliteDB::SetStatementForAccountRecord(sqlite3_stmt* statement, Account* re
 	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
 	sqlite3_bind_text(statement, 3, record->AccountName, sizeof(record->AccountName), nullptr);
-	sqlite3_bind_text(statement, 4, record->Password, sizeof(record->Password), nullptr);
-	sqlite3_bind_double(statement, 5, record->PreBalance);
-	sqlite3_bind_double(statement, 6, record->Balance);
-	sqlite3_bind_double(statement, 7, record->CloseProfitByDate);
-	sqlite3_bind_double(statement, 8, record->PositionProfitByDate);
-	sqlite3_bind_double(statement, 9, record->PositionProfitByTrade);
-	sqlite3_bind_double(statement, 10, record->PremiumIn);
-	sqlite3_bind_double(statement, 11, record->PremiumOut);
-	sqlite3_bind_double(statement, 12, record->MarketValue);
+	sqlite3_bind_int(statement, 4, int(record->AccountType));
+	sqlite3_bind_int(statement, 5, int(record->AccountStatus));
+	sqlite3_bind_text(statement, 6, record->Password, sizeof(record->Password), nullptr);
+	sqlite3_bind_int(statement, 7, record->TradeGroupID);
+	sqlite3_bind_int(statement, 8, record->RiskGroupID);
+	sqlite3_bind_int(statement, 9, record->CommissionGroupID);
 }
 void SqliteDB::SetStatementForAccountRecordUpdate(sqlite3_stmt* statement, Account* record)
 {
 	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->AccountName, sizeof(record->AccountName), nullptr);
-	sqlite3_bind_text(statement, 3, record->Password, sizeof(record->Password), nullptr);
-	sqlite3_bind_double(statement, 4, record->PreBalance);
-	sqlite3_bind_double(statement, 5, record->Balance);
-	sqlite3_bind_double(statement, 6, record->CloseProfitByDate);
-	sqlite3_bind_double(statement, 7, record->PositionProfitByDate);
-	sqlite3_bind_double(statement, 8, record->PositionProfitByTrade);
-	sqlite3_bind_double(statement, 9, record->PremiumIn);
-	sqlite3_bind_double(statement, 10, record->PremiumOut);
-	sqlite3_bind_double(statement, 11, record->MarketValue);
-	sqlite3_bind_text(statement, 12, record->AccountID, sizeof(record->AccountID), nullptr);
+	sqlite3_bind_int(statement, 3, int(record->AccountType));
+	sqlite3_bind_int(statement, 4, int(record->AccountStatus));
+	sqlite3_bind_text(statement, 5, record->Password, sizeof(record->Password), nullptr);
+	sqlite3_bind_int(statement, 6, record->TradeGroupID);
+	sqlite3_bind_int(statement, 7, record->RiskGroupID);
+	sqlite3_bind_int(statement, 8, record->CommissionGroupID);
+	sqlite3_bind_text(statement, 9, record->AccountID, sizeof(record->AccountID), nullptr);
 }
 void SqliteDB::SetStatementForAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& AccountID)
 {
@@ -1882,60 +2308,164 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<Account*>& recor
 	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->AccountID, (const char*)sqlite3_column_text(statement, 1));
 	Strcpy(record->AccountName, (const char*)sqlite3_column_text(statement, 2));
-	Strcpy(record->Password, (const char*)sqlite3_column_text(statement, 3));
-	record->PreBalance = sqlite3_column_double(statement, 4);
-	record->Balance = sqlite3_column_double(statement, 5);
-	record->CloseProfitByDate = sqlite3_column_double(statement, 6);
-	record->PositionProfitByDate = sqlite3_column_double(statement, 7);
-	record->PositionProfitByTrade = sqlite3_column_double(statement, 8);
-	record->PremiumIn = sqlite3_column_double(statement, 9);
-	record->PremiumOut = sqlite3_column_double(statement, 10);
-	record->MarketValue = sqlite3_column_double(statement, 11);
+	record->AccountType = AccountTypeType(sqlite3_column_int(statement, 3));
+	record->AccountStatus = AccountStatusType(sqlite3_column_int(statement, 4));
+	Strcpy(record->Password, (const char*)sqlite3_column_text(statement, 5));
+	record->TradeGroupID = sqlite3_column_int(statement, 6);
+	record->RiskGroupID = sqlite3_column_int(statement, 7);
+	record->CommissionGroupID = sqlite3_column_int(statement, 8);
+	records.push_back(record);
+}
+void SqliteDB::SetStatementForCapitalRecord(sqlite3_stmt* statement, Capital* record)
+{
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
+	sqlite3_bind_int(statement, 3, int(record->AccountType));
+	sqlite3_bind_double(statement, 4, record->Asset);
+	sqlite3_bind_double(statement, 5, record->PreAsset);
+	sqlite3_bind_double(statement, 6, record->CashAsset);
+	sqlite3_bind_double(statement, 7, record->PreCashAsset);
+	sqlite3_bind_double(statement, 8, record->Available);
+	sqlite3_bind_double(statement, 9, record->CashIn);
+	sqlite3_bind_double(statement, 10, record->CashOut);
+	sqlite3_bind_double(statement, 11, record->Margin);
+	sqlite3_bind_double(statement, 12, record->Commission);
+	sqlite3_bind_double(statement, 13, record->StampTax);
+	sqlite3_bind_double(statement, 14, record->TransferFee);
+	sqlite3_bind_double(statement, 15, record->FrozenCash);
+	sqlite3_bind_double(statement, 16, record->FrozenMargin);
+	sqlite3_bind_double(statement, 17, record->FrozenCommission);
+	sqlite3_bind_double(statement, 18, record->FrozenStampTax);
+	sqlite3_bind_double(statement, 19, record->FrozenTransferFee);
+	sqlite3_bind_double(statement, 20, record->MarketValue);
+	sqlite3_bind_double(statement, 21, record->TotalProfit);
+	sqlite3_bind_double(statement, 22, record->TodayProfit);
+	sqlite3_bind_double(statement, 23, record->Deposit);
+	sqlite3_bind_double(statement, 24, record->Withdraw);
+}
+void SqliteDB::SetStatementForCapitalRecordUpdate(sqlite3_stmt* statement, Capital* record)
+{
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_int(statement, 2, int(record->AccountType));
+	sqlite3_bind_double(statement, 3, record->Asset);
+	sqlite3_bind_double(statement, 4, record->PreAsset);
+	sqlite3_bind_double(statement, 5, record->CashAsset);
+	sqlite3_bind_double(statement, 6, record->PreCashAsset);
+	sqlite3_bind_double(statement, 7, record->Available);
+	sqlite3_bind_double(statement, 8, record->CashIn);
+	sqlite3_bind_double(statement, 9, record->CashOut);
+	sqlite3_bind_double(statement, 10, record->Margin);
+	sqlite3_bind_double(statement, 11, record->Commission);
+	sqlite3_bind_double(statement, 12, record->StampTax);
+	sqlite3_bind_double(statement, 13, record->TransferFee);
+	sqlite3_bind_double(statement, 14, record->FrozenCash);
+	sqlite3_bind_double(statement, 15, record->FrozenMargin);
+	sqlite3_bind_double(statement, 16, record->FrozenCommission);
+	sqlite3_bind_double(statement, 17, record->FrozenStampTax);
+	sqlite3_bind_double(statement, 18, record->FrozenTransferFee);
+	sqlite3_bind_double(statement, 19, record->MarketValue);
+	sqlite3_bind_double(statement, 20, record->TotalProfit);
+	sqlite3_bind_double(statement, 21, record->TodayProfit);
+	sqlite3_bind_double(statement, 22, record->Deposit);
+	sqlite3_bind_double(statement, 23, record->Withdraw);
+	sqlite3_bind_text(statement, 24, record->AccountID, sizeof(record->AccountID), nullptr);
+}
+void SqliteDB::SetStatementForCapitalPrimaryKey(sqlite3_stmt* statement, const AccountIDType& AccountID)
+{
+	sqlite3_bind_text(statement, 1, AccountID, sizeof(AccountID), nullptr);
+}
+void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<Capital*>& records)
+{
+	Capital* record = Capital::Allocate();
+	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
+	Strcpy(record->AccountID, (const char*)sqlite3_column_text(statement, 1));
+	record->AccountType = AccountTypeType(sqlite3_column_int(statement, 2));
+	record->Asset = sqlite3_column_double(statement, 3);
+	record->PreAsset = sqlite3_column_double(statement, 4);
+	record->CashAsset = sqlite3_column_double(statement, 5);
+	record->PreCashAsset = sqlite3_column_double(statement, 6);
+	record->Available = sqlite3_column_double(statement, 7);
+	record->CashIn = sqlite3_column_double(statement, 8);
+	record->CashOut = sqlite3_column_double(statement, 9);
+	record->Margin = sqlite3_column_double(statement, 10);
+	record->Commission = sqlite3_column_double(statement, 11);
+	record->StampTax = sqlite3_column_double(statement, 12);
+	record->TransferFee = sqlite3_column_double(statement, 13);
+	record->FrozenCash = sqlite3_column_double(statement, 14);
+	record->FrozenMargin = sqlite3_column_double(statement, 15);
+	record->FrozenCommission = sqlite3_column_double(statement, 16);
+	record->FrozenStampTax = sqlite3_column_double(statement, 17);
+	record->FrozenTransferFee = sqlite3_column_double(statement, 18);
+	record->MarketValue = sqlite3_column_double(statement, 19);
+	record->TotalProfit = sqlite3_column_double(statement, 20);
+	record->TodayProfit = sqlite3_column_double(statement, 21);
+	record->Deposit = sqlite3_column_double(statement, 22);
+	record->Withdraw = sqlite3_column_double(statement, 23);
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForPositionRecord(sqlite3_stmt* statement, Position* record)
 {
 	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
-	sqlite3_bind_text(statement, 3, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 4, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_int(statement, 5, int(record->ProductClass));
-	sqlite3_bind_int(statement, 6, int(record->PosiDirection));
-	sqlite3_bind_int64(statement, 7, record->TotalPosition);
-	sqlite3_bind_int64(statement, 8, record->TodayPosition);
-	sqlite3_bind_int64(statement, 9, record->FrozenPosition);
-	sqlite3_bind_double(statement, 10, record->CloseProfitByDate);
-	sqlite3_bind_double(statement, 11, record->CloseProfitByTrade);
-	sqlite3_bind_double(statement, 12, record->PositionProfitByDate);
-	sqlite3_bind_double(statement, 13, record->PositionProfitByTrade);
-	sqlite3_bind_double(statement, 14, record->PremiumIn);
-	sqlite3_bind_double(statement, 15, record->PremiumOut);
-	sqlite3_bind_double(statement, 16, record->MarketValue);
-	sqlite3_bind_int(statement, 17, record->VolumeMultiple);
-	sqlite3_bind_double(statement, 18, record->SettlementPrice);
-	sqlite3_bind_double(statement, 19, record->PreSettlementPrice);
+	sqlite3_bind_int(statement, 3, int(record->AccountType));
+	sqlite3_bind_text(statement, 4, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 5, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_int(statement, 6, int(record->SecurityType));
+	sqlite3_bind_int(statement, 7, int(record->PosiDirection));
+	sqlite3_bind_int64(statement, 8, record->TotalPosition);
+	sqlite3_bind_int64(statement, 9, record->PositionFrozen);
+	sqlite3_bind_int64(statement, 10, record->TodayPosition);
+	sqlite3_bind_double(statement, 11, record->CashIn);
+	sqlite3_bind_double(statement, 12, record->CashOut);
+	sqlite3_bind_double(statement, 13, record->Margin);
+	sqlite3_bind_double(statement, 14, record->Commission);
+	sqlite3_bind_double(statement, 15, record->StampTax);
+	sqlite3_bind_double(statement, 16, record->TransferFee);
+	sqlite3_bind_double(statement, 17, record->FrozenCash);
+	sqlite3_bind_double(statement, 18, record->FrozenMargin);
+	sqlite3_bind_double(statement, 19, record->FrozenCommission);
+	sqlite3_bind_double(statement, 20, record->FrozenStampTax);
+	sqlite3_bind_double(statement, 21, record->FrozenTransferFee);
+	sqlite3_bind_double(statement, 22, record->MarketValue);
+	sqlite3_bind_int(statement, 23, record->VolumeMultiple);
+	sqlite3_bind_double(statement, 24, record->CloseProfit);
+	sqlite3_bind_double(statement, 25, record->CloseProfitFloat);
+	sqlite3_bind_double(statement, 26, record->PositionProfit);
+	sqlite3_bind_double(statement, 27, record->PositionProfitFloat);
+	sqlite3_bind_double(statement, 28, record->LastPrice);
+	sqlite3_bind_double(statement, 29, record->PrePrice);
 }
 void SqliteDB::SetStatementForPositionRecordUpdate(sqlite3_stmt* statement, Position* record)
 {
-	sqlite3_bind_int(statement, 1, int(record->ProductClass));
-	sqlite3_bind_int64(statement, 2, record->TotalPosition);
-	sqlite3_bind_int64(statement, 3, record->TodayPosition);
-	sqlite3_bind_int64(statement, 4, record->FrozenPosition);
-	sqlite3_bind_double(statement, 5, record->CloseProfitByDate);
-	sqlite3_bind_double(statement, 6, record->CloseProfitByTrade);
-	sqlite3_bind_double(statement, 7, record->PositionProfitByDate);
-	sqlite3_bind_double(statement, 8, record->PositionProfitByTrade);
-	sqlite3_bind_double(statement, 9, record->PremiumIn);
-	sqlite3_bind_double(statement, 10, record->PremiumOut);
-	sqlite3_bind_double(statement, 11, record->MarketValue);
-	sqlite3_bind_int(statement, 12, record->VolumeMultiple);
-	sqlite3_bind_double(statement, 13, record->SettlementPrice);
-	sqlite3_bind_double(statement, 14, record->PreSettlementPrice);
-	sqlite3_bind_text(statement, 15, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 16, record->AccountID, sizeof(record->AccountID), nullptr);
-	sqlite3_bind_text(statement, 17, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 18, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_int(statement, 19, int(record->PosiDirection));
+	sqlite3_bind_int(statement, 1, int(record->AccountType));
+	sqlite3_bind_int(statement, 2, int(record->SecurityType));
+	sqlite3_bind_int64(statement, 3, record->TotalPosition);
+	sqlite3_bind_int64(statement, 4, record->PositionFrozen);
+	sqlite3_bind_int64(statement, 5, record->TodayPosition);
+	sqlite3_bind_double(statement, 6, record->CashIn);
+	sqlite3_bind_double(statement, 7, record->CashOut);
+	sqlite3_bind_double(statement, 8, record->Margin);
+	sqlite3_bind_double(statement, 9, record->Commission);
+	sqlite3_bind_double(statement, 10, record->StampTax);
+	sqlite3_bind_double(statement, 11, record->TransferFee);
+	sqlite3_bind_double(statement, 12, record->FrozenCash);
+	sqlite3_bind_double(statement, 13, record->FrozenMargin);
+	sqlite3_bind_double(statement, 14, record->FrozenCommission);
+	sqlite3_bind_double(statement, 15, record->FrozenStampTax);
+	sqlite3_bind_double(statement, 16, record->FrozenTransferFee);
+	sqlite3_bind_double(statement, 17, record->MarketValue);
+	sqlite3_bind_int(statement, 18, record->VolumeMultiple);
+	sqlite3_bind_double(statement, 19, record->CloseProfit);
+	sqlite3_bind_double(statement, 20, record->CloseProfitFloat);
+	sqlite3_bind_double(statement, 21, record->PositionProfit);
+	sqlite3_bind_double(statement, 22, record->PositionProfitFloat);
+	sqlite3_bind_double(statement, 23, record->LastPrice);
+	sqlite3_bind_double(statement, 24, record->PrePrice);
+	sqlite3_bind_text(statement, 25, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 26, record->AccountID, sizeof(record->AccountID), nullptr);
+	sqlite3_bind_text(statement, 27, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 28, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_int(statement, 29, int(record->PosiDirection));
 }
 void SqliteDB::SetStatementForPositionPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
 {
@@ -1947,76 +2477,118 @@ void SqliteDB::SetStatementForPositionPrimaryKey(sqlite3_stmt* statement, const 
 }
 void SqliteDB::SetStatementForPositionIndexAccount(sqlite3_stmt* statement, Position* record)
 {
-	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
 }
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<Position*>& records)
 {
 	Position* record = Position::Allocate();
 	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->AccountID, (const char*)sqlite3_column_text(statement, 1));
-	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 2));
-	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 3));
-	record->ProductClass = ProductClassType(sqlite3_column_int(statement, 4));
-	record->PosiDirection = PosiDirectionType(sqlite3_column_int(statement, 5));
-	record->TotalPosition = sqlite3_column_int64(statement, 6);
-	record->TodayPosition = sqlite3_column_int64(statement, 7);
-	record->FrozenPosition = sqlite3_column_int64(statement, 8);
-	record->CloseProfitByDate = sqlite3_column_double(statement, 9);
-	record->CloseProfitByTrade = sqlite3_column_double(statement, 10);
-	record->PositionProfitByDate = sqlite3_column_double(statement, 11);
-	record->PositionProfitByTrade = sqlite3_column_double(statement, 12);
-	record->PremiumIn = sqlite3_column_double(statement, 13);
-	record->PremiumOut = sqlite3_column_double(statement, 14);
-	record->MarketValue = sqlite3_column_double(statement, 15);
-	record->VolumeMultiple = sqlite3_column_int(statement, 16);
-	record->SettlementPrice = sqlite3_column_double(statement, 17);
-	record->PreSettlementPrice = sqlite3_column_double(statement, 18);
+	record->AccountType = AccountTypeType(sqlite3_column_int(statement, 2));
+	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 3));
+	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 4));
+	record->SecurityType = SecurityTypeType(sqlite3_column_int(statement, 5));
+	record->PosiDirection = PosiDirectionType(sqlite3_column_int(statement, 6));
+	record->TotalPosition = sqlite3_column_int64(statement, 7);
+	record->PositionFrozen = sqlite3_column_int64(statement, 8);
+	record->TodayPosition = sqlite3_column_int64(statement, 9);
+	record->CashIn = sqlite3_column_double(statement, 10);
+	record->CashOut = sqlite3_column_double(statement, 11);
+	record->Margin = sqlite3_column_double(statement, 12);
+	record->Commission = sqlite3_column_double(statement, 13);
+	record->StampTax = sqlite3_column_double(statement, 14);
+	record->TransferFee = sqlite3_column_double(statement, 15);
+	record->FrozenCash = sqlite3_column_double(statement, 16);
+	record->FrozenMargin = sqlite3_column_double(statement, 17);
+	record->FrozenCommission = sqlite3_column_double(statement, 18);
+	record->FrozenStampTax = sqlite3_column_double(statement, 19);
+	record->FrozenTransferFee = sqlite3_column_double(statement, 20);
+	record->MarketValue = sqlite3_column_double(statement, 21);
+	record->VolumeMultiple = sqlite3_column_int(statement, 22);
+	record->CloseProfit = sqlite3_column_double(statement, 23);
+	record->CloseProfitFloat = sqlite3_column_double(statement, 24);
+	record->PositionProfit = sqlite3_column_double(statement, 25);
+	record->PositionProfitFloat = sqlite3_column_double(statement, 26);
+	record->LastPrice = sqlite3_column_double(statement, 27);
+	record->PrePrice = sqlite3_column_double(statement, 28);
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForOrderRecord(sqlite3_stmt* statement, Order* record)
 {
 	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
-	sqlite3_bind_text(statement, 3, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 4, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_int(statement, 5, record->OrderID);
-	sqlite3_bind_int(statement, 6, record->ClientOrderID);
-	sqlite3_bind_int(statement, 7, int(record->Direction));
-	sqlite3_bind_int(statement, 8, int(record->OffsetFlag));
-	sqlite3_bind_int(statement, 9, int(record->OrderPriceType));
-	sqlite3_bind_double(statement, 10, record->Price);
-	sqlite3_bind_int64(statement, 11, record->Volume);
-	sqlite3_bind_int64(statement, 12, record->VolumeRemain);
-	sqlite3_bind_int64(statement, 13, record->VolumeTraded);
-	sqlite3_bind_int(statement, 14, record->VolumeMultiple);
-	sqlite3_bind_int(statement, 15, int(record->OrderStatus));
-	sqlite3_bind_text(statement, 16, record->OrderDate, sizeof(record->OrderDate), nullptr);
-	sqlite3_bind_text(statement, 17, record->OrderTime, sizeof(record->OrderTime), nullptr);
-	sqlite3_bind_text(statement, 18, record->CancelDate, sizeof(record->CancelDate), nullptr);
-	sqlite3_bind_text(statement, 19, record->CancelTime, sizeof(record->CancelTime), nullptr);
+	sqlite3_bind_text(statement, 3, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
+	sqlite3_bind_int(statement, 4, int(record->AccountType));
+	sqlite3_bind_text(statement, 5, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 6, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_int(statement, 7, int(record->SecurityType));
+	sqlite3_bind_int(statement, 8, record->OrderID);
+	sqlite3_bind_text(statement, 9, record->OrderSysID, sizeof(record->OrderSysID), nullptr);
+	sqlite3_bind_int(statement, 10, int(record->Direction));
+	sqlite3_bind_int(statement, 11, int(record->OffsetFlag));
+	sqlite3_bind_int(statement, 12, int(record->OrderPriceType));
+	sqlite3_bind_double(statement, 13, record->Price);
+	sqlite3_bind_int64(statement, 14, record->Volume);
+	sqlite3_bind_int64(statement, 15, record->VolumeTotal);
+	sqlite3_bind_int64(statement, 16, record->VolumeTraded);
+	sqlite3_bind_int(statement, 17, record->VolumeMultiple);
+	sqlite3_bind_int(statement, 18, int(record->OrderStatus));
+	sqlite3_bind_text(statement, 19, record->OrderDate, sizeof(record->OrderDate), nullptr);
+	sqlite3_bind_text(statement, 20, record->OrderTime, sizeof(record->OrderTime), nullptr);
+	sqlite3_bind_text(statement, 21, record->CancelDate, sizeof(record->CancelDate), nullptr);
+	sqlite3_bind_text(statement, 22, record->CancelTime, sizeof(record->CancelTime), nullptr);
+	sqlite3_bind_int64(statement, 23, record->SessionID);
+	sqlite3_bind_int(statement, 24, record->ClientOrderID);
+	sqlite3_bind_int(statement, 25, record->RequestID);
+	sqlite3_bind_int(statement, 26, record->OfferID);
+	sqlite3_bind_int(statement, 27, record->TradeGroupID);
+	sqlite3_bind_int(statement, 28, record->RiskGroupID);
+	sqlite3_bind_int(statement, 29, record->CommissionGroupID);
+	sqlite3_bind_double(statement, 30, record->FrozenCash);
+	sqlite3_bind_double(statement, 31, record->FrozenMargin);
+	sqlite3_bind_double(statement, 32, record->FrozenCommission);
+	sqlite3_bind_double(statement, 33, record->FrozenStampTax);
+	sqlite3_bind_double(statement, 34, record->FrozenTransferFee);
+	sqlite3_bind_int(statement, 35, record->RebuildMark);
+	sqlite3_bind_int(statement, 36, record->IsForceClose);
 }
 void SqliteDB::SetStatementForOrderRecordUpdate(sqlite3_stmt* statement, Order* record)
 {
-	sqlite3_bind_int(statement, 1, record->ClientOrderID);
-	sqlite3_bind_int(statement, 2, int(record->Direction));
-	sqlite3_bind_int(statement, 3, int(record->OffsetFlag));
-	sqlite3_bind_int(statement, 4, int(record->OrderPriceType));
-	sqlite3_bind_double(statement, 5, record->Price);
-	sqlite3_bind_int64(statement, 6, record->Volume);
-	sqlite3_bind_int64(statement, 7, record->VolumeRemain);
-	sqlite3_bind_int64(statement, 8, record->VolumeTraded);
-	sqlite3_bind_int(statement, 9, record->VolumeMultiple);
-	sqlite3_bind_int(statement, 10, int(record->OrderStatus));
-	sqlite3_bind_text(statement, 11, record->OrderDate, sizeof(record->OrderDate), nullptr);
-	sqlite3_bind_text(statement, 12, record->OrderTime, sizeof(record->OrderTime), nullptr);
-	sqlite3_bind_text(statement, 13, record->CancelDate, sizeof(record->CancelDate), nullptr);
-	sqlite3_bind_text(statement, 14, record->CancelTime, sizeof(record->CancelTime), nullptr);
-	sqlite3_bind_text(statement, 15, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 16, record->AccountID, sizeof(record->AccountID), nullptr);
-	sqlite3_bind_text(statement, 17, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 18, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_int(statement, 19, record->OrderID);
+	sqlite3_bind_text(statement, 1, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
+	sqlite3_bind_int(statement, 2, int(record->AccountType));
+	sqlite3_bind_int(statement, 3, int(record->SecurityType));
+	sqlite3_bind_text(statement, 4, record->OrderSysID, sizeof(record->OrderSysID), nullptr);
+	sqlite3_bind_int(statement, 5, int(record->Direction));
+	sqlite3_bind_int(statement, 6, int(record->OffsetFlag));
+	sqlite3_bind_int(statement, 7, int(record->OrderPriceType));
+	sqlite3_bind_double(statement, 8, record->Price);
+	sqlite3_bind_int64(statement, 9, record->Volume);
+	sqlite3_bind_int64(statement, 10, record->VolumeTotal);
+	sqlite3_bind_int64(statement, 11, record->VolumeTraded);
+	sqlite3_bind_int(statement, 12, record->VolumeMultiple);
+	sqlite3_bind_int(statement, 13, int(record->OrderStatus));
+	sqlite3_bind_text(statement, 14, record->OrderDate, sizeof(record->OrderDate), nullptr);
+	sqlite3_bind_text(statement, 15, record->OrderTime, sizeof(record->OrderTime), nullptr);
+	sqlite3_bind_text(statement, 16, record->CancelDate, sizeof(record->CancelDate), nullptr);
+	sqlite3_bind_text(statement, 17, record->CancelTime, sizeof(record->CancelTime), nullptr);
+	sqlite3_bind_int64(statement, 18, record->SessionID);
+	sqlite3_bind_int(statement, 19, record->ClientOrderID);
+	sqlite3_bind_int(statement, 20, record->RequestID);
+	sqlite3_bind_int(statement, 21, record->OfferID);
+	sqlite3_bind_int(statement, 22, record->TradeGroupID);
+	sqlite3_bind_int(statement, 23, record->RiskGroupID);
+	sqlite3_bind_int(statement, 24, record->CommissionGroupID);
+	sqlite3_bind_double(statement, 25, record->FrozenCash);
+	sqlite3_bind_double(statement, 26, record->FrozenMargin);
+	sqlite3_bind_double(statement, 27, record->FrozenCommission);
+	sqlite3_bind_double(statement, 28, record->FrozenStampTax);
+	sqlite3_bind_double(statement, 29, record->FrozenTransferFee);
+	sqlite3_bind_int(statement, 30, record->RebuildMark);
+	sqlite3_bind_int(statement, 31, record->IsForceClose);
+	sqlite3_bind_text(statement, 32, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 33, record->AccountID, sizeof(record->AccountID), nullptr);
+	sqlite3_bind_text(statement, 34, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 35, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_int(statement, 36, record->OrderID);
 }
 void SqliteDB::SetStatementForOrderPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID)
 {
@@ -2031,60 +2603,89 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<Order*>& records
 	Order* record = Order::Allocate();
 	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->AccountID, (const char*)sqlite3_column_text(statement, 1));
-	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 2));
-	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 3));
-	record->OrderID = sqlite3_column_int(statement, 4);
-	record->ClientOrderID = sqlite3_column_int(statement, 5);
-	record->Direction = DirectionType(sqlite3_column_int(statement, 6));
-	record->OffsetFlag = OffsetFlagType(sqlite3_column_int(statement, 7));
-	record->OrderPriceType = OrderPriceTypeType(sqlite3_column_int(statement, 8));
-	record->Price = sqlite3_column_double(statement, 9);
-	record->Volume = sqlite3_column_int64(statement, 10);
-	record->VolumeRemain = sqlite3_column_int64(statement, 11);
-	record->VolumeTraded = sqlite3_column_int64(statement, 12);
-	record->VolumeMultiple = sqlite3_column_int(statement, 13);
-	record->OrderStatus = OrderStatusType(sqlite3_column_int(statement, 14));
-	Strcpy(record->OrderDate, (const char*)sqlite3_column_text(statement, 15));
-	Strcpy(record->OrderTime, (const char*)sqlite3_column_text(statement, 16));
-	Strcpy(record->CancelDate, (const char*)sqlite3_column_text(statement, 17));
-	Strcpy(record->CancelTime, (const char*)sqlite3_column_text(statement, 18));
+	Strcpy(record->PrimaryAccountID, (const char*)sqlite3_column_text(statement, 2));
+	record->AccountType = AccountTypeType(sqlite3_column_int(statement, 3));
+	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 4));
+	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 5));
+	record->SecurityType = SecurityTypeType(sqlite3_column_int(statement, 6));
+	record->OrderID = sqlite3_column_int(statement, 7);
+	Strcpy(record->OrderSysID, (const char*)sqlite3_column_text(statement, 8));
+	record->Direction = DirectionType(sqlite3_column_int(statement, 9));
+	record->OffsetFlag = OffsetFlagType(sqlite3_column_int(statement, 10));
+	record->OrderPriceType = OrderPriceTypeType(sqlite3_column_int(statement, 11));
+	record->Price = sqlite3_column_double(statement, 12);
+	record->Volume = sqlite3_column_int64(statement, 13);
+	record->VolumeTotal = sqlite3_column_int64(statement, 14);
+	record->VolumeTraded = sqlite3_column_int64(statement, 15);
+	record->VolumeMultiple = sqlite3_column_int(statement, 16);
+	record->OrderStatus = OrderStatusType(sqlite3_column_int(statement, 17));
+	Strcpy(record->OrderDate, (const char*)sqlite3_column_text(statement, 18));
+	Strcpy(record->OrderTime, (const char*)sqlite3_column_text(statement, 19));
+	Strcpy(record->CancelDate, (const char*)sqlite3_column_text(statement, 20));
+	Strcpy(record->CancelTime, (const char*)sqlite3_column_text(statement, 21));
+	record->SessionID = sqlite3_column_int64(statement, 22);
+	record->ClientOrderID = sqlite3_column_int(statement, 23);
+	record->RequestID = sqlite3_column_int(statement, 24);
+	record->OfferID = sqlite3_column_int(statement, 25);
+	record->TradeGroupID = sqlite3_column_int(statement, 26);
+	record->RiskGroupID = sqlite3_column_int(statement, 27);
+	record->CommissionGroupID = sqlite3_column_int(statement, 28);
+	record->FrozenCash = sqlite3_column_double(statement, 29);
+	record->FrozenMargin = sqlite3_column_double(statement, 30);
+	record->FrozenCommission = sqlite3_column_double(statement, 31);
+	record->FrozenStampTax = sqlite3_column_double(statement, 32);
+	record->FrozenTransferFee = sqlite3_column_double(statement, 33);
+	record->RebuildMark = sqlite3_column_int(statement, 34);
+	record->IsForceClose = sqlite3_column_int(statement, 35);
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForTradeRecord(sqlite3_stmt* statement, Trade* record)
 {
 	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
-	sqlite3_bind_text(statement, 3, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 4, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_int(statement, 5, record->OrderID);
-	sqlite3_bind_text(statement, 6, record->TradeID, sizeof(record->TradeID), nullptr);
-	sqlite3_bind_int(statement, 7, int(record->Direction));
-	sqlite3_bind_int(statement, 8, int(record->OffsetFlag));
-	sqlite3_bind_double(statement, 9, record->Price);
-	sqlite3_bind_int64(statement, 10, record->Volume);
-	sqlite3_bind_double(statement, 11, record->TradeAmount);
-	sqlite3_bind_double(statement, 12, record->PremiumIn);
-	sqlite3_bind_double(statement, 13, record->PremiumOut);
-	sqlite3_bind_text(statement, 14, record->TradeDate, sizeof(record->TradeDate), nullptr);
-	sqlite3_bind_text(statement, 15, record->TradeTime, sizeof(record->TradeTime), nullptr);
+	sqlite3_bind_text(statement, 3, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
+	sqlite3_bind_int(statement, 4, int(record->AccountType));
+	sqlite3_bind_text(statement, 5, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 6, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_int(statement, 7, int(record->SecurityType));
+	sqlite3_bind_int(statement, 8, record->OrderID);
+	sqlite3_bind_text(statement, 9, record->OrderSysID, sizeof(record->OrderSysID), nullptr);
+	sqlite3_bind_text(statement, 10, record->TradeID, sizeof(record->TradeID), nullptr);
+	sqlite3_bind_int(statement, 11, int(record->Direction));
+	sqlite3_bind_int(statement, 12, int(record->OffsetFlag));
+	sqlite3_bind_double(statement, 13, record->Price);
+	sqlite3_bind_int64(statement, 14, record->Volume);
+	sqlite3_bind_int(statement, 15, record->VolumeMultiple);
+	sqlite3_bind_double(statement, 16, record->TradeAmount);
+	sqlite3_bind_double(statement, 17, record->Commission);
+	sqlite3_bind_double(statement, 18, record->StampTax);
+	sqlite3_bind_double(statement, 19, record->TransferFee);
+	sqlite3_bind_text(statement, 20, record->TradeDate, sizeof(record->TradeDate), nullptr);
+	sqlite3_bind_text(statement, 21, record->TradeTime, sizeof(record->TradeTime), nullptr);
 }
 void SqliteDB::SetStatementForTradeRecordUpdate(sqlite3_stmt* statement, Trade* record)
 {
 	sqlite3_bind_text(statement, 1, record->AccountID, sizeof(record->AccountID), nullptr);
-	sqlite3_bind_text(statement, 2, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_int(statement, 3, record->OrderID);
-	sqlite3_bind_int(statement, 4, int(record->OffsetFlag));
-	sqlite3_bind_double(statement, 5, record->Price);
-	sqlite3_bind_int64(statement, 6, record->Volume);
-	sqlite3_bind_double(statement, 7, record->TradeAmount);
-	sqlite3_bind_double(statement, 8, record->PremiumIn);
-	sqlite3_bind_double(statement, 9, record->PremiumOut);
-	sqlite3_bind_text(statement, 10, record->TradeDate, sizeof(record->TradeDate), nullptr);
-	sqlite3_bind_text(statement, 11, record->TradeTime, sizeof(record->TradeTime), nullptr);
-	sqlite3_bind_text(statement, 12, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 13, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 14, record->TradeID, sizeof(record->TradeID), nullptr);
-	sqlite3_bind_int(statement, 15, int(record->Direction));
+	sqlite3_bind_text(statement, 2, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
+	sqlite3_bind_int(statement, 3, int(record->AccountType));
+	sqlite3_bind_text(statement, 4, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_int(statement, 5, int(record->SecurityType));
+	sqlite3_bind_int(statement, 6, record->OrderID);
+	sqlite3_bind_text(statement, 7, record->OrderSysID, sizeof(record->OrderSysID), nullptr);
+	sqlite3_bind_int(statement, 8, int(record->OffsetFlag));
+	sqlite3_bind_double(statement, 9, record->Price);
+	sqlite3_bind_int64(statement, 10, record->Volume);
+	sqlite3_bind_int(statement, 11, record->VolumeMultiple);
+	sqlite3_bind_double(statement, 12, record->TradeAmount);
+	sqlite3_bind_double(statement, 13, record->Commission);
+	sqlite3_bind_double(statement, 14, record->StampTax);
+	sqlite3_bind_double(statement, 15, record->TransferFee);
+	sqlite3_bind_text(statement, 16, record->TradeDate, sizeof(record->TradeDate), nullptr);
+	sqlite3_bind_text(statement, 17, record->TradeTime, sizeof(record->TradeTime), nullptr);
+	sqlite3_bind_text(statement, 18, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 19, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 20, record->TradeID, sizeof(record->TradeID), nullptr);
+	sqlite3_bind_int(statement, 21, int(record->Direction));
 }
 void SqliteDB::SetStatementForTradePrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction)
 {
@@ -2098,22 +2699,28 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<Trade*>& records
 	Trade* record = Trade::Allocate();
 	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->AccountID, (const char*)sqlite3_column_text(statement, 1));
-	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 2));
-	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 3));
-	record->OrderID = sqlite3_column_int(statement, 4);
-	Strcpy(record->TradeID, (const char*)sqlite3_column_text(statement, 5));
-	record->Direction = DirectionType(sqlite3_column_int(statement, 6));
-	record->OffsetFlag = OffsetFlagType(sqlite3_column_int(statement, 7));
-	record->Price = sqlite3_column_double(statement, 8);
-	record->Volume = sqlite3_column_int64(statement, 9);
-	record->TradeAmount = sqlite3_column_double(statement, 10);
-	record->PremiumIn = sqlite3_column_double(statement, 11);
-	record->PremiumOut = sqlite3_column_double(statement, 12);
-	Strcpy(record->TradeDate, (const char*)sqlite3_column_text(statement, 13));
-	Strcpy(record->TradeTime, (const char*)sqlite3_column_text(statement, 14));
+	Strcpy(record->PrimaryAccountID, (const char*)sqlite3_column_text(statement, 2));
+	record->AccountType = AccountTypeType(sqlite3_column_int(statement, 3));
+	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 4));
+	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 5));
+	record->SecurityType = SecurityTypeType(sqlite3_column_int(statement, 6));
+	record->OrderID = sqlite3_column_int(statement, 7);
+	Strcpy(record->OrderSysID, (const char*)sqlite3_column_text(statement, 8));
+	Strcpy(record->TradeID, (const char*)sqlite3_column_text(statement, 9));
+	record->Direction = DirectionType(sqlite3_column_int(statement, 10));
+	record->OffsetFlag = OffsetFlagType(sqlite3_column_int(statement, 11));
+	record->Price = sqlite3_column_double(statement, 12);
+	record->Volume = sqlite3_column_int64(statement, 13);
+	record->VolumeMultiple = sqlite3_column_int(statement, 14);
+	record->TradeAmount = sqlite3_column_double(statement, 15);
+	record->Commission = sqlite3_column_double(statement, 16);
+	record->StampTax = sqlite3_column_double(statement, 17);
+	record->TransferFee = sqlite3_column_double(statement, 18);
+	Strcpy(record->TradeDate, (const char*)sqlite3_column_text(statement, 19));
+	Strcpy(record->TradeTime, (const char*)sqlite3_column_text(statement, 20));
 	records.push_back(record);
 }
-void SqliteDB::SetStatementForMdTickRecord(sqlite3_stmt* statement, MdTick* record)
+void SqliteDB::SetStatementForDepthMarketDataRecord(sqlite3_stmt* statement, DepthMarketData* record)
 {
 	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
@@ -2125,36 +2732,59 @@ void SqliteDB::SetStatementForMdTickRecord(sqlite3_stmt* statement, MdTick* reco
 	sqlite3_bind_double(statement, 8, record->OpenPrice);
 	sqlite3_bind_double(statement, 9, record->HighestPrice);
 	sqlite3_bind_double(statement, 10, record->LowestPrice);
-	sqlite3_bind_int64(statement, 11, record->Volume);
-	sqlite3_bind_double(statement, 12, record->Turnover);
-	sqlite3_bind_int64(statement, 13, record->OpenInterest);
-	sqlite3_bind_double(statement, 14, record->UpperLimitPrice);
-	sqlite3_bind_double(statement, 15, record->LowerLimitPrice);
-	sqlite3_bind_text(statement, 16, record->UpdateTime, sizeof(record->UpdateTime), nullptr);
-	sqlite3_bind_int(statement, 17, record->UpdateMillisec);
-	sqlite3_bind_double(statement, 18, record->AskPrice1);
-	sqlite3_bind_double(statement, 19, record->AskPrice2);
-	sqlite3_bind_double(statement, 20, record->AskPrice3);
-	sqlite3_bind_double(statement, 21, record->AskPrice4);
-	sqlite3_bind_double(statement, 22, record->AskPrice5);
-	sqlite3_bind_int64(statement, 23, record->AskVolume1);
-	sqlite3_bind_int64(statement, 24, record->AskVolume2);
-	sqlite3_bind_int64(statement, 25, record->AskVolume3);
-	sqlite3_bind_int64(statement, 26, record->AskVolume4);
-	sqlite3_bind_int64(statement, 27, record->AskVolume5);
-	sqlite3_bind_double(statement, 28, record->BidPrice1);
-	sqlite3_bind_double(statement, 29, record->BidPrice2);
-	sqlite3_bind_double(statement, 30, record->BidPrice3);
-	sqlite3_bind_double(statement, 31, record->BidPrice4);
-	sqlite3_bind_double(statement, 32, record->BidPrice5);
-	sqlite3_bind_int64(statement, 33, record->BidVolume1);
-	sqlite3_bind_int64(statement, 34, record->BidVolume2);
-	sqlite3_bind_int64(statement, 35, record->BidVolume3);
-	sqlite3_bind_int64(statement, 36, record->BidVolume4);
-	sqlite3_bind_int64(statement, 37, record->BidVolume5);
-	sqlite3_bind_double(statement, 38, record->AveragePrice);
+	sqlite3_bind_double(statement, 11, record->ClosePrice);
+	sqlite3_bind_int64(statement, 12, record->CurrVolume);
+	sqlite3_bind_int64(statement, 13, record->Volume);
+	sqlite3_bind_double(statement, 14, record->CurrTurnover);
+	sqlite3_bind_double(statement, 15, record->Turnover);
+	sqlite3_bind_int64(statement, 16, record->OpenInterest);
+	sqlite3_bind_double(statement, 17, record->SettlementPrice);
+	sqlite3_bind_double(statement, 18, record->UpperLimitPrice);
+	sqlite3_bind_double(statement, 19, record->LowerLimitPrice);
+	sqlite3_bind_double(statement, 20, record->AveragePrice);
+	sqlite3_bind_int64(statement, 21, record->UpdateTs);
+	sqlite3_bind_double(statement, 22, record->AskPrice1);
+	sqlite3_bind_double(statement, 23, record->AskPrice2);
+	sqlite3_bind_double(statement, 24, record->AskPrice3);
+	sqlite3_bind_double(statement, 25, record->AskPrice4);
+	sqlite3_bind_double(statement, 26, record->AskPrice5);
+	sqlite3_bind_double(statement, 27, record->AskPrice6);
+	sqlite3_bind_double(statement, 28, record->AskPrice7);
+	sqlite3_bind_double(statement, 29, record->AskPrice8);
+	sqlite3_bind_double(statement, 30, record->AskPrice9);
+	sqlite3_bind_double(statement, 31, record->AskPrice10);
+	sqlite3_bind_int64(statement, 32, record->AskVolume1);
+	sqlite3_bind_int64(statement, 33, record->AskVolume2);
+	sqlite3_bind_int64(statement, 34, record->AskVolume3);
+	sqlite3_bind_int64(statement, 35, record->AskVolume4);
+	sqlite3_bind_int64(statement, 36, record->AskVolume5);
+	sqlite3_bind_int64(statement, 37, record->AskVolume6);
+	sqlite3_bind_int64(statement, 38, record->AskVolume7);
+	sqlite3_bind_int64(statement, 39, record->AskVolume8);
+	sqlite3_bind_int64(statement, 40, record->AskVolume9);
+	sqlite3_bind_int64(statement, 41, record->AskVolume10);
+	sqlite3_bind_double(statement, 42, record->BidPrice1);
+	sqlite3_bind_double(statement, 43, record->BidPrice2);
+	sqlite3_bind_double(statement, 44, record->BidPrice3);
+	sqlite3_bind_double(statement, 45, record->BidPrice4);
+	sqlite3_bind_double(statement, 46, record->BidPrice5);
+	sqlite3_bind_double(statement, 47, record->BidPrice6);
+	sqlite3_bind_double(statement, 48, record->BidPrice7);
+	sqlite3_bind_double(statement, 49, record->BidPrice8);
+	sqlite3_bind_double(statement, 50, record->BidPrice9);
+	sqlite3_bind_double(statement, 51, record->BidPrice10);
+	sqlite3_bind_int64(statement, 52, record->BidVolume1);
+	sqlite3_bind_int64(statement, 53, record->BidVolume2);
+	sqlite3_bind_int64(statement, 54, record->BidVolume3);
+	sqlite3_bind_int64(statement, 55, record->BidVolume4);
+	sqlite3_bind_int64(statement, 56, record->BidVolume5);
+	sqlite3_bind_int64(statement, 57, record->BidVolume6);
+	sqlite3_bind_int64(statement, 58, record->BidVolume7);
+	sqlite3_bind_int64(statement, 59, record->BidVolume8);
+	sqlite3_bind_int64(statement, 60, record->BidVolume9);
+	sqlite3_bind_int64(statement, 61, record->BidVolume10);
 }
-void SqliteDB::SetStatementForMdTickRecordUpdate(sqlite3_stmt* statement, MdTick* record)
+void SqliteDB::SetStatementForDepthMarketDataRecordUpdate(sqlite3_stmt* statement, DepthMarketData* record)
 {
 	sqlite3_bind_double(statement, 1, record->LastPrice);
 	sqlite3_bind_double(statement, 2, record->PreSettlementPrice);
@@ -2163,47 +2793,70 @@ void SqliteDB::SetStatementForMdTickRecordUpdate(sqlite3_stmt* statement, MdTick
 	sqlite3_bind_double(statement, 5, record->OpenPrice);
 	sqlite3_bind_double(statement, 6, record->HighestPrice);
 	sqlite3_bind_double(statement, 7, record->LowestPrice);
-	sqlite3_bind_int64(statement, 8, record->Volume);
-	sqlite3_bind_double(statement, 9, record->Turnover);
-	sqlite3_bind_int64(statement, 10, record->OpenInterest);
-	sqlite3_bind_double(statement, 11, record->UpperLimitPrice);
-	sqlite3_bind_double(statement, 12, record->LowerLimitPrice);
-	sqlite3_bind_text(statement, 13, record->UpdateTime, sizeof(record->UpdateTime), nullptr);
-	sqlite3_bind_int(statement, 14, record->UpdateMillisec);
-	sqlite3_bind_double(statement, 15, record->AskPrice1);
-	sqlite3_bind_double(statement, 16, record->AskPrice2);
-	sqlite3_bind_double(statement, 17, record->AskPrice3);
-	sqlite3_bind_double(statement, 18, record->AskPrice4);
-	sqlite3_bind_double(statement, 19, record->AskPrice5);
-	sqlite3_bind_int64(statement, 20, record->AskVolume1);
-	sqlite3_bind_int64(statement, 21, record->AskVolume2);
-	sqlite3_bind_int64(statement, 22, record->AskVolume3);
-	sqlite3_bind_int64(statement, 23, record->AskVolume4);
-	sqlite3_bind_int64(statement, 24, record->AskVolume5);
-	sqlite3_bind_double(statement, 25, record->BidPrice1);
-	sqlite3_bind_double(statement, 26, record->BidPrice2);
-	sqlite3_bind_double(statement, 27, record->BidPrice3);
-	sqlite3_bind_double(statement, 28, record->BidPrice4);
-	sqlite3_bind_double(statement, 29, record->BidPrice5);
-	sqlite3_bind_int64(statement, 30, record->BidVolume1);
-	sqlite3_bind_int64(statement, 31, record->BidVolume2);
-	sqlite3_bind_int64(statement, 32, record->BidVolume3);
-	sqlite3_bind_int64(statement, 33, record->BidVolume4);
-	sqlite3_bind_int64(statement, 34, record->BidVolume5);
-	sqlite3_bind_double(statement, 35, record->AveragePrice);
-	sqlite3_bind_text(statement, 36, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 37, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 38, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_double(statement, 8, record->ClosePrice);
+	sqlite3_bind_int64(statement, 9, record->CurrVolume);
+	sqlite3_bind_int64(statement, 10, record->Volume);
+	sqlite3_bind_double(statement, 11, record->CurrTurnover);
+	sqlite3_bind_double(statement, 12, record->Turnover);
+	sqlite3_bind_int64(statement, 13, record->OpenInterest);
+	sqlite3_bind_double(statement, 14, record->SettlementPrice);
+	sqlite3_bind_double(statement, 15, record->UpperLimitPrice);
+	sqlite3_bind_double(statement, 16, record->LowerLimitPrice);
+	sqlite3_bind_double(statement, 17, record->AveragePrice);
+	sqlite3_bind_int64(statement, 18, record->UpdateTs);
+	sqlite3_bind_double(statement, 19, record->AskPrice1);
+	sqlite3_bind_double(statement, 20, record->AskPrice2);
+	sqlite3_bind_double(statement, 21, record->AskPrice3);
+	sqlite3_bind_double(statement, 22, record->AskPrice4);
+	sqlite3_bind_double(statement, 23, record->AskPrice5);
+	sqlite3_bind_double(statement, 24, record->AskPrice6);
+	sqlite3_bind_double(statement, 25, record->AskPrice7);
+	sqlite3_bind_double(statement, 26, record->AskPrice8);
+	sqlite3_bind_double(statement, 27, record->AskPrice9);
+	sqlite3_bind_double(statement, 28, record->AskPrice10);
+	sqlite3_bind_int64(statement, 29, record->AskVolume1);
+	sqlite3_bind_int64(statement, 30, record->AskVolume2);
+	sqlite3_bind_int64(statement, 31, record->AskVolume3);
+	sqlite3_bind_int64(statement, 32, record->AskVolume4);
+	sqlite3_bind_int64(statement, 33, record->AskVolume5);
+	sqlite3_bind_int64(statement, 34, record->AskVolume6);
+	sqlite3_bind_int64(statement, 35, record->AskVolume7);
+	sqlite3_bind_int64(statement, 36, record->AskVolume8);
+	sqlite3_bind_int64(statement, 37, record->AskVolume9);
+	sqlite3_bind_int64(statement, 38, record->AskVolume10);
+	sqlite3_bind_double(statement, 39, record->BidPrice1);
+	sqlite3_bind_double(statement, 40, record->BidPrice2);
+	sqlite3_bind_double(statement, 41, record->BidPrice3);
+	sqlite3_bind_double(statement, 42, record->BidPrice4);
+	sqlite3_bind_double(statement, 43, record->BidPrice5);
+	sqlite3_bind_double(statement, 44, record->BidPrice6);
+	sqlite3_bind_double(statement, 45, record->BidPrice7);
+	sqlite3_bind_double(statement, 46, record->BidPrice8);
+	sqlite3_bind_double(statement, 47, record->BidPrice9);
+	sqlite3_bind_double(statement, 48, record->BidPrice10);
+	sqlite3_bind_int64(statement, 49, record->BidVolume1);
+	sqlite3_bind_int64(statement, 50, record->BidVolume2);
+	sqlite3_bind_int64(statement, 51, record->BidVolume3);
+	sqlite3_bind_int64(statement, 52, record->BidVolume4);
+	sqlite3_bind_int64(statement, 53, record->BidVolume5);
+	sqlite3_bind_int64(statement, 54, record->BidVolume6);
+	sqlite3_bind_int64(statement, 55, record->BidVolume7);
+	sqlite3_bind_int64(statement, 56, record->BidVolume8);
+	sqlite3_bind_int64(statement, 57, record->BidVolume9);
+	sqlite3_bind_int64(statement, 58, record->BidVolume10);
+	sqlite3_bind_text(statement, 59, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 60, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 61, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
 }
-void SqliteDB::SetStatementForMdTickPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+void SqliteDB::SetStatementForDepthMarketDataPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
 	sqlite3_bind_text(statement, 1, TradingDay, sizeof(TradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, ExchangeID, sizeof(ExchangeID), nullptr);
 	sqlite3_bind_text(statement, 3, InstrumentID, sizeof(InstrumentID), nullptr);
 }
-void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<MdTick*>& records)
+void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<DepthMarketData*>& records)
 {
-	MdTick* record = MdTick::Allocate();
+	DepthMarketData* record = DepthMarketData::Allocate();
 	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 1));
 	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 2));
@@ -2214,33 +2867,57 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::vector<MdTick*>& record
 	record->OpenPrice = sqlite3_column_double(statement, 7);
 	record->HighestPrice = sqlite3_column_double(statement, 8);
 	record->LowestPrice = sqlite3_column_double(statement, 9);
-	record->Volume = sqlite3_column_int64(statement, 10);
-	record->Turnover = sqlite3_column_double(statement, 11);
-	record->OpenInterest = sqlite3_column_int64(statement, 12);
-	record->UpperLimitPrice = sqlite3_column_double(statement, 13);
-	record->LowerLimitPrice = sqlite3_column_double(statement, 14);
-	Strcpy(record->UpdateTime, (const char*)sqlite3_column_text(statement, 15));
-	record->UpdateMillisec = sqlite3_column_int(statement, 16);
-	record->AskPrice1 = sqlite3_column_double(statement, 17);
-	record->AskPrice2 = sqlite3_column_double(statement, 18);
-	record->AskPrice3 = sqlite3_column_double(statement, 19);
-	record->AskPrice4 = sqlite3_column_double(statement, 20);
-	record->AskPrice5 = sqlite3_column_double(statement, 21);
-	record->AskVolume1 = sqlite3_column_int64(statement, 22);
-	record->AskVolume2 = sqlite3_column_int64(statement, 23);
-	record->AskVolume3 = sqlite3_column_int64(statement, 24);
-	record->AskVolume4 = sqlite3_column_int64(statement, 25);
-	record->AskVolume5 = sqlite3_column_int64(statement, 26);
-	record->BidPrice1 = sqlite3_column_double(statement, 27);
-	record->BidPrice2 = sqlite3_column_double(statement, 28);
-	record->BidPrice3 = sqlite3_column_double(statement, 29);
-	record->BidPrice4 = sqlite3_column_double(statement, 30);
-	record->BidPrice5 = sqlite3_column_double(statement, 31);
-	record->BidVolume1 = sqlite3_column_int64(statement, 32);
-	record->BidVolume2 = sqlite3_column_int64(statement, 33);
-	record->BidVolume3 = sqlite3_column_int64(statement, 34);
-	record->BidVolume4 = sqlite3_column_int64(statement, 35);
-	record->BidVolume5 = sqlite3_column_int64(statement, 36);
-	record->AveragePrice = sqlite3_column_double(statement, 37);
+	record->ClosePrice = sqlite3_column_double(statement, 10);
+	record->CurrVolume = sqlite3_column_int64(statement, 11);
+	record->Volume = sqlite3_column_int64(statement, 12);
+	record->CurrTurnover = sqlite3_column_double(statement, 13);
+	record->Turnover = sqlite3_column_double(statement, 14);
+	record->OpenInterest = sqlite3_column_int64(statement, 15);
+	record->SettlementPrice = sqlite3_column_double(statement, 16);
+	record->UpperLimitPrice = sqlite3_column_double(statement, 17);
+	record->LowerLimitPrice = sqlite3_column_double(statement, 18);
+	record->AveragePrice = sqlite3_column_double(statement, 19);
+	record->UpdateTs = sqlite3_column_int64(statement, 20);
+	record->AskPrice1 = sqlite3_column_double(statement, 21);
+	record->AskPrice2 = sqlite3_column_double(statement, 22);
+	record->AskPrice3 = sqlite3_column_double(statement, 23);
+	record->AskPrice4 = sqlite3_column_double(statement, 24);
+	record->AskPrice5 = sqlite3_column_double(statement, 25);
+	record->AskPrice6 = sqlite3_column_double(statement, 26);
+	record->AskPrice7 = sqlite3_column_double(statement, 27);
+	record->AskPrice8 = sqlite3_column_double(statement, 28);
+	record->AskPrice9 = sqlite3_column_double(statement, 29);
+	record->AskPrice10 = sqlite3_column_double(statement, 30);
+	record->AskVolume1 = sqlite3_column_int64(statement, 31);
+	record->AskVolume2 = sqlite3_column_int64(statement, 32);
+	record->AskVolume3 = sqlite3_column_int64(statement, 33);
+	record->AskVolume4 = sqlite3_column_int64(statement, 34);
+	record->AskVolume5 = sqlite3_column_int64(statement, 35);
+	record->AskVolume6 = sqlite3_column_int64(statement, 36);
+	record->AskVolume7 = sqlite3_column_int64(statement, 37);
+	record->AskVolume8 = sqlite3_column_int64(statement, 38);
+	record->AskVolume9 = sqlite3_column_int64(statement, 39);
+	record->AskVolume10 = sqlite3_column_int64(statement, 40);
+	record->BidPrice1 = sqlite3_column_double(statement, 41);
+	record->BidPrice2 = sqlite3_column_double(statement, 42);
+	record->BidPrice3 = sqlite3_column_double(statement, 43);
+	record->BidPrice4 = sqlite3_column_double(statement, 44);
+	record->BidPrice5 = sqlite3_column_double(statement, 45);
+	record->BidPrice6 = sqlite3_column_double(statement, 46);
+	record->BidPrice7 = sqlite3_column_double(statement, 47);
+	record->BidPrice8 = sqlite3_column_double(statement, 48);
+	record->BidPrice9 = sqlite3_column_double(statement, 49);
+	record->BidPrice10 = sqlite3_column_double(statement, 50);
+	record->BidVolume1 = sqlite3_column_int64(statement, 51);
+	record->BidVolume2 = sqlite3_column_int64(statement, 52);
+	record->BidVolume3 = sqlite3_column_int64(statement, 53);
+	record->BidVolume4 = sqlite3_column_int64(statement, 54);
+	record->BidVolume5 = sqlite3_column_int64(statement, 55);
+	record->BidVolume6 = sqlite3_column_int64(statement, 56);
+	record->BidVolume7 = sqlite3_column_int64(statement, 57);
+	record->BidVolume8 = sqlite3_column_int64(statement, 58);
+	record->BidVolume9 = sqlite3_column_int64(statement, 59);
+	record->BidVolume10 = sqlite3_column_int64(statement, 60);
 	records.push_back(record);
 }
+

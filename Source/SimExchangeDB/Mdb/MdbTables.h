@@ -128,6 +128,37 @@ namespace mdb
 		InstrumentPrimaryKey* m_PrimaryKey;
 	};
 
+	class PrimaryAccountTable
+	{
+	public:
+		PrimaryAccountTable(Mdb* mdb);
+		~PrimaryAccountTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(PrimaryAccount* record);
+		void BatchInsert(std::list<mdb::PrimaryAccount*>* records);
+		void Erase(PrimaryAccount* record);
+		int EraseByOfferIDIndex();
+		bool Update(PrimaryAccount* const oldRecord, PrimaryAccount* const newRecord, bool updateDB = true);
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(PrimaryAccount* record);
+		void EraseIndex(PrimaryAccount* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		PrimaryAccountPrimaryKey* m_PrimaryKey;
+		PrimaryAccountIndexOfferID* m_OfferIDIndex;
+	};
+
 	class AccountTable
 	{
 	public:
@@ -157,6 +188,35 @@ namespace mdb
 		AccountPrimaryKey* m_PrimaryKey;
 	};
 
+	class CapitalTable
+	{
+	public:
+		CapitalTable(Mdb* mdb);
+		~CapitalTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(Capital* record);
+		void BatchInsert(std::list<mdb::Capital*>* records);
+		void Erase(Capital* record);
+		bool Update(Capital* const oldRecord, Capital* const newRecord, bool updateDB = true);
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(Capital* record);
+		void EraseIndex(Capital* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		CapitalPrimaryKey* m_PrimaryKey;
+	};
+
 	class PositionTable
 	{
 	public:
@@ -170,7 +230,7 @@ namespace mdb
 		bool Insert(Position* record);
 		void BatchInsert(std::list<mdb::Position*>* records);
 		void Erase(Position* record);
-		int EraseByAccountIndex(const DateType& TradingDay, const AccountIDType& AccountID);
+		int EraseByAccountIndex();
 		bool Update(Position* const oldRecord, Position* const newRecord, bool updateDB = true);
 		void TruncateTable();
 		void Dump(const char* dir);
@@ -247,33 +307,33 @@ namespace mdb
 		TradePrimaryKey* m_PrimaryKey;
 	};
 
-	class MdTickTable
+	class DepthMarketDataTable
 	{
 	public:
-		MdTickTable(Mdb* mdb);
-		~MdTickTable();
+		DepthMarketDataTable(Mdb* mdb);
+		~DepthMarketDataTable();
 		void Subscribe(MdbSubscriber* mdbSubscriber);
 		void UnSubscribe();
 		void LockShared();
 		void UnlockShared();
 		void InitDB();
-		bool Insert(MdTick* record);
-		void BatchInsert(std::list<mdb::MdTick*>* records);
-		void Erase(MdTick* record);
-		bool Update(MdTick* const oldRecord, MdTick* const newRecord, bool updateDB = true);
+		bool Insert(DepthMarketData* record);
+		void BatchInsert(std::list<mdb::DepthMarketData*>* records);
+		void Erase(DepthMarketData* record);
+		bool Update(DepthMarketData* const oldRecord, DepthMarketData* const newRecord, bool updateDB = true);
 		void TruncateTable();
 		void Dump(const char* dir);
 
 	private:
-		void EraseUniqueKey(MdTick* record);
-		void EraseIndex(MdTick* record);
+		void EraseUniqueKey(DepthMarketData* record);
+		void EraseIndex(DepthMarketData* record);
 
 	public:
 		std::atomic<bool> m_DBInited;
 		Mdb* m_Mdb;
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
-		MdTickPrimaryKey* m_PrimaryKey;
+		DepthMarketDataPrimaryKey* m_PrimaryKey;
 	};
 
 }

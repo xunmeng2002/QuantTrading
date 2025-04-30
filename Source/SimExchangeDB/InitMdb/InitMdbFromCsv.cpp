@@ -19,11 +19,13 @@ namespace mdb
 		LoadExchangeTable(mdb, dir);
 		LoadProductTable(mdb, dir);
 		LoadInstrumentTable(mdb, dir);
+		LoadPrimaryAccountTable(mdb, dir);
 		LoadAccountTable(mdb, dir);
+		LoadCapitalTable(mdb, dir);
 		LoadPositionTable(mdb, dir);
 		LoadOrderTable(mdb, dir);
 		LoadTradeTable(mdb, dir);
-		LoadMdTickTable(mdb, dir);
+		LoadDepthMarketDataTable(mdb, dir);
 	}
 
 	void InitMdbFromCsv::LoadTradingDayTable(Mdb* mdb, const char* dir)
@@ -54,7 +56,7 @@ namespace mdb
 			}
 
 			auto record = new TradingDay();
-			record->PK = csv_record.GetFieldAsInt("PK");
+			Strcpy(record->PK, csv_record.GetFieldAsString("PK"));
 			Strcpy(record->CurrTradingDay, csv_record.GetFieldAsString("CurrTradingDay"));
 			Strcpy(record->PreTradingDay, csv_record.GetFieldAsString("PreTradingDay"));
 			mdb->t_TradingDay->Insert(record);
@@ -126,7 +128,7 @@ namespace mdb
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->ProductID, csv_record.GetFieldAsString("ProductID"));
 			Strcpy(record->ProductName, csv_record.GetFieldAsString("ProductName"));
-			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			record->SecurityType = (SecurityTypeType)csv_record.GetFieldAsInt("SecurityType");
 			record->VolumeMultiple = csv_record.GetFieldAsInt("VolumeMultiple");
 			record->PriceTick = csv_record.GetFieldAsDouble("PriceTick");
 			record->MaxMarketOrderVolume = csv_record.GetFieldAsInt64("MaxMarketOrderVolume");
@@ -166,11 +168,14 @@ namespace mdb
 			}
 
 			auto record = new Instrument();
+			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			Strcpy(record->ExchangeInstID, csv_record.GetFieldAsString("ExchangeInstID"));
 			Strcpy(record->InstrumentName, csv_record.GetFieldAsString("InstrumentName"));
 			Strcpy(record->ProductID, csv_record.GetFieldAsString("ProductID"));
-			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			record->SecurityType = (SecurityTypeType)csv_record.GetFieldAsInt("SecurityType");
+			record->SecurityDetailType = (SecurityDetailTypeType)csv_record.GetFieldAsInt("SecurityDetailType");
 			record->VolumeMultiple = csv_record.GetFieldAsInt("VolumeMultiple");
 			record->PriceTick = csv_record.GetFieldAsDouble("PriceTick");
 			record->MaxMarketOrderVolume = csv_record.GetFieldAsInt64("MaxMarketOrderVolume");
@@ -178,9 +183,49 @@ namespace mdb
 			record->MaxLimitOrderVolume = csv_record.GetFieldAsInt64("MaxLimitOrderVolume");
 			record->MinLimitOrderVolume = csv_record.GetFieldAsInt64("MinLimitOrderVolume");
 			Strcpy(record->SessionName, csv_record.GetFieldAsString("SessionName"));
-			record->DeliveryYear = csv_record.GetFieldAsInt("DeliveryYear");
-			record->DeliveryMonth = csv_record.GetFieldAsInt("DeliveryMonth");
 			mdb->t_Instrument->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadPrimaryAccountTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_PrimaryAccount.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_PrimaryAccount.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_PrimaryAccount.csv failed");
+			}
+
+			auto record = new PrimaryAccount();
+			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
+			Strcpy(record->PrimaryAccountID, csv_record.GetFieldAsString("PrimaryAccountID"));
+			Strcpy(record->PrimaryAccountName, csv_record.GetFieldAsString("PrimaryAccountName"));
+			record->AccountClass = (AccountClassType)csv_record.GetFieldAsInt("AccountClass");
+			Strcpy(record->BrokerPassword, csv_record.GetFieldAsString("BrokerPassword"));
+			record->OfferID = csv_record.GetFieldAsInt("OfferID");
+			record->IsAllowLogin = (bool)csv_record.GetFieldAsInt("IsAllowLogin");
+			record->IsSimulateAccount = (bool)csv_record.GetFieldAsInt("IsSimulateAccount");
+			record->LoginStatus = (LoginStatusType)csv_record.GetFieldAsInt("LoginStatus");
+			record->InitStatus = (InitStatusType)csv_record.GetFieldAsInt("InitStatus");
+			mdb->t_PrimaryAccount->Insert(record);
 		}
 		file.close();
 	}
@@ -215,16 +260,69 @@ namespace mdb
 			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			Strcpy(record->AccountName, csv_record.GetFieldAsString("AccountName"));
+			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
+			record->AccountStatus = (AccountStatusType)csv_record.GetFieldAsInt("AccountStatus");
 			Strcpy(record->Password, csv_record.GetFieldAsString("Password"));
-			record->PreBalance = csv_record.GetFieldAsDouble("PreBalance");
-			record->Balance = csv_record.GetFieldAsDouble("Balance");
-			record->CloseProfitByDate = csv_record.GetFieldAsDouble("CloseProfitByDate");
-			record->PositionProfitByDate = csv_record.GetFieldAsDouble("PositionProfitByDate");
-			record->PositionProfitByTrade = csv_record.GetFieldAsDouble("PositionProfitByTrade");
-			record->PremiumIn = csv_record.GetFieldAsDouble("PremiumIn");
-			record->PremiumOut = csv_record.GetFieldAsDouble("PremiumOut");
-			record->MarketValue = csv_record.GetFieldAsDouble("MarketValue");
+			record->TradeGroupID = csv_record.GetFieldAsInt("TradeGroupID");
+			record->RiskGroupID = csv_record.GetFieldAsInt("RiskGroupID");
+			record->CommissionGroupID = csv_record.GetFieldAsInt("CommissionGroupID");
 			mdb->t_Account->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadCapitalTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_Capital.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_Capital.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_Capital.csv failed");
+			}
+
+			auto record = new Capital();
+			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
+			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
+			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
+			record->Asset = csv_record.GetFieldAsDouble("Asset");
+			record->PreAsset = csv_record.GetFieldAsDouble("PreAsset");
+			record->CashAsset = csv_record.GetFieldAsDouble("CashAsset");
+			record->PreCashAsset = csv_record.GetFieldAsDouble("PreCashAsset");
+			record->Available = csv_record.GetFieldAsDouble("Available");
+			record->CashIn = csv_record.GetFieldAsDouble("CashIn");
+			record->CashOut = csv_record.GetFieldAsDouble("CashOut");
+			record->Margin = csv_record.GetFieldAsDouble("Margin");
+			record->Commission = csv_record.GetFieldAsDouble("Commission");
+			record->StampTax = csv_record.GetFieldAsDouble("StampTax");
+			record->TransferFee = csv_record.GetFieldAsDouble("TransferFee");
+			record->FrozenCash = csv_record.GetFieldAsDouble("FrozenCash");
+			record->FrozenMargin = csv_record.GetFieldAsDouble("FrozenMargin");
+			record->FrozenCommission = csv_record.GetFieldAsDouble("FrozenCommission");
+			record->FrozenStampTax = csv_record.GetFieldAsDouble("FrozenStampTax");
+			record->FrozenTransferFee = csv_record.GetFieldAsDouble("FrozenTransferFee");
+			record->MarketValue = csv_record.GetFieldAsDouble("MarketValue");
+			record->TotalProfit = csv_record.GetFieldAsDouble("TotalProfit");
+			record->TodayProfit = csv_record.GetFieldAsDouble("TodayProfit");
+			record->Deposit = csv_record.GetFieldAsDouble("Deposit");
+			record->Withdraw = csv_record.GetFieldAsDouble("Withdraw");
+			mdb->t_Capital->Insert(record);
 		}
 		file.close();
 	}
@@ -258,23 +356,33 @@ namespace mdb
 			auto record = new Position();
 			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
+			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
-			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			record->SecurityType = (SecurityTypeType)csv_record.GetFieldAsInt("SecurityType");
 			record->PosiDirection = (PosiDirectionType)csv_record.GetFieldAsInt("PosiDirection");
 			record->TotalPosition = csv_record.GetFieldAsInt64("TotalPosition");
+			record->PositionFrozen = csv_record.GetFieldAsInt64("PositionFrozen");
 			record->TodayPosition = csv_record.GetFieldAsInt64("TodayPosition");
-			record->FrozenPosition = csv_record.GetFieldAsInt64("FrozenPosition");
-			record->CloseProfitByDate = csv_record.GetFieldAsDouble("CloseProfitByDate");
-			record->CloseProfitByTrade = csv_record.GetFieldAsDouble("CloseProfitByTrade");
-			record->PositionProfitByDate = csv_record.GetFieldAsDouble("PositionProfitByDate");
-			record->PositionProfitByTrade = csv_record.GetFieldAsDouble("PositionProfitByTrade");
-			record->PremiumIn = csv_record.GetFieldAsDouble("PremiumIn");
-			record->PremiumOut = csv_record.GetFieldAsDouble("PremiumOut");
+			record->CashIn = csv_record.GetFieldAsDouble("CashIn");
+			record->CashOut = csv_record.GetFieldAsDouble("CashOut");
+			record->Margin = csv_record.GetFieldAsDouble("Margin");
+			record->Commission = csv_record.GetFieldAsDouble("Commission");
+			record->StampTax = csv_record.GetFieldAsDouble("StampTax");
+			record->TransferFee = csv_record.GetFieldAsDouble("TransferFee");
+			record->FrozenCash = csv_record.GetFieldAsDouble("FrozenCash");
+			record->FrozenMargin = csv_record.GetFieldAsDouble("FrozenMargin");
+			record->FrozenCommission = csv_record.GetFieldAsDouble("FrozenCommission");
+			record->FrozenStampTax = csv_record.GetFieldAsDouble("FrozenStampTax");
+			record->FrozenTransferFee = csv_record.GetFieldAsDouble("FrozenTransferFee");
 			record->MarketValue = csv_record.GetFieldAsDouble("MarketValue");
 			record->VolumeMultiple = csv_record.GetFieldAsInt("VolumeMultiple");
-			record->SettlementPrice = csv_record.GetFieldAsDouble("SettlementPrice");
-			record->PreSettlementPrice = csv_record.GetFieldAsDouble("PreSettlementPrice");
+			record->CloseProfit = csv_record.GetFieldAsDouble("CloseProfit");
+			record->CloseProfitFloat = csv_record.GetFieldAsDouble("CloseProfitFloat");
+			record->PositionProfit = csv_record.GetFieldAsDouble("PositionProfit");
+			record->PositionProfitFloat = csv_record.GetFieldAsDouble("PositionProfitFloat");
+			record->LastPrice = csv_record.GetFieldAsDouble("LastPrice");
+			record->PrePrice = csv_record.GetFieldAsDouble("PrePrice");
 			mdb->t_Position->Insert(record);
 		}
 		file.close();
@@ -309,16 +417,19 @@ namespace mdb
 			auto record = new Order();
 			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
+			Strcpy(record->PrimaryAccountID, csv_record.GetFieldAsString("PrimaryAccountID"));
+			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			record->SecurityType = (SecurityTypeType)csv_record.GetFieldAsInt("SecurityType");
 			record->OrderID = csv_record.GetFieldAsInt("OrderID");
-			record->ClientOrderID = csv_record.GetFieldAsInt("ClientOrderID");
+			Strcpy(record->OrderSysID, csv_record.GetFieldAsString("OrderSysID"));
 			record->Direction = (DirectionType)csv_record.GetFieldAsInt("Direction");
 			record->OffsetFlag = (OffsetFlagType)csv_record.GetFieldAsInt("OffsetFlag");
 			record->OrderPriceType = (OrderPriceTypeType)csv_record.GetFieldAsInt("OrderPriceType");
 			record->Price = csv_record.GetFieldAsDouble("Price");
 			record->Volume = csv_record.GetFieldAsInt64("Volume");
-			record->VolumeRemain = csv_record.GetFieldAsInt64("VolumeRemain");
+			record->VolumeTotal = csv_record.GetFieldAsInt64("VolumeTotal");
 			record->VolumeTraded = csv_record.GetFieldAsInt64("VolumeTraded");
 			record->VolumeMultiple = csv_record.GetFieldAsInt("VolumeMultiple");
 			record->OrderStatus = (OrderStatusType)csv_record.GetFieldAsInt("OrderStatus");
@@ -326,6 +437,20 @@ namespace mdb
 			Strcpy(record->OrderTime, csv_record.GetFieldAsString("OrderTime"));
 			Strcpy(record->CancelDate, csv_record.GetFieldAsString("CancelDate"));
 			Strcpy(record->CancelTime, csv_record.GetFieldAsString("CancelTime"));
+			record->SessionID = csv_record.GetFieldAsInt64("SessionID");
+			record->ClientOrderID = csv_record.GetFieldAsInt("ClientOrderID");
+			record->RequestID = csv_record.GetFieldAsInt("RequestID");
+			record->OfferID = csv_record.GetFieldAsInt("OfferID");
+			record->TradeGroupID = csv_record.GetFieldAsInt("TradeGroupID");
+			record->RiskGroupID = csv_record.GetFieldAsInt("RiskGroupID");
+			record->CommissionGroupID = csv_record.GetFieldAsInt("CommissionGroupID");
+			record->FrozenCash = csv_record.GetFieldAsDouble("FrozenCash");
+			record->FrozenMargin = csv_record.GetFieldAsDouble("FrozenMargin");
+			record->FrozenCommission = csv_record.GetFieldAsDouble("FrozenCommission");
+			record->FrozenStampTax = csv_record.GetFieldAsDouble("FrozenStampTax");
+			record->FrozenTransferFee = csv_record.GetFieldAsDouble("FrozenTransferFee");
+			record->RebuildMark = (bool)csv_record.GetFieldAsInt("RebuildMark");
+			record->IsForceClose = (bool)csv_record.GetFieldAsInt("IsForceClose");
 			mdb->t_Order->Insert(record);
 		}
 		file.close();
@@ -360,27 +485,33 @@ namespace mdb
 			auto record = new Trade();
 			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
+			Strcpy(record->PrimaryAccountID, csv_record.GetFieldAsString("PrimaryAccountID"));
+			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			record->SecurityType = (SecurityTypeType)csv_record.GetFieldAsInt("SecurityType");
 			record->OrderID = csv_record.GetFieldAsInt("OrderID");
+			Strcpy(record->OrderSysID, csv_record.GetFieldAsString("OrderSysID"));
 			Strcpy(record->TradeID, csv_record.GetFieldAsString("TradeID"));
 			record->Direction = (DirectionType)csv_record.GetFieldAsInt("Direction");
 			record->OffsetFlag = (OffsetFlagType)csv_record.GetFieldAsInt("OffsetFlag");
 			record->Price = csv_record.GetFieldAsDouble("Price");
 			record->Volume = csv_record.GetFieldAsInt64("Volume");
+			record->VolumeMultiple = csv_record.GetFieldAsInt("VolumeMultiple");
 			record->TradeAmount = csv_record.GetFieldAsDouble("TradeAmount");
-			record->PremiumIn = csv_record.GetFieldAsDouble("PremiumIn");
-			record->PremiumOut = csv_record.GetFieldAsDouble("PremiumOut");
+			record->Commission = csv_record.GetFieldAsDouble("Commission");
+			record->StampTax = csv_record.GetFieldAsDouble("StampTax");
+			record->TransferFee = csv_record.GetFieldAsDouble("TransferFee");
 			Strcpy(record->TradeDate, csv_record.GetFieldAsString("TradeDate"));
 			Strcpy(record->TradeTime, csv_record.GetFieldAsString("TradeTime"));
 			mdb->t_Trade->Insert(record);
 		}
 		file.close();
 	}
-	void InitMdbFromCsv::LoadMdTickTable(Mdb* mdb, const char* dir)
+	void InitMdbFromCsv::LoadDepthMarketDataTable(Mdb* mdb, const char* dir)
 	{
 		char fullPath[260];
-		sprintf(fullPath, "%s/t_MdTick.csv", dir);
+		sprintf(fullPath, "%s/t_DepthMarketData.csv", dir);
 		fstream file(fullPath, fstream::in);
 		if (!file)
 		{
@@ -391,7 +522,7 @@ namespace mdb
 		CSVRecord csv_record;
 		if (!csv_record.AnalysisFieldName(HeaderBuffer))
 		{
-			throw std::string("AnalysisFieldName t_MdTick.csv failed");
+			throw std::string("AnalysisFieldName t_DepthMarketData.csv failed");
 		}
 		while (!file.eof())
 		{
@@ -401,10 +532,10 @@ namespace mdb
 				break;
 			if (!csv_record.AnalysisFieldContent(ContentBuffer))
 			{
-				throw std::string("AnalysisFieldContent t_MdTick.csv failed");
+				throw std::string("AnalysisFieldContent t_DepthMarketData.csv failed");
 			}
 
-			auto record = new MdTick();
+			auto record = new DepthMarketData();
 			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
@@ -415,35 +546,58 @@ namespace mdb
 			record->OpenPrice = csv_record.GetFieldAsDouble("OpenPrice");
 			record->HighestPrice = csv_record.GetFieldAsDouble("HighestPrice");
 			record->LowestPrice = csv_record.GetFieldAsDouble("LowestPrice");
+			record->ClosePrice = csv_record.GetFieldAsDouble("ClosePrice");
+			record->CurrVolume = csv_record.GetFieldAsInt64("CurrVolume");
 			record->Volume = csv_record.GetFieldAsInt64("Volume");
+			record->CurrTurnover = csv_record.GetFieldAsDouble("CurrTurnover");
 			record->Turnover = csv_record.GetFieldAsDouble("Turnover");
 			record->OpenInterest = csv_record.GetFieldAsInt64("OpenInterest");
+			record->SettlementPrice = csv_record.GetFieldAsDouble("SettlementPrice");
 			record->UpperLimitPrice = csv_record.GetFieldAsDouble("UpperLimitPrice");
 			record->LowerLimitPrice = csv_record.GetFieldAsDouble("LowerLimitPrice");
-			Strcpy(record->UpdateTime, csv_record.GetFieldAsString("UpdateTime"));
-			record->UpdateMillisec = csv_record.GetFieldAsInt("UpdateMillisec");
+			record->AveragePrice = csv_record.GetFieldAsDouble("AveragePrice");
+			record->UpdateTs = csv_record.GetFieldAsInt64("UpdateTs");
 			record->AskPrice1 = csv_record.GetFieldAsDouble("AskPrice1");
 			record->AskPrice2 = csv_record.GetFieldAsDouble("AskPrice2");
 			record->AskPrice3 = csv_record.GetFieldAsDouble("AskPrice3");
 			record->AskPrice4 = csv_record.GetFieldAsDouble("AskPrice4");
 			record->AskPrice5 = csv_record.GetFieldAsDouble("AskPrice5");
+			record->AskPrice6 = csv_record.GetFieldAsDouble("AskPrice6");
+			record->AskPrice7 = csv_record.GetFieldAsDouble("AskPrice7");
+			record->AskPrice8 = csv_record.GetFieldAsDouble("AskPrice8");
+			record->AskPrice9 = csv_record.GetFieldAsDouble("AskPrice9");
+			record->AskPrice10 = csv_record.GetFieldAsDouble("AskPrice10");
 			record->AskVolume1 = csv_record.GetFieldAsInt64("AskVolume1");
 			record->AskVolume2 = csv_record.GetFieldAsInt64("AskVolume2");
 			record->AskVolume3 = csv_record.GetFieldAsInt64("AskVolume3");
 			record->AskVolume4 = csv_record.GetFieldAsInt64("AskVolume4");
 			record->AskVolume5 = csv_record.GetFieldAsInt64("AskVolume5");
+			record->AskVolume6 = csv_record.GetFieldAsInt64("AskVolume6");
+			record->AskVolume7 = csv_record.GetFieldAsInt64("AskVolume7");
+			record->AskVolume8 = csv_record.GetFieldAsInt64("AskVolume8");
+			record->AskVolume9 = csv_record.GetFieldAsInt64("AskVolume9");
+			record->AskVolume10 = csv_record.GetFieldAsInt64("AskVolume10");
 			record->BidPrice1 = csv_record.GetFieldAsDouble("BidPrice1");
 			record->BidPrice2 = csv_record.GetFieldAsDouble("BidPrice2");
 			record->BidPrice3 = csv_record.GetFieldAsDouble("BidPrice3");
 			record->BidPrice4 = csv_record.GetFieldAsDouble("BidPrice4");
 			record->BidPrice5 = csv_record.GetFieldAsDouble("BidPrice5");
+			record->BidPrice6 = csv_record.GetFieldAsDouble("BidPrice6");
+			record->BidPrice7 = csv_record.GetFieldAsDouble("BidPrice7");
+			record->BidPrice8 = csv_record.GetFieldAsDouble("BidPrice8");
+			record->BidPrice9 = csv_record.GetFieldAsDouble("BidPrice9");
+			record->BidPrice10 = csv_record.GetFieldAsDouble("BidPrice10");
 			record->BidVolume1 = csv_record.GetFieldAsInt64("BidVolume1");
 			record->BidVolume2 = csv_record.GetFieldAsInt64("BidVolume2");
 			record->BidVolume3 = csv_record.GetFieldAsInt64("BidVolume3");
 			record->BidVolume4 = csv_record.GetFieldAsInt64("BidVolume4");
 			record->BidVolume5 = csv_record.GetFieldAsInt64("BidVolume5");
-			record->AveragePrice = csv_record.GetFieldAsDouble("AveragePrice");
-			mdb->t_MdTick->Insert(record);
+			record->BidVolume6 = csv_record.GetFieldAsInt64("BidVolume6");
+			record->BidVolume7 = csv_record.GetFieldAsInt64("BidVolume7");
+			record->BidVolume8 = csv_record.GetFieldAsInt64("BidVolume8");
+			record->BidVolume9 = csv_record.GetFieldAsInt64("BidVolume9");
+			record->BidVolume10 = csv_record.GetFieldAsInt64("BidVolume10");
+			mdb->t_DepthMarketData->Insert(record);
 		}
 		file.close();
 	}

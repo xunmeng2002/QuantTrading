@@ -24,35 +24,50 @@ public:
 	virtual void UpdateTradingDay(mdb::TradingDay* record) override;
 	virtual void SelectTradingDay(std::vector<mdb::TradingDay*>& records) override;
 	virtual void TruncateTradingDay() override;
-	
+
 	virtual void InsertExchange(mdb::Exchange* record) override;
 	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) override;
 	virtual void DeleteExchange(mdb::Exchange* record) override;
 	virtual void UpdateExchange(mdb::Exchange* record) override;
 	virtual void SelectExchange(std::vector<mdb::Exchange*>& records) override;
 	virtual void TruncateExchange() override;
-	
+
 	virtual void InsertProduct(mdb::Product* record) override;
 	virtual void BatchInsertProduct(std::list<mdb::Product*>* records) override;
 	virtual void DeleteProduct(mdb::Product* record) override;
 	virtual void UpdateProduct(mdb::Product* record) override;
 	virtual void SelectProduct(std::vector<mdb::Product*>& records) override;
 	virtual void TruncateProduct() override;
-	
+
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
 	virtual void UpdateInstrument(mdb::Instrument* record) override;
 	virtual void SelectInstrument(std::vector<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
-	
+
+	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) override;
+	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) override;
+	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void SelectPrimaryAccount(std::vector<mdb::PrimaryAccount*>& records) override;
+	virtual void TruncatePrimaryAccount() override;
+
 	virtual void InsertAccount(mdb::Account* record) override;
 	virtual void BatchInsertAccount(std::list<mdb::Account*>* records) override;
 	virtual void DeleteAccount(mdb::Account* record) override;
 	virtual void UpdateAccount(mdb::Account* record) override;
 	virtual void SelectAccount(std::vector<mdb::Account*>& records) override;
 	virtual void TruncateAccount() override;
-	
+
+	virtual void InsertCapital(mdb::Capital* record) override;
+	virtual void BatchInsertCapital(std::list<mdb::Capital*>* records) override;
+	virtual void DeleteCapital(mdb::Capital* record) override;
+	virtual void UpdateCapital(mdb::Capital* record) override;
+	virtual void SelectCapital(std::vector<mdb::Capital*>& records) override;
+	virtual void TruncateCapital() override;
+
 	virtual void InsertPosition(mdb::Position* record) override;
 	virtual void BatchInsertPosition(std::list<mdb::Position*>* records) override;
 	virtual void DeletePosition(mdb::Position* record) override;
@@ -60,28 +75,28 @@ public:
 	virtual void UpdatePosition(mdb::Position* record) override;
 	virtual void SelectPosition(std::vector<mdb::Position*>& records) override;
 	virtual void TruncatePosition() override;
-	
+
 	virtual void InsertOrder(mdb::Order* record) override;
 	virtual void BatchInsertOrder(std::list<mdb::Order*>* records) override;
 	virtual void DeleteOrder(mdb::Order* record) override;
 	virtual void UpdateOrder(mdb::Order* record) override;
 	virtual void SelectOrder(std::vector<mdb::Order*>& records) override;
 	virtual void TruncateOrder() override;
-	
+
 	virtual void InsertTrade(mdb::Trade* record) override;
 	virtual void BatchInsertTrade(std::list<mdb::Trade*>* records) override;
 	virtual void DeleteTrade(mdb::Trade* record) override;
 	virtual void UpdateTrade(mdb::Trade* record) override;
 	virtual void SelectTrade(std::vector<mdb::Trade*>& records) override;
 	virtual void TruncateTrade() override;
-	
-	virtual void InsertMdTick(mdb::MdTick* record) override;
-	virtual void BatchInsertMdTick(std::list<mdb::MdTick*>* records) override;
-	virtual void DeleteMdTick(mdb::MdTick* record) override;
-	virtual void UpdateMdTick(mdb::MdTick* record) override;
-	virtual void SelectMdTick(std::vector<mdb::MdTick*>& records) override;
-	virtual void TruncateMdTick() override;
-	
+
+	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
+	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void SelectDepthMarketData(std::vector<mdb::DepthMarketData*>& records) override;
+	virtual void TruncateDepthMarketData() override;
+
 
 private:
 	bool AppendForTradingDayRecord(duckdb_appender appender, mdb::TradingDay* record);
@@ -104,11 +119,22 @@ private:
 	void SetStatementForInstrumentRecordUpdate(duckdb_prepared_statement statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement statement, mdb::Instrument* record);
 	void ParseRecord(duckdb_result& result, std::vector<mdb::Instrument*>& records);
+	bool AppendForPrimaryAccountRecord(duckdb_appender appender, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountRecord(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountRecordUpdate(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountPrimaryKey(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountIndexOfferID(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
+	void ParseRecord(duckdb_result& result, std::vector<mdb::PrimaryAccount*>& records);
 	bool AppendForAccountRecord(duckdb_appender appender, mdb::Account* record);
 	void SetStatementForAccountRecord(duckdb_prepared_statement statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(duckdb_prepared_statement statement, mdb::Account* record);
 	void SetStatementForAccountPrimaryKey(duckdb_prepared_statement statement, mdb::Account* record);
 	void ParseRecord(duckdb_result& result, std::vector<mdb::Account*>& records);
+	bool AppendForCapitalRecord(duckdb_appender appender, mdb::Capital* record);
+	void SetStatementForCapitalRecord(duckdb_prepared_statement statement, mdb::Capital* record);
+	void SetStatementForCapitalRecordUpdate(duckdb_prepared_statement statement, mdb::Capital* record);
+	void SetStatementForCapitalPrimaryKey(duckdb_prepared_statement statement, mdb::Capital* record);
+	void ParseRecord(duckdb_result& result, std::vector<mdb::Capital*>& records);
 	bool AppendForPositionRecord(duckdb_appender appender, mdb::Position* record);
 	void SetStatementForPositionRecord(duckdb_prepared_statement statement, mdb::Position* record);
 	void SetStatementForPositionRecordUpdate(duckdb_prepared_statement statement, mdb::Position* record);
@@ -125,11 +151,11 @@ private:
 	void SetStatementForTradeRecordUpdate(duckdb_prepared_statement statement, mdb::Trade* record);
 	void SetStatementForTradePrimaryKey(duckdb_prepared_statement statement, mdb::Trade* record);
 	void ParseRecord(duckdb_result& result, std::vector<mdb::Trade*>& records);
-	bool AppendForMdTickRecord(duckdb_appender appender, mdb::MdTick* record);
-	void SetStatementForMdTickRecord(duckdb_prepared_statement statement, mdb::MdTick* record);
-	void SetStatementForMdTickRecordUpdate(duckdb_prepared_statement statement, mdb::MdTick* record);
-	void SetStatementForMdTickPrimaryKey(duckdb_prepared_statement statement, mdb::MdTick* record);
-	void ParseRecord(duckdb_result& result, std::vector<mdb::MdTick*>& records);
+	bool AppendForDepthMarketDataRecord(duckdb_appender appender, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataRecord(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataRecordUpdate(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataPrimaryKey(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
+	void ParseRecord(duckdb_result& result, std::vector<mdb::DepthMarketData*>& records);
 
 
 private:
@@ -154,10 +180,19 @@ private:
 	duckdb_prepared_statement m_InstrumentUpdateStatement;
 	duckdb_prepared_statement m_InstrumentSelectStatement;
 	duckdb_prepared_statement m_InstrumentTruncateStatement;
+	duckdb_prepared_statement m_PrimaryAccountDeleteStatement;
+	duckdb_prepared_statement m_PrimaryAccountDeleteByOfferIDIndexStatement;
+	duckdb_prepared_statement m_PrimaryAccountUpdateStatement;
+	duckdb_prepared_statement m_PrimaryAccountSelectStatement;
+	duckdb_prepared_statement m_PrimaryAccountTruncateStatement;
 	duckdb_prepared_statement m_AccountDeleteStatement;
 	duckdb_prepared_statement m_AccountUpdateStatement;
 	duckdb_prepared_statement m_AccountSelectStatement;
 	duckdb_prepared_statement m_AccountTruncateStatement;
+	duckdb_prepared_statement m_CapitalDeleteStatement;
+	duckdb_prepared_statement m_CapitalUpdateStatement;
+	duckdb_prepared_statement m_CapitalSelectStatement;
+	duckdb_prepared_statement m_CapitalTruncateStatement;
 	duckdb_prepared_statement m_PositionDeleteStatement;
 	duckdb_prepared_statement m_PositionDeleteByAccountIndexStatement;
 	duckdb_prepared_statement m_PositionUpdateStatement;
@@ -171,8 +206,8 @@ private:
 	duckdb_prepared_statement m_TradeUpdateStatement;
 	duckdb_prepared_statement m_TradeSelectStatement;
 	duckdb_prepared_statement m_TradeTruncateStatement;
-	duckdb_prepared_statement m_MdTickDeleteStatement;
-	duckdb_prepared_statement m_MdTickUpdateStatement;
-	duckdb_prepared_statement m_MdTickSelectStatement;
-	duckdb_prepared_statement m_MdTickTruncateStatement;
+	duckdb_prepared_statement m_DepthMarketDataDeleteStatement;
+	duckdb_prepared_statement m_DepthMarketDataUpdateStatement;
+	duckdb_prepared_statement m_DepthMarketDataSelectStatement;
+	duckdb_prepared_statement m_DepthMarketDataTruncateStatement;
 };

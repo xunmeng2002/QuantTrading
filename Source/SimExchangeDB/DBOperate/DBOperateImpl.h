@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "DBOperate.h"
 
 class DBOperateImpl : public DBOperate

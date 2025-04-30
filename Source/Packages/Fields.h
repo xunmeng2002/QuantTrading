@@ -417,8 +417,8 @@ public:
 	PriceType ExecutePrice;		//行权价
 	MoneyType UnitMargin;		//单位保证金
 	PriceType PriceTick;		//最小变动价位
-	VolumeType MaxLimitOrderVolume;		//限价最大下单数量
-	VolumeType MaxMarketOrderVolume;		//市价最大下单数量
+	VolumeType MaxLimitOrderVolume;		//限价最大下单量
+	VolumeType MaxMarketOrderVolume;		//市价最大下单量
 	DateType ExpiringDate;		//到期日
 };
 class ReqQryCommissionRateField

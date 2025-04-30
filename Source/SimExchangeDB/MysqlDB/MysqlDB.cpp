@@ -46,11 +46,24 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
 
+	m_PrimaryAccountInsertStatement = nullptr;
+	m_PrimaryAccountDeleteStatement = nullptr;
+	m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	m_PrimaryAccountUpdateStatement = nullptr;
+	m_PrimaryAccountSelectStatement = nullptr;
+	m_PrimaryAccountTruncateStatement = nullptr;
+
 	m_AccountInsertStatement = nullptr;
 	m_AccountDeleteStatement = nullptr;
 	m_AccountUpdateStatement = nullptr;
 	m_AccountSelectStatement = nullptr;
 	m_AccountTruncateStatement = nullptr;
+
+	m_CapitalInsertStatement = nullptr;
+	m_CapitalDeleteStatement = nullptr;
+	m_CapitalUpdateStatement = nullptr;
+	m_CapitalSelectStatement = nullptr;
+	m_CapitalTruncateStatement = nullptr;
 
 	m_PositionInsertStatement = nullptr;
 	m_PositionDeleteStatement = nullptr;
@@ -71,11 +84,11 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_TradeSelectStatement = nullptr;
 	m_TradeTruncateStatement = nullptr;
 
-	m_MdTickInsertStatement = nullptr;
-	m_MdTickDeleteStatement = nullptr;
-	m_MdTickUpdateStatement = nullptr;
-	m_MdTickSelectStatement = nullptr;
-	m_MdTickTruncateStatement = nullptr;
+	m_DepthMarketDataInsertStatement = nullptr;
+	m_DepthMarketDataDeleteStatement = nullptr;
+	m_DepthMarketDataUpdateStatement = nullptr;
+	m_DepthMarketDataSelectStatement = nullptr;
+	m_DepthMarketDataTruncateStatement = nullptr;
 
 }
 MysqlDB::~MysqlDB()
@@ -231,6 +244,36 @@ void MysqlDB::DisConnect()
 		m_InstrumentTruncateStatement->close();
 		m_InstrumentTruncateStatement = nullptr;
 	}
+	if (m_PrimaryAccountInsertStatement != nullptr)
+	{
+		m_PrimaryAccountInsertStatement->close();
+		m_PrimaryAccountInsertStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteStatement != nullptr)
+	{
+		m_PrimaryAccountDeleteStatement->close();
+		m_PrimaryAccountDeleteStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement != nullptr)
+	{
+		m_PrimaryAccountDeleteByOfferIDIndexStatement->close();
+		m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	}
+	if (m_PrimaryAccountUpdateStatement != nullptr)
+	{
+		m_PrimaryAccountUpdateStatement->close();
+		m_PrimaryAccountUpdateStatement = nullptr;
+	}
+	if (m_PrimaryAccountSelectStatement != nullptr)
+	{
+		m_PrimaryAccountSelectStatement->close();
+		m_PrimaryAccountSelectStatement = nullptr;
+	}
+	if (m_PrimaryAccountTruncateStatement != nullptr)
+	{
+		m_PrimaryAccountTruncateStatement->close();
+		m_PrimaryAccountTruncateStatement = nullptr;
+	}
 	if (m_AccountInsertStatement != nullptr)
 	{
 		m_AccountInsertStatement->close();
@@ -255,6 +298,31 @@ void MysqlDB::DisConnect()
 	{
 		m_AccountTruncateStatement->close();
 		m_AccountTruncateStatement = nullptr;
+	}
+	if (m_CapitalInsertStatement != nullptr)
+	{
+		m_CapitalInsertStatement->close();
+		m_CapitalInsertStatement = nullptr;
+	}
+	if (m_CapitalDeleteStatement != nullptr)
+	{
+		m_CapitalDeleteStatement->close();
+		m_CapitalDeleteStatement = nullptr;
+	}
+	if (m_CapitalUpdateStatement != nullptr)
+	{
+		m_CapitalUpdateStatement->close();
+		m_CapitalUpdateStatement = nullptr;
+	}
+	if (m_CapitalSelectStatement != nullptr)
+	{
+		m_CapitalSelectStatement->close();
+		m_CapitalSelectStatement = nullptr;
+	}
+	if (m_CapitalTruncateStatement != nullptr)
+	{
+		m_CapitalTruncateStatement->close();
+		m_CapitalTruncateStatement = nullptr;
 	}
 	if (m_PositionInsertStatement != nullptr)
 	{
@@ -336,30 +404,30 @@ void MysqlDB::DisConnect()
 		m_TradeTruncateStatement->close();
 		m_TradeTruncateStatement = nullptr;
 	}
-	if (m_MdTickInsertStatement != nullptr)
+	if (m_DepthMarketDataInsertStatement != nullptr)
 	{
-		m_MdTickInsertStatement->close();
-		m_MdTickInsertStatement = nullptr;
+		m_DepthMarketDataInsertStatement->close();
+		m_DepthMarketDataInsertStatement = nullptr;
 	}
-	if (m_MdTickDeleteStatement != nullptr)
+	if (m_DepthMarketDataDeleteStatement != nullptr)
 	{
-		m_MdTickDeleteStatement->close();
-		m_MdTickDeleteStatement = nullptr;
+		m_DepthMarketDataDeleteStatement->close();
+		m_DepthMarketDataDeleteStatement = nullptr;
 	}
-	if (m_MdTickUpdateStatement != nullptr)
+	if (m_DepthMarketDataUpdateStatement != nullptr)
 	{
-		m_MdTickUpdateStatement->close();
-		m_MdTickUpdateStatement = nullptr;
+		m_DepthMarketDataUpdateStatement->close();
+		m_DepthMarketDataUpdateStatement = nullptr;
 	}
-	if (m_MdTickSelectStatement != nullptr)
+	if (m_DepthMarketDataSelectStatement != nullptr)
 	{
-		m_MdTickSelectStatement->close();
-		m_MdTickSelectStatement = nullptr;
+		m_DepthMarketDataSelectStatement->close();
+		m_DepthMarketDataSelectStatement = nullptr;
 	}
-	if (m_MdTickTruncateStatement != nullptr)
+	if (m_DepthMarketDataTruncateStatement != nullptr)
 	{
-		m_MdTickTruncateStatement->close();
-		m_MdTickTruncateStatement = nullptr;
+		m_DepthMarketDataTruncateStatement->close();
+		m_DepthMarketDataTruncateStatement = nullptr;
 	}
 }
 void MysqlDB::InitDB()
@@ -372,21 +440,24 @@ void MysqlDB::InitDB()
 	m_Statement->executeUpdate("Insert Into t_Product select * from Init.t_Product;");
 	m_Statement->executeUpdate("Truncate Table t_Instrument;");
 	m_Statement->executeUpdate("Insert Into t_Instrument select * from Init.t_Instrument;");
+	m_Statement->executeUpdate("Truncate Table t_PrimaryAccount;");
+	m_Statement->executeUpdate("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
 	m_Statement->executeUpdate("Truncate Table t_Account;");
 	m_Statement->executeUpdate("Insert Into t_Account select * from Init.t_Account;");
+	m_Statement->executeUpdate("Truncate Table t_Capital;");
+	m_Statement->executeUpdate("Insert Into t_Capital select * from Init.t_Capital;");
 	m_Statement->executeUpdate("Truncate Table t_Position;");
 	m_Statement->executeUpdate("Insert Into t_Position select * from Init.t_Position;");
 	m_Statement->executeUpdate("Truncate Table t_Order;");
 	m_Statement->executeUpdate("Insert Into t_Order select * from Init.t_Order;");
 	m_Statement->executeUpdate("Truncate Table t_Trade;");
 	m_Statement->executeUpdate("Insert Into t_Trade select * from Init.t_Trade;");
-	m_Statement->executeUpdate("Truncate Table t_MdTick;");
-	m_Statement->executeUpdate("Insert Into t_MdTick select * from Init.t_MdTick;");
+	m_Statement->executeUpdate("Truncate Table t_DepthMarketData;");
+	m_Statement->executeUpdate("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 }
 void MysqlDB::TruncateSessionTables()
 {
 	auto start = steady_clock::now();
-	TruncateTradingDay();
 	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 void MysqlDB::TruncateTables()
@@ -394,11 +465,13 @@ void MysqlDB::TruncateTables()
 	TruncateTradingDay();
 	TruncateExchange();
 	TruncateProduct();
+	TruncatePrimaryAccount();
 	TruncateAccount();
+	TruncateCapital();
 	TruncatePosition();
 	TruncateOrder();
 	TruncateTrade();
-	TruncateMdTick();
+	TruncateDepthMarketData();
 }
 
 void MysqlDB::InsertTradingDay(TradingDay* record)
@@ -699,7 +772,7 @@ void MysqlDB::UpdateProduct(Product* record)
 	auto start = steady_clock::now();
 	if (m_ProductUpdateStatement == nullptr)
 	{
-		m_ProductUpdateStatement = m_DBConnection->prepareStatement("update t_Product set ProductName = ?, ProductClass = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and ProductID = ?;");
+		m_ProductUpdateStatement = m_DBConnection->prepareStatement("update t_Product set ProductName = ?, SecurityType = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and ProductID = ?;");
 	}
 	SetStatementForProductRecordUpdate(m_ProductUpdateStatement, record);
 	m_ProductUpdateStatement->executeUpdate();
@@ -742,7 +815,7 @@ void MysqlDB::InsertInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentInsertStatement == nullptr)
 	{
-		m_InstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_InstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForInstrumentRecord(m_InstrumentInsertStatement, record);
 	
@@ -811,7 +884,7 @@ void MysqlDB::UpdateInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentUpdateStatement == nullptr)
 	{
-		m_InstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_Instrument set InstrumentName = ?, ProductID = ?, ProductClass = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ?, DeliveryYear = ?, DeliveryMonth = ? where ExchangeID = ? and InstrumentID = ?;");
+		m_InstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_Instrument set TradingDay = ?, ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, SecurityType = ?, SecurityDetailType = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;");
 	}
 	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
 	m_InstrumentUpdateStatement->executeUpdate();
@@ -849,12 +922,139 @@ void MysqlDB::TruncateInstrument()
 	m_InstrumentTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
+void MysqlDB::InsertPrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountInsertStatement == nullptr)
+	{
+		m_PrimaryAccountInsertStatement = m_DBConnection->prepareStatement("insert into t_PrimaryAccount Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForPrimaryAccountRecord(m_PrimaryAccountInsertStatement, record);
+	
+	m_PrimaryAccountInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertPrimaryAccount(std::list<PrimaryAccount*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeletePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteStatement == nullptr)
+	{
+		m_PrimaryAccountDeleteStatement = m_DBConnection->prepareStatement("delete from t_PrimaryAccount where PrimaryAccountID = ?;");
+	}
+	SetStatementForPrimaryAccountPrimaryKey(m_PrimaryAccountDeleteStatement, record->PrimaryAccountID);
+	m_PrimaryAccountDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void MysqlDB::DeletePrimaryAccountByOfferIDIndex(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement == nullptr)
+	{
+		m_PrimaryAccountDeleteByOfferIDIndexStatement = m_DBConnection->prepareStatement("delete from t_PrimaryAccount where ;");
+	}
+	SetStatementForPrimaryAccountIndexOfferID(m_PrimaryAccountDeleteByOfferIDIndexStatement, record);
+	m_PrimaryAccountDeleteByOfferIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdatePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountUpdateStatement == nullptr)
+	{
+		m_PrimaryAccountUpdateStatement = m_DBConnection->prepareStatement("update t_PrimaryAccount set TradingDay = ?, PrimaryAccountName = ?, AccountClass = ?, BrokerPassword = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;");
+	}
+	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
+	m_PrimaryAccountUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectPrimaryAccount(std::vector<PrimaryAccount*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountSelectStatement == nullptr)
+	{
+		m_PrimaryAccountSelectStatement = m_DBConnection->prepareStatement("select * from t_PrimaryAccount;");
+	}
+	auto result = m_PrimaryAccountSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountTruncateStatement == nullptr)
+	{
+		m_PrimaryAccountTruncateStatement = m_DBConnection->prepareStatement("truncate table t_PrimaryAccount;");
+	}
+	m_PrimaryAccountTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncatePrimaryAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
 void MysqlDB::InsertAccount(Account* record)
 {
 	auto start = steady_clock::now();
 	if (m_AccountInsertStatement == nullptr)
 	{
-		m_AccountInsertStatement = m_DBConnection->prepareStatement("insert into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_AccountInsertStatement = m_DBConnection->prepareStatement("insert into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForAccountRecord(m_AccountInsertStatement, record);
 	
@@ -923,7 +1123,7 @@ void MysqlDB::UpdateAccount(Account* record)
 	auto start = steady_clock::now();
 	if (m_AccountUpdateStatement == nullptr)
 	{
-		m_AccountUpdateStatement = m_DBConnection->prepareStatement("update t_Account set TradingDay = ?, AccountName = ?, Password = ?, PreBalance = ?, Balance = ?, CloseProfitByDate = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, PremiumIn = ?, PremiumOut = ?, MarketValue = ? where AccountID = ?;");
+		m_AccountUpdateStatement = m_DBConnection->prepareStatement("update t_Account set TradingDay = ?, AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;");
 	}
 	SetStatementForAccountRecordUpdate(m_AccountUpdateStatement, record);
 	m_AccountUpdateStatement->executeUpdate();
@@ -961,12 +1161,124 @@ void MysqlDB::TruncateAccount()
 	m_AccountTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
+void MysqlDB::InsertCapital(Capital* record)
+{
+	auto start = steady_clock::now();
+	if (m_CapitalInsertStatement == nullptr)
+	{
+		m_CapitalInsertStatement = m_DBConnection->prepareStatement("insert into t_Capital Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForCapitalRecord(m_CapitalInsertStatement, record);
+	
+	m_CapitalInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertCapital Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertCapital(std::list<Capital*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Capital Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertCapital Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Capital Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertCapital Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertCapital RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteCapital(Capital* record)
+{
+	auto start = steady_clock::now();
+	if (m_CapitalDeleteStatement == nullptr)
+	{
+		m_CapitalDeleteStatement = m_DBConnection->prepareStatement("delete from t_Capital where AccountID = ?;");
+	}
+	SetStatementForCapitalPrimaryKey(m_CapitalDeleteStatement, record->AccountID);
+	m_CapitalDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteCapital Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateCapital(Capital* record)
+{
+	auto start = steady_clock::now();
+	if (m_CapitalUpdateStatement == nullptr)
+	{
+		m_CapitalUpdateStatement = m_DBConnection->prepareStatement("update t_Capital set TradingDay = ?, AccountType = ?, Asset = ?, PreAsset = ?, CashAsset = ?, PreCashAsset = ?, Available = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, StampTax = ?, TransferFee = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, FrozenStampTax = ?, FrozenTransferFee = ?, MarketValue = ?, TotalProfit = ?, TodayProfit = ?, Deposit = ?, Withdraw = ? where AccountID = ?;");
+	}
+	SetStatementForCapitalRecordUpdate(m_CapitalUpdateStatement, record);
+	m_CapitalUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateCapital Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectCapital(std::vector<Capital*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_CapitalSelectStatement == nullptr)
+	{
+		m_CapitalSelectStatement = m_DBConnection->prepareStatement("select * from t_Capital;");
+	}
+	auto result = m_CapitalSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectCapital Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateCapital()
+{
+	auto start = steady_clock::now();
+	if (m_CapitalTruncateStatement == nullptr)
+	{
+		m_CapitalTruncateStatement = m_DBConnection->prepareStatement("truncate table t_Capital;");
+	}
+	m_CapitalTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateCapital Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
 void MysqlDB::InsertPosition(Position* record)
 {
 	auto start = steady_clock::now();
 	if (m_PositionInsertStatement == nullptr)
 	{
-		m_PositionInsertStatement = m_DBConnection->prepareStatement("insert into t_Position Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_PositionInsertStatement = m_DBConnection->prepareStatement("insert into t_Position Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForPositionRecord(m_PositionInsertStatement, record);
 	
@@ -1035,7 +1347,7 @@ void MysqlDB::DeletePositionByAccountIndex(Position* record)
 	auto start = steady_clock::now();
 	if (m_PositionDeleteByAccountIndexStatement == nullptr)
 	{
-		m_PositionDeleteByAccountIndexStatement = m_DBConnection->prepareStatement("delete from t_Position where TradingDay = ? and AccountID = ?;");
+		m_PositionDeleteByAccountIndexStatement = m_DBConnection->prepareStatement("delete from t_Position where ;");
 	}
 	SetStatementForPositionIndexAccount(m_PositionDeleteByAccountIndexStatement, record);
 	m_PositionDeleteByAccountIndexStatement->executeUpdate();
@@ -1050,7 +1362,7 @@ void MysqlDB::UpdatePosition(Position* record)
 	auto start = steady_clock::now();
 	if (m_PositionUpdateStatement == nullptr)
 	{
-		m_PositionUpdateStatement = m_DBConnection->prepareStatement("update t_Position set ProductClass = ?, TotalPosition = ?, TodayPosition = ?, FrozenPosition = ?, CloseProfitByDate = ?, CloseProfitByTrade = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, PremiumIn = ?, PremiumOut = ?, MarketValue = ?, VolumeMultiple = ?, SettlementPrice = ?, PreSettlementPrice = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and PosiDirection = ?;");
+		m_PositionUpdateStatement = m_DBConnection->prepareStatement("update t_Position set AccountType = ?, SecurityType = ?, TotalPosition = ?, PositionFrozen = ?, TodayPosition = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, StampTax = ?, TransferFee = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, FrozenStampTax = ?, FrozenTransferFee = ?, MarketValue = ?, VolumeMultiple = ?, CloseProfit = ?, CloseProfitFloat = ?, PositionProfit = ?, PositionProfitFloat = ?, LastPrice = ?, PrePrice = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and PosiDirection = ?;");
 	}
 	SetStatementForPositionRecordUpdate(m_PositionUpdateStatement, record);
 	m_PositionUpdateStatement->executeUpdate();
@@ -1093,7 +1405,7 @@ void MysqlDB::InsertOrder(Order* record)
 	auto start = steady_clock::now();
 	if (m_OrderInsertStatement == nullptr)
 	{
-		m_OrderInsertStatement = m_DBConnection->prepareStatement("insert into t_Order Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_OrderInsertStatement = m_DBConnection->prepareStatement("insert into t_Order Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForOrderRecord(m_OrderInsertStatement, record);
 	
@@ -1162,7 +1474,7 @@ void MysqlDB::UpdateOrder(Order* record)
 	auto start = steady_clock::now();
 	if (m_OrderUpdateStatement == nullptr)
 	{
-		m_OrderUpdateStatement = m_DBConnection->prepareStatement("update t_Order set ClientOrderID = ?, Direction = ?, OffsetFlag = ?, OrderPriceType = ?, Price = ?, Volume = ?, VolumeRemain = ?, VolumeTraded = ?, VolumeMultiple = ?, OrderStatus = ?, OrderDate = ?, OrderTime = ?, CancelDate = ?, CancelTime = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;");
+		m_OrderUpdateStatement = m_DBConnection->prepareStatement("update t_Order set PrimaryAccountID = ?, AccountType = ?, SecurityType = ?, OrderSysID = ?, Direction = ?, OffsetFlag = ?, OrderPriceType = ?, Price = ?, Volume = ?, VolumeTotal = ?, VolumeTraded = ?, VolumeMultiple = ?, OrderStatus = ?, OrderDate = ?, OrderTime = ?, CancelDate = ?, CancelTime = ?, SessionID = ?, ClientOrderID = ?, RequestID = ?, OfferID = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, FrozenStampTax = ?, FrozenTransferFee = ?, RebuildMark = ?, IsForceClose = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;");
 	}
 	SetStatementForOrderRecordUpdate(m_OrderUpdateStatement, record);
 	m_OrderUpdateStatement->executeUpdate();
@@ -1205,7 +1517,7 @@ void MysqlDB::InsertTrade(Trade* record)
 	auto start = steady_clock::now();
 	if (m_TradeInsertStatement == nullptr)
 	{
-		m_TradeInsertStatement = m_DBConnection->prepareStatement("insert into t_Trade Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_TradeInsertStatement = m_DBConnection->prepareStatement("insert into t_Trade Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForTradeRecord(m_TradeInsertStatement, record);
 	
@@ -1274,7 +1586,7 @@ void MysqlDB::UpdateTrade(Trade* record)
 	auto start = steady_clock::now();
 	if (m_TradeUpdateStatement == nullptr)
 	{
-		m_TradeUpdateStatement = m_DBConnection->prepareStatement("update t_Trade set AccountID = ?, InstrumentID = ?, OrderID = ?, OffsetFlag = ?, Price = ?, Volume = ?, TradeAmount = ?, PremiumIn = ?, PremiumOut = ?, TradeDate = ?, TradeTime = ? where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;");
+		m_TradeUpdateStatement = m_DBConnection->prepareStatement("update t_Trade set AccountID = ?, PrimaryAccountID = ?, AccountType = ?, InstrumentID = ?, SecurityType = ?, OrderID = ?, OrderSysID = ?, OffsetFlag = ?, Price = ?, Volume = ?, VolumeMultiple = ?, TradeAmount = ?, Commission = ?, StampTax = ?, TransferFee = ?, TradeDate = ?, TradeTime = ? where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;");
 	}
 	SetStatementForTradeRecordUpdate(m_TradeUpdateStatement, record);
 	m_TradeUpdateStatement->executeUpdate();
@@ -1312,27 +1624,27 @@ void MysqlDB::TruncateTrade()
 	m_TradeTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateTrade Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void MysqlDB::InsertMdTick(MdTick* record)
+void MysqlDB::InsertDepthMarketData(DepthMarketData* record)
 {
 	auto start = steady_clock::now();
-	if (m_MdTickInsertStatement == nullptr)
+	if (m_DepthMarketDataInsertStatement == nullptr)
 	{
-		m_MdTickInsertStatement = m_DBConnection->prepareStatement("insert into t_MdTick Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_DepthMarketDataInsertStatement = m_DBConnection->prepareStatement("insert into t_DepthMarketData Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
-	SetStatementForMdTickRecord(m_MdTickInsertStatement, record);
+	SetStatementForDepthMarketDataRecord(m_DepthMarketDataInsertStatement, record);
 	
-	m_MdTickInsertStatement->executeUpdate();
+	m_DepthMarketDataInsertStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "InsertMdTick Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "InsertDepthMarketData Spend:%lldms", duration);
 	}
 }
-void MysqlDB::BatchInsertMdTick(std::list<MdTick*>* records)
+void MysqlDB::BatchInsertDepthMarketData(std::list<DepthMarketData*>* records)
 {
 	auto start = steady_clock::now();
 	memset(m_SqlBuff, 0, BuffSize);
-	strcpy(m_SqlBuff, "Insert into t_MdTick Values");
+	strcpy(m_SqlBuff, "Insert into t_DepthMarketData Values");
 	int n = (int)strlen(m_SqlBuff);
 	int i = 0;
 	for (auto it = records->begin(); it != records->end(); ++it, ++i)
@@ -1346,10 +1658,10 @@ void MysqlDB::BatchInsertMdTick(std::list<MdTick*>* records)
 			}
 			catch(exception e)
 			{
-				WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+				WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
 			}
 			memset(m_SqlBuff, 0, BuffSize);
-			strcpy(m_SqlBuff, "Insert into t_MdTick Values");
+			strcpy(m_SqlBuff, "Insert into t_DepthMarketData Values");
 			n = (int)strlen(m_SqlBuff);
 		}
 		n += (*it)->GetSqlString(m_SqlBuff + n);
@@ -1361,49 +1673,49 @@ void MysqlDB::BatchInsertMdTick(std::list<MdTick*>* records)
 	}
 	catch(exception e)
 	{
-		WriteLog(LogLevel::Warning, "BatchInsertMdTick Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+		WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
 	}
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertMdTick RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
-void MysqlDB::DeleteMdTick(MdTick* record)
+void MysqlDB::DeleteDepthMarketData(DepthMarketData* record)
 {
 	auto start = steady_clock::now();
-	if (m_MdTickDeleteStatement == nullptr)
+	if (m_DepthMarketDataDeleteStatement == nullptr)
 	{
-		m_MdTickDeleteStatement = m_DBConnection->prepareStatement("delete from t_MdTick where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;");
+		m_DepthMarketDataDeleteStatement = m_DBConnection->prepareStatement("delete from t_DepthMarketData where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;");
 	}
-	SetStatementForMdTickPrimaryKey(m_MdTickDeleteStatement, record->TradingDay, record->ExchangeID, record->InstrumentID);
-	m_MdTickDeleteStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "DeleteMdTick Spend:%lldms", duration);
-	}
-}
-void MysqlDB::UpdateMdTick(MdTick* record)
-{
-	auto start = steady_clock::now();
-	if (m_MdTickUpdateStatement == nullptr)
-	{
-		m_MdTickUpdateStatement = m_DBConnection->prepareStatement("update t_MdTick set LastPrice = ?, PreSettlementPrice = ?, PreClosePrice = ?, PreOpenInterest = ?, OpenPrice = ?, HighestPrice = ?, LowestPrice = ?, Volume = ?, Turnover = ?, OpenInterest = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, UpdateTime = ?, UpdateMillisec = ?, AskPrice1 = ?, AskPrice2 = ?, AskPrice3 = ?, AskPrice4 = ?, AskPrice5 = ?, AskVolume1 = ?, AskVolume2 = ?, AskVolume3 = ?, AskVolume4 = ?, AskVolume5 = ?, BidPrice1 = ?, BidPrice2 = ?, BidPrice3 = ?, BidPrice4 = ?, BidPrice5 = ?, BidVolume1 = ?, BidVolume2 = ?, BidVolume3 = ?, BidVolume4 = ?, BidVolume5 = ?, AveragePrice = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;");
-	}
-	SetStatementForMdTickRecordUpdate(m_MdTickUpdateStatement, record);
-	m_MdTickUpdateStatement->executeUpdate();
+	SetStatementForDepthMarketDataPrimaryKey(m_DepthMarketDataDeleteStatement, record->TradingDay, record->ExchangeID, record->InstrumentID);
+	m_DepthMarketDataDeleteStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "UpdateMdTick Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "DeleteDepthMarketData Spend:%lldms", duration);
 	}
 }
-void MysqlDB::SelectMdTick(std::vector<MdTick*>& records)
+void MysqlDB::UpdateDepthMarketData(DepthMarketData* record)
 {
 	auto start = steady_clock::now();
-	if (m_MdTickSelectStatement == nullptr)
+	if (m_DepthMarketDataUpdateStatement == nullptr)
 	{
-		m_MdTickSelectStatement = m_DBConnection->prepareStatement("select * from t_MdTick;");
+		m_DepthMarketDataUpdateStatement = m_DBConnection->prepareStatement("update t_DepthMarketData set LastPrice = ?, PreSettlementPrice = ?, PreClosePrice = ?, PreOpenInterest = ?, OpenPrice = ?, HighestPrice = ?, LowestPrice = ?, ClosePrice = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ?, SettlementPrice = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, AveragePrice = ?, UpdateTs = ?, AskPrice1 = ?, AskPrice2 = ?, AskPrice3 = ?, AskPrice4 = ?, AskPrice5 = ?, AskPrice6 = ?, AskPrice7 = ?, AskPrice8 = ?, AskPrice9 = ?, AskPrice10 = ?, AskVolume1 = ?, AskVolume2 = ?, AskVolume3 = ?, AskVolume4 = ?, AskVolume5 = ?, AskVolume6 = ?, AskVolume7 = ?, AskVolume8 = ?, AskVolume9 = ?, AskVolume10 = ?, BidPrice1 = ?, BidPrice2 = ?, BidPrice3 = ?, BidPrice4 = ?, BidPrice5 = ?, BidPrice6 = ?, BidPrice7 = ?, BidPrice8 = ?, BidPrice9 = ?, BidPrice10 = ?, BidVolume1 = ?, BidVolume2 = ?, BidVolume3 = ?, BidVolume4 = ?, BidVolume5 = ?, BidVolume6 = ?, BidVolume7 = ?, BidVolume8 = ?, BidVolume9 = ?, BidVolume10 = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;");
 	}
-	auto result = m_MdTickSelectStatement->executeQuery();
+	SetStatementForDepthMarketDataRecordUpdate(m_DepthMarketDataUpdateStatement, record);
+	m_DepthMarketDataUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectDepthMarketData(std::vector<DepthMarketData*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataSelectStatement == nullptr)
+	{
+		m_DepthMarketDataSelectStatement = m_DBConnection->prepareStatement("select * from t_DepthMarketData;");
+	}
+	auto result = m_DepthMarketDataSelectStatement->executeQuery();
 	while (result->next())
 	{
 		ParseRecord(result, records);
@@ -1411,24 +1723,24 @@ void MysqlDB::SelectMdTick(std::vector<MdTick*>& records)
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "SelectMdTick Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "SelectDepthMarketData Spend:%lldms", duration);
 	}
 }
-void MysqlDB::TruncateMdTick()
+void MysqlDB::TruncateDepthMarketData()
 {
 	auto start = steady_clock::now();
-	if (m_MdTickTruncateStatement == nullptr)
+	if (m_DepthMarketDataTruncateStatement == nullptr)
 	{
-		m_MdTickTruncateStatement = m_DBConnection->prepareStatement("truncate table t_MdTick;");
+		m_DepthMarketDataTruncateStatement = m_DBConnection->prepareStatement("truncate table t_DepthMarketData;");
 	}
-	m_MdTickTruncateStatement->executeQuery();
-	WriteLog(LogLevel::Info, "TruncateMdTick Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+	m_DepthMarketDataTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateDepthMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 
 
 void MysqlDB::SetStatementForTradingDayRecord(sql::PreparedStatement* statement, TradingDay* record)
 {
-	statement->setInt(1, record->PK);
+	statement->setString(1, record->PK);
 	statement->setString(2, record->CurrTradingDay);
 	statement->setString(3, record->PreTradingDay);
 }
@@ -1436,16 +1748,16 @@ void MysqlDB::SetStatementForTradingDayRecordUpdate(sql::PreparedStatement* stat
 {
 	statement->setString(1, record->CurrTradingDay);
 	statement->setString(2, record->PreTradingDay);
-	statement->setInt(3, record->PK);
+	statement->setString(3, record->PK);
 }
-void MysqlDB::SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const IntType& PK)
+void MysqlDB::SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const UserIDType& PK)
 {
-	statement->setInt(1, PK);
+	statement->setString(1, PK);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<TradingDay*>& records)
 {
 	TradingDay* record = TradingDay::Allocate();
-	record->PK = result->getInt(1);
+	Strcpy(record->PK, result->getString(1).c_str());
 	Strcpy(record->CurrTradingDay, result->getString(2).c_str());
 	Strcpy(record->PreTradingDay, result->getString(3).c_str());
 	records.push_back(record);
@@ -1476,7 +1788,7 @@ void MysqlDB::SetStatementForProductRecord(sql::PreparedStatement* statement, Pr
 	statement->setString(1, record->ExchangeID);
 	statement->setString(2, record->ProductID);
 	statement->setString(3, record->ProductName);
-	statement->setInt(4, int(record->ProductClass));
+	statement->setInt(4, int(record->SecurityType));
 	statement->setInt(5, record->VolumeMultiple);
 	statement->setDouble(6, record->PriceTick);
 	statement->setInt64(7, record->MaxMarketOrderVolume);
@@ -1488,7 +1800,7 @@ void MysqlDB::SetStatementForProductRecord(sql::PreparedStatement* statement, Pr
 void MysqlDB::SetStatementForProductRecordUpdate(sql::PreparedStatement* statement, Product* record)
 {
 	statement->setString(1, record->ProductName);
-	statement->setInt(2, int(record->ProductClass));
+	statement->setInt(2, int(record->SecurityType));
 	statement->setInt(3, record->VolumeMultiple);
 	statement->setDouble(4, record->PriceTick);
 	statement->setInt64(5, record->MaxMarketOrderVolume);
@@ -1510,7 +1822,7 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Product*>& records
 	Strcpy(record->ExchangeID, result->getString(1).c_str());
 	Strcpy(record->ProductID, result->getString(2).c_str());
 	Strcpy(record->ProductName, result->getString(3).c_str());
-	record->ProductClass = ProductClassType(result->getInt(4));
+	record->SecurityType = SecurityTypeType(result->getInt(4));
 	record->VolumeMultiple = result->getInt(5);
 	record->PriceTick = result->getDouble(6);
 	record->MaxMarketOrderVolume = result->getInt64(7);
@@ -1522,37 +1834,39 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Product*>& records
 }
 void MysqlDB::SetStatementForInstrumentRecord(sql::PreparedStatement* statement, Instrument* record)
 {
-	statement->setString(1, record->ExchangeID);
-	statement->setString(2, record->InstrumentID);
-	statement->setString(3, record->InstrumentName);
-	statement->setString(4, record->ProductID);
-	statement->setInt(5, int(record->ProductClass));
-	statement->setInt(6, record->VolumeMultiple);
-	statement->setDouble(7, record->PriceTick);
-	statement->setInt64(8, record->MaxMarketOrderVolume);
-	statement->setInt64(9, record->MinMarketOrderVolume);
-	statement->setInt64(10, record->MaxLimitOrderVolume);
-	statement->setInt64(11, record->MinLimitOrderVolume);
-	statement->setString(12, record->SessionName);
-	statement->setInt(13, record->DeliveryYear);
-	statement->setInt(14, record->DeliveryMonth);
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->ExchangeID);
+	statement->setString(3, record->InstrumentID);
+	statement->setString(4, record->ExchangeInstID);
+	statement->setString(5, record->InstrumentName);
+	statement->setString(6, record->ProductID);
+	statement->setInt(7, int(record->SecurityType));
+	statement->setInt(8, int(record->SecurityDetailType));
+	statement->setInt(9, record->VolumeMultiple);
+	statement->setDouble(10, record->PriceTick);
+	statement->setInt64(11, record->MaxMarketOrderVolume);
+	statement->setInt64(12, record->MinMarketOrderVolume);
+	statement->setInt64(13, record->MaxLimitOrderVolume);
+	statement->setInt64(14, record->MinLimitOrderVolume);
+	statement->setString(15, record->SessionName);
 }
 void MysqlDB::SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, Instrument* record)
 {
-	statement->setString(1, record->InstrumentName);
-	statement->setString(2, record->ProductID);
-	statement->setInt(3, int(record->ProductClass));
-	statement->setInt(4, record->VolumeMultiple);
-	statement->setDouble(5, record->PriceTick);
-	statement->setInt64(6, record->MaxMarketOrderVolume);
-	statement->setInt64(7, record->MinMarketOrderVolume);
-	statement->setInt64(8, record->MaxLimitOrderVolume);
-	statement->setInt64(9, record->MinLimitOrderVolume);
-	statement->setString(10, record->SessionName);
-	statement->setInt(11, record->DeliveryYear);
-	statement->setInt(12, record->DeliveryMonth);
-	statement->setString(13, record->ExchangeID);
-	statement->setString(14, record->InstrumentID);
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->ExchangeInstID);
+	statement->setString(3, record->InstrumentName);
+	statement->setString(4, record->ProductID);
+	statement->setInt(5, int(record->SecurityType));
+	statement->setInt(6, int(record->SecurityDetailType));
+	statement->setInt(7, record->VolumeMultiple);
+	statement->setDouble(8, record->PriceTick);
+	statement->setInt64(9, record->MaxMarketOrderVolume);
+	statement->setInt64(10, record->MinMarketOrderVolume);
+	statement->setInt64(11, record->MaxLimitOrderVolume);
+	statement->setInt64(12, record->MinLimitOrderVolume);
+	statement->setString(13, record->SessionName);
+	statement->setString(14, record->ExchangeID);
+	statement->setString(15, record->InstrumentID);
 }
 void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
@@ -1562,20 +1876,69 @@ void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statem
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Instrument*>& records)
 {
 	Instrument* record = Instrument::Allocate();
-	Strcpy(record->ExchangeID, result->getString(1).c_str());
-	Strcpy(record->InstrumentID, result->getString(2).c_str());
-	Strcpy(record->InstrumentName, result->getString(3).c_str());
-	Strcpy(record->ProductID, result->getString(4).c_str());
-	record->ProductClass = ProductClassType(result->getInt(5));
-	record->VolumeMultiple = result->getInt(6);
-	record->PriceTick = result->getDouble(7);
-	record->MaxMarketOrderVolume = result->getInt64(8);
-	record->MinMarketOrderVolume = result->getInt64(9);
-	record->MaxLimitOrderVolume = result->getInt64(10);
-	record->MinLimitOrderVolume = result->getInt64(11);
-	Strcpy(record->SessionName, result->getString(12).c_str());
-	record->DeliveryYear = result->getInt(13);
-	record->DeliveryMonth = result->getInt(14);
+	Strcpy(record->TradingDay, result->getString(1).c_str());
+	Strcpy(record->ExchangeID, result->getString(2).c_str());
+	Strcpy(record->InstrumentID, result->getString(3).c_str());
+	Strcpy(record->ExchangeInstID, result->getString(4).c_str());
+	Strcpy(record->InstrumentName, result->getString(5).c_str());
+	Strcpy(record->ProductID, result->getString(6).c_str());
+	record->SecurityType = SecurityTypeType(result->getInt(7));
+	record->SecurityDetailType = SecurityDetailTypeType(result->getInt(8));
+	record->VolumeMultiple = result->getInt(9);
+	record->PriceTick = result->getDouble(10);
+	record->MaxMarketOrderVolume = result->getInt64(11);
+	record->MinMarketOrderVolume = result->getInt64(12);
+	record->MaxLimitOrderVolume = result->getInt64(13);
+	record->MinLimitOrderVolume = result->getInt64(14);
+	Strcpy(record->SessionName, result->getString(15).c_str());
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statement, PrimaryAccount* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->PrimaryAccountID);
+	statement->setString(3, record->PrimaryAccountName);
+	statement->setInt(4, int(record->AccountClass));
+	statement->setString(5, record->BrokerPassword);
+	statement->setInt(6, record->OfferID);
+	statement->setBoolean(7, record->IsAllowLogin);
+	statement->setBoolean(8, record->IsSimulateAccount);
+	statement->setInt(9, int(record->LoginStatus));
+	statement->setInt(10, int(record->InitStatus));
+}
+void MysqlDB::SetStatementForPrimaryAccountRecordUpdate(sql::PreparedStatement* statement, PrimaryAccount* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->PrimaryAccountName);
+	statement->setInt(3, int(record->AccountClass));
+	statement->setString(4, record->BrokerPassword);
+	statement->setInt(5, record->OfferID);
+	statement->setBoolean(6, record->IsAllowLogin);
+	statement->setBoolean(7, record->IsSimulateAccount);
+	statement->setInt(8, int(record->LoginStatus));
+	statement->setInt(9, int(record->InitStatus));
+	statement->setString(10, record->PrimaryAccountID);
+}
+void MysqlDB::SetStatementForPrimaryAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& PrimaryAccountID)
+{
+	statement->setString(1, PrimaryAccountID);
+}
+void MysqlDB::SetStatementForPrimaryAccountIndexOfferID(sql::PreparedStatement* statement, PrimaryAccount* record)
+{
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<PrimaryAccount*>& records)
+{
+	PrimaryAccount* record = PrimaryAccount::Allocate();
+	Strcpy(record->TradingDay, result->getString(1).c_str());
+	Strcpy(record->PrimaryAccountID, result->getString(2).c_str());
+	Strcpy(record->PrimaryAccountName, result->getString(3).c_str());
+	record->AccountClass = AccountClassType(result->getInt(4));
+	Strcpy(record->BrokerPassword, result->getString(5).c_str());
+	record->OfferID = result->getInt(6);
+	record->IsAllowLogin = result->getBoolean(7);
+	record->IsSimulateAccount = result->getBoolean(8);
+	record->LoginStatus = LoginStatusType(result->getInt(9));
+	record->InitStatus = InitStatusType(result->getInt(10));
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForAccountRecord(sql::PreparedStatement* statement, Account* record)
@@ -1583,30 +1946,24 @@ void MysqlDB::SetStatementForAccountRecord(sql::PreparedStatement* statement, Ac
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountID);
 	statement->setString(3, record->AccountName);
-	statement->setString(4, record->Password);
-	statement->setDouble(5, record->PreBalance);
-	statement->setDouble(6, record->Balance);
-	statement->setDouble(7, record->CloseProfitByDate);
-	statement->setDouble(8, record->PositionProfitByDate);
-	statement->setDouble(9, record->PositionProfitByTrade);
-	statement->setDouble(10, record->PremiumIn);
-	statement->setDouble(11, record->PremiumOut);
-	statement->setDouble(12, record->MarketValue);
+	statement->setInt(4, int(record->AccountType));
+	statement->setInt(5, int(record->AccountStatus));
+	statement->setString(6, record->Password);
+	statement->setInt(7, record->TradeGroupID);
+	statement->setInt(8, record->RiskGroupID);
+	statement->setInt(9, record->CommissionGroupID);
 }
 void MysqlDB::SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, Account* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountName);
-	statement->setString(3, record->Password);
-	statement->setDouble(4, record->PreBalance);
-	statement->setDouble(5, record->Balance);
-	statement->setDouble(6, record->CloseProfitByDate);
-	statement->setDouble(7, record->PositionProfitByDate);
-	statement->setDouble(8, record->PositionProfitByTrade);
-	statement->setDouble(9, record->PremiumIn);
-	statement->setDouble(10, record->PremiumOut);
-	statement->setDouble(11, record->MarketValue);
-	statement->setString(12, record->AccountID);
+	statement->setInt(3, int(record->AccountType));
+	statement->setInt(4, int(record->AccountStatus));
+	statement->setString(5, record->Password);
+	statement->setInt(6, record->TradeGroupID);
+	statement->setInt(7, record->RiskGroupID);
+	statement->setInt(8, record->CommissionGroupID);
+	statement->setString(9, record->AccountID);
 }
 void MysqlDB::SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID)
 {
@@ -1618,60 +1975,164 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Account*>& records
 	Strcpy(record->TradingDay, result->getString(1).c_str());
 	Strcpy(record->AccountID, result->getString(2).c_str());
 	Strcpy(record->AccountName, result->getString(3).c_str());
-	Strcpy(record->Password, result->getString(4).c_str());
-	record->PreBalance = result->getDouble(5);
-	record->Balance = result->getDouble(6);
-	record->CloseProfitByDate = result->getDouble(7);
-	record->PositionProfitByDate = result->getDouble(8);
-	record->PositionProfitByTrade = result->getDouble(9);
-	record->PremiumIn = result->getDouble(10);
-	record->PremiumOut = result->getDouble(11);
-	record->MarketValue = result->getDouble(12);
+	record->AccountType = AccountTypeType(result->getInt(4));
+	record->AccountStatus = AccountStatusType(result->getInt(5));
+	Strcpy(record->Password, result->getString(6).c_str());
+	record->TradeGroupID = result->getInt(7);
+	record->RiskGroupID = result->getInt(8);
+	record->CommissionGroupID = result->getInt(9);
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForCapitalRecord(sql::PreparedStatement* statement, Capital* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->AccountID);
+	statement->setInt(3, int(record->AccountType));
+	statement->setDouble(4, record->Asset);
+	statement->setDouble(5, record->PreAsset);
+	statement->setDouble(6, record->CashAsset);
+	statement->setDouble(7, record->PreCashAsset);
+	statement->setDouble(8, record->Available);
+	statement->setDouble(9, record->CashIn);
+	statement->setDouble(10, record->CashOut);
+	statement->setDouble(11, record->Margin);
+	statement->setDouble(12, record->Commission);
+	statement->setDouble(13, record->StampTax);
+	statement->setDouble(14, record->TransferFee);
+	statement->setDouble(15, record->FrozenCash);
+	statement->setDouble(16, record->FrozenMargin);
+	statement->setDouble(17, record->FrozenCommission);
+	statement->setDouble(18, record->FrozenStampTax);
+	statement->setDouble(19, record->FrozenTransferFee);
+	statement->setDouble(20, record->MarketValue);
+	statement->setDouble(21, record->TotalProfit);
+	statement->setDouble(22, record->TodayProfit);
+	statement->setDouble(23, record->Deposit);
+	statement->setDouble(24, record->Withdraw);
+}
+void MysqlDB::SetStatementForCapitalRecordUpdate(sql::PreparedStatement* statement, Capital* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setInt(2, int(record->AccountType));
+	statement->setDouble(3, record->Asset);
+	statement->setDouble(4, record->PreAsset);
+	statement->setDouble(5, record->CashAsset);
+	statement->setDouble(6, record->PreCashAsset);
+	statement->setDouble(7, record->Available);
+	statement->setDouble(8, record->CashIn);
+	statement->setDouble(9, record->CashOut);
+	statement->setDouble(10, record->Margin);
+	statement->setDouble(11, record->Commission);
+	statement->setDouble(12, record->StampTax);
+	statement->setDouble(13, record->TransferFee);
+	statement->setDouble(14, record->FrozenCash);
+	statement->setDouble(15, record->FrozenMargin);
+	statement->setDouble(16, record->FrozenCommission);
+	statement->setDouble(17, record->FrozenStampTax);
+	statement->setDouble(18, record->FrozenTransferFee);
+	statement->setDouble(19, record->MarketValue);
+	statement->setDouble(20, record->TotalProfit);
+	statement->setDouble(21, record->TodayProfit);
+	statement->setDouble(22, record->Deposit);
+	statement->setDouble(23, record->Withdraw);
+	statement->setString(24, record->AccountID);
+}
+void MysqlDB::SetStatementForCapitalPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID)
+{
+	statement->setString(1, AccountID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Capital*>& records)
+{
+	Capital* record = Capital::Allocate();
+	Strcpy(record->TradingDay, result->getString(1).c_str());
+	Strcpy(record->AccountID, result->getString(2).c_str());
+	record->AccountType = AccountTypeType(result->getInt(3));
+	record->Asset = result->getDouble(4);
+	record->PreAsset = result->getDouble(5);
+	record->CashAsset = result->getDouble(6);
+	record->PreCashAsset = result->getDouble(7);
+	record->Available = result->getDouble(8);
+	record->CashIn = result->getDouble(9);
+	record->CashOut = result->getDouble(10);
+	record->Margin = result->getDouble(11);
+	record->Commission = result->getDouble(12);
+	record->StampTax = result->getDouble(13);
+	record->TransferFee = result->getDouble(14);
+	record->FrozenCash = result->getDouble(15);
+	record->FrozenMargin = result->getDouble(16);
+	record->FrozenCommission = result->getDouble(17);
+	record->FrozenStampTax = result->getDouble(18);
+	record->FrozenTransferFee = result->getDouble(19);
+	record->MarketValue = result->getDouble(20);
+	record->TotalProfit = result->getDouble(21);
+	record->TodayProfit = result->getDouble(22);
+	record->Deposit = result->getDouble(23);
+	record->Withdraw = result->getDouble(24);
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForPositionRecord(sql::PreparedStatement* statement, Position* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountID);
-	statement->setString(3, record->ExchangeID);
-	statement->setString(4, record->InstrumentID);
-	statement->setInt(5, int(record->ProductClass));
-	statement->setInt(6, int(record->PosiDirection));
-	statement->setInt64(7, record->TotalPosition);
-	statement->setInt64(8, record->TodayPosition);
-	statement->setInt64(9, record->FrozenPosition);
-	statement->setDouble(10, record->CloseProfitByDate);
-	statement->setDouble(11, record->CloseProfitByTrade);
-	statement->setDouble(12, record->PositionProfitByDate);
-	statement->setDouble(13, record->PositionProfitByTrade);
-	statement->setDouble(14, record->PremiumIn);
-	statement->setDouble(15, record->PremiumOut);
-	statement->setDouble(16, record->MarketValue);
-	statement->setInt(17, record->VolumeMultiple);
-	statement->setDouble(18, record->SettlementPrice);
-	statement->setDouble(19, record->PreSettlementPrice);
+	statement->setInt(3, int(record->AccountType));
+	statement->setString(4, record->ExchangeID);
+	statement->setString(5, record->InstrumentID);
+	statement->setInt(6, int(record->SecurityType));
+	statement->setInt(7, int(record->PosiDirection));
+	statement->setInt64(8, record->TotalPosition);
+	statement->setInt64(9, record->PositionFrozen);
+	statement->setInt64(10, record->TodayPosition);
+	statement->setDouble(11, record->CashIn);
+	statement->setDouble(12, record->CashOut);
+	statement->setDouble(13, record->Margin);
+	statement->setDouble(14, record->Commission);
+	statement->setDouble(15, record->StampTax);
+	statement->setDouble(16, record->TransferFee);
+	statement->setDouble(17, record->FrozenCash);
+	statement->setDouble(18, record->FrozenMargin);
+	statement->setDouble(19, record->FrozenCommission);
+	statement->setDouble(20, record->FrozenStampTax);
+	statement->setDouble(21, record->FrozenTransferFee);
+	statement->setDouble(22, record->MarketValue);
+	statement->setInt(23, record->VolumeMultiple);
+	statement->setDouble(24, record->CloseProfit);
+	statement->setDouble(25, record->CloseProfitFloat);
+	statement->setDouble(26, record->PositionProfit);
+	statement->setDouble(27, record->PositionProfitFloat);
+	statement->setDouble(28, record->LastPrice);
+	statement->setDouble(29, record->PrePrice);
 }
 void MysqlDB::SetStatementForPositionRecordUpdate(sql::PreparedStatement* statement, Position* record)
 {
-	statement->setInt(1, int(record->ProductClass));
-	statement->setInt64(2, record->TotalPosition);
-	statement->setInt64(3, record->TodayPosition);
-	statement->setInt64(4, record->FrozenPosition);
-	statement->setDouble(5, record->CloseProfitByDate);
-	statement->setDouble(6, record->CloseProfitByTrade);
-	statement->setDouble(7, record->PositionProfitByDate);
-	statement->setDouble(8, record->PositionProfitByTrade);
-	statement->setDouble(9, record->PremiumIn);
-	statement->setDouble(10, record->PremiumOut);
-	statement->setDouble(11, record->MarketValue);
-	statement->setInt(12, record->VolumeMultiple);
-	statement->setDouble(13, record->SettlementPrice);
-	statement->setDouble(14, record->PreSettlementPrice);
-	statement->setString(15, record->TradingDay);
-	statement->setString(16, record->AccountID);
-	statement->setString(17, record->ExchangeID);
-	statement->setString(18, record->InstrumentID);
-	statement->setInt(19, int(record->PosiDirection));
+	statement->setInt(1, int(record->AccountType));
+	statement->setInt(2, int(record->SecurityType));
+	statement->setInt64(3, record->TotalPosition);
+	statement->setInt64(4, record->PositionFrozen);
+	statement->setInt64(5, record->TodayPosition);
+	statement->setDouble(6, record->CashIn);
+	statement->setDouble(7, record->CashOut);
+	statement->setDouble(8, record->Margin);
+	statement->setDouble(9, record->Commission);
+	statement->setDouble(10, record->StampTax);
+	statement->setDouble(11, record->TransferFee);
+	statement->setDouble(12, record->FrozenCash);
+	statement->setDouble(13, record->FrozenMargin);
+	statement->setDouble(14, record->FrozenCommission);
+	statement->setDouble(15, record->FrozenStampTax);
+	statement->setDouble(16, record->FrozenTransferFee);
+	statement->setDouble(17, record->MarketValue);
+	statement->setInt(18, record->VolumeMultiple);
+	statement->setDouble(19, record->CloseProfit);
+	statement->setDouble(20, record->CloseProfitFloat);
+	statement->setDouble(21, record->PositionProfit);
+	statement->setDouble(22, record->PositionProfitFloat);
+	statement->setDouble(23, record->LastPrice);
+	statement->setDouble(24, record->PrePrice);
+	statement->setString(25, record->TradingDay);
+	statement->setString(26, record->AccountID);
+	statement->setString(27, record->ExchangeID);
+	statement->setString(28, record->InstrumentID);
+	statement->setInt(29, int(record->PosiDirection));
 }
 void MysqlDB::SetStatementForPositionPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
 {
@@ -1683,76 +2144,118 @@ void MysqlDB::SetStatementForPositionPrimaryKey(sql::PreparedStatement* statemen
 }
 void MysqlDB::SetStatementForPositionIndexAccount(sql::PreparedStatement* statement, Position* record)
 {
-	statement->setString(1, record->TradingDay);
-	statement->setString(2, record->AccountID);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Position*>& records)
 {
 	Position* record = Position::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());
 	Strcpy(record->AccountID, result->getString(2).c_str());
-	Strcpy(record->ExchangeID, result->getString(3).c_str());
-	Strcpy(record->InstrumentID, result->getString(4).c_str());
-	record->ProductClass = ProductClassType(result->getInt(5));
-	record->PosiDirection = PosiDirectionType(result->getInt(6));
-	record->TotalPosition = result->getInt64(7);
-	record->TodayPosition = result->getInt64(8);
-	record->FrozenPosition = result->getInt64(9);
-	record->CloseProfitByDate = result->getDouble(10);
-	record->CloseProfitByTrade = result->getDouble(11);
-	record->PositionProfitByDate = result->getDouble(12);
-	record->PositionProfitByTrade = result->getDouble(13);
-	record->PremiumIn = result->getDouble(14);
-	record->PremiumOut = result->getDouble(15);
-	record->MarketValue = result->getDouble(16);
-	record->VolumeMultiple = result->getInt(17);
-	record->SettlementPrice = result->getDouble(18);
-	record->PreSettlementPrice = result->getDouble(19);
+	record->AccountType = AccountTypeType(result->getInt(3));
+	Strcpy(record->ExchangeID, result->getString(4).c_str());
+	Strcpy(record->InstrumentID, result->getString(5).c_str());
+	record->SecurityType = SecurityTypeType(result->getInt(6));
+	record->PosiDirection = PosiDirectionType(result->getInt(7));
+	record->TotalPosition = result->getInt64(8);
+	record->PositionFrozen = result->getInt64(9);
+	record->TodayPosition = result->getInt64(10);
+	record->CashIn = result->getDouble(11);
+	record->CashOut = result->getDouble(12);
+	record->Margin = result->getDouble(13);
+	record->Commission = result->getDouble(14);
+	record->StampTax = result->getDouble(15);
+	record->TransferFee = result->getDouble(16);
+	record->FrozenCash = result->getDouble(17);
+	record->FrozenMargin = result->getDouble(18);
+	record->FrozenCommission = result->getDouble(19);
+	record->FrozenStampTax = result->getDouble(20);
+	record->FrozenTransferFee = result->getDouble(21);
+	record->MarketValue = result->getDouble(22);
+	record->VolumeMultiple = result->getInt(23);
+	record->CloseProfit = result->getDouble(24);
+	record->CloseProfitFloat = result->getDouble(25);
+	record->PositionProfit = result->getDouble(26);
+	record->PositionProfitFloat = result->getDouble(27);
+	record->LastPrice = result->getDouble(28);
+	record->PrePrice = result->getDouble(29);
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForOrderRecord(sql::PreparedStatement* statement, Order* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountID);
-	statement->setString(3, record->ExchangeID);
-	statement->setString(4, record->InstrumentID);
-	statement->setInt(5, record->OrderID);
-	statement->setInt(6, record->ClientOrderID);
-	statement->setInt(7, int(record->Direction));
-	statement->setInt(8, int(record->OffsetFlag));
-	statement->setInt(9, int(record->OrderPriceType));
-	statement->setDouble(10, record->Price);
-	statement->setInt64(11, record->Volume);
-	statement->setInt64(12, record->VolumeRemain);
-	statement->setInt64(13, record->VolumeTraded);
-	statement->setInt(14, record->VolumeMultiple);
-	statement->setInt(15, int(record->OrderStatus));
-	statement->setString(16, record->OrderDate);
-	statement->setString(17, record->OrderTime);
-	statement->setString(18, record->CancelDate);
-	statement->setString(19, record->CancelTime);
+	statement->setString(3, record->PrimaryAccountID);
+	statement->setInt(4, int(record->AccountType));
+	statement->setString(5, record->ExchangeID);
+	statement->setString(6, record->InstrumentID);
+	statement->setInt(7, int(record->SecurityType));
+	statement->setInt(8, record->OrderID);
+	statement->setString(9, record->OrderSysID);
+	statement->setInt(10, int(record->Direction));
+	statement->setInt(11, int(record->OffsetFlag));
+	statement->setInt(12, int(record->OrderPriceType));
+	statement->setDouble(13, record->Price);
+	statement->setInt64(14, record->Volume);
+	statement->setInt64(15, record->VolumeTotal);
+	statement->setInt64(16, record->VolumeTraded);
+	statement->setInt(17, record->VolumeMultiple);
+	statement->setInt(18, int(record->OrderStatus));
+	statement->setString(19, record->OrderDate);
+	statement->setString(20, record->OrderTime);
+	statement->setString(21, record->CancelDate);
+	statement->setString(22, record->CancelTime);
+	statement->setInt64(23, record->SessionID);
+	statement->setInt(24, record->ClientOrderID);
+	statement->setInt(25, record->RequestID);
+	statement->setInt(26, record->OfferID);
+	statement->setInt(27, record->TradeGroupID);
+	statement->setInt(28, record->RiskGroupID);
+	statement->setInt(29, record->CommissionGroupID);
+	statement->setDouble(30, record->FrozenCash);
+	statement->setDouble(31, record->FrozenMargin);
+	statement->setDouble(32, record->FrozenCommission);
+	statement->setDouble(33, record->FrozenStampTax);
+	statement->setDouble(34, record->FrozenTransferFee);
+	statement->setBoolean(35, record->RebuildMark);
+	statement->setBoolean(36, record->IsForceClose);
 }
 void MysqlDB::SetStatementForOrderRecordUpdate(sql::PreparedStatement* statement, Order* record)
 {
-	statement->setInt(1, record->ClientOrderID);
-	statement->setInt(2, int(record->Direction));
-	statement->setInt(3, int(record->OffsetFlag));
-	statement->setInt(4, int(record->OrderPriceType));
-	statement->setDouble(5, record->Price);
-	statement->setInt64(6, record->Volume);
-	statement->setInt64(7, record->VolumeRemain);
-	statement->setInt64(8, record->VolumeTraded);
-	statement->setInt(9, record->VolumeMultiple);
-	statement->setInt(10, int(record->OrderStatus));
-	statement->setString(11, record->OrderDate);
-	statement->setString(12, record->OrderTime);
-	statement->setString(13, record->CancelDate);
-	statement->setString(14, record->CancelTime);
-	statement->setString(15, record->TradingDay);
-	statement->setString(16, record->AccountID);
-	statement->setString(17, record->ExchangeID);
-	statement->setString(18, record->InstrumentID);
-	statement->setInt(19, record->OrderID);
+	statement->setString(1, record->PrimaryAccountID);
+	statement->setInt(2, int(record->AccountType));
+	statement->setInt(3, int(record->SecurityType));
+	statement->setString(4, record->OrderSysID);
+	statement->setInt(5, int(record->Direction));
+	statement->setInt(6, int(record->OffsetFlag));
+	statement->setInt(7, int(record->OrderPriceType));
+	statement->setDouble(8, record->Price);
+	statement->setInt64(9, record->Volume);
+	statement->setInt64(10, record->VolumeTotal);
+	statement->setInt64(11, record->VolumeTraded);
+	statement->setInt(12, record->VolumeMultiple);
+	statement->setInt(13, int(record->OrderStatus));
+	statement->setString(14, record->OrderDate);
+	statement->setString(15, record->OrderTime);
+	statement->setString(16, record->CancelDate);
+	statement->setString(17, record->CancelTime);
+	statement->setInt64(18, record->SessionID);
+	statement->setInt(19, record->ClientOrderID);
+	statement->setInt(20, record->RequestID);
+	statement->setInt(21, record->OfferID);
+	statement->setInt(22, record->TradeGroupID);
+	statement->setInt(23, record->RiskGroupID);
+	statement->setInt(24, record->CommissionGroupID);
+	statement->setDouble(25, record->FrozenCash);
+	statement->setDouble(26, record->FrozenMargin);
+	statement->setDouble(27, record->FrozenCommission);
+	statement->setDouble(28, record->FrozenStampTax);
+	statement->setDouble(29, record->FrozenTransferFee);
+	statement->setBoolean(30, record->RebuildMark);
+	statement->setBoolean(31, record->IsForceClose);
+	statement->setString(32, record->TradingDay);
+	statement->setString(33, record->AccountID);
+	statement->setString(34, record->ExchangeID);
+	statement->setString(35, record->InstrumentID);
+	statement->setInt(36, record->OrderID);
 }
 void MysqlDB::SetStatementForOrderPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID)
 {
@@ -1767,60 +2270,89 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Order*>& records)
 	Order* record = Order::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());
 	Strcpy(record->AccountID, result->getString(2).c_str());
-	Strcpy(record->ExchangeID, result->getString(3).c_str());
-	Strcpy(record->InstrumentID, result->getString(4).c_str());
-	record->OrderID = result->getInt(5);
-	record->ClientOrderID = result->getInt(6);
-	record->Direction = DirectionType(result->getInt(7));
-	record->OffsetFlag = OffsetFlagType(result->getInt(8));
-	record->OrderPriceType = OrderPriceTypeType(result->getInt(9));
-	record->Price = result->getDouble(10);
-	record->Volume = result->getInt64(11);
-	record->VolumeRemain = result->getInt64(12);
-	record->VolumeTraded = result->getInt64(13);
-	record->VolumeMultiple = result->getInt(14);
-	record->OrderStatus = OrderStatusType(result->getInt(15));
-	Strcpy(record->OrderDate, result->getString(16).c_str());
-	Strcpy(record->OrderTime, result->getString(17).c_str());
-	Strcpy(record->CancelDate, result->getString(18).c_str());
-	Strcpy(record->CancelTime, result->getString(19).c_str());
+	Strcpy(record->PrimaryAccountID, result->getString(3).c_str());
+	record->AccountType = AccountTypeType(result->getInt(4));
+	Strcpy(record->ExchangeID, result->getString(5).c_str());
+	Strcpy(record->InstrumentID, result->getString(6).c_str());
+	record->SecurityType = SecurityTypeType(result->getInt(7));
+	record->OrderID = result->getInt(8);
+	Strcpy(record->OrderSysID, result->getString(9).c_str());
+	record->Direction = DirectionType(result->getInt(10));
+	record->OffsetFlag = OffsetFlagType(result->getInt(11));
+	record->OrderPriceType = OrderPriceTypeType(result->getInt(12));
+	record->Price = result->getDouble(13);
+	record->Volume = result->getInt64(14);
+	record->VolumeTotal = result->getInt64(15);
+	record->VolumeTraded = result->getInt64(16);
+	record->VolumeMultiple = result->getInt(17);
+	record->OrderStatus = OrderStatusType(result->getInt(18));
+	Strcpy(record->OrderDate, result->getString(19).c_str());
+	Strcpy(record->OrderTime, result->getString(20).c_str());
+	Strcpy(record->CancelDate, result->getString(21).c_str());
+	Strcpy(record->CancelTime, result->getString(22).c_str());
+	record->SessionID = result->getInt64(23);
+	record->ClientOrderID = result->getInt(24);
+	record->RequestID = result->getInt(25);
+	record->OfferID = result->getInt(26);
+	record->TradeGroupID = result->getInt(27);
+	record->RiskGroupID = result->getInt(28);
+	record->CommissionGroupID = result->getInt(29);
+	record->FrozenCash = result->getDouble(30);
+	record->FrozenMargin = result->getDouble(31);
+	record->FrozenCommission = result->getDouble(32);
+	record->FrozenStampTax = result->getDouble(33);
+	record->FrozenTransferFee = result->getDouble(34);
+	record->RebuildMark = result->getBoolean(35);
+	record->IsForceClose = result->getBoolean(36);
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForTradeRecord(sql::PreparedStatement* statement, Trade* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->AccountID);
-	statement->setString(3, record->ExchangeID);
-	statement->setString(4, record->InstrumentID);
-	statement->setInt(5, record->OrderID);
-	statement->setString(6, record->TradeID);
-	statement->setInt(7, int(record->Direction));
-	statement->setInt(8, int(record->OffsetFlag));
-	statement->setDouble(9, record->Price);
-	statement->setInt64(10, record->Volume);
-	statement->setDouble(11, record->TradeAmount);
-	statement->setDouble(12, record->PremiumIn);
-	statement->setDouble(13, record->PremiumOut);
-	statement->setString(14, record->TradeDate);
-	statement->setString(15, record->TradeTime);
+	statement->setString(3, record->PrimaryAccountID);
+	statement->setInt(4, int(record->AccountType));
+	statement->setString(5, record->ExchangeID);
+	statement->setString(6, record->InstrumentID);
+	statement->setInt(7, int(record->SecurityType));
+	statement->setInt(8, record->OrderID);
+	statement->setString(9, record->OrderSysID);
+	statement->setString(10, record->TradeID);
+	statement->setInt(11, int(record->Direction));
+	statement->setInt(12, int(record->OffsetFlag));
+	statement->setDouble(13, record->Price);
+	statement->setInt64(14, record->Volume);
+	statement->setInt(15, record->VolumeMultiple);
+	statement->setDouble(16, record->TradeAmount);
+	statement->setDouble(17, record->Commission);
+	statement->setDouble(18, record->StampTax);
+	statement->setDouble(19, record->TransferFee);
+	statement->setString(20, record->TradeDate);
+	statement->setString(21, record->TradeTime);
 }
 void MysqlDB::SetStatementForTradeRecordUpdate(sql::PreparedStatement* statement, Trade* record)
 {
 	statement->setString(1, record->AccountID);
-	statement->setString(2, record->InstrumentID);
-	statement->setInt(3, record->OrderID);
-	statement->setInt(4, int(record->OffsetFlag));
-	statement->setDouble(5, record->Price);
-	statement->setInt64(6, record->Volume);
-	statement->setDouble(7, record->TradeAmount);
-	statement->setDouble(8, record->PremiumIn);
-	statement->setDouble(9, record->PremiumOut);
-	statement->setString(10, record->TradeDate);
-	statement->setString(11, record->TradeTime);
-	statement->setString(12, record->TradingDay);
-	statement->setString(13, record->ExchangeID);
-	statement->setString(14, record->TradeID);
-	statement->setInt(15, int(record->Direction));
+	statement->setString(2, record->PrimaryAccountID);
+	statement->setInt(3, int(record->AccountType));
+	statement->setString(4, record->InstrumentID);
+	statement->setInt(5, int(record->SecurityType));
+	statement->setInt(6, record->OrderID);
+	statement->setString(7, record->OrderSysID);
+	statement->setInt(8, int(record->OffsetFlag));
+	statement->setDouble(9, record->Price);
+	statement->setInt64(10, record->Volume);
+	statement->setInt(11, record->VolumeMultiple);
+	statement->setDouble(12, record->TradeAmount);
+	statement->setDouble(13, record->Commission);
+	statement->setDouble(14, record->StampTax);
+	statement->setDouble(15, record->TransferFee);
+	statement->setString(16, record->TradeDate);
+	statement->setString(17, record->TradeTime);
+	statement->setString(18, record->TradingDay);
+	statement->setString(19, record->ExchangeID);
+	statement->setString(20, record->TradeID);
+	statement->setInt(21, int(record->Direction));
 }
 void MysqlDB::SetStatementForTradePrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction)
 {
@@ -1834,22 +2366,28 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<Trade*>& records)
 	Trade* record = Trade::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());
 	Strcpy(record->AccountID, result->getString(2).c_str());
-	Strcpy(record->ExchangeID, result->getString(3).c_str());
-	Strcpy(record->InstrumentID, result->getString(4).c_str());
-	record->OrderID = result->getInt(5);
-	Strcpy(record->TradeID, result->getString(6).c_str());
-	record->Direction = DirectionType(result->getInt(7));
-	record->OffsetFlag = OffsetFlagType(result->getInt(8));
-	record->Price = result->getDouble(9);
-	record->Volume = result->getInt64(10);
-	record->TradeAmount = result->getDouble(11);
-	record->PremiumIn = result->getDouble(12);
-	record->PremiumOut = result->getDouble(13);
-	Strcpy(record->TradeDate, result->getString(14).c_str());
-	Strcpy(record->TradeTime, result->getString(15).c_str());
+	Strcpy(record->PrimaryAccountID, result->getString(3).c_str());
+	record->AccountType = AccountTypeType(result->getInt(4));
+	Strcpy(record->ExchangeID, result->getString(5).c_str());
+	Strcpy(record->InstrumentID, result->getString(6).c_str());
+	record->SecurityType = SecurityTypeType(result->getInt(7));
+	record->OrderID = result->getInt(8);
+	Strcpy(record->OrderSysID, result->getString(9).c_str());
+	Strcpy(record->TradeID, result->getString(10).c_str());
+	record->Direction = DirectionType(result->getInt(11));
+	record->OffsetFlag = OffsetFlagType(result->getInt(12));
+	record->Price = result->getDouble(13);
+	record->Volume = result->getInt64(14);
+	record->VolumeMultiple = result->getInt(15);
+	record->TradeAmount = result->getDouble(16);
+	record->Commission = result->getDouble(17);
+	record->StampTax = result->getDouble(18);
+	record->TransferFee = result->getDouble(19);
+	Strcpy(record->TradeDate, result->getString(20).c_str());
+	Strcpy(record->TradeTime, result->getString(21).c_str());
 	records.push_back(record);
 }
-void MysqlDB::SetStatementForMdTickRecord(sql::PreparedStatement* statement, MdTick* record)
+void MysqlDB::SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, DepthMarketData* record)
 {
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->ExchangeID);
@@ -1861,36 +2399,59 @@ void MysqlDB::SetStatementForMdTickRecord(sql::PreparedStatement* statement, MdT
 	statement->setDouble(8, record->OpenPrice);
 	statement->setDouble(9, record->HighestPrice);
 	statement->setDouble(10, record->LowestPrice);
-	statement->setInt64(11, record->Volume);
-	statement->setDouble(12, record->Turnover);
-	statement->setInt64(13, record->OpenInterest);
-	statement->setDouble(14, record->UpperLimitPrice);
-	statement->setDouble(15, record->LowerLimitPrice);
-	statement->setString(16, record->UpdateTime);
-	statement->setInt(17, record->UpdateMillisec);
-	statement->setDouble(18, record->AskPrice1);
-	statement->setDouble(19, record->AskPrice2);
-	statement->setDouble(20, record->AskPrice3);
-	statement->setDouble(21, record->AskPrice4);
-	statement->setDouble(22, record->AskPrice5);
-	statement->setInt64(23, record->AskVolume1);
-	statement->setInt64(24, record->AskVolume2);
-	statement->setInt64(25, record->AskVolume3);
-	statement->setInt64(26, record->AskVolume4);
-	statement->setInt64(27, record->AskVolume5);
-	statement->setDouble(28, record->BidPrice1);
-	statement->setDouble(29, record->BidPrice2);
-	statement->setDouble(30, record->BidPrice3);
-	statement->setDouble(31, record->BidPrice4);
-	statement->setDouble(32, record->BidPrice5);
-	statement->setInt64(33, record->BidVolume1);
-	statement->setInt64(34, record->BidVolume2);
-	statement->setInt64(35, record->BidVolume3);
-	statement->setInt64(36, record->BidVolume4);
-	statement->setInt64(37, record->BidVolume5);
-	statement->setDouble(38, record->AveragePrice);
+	statement->setDouble(11, record->ClosePrice);
+	statement->setInt64(12, record->CurrVolume);
+	statement->setInt64(13, record->Volume);
+	statement->setDouble(14, record->CurrTurnover);
+	statement->setDouble(15, record->Turnover);
+	statement->setInt64(16, record->OpenInterest);
+	statement->setDouble(17, record->SettlementPrice);
+	statement->setDouble(18, record->UpperLimitPrice);
+	statement->setDouble(19, record->LowerLimitPrice);
+	statement->setDouble(20, record->AveragePrice);
+	statement->setInt64(21, record->UpdateTs);
+	statement->setDouble(22, record->AskPrice1);
+	statement->setDouble(23, record->AskPrice2);
+	statement->setDouble(24, record->AskPrice3);
+	statement->setDouble(25, record->AskPrice4);
+	statement->setDouble(26, record->AskPrice5);
+	statement->setDouble(27, record->AskPrice6);
+	statement->setDouble(28, record->AskPrice7);
+	statement->setDouble(29, record->AskPrice8);
+	statement->setDouble(30, record->AskPrice9);
+	statement->setDouble(31, record->AskPrice10);
+	statement->setInt64(32, record->AskVolume1);
+	statement->setInt64(33, record->AskVolume2);
+	statement->setInt64(34, record->AskVolume3);
+	statement->setInt64(35, record->AskVolume4);
+	statement->setInt64(36, record->AskVolume5);
+	statement->setInt64(37, record->AskVolume6);
+	statement->setInt64(38, record->AskVolume7);
+	statement->setInt64(39, record->AskVolume8);
+	statement->setInt64(40, record->AskVolume9);
+	statement->setInt64(41, record->AskVolume10);
+	statement->setDouble(42, record->BidPrice1);
+	statement->setDouble(43, record->BidPrice2);
+	statement->setDouble(44, record->BidPrice3);
+	statement->setDouble(45, record->BidPrice4);
+	statement->setDouble(46, record->BidPrice5);
+	statement->setDouble(47, record->BidPrice6);
+	statement->setDouble(48, record->BidPrice7);
+	statement->setDouble(49, record->BidPrice8);
+	statement->setDouble(50, record->BidPrice9);
+	statement->setDouble(51, record->BidPrice10);
+	statement->setInt64(52, record->BidVolume1);
+	statement->setInt64(53, record->BidVolume2);
+	statement->setInt64(54, record->BidVolume3);
+	statement->setInt64(55, record->BidVolume4);
+	statement->setInt64(56, record->BidVolume5);
+	statement->setInt64(57, record->BidVolume6);
+	statement->setInt64(58, record->BidVolume7);
+	statement->setInt64(59, record->BidVolume8);
+	statement->setInt64(60, record->BidVolume9);
+	statement->setInt64(61, record->BidVolume10);
 }
-void MysqlDB::SetStatementForMdTickRecordUpdate(sql::PreparedStatement* statement, MdTick* record)
+void MysqlDB::SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, DepthMarketData* record)
 {
 	statement->setDouble(1, record->LastPrice);
 	statement->setDouble(2, record->PreSettlementPrice);
@@ -1899,47 +2460,70 @@ void MysqlDB::SetStatementForMdTickRecordUpdate(sql::PreparedStatement* statemen
 	statement->setDouble(5, record->OpenPrice);
 	statement->setDouble(6, record->HighestPrice);
 	statement->setDouble(7, record->LowestPrice);
-	statement->setInt64(8, record->Volume);
-	statement->setDouble(9, record->Turnover);
-	statement->setInt64(10, record->OpenInterest);
-	statement->setDouble(11, record->UpperLimitPrice);
-	statement->setDouble(12, record->LowerLimitPrice);
-	statement->setString(13, record->UpdateTime);
-	statement->setInt(14, record->UpdateMillisec);
-	statement->setDouble(15, record->AskPrice1);
-	statement->setDouble(16, record->AskPrice2);
-	statement->setDouble(17, record->AskPrice3);
-	statement->setDouble(18, record->AskPrice4);
-	statement->setDouble(19, record->AskPrice5);
-	statement->setInt64(20, record->AskVolume1);
-	statement->setInt64(21, record->AskVolume2);
-	statement->setInt64(22, record->AskVolume3);
-	statement->setInt64(23, record->AskVolume4);
-	statement->setInt64(24, record->AskVolume5);
-	statement->setDouble(25, record->BidPrice1);
-	statement->setDouble(26, record->BidPrice2);
-	statement->setDouble(27, record->BidPrice3);
-	statement->setDouble(28, record->BidPrice4);
-	statement->setDouble(29, record->BidPrice5);
-	statement->setInt64(30, record->BidVolume1);
-	statement->setInt64(31, record->BidVolume2);
-	statement->setInt64(32, record->BidVolume3);
-	statement->setInt64(33, record->BidVolume4);
-	statement->setInt64(34, record->BidVolume5);
-	statement->setDouble(35, record->AveragePrice);
-	statement->setString(36, record->TradingDay);
-	statement->setString(37, record->ExchangeID);
-	statement->setString(38, record->InstrumentID);
+	statement->setDouble(8, record->ClosePrice);
+	statement->setInt64(9, record->CurrVolume);
+	statement->setInt64(10, record->Volume);
+	statement->setDouble(11, record->CurrTurnover);
+	statement->setDouble(12, record->Turnover);
+	statement->setInt64(13, record->OpenInterest);
+	statement->setDouble(14, record->SettlementPrice);
+	statement->setDouble(15, record->UpperLimitPrice);
+	statement->setDouble(16, record->LowerLimitPrice);
+	statement->setDouble(17, record->AveragePrice);
+	statement->setInt64(18, record->UpdateTs);
+	statement->setDouble(19, record->AskPrice1);
+	statement->setDouble(20, record->AskPrice2);
+	statement->setDouble(21, record->AskPrice3);
+	statement->setDouble(22, record->AskPrice4);
+	statement->setDouble(23, record->AskPrice5);
+	statement->setDouble(24, record->AskPrice6);
+	statement->setDouble(25, record->AskPrice7);
+	statement->setDouble(26, record->AskPrice8);
+	statement->setDouble(27, record->AskPrice9);
+	statement->setDouble(28, record->AskPrice10);
+	statement->setInt64(29, record->AskVolume1);
+	statement->setInt64(30, record->AskVolume2);
+	statement->setInt64(31, record->AskVolume3);
+	statement->setInt64(32, record->AskVolume4);
+	statement->setInt64(33, record->AskVolume5);
+	statement->setInt64(34, record->AskVolume6);
+	statement->setInt64(35, record->AskVolume7);
+	statement->setInt64(36, record->AskVolume8);
+	statement->setInt64(37, record->AskVolume9);
+	statement->setInt64(38, record->AskVolume10);
+	statement->setDouble(39, record->BidPrice1);
+	statement->setDouble(40, record->BidPrice2);
+	statement->setDouble(41, record->BidPrice3);
+	statement->setDouble(42, record->BidPrice4);
+	statement->setDouble(43, record->BidPrice5);
+	statement->setDouble(44, record->BidPrice6);
+	statement->setDouble(45, record->BidPrice7);
+	statement->setDouble(46, record->BidPrice8);
+	statement->setDouble(47, record->BidPrice9);
+	statement->setDouble(48, record->BidPrice10);
+	statement->setInt64(49, record->BidVolume1);
+	statement->setInt64(50, record->BidVolume2);
+	statement->setInt64(51, record->BidVolume3);
+	statement->setInt64(52, record->BidVolume4);
+	statement->setInt64(53, record->BidVolume5);
+	statement->setInt64(54, record->BidVolume6);
+	statement->setInt64(55, record->BidVolume7);
+	statement->setInt64(56, record->BidVolume8);
+	statement->setInt64(57, record->BidVolume9);
+	statement->setInt64(58, record->BidVolume10);
+	statement->setString(59, record->TradingDay);
+	statement->setString(60, record->ExchangeID);
+	statement->setString(61, record->InstrumentID);
 }
-void MysqlDB::SetStatementForMdTickPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+void MysqlDB::SetStatementForDepthMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
 	statement->setString(1, TradingDay);
 	statement->setString(2, ExchangeID);
 	statement->setString(3, InstrumentID);
 }
-void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<MdTick*>& records)
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<DepthMarketData*>& records)
 {
-	MdTick* record = MdTick::Allocate();
+	DepthMarketData* record = DepthMarketData::Allocate();
 	Strcpy(record->TradingDay, result->getString(1).c_str());
 	Strcpy(record->ExchangeID, result->getString(2).c_str());
 	Strcpy(record->InstrumentID, result->getString(3).c_str());
@@ -1950,33 +2534,57 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::vector<MdTick*>& records)
 	record->OpenPrice = result->getDouble(8);
 	record->HighestPrice = result->getDouble(9);
 	record->LowestPrice = result->getDouble(10);
-	record->Volume = result->getInt64(11);
-	record->Turnover = result->getDouble(12);
-	record->OpenInterest = result->getInt64(13);
-	record->UpperLimitPrice = result->getDouble(14);
-	record->LowerLimitPrice = result->getDouble(15);
-	Strcpy(record->UpdateTime, result->getString(16).c_str());
-	record->UpdateMillisec = result->getInt(17);
-	record->AskPrice1 = result->getDouble(18);
-	record->AskPrice2 = result->getDouble(19);
-	record->AskPrice3 = result->getDouble(20);
-	record->AskPrice4 = result->getDouble(21);
-	record->AskPrice5 = result->getDouble(22);
-	record->AskVolume1 = result->getInt64(23);
-	record->AskVolume2 = result->getInt64(24);
-	record->AskVolume3 = result->getInt64(25);
-	record->AskVolume4 = result->getInt64(26);
-	record->AskVolume5 = result->getInt64(27);
-	record->BidPrice1 = result->getDouble(28);
-	record->BidPrice2 = result->getDouble(29);
-	record->BidPrice3 = result->getDouble(30);
-	record->BidPrice4 = result->getDouble(31);
-	record->BidPrice5 = result->getDouble(32);
-	record->BidVolume1 = result->getInt64(33);
-	record->BidVolume2 = result->getInt64(34);
-	record->BidVolume3 = result->getInt64(35);
-	record->BidVolume4 = result->getInt64(36);
-	record->BidVolume5 = result->getInt64(37);
-	record->AveragePrice = result->getDouble(38);
+	record->ClosePrice = result->getDouble(11);
+	record->CurrVolume = result->getInt64(12);
+	record->Volume = result->getInt64(13);
+	record->CurrTurnover = result->getDouble(14);
+	record->Turnover = result->getDouble(15);
+	record->OpenInterest = result->getInt64(16);
+	record->SettlementPrice = result->getDouble(17);
+	record->UpperLimitPrice = result->getDouble(18);
+	record->LowerLimitPrice = result->getDouble(19);
+	record->AveragePrice = result->getDouble(20);
+	record->UpdateTs = result->getInt64(21);
+	record->AskPrice1 = result->getDouble(22);
+	record->AskPrice2 = result->getDouble(23);
+	record->AskPrice3 = result->getDouble(24);
+	record->AskPrice4 = result->getDouble(25);
+	record->AskPrice5 = result->getDouble(26);
+	record->AskPrice6 = result->getDouble(27);
+	record->AskPrice7 = result->getDouble(28);
+	record->AskPrice8 = result->getDouble(29);
+	record->AskPrice9 = result->getDouble(30);
+	record->AskPrice10 = result->getDouble(31);
+	record->AskVolume1 = result->getInt64(32);
+	record->AskVolume2 = result->getInt64(33);
+	record->AskVolume3 = result->getInt64(34);
+	record->AskVolume4 = result->getInt64(35);
+	record->AskVolume5 = result->getInt64(36);
+	record->AskVolume6 = result->getInt64(37);
+	record->AskVolume7 = result->getInt64(38);
+	record->AskVolume8 = result->getInt64(39);
+	record->AskVolume9 = result->getInt64(40);
+	record->AskVolume10 = result->getInt64(41);
+	record->BidPrice1 = result->getDouble(42);
+	record->BidPrice2 = result->getDouble(43);
+	record->BidPrice3 = result->getDouble(44);
+	record->BidPrice4 = result->getDouble(45);
+	record->BidPrice5 = result->getDouble(46);
+	record->BidPrice6 = result->getDouble(47);
+	record->BidPrice7 = result->getDouble(48);
+	record->BidPrice8 = result->getDouble(49);
+	record->BidPrice9 = result->getDouble(50);
+	record->BidPrice10 = result->getDouble(51);
+	record->BidVolume1 = result->getInt64(52);
+	record->BidVolume2 = result->getInt64(53);
+	record->BidVolume3 = result->getInt64(54);
+	record->BidVolume4 = result->getInt64(55);
+	record->BidVolume5 = result->getInt64(56);
+	record->BidVolume6 = result->getInt64(57);
+	record->BidVolume7 = result->getInt64(58);
+	record->BidVolume8 = result->getInt64(59);
+	record->BidVolume9 = result->getInt64(60);
+	record->BidVolume10 = result->getInt64(61);
 	records.push_back(record);
 }
+

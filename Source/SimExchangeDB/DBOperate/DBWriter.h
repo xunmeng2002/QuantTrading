@@ -45,11 +45,24 @@ public:
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) override;
 	virtual void OnInstrumentTruncate() override;
 	
+	virtual void OnPrimaryAccountInsert(mdb::PrimaryAccount* record) override;
+	virtual void OnPrimaryAccountBatchInsert(std::list<mdb::PrimaryAccount*>* records) override;
+	virtual void OnPrimaryAccountErase(mdb::PrimaryAccount* record) override;
+	virtual void OnPrimaryAccountEraseByOfferIDIndex(mdb::PrimaryAccount* record) override;
+	virtual void OnPrimaryAccountUpdate(mdb::PrimaryAccount* record) override;
+	virtual void OnPrimaryAccountTruncate() override;
+	
 	virtual void OnAccountInsert(mdb::Account* record) override;
 	virtual void OnAccountBatchInsert(std::list<mdb::Account*>* records) override;
 	virtual void OnAccountErase(mdb::Account* record) override;
 	virtual void OnAccountUpdate(mdb::Account* record) override;
 	virtual void OnAccountTruncate() override;
+	
+	virtual void OnCapitalInsert(mdb::Capital* record) override;
+	virtual void OnCapitalBatchInsert(std::list<mdb::Capital*>* records) override;
+	virtual void OnCapitalErase(mdb::Capital* record) override;
+	virtual void OnCapitalUpdate(mdb::Capital* record) override;
+	virtual void OnCapitalTruncate() override;
 	
 	virtual void OnPositionInsert(mdb::Position* record) override;
 	virtual void OnPositionBatchInsert(std::list<mdb::Position*>* records) override;
@@ -70,11 +83,11 @@ public:
 	virtual void OnTradeUpdate(mdb::Trade* record) override;
 	virtual void OnTradeTruncate() override;
 	
-	virtual void OnMdTickInsert(mdb::MdTick* record) override;
-	virtual void OnMdTickBatchInsert(std::list<mdb::MdTick*>* records) override;
-	virtual void OnMdTickErase(mdb::MdTick* record) override;
-	virtual void OnMdTickUpdate(mdb::MdTick* record) override;
-	virtual void OnMdTickTruncate() override;
+	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) override;
+	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) override;
+	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) override;
+	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) override;
+	virtual void OnDepthMarketDataTruncate() override;
 	
 
 protected:

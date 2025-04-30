@@ -4,21 +4,31 @@
 
 namespace mdb
 {
+
+
+
+
+	bool PrimaryAccountEqualForOfferIDIndex::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
+	{
+		return ;
+	}
+	bool PrimaryAccountLessForOfferIDIndex::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
+	{
+		return false;
+	}
+
+
+
 	bool PositionEqualForAccountIndex::operator()(const Position* const left, const Position* const right) const
 	{
-		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountID, right->AccountID) == 0;
+		return ;
 	}
 	bool PositionLessForAccountIndex::operator()(const Position* const left, const Position* const right) const
 	{
-		if (strcmp(left->TradingDay, right->TradingDay) < 0)
-			return true;
-		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
-			return false;
-		if (strcmp(left->AccountID, right->AccountID) < 0)
-			return true;
-		else if (strcmp(left->AccountID, right->AccountID) > 0)
-			return false;
 		return false;
 	}
+
+
+
 
 }

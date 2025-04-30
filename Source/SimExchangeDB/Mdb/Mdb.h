@@ -25,11 +25,13 @@ namespace mdb
 		ExchangeTable* t_Exchange;
 		ProductTable* t_Product;
 		InstrumentTable* t_Instrument;
+		PrimaryAccountTable* t_PrimaryAccount;
 		AccountTable* t_Account;
+		CapitalTable* t_Capital;
 		PositionTable* t_Position;
 		OrderTable* t_Order;
 		TradeTable* t_Trade;
-		MdTickTable* t_MdTick;
+		DepthMarketDataTable* t_DepthMarketData;
 	};
 }
 

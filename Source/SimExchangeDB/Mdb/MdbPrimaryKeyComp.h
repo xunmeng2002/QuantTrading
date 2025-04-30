@@ -16,7 +16,7 @@ namespace mdb
 	{
 		size_t operator()(const TradingDay* const record) const;
 	};
-	
+
 	struct ExchangeEqualForExchangePrimaryKey
 	{
 		bool operator()(const Exchange* const left, const Exchange* const right) const;
@@ -29,7 +29,7 @@ namespace mdb
 	{
 		size_t operator()(const Exchange* const record) const;
 	};
-	
+
 	struct ProductEqualForProductPrimaryKey
 	{
 		bool operator()(const Product* const left, const Product* const right) const;
@@ -42,7 +42,7 @@ namespace mdb
 	{
 		size_t operator()(const Product* const record) const;
 	};
-	
+
 	struct InstrumentEqualForInstrumentPrimaryKey
 	{
 		bool operator()(const Instrument* const left, const Instrument* const right) const;
@@ -55,7 +55,20 @@ namespace mdb
 	{
 		size_t operator()(const Instrument* const record) const;
 	};
-	
+
+	struct PrimaryAccountEqualForPrimaryAccountPrimaryKey
+	{
+		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
+	};
+	struct PrimaryAccountLessForPrimaryAccountPrimaryKey
+	{
+		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
+	};
+	struct PrimaryAccountHashForPrimaryAccountPrimaryKey
+	{
+		size_t operator()(const PrimaryAccount* const record) const;
+	};
+
 	struct AccountEqualForAccountPrimaryKey
 	{
 		bool operator()(const Account* const left, const Account* const right) const;
@@ -68,7 +81,20 @@ namespace mdb
 	{
 		size_t operator()(const Account* const record) const;
 	};
-	
+
+	struct CapitalEqualForCapitalPrimaryKey
+	{
+		bool operator()(const Capital* const left, const Capital* const right) const;
+	};
+	struct CapitalLessForCapitalPrimaryKey
+	{
+		bool operator()(const Capital* const left, const Capital* const right) const;
+	};
+	struct CapitalHashForCapitalPrimaryKey
+	{
+		size_t operator()(const Capital* const record) const;
+	};
+
 	struct PositionEqualForPositionPrimaryKey
 	{
 		bool operator()(const Position* const left, const Position* const right) const;
@@ -81,7 +107,7 @@ namespace mdb
 	{
 		size_t operator()(const Position* const record) const;
 	};
-	
+
 	struct OrderEqualForOrderPrimaryKey
 	{
 		bool operator()(const Order* const left, const Order* const right) const;
@@ -94,7 +120,6 @@ namespace mdb
 	{
 		size_t operator()(const Order* const record) const;
 	};
-	
 	struct OrderEqualForClientOrderIDUniqueKey
 	{
 		bool operator()(const Order* const left, const Order* const right) const;
@@ -107,7 +132,7 @@ namespace mdb
 	{
 		size_t operator()(const Order* const record) const;
 	};
-	
+
 	struct TradeEqualForTradePrimaryKey
 	{
 		bool operator()(const Trade* const left, const Trade* const right) const;
@@ -120,19 +145,19 @@ namespace mdb
 	{
 		size_t operator()(const Trade* const record) const;
 	};
-	
-	struct MdTickEqualForMdTickPrimaryKey
+
+	struct DepthMarketDataEqualForDepthMarketDataPrimaryKey
 	{
-		bool operator()(const MdTick* const left, const MdTick* const right) const;
+		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
 	};
-	struct MdTickLessForMdTickPrimaryKey
+	struct DepthMarketDataLessForDepthMarketDataPrimaryKey
 	{
-		bool operator()(const MdTick* const left, const MdTick* const right) const;
+		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
 	};
-	struct MdTickHashForMdTickPrimaryKey
+	struct DepthMarketDataHashForDepthMarketDataPrimaryKey
 	{
-		size_t operator()(const MdTick* const record) const;
+		size_t operator()(const DepthMarketData* const record) const;
 	};
-	
+
 }
 

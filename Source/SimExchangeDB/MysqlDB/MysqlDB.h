@@ -72,12 +72,27 @@ public:
 	virtual void SelectInstrument(std::vector<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
 	
+	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) override;
+	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) override;
+	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void SelectPrimaryAccount(std::vector<mdb::PrimaryAccount*>& records) override;
+	virtual void TruncatePrimaryAccount() override;
+	
 	virtual void InsertAccount(mdb::Account* record) override;
 	virtual void BatchInsertAccount(std::list<mdb::Account*>* records) override;
 	virtual void DeleteAccount(mdb::Account* record) override;
 	virtual void UpdateAccount(mdb::Account* record) override;
 	virtual void SelectAccount(std::vector<mdb::Account*>& records) override;
 	virtual void TruncateAccount() override;
+	
+	virtual void InsertCapital(mdb::Capital* record) override;
+	virtual void BatchInsertCapital(std::list<mdb::Capital*>* records) override;
+	virtual void DeleteCapital(mdb::Capital* record) override;
+	virtual void UpdateCapital(mdb::Capital* record) override;
+	virtual void SelectCapital(std::vector<mdb::Capital*>& records) override;
+	virtual void TruncateCapital() override;
 	
 	virtual void InsertPosition(mdb::Position* record) override;
 	virtual void BatchInsertPosition(std::list<mdb::Position*>* records) override;
@@ -101,18 +116,18 @@ public:
 	virtual void SelectTrade(std::vector<mdb::Trade*>& records) override;
 	virtual void TruncateTrade() override;
 	
-	virtual void InsertMdTick(mdb::MdTick* record) override;
-	virtual void BatchInsertMdTick(std::list<mdb::MdTick*>* records) override;
-	virtual void DeleteMdTick(mdb::MdTick* record) override;
-	virtual void UpdateMdTick(mdb::MdTick* record) override;
-	virtual void SelectMdTick(std::vector<mdb::MdTick*>& records) override;
-	virtual void TruncateMdTick() override;
+	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
+	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void SelectDepthMarketData(std::vector<mdb::DepthMarketData*>& records) override;
+	virtual void TruncateDepthMarketData() override;
 	
 
 private:
 	void SetStatementForTradingDayRecord(sql::PreparedStatement* statement, mdb::TradingDay* record);
 	void SetStatementForTradingDayRecordUpdate(sql::PreparedStatement* statement, mdb::TradingDay* record);
-	void SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const IntType& PK);
+	void SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const UserIDType& PK);
 	void ParseRecord(sql::ResultSet* result, std::vector<mdb::TradingDay*>& records);
 	void SetStatementForExchangeRecord(sql::PreparedStatement* statement, mdb::Exchange* record);
 	void SetStatementForExchangeRecordUpdate(sql::PreparedStatement* statement, mdb::Exchange* record);
@@ -126,10 +141,19 @@ private:
 	void SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
 	void ParseRecord(sql::ResultSet* result, std::vector<mdb::Instrument*>& records);
+	void SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountRecordUpdate(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& PrimaryAccountID);
+	void SetStatementForPrimaryAccountIndexOfferID(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
+	void ParseRecord(sql::ResultSet* result, std::vector<mdb::PrimaryAccount*>& records);
 	void SetStatementForAccountRecord(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID);
 	void ParseRecord(sql::ResultSet* result, std::vector<mdb::Account*>& records);
+	void SetStatementForCapitalRecord(sql::PreparedStatement* statement, mdb::Capital* record);
+	void SetStatementForCapitalRecordUpdate(sql::PreparedStatement* statement, mdb::Capital* record);
+	void SetStatementForCapitalPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID);
+	void ParseRecord(sql::ResultSet* result, std::vector<mdb::Capital*>& records);
 	void SetStatementForPositionRecord(sql::PreparedStatement* statement, mdb::Position* record);
 	void SetStatementForPositionRecordUpdate(sql::PreparedStatement* statement, mdb::Position* record);
 	void SetStatementForPositionPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection);
@@ -143,10 +167,10 @@ private:
 	void SetStatementForTradeRecordUpdate(sql::PreparedStatement* statement, mdb::Trade* record);
 	void SetStatementForTradePrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction);
 	void ParseRecord(sql::ResultSet* result, std::vector<mdb::Trade*>& records);
-	void SetStatementForMdTickRecord(sql::PreparedStatement* statement, mdb::MdTick* record);
-	void SetStatementForMdTickRecordUpdate(sql::PreparedStatement* statement, mdb::MdTick* record);
-	void SetStatementForMdTickPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
-	void ParseRecord(sql::ResultSet* result, std::vector<mdb::MdTick*>& records);
+	void SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void ParseRecord(sql::ResultSet* result, std::vector<mdb::DepthMarketData*>& records);
 
 
 private:
@@ -179,11 +203,22 @@ private:
 	sql::PreparedStatement* m_InstrumentUpdateStatement;
 	sql::PreparedStatement* m_InstrumentSelectStatement;
 	sql::PreparedStatement* m_InstrumentTruncateStatement;
+	sql::PreparedStatement* m_PrimaryAccountInsertStatement;
+	sql::PreparedStatement* m_PrimaryAccountDeleteStatement;
+	sql::PreparedStatement* m_PrimaryAccountDeleteByOfferIDIndexStatement;
+	sql::PreparedStatement* m_PrimaryAccountUpdateStatement;
+	sql::PreparedStatement* m_PrimaryAccountSelectStatement;
+	sql::PreparedStatement* m_PrimaryAccountTruncateStatement;
 	sql::PreparedStatement* m_AccountInsertStatement;
 	sql::PreparedStatement* m_AccountDeleteStatement;
 	sql::PreparedStatement* m_AccountUpdateStatement;
 	sql::PreparedStatement* m_AccountSelectStatement;
 	sql::PreparedStatement* m_AccountTruncateStatement;
+	sql::PreparedStatement* m_CapitalInsertStatement;
+	sql::PreparedStatement* m_CapitalDeleteStatement;
+	sql::PreparedStatement* m_CapitalUpdateStatement;
+	sql::PreparedStatement* m_CapitalSelectStatement;
+	sql::PreparedStatement* m_CapitalTruncateStatement;
 	sql::PreparedStatement* m_PositionInsertStatement;
 	sql::PreparedStatement* m_PositionDeleteStatement;
 	sql::PreparedStatement* m_PositionDeleteByAccountIndexStatement;
@@ -200,9 +235,9 @@ private:
 	sql::PreparedStatement* m_TradeUpdateStatement;
 	sql::PreparedStatement* m_TradeSelectStatement;
 	sql::PreparedStatement* m_TradeTruncateStatement;
-	sql::PreparedStatement* m_MdTickInsertStatement;
-	sql::PreparedStatement* m_MdTickDeleteStatement;
-	sql::PreparedStatement* m_MdTickUpdateStatement;
-	sql::PreparedStatement* m_MdTickSelectStatement;
-	sql::PreparedStatement* m_MdTickTruncateStatement;
+	sql::PreparedStatement* m_DepthMarketDataInsertStatement;
+	sql::PreparedStatement* m_DepthMarketDataDeleteStatement;
+	sql::PreparedStatement* m_DepthMarketDataUpdateStatement;
+	sql::PreparedStatement* m_DepthMarketDataSelectStatement;
+	sql::PreparedStatement* m_DepthMarketDataTruncateStatement;
 };

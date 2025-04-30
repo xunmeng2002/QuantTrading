@@ -253,7 +253,7 @@
 			<item name="Commission" id="0x700A" type="Money" desc="手续费"/>
 			<item name="StampTax" id="0x7018" type="Money" desc="印花税"/>
 			<item name="TransferFee" id="0x701A" type="Money" desc="过户费"/>
-			<item name="FrozenCash" id="0x7017" type="Money" desc="冻结资金"/>
+			<item name="FrozenCash" id="0x7025" type="Money" desc="冻结资金"/>
 			<item name="FrozenMargin" id="0x7009" type="Money" desc="冻结保证金"/>
 			<item name="FrozenCommission" id="0x700B" type="Money" desc="冻结手续费"/>
 			<item name="FrozenStampTax" id="0x7019" type="Money" desc="冻结印花税"/>
@@ -281,7 +281,7 @@
 			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 			<item name="PosiDirection" id="0x9004" type="PosiDirection" desc="持仓方向"/>
 			<item name="TotalPosition" id="0x4019" type="Volume" desc="持仓数量"/>
 			<item name="PositionFrozen" id="0x401A" type="Volume" desc="冻结持仓"/>
@@ -319,7 +319,7 @@
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 			<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 			<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
 			<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
@@ -339,7 +339,7 @@
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 			<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 			<item name="RequestID" id="0x1016" type="RequestID" desc="客户端请求编号"/>
-			<item name="FrozenCash" id="0x7017" type="Money" desc="冻结资金"/>
+			<item name="FrozenCash" id="0x7025" type="Money" desc="冻结资金"/>
 			<item name="FrozenMargin" id="0x7009" type="Money" desc="冻结保证金"/>
 			<item name="FrozenCommission" id="0x700B" type="Money" desc="冻结手续费"/>
 			<item name="FrozenStampTax" id="0x7019" type="Money" desc="冻结印花税"/>
@@ -361,7 +361,7 @@
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 			<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 			<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
 			<item name="TradeID" id="0x101F" type="TradeID" desc="成交编号"/>
@@ -395,7 +395,7 @@
 			<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
 			<item name="InstrumentName" id="0x2004" type="InstrumentName" desc="合约名称"/>
 			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 		</field>
 		<field name="RspInfo" id="0x0001" desc="应答信息">
 			<item name="ErrorID" id="0x1009" type="ErrorID" desc="错误代码"/>
@@ -420,8 +420,8 @@
 			<item name="ExecutePrice" id="0x6023" type="Price" desc="行权价"/>
 			<item name="UnitMargin" id="0x7021" type="Money" desc="单位保证金"/>
 			<item name="PriceTick" id="0x6024" type="Price" desc="最小变动价位"/>
-			<item name="MaxLimitOrderVolume" id="0x401D" type="Volume" desc="限价最大下单数量"/>
-			<item name="MaxMarketOrderVolume" id="0x401E" type="Volume" desc="市价最大下单数量"/>
+			<item name="MaxLimitOrderVolume" id="0x4026" type="Volume" desc="限价最大下单量"/>
+			<item name="MaxMarketOrderVolume" id="0x4024" type="Volume" desc="市价最大下单量"/>
 			<item name="ExpiringDate" id="0x300D" type="Date" desc="到期日"/>
 		</field>
 		<field name="RspInfo" id="0x0001" desc="应答信息">
@@ -433,14 +433,14 @@
 		<field name="ReqQryCommissionRate" id="0x2016" desc="查询手续费率请求">
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 		</field>
 	</package>
 	<package name="RspQryCommissionRate" id="0x2016" desc="查询手续费率应答">
 		<field name="CommissionRate" id="0x2017" desc="手续费率">
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 			<item name="OpenBuyByMoney" id="0x5006" type="Rate" desc="买开仓费率"/>
 			<item name="OpenSellByMoney" id="0x5007" type="Rate" desc="卖开仓费率"/>
 			<item name="CloseBuyByMoney" id="0x5008" type="Rate" desc="买平仓费率"/>
@@ -499,7 +499,7 @@
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 			<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 			<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
 			<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
@@ -519,7 +519,7 @@
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 			<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 			<item name="RequestID" id="0x1016" type="RequestID" desc="客户端请求编号"/>
-			<item name="FrozenCash" id="0x7017" type="Money" desc="冻结资金"/>
+			<item name="FrozenCash" id="0x7025" type="Money" desc="冻结资金"/>
 			<item name="FrozenMargin" id="0x7009" type="Money" desc="冻结保证金"/>
 			<item name="FrozenCommission" id="0x700B" type="Money" desc="冻结手续费"/>
 			<item name="FrozenStampTax" id="0x7019" type="Money" desc="冻结印花税"/>
@@ -562,7 +562,7 @@
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 			<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 			<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
 			<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
@@ -582,7 +582,7 @@
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 			<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 			<item name="RequestID" id="0x1016" type="RequestID" desc="客户端请求编号"/>
-			<item name="FrozenCash" id="0x7017" type="Money" desc="冻结资金"/>
+			<item name="FrozenCash" id="0x7025" type="Money" desc="冻结资金"/>
 			<item name="FrozenMargin" id="0x7009" type="Money" desc="冻结保证金"/>
 			<item name="FrozenCommission" id="0x700B" type="Money" desc="冻结手续费"/>
 			<item name="FrozenStampTax" id="0x7019" type="Money" desc="冻结印花税"/>
@@ -595,7 +595,7 @@
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x9001" type="SecurityType" desc="证券类别"/>
+			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
 			<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 			<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
 			<item name="TradeID" id="0x101F" type="TradeID" desc="成交编号"/>
