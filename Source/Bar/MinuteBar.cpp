@@ -50,7 +50,7 @@ void MinuteBar::OnDepthMarketData(DepthMarketDataField* depthMd)
 			AddBar(bar);
 		}
 	}
-	else if (depthMd->UpdateTs >= bar->UpdateTs)
+	else if (depthMd->UpdateTs >= bar->BarTime)
 	{
 		EndBar(preBar, bar);
 		preBar = bar;
@@ -173,7 +173,7 @@ void MinuteBar::CheckHasLostBar(BarMarketDataField* preBar, DepthMarketDataField
 		preBar = InitLostBarFromDepthMd(depthMd, lostBarMinuteTime, lostBarMinuteTime);
 		m_LostBars.push_back(preBar);
 	}
-	auto preBarMinuteTime = preBar->UpdateTs / 100000LL;
+	auto preBarMinuteTime = preBar->BarTime / 100000LL;
 	auto lostBarMinuteTime = MinuteAdd(preBarMinuteTime, 1);
 	if (lostBarMinuteTime >= nextBarMinuteTime)
 	{

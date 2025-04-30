@@ -6,6 +6,7 @@
 #include "ThostFtdcMdSpiImpl.h"
 #include "FieldsCompare.h"
 #include "BarInterface.h"
+#include "MinuteBar.h"
 #include <map>
 #include <set>
 #include <list>
@@ -42,12 +43,14 @@ protected:
 private:
 	MdFront* m_MdFront;
 	CThostFtdcMdSpiImpl* m_MdSpi;
+	MinuteBar* m_MinuteBar;
 
 	std::set<SessionIDType> m_LoggedSessions;
 	std::set<ReqSubMarketDataField*, std::less<ReqSubMarketDataField>> m_SubscribeInstruments;
 	std::map<SessionIDType, std::set<ReqSubMarketDataField*, std::less<ReqSubMarketDataField>>> m_SessionSubscribeInstruments;
 	std::list<Package*> m_RecvPackages;
 
+	ReqSubMarketDataField* m_ReqSubMarketData;
 	RtnBarMarketDataPackage* m_BarMdPackage;
 
 	UserIDType m_MdUser;

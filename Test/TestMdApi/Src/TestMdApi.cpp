@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	api->RegisterFront(serverConfig.MdOfferAddress.c_str());
 	api->Init();
 
-	std::this_thread::sleep_for(chrono::seconds(90));
+	std::this_thread::sleep_for(chrono::seconds(120));
 	api->Release();
 	std::this_thread::sleep_for(chrono::seconds(1));
 

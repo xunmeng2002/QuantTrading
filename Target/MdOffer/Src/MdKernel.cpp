@@ -13,6 +13,10 @@ MdKernel::MdKernel(const char* mdUser, const char* password)
 {
 	Strcpy(m_MdUser, mdUser);
 	Strcpy(m_MdPassword, password);
+
+	m_MinuteBar = new MinuteBar();
+	m_MinuteBar->Subscribe(this);
+	m_ReqSubMarketData = new ReqSubMarketDataField();
 	m_BarMdPackage = new RtnBarMarketDataPackage();
 }
 void MdKernel::SetMdFront(MdFront* mdFront)
@@ -52,10 +56,10 @@ void MdKernel::OnMessage(Package* package)
 void MdKernel::OnBarMarketData(BarMarketDataField* bar)
 {
 	m_BarMdPackage->BarMarketData = bar;
-	ReqSubMarketDataField reqSubMarketData;
-	Strcpy(reqSubMarketData.ExchangeID, bar->ExchangeID);
-	Strcpy(reqSubMarketData.InstrumentID, bar->InstrumentID);
-	PushToAllSubscribed(&reqSubMarketData, m_BarMdPackage);
+
+	Strcpy(m_ReqSubMarketData->ExchangeID, bar->ExchangeID);
+	Strcpy(m_ReqSubMarketData->InstrumentID, bar->InstrumentID);
+	PushToAllSubscribed(m_ReqSubMarketData, m_BarMdPackage);
 }
 
 void MdKernel::Run()
@@ -182,6 +186,7 @@ int MdKernel::HandleReqSubMarketData(ReqSubMarketDataPackage* package)
 		if (it == m_SubscribeInstruments.end())
 		{
 			m_SubscribeInstruments.insert(reqSubMarketData);
+			m_MinuteBar->ReqSubMarketData(reqSubMarketData);
 			m_MdSpi->SubscribeMd(reqSubMarketData);
 		}
 		auto& sessionSubscribeInstruments = m_SessionSubscribeInstruments[package->SessionID];
@@ -214,11 +219,11 @@ int MdKernel::HandleReqSubMarketData(ReqSubMarketDataPackage* package)
 }
 int MdKernel::HandleRtnDepthMarketData(RtnDepthMarketDataPackage* package)
 {
+	m_MinuteBar->OnDepthMarketData(package->DepthMarketData);
 	package = MdSnap::GetInstance().AddDepthMd(package);
-	ReqSubMarketDataField reqSubMarketData;
-	Strcpy(reqSubMarketData.ExchangeID, package->DepthMarketData->ExchangeID);
-	Strcpy(reqSubMarketData.InstrumentID, package->DepthMarketData->InstrumentID);
-	PushToAllSubscribed(&reqSubMarketData, package);
+	Strcpy(m_ReqSubMarketData->ExchangeID, package->DepthMarketData->ExchangeID);
+	Strcpy(m_ReqSubMarketData->InstrumentID, package->DepthMarketData->InstrumentID);
+	PushToAllSubscribed(m_ReqSubMarketData, package);
 	return 0;
 }
 
