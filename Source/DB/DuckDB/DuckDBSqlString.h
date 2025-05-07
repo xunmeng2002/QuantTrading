@@ -1,0 +1,35 @@
+﻿#pragma once
+
+constexpr const char* CreateDuckDBTradingDayTableSqlString = "CREATE TABLE IF NOT EXISTS t_TradingDay(PK varchar, CurrTradingDay varchar, PreTradingDay varchar, PRIMARY KEY(PK));";
+constexpr const char* TruncateDuckDBTradingDayTableSqlString = "Delete From t_TradingDay;";
+
+constexpr const char* CreateDuckDBExchangeTableSqlString = "CREATE TABLE IF NOT EXISTS t_Exchange(ExchangeID varchar, ExchangeName varchar, PRIMARY KEY(ExchangeID));";
+constexpr const char* TruncateDuckDBExchangeTableSqlString = "Delete From t_Exchange;";
+
+constexpr const char* CreateDuckDBProductTableSqlString = "CREATE TABLE IF NOT EXISTS t_Product(ExchangeID varchar, ProductID varchar, ProductName varchar, SecurityType int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, ProductID));";
+constexpr const char* TruncateDuckDBProductTableSqlString = "Delete From t_Product;";
+
+constexpr const char* CreateDuckDBInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_Instrument(TradingDay varchar, ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, SecurityType int, SecurityDetailType int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));";
+constexpr const char* TruncateDuckDBInstrumentTableSqlString = "Delete From t_Instrument;";
+
+constexpr const char* CreateDuckDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(TradingDay varchar, PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, BrokerPassword varchar, OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID)); CREATE INDEX IF NOT EXISTS OfferIDIndex ON t_PrimaryAccount(OfferID);";
+constexpr const char* TruncateDuckDBPrimaryAccountTableSqlString = "Delete From t_PrimaryAccount;";
+
+constexpr const char* CreateDuckDBAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_Account(TradingDay varchar, AccountID varchar, AccountName varchar, AccountType int, AccountStatus int, Password varchar, TradeGroupID int, RiskGroupID int, CommissionGroupID int, PRIMARY KEY(AccountID));";
+constexpr const char* TruncateDuckDBAccountTableSqlString = "Delete From t_Account;";
+
+constexpr const char* CreateDuckDBCapitalTableSqlString = "CREATE TABLE IF NOT EXISTS t_Capital(TradingDay varchar, AccountID varchar, AccountType int, Asset double, PreAsset double, CashAsset double, PreCashAsset double, Available double, CashIn double, CashOut double, Margin double, Commission double, StampTax double, TransferFee double, FrozenCash double, FrozenMargin double, FrozenCommission double, FrozenStampTax double, FrozenTransferFee double, MarketValue double, TotalProfit double, TodayProfit double, Deposit double, Withdraw double, PRIMARY KEY(AccountID));";
+constexpr const char* TruncateDuckDBCapitalTableSqlString = "Delete From t_Capital;";
+
+constexpr const char* CreateDuckDBPositionTableSqlString = "CREATE TABLE IF NOT EXISTS t_Position(TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, SecurityType int, PosiDirection int, TotalPosition bigint, PositionFrozen bigint, TodayPosition bigint, CashIn double, CashOut double, Margin double, Commission double, StampTax double, TransferFee double, FrozenCash double, FrozenMargin double, FrozenCommission double, FrozenStampTax double, FrozenTransferFee double, MarketValue double, VolumeMultiple int, CloseProfit double, CloseProfitFloat double, PositionProfit double, PositionProfitFloat double, LastPrice double, PrePrice double, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)); CREATE INDEX IF NOT EXISTS AccountIndex ON t_Position(TradingDay, AccountID);";
+constexpr const char* TruncateDuckDBPositionTableSqlString = "Delete From t_Position;";
+
+constexpr const char* CreateDuckDBOrderTableSqlString = "CREATE TABLE IF NOT EXISTS t_Order(TradingDay varchar, AccountID varchar, PrimaryAccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, SecurityType int, OrderID int, OrderSysID varchar, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, RequestID int, OfferID int, TradeGroupID int, RiskGroupID int, CommissionGroupID int, FrozenCash double, FrozenMargin double, FrozenCommission double, FrozenStampTax double, FrozenTransferFee double, RebuildMark bool, IsForceClose bool, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));";
+constexpr const char* TruncateDuckDBOrderTableSqlString = "Delete From t_Order;";
+
+constexpr const char* CreateDuckDBTradeTableSqlString = "CREATE TABLE IF NOT EXISTS t_Trade(TradingDay varchar, AccountID varchar, PrimaryAccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, SecurityType int, OrderID int, OrderSysID varchar, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, StampTax double, TransferFee double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));";
+constexpr const char* TruncateDuckDBTradeTableSqlString = "Delete From t_Trade;";
+
+constexpr const char* CreateDuckDBDepthMarketDataTableSqlString = "CREATE TABLE IF NOT EXISTS t_DepthMarketData(TradingDay varchar, ExchangeID varchar, InstrumentID varchar, LastPrice double, PreSettlementPrice double, PreClosePrice double, PreOpenInterest bigint, OpenPrice double, HighestPrice double, LowestPrice double, ClosePrice double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest bigint, SettlementPrice double, UpperLimitPrice double, LowerLimitPrice double, AveragePrice double, UpdateTs bigint, AskPrice1 double, AskPrice2 double, AskPrice3 double, AskPrice4 double, AskPrice5 double, AskPrice6 double, AskPrice7 double, AskPrice8 double, AskPrice9 double, AskPrice10 double, AskVolume1 bigint, AskVolume2 bigint, AskVolume3 bigint, AskVolume4 bigint, AskVolume5 bigint, AskVolume6 bigint, AskVolume7 bigint, AskVolume8 bigint, AskVolume9 bigint, AskVolume10 bigint, BidPrice1 double, BidPrice2 double, BidPrice3 double, BidPrice4 double, BidPrice5 double, BidPrice6 double, BidPrice7 double, BidPrice8 double, BidPrice9 double, BidPrice10 double, BidVolume1 bigint, BidVolume2 bigint, BidVolume3 bigint, BidVolume4 bigint, BidVolume5 bigint, BidVolume6 bigint, BidVolume7 bigint, BidVolume8 bigint, BidVolume9 bigint, BidVolume10 bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));";
+constexpr const char* TruncateDuckDBDepthMarketDataTableSqlString = "Delete From t_DepthMarketData;";
+

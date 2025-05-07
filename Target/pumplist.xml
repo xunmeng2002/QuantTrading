@@ -13,10 +13,15 @@
 
 	<pump dest="./Target/BackTest/DB/MysqlDB/MysqlDB.h" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
 	<pump dest="./Target/BackTest/DB/MysqlDB/MysqlDB.cpp" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/MysqlDB/MysqlDBSqlString.h" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	
 	<pump dest="./Target/BackTest/DB/SqliteDB/SqliteDB.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
 	<pump dest="./Target/BackTest/DB/SqliteDB/SqliteDB.cpp" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/SqliteDB/SqliteDBSqlString.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	
 	<pump dest="./Target/BackTest/DB/DuckDB/DuckDB.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
 	<pump dest="./Target/BackTest/DB/DuckDB/DuckDB.cpp" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/DB/DuckDB/DuckDBSqlString.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
 	
 	<pump dest="./Target/BackTest/DB/InitMdb/InitMdbFromCsv.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
 	<pump dest="./Target/BackTest/DB/InitMdb/InitMdbFromCsv.cpp" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
