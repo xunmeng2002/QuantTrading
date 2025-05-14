@@ -245,8 +245,9 @@ namespace mdb
 		:m_Table(table), m_Index(buckets)
 	{
 	}
-	Capital* CapitalPrimaryKey::Select(const AccountIDType& AccountID)
+	Capital* CapitalPrimaryKey::Select(const DateType& TradingDay, const AccountIDType& AccountID)
 	{
+		Strcpy(t_CompareCapital.TradingDay, TradingDay);
 		Strcpy(t_CompareCapital.AccountID, AccountID);
 		
 		std::shared_lock guard(m_Table->m_SharedMutex);

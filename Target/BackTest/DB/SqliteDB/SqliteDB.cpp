@@ -1320,7 +1320,7 @@ void SqliteDB::InsertAccount(Account* record)
 	auto start = steady_clock::now();
 	if (m_AccountInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_AccountInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_AccountInsertStatement, nullptr);
 	}
 	SetStatementForAccountRecord(m_AccountInsertStatement, record);
 	
@@ -1404,7 +1404,7 @@ void SqliteDB::UpdateAccount(Account* record)
 	auto start = steady_clock::now();
 	if (m_AccountUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Account set TradingDay = ?, AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;", -1, &m_AccountUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Account set AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;", -1, &m_AccountUpdateStatement, nullptr);
 	}
 	SetStatementForAccountRecordUpdate(m_AccountUpdateStatement, record);
 	
@@ -1525,9 +1525,9 @@ void SqliteDB::DeleteCapital(Capital* record)
 	auto start = steady_clock::now();
 	if (m_CapitalDeleteStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "delete from t_Capital where AccountID = ?;", -1, &m_CapitalDeleteStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "delete from t_Capital where TradingDay = ? and AccountID = ?;", -1, &m_CapitalDeleteStatement, nullptr);
 	}
-	SetStatementForCapitalPrimaryKey(m_CapitalDeleteStatement, record->AccountID);
+	SetStatementForCapitalPrimaryKey(m_CapitalDeleteStatement, record->TradingDay, record->AccountID);
 
 	auto rc = sqlite3_step(m_CapitalDeleteStatement);
 	if (rc != SQLITE_DONE)
@@ -1569,7 +1569,7 @@ void SqliteDB::UpdateCapital(Capital* record)
 	auto start = steady_clock::now();
 	if (m_CapitalUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Capital set TradingDay = ?, AccountType = ?, Balance = ?, PreBalance = ?, Available = ?, MarketValue = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, CloseProfitByDate = ?, CloseProfitByTrade = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, Deposit = ?, Withdraw = ? where AccountID = ?;", -1, &m_CapitalUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Capital set AccountType = ?, Balance = ?, PreBalance = ?, Available = ?, MarketValue = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, CloseProfitByDate = ?, CloseProfitByTrade = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, Deposit = ?, Withdraw = ? where TradingDay = ? and AccountID = ?;", -1, &m_CapitalUpdateStatement, nullptr);
 	}
 	SetStatementForCapitalRecordUpdate(m_CapitalUpdateStatement, record);
 	
@@ -2932,19 +2932,7 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<Instrument*>& reco
 }
 void SqliteDB::SetStatementForAccountRecord(sqlite3_stmt* statement, Account* record)
 {
-	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
-	sqlite3_bind_text(statement, 3, record->AccountName, sizeof(record->AccountName), nullptr);
-	sqlite3_bind_int(statement, 4, int(record->AccountType));
-	sqlite3_bind_int(statement, 5, int(record->AccountStatus));
-	sqlite3_bind_text(statement, 6, record->Password, sizeof(record->Password), nullptr);
-	sqlite3_bind_int(statement, 7, record->TradeGroupID);
-	sqlite3_bind_int(statement, 8, record->RiskGroupID);
-	sqlite3_bind_int(statement, 9, record->CommissionGroupID);
-}
-void SqliteDB::SetStatementForAccountRecordUpdate(sqlite3_stmt* statement, Account* record)
-{
-	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 1, record->AccountID, sizeof(record->AccountID), nullptr);
 	sqlite3_bind_text(statement, 2, record->AccountName, sizeof(record->AccountName), nullptr);
 	sqlite3_bind_int(statement, 3, int(record->AccountType));
 	sqlite3_bind_int(statement, 4, int(record->AccountStatus));
@@ -2952,7 +2940,17 @@ void SqliteDB::SetStatementForAccountRecordUpdate(sqlite3_stmt* statement, Accou
 	sqlite3_bind_int(statement, 6, record->TradeGroupID);
 	sqlite3_bind_int(statement, 7, record->RiskGroupID);
 	sqlite3_bind_int(statement, 8, record->CommissionGroupID);
-	sqlite3_bind_text(statement, 9, record->AccountID, sizeof(record->AccountID), nullptr);
+}
+void SqliteDB::SetStatementForAccountRecordUpdate(sqlite3_stmt* statement, Account* record)
+{
+	sqlite3_bind_text(statement, 1, record->AccountName, sizeof(record->AccountName), nullptr);
+	sqlite3_bind_int(statement, 2, int(record->AccountType));
+	sqlite3_bind_int(statement, 3, int(record->AccountStatus));
+	sqlite3_bind_text(statement, 4, record->Password, sizeof(record->Password), nullptr);
+	sqlite3_bind_int(statement, 5, record->TradeGroupID);
+	sqlite3_bind_int(statement, 6, record->RiskGroupID);
+	sqlite3_bind_int(statement, 7, record->CommissionGroupID);
+	sqlite3_bind_text(statement, 8, record->AccountID, sizeof(record->AccountID), nullptr);
 }
 void SqliteDB::SetStatementForAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& AccountID)
 {
@@ -2961,15 +2959,14 @@ void SqliteDB::SetStatementForAccountPrimaryKey(sqlite3_stmt* statement, const A
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<Account*>& records)
 {
 	Account* record = Account::Allocate();
-	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
-	Strcpy(record->AccountID, (const char*)sqlite3_column_text(statement, 1));
-	Strcpy(record->AccountName, (const char*)sqlite3_column_text(statement, 2));
-	record->AccountType = AccountTypeType(sqlite3_column_int(statement, 3));
-	record->AccountStatus = AccountStatusType(sqlite3_column_int(statement, 4));
-	Strcpy(record->Password, (const char*)sqlite3_column_text(statement, 5));
-	record->TradeGroupID = sqlite3_column_int(statement, 6);
-	record->RiskGroupID = sqlite3_column_int(statement, 7);
-	record->CommissionGroupID = sqlite3_column_int(statement, 8);
+	Strcpy(record->AccountID, (const char*)sqlite3_column_text(statement, 0));
+	Strcpy(record->AccountName, (const char*)sqlite3_column_text(statement, 1));
+	record->AccountType = AccountTypeType(sqlite3_column_int(statement, 2));
+	record->AccountStatus = AccountStatusType(sqlite3_column_int(statement, 3));
+	Strcpy(record->Password, (const char*)sqlite3_column_text(statement, 4));
+	record->TradeGroupID = sqlite3_column_int(statement, 5);
+	record->RiskGroupID = sqlite3_column_int(statement, 6);
+	record->CommissionGroupID = sqlite3_column_int(statement, 7);
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForCapitalRecord(sqlite3_stmt* statement, Capital* record)
@@ -2997,30 +2994,31 @@ void SqliteDB::SetStatementForCapitalRecord(sqlite3_stmt* statement, Capital* re
 }
 void SqliteDB::SetStatementForCapitalRecordUpdate(sqlite3_stmt* statement, Capital* record)
 {
-	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_int(statement, 2, int(record->AccountType));
-	sqlite3_bind_double(statement, 3, record->Balance);
-	sqlite3_bind_double(statement, 4, record->PreBalance);
-	sqlite3_bind_double(statement, 5, record->Available);
-	sqlite3_bind_double(statement, 6, record->MarketValue);
-	sqlite3_bind_double(statement, 7, record->CashIn);
-	sqlite3_bind_double(statement, 8, record->CashOut);
-	sqlite3_bind_double(statement, 9, record->Margin);
-	sqlite3_bind_double(statement, 10, record->Commission);
-	sqlite3_bind_double(statement, 11, record->FrozenCash);
-	sqlite3_bind_double(statement, 12, record->FrozenMargin);
-	sqlite3_bind_double(statement, 13, record->FrozenCommission);
-	sqlite3_bind_double(statement, 14, record->CloseProfitByDate);
-	sqlite3_bind_double(statement, 15, record->CloseProfitByTrade);
-	sqlite3_bind_double(statement, 16, record->PositionProfitByDate);
-	sqlite3_bind_double(statement, 17, record->PositionProfitByTrade);
-	sqlite3_bind_double(statement, 18, record->Deposit);
-	sqlite3_bind_double(statement, 19, record->Withdraw);
+	sqlite3_bind_int(statement, 1, int(record->AccountType));
+	sqlite3_bind_double(statement, 2, record->Balance);
+	sqlite3_bind_double(statement, 3, record->PreBalance);
+	sqlite3_bind_double(statement, 4, record->Available);
+	sqlite3_bind_double(statement, 5, record->MarketValue);
+	sqlite3_bind_double(statement, 6, record->CashIn);
+	sqlite3_bind_double(statement, 7, record->CashOut);
+	sqlite3_bind_double(statement, 8, record->Margin);
+	sqlite3_bind_double(statement, 9, record->Commission);
+	sqlite3_bind_double(statement, 10, record->FrozenCash);
+	sqlite3_bind_double(statement, 11, record->FrozenMargin);
+	sqlite3_bind_double(statement, 12, record->FrozenCommission);
+	sqlite3_bind_double(statement, 13, record->CloseProfitByDate);
+	sqlite3_bind_double(statement, 14, record->CloseProfitByTrade);
+	sqlite3_bind_double(statement, 15, record->PositionProfitByDate);
+	sqlite3_bind_double(statement, 16, record->PositionProfitByTrade);
+	sqlite3_bind_double(statement, 17, record->Deposit);
+	sqlite3_bind_double(statement, 18, record->Withdraw);
+	sqlite3_bind_text(statement, 19, record->TradingDay, sizeof(record->TradingDay), nullptr);
 	sqlite3_bind_text(statement, 20, record->AccountID, sizeof(record->AccountID), nullptr);
 }
-void SqliteDB::SetStatementForCapitalPrimaryKey(sqlite3_stmt* statement, const AccountIDType& AccountID)
+void SqliteDB::SetStatementForCapitalPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const AccountIDType& AccountID)
 {
-	sqlite3_bind_text(statement, 1, AccountID, sizeof(AccountID), nullptr);
+	sqlite3_bind_text(statement, 1, TradingDay, sizeof(TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, AccountID, sizeof(AccountID), nullptr);
 }
 void SqliteDB::SetStatementForCapitalIndexTradingDay(sqlite3_stmt* statement, Capital* record)
 {

@@ -22,6 +22,8 @@ private:
 
 	void ExecuteQuery(duckdb_result* result);
 	void ParseInstrumentRecord(duckdb_result& result, std::list<mdb::Instrument*>& records);
+	void ParseMdTickRecord(duckdb_result& result, std::list<mdb::DepthMarketData*>& records);
+	void ParseMdBarRecord(duckdb_result& result, std::list<mdb::BarMarketData*>& records);
 
 	void UpdateMdTicks(mdb::MdSubscribe* mdSubscribe, std::list<mdb::DepthMarketData*>& mdTicks);
 	void UpdateMdBars(mdb::MdSubscribe* mdSubscribe, std::list<mdb::BarMarketData*>& mdBars);

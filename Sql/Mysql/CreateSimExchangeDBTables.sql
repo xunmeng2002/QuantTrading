@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS `t_Instrument` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='合约';
 
 CREATE TABLE IF NOT EXISTS `t_PrimaryAccount` (
-  `TradingDay` char(9) COMMENT '交易日',
   `PrimaryAccountID` char(32) COMMENT '主账户代码',
   `PrimaryAccountName` char(64) COMMENT '主账户名称',
   `AccountClass` int COMMENT '账户类别',
@@ -85,7 +84,6 @@ CREATE TABLE IF NOT EXISTS `t_PrimaryAccount` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='主账户';
 
 CREATE TABLE IF NOT EXISTS `t_Account` (
-  `TradingDay` char(9) COMMENT '交易日',
   `AccountID` char(32) COMMENT '账户代码',
   `AccountName` char(64) COMMENT '账户名称',
   `AccountType` int COMMENT '账户类型',
@@ -121,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `t_Capital` (
   `Withdraw` decimal(24,8) COMMENT '出金',
 
   INDEX TradingDay(TradingDay),
-  PRIMARY KEY(AccountID)
+  PRIMARY KEY(TradingDay, AccountID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='资金';
 
 CREATE TABLE IF NOT EXISTS `t_Position` (

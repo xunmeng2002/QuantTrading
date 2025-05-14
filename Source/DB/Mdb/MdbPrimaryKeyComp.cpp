@@ -149,10 +149,14 @@ namespace mdb
 
 	bool CapitalEqualForCapitalPrimaryKey::operator()(const Capital* const left, const Capital* const right) const
 	{
-		return strcmp(left->AccountID, right->AccountID) == 0;
+		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->AccountID, right->AccountID) == 0;
 	}
 	bool CapitalLessForCapitalPrimaryKey::operator()(const Capital* const left, const Capital* const right) const
 	{
+		if (strcmp(left->TradingDay, right->TradingDay) < 0)
+			return true;
+		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
+			return false;
 		if (strcmp(left->AccountID, right->AccountID) < 0)
 			return true;
 		else if (strcmp(left->AccountID, right->AccountID) > 0)
@@ -161,7 +165,7 @@ namespace mdb
 	}
 	size_t CapitalHashForCapitalPrimaryKey::operator()(const Capital* const record) const
 	{
-		return std::hash<string>()(record->AccountID);
+		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->AccountID);
 	}
 
 	bool PositionEqualForPositionPrimaryKey::operator()(const Position* const left, const Position* const right) const

@@ -4,7 +4,7 @@
 BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi)
 	:m_BackTestApi(backTestApi), m_LastOrderTickMd(nullptr), m_LastOrderBarMd(nullptr), m_MaxRequestID(0), m_MaxClientOrderID(0)
 {
-	strcpy(m_AccountID, "Xunmeng001");
+	strcpy(m_AccountID, "18511899894");
 }
 
 void BackTestSpiImpl::OnConnected()
@@ -21,24 +21,43 @@ void BackTestSpiImpl::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData
 }
 void BackTestSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
 {
-	BackTestSpiMiddle::OnRtnDepthMarketData(depthMarketData);
+	//BackTestSpiMiddle::OnRtnDepthMarketData(depthMarketData);
 	if (m_LastOrderTickMd == nullptr)
 	{
 		m_LastOrderTickMd = new DepthMarketDataField();
 		memcpy(m_LastOrderTickMd, depthMarketData, sizeof(DepthMarketDataField));
+		ReqInsertOrder(m_LastOrderTickMd->ExchangeID, m_LastOrderTickMd->InstrumentID, m_LastOrderTickMd->LastPrice, DirectionType::Buy);
 	}
 	else if (m_LastOrderTickMd->LastPrice - depthMarketData->LastPrice > 10)
 	{
 		memcpy(m_LastOrderTickMd, depthMarketData, sizeof(DepthMarketDataField));
+		ReqInsertOrder(m_LastOrderTickMd->ExchangeID, m_LastOrderTickMd->InstrumentID, m_LastOrderTickMd->LastPrice, DirectionType::Sell);
 	}
 	else if (m_LastOrderTickMd->LastPrice - depthMarketData->LastPrice < -10)
 	{
 		memcpy(m_LastOrderTickMd, depthMarketData, sizeof(DepthMarketDataField));
+		ReqInsertOrder(m_LastOrderTickMd->ExchangeID, m_LastOrderTickMd->InstrumentID, m_LastOrderTickMd->LastPrice, DirectionType::Buy);
 	}
 }
 void BackTestSpiImpl::OnRtnBarMarketData(BarMarketDataField* barMarketData)
 {
-	BackTestSpiMiddle::OnRtnBarMarketData(barMarketData);
+	//BackTestSpiMiddle::OnRtnBarMarketData(barMarketData);
+	if (m_LastOrderBarMd == nullptr)
+	{
+		m_LastOrderBarMd = new BarMarketDataField();
+		memcpy(m_LastOrderBarMd, barMarketData, sizeof(BarMarketDataField));
+		ReqInsertOrder(m_LastOrderBarMd->ExchangeID, m_LastOrderBarMd->InstrumentID, m_LastOrderBarMd->Close, DirectionType::Buy);
+	}
+	else if (m_LastOrderBarMd->Close - barMarketData->Close > 10)
+	{
+		memcpy(m_LastOrderBarMd, barMarketData, sizeof(BarMarketDataField));
+		ReqInsertOrder(m_LastOrderBarMd->ExchangeID, m_LastOrderBarMd->InstrumentID, m_LastOrderBarMd->Close, DirectionType::Sell);
+	}
+	else if (m_LastOrderBarMd->Close - barMarketData->Close < -10)
+	{
+		memcpy(m_LastOrderBarMd, barMarketData, sizeof(BarMarketDataField));
+		ReqInsertOrder(m_LastOrderBarMd->ExchangeID, m_LastOrderBarMd->InstrumentID, m_LastOrderBarMd->Close, DirectionType::Buy);
+	}
 }
 void BackTestSpiImpl::OnRtnSessionBegin(SessionBeginField* sessionBegin)
 {

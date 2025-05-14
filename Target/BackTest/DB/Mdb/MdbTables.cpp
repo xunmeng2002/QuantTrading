@@ -969,7 +969,7 @@ namespace mdb
 			return;
 		}
 
-		fprintf(dumpFile, "TradingDay,AccountID,AccountName,AccountType,AccountStatus,Password,TradeGroupID,RiskGroupID,CommissionGroupID\n");
+		fprintf(dumpFile, "AccountID,AccountName,AccountType,AccountStatus,Password,TradeGroupID,RiskGroupID,CommissionGroupID\n");
 		char buff[4096] = { 0 };
 		set<Account*, AccountLessForAccountPrimaryKey> records;
 		std::shared_lock guard(m_SharedMutex);

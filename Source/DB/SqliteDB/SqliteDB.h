@@ -163,7 +163,7 @@ private:
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Account*>& records);
 	void SetStatementForCapitalRecord(sqlite3_stmt* statement, mdb::Capital* record);
 	void SetStatementForCapitalRecordUpdate(sqlite3_stmt* statement, mdb::Capital* record);
-	void SetStatementForCapitalPrimaryKey(sqlite3_stmt* statement, const AccountIDType& AccountID);
+	void SetStatementForCapitalPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const AccountIDType& AccountID);
 	void SetStatementForCapitalIndexTradingDay(sqlite3_stmt* statement, mdb::Capital* record);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Capital*>& records);
 	void SetStatementForPositionRecord(sqlite3_stmt* statement, mdb::Position* record);

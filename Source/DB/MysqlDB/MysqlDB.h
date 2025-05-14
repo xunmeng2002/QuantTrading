@@ -189,7 +189,7 @@ private:
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Account*>& records);
 	void SetStatementForCapitalRecord(sql::PreparedStatement* statement, mdb::Capital* record);
 	void SetStatementForCapitalRecordUpdate(sql::PreparedStatement* statement, mdb::Capital* record);
-	void SetStatementForCapitalPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID);
+	void SetStatementForCapitalPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID);
 	void SetStatementForCapitalIndexTradingDay(sql::PreparedStatement* statement, mdb::Capital* record);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Capital*>& records);
 	void SetStatementForPositionRecord(sql::PreparedStatement* statement, mdb::Position* record);

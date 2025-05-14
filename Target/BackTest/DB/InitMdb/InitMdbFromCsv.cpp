@@ -262,7 +262,6 @@ namespace mdb
 			}
 
 			auto record = new Account();
-			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			Strcpy(record->AccountName, csv_record.GetFieldAsString("AccountName"));
 			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");

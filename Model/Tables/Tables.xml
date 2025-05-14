@@ -102,7 +102,6 @@
 	</table>
 	<table name="PrimaryAccount" id="0x0006" desc="主账户" batch="" session="">
 		<items>
-			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
 			<item name="PrimaryAccountName" id="0x2002" type="AccountName" desc="主账户名称"/>
 			<item name="AccountClass" id="0x9013" type="AccountClass" desc="账户类别"/>
@@ -125,7 +124,6 @@
 	</table>
 	<table name="Account" id="0x0007" desc="账户" batch="" session="">
 		<items>
-			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="AccountName" id="0x2001" type="AccountName" desc="账户名称"/>
 			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
@@ -165,6 +163,7 @@
 			<item name="Withdraw" id="0x7013" type="Money" desc="出金"/>
 		</items>
 		<primarykey>
+			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 		</primarykey>
 		<uniquekeys/>

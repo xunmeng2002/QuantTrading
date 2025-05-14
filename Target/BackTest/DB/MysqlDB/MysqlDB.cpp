@@ -1180,7 +1180,7 @@ void MysqlDB::InsertAccount(Account* record)
 	auto start = steady_clock::now();
 	if (m_AccountInsertStatement == nullptr)
 	{
-		m_AccountInsertStatement = m_DBConnection->prepareStatement("insert into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_AccountInsertStatement = m_DBConnection->prepareStatement("insert into t_Account Values(?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForAccountRecord(m_AccountInsertStatement, record);
 	
@@ -1249,7 +1249,7 @@ void MysqlDB::UpdateAccount(Account* record)
 	auto start = steady_clock::now();
 	if (m_AccountUpdateStatement == nullptr)
 	{
-		m_AccountUpdateStatement = m_DBConnection->prepareStatement("update t_Account set TradingDay = ?, AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;");
+		m_AccountUpdateStatement = m_DBConnection->prepareStatement("update t_Account set AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;");
 	}
 	SetStatementForAccountRecordUpdate(m_AccountUpdateStatement, record);
 	m_AccountUpdateStatement->executeUpdate();
@@ -1346,9 +1346,9 @@ void MysqlDB::DeleteCapital(Capital* record)
 	auto start = steady_clock::now();
 	if (m_CapitalDeleteStatement == nullptr)
 	{
-		m_CapitalDeleteStatement = m_DBConnection->prepareStatement("delete from t_Capital where AccountID = ?;");
+		m_CapitalDeleteStatement = m_DBConnection->prepareStatement("delete from t_Capital where TradingDay = ? and AccountID = ?;");
 	}
-	SetStatementForCapitalPrimaryKey(m_CapitalDeleteStatement, record->AccountID);
+	SetStatementForCapitalPrimaryKey(m_CapitalDeleteStatement, record->TradingDay, record->AccountID);
 	m_CapitalDeleteStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
@@ -1376,7 +1376,7 @@ void MysqlDB::UpdateCapital(Capital* record)
 	auto start = steady_clock::now();
 	if (m_CapitalUpdateStatement == nullptr)
 	{
-		m_CapitalUpdateStatement = m_DBConnection->prepareStatement("update t_Capital set TradingDay = ?, AccountType = ?, Balance = ?, PreBalance = ?, Available = ?, MarketValue = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, CloseProfitByDate = ?, CloseProfitByTrade = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, Deposit = ?, Withdraw = ? where AccountID = ?;");
+		m_CapitalUpdateStatement = m_DBConnection->prepareStatement("update t_Capital set AccountType = ?, Balance = ?, PreBalance = ?, Available = ?, MarketValue = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, CloseProfitByDate = ?, CloseProfitByTrade = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, Deposit = ?, Withdraw = ? where TradingDay = ? and AccountID = ?;");
 	}
 	SetStatementForCapitalRecordUpdate(m_CapitalUpdateStatement, record);
 	m_CapitalUpdateStatement->executeUpdate();
@@ -2478,19 +2478,7 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Instrument*>& record
 }
 void MysqlDB::SetStatementForAccountRecord(sql::PreparedStatement* statement, Account* record)
 {
-	statement->setString(1, record->TradingDay);
-	statement->setString(2, record->AccountID);
-	statement->setString(3, record->AccountName);
-	statement->setInt(4, int(record->AccountType));
-	statement->setInt(5, int(record->AccountStatus));
-	statement->setString(6, record->Password);
-	statement->setInt(7, record->TradeGroupID);
-	statement->setInt(8, record->RiskGroupID);
-	statement->setInt(9, record->CommissionGroupID);
-}
-void MysqlDB::SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, Account* record)
-{
-	statement->setString(1, record->TradingDay);
+	statement->setString(1, record->AccountID);
 	statement->setString(2, record->AccountName);
 	statement->setInt(3, int(record->AccountType));
 	statement->setInt(4, int(record->AccountStatus));
@@ -2498,7 +2486,17 @@ void MysqlDB::SetStatementForAccountRecordUpdate(sql::PreparedStatement* stateme
 	statement->setInt(6, record->TradeGroupID);
 	statement->setInt(7, record->RiskGroupID);
 	statement->setInt(8, record->CommissionGroupID);
-	statement->setString(9, record->AccountID);
+}
+void MysqlDB::SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, Account* record)
+{
+	statement->setString(1, record->AccountName);
+	statement->setInt(2, int(record->AccountType));
+	statement->setInt(3, int(record->AccountStatus));
+	statement->setString(4, record->Password);
+	statement->setInt(5, record->TradeGroupID);
+	statement->setInt(6, record->RiskGroupID);
+	statement->setInt(7, record->CommissionGroupID);
+	statement->setString(8, record->AccountID);
 }
 void MysqlDB::SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID)
 {
@@ -2507,15 +2505,14 @@ void MysqlDB::SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Account*>& records)
 {
 	Account* record = Account::Allocate();
-	Strcpy(record->TradingDay, result->getString(1).c_str());
-	Strcpy(record->AccountID, result->getString(2).c_str());
-	Strcpy(record->AccountName, result->getString(3).c_str());
-	record->AccountType = AccountTypeType(result->getInt(4));
-	record->AccountStatus = AccountStatusType(result->getInt(5));
-	Strcpy(record->Password, result->getString(6).c_str());
-	record->TradeGroupID = result->getInt(7);
-	record->RiskGroupID = result->getInt(8);
-	record->CommissionGroupID = result->getInt(9);
+	Strcpy(record->AccountID, result->getString(1).c_str());
+	Strcpy(record->AccountName, result->getString(2).c_str());
+	record->AccountType = AccountTypeType(result->getInt(3));
+	record->AccountStatus = AccountStatusType(result->getInt(4));
+	Strcpy(record->Password, result->getString(5).c_str());
+	record->TradeGroupID = result->getInt(6);
+	record->RiskGroupID = result->getInt(7);
+	record->CommissionGroupID = result->getInt(8);
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForCapitalRecord(sql::PreparedStatement* statement, Capital* record)
@@ -2543,30 +2540,31 @@ void MysqlDB::SetStatementForCapitalRecord(sql::PreparedStatement* statement, Ca
 }
 void MysqlDB::SetStatementForCapitalRecordUpdate(sql::PreparedStatement* statement, Capital* record)
 {
-	statement->setString(1, record->TradingDay);
-	statement->setInt(2, int(record->AccountType));
-	statement->setDouble(3, record->Balance);
-	statement->setDouble(4, record->PreBalance);
-	statement->setDouble(5, record->Available);
-	statement->setDouble(6, record->MarketValue);
-	statement->setDouble(7, record->CashIn);
-	statement->setDouble(8, record->CashOut);
-	statement->setDouble(9, record->Margin);
-	statement->setDouble(10, record->Commission);
-	statement->setDouble(11, record->FrozenCash);
-	statement->setDouble(12, record->FrozenMargin);
-	statement->setDouble(13, record->FrozenCommission);
-	statement->setDouble(14, record->CloseProfitByDate);
-	statement->setDouble(15, record->CloseProfitByTrade);
-	statement->setDouble(16, record->PositionProfitByDate);
-	statement->setDouble(17, record->PositionProfitByTrade);
-	statement->setDouble(18, record->Deposit);
-	statement->setDouble(19, record->Withdraw);
+	statement->setInt(1, int(record->AccountType));
+	statement->setDouble(2, record->Balance);
+	statement->setDouble(3, record->PreBalance);
+	statement->setDouble(4, record->Available);
+	statement->setDouble(5, record->MarketValue);
+	statement->setDouble(6, record->CashIn);
+	statement->setDouble(7, record->CashOut);
+	statement->setDouble(8, record->Margin);
+	statement->setDouble(9, record->Commission);
+	statement->setDouble(10, record->FrozenCash);
+	statement->setDouble(11, record->FrozenMargin);
+	statement->setDouble(12, record->FrozenCommission);
+	statement->setDouble(13, record->CloseProfitByDate);
+	statement->setDouble(14, record->CloseProfitByTrade);
+	statement->setDouble(15, record->PositionProfitByDate);
+	statement->setDouble(16, record->PositionProfitByTrade);
+	statement->setDouble(17, record->Deposit);
+	statement->setDouble(18, record->Withdraw);
+	statement->setString(19, record->TradingDay);
 	statement->setString(20, record->AccountID);
 }
-void MysqlDB::SetStatementForCapitalPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID)
+void MysqlDB::SetStatementForCapitalPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID)
 {
-	statement->setString(1, AccountID);
+	statement->setString(1, TradingDay);
+	statement->setString(2, AccountID);
 }
 void MysqlDB::SetStatementForCapitalIndexTradingDay(sql::PreparedStatement* statement, Capital* record)
 {

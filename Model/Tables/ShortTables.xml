@@ -101,7 +101,6 @@
 	</table>
 	<table name="PrimaryAccount" 				id="0x0006" desc="主账户">
 		<items>
-			<item name="TradingDay"/>
 			<item name="PrimaryAccountID"/>
 			<item name="PrimaryAccountName"/>
 			<item name="AccountClass"/>
@@ -124,7 +123,6 @@
 	</table>
 	<table name="Account" 						id="0x0007" desc="账户">
 		<items>
-			<item name="TradingDay"/>
 			<item name="AccountID"/>
 			<item name="AccountName"/>
 			<item name="AccountType"/>
@@ -164,6 +162,7 @@
 			<item name="Withdraw"/>
 		</items>
 		<primarykey>
+			<item name="TradingDay"/>
 			<item name="AccountID"/>
 		</primarykey>
 		<uniquekeys></uniquekeys>

@@ -147,19 +147,19 @@ namespace mdb
 	}
 	const char* PrimaryAccount::GetString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%d,%s,%d,%d,%d,%d,%d",
-			TradingDay, PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%d,%s,%d,%d,%d,%d,%d",
+			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
 		return t_MdbDataStringBuffer;
 	}
 	int PrimaryAccount::GetSqlString(char* buff) const
 	{
-		return sprintf(buff, "\n('%s','%s','%s','%d','%s','%d','%d','%d','%d','%d'),",
-			TradingDay, PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
+		return sprintf(buff, "\n('%s','%s','%d','%s','%d','%d','%d','%d','%d'),",
+			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
 	}
 	const char* PrimaryAccount::GetDebugString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "PrimaryAccount:TradingDay:[%s], PrimaryAccountID:[%s], PrimaryAccountName:[%s], AccountClass:[%d], BrokerPassword:[%s], OfferID:[%d], IsAllowLogin:[%d], IsSimulateAccount:[%d], LoginStatus:[%d], InitStatus:[%d]",
-			TradingDay, PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
+		sprintf(t_MdbDataStringBuffer, "PrimaryAccount:PrimaryAccountID:[%s], PrimaryAccountName:[%s], AccountClass:[%d], BrokerPassword:[%s], OfferID:[%d], IsAllowLogin:[%d], IsSimulateAccount:[%d], LoginStatus:[%d], InitStatus:[%d]",
+			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
 		return t_MdbDataStringBuffer;
 	}
 
@@ -173,19 +173,19 @@ namespace mdb
 	}
 	const char* Account::GetString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%d,%d,%s,%d,%d,%d",
-			TradingDay, AccountID, AccountName, (int)AccountType, (int)AccountStatus, Password, TradeGroupID, RiskGroupID, CommissionGroupID);
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%d,%d,%s,%d,%d,%d",
+			AccountID, AccountName, (int)AccountType, (int)AccountStatus, Password, TradeGroupID, RiskGroupID, CommissionGroupID);
 		return t_MdbDataStringBuffer;
 	}
 	int Account::GetSqlString(char* buff) const
 	{
-		return sprintf(buff, "\n('%s','%s','%s','%d','%d','%s','%d','%d','%d'),",
-			TradingDay, AccountID, AccountName, (int)AccountType, (int)AccountStatus, Password, TradeGroupID, RiskGroupID, CommissionGroupID);
+		return sprintf(buff, "\n('%s','%s','%d','%d','%s','%d','%d','%d'),",
+			AccountID, AccountName, (int)AccountType, (int)AccountStatus, Password, TradeGroupID, RiskGroupID, CommissionGroupID);
 	}
 	const char* Account::GetDebugString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "Account:TradingDay:[%s], AccountID:[%s], AccountName:[%s], AccountType:[%d], AccountStatus:[%d], Password:[%s], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]",
-			TradingDay, AccountID, AccountName, (int)AccountType, (int)AccountStatus, Password, TradeGroupID, RiskGroupID, CommissionGroupID);
+		sprintf(t_MdbDataStringBuffer, "Account:AccountID:[%s], AccountName:[%s], AccountType:[%d], AccountStatus:[%d], Password:[%s], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]",
+			AccountID, AccountName, (int)AccountType, (int)AccountStatus, Password, TradeGroupID, RiskGroupID, CommissionGroupID);
 		return t_MdbDataStringBuffer;
 	}
 

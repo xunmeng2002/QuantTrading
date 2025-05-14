@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS t_Instrument (
 
 
 CREATE TABLE IF NOT EXISTS t_PrimaryAccount (
-  TradingDay varchar,  -- '交易日'
   PrimaryAccountID varchar,  -- '主账户代码'
   PrimaryAccountName varchar,  -- '主账户名称'
   AccountClass int,  -- '账户类别'
@@ -85,7 +84,6 @@ CREATE TABLE IF NOT EXISTS t_PrimaryAccount (
 
 
 CREATE TABLE IF NOT EXISTS t_Account (
-  TradingDay varchar,  -- '交易日'
   AccountID varchar,  -- '账户代码'
   AccountName varchar,  -- '账户名称'
   AccountType int,  -- '账户类型'
@@ -119,7 +117,7 @@ CREATE TABLE IF NOT EXISTS t_Capital (
   PositionProfitByTrade double,  -- '逐笔持仓盈亏'
   Deposit double,  -- '入金'
   Withdraw double,  -- '出金'
-  PRIMARY KEY(AccountID)
+  PRIMARY KEY(TradingDay, AccountID)
 );  -- '资金'
   CREATE INDEX TradingDay ON t_Capital(TradingDay);
 

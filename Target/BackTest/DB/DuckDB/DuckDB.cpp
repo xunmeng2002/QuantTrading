@@ -1516,7 +1516,7 @@ void DuckDB::UpdateAccount(Account* record)
 	auto start = steady_clock::now();
 	if (m_AccountUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_Account set TradingDay = ?, AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;", &m_AccountUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_Account set AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;", &m_AccountUpdateStatement);
 	}
 	SetStatementForAccountRecordUpdate(m_AccountUpdateStatement, record);
 	
@@ -1593,17 +1593,15 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Account*>& records)
 		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
 		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
 		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
-		duckdb_vector column8 = duckdb_data_chunk_get_vector(dataChunk, 8);
 
 		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
 		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
-		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
+		int* dataColumn2 = (int*)duckdb_vector_get_data(column2);
 		int* dataColumn3 = (int*)duckdb_vector_get_data(column3);
-		int* dataColumn4 = (int*)duckdb_vector_get_data(column4);
-		duckdb_string_t* dataColumn5 = (duckdb_string_t*)duckdb_vector_get_data(column5);
+		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
+		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
 		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
 		int* dataColumn7 = (int*)duckdb_vector_get_data(column7);
-		int* dataColumn8 = (int*)duckdb_vector_get_data(column8);
 
 		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
 		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
@@ -1613,7 +1611,6 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Account*>& records)
 		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
 		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
 		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
-		uint64_t* validityColumn8 = duckdb_vector_get_validity(column8);
 
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
@@ -1622,25 +1619,21 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Account*>& records)
 			memset(record, 0, sizeof(Account));
 			if (duckdb_validity_row_is_valid(validityColumn0, row))
 			{
-				CpyDuckdbString(record->TradingDay, dataColumn0[row]);
+				CpyDuckdbString(record->AccountID, dataColumn0[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn1, row))
 			{
-				CpyDuckdbString(record->AccountID, dataColumn1[row]);
+				CpyDuckdbString(record->AccountName, dataColumn1[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn2, row))
+			if (duckdb_validity_row_is_valid(validityColumn2, row)) record->AccountType = AccountTypeType(dataColumn2[row]);
+			if (duckdb_validity_row_is_valid(validityColumn3, row)) record->AccountStatus = AccountStatusType(dataColumn3[row]);
+			if (duckdb_validity_row_is_valid(validityColumn4, row))
 			{
-				CpyDuckdbString(record->AccountName, dataColumn2[row]);
+				CpyDuckdbString(record->Password, dataColumn4[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn3, row)) record->AccountType = AccountTypeType(dataColumn3[row]);
-			if (duckdb_validity_row_is_valid(validityColumn4, row)) record->AccountStatus = AccountStatusType(dataColumn4[row]);
-			if (duckdb_validity_row_is_valid(validityColumn5, row))
-			{
-				CpyDuckdbString(record->Password, dataColumn5[row]);
-			}
-			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->TradeGroupID = dataColumn6[row];
-			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->RiskGroupID = dataColumn7[row];
-			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->CommissionGroupID = dataColumn8[row];
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->TradeGroupID = dataColumn5[row];
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->RiskGroupID = dataColumn6[row];
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->CommissionGroupID = dataColumn7[row];
 			records.push_back(record);
 		}
 	}
@@ -1681,7 +1674,7 @@ void DuckDB::DeleteCapital(Capital* record)
 	auto start = steady_clock::now();
 	if (m_CapitalDeleteStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_Capital where AccountID = ?;", &m_CapitalDeleteStatement);
+		duckdb_prepare(m_Connection, "delete from t_Capital where TradingDay = ? and AccountID = ?;", &m_CapitalDeleteStatement);
 	}
 	SetStatementForCapitalPrimaryKey(m_CapitalDeleteStatement, record);
 
@@ -1727,7 +1720,7 @@ void DuckDB::UpdateCapital(Capital* record)
 	auto start = steady_clock::now();
 	if (m_CapitalUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_Capital set TradingDay = ?, AccountType = ?, Balance = ?, PreBalance = ?, Available = ?, MarketValue = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, CloseProfitByDate = ?, CloseProfitByTrade = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, Deposit = ?, Withdraw = ? where AccountID = ?;", &m_CapitalUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_Capital set AccountType = ?, Balance = ?, PreBalance = ?, Available = ?, MarketValue = ?, CashIn = ?, CashOut = ?, Margin = ?, Commission = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, CloseProfitByDate = ?, CloseProfitByTrade = ?, PositionProfitByDate = ?, PositionProfitByTrade = ?, Deposit = ?, Withdraw = ? where TradingDay = ? and AccountID = ?;", &m_CapitalUpdateStatement);
 	}
 	SetStatementForCapitalRecordUpdate(m_CapitalUpdateStatement, record);
 	
@@ -4071,7 +4064,6 @@ void DuckDB::SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement state
 }
 bool DuckDB::AppendForAccountRecord(duckdb_appender appender, Account* record)
 {
-	duckdb_append_varchar(appender, record->TradingDay);
 	duckdb_append_varchar(appender, record->AccountID);
 	duckdb_append_varchar(appender, record->AccountName);
 	duckdb_append_int32(appender, int(record->AccountType));
@@ -4089,19 +4081,7 @@ bool DuckDB::AppendForAccountRecord(duckdb_appender appender, Account* record)
 }
 void DuckDB::SetStatementForAccountRecord(duckdb_prepared_statement statement, Account* record)
 {
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_varchar(statement, 2, record->AccountID);
-	duckdb_bind_varchar(statement, 3, record->AccountName);
-	duckdb_bind_int32(statement, 4, int(record->AccountType));
-	duckdb_bind_int32(statement, 5, int(record->AccountStatus));
-	duckdb_bind_varchar(statement, 6, record->Password);
-	duckdb_bind_int32(statement, 7, record->TradeGroupID);
-	duckdb_bind_int32(statement, 8, record->RiskGroupID);
-	duckdb_bind_int32(statement, 9, record->CommissionGroupID);
-}
-void DuckDB::SetStatementForAccountRecordUpdate(duckdb_prepared_statement statement, Account* record)
-{
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 1, record->AccountID);
 	duckdb_bind_varchar(statement, 2, record->AccountName);
 	duckdb_bind_int32(statement, 3, int(record->AccountType));
 	duckdb_bind_int32(statement, 4, int(record->AccountStatus));
@@ -4109,7 +4089,17 @@ void DuckDB::SetStatementForAccountRecordUpdate(duckdb_prepared_statement statem
 	duckdb_bind_int32(statement, 6, record->TradeGroupID);
 	duckdb_bind_int32(statement, 7, record->RiskGroupID);
 	duckdb_bind_int32(statement, 8, record->CommissionGroupID);
-	duckdb_bind_varchar(statement, 9, record->AccountID);
+}
+void DuckDB::SetStatementForAccountRecordUpdate(duckdb_prepared_statement statement, Account* record)
+{
+	duckdb_bind_varchar(statement, 1, record->AccountName);
+	duckdb_bind_int32(statement, 2, int(record->AccountType));
+	duckdb_bind_int32(statement, 3, int(record->AccountStatus));
+	duckdb_bind_varchar(statement, 4, record->Password);
+	duckdb_bind_int32(statement, 5, record->TradeGroupID);
+	duckdb_bind_int32(statement, 6, record->RiskGroupID);
+	duckdb_bind_int32(statement, 7, record->CommissionGroupID);
+	duckdb_bind_varchar(statement, 8, record->AccountID);
 }
 void DuckDB::SetStatementForAccountPrimaryKey(duckdb_prepared_statement statement, Account* record)
 {
@@ -4169,30 +4159,31 @@ void DuckDB::SetStatementForCapitalRecord(duckdb_prepared_statement statement, C
 }
 void DuckDB::SetStatementForCapitalRecordUpdate(duckdb_prepared_statement statement, Capital* record)
 {
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_int32(statement, 2, int(record->AccountType));
-	duckdb_bind_double(statement, 3, record->Balance);
-	duckdb_bind_double(statement, 4, record->PreBalance);
-	duckdb_bind_double(statement, 5, record->Available);
-	duckdb_bind_double(statement, 6, record->MarketValue);
-	duckdb_bind_double(statement, 7, record->CashIn);
-	duckdb_bind_double(statement, 8, record->CashOut);
-	duckdb_bind_double(statement, 9, record->Margin);
-	duckdb_bind_double(statement, 10, record->Commission);
-	duckdb_bind_double(statement, 11, record->FrozenCash);
-	duckdb_bind_double(statement, 12, record->FrozenMargin);
-	duckdb_bind_double(statement, 13, record->FrozenCommission);
-	duckdb_bind_double(statement, 14, record->CloseProfitByDate);
-	duckdb_bind_double(statement, 15, record->CloseProfitByTrade);
-	duckdb_bind_double(statement, 16, record->PositionProfitByDate);
-	duckdb_bind_double(statement, 17, record->PositionProfitByTrade);
-	duckdb_bind_double(statement, 18, record->Deposit);
-	duckdb_bind_double(statement, 19, record->Withdraw);
+	duckdb_bind_int32(statement, 1, int(record->AccountType));
+	duckdb_bind_double(statement, 2, record->Balance);
+	duckdb_bind_double(statement, 3, record->PreBalance);
+	duckdb_bind_double(statement, 4, record->Available);
+	duckdb_bind_double(statement, 5, record->MarketValue);
+	duckdb_bind_double(statement, 6, record->CashIn);
+	duckdb_bind_double(statement, 7, record->CashOut);
+	duckdb_bind_double(statement, 8, record->Margin);
+	duckdb_bind_double(statement, 9, record->Commission);
+	duckdb_bind_double(statement, 10, record->FrozenCash);
+	duckdb_bind_double(statement, 11, record->FrozenMargin);
+	duckdb_bind_double(statement, 12, record->FrozenCommission);
+	duckdb_bind_double(statement, 13, record->CloseProfitByDate);
+	duckdb_bind_double(statement, 14, record->CloseProfitByTrade);
+	duckdb_bind_double(statement, 15, record->PositionProfitByDate);
+	duckdb_bind_double(statement, 16, record->PositionProfitByTrade);
+	duckdb_bind_double(statement, 17, record->Deposit);
+	duckdb_bind_double(statement, 18, record->Withdraw);
+	duckdb_bind_varchar(statement, 19, record->TradingDay);
 	duckdb_bind_varchar(statement, 20, record->AccountID);
 }
 void DuckDB::SetStatementForCapitalPrimaryKey(duckdb_prepared_statement statement, Capital* record)
 {
-	duckdb_bind_varchar(statement, 1, record->AccountID);
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->AccountID);
 }
 void DuckDB::SetStatementForCapitalIndexTradingDay(duckdb_prepared_statement statement, Capital* record)
 {

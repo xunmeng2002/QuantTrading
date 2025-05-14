@@ -57,7 +57,6 @@ void InitExchange(Mdb* mdb)
 void InitAccount(Mdb* mdb)
 {
 	Account* account = new Account();
-	strcpy(account->TradingDay, GetLocalDate().c_str());
 	strcpy(account->AccountID, "18511899894");
 	strcpy(account->AccountName, "18511899894");
 	account->AccountType = AccountTypeType::Primary;

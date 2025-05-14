@@ -159,7 +159,7 @@ namespace mdb
 		friend class CapitalTable;
 	public:
 		CapitalPrimaryKey(CapitalTable* table, size_t buckets = 1000);
-		Capital* Select(const AccountIDType& AccountID);
+		Capital* Select(const DateType& TradingDay, const AccountIDType& AccountID);
 		std::pair<iterator, iterator> SelectAll();
 		
 	protected:

@@ -163,7 +163,7 @@ void SimExchange::UpdateOrderQueue()
 void SimExchange::OnMdEnd()
 {
 	WriteLog(LogLevel::Info, "OnMdEnd");
-	//Settlement(0, false);
+	Settlement();
 	m_Mdb->Dump(m_DumpPath.c_str());
 	WriteLog(LogLevel::Info, "Dump Completed\n");
 	m_ShouldRun = false;
@@ -387,6 +387,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			m_MdBars.splice(m_MdBars.end(), mdBars);
 		}
 	}
+	m_HasSubMd = true;
 }
 void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 {
@@ -435,7 +436,7 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	{
 		return;
 	}
-	Order* order = InitOrder(reqPackage, account, position, updatTs % 1000000000LL);
+	Order* order = InitOrder(reqPackage, account, position, (updatTs / 1000) % 1000000LL);
 	CheckMatchForOrderQueue(order);
 	if (order->VolumeTotal > 0)
 	{
@@ -1063,7 +1064,7 @@ void SimExchange::CheckMatchForMdBar(mdb::Order* order, mdb::BarMarketData* mdBa
 	TradeIDType tradeID;
 	GetNextTradeID(tradeID);
 	TimeType tradeTime;
-	strcpy(tradeTime, to_string(mdBar->UpdateTs % 1000000000).c_str());
+	strcpy(tradeTime, to_string((mdBar->UpdateTs /1000) % 1000000).c_str());
 	Match(order, matchPrice, order->VolumeTotal, tradeID, tradeTime);
 }
 void SimExchange::CheckMatchForOnePrice(mdb::Order* order, const Int64Type& updateTs, PriceType lastPrice, PriceType oppoPrice, VolumeType& oppoVolume)
@@ -1087,7 +1088,7 @@ void SimExchange::CheckMatchForOnePrice(mdb::Order* order, const Int64Type& upda
 	TradeIDType tradeID;
 	GetNextTradeID(tradeID);
 	TimeType tradeTime;
-	strcpy(tradeTime, to_string(updateTs % 1000000000).c_str());
+	strcpy(tradeTime, to_string((updateTs / 1000) % 1000000).c_str());
 	Match(order, matchPrice, matchVolume, tradeID, tradeTime);
 }
 void SimExchange::CheckMatchForOrderQueue(mdb::Order* order)

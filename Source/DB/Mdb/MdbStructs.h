@@ -148,8 +148,6 @@ namespace mdb
 	{
 	public:
 		static constexpr unsigned int TableID = 0x0006;
-		//交易日
-		DateType TradingDay;
 		//主账户代码
 		AccountIDType PrimaryAccountID;
 		//主账户名称
@@ -179,8 +177,6 @@ namespace mdb
 	{
 	public:
 		static constexpr unsigned int TableID = 0x0007;
-		//交易日
-		DateType TradingDay;
 		//账户代码
 		AccountIDType AccountID;
 		//账户名称
