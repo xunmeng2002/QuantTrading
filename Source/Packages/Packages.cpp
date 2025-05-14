@@ -140,8 +140,7 @@ bool NotifyConnectPackage::FromXtpStream(char* buff, int startIndex, int endInde
 const char* NotifyConnectPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "NotifyConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]",
-		NotifyConnect->SessionID, NotifyConnect->IPAddress, NotifyConnect->Port);
+	offset += sprintf(t_DataStringBuffer + offset, "NotifyConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyConnect->SessionID, NotifyConnect->IPAddress, NotifyConnect->Port);
 	return t_DataStringBuffer;
 }
  
@@ -275,8 +274,7 @@ bool NotifyDisConnectPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* NotifyDisConnectPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "NotifyDisConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]",
-		NotifyDisConnect->SessionID, NotifyDisConnect->IPAddress, NotifyDisConnect->Port);
+	offset += sprintf(t_DataStringBuffer + offset, "NotifyDisConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyDisConnect->SessionID, NotifyDisConnect->IPAddress, NotifyDisConnect->Port);
 	return t_DataStringBuffer;
 }
  
@@ -409,8 +407,7 @@ bool ReqMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* ReqMdUserLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]",
-		ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]", ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
 	return t_DataStringBuffer;
 }
  
@@ -622,10 +619,8 @@ bool RspMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* RspMdUserLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]",
-		RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -747,8 +742,7 @@ bool ReqMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 const char* ReqMdUserLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogout:UserID:[%s]",
-		ReqMdUserLogout->UserID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogout:UserID:[%s]", ReqMdUserLogout->UserID);
 	return t_DataStringBuffer;
 }
  
@@ -932,10 +926,8 @@ bool RspMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 const char* RspMdUserLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]",
-		RspMdUserLogout->UserID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]", RspMdUserLogout->UserID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -1068,8 +1060,7 @@ bool ReqSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* ReqSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
-		ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID);
 	return t_DataStringBuffer;
 }
  
@@ -1264,10 +1255,8 @@ bool RspSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RspSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
-		RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -1400,8 +1389,7 @@ bool ReqUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 const char* ReqUnSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
-		ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
 	return t_DataStringBuffer;
 }
  
@@ -1596,10 +1584,119 @@ bool RspUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 const char* RspUnSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
-		RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	return t_DataStringBuffer;
+}
+ 
+ReqSubMarketDataFinishedPackage* ReqSubMarketDataFinishedPackage::Allocate()
+{
+	return ::Allocate<ReqSubMarketDataFinishedPackage>();
+}
+void ReqSubMarketDataFinishedPackage::Free()
+{
+	Package::Free();
+	if (ReqSubMarketDataFinished != nullptr)
+	{
+		::Free<ReqSubMarketDataFinishedField>(ReqSubMarketDataFinished);
+		ReqSubMarketDataFinished = nullptr;
+	}
+	MemCacheTemplateSingleton<ReqSubMarketDataFinishedPackage>::GetInstance().Free(this);
+}
+void ReqSubMarketDataFinishedPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int ReqSubMarketDataFinishedPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (ReqSubMarketDataFinished != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, ReqSubMarketDataFinishedField::FieldID);
+		WriteHexString(ppos, Items::FieldEnd, ReqSubMarketDataFinishedField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool ReqSubMarketDataFinishedPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case ReqSubMarketDataFinishedField::FieldID:
+			{
+				ReqSubMarketDataFinished = ::Allocate<ReqSubMarketDataFinishedField>();
+				memset(ReqSubMarketDataFinished, 0, sizeof(*ReqSubMarketDataFinished));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSubMarketDataFinishedField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqSubMarketDataFinishedPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqSubMarketDataFinishedPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int ReqSubMarketDataFinishedPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, ReqSubMarketDataFinished, sizeof(ReqSubMarketDataFinishedField));
+	offset += sizeof(ReqSubMarketDataFinishedField);
+	return offset;
+}
+bool ReqSubMarketDataFinishedPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	ReqSubMarketDataFinished = ::Allocate<ReqSubMarketDataFinishedField>();
+	memcpy(ReqSubMarketDataFinished, buff + offset, sizeof(ReqSubMarketDataFinishedField));
+	offset += sizeof(ReqSubMarketDataFinishedField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* ReqSubMarketDataFinishedPackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketDataFinished:");
 	return t_DataStringBuffer;
 }
  
@@ -1643,6 +1740,7 @@ int RtnDepthMarketDataPackage::ToStepStream(char* buff, int size) const
 			DepthMarketData->InstrumentID[sizeof(DepthMarketData->InstrumentID) - 1] = 0;
 		}
 		WriteString(ppos, Items::InstrumentID, DepthMarketData->InstrumentID);
+		WriteString(ppos, Items::UpdateTs, DepthMarketData->UpdateTs);
 		WriteString(ppos, Items::LastPrice, DepthMarketData->LastPrice);
 		WriteString(ppos, Items::PreSettlementPrice, DepthMarketData->PreSettlementPrice);
 		WriteString(ppos, Items::PreClosePrice, DepthMarketData->PreClosePrice);
@@ -1660,7 +1758,6 @@ int RtnDepthMarketDataPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::UpperLimitPrice, DepthMarketData->UpperLimitPrice);
 		WriteString(ppos, Items::LowerLimitPrice, DepthMarketData->LowerLimitPrice);
 		WriteString(ppos, Items::AveragePrice, DepthMarketData->AveragePrice);
-		WriteString(ppos, Items::UpdateTs, DepthMarketData->UpdateTs);
 		WriteString(ppos, Items::AskPrice1, DepthMarketData->AskPrice1);
 		WriteString(ppos, Items::AskPrice2, DepthMarketData->AskPrice2);
 		WriteString(ppos, Items::AskPrice3, DepthMarketData->AskPrice3);
@@ -1751,6 +1848,11 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 							memcpy(DepthMarketData->InstrumentID, value.c_str(), len);
 							break;
 						}
+						case Items::UpdateTs:
+						{
+							DepthMarketData->UpdateTs = atoll(value.c_str());
+							break;
+						}
 						case Items::LastPrice:
 						{
 							DepthMarketData->LastPrice = atof(value.c_str());
@@ -1768,7 +1870,7 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						}
 						case Items::PreOpenInterest:
 						{
-							DepthMarketData->PreOpenInterest = atoll(value.c_str());
+							DepthMarketData->PreOpenInterest = atof(value.c_str());
 							break;
 						}
 						case Items::OpenPrice:
@@ -1813,7 +1915,7 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						}
 						case Items::OpenInterest:
 						{
-							DepthMarketData->OpenInterest = atoll(value.c_str());
+							DepthMarketData->OpenInterest = atof(value.c_str());
 							break;
 						}
 						case Items::SettlementPrice:
@@ -1834,11 +1936,6 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						case Items::AveragePrice:
 						{
 							DepthMarketData->AveragePrice = atof(value.c_str());
-							break;
-						}
-						case Items::UpdateTs:
-						{
-							DepthMarketData->UpdateTs = atoll(value.c_str());
 							break;
 						}
 						case Items::AskPrice1:
@@ -2091,8 +2188,7 @@ bool RtnDepthMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 const char* RtnDepthMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%lld], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%lld], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], UpdateTs:[%lld], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]",
-		DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->UpdateTs, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
+	offset += sprintf(t_DataStringBuffer + offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], UpdateTs:[%lld], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%f], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]", DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->UpdateTs, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
 	return t_DataStringBuffer;
 }
  
@@ -2273,7 +2369,7 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::OpenInterest:
 						{
-							BarMarketData->OpenInterest = atoll(value.c_str());
+							BarMarketData->OpenInterest = atof(value.c_str());
 							break;
 						}
 						default:
@@ -2326,8 +2422,251 @@ bool RtnBarMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RtnBarMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%lld]",
-		BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+	offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+	return t_DataStringBuffer;
+}
+ 
+RtnSessionBeginPackage* RtnSessionBeginPackage::Allocate()
+{
+	return ::Allocate<RtnSessionBeginPackage>();
+}
+void RtnSessionBeginPackage::Free()
+{
+	Package::Free();
+	if (SessionBegin != nullptr)
+	{
+		::Free<SessionBeginField>(SessionBegin);
+		SessionBegin = nullptr;
+	}
+	MemCacheTemplateSingleton<RtnSessionBeginPackage>::GetInstance().Free(this);
+}
+void RtnSessionBeginPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RtnSessionBeginPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (SessionBegin != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, SessionBeginField::FieldID);
+		if (strlen(SessionBegin->TradingDay) >= sizeof(SessionBegin->TradingDay))
+		{
+			SessionBegin->TradingDay[sizeof(SessionBegin->TradingDay) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradingDay, SessionBegin->TradingDay);
+		WriteHexString(ppos, Items::FieldEnd, SessionBeginField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RtnSessionBeginPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case SessionBeginField::FieldID:
+			{
+				SessionBegin = ::Allocate<SessionBeginField>();
+				memset(SessionBegin, 0, sizeof(*SessionBegin));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::TradingDay:
+						{
+							size_t len = value.length() >= sizeof(SessionBegin->TradingDay) ? sizeof(SessionBegin->TradingDay) - 1 : value.length();
+							memcpy(SessionBegin->TradingDay, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SessionBeginField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnSessionBeginPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RtnSessionBeginPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RtnSessionBeginPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, SessionBegin, sizeof(SessionBeginField));
+	offset += sizeof(SessionBeginField);
+	return offset;
+}
+bool RtnSessionBeginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	SessionBegin = ::Allocate<SessionBeginField>();
+	memcpy(SessionBegin, buff + offset, sizeof(SessionBeginField));
+	offset += sizeof(SessionBeginField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* RtnSessionBeginPackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "SessionBegin:TradingDay:[%s]", SessionBegin->TradingDay);
+	return t_DataStringBuffer;
+}
+ 
+RtnSessionEndPackage* RtnSessionEndPackage::Allocate()
+{
+	return ::Allocate<RtnSessionEndPackage>();
+}
+void RtnSessionEndPackage::Free()
+{
+	Package::Free();
+	if (SessionEnd != nullptr)
+	{
+		::Free<SessionEndField>(SessionEnd);
+		SessionEnd = nullptr;
+	}
+	MemCacheTemplateSingleton<RtnSessionEndPackage>::GetInstance().Free(this);
+}
+void RtnSessionEndPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RtnSessionEndPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (SessionEnd != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, SessionEndField::FieldID);
+		if (strlen(SessionEnd->TradingDay) >= sizeof(SessionEnd->TradingDay))
+		{
+			SessionEnd->TradingDay[sizeof(SessionEnd->TradingDay) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradingDay, SessionEnd->TradingDay);
+		WriteHexString(ppos, Items::FieldEnd, SessionEndField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RtnSessionEndPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case SessionEndField::FieldID:
+			{
+				SessionEnd = ::Allocate<SessionEndField>();
+				memset(SessionEnd, 0, sizeof(*SessionEnd));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::TradingDay:
+						{
+							size_t len = value.length() >= sizeof(SessionEnd->TradingDay) ? sizeof(SessionEnd->TradingDay) - 1 : value.length();
+							memcpy(SessionEnd->TradingDay, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SessionEndField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnSessionEndPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RtnSessionEndPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RtnSessionEndPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, SessionEnd, sizeof(SessionEndField));
+	offset += sizeof(SessionEndField);
+	return offset;
+}
+bool RtnSessionEndPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	SessionEnd = ::Allocate<SessionEndField>();
+	memcpy(SessionEnd, buff + offset, sizeof(SessionEndField));
+	offset += sizeof(SessionEndField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* RtnSessionEndPackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "SessionEnd:TradingDay:[%s]", SessionEnd->TradingDay);
 	return t_DataStringBuffer;
 }
  
@@ -2460,8 +2799,7 @@ bool ReqAccountLoginPackage::FromXtpStream(char* buff, int startIndex, int endIn
 const char* ReqAccountLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogin:AccountID:[%s], Password:[%s]",
-		ReqAccountLogin->AccountID, ReqAccountLogin->Password);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogin:AccountID:[%s], Password:[%s]", ReqAccountLogin->AccountID, ReqAccountLogin->Password);
 	return t_DataStringBuffer;
 }
  
@@ -2673,10 +3011,8 @@ bool RspAccountLoginPackage::FromXtpStream(char* buff, int startIndex, int endIn
 const char* RspAccountLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogin:AccountID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]",
-		RspAccountLogin->AccountID, RspAccountLogin->LoginDate, RspAccountLogin->LoginTime, RspAccountLogin->SessionID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogin:AccountID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspAccountLogin->AccountID, RspAccountLogin->LoginDate, RspAccountLogin->LoginTime, RspAccountLogin->SessionID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -2798,8 +3134,7 @@ bool ReqAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* ReqAccountLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogout:AccountID:[%s]",
-		ReqAccountLogout->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogout:AccountID:[%s]", ReqAccountLogout->AccountID);
 	return t_DataStringBuffer;
 }
  
@@ -2983,10 +3318,8 @@ bool RspAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RspAccountLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogout:AccountID:[%s]",
-		RspAccountLogout->AccountID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogout:AccountID:[%s]", RspAccountLogout->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -3108,8 +3441,7 @@ bool ReqQryAccountPackage::FromXtpStream(char* buff, int startIndex, int endInde
 const char* ReqQryAccountPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryAccount:AccountID:[%s]",
-		ReqQryAccount->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryAccount:AccountID:[%s]", ReqQryAccount->AccountID);
 	return t_DataStringBuffer;
 }
  
@@ -3323,10 +3655,8 @@ bool RspQryAccountPackage::FromXtpStream(char* buff, int startIndex, int endInde
 const char* RspQryAccountPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]",
-		Account->AccountID, (int)Account->AccountType, (int)Account->AccountStatus, Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]", Account->AccountID, (int)Account->AccountType, (int)Account->AccountStatus, Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -3448,8 +3778,7 @@ bool ReqQryHolderAccountPackage::FromXtpStream(char* buff, int startIndex, int e
 const char* ReqQryHolderAccountPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryHolderAccount:AccountID:[%s]",
-		ReqQryHolderAccount->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryHolderAccount:AccountID:[%s]", ReqQryHolderAccount->AccountID);
 	return t_DataStringBuffer;
 }
  
@@ -3650,10 +3979,8 @@ bool RspQryHolderAccountPackage::FromXtpStream(char* buff, int startIndex, int e
 const char* RspQryHolderAccountPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "HolderAccount:ExchangeID:[%s], HolderAccountID:[%s], PrimaryFlag:[%d]",
-		HolderAccount->ExchangeID, HolderAccount->HolderAccountID, HolderAccount->PrimaryFlag);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "HolderAccount:ExchangeID:[%s], HolderAccountID:[%s], PrimaryFlag:[%d]", HolderAccount->ExchangeID, HolderAccount->HolderAccountID, HolderAccount->PrimaryFlag);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -3775,8 +4102,7 @@ bool ReqQryCapitalPackage::FromXtpStream(char* buff, int startIndex, int endInde
 const char* ReqQryCapitalPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryCapital:AccountID:[%s]",
-		ReqQryCapital->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryCapital:AccountID:[%s]", ReqQryCapital->AccountID);
 	return t_DataStringBuffer;
 }
  
@@ -3821,25 +4147,21 @@ int RspQryCapitalPackage::ToStepStream(char* buff, int size) const
 		}
 		WriteString(ppos, Items::AccountID, Capital->AccountID);
 		WriteString(ppos, Items::AccountType, (int)Capital->AccountType);
-		WriteString(ppos, Items::Asset, Capital->Asset);
-		WriteString(ppos, Items::PreAsset, Capital->PreAsset);
-		WriteString(ppos, Items::CashAsset, Capital->CashAsset);
-		WriteString(ppos, Items::PreCashAsset, Capital->PreCashAsset);
+		WriteString(ppos, Items::Balance, Capital->Balance);
+		WriteString(ppos, Items::PreBalance, Capital->PreBalance);
 		WriteString(ppos, Items::Available, Capital->Available);
+		WriteString(ppos, Items::MarketValue, Capital->MarketValue);
 		WriteString(ppos, Items::CashIn, Capital->CashIn);
 		WriteString(ppos, Items::CashOut, Capital->CashOut);
 		WriteString(ppos, Items::Margin, Capital->Margin);
 		WriteString(ppos, Items::Commission, Capital->Commission);
-		WriteString(ppos, Items::StampTax, Capital->StampTax);
-		WriteString(ppos, Items::TransferFee, Capital->TransferFee);
 		WriteString(ppos, Items::FrozenCash, Capital->FrozenCash);
 		WriteString(ppos, Items::FrozenMargin, Capital->FrozenMargin);
 		WriteString(ppos, Items::FrozenCommission, Capital->FrozenCommission);
-		WriteString(ppos, Items::FrozenStampTax, Capital->FrozenStampTax);
-		WriteString(ppos, Items::FrozenTransferFee, Capital->FrozenTransferFee);
-		WriteString(ppos, Items::MarketValue, Capital->MarketValue);
-		WriteString(ppos, Items::TotalProfit, Capital->TotalProfit);
-		WriteString(ppos, Items::TodayProfit, Capital->TodayProfit);
+		WriteString(ppos, Items::CloseProfitByDate, Capital->CloseProfitByDate);
+		WriteString(ppos, Items::CloseProfitByTrade, Capital->CloseProfitByTrade);
+		WriteString(ppos, Items::PositionProfitByDate, Capital->PositionProfitByDate);
+		WriteString(ppos, Items::PositionProfitByTrade, Capital->PositionProfitByTrade);
 		WriteString(ppos, Items::Deposit, Capital->Deposit);
 		WriteString(ppos, Items::Withdraw, Capital->Withdraw);
 		WriteHexString(ppos, Items::FieldEnd, CapitalField::FieldID);
@@ -3902,29 +4224,24 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 							Capital->AccountType = (AccountTypeType)(atoi(value.c_str()));
 							break;
 						}
-						case Items::Asset:
+						case Items::Balance:
 						{
-							Capital->Asset = atof(value.c_str());
+							Capital->Balance = atof(value.c_str());
 							break;
 						}
-						case Items::PreAsset:
+						case Items::PreBalance:
 						{
-							Capital->PreAsset = atof(value.c_str());
-							break;
-						}
-						case Items::CashAsset:
-						{
-							Capital->CashAsset = atof(value.c_str());
-							break;
-						}
-						case Items::PreCashAsset:
-						{
-							Capital->PreCashAsset = atof(value.c_str());
+							Capital->PreBalance = atof(value.c_str());
 							break;
 						}
 						case Items::Available:
 						{
 							Capital->Available = atof(value.c_str());
+							break;
+						}
+						case Items::MarketValue:
+						{
+							Capital->MarketValue = atof(value.c_str());
 							break;
 						}
 						case Items::CashIn:
@@ -3947,16 +4264,6 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 							Capital->Commission = atof(value.c_str());
 							break;
 						}
-						case Items::StampTax:
-						{
-							Capital->StampTax = atof(value.c_str());
-							break;
-						}
-						case Items::TransferFee:
-						{
-							Capital->TransferFee = atof(value.c_str());
-							break;
-						}
 						case Items::FrozenCash:
 						{
 							Capital->FrozenCash = atof(value.c_str());
@@ -3972,29 +4279,24 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 							Capital->FrozenCommission = atof(value.c_str());
 							break;
 						}
-						case Items::FrozenStampTax:
+						case Items::CloseProfitByDate:
 						{
-							Capital->FrozenStampTax = atof(value.c_str());
+							Capital->CloseProfitByDate = atof(value.c_str());
 							break;
 						}
-						case Items::FrozenTransferFee:
+						case Items::CloseProfitByTrade:
 						{
-							Capital->FrozenTransferFee = atof(value.c_str());
+							Capital->CloseProfitByTrade = atof(value.c_str());
 							break;
 						}
-						case Items::MarketValue:
+						case Items::PositionProfitByDate:
 						{
-							Capital->MarketValue = atof(value.c_str());
+							Capital->PositionProfitByDate = atof(value.c_str());
 							break;
 						}
-						case Items::TotalProfit:
+						case Items::PositionProfitByTrade:
 						{
-							Capital->TotalProfit = atof(value.c_str());
-							break;
-						}
-						case Items::TodayProfit:
-						{
-							Capital->TodayProfit = atof(value.c_str());
+							Capital->PositionProfitByTrade = atof(value.c_str());
 							break;
 						}
 						case Items::Deposit:
@@ -4103,10 +4405,8 @@ bool RspQryCapitalPackage::FromXtpStream(char* buff, int startIndex, int endInde
 const char* RspQryCapitalPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Asset:[%f], PreAsset:[%f], CashAsset:[%f], PreCashAsset:[%f], Available:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], StampTax:[%f], TransferFee:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], FrozenStampTax:[%f], FrozenTransferFee:[%f], MarketValue:[%f], TotalProfit:[%f], TodayProfit:[%f], Deposit:[%f], Withdraw:[%f]",
-		Capital->TradingDay, Capital->AccountID, (int)Capital->AccountType, Capital->Asset, Capital->PreAsset, Capital->CashAsset, Capital->PreCashAsset, Capital->Available, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->StampTax, Capital->TransferFee, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->FrozenStampTax, Capital->FrozenTransferFee, Capital->MarketValue, Capital->TotalProfit, Capital->TodayProfit, Capital->Deposit, Capital->Withdraw);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountID, (int)Capital->AccountType, Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -4228,8 +4528,7 @@ bool ReqQryPositionPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* ReqQryPositionPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryPosition:AccountID:[%s]",
-		ReqQryPosition->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryPosition:AccountID:[%s]", ReqQryPosition->AccountID);
 	return t_DataStringBuffer;
 }
  
@@ -4284,27 +4583,23 @@ int RspQryPositionPackage::ToStepStream(char* buff, int size) const
 			Position->InstrumentID[sizeof(Position->InstrumentID) - 1] = 0;
 		}
 		WriteString(ppos, Items::InstrumentID, Position->InstrumentID);
-		WriteString(ppos, Items::SecurityType, (int)Position->SecurityType);
+		WriteString(ppos, Items::ProductClass, (int)Position->ProductClass);
 		WriteString(ppos, Items::PosiDirection, (int)Position->PosiDirection);
 		WriteString(ppos, Items::TotalPosition, Position->TotalPosition);
 		WriteString(ppos, Items::PositionFrozen, Position->PositionFrozen);
 		WriteString(ppos, Items::TodayPosition, Position->TodayPosition);
-		WriteString(ppos, Items::TotalCostPrice, Position->TotalCostPrice);
-		WriteString(ppos, Items::TodayCostPrice, Position->TodayCostPrice);
+		WriteString(ppos, Items::MarketValue, Position->MarketValue);
 		WriteString(ppos, Items::CashIn, Position->CashIn);
 		WriteString(ppos, Items::CashOut, Position->CashOut);
 		WriteString(ppos, Items::Margin, Position->Margin);
 		WriteString(ppos, Items::Commission, Position->Commission);
-		WriteString(ppos, Items::StampTax, Position->StampTax);
-		WriteString(ppos, Items::TransferFee, Position->TransferFee);
-		WriteString(ppos, Items::MarketValue, Position->MarketValue);
 		WriteString(ppos, Items::VolumeMultiple, Position->VolumeMultiple);
-		WriteString(ppos, Items::TotalCost, Position->TotalCost);
-		WriteString(ppos, Items::TodayCost, Position->TodayCost);
-		WriteString(ppos, Items::TotalProfit, Position->TotalProfit);
-		WriteString(ppos, Items::TodayProfit, Position->TodayProfit);
+		WriteString(ppos, Items::CloseProfitByDate, Position->CloseProfitByDate);
+		WriteString(ppos, Items::CloseProfitByTrade, Position->CloseProfitByTrade);
+		WriteString(ppos, Items::PositionProfitByDate, Position->PositionProfitByDate);
+		WriteString(ppos, Items::PositionProfitByTrade, Position->PositionProfitByTrade);
 		WriteString(ppos, Items::LastPrice, Position->LastPrice);
-		WriteString(ppos, Items::PrePrice, Position->PrePrice);
+		WriteString(ppos, Items::PreSettlementPrice, Position->PreSettlementPrice);
 		WriteHexString(ppos, Items::FieldEnd, PositionField::FieldID);
 	}
 	if (RspInfo != nullptr)
@@ -4377,9 +4672,9 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							memcpy(Position->InstrumentID, value.c_str(), len);
 							break;
 						}
-						case Items::SecurityType:
+						case Items::ProductClass:
 						{
-							Position->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
+							Position->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::PosiDirection:
@@ -4402,14 +4697,9 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							Position->TodayPosition = atoll(value.c_str());
 							break;
 						}
-						case Items::TotalCostPrice:
+						case Items::MarketValue:
 						{
-							Position->TotalCostPrice = atof(value.c_str());
-							break;
-						}
-						case Items::TodayCostPrice:
-						{
-							Position->TodayCostPrice = atof(value.c_str());
+							Position->MarketValue = atof(value.c_str());
 							break;
 						}
 						case Items::CashIn:
@@ -4432,44 +4722,29 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							Position->Commission = atof(value.c_str());
 							break;
 						}
-						case Items::StampTax:
-						{
-							Position->StampTax = atof(value.c_str());
-							break;
-						}
-						case Items::TransferFee:
-						{
-							Position->TransferFee = atof(value.c_str());
-							break;
-						}
-						case Items::MarketValue:
-						{
-							Position->MarketValue = atof(value.c_str());
-							break;
-						}
 						case Items::VolumeMultiple:
 						{
 							Position->VolumeMultiple = atoi(value.c_str());
 							break;
 						}
-						case Items::TotalCost:
+						case Items::CloseProfitByDate:
 						{
-							Position->TotalCost = atof(value.c_str());
+							Position->CloseProfitByDate = atof(value.c_str());
 							break;
 						}
-						case Items::TodayCost:
+						case Items::CloseProfitByTrade:
 						{
-							Position->TodayCost = atof(value.c_str());
+							Position->CloseProfitByTrade = atof(value.c_str());
 							break;
 						}
-						case Items::TotalProfit:
+						case Items::PositionProfitByDate:
 						{
-							Position->TotalProfit = atof(value.c_str());
+							Position->PositionProfitByDate = atof(value.c_str());
 							break;
 						}
-						case Items::TodayProfit:
+						case Items::PositionProfitByTrade:
 						{
-							Position->TodayProfit = atof(value.c_str());
+							Position->PositionProfitByTrade = atof(value.c_str());
 							break;
 						}
 						case Items::LastPrice:
@@ -4477,9 +4752,9 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							Position->LastPrice = atof(value.c_str());
 							break;
 						}
-						case Items::PrePrice:
+						case Items::PreSettlementPrice:
 						{
-							Position->PrePrice = atof(value.c_str());
+							Position->PreSettlementPrice = atof(value.c_str());
 							break;
 						}
 						default:
@@ -4578,10 +4853,8 @@ bool RspQryPositionPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* RspQryPositionPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], SecurityType:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], TotalCostPrice:[%f], TodayCostPrice:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], StampTax:[%f], TransferFee:[%f], MarketValue:[%f], VolumeMultiple:[%d], TotalCost:[%f], TodayCost:[%f], TotalProfit:[%f], TodayProfit:[%f], LastPrice:[%f], PrePrice:[%f]",
-		Position->TradingDay, Position->AccountID, (int)Position->AccountType, Position->ExchangeID, Position->InstrumentID, (int)Position->SecurityType, (int)Position->PosiDirection, Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->TotalCostPrice, Position->TodayCostPrice, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->StampTax, Position->TransferFee, Position->MarketValue, Position->VolumeMultiple, Position->TotalCost, Position->TodayCost, Position->TotalProfit, Position->TodayProfit, Position->LastPrice, Position->PrePrice);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountID, (int)Position->AccountType, Position->ExchangeID, Position->InstrumentID, (int)Position->ProductClass, (int)Position->PosiDirection, Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -4703,8 +4976,7 @@ bool ReqQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 const char* ReqQryOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryOrder:AccountID:[%s]",
-		ReqQryOrder->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryOrder:AccountID:[%s]", ReqQryOrder->AccountID);
 	return t_DataStringBuffer;
 }
  
@@ -4758,7 +5030,7 @@ int RspQryOrderPackage::ToStepStream(char* buff, int size) const
 			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
 		}
 		WriteString(ppos, Items::InstrumentID, Order->InstrumentID);
-		WriteString(ppos, Items::SecurityType, (int)Order->SecurityType);
+		WriteString(ppos, Items::ProductClass, (int)Order->ProductClass);
 		WriteString(ppos, Items::OrderID, Order->OrderID);
 		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
 		{
@@ -4774,11 +5046,6 @@ int RspQryOrderPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::VolumeTraded, Order->VolumeTraded);
 		WriteString(ppos, Items::VolumeMultiple, Order->VolumeMultiple);
 		WriteString(ppos, Items::OrderStatus, (int)Order->OrderStatus);
-		if (strlen(Order->StatusMsg) >= sizeof(Order->StatusMsg))
-		{
-			Order->StatusMsg[sizeof(Order->StatusMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::StatusMsg, Order->StatusMsg);
 		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
 		{
 			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
@@ -4805,8 +5072,6 @@ int RspQryOrderPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::FrozenCash, Order->FrozenCash);
 		WriteString(ppos, Items::FrozenMargin, Order->FrozenMargin);
 		WriteString(ppos, Items::FrozenCommission, Order->FrozenCommission);
-		WriteString(ppos, Items::FrozenStampTax, Order->FrozenStampTax);
-		WriteString(ppos, Items::FrozenTransferFee, Order->FrozenTransferFee);
 		WriteHexString(ppos, Items::FieldEnd, OrderField::FieldID);
 	}
 	if (RspInfo != nullptr)
@@ -4874,9 +5139,9 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 							memcpy(Order->InstrumentID, value.c_str(), len);
 							break;
 						}
-						case Items::SecurityType:
+						case Items::ProductClass:
 						{
-							Order->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
+							Order->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
@@ -4935,12 +5200,6 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 							Order->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
 							break;
 						}
-						case Items::StatusMsg:
-						{
-							size_t len = value.length() >= sizeof(Order->StatusMsg) ? sizeof(Order->StatusMsg) - 1 : value.length();
-							memcpy(Order->StatusMsg, value.c_str(), len);
-							break;
-						}
 						case Items::OrderDate:
 						{
 							size_t len = value.length() >= sizeof(Order->OrderDate) ? sizeof(Order->OrderDate) - 1 : value.length();
@@ -4993,16 +5252,6 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 						case Items::FrozenCommission:
 						{
 							Order->FrozenCommission = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenStampTax:
-						{
-							Order->FrozenStampTax = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenTransferFee:
-						{
-							Order->FrozenTransferFee = atof(value.c_str());
 							break;
 						}
 						default:
@@ -5101,10 +5350,8 @@ bool RspQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 const char* RspQryOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], SecurityType:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], StatusMsg:[%s], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], FrozenStampTax:[%f], FrozenTransferFee:[%f]",
-		Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->SecurityType, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->StatusMsg, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission, Order->FrozenStampTax, Order->FrozenTransferFee);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -5226,8 +5473,7 @@ bool ReqQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 const char* ReqQryTradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryTrade:AccountID:[%s]",
-		ReqQryTrade->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryTrade:AccountID:[%s]", ReqQryTrade->AccountID);
 	return t_DataStringBuffer;
 }
  
@@ -5281,7 +5527,7 @@ int RspQryTradePackage::ToStepStream(char* buff, int size) const
 			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
 		}
 		WriteString(ppos, Items::InstrumentID, Trade->InstrumentID);
-		WriteString(ppos, Items::SecurityType, (int)Trade->SecurityType);
+		WriteString(ppos, Items::ProductClass, (int)Trade->ProductClass);
 		WriteString(ppos, Items::OrderID, Trade->OrderID);
 		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
 		{
@@ -5300,8 +5546,6 @@ int RspQryTradePackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::VolumeMultiple, Trade->VolumeMultiple);
 		WriteString(ppos, Items::TradeAmount, Trade->TradeAmount);
 		WriteString(ppos, Items::Commission, Trade->Commission);
-		WriteString(ppos, Items::StampTax, Trade->StampTax);
-		WriteString(ppos, Items::TransferFee, Trade->TransferFee);
 		if (strlen(Trade->TradeDate) >= sizeof(Trade->TradeDate))
 		{
 			Trade->TradeDate[sizeof(Trade->TradeDate) - 1] = 0;
@@ -5379,9 +5623,9 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 							memcpy(Trade->InstrumentID, value.c_str(), len);
 							break;
 						}
-						case Items::SecurityType:
+						case Items::ProductClass:
 						{
-							Trade->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
+							Trade->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
@@ -5434,16 +5678,6 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 						case Items::Commission:
 						{
 							Trade->Commission = atof(value.c_str());
-							break;
-						}
-						case Items::StampTax:
-						{
-							Trade->StampTax = atof(value.c_str());
-							break;
-						}
-						case Items::TransferFee:
-						{
-							Trade->TransferFee = atof(value.c_str());
 							break;
 						}
 						case Items::TradeDate:
@@ -5554,10 +5788,8 @@ bool RspQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 const char* RspQryTradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], SecurityType:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], StampTax:[%f], TransferFee:[%f], TradeDate:[%s], TradeTime:[%s]",
-		Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->SecurityType, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->StampTax, Trade->TransferFee, Trade->TradeDate, Trade->TradeTime);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -5690,8 +5922,7 @@ bool ReqQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* ReqQryInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryInstrument:ExchangeID:[%s], InstrumentID:[%s]",
-		ReqQryInstrument->ExchangeID, ReqQryInstrument->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryInstrument->ExchangeID, ReqQryInstrument->InstrumentID);
 	return t_DataStringBuffer;
 }
  
@@ -5746,7 +5977,7 @@ int RspQryInstrumentPackage::ToStepStream(char* buff, int size) const
 		}
 		WriteString(ppos, Items::InstrumentName, Instrument->InstrumentName);
 		WriteString(ppos, Items::VolumeMultiple, Instrument->VolumeMultiple);
-		WriteString(ppos, Items::SecurityType, (int)Instrument->SecurityType);
+		WriteString(ppos, Items::ProductClass, (int)Instrument->ProductClass);
 		WriteHexString(ppos, Items::FieldEnd, InstrumentField::FieldID);
 	}
 	if (RspInfo != nullptr)
@@ -5819,9 +6050,9 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 							Instrument->VolumeMultiple = atoi(value.c_str());
 							break;
 						}
-						case Items::SecurityType:
+						case Items::ProductClass:
 						{
-							Instrument->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
+							Instrument->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						default:
@@ -5920,10 +6151,8 @@ bool RspQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RspQryInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], SecurityType:[%d]",
-		Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->VolumeMultiple, (int)Instrument->SecurityType);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], ProductClass:[%d]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->VolumeMultiple, (int)Instrument->ProductClass);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -6056,8 +6285,7 @@ bool ReqQryOptionInstrumentPackage::FromXtpStream(char* buff, int startIndex, in
 const char* ReqQryOptionInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryOptionInstrument:ExchangeID:[%s], InstrumentID:[%s]",
-		ReqQryOptionInstrument->ExchangeID, ReqQryOptionInstrument->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryOptionInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryOptionInstrument->ExchangeID, ReqQryOptionInstrument->InstrumentID);
 	return t_DataStringBuffer;
 }
  
@@ -6338,10 +6566,8 @@ bool RspQryOptionInstrumentPackage::FromXtpStream(char* buff, int startIndex, in
 const char* RspQryOptionInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]",
-		OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, (int)OptionInstrument->OptionType, OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, (int)OptionInstrument->OptionType, OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -6380,7 +6606,7 @@ int ReqQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 			ReqQryCommissionRate->ExchangeID[sizeof(ReqQryCommissionRate->ExchangeID) - 1] = 0;
 		}
 		WriteString(ppos, Items::ExchangeID, ReqQryCommissionRate->ExchangeID);
-		WriteString(ppos, Items::SecurityType, (int)ReqQryCommissionRate->SecurityType);
+		WriteString(ppos, Items::ProductClass, (int)ReqQryCommissionRate->ProductClass);
 		WriteHexString(ppos, Items::FieldEnd, ReqQryCommissionRateField::FieldID);
 	}
 	return int(ppos - buff);
@@ -6425,9 +6651,9 @@ bool ReqQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 							memcpy(ReqQryCommissionRate->ExchangeID, value.c_str(), len);
 							break;
 						}
-						case Items::SecurityType:
+						case Items::ProductClass:
 						{
-							ReqQryCommissionRate->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
+							ReqQryCommissionRate->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						default:
@@ -6480,8 +6706,7 @@ bool ReqQryCommissionRatePackage::FromXtpStream(char* buff, int startIndex, int 
 const char* ReqQryCommissionRatePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], SecurityType:[%d]",
-		ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, (int)ReqQryCommissionRate->SecurityType);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, (int)ReqQryCommissionRate->ProductClass);
 	return t_DataStringBuffer;
 }
  
@@ -6525,7 +6750,7 @@ int RspQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 			CommissionRate->ExchangeID[sizeof(CommissionRate->ExchangeID) - 1] = 0;
 		}
 		WriteString(ppos, Items::ExchangeID, CommissionRate->ExchangeID);
-		WriteString(ppos, Items::SecurityType, (int)CommissionRate->SecurityType);
+		WriteString(ppos, Items::ProductClass, (int)CommissionRate->ProductClass);
 		WriteString(ppos, Items::OpenBuyByMoney, CommissionRate->OpenBuyByMoney);
 		WriteString(ppos, Items::OpenSellByMoney, CommissionRate->OpenSellByMoney);
 		WriteString(ppos, Items::CloseBuyByMoney, CommissionRate->CloseBuyByMoney);
@@ -6591,9 +6816,9 @@ bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 							memcpy(CommissionRate->ExchangeID, value.c_str(), len);
 							break;
 						}
-						case Items::SecurityType:
+						case Items::ProductClass:
 						{
-							CommissionRate->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
+							CommissionRate->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OpenBuyByMoney:
@@ -6742,10 +6967,8 @@ bool RspQryCommissionRatePackage::FromXtpStream(char* buff, int startIndex, int 
 const char* RspQryCommissionRatePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], SecurityType:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]",
-		CommissionRate->AccountID, CommissionRate->ExchangeID, (int)CommissionRate->SecurityType, CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountID, CommissionRate->ExchangeID, (int)CommissionRate->ProductClass, CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -6867,8 +7090,7 @@ bool ReqQryMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int e
 const char* ReqQryMoneyTransferPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryMoneyTransfer:AccountID:[%s]",
-		ReqQryMoneyTransfer->AccountID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQryMoneyTransfer:AccountID:[%s]", ReqQryMoneyTransfer->AccountID);
 	return t_DataStringBuffer;
 }
  
@@ -7131,10 +7353,8 @@ bool RspQryMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int e
 const char* RspQryMoneyTransferPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]",
-		MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -7314,8 +7534,7 @@ bool ReqInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* ReqInsertOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]",
-		ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
 	return t_DataStringBuffer;
 }
  
@@ -7326,10 +7545,10 @@ RspInsertOrderPackage* RspInsertOrderPackage::Allocate()
 void RspInsertOrderPackage::Free()
 {
 	Package::Free();
-	if (Order != nullptr)
+	if (ReqInsertOrder != nullptr)
 	{
-		::Free<OrderField>(Order);
-		Order = nullptr;
+		::Free<ReqInsertOrderField>(ReqInsertOrder);
+		ReqInsertOrder = nullptr;
 	}
 	if (RspInfo != nullptr)
 	{
@@ -7346,79 +7565,31 @@ void RspInsertOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, 
 int RspInsertOrderPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (Order != nullptr)
+	if (ReqInsertOrder != nullptr)
 	{
-		WriteHexString(ppos, Items::FieldStart, OrderField::FieldID);
-		if (strlen(Order->TradingDay) >= sizeof(Order->TradingDay))
+		WriteHexString(ppos, Items::FieldStart, ReqInsertOrderField::FieldID);
+		if (strlen(ReqInsertOrder->AccountID) >= sizeof(ReqInsertOrder->AccountID))
 		{
-			Order->TradingDay[sizeof(Order->TradingDay) - 1] = 0;
+			ReqInsertOrder->AccountID[sizeof(ReqInsertOrder->AccountID) - 1] = 0;
 		}
-		WriteString(ppos, Items::TradingDay, Order->TradingDay);
-		if (strlen(Order->AccountID) >= sizeof(Order->AccountID))
+		WriteString(ppos, Items::AccountID, ReqInsertOrder->AccountID);
+		if (strlen(ReqInsertOrder->ExchangeID) >= sizeof(ReqInsertOrder->ExchangeID))
 		{
-			Order->AccountID[sizeof(Order->AccountID) - 1] = 0;
+			ReqInsertOrder->ExchangeID[sizeof(ReqInsertOrder->ExchangeID) - 1] = 0;
 		}
-		WriteString(ppos, Items::AccountID, Order->AccountID);
-		if (strlen(Order->ExchangeID) >= sizeof(Order->ExchangeID))
+		WriteString(ppos, Items::ExchangeID, ReqInsertOrder->ExchangeID);
+		if (strlen(ReqInsertOrder->InstrumentID) >= sizeof(ReqInsertOrder->InstrumentID))
 		{
-			Order->ExchangeID[sizeof(Order->ExchangeID) - 1] = 0;
+			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
 		}
-		WriteString(ppos, Items::ExchangeID, Order->ExchangeID);
-		if (strlen(Order->InstrumentID) >= sizeof(Order->InstrumentID))
-		{
-			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
-		}
-		WriteString(ppos, Items::InstrumentID, Order->InstrumentID);
-		WriteString(ppos, Items::SecurityType, (int)Order->SecurityType);
-		WriteString(ppos, Items::OrderID, Order->OrderID);
-		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
-		{
-			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderSysID, Order->OrderSysID);
-		WriteString(ppos, Items::Direction, (int)Order->Direction);
-		WriteString(ppos, Items::OffsetFlag, (int)Order->OffsetFlag);
-		WriteString(ppos, Items::OrderPriceType, (int)Order->OrderPriceType);
-		WriteString(ppos, Items::Price, Order->Price);
-		WriteString(ppos, Items::Volume, Order->Volume);
-		WriteString(ppos, Items::VolumeTotal, Order->VolumeTotal);
-		WriteString(ppos, Items::VolumeTraded, Order->VolumeTraded);
-		WriteString(ppos, Items::VolumeMultiple, Order->VolumeMultiple);
-		WriteString(ppos, Items::OrderStatus, (int)Order->OrderStatus);
-		if (strlen(Order->StatusMsg) >= sizeof(Order->StatusMsg))
-		{
-			Order->StatusMsg[sizeof(Order->StatusMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::StatusMsg, Order->StatusMsg);
-		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
-		{
-			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderDate, Order->OrderDate);
-		if (strlen(Order->OrderTime) >= sizeof(Order->OrderTime))
-		{
-			Order->OrderTime[sizeof(Order->OrderTime) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderTime, Order->OrderTime);
-		if (strlen(Order->CancelDate) >= sizeof(Order->CancelDate))
-		{
-			Order->CancelDate[sizeof(Order->CancelDate) - 1] = 0;
-		}
-		WriteString(ppos, Items::CancelDate, Order->CancelDate);
-		if (strlen(Order->CancelTime) >= sizeof(Order->CancelTime))
-		{
-			Order->CancelTime[sizeof(Order->CancelTime) - 1] = 0;
-		}
-		WriteString(ppos, Items::CancelTime, Order->CancelTime);
-		WriteString(ppos, Items::SessionID, Order->SessionID);
-		WriteString(ppos, Items::ClientOrderID, Order->ClientOrderID);
-		WriteString(ppos, Items::RequestID, Order->RequestID);
-		WriteString(ppos, Items::FrozenCash, Order->FrozenCash);
-		WriteString(ppos, Items::FrozenMargin, Order->FrozenMargin);
-		WriteString(ppos, Items::FrozenCommission, Order->FrozenCommission);
-		WriteString(ppos, Items::FrozenStampTax, Order->FrozenStampTax);
-		WriteString(ppos, Items::FrozenTransferFee, Order->FrozenTransferFee);
-		WriteHexString(ppos, Items::FieldEnd, OrderField::FieldID);
+		WriteString(ppos, Items::InstrumentID, ReqInsertOrder->InstrumentID);
+		WriteString(ppos, Items::Direction, (int)ReqInsertOrder->Direction);
+		WriteString(ppos, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
+		WriteString(ppos, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
+		WriteString(ppos, Items::Price, ReqInsertOrder->Price);
+		WriteString(ppos, Items::Volume, ReqInsertOrder->Volume);
+		WriteString(ppos, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
+		WriteHexString(ppos, Items::FieldEnd, ReqInsertOrderField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -7445,10 +7616,10 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case OrderField::FieldID:
+			case ReqInsertOrderField::FieldID:
 			{
-				Order = ::Allocate<OrderField>();
-				memset(Order, 0, sizeof(*Order));
+				ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
+				memset(ReqInsertOrder, 0, sizeof(*ReqInsertOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
 					unsigned short  itemID;
@@ -7461,163 +7632,56 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::TradingDay:
-						{
-							size_t len = value.length() >= sizeof(Order->TradingDay) ? sizeof(Order->TradingDay) - 1 : value.length();
-							memcpy(Order->TradingDay, value.c_str(), len);
-							break;
-						}
 						case Items::AccountID:
 						{
-							size_t len = value.length() >= sizeof(Order->AccountID) ? sizeof(Order->AccountID) - 1 : value.length();
-							memcpy(Order->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->AccountID) ? sizeof(ReqInsertOrder->AccountID) - 1 : value.length();
+							memcpy(ReqInsertOrder->AccountID, value.c_str(), len);
 							break;
 						}
 						case Items::ExchangeID:
 						{
-							size_t len = value.length() >= sizeof(Order->ExchangeID) ? sizeof(Order->ExchangeID) - 1 : value.length();
-							memcpy(Order->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->ExchangeID) ? sizeof(ReqInsertOrder->ExchangeID) - 1 : value.length();
+							memcpy(ReqInsertOrder->ExchangeID, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentID:
 						{
-							size_t len = value.length() >= sizeof(Order->InstrumentID) ? sizeof(Order->InstrumentID) - 1 : value.length();
-							memcpy(Order->InstrumentID, value.c_str(), len);
-							break;
-						}
-						case Items::SecurityType:
-						{
-							Order->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::OrderID:
-						{
-							Order->OrderID = atoi(value.c_str());
-							break;
-						}
-						case Items::OrderSysID:
-						{
-							size_t len = value.length() >= sizeof(Order->OrderSysID) ? sizeof(Order->OrderSysID) - 1 : value.length();
-							memcpy(Order->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->InstrumentID) ? sizeof(ReqInsertOrder->InstrumentID) - 1 : value.length();
+							memcpy(ReqInsertOrder->InstrumentID, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
 						{
-							Order->Direction = (DirectionType)(atoi(value.c_str()));
+							ReqInsertOrder->Direction = (DirectionType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							Order->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							ReqInsertOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderPriceType:
 						{
-							Order->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							ReqInsertOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
 						{
-							Order->Price = atof(value.c_str());
+							ReqInsertOrder->Price = atof(value.c_str());
 							break;
 						}
 						case Items::Volume:
 						{
-							Order->Volume = atoll(value.c_str());
-							break;
-						}
-						case Items::VolumeTotal:
-						{
-							Order->VolumeTotal = atoll(value.c_str());
-							break;
-						}
-						case Items::VolumeTraded:
-						{
-							Order->VolumeTraded = atoll(value.c_str());
-							break;
-						}
-						case Items::VolumeMultiple:
-						{
-							Order->VolumeMultiple = atoi(value.c_str());
-							break;
-						}
-						case Items::OrderStatus:
-						{
-							Order->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::StatusMsg:
-						{
-							size_t len = value.length() >= sizeof(Order->StatusMsg) ? sizeof(Order->StatusMsg) - 1 : value.length();
-							memcpy(Order->StatusMsg, value.c_str(), len);
-							break;
-						}
-						case Items::OrderDate:
-						{
-							size_t len = value.length() >= sizeof(Order->OrderDate) ? sizeof(Order->OrderDate) - 1 : value.length();
-							memcpy(Order->OrderDate, value.c_str(), len);
-							break;
-						}
-						case Items::OrderTime:
-						{
-							size_t len = value.length() >= sizeof(Order->OrderTime) ? sizeof(Order->OrderTime) - 1 : value.length();
-							memcpy(Order->OrderTime, value.c_str(), len);
-							break;
-						}
-						case Items::CancelDate:
-						{
-							size_t len = value.length() >= sizeof(Order->CancelDate) ? sizeof(Order->CancelDate) - 1 : value.length();
-							memcpy(Order->CancelDate, value.c_str(), len);
-							break;
-						}
-						case Items::CancelTime:
-						{
-							size_t len = value.length() >= sizeof(Order->CancelTime) ? sizeof(Order->CancelTime) - 1 : value.length();
-							memcpy(Order->CancelTime, value.c_str(), len);
-							break;
-						}
-						case Items::SessionID:
-						{
-							Order->SessionID = atoll(value.c_str());
+							ReqInsertOrder->Volume = atoll(value.c_str());
 							break;
 						}
 						case Items::ClientOrderID:
 						{
-							Order->ClientOrderID = atoi(value.c_str());
-							break;
-						}
-						case Items::RequestID:
-						{
-							Order->RequestID = atoi(value.c_str());
-							break;
-						}
-						case Items::FrozenCash:
-						{
-							Order->FrozenCash = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenMargin:
-						{
-							Order->FrozenMargin = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenCommission:
-						{
-							Order->FrozenCommission = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenStampTax:
-						{
-							Order->FrozenStampTax = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenTransferFee:
-						{
-							Order->FrozenTransferFee = atof(value.c_str());
+							ReqInsertOrder->ClientOrderID = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for OrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqInsertOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
@@ -7688,8 +7752,8 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 int RspInsertOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Order, sizeof(OrderField));
-	offset += sizeof(OrderField);
+	memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
+	offset += sizeof(ReqInsertOrderField);
 	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 	offset += sizeof(RspInfoField);
 	return offset;
@@ -7697,9 +7761,9 @@ int RspInsertOrderPackage::ToXtpStream(char* buff, int size) const
 bool RspInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Order = ::Allocate<OrderField>();
-	memcpy(Order, buff + offset, sizeof(OrderField));
-	offset += sizeof(OrderField);
+	ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
+	memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
+	offset += sizeof(ReqInsertOrderField);
 	RspInfo = ::Allocate<RspInfoField>();
 	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
 	offset += sizeof(RspInfoField);
@@ -7712,10 +7776,8 @@ bool RspInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* RspInsertOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], SecurityType:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], StatusMsg:[%s], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], FrozenStampTax:[%f], FrozenTransferFee:[%f]",
-		Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->SecurityType, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->StatusMsg, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission, Order->FrozenStampTax, Order->FrozenTransferFee);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -7766,6 +7828,7 @@ int ReqCancelOrderPackage::ToStepStream(char* buff, int size) const
 			ReqCancelOrder->OrderSysID[sizeof(ReqCancelOrder->OrderSysID) - 1] = 0;
 		}
 		WriteString(ppos, Items::OrderSysID, ReqCancelOrder->OrderSysID);
+		WriteString(ppos, Items::SessionID, ReqCancelOrder->SessionID);
 		WriteString(ppos, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
 		WriteHexString(ppos, Items::FieldEnd, ReqCancelOrderField::FieldID);
 	}
@@ -7833,6 +7896,11 @@ bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							memcpy(ReqCancelOrder->OrderSysID, value.c_str(), len);
 							break;
 						}
+						case Items::SessionID:
+						{
+							ReqCancelOrder->SessionID = atoll(value.c_str());
+							break;
+						}
 						case Items::ClientOrderID:
 						{
 							ReqCancelOrder->ClientOrderID = atoi(value.c_str());
@@ -7888,8 +7956,7 @@ bool ReqCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* ReqCancelOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], ClientOrderID:[%d]",
-		ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->ClientOrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
 	return t_DataStringBuffer;
 }
  
@@ -7900,10 +7967,10 @@ RspCancelOrderPackage* RspCancelOrderPackage::Allocate()
 void RspCancelOrderPackage::Free()
 {
 	Package::Free();
-	if (CancelOrder != nullptr)
+	if (ReqCancelOrder != nullptr)
 	{
-		::Free<CancelOrderField>(CancelOrder);
-		CancelOrder = nullptr;
+		::Free<ReqCancelOrderField>(ReqCancelOrder);
+		ReqCancelOrder = nullptr;
 	}
 	if (RspInfo != nullptr)
 	{
@@ -7920,33 +7987,34 @@ void RspCancelOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, 
 int RspCancelOrderPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (CancelOrder != nullptr)
+	if (ReqCancelOrder != nullptr)
 	{
-		WriteHexString(ppos, Items::FieldStart, CancelOrderField::FieldID);
-		if (strlen(CancelOrder->AccountID) >= sizeof(CancelOrder->AccountID))
+		WriteHexString(ppos, Items::FieldStart, ReqCancelOrderField::FieldID);
+		if (strlen(ReqCancelOrder->AccountID) >= sizeof(ReqCancelOrder->AccountID))
 		{
-			CancelOrder->AccountID[sizeof(CancelOrder->AccountID) - 1] = 0;
+			ReqCancelOrder->AccountID[sizeof(ReqCancelOrder->AccountID) - 1] = 0;
 		}
-		WriteString(ppos, Items::AccountID, CancelOrder->AccountID);
-		if (strlen(CancelOrder->ExchangeID) >= sizeof(CancelOrder->ExchangeID))
+		WriteString(ppos, Items::AccountID, ReqCancelOrder->AccountID);
+		if (strlen(ReqCancelOrder->ExchangeID) >= sizeof(ReqCancelOrder->ExchangeID))
 		{
-			CancelOrder->ExchangeID[sizeof(CancelOrder->ExchangeID) - 1] = 0;
+			ReqCancelOrder->ExchangeID[sizeof(ReqCancelOrder->ExchangeID) - 1] = 0;
 		}
-		WriteString(ppos, Items::ExchangeID, CancelOrder->ExchangeID);
-		if (strlen(CancelOrder->InstrumentID) >= sizeof(CancelOrder->InstrumentID))
+		WriteString(ppos, Items::ExchangeID, ReqCancelOrder->ExchangeID);
+		if (strlen(ReqCancelOrder->InstrumentID) >= sizeof(ReqCancelOrder->InstrumentID))
 		{
-			CancelOrder->InstrumentID[sizeof(CancelOrder->InstrumentID) - 1] = 0;
+			ReqCancelOrder->InstrumentID[sizeof(ReqCancelOrder->InstrumentID) - 1] = 0;
 		}
-		WriteString(ppos, Items::InstrumentID, CancelOrder->InstrumentID);
-		WriteString(ppos, Items::ClientCancelOrderID, CancelOrder->ClientCancelOrderID);
-		WriteString(ppos, Items::OrderID, CancelOrder->OrderID);
-		if (strlen(CancelOrder->OrderSysID) >= sizeof(CancelOrder->OrderSysID))
+		WriteString(ppos, Items::InstrumentID, ReqCancelOrder->InstrumentID);
+		WriteString(ppos, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
+		WriteString(ppos, Items::OrderID, ReqCancelOrder->OrderID);
+		if (strlen(ReqCancelOrder->OrderSysID) >= sizeof(ReqCancelOrder->OrderSysID))
 		{
-			CancelOrder->OrderSysID[sizeof(CancelOrder->OrderSysID) - 1] = 0;
+			ReqCancelOrder->OrderSysID[sizeof(ReqCancelOrder->OrderSysID) - 1] = 0;
 		}
-		WriteString(ppos, Items::OrderSysID, CancelOrder->OrderSysID);
-		WriteString(ppos, Items::ClientOrderID, CancelOrder->ClientOrderID);
-		WriteHexString(ppos, Items::FieldEnd, CancelOrderField::FieldID);
+		WriteString(ppos, Items::OrderSysID, ReqCancelOrder->OrderSysID);
+		WriteString(ppos, Items::SessionID, ReqCancelOrder->SessionID);
+		WriteString(ppos, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
+		WriteHexString(ppos, Items::FieldEnd, ReqCancelOrderField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -7973,10 +8041,10 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case CancelOrderField::FieldID:
+			case ReqCancelOrderField::FieldID:
 			{
-				CancelOrder = ::Allocate<CancelOrderField>();
-				memset(CancelOrder, 0, sizeof(*CancelOrder));
+				ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
+				memset(ReqCancelOrder, 0, sizeof(*ReqCancelOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
 					unsigned short  itemID;
@@ -7991,45 +8059,50 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::AccountID:
 						{
-							size_t len = value.length() >= sizeof(CancelOrder->AccountID) ? sizeof(CancelOrder->AccountID) - 1 : value.length();
-							memcpy(CancelOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->AccountID) ? sizeof(ReqCancelOrder->AccountID) - 1 : value.length();
+							memcpy(ReqCancelOrder->AccountID, value.c_str(), len);
 							break;
 						}
 						case Items::ExchangeID:
 						{
-							size_t len = value.length() >= sizeof(CancelOrder->ExchangeID) ? sizeof(CancelOrder->ExchangeID) - 1 : value.length();
-							memcpy(CancelOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->ExchangeID) ? sizeof(ReqCancelOrder->ExchangeID) - 1 : value.length();
+							memcpy(ReqCancelOrder->ExchangeID, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentID:
 						{
-							size_t len = value.length() >= sizeof(CancelOrder->InstrumentID) ? sizeof(CancelOrder->InstrumentID) - 1 : value.length();
-							memcpy(CancelOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->InstrumentID) ? sizeof(ReqCancelOrder->InstrumentID) - 1 : value.length();
+							memcpy(ReqCancelOrder->InstrumentID, value.c_str(), len);
 							break;
 						}
 						case Items::ClientCancelOrderID:
 						{
-							CancelOrder->ClientCancelOrderID = atoi(value.c_str());
+							ReqCancelOrder->ClientCancelOrderID = atoi(value.c_str());
 							break;
 						}
 						case Items::OrderID:
 						{
-							CancelOrder->OrderID = atoi(value.c_str());
+							ReqCancelOrder->OrderID = atoi(value.c_str());
 							break;
 						}
 						case Items::OrderSysID:
 						{
-							size_t len = value.length() >= sizeof(CancelOrder->OrderSysID) ? sizeof(CancelOrder->OrderSysID) - 1 : value.length();
-							memcpy(CancelOrder->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->OrderSysID) ? sizeof(ReqCancelOrder->OrderSysID) - 1 : value.length();
+							memcpy(ReqCancelOrder->OrderSysID, value.c_str(), len);
+							break;
+						}
+						case Items::SessionID:
+						{
+							ReqCancelOrder->SessionID = atoll(value.c_str());
 							break;
 						}
 						case Items::ClientOrderID:
 						{
-							CancelOrder->ClientOrderID = atoi(value.c_str());
+							ReqCancelOrder->ClientOrderID = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for CancelOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqCancelOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
@@ -8100,8 +8173,8 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 int RspCancelOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, CancelOrder, sizeof(CancelOrderField));
-	offset += sizeof(CancelOrderField);
+	memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
+	offset += sizeof(ReqCancelOrderField);
 	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 	offset += sizeof(RspInfoField);
 	return offset;
@@ -8109,9 +8182,9 @@ int RspCancelOrderPackage::ToXtpStream(char* buff, int size) const
 bool RspCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	CancelOrder = ::Allocate<CancelOrderField>();
-	memcpy(CancelOrder, buff + offset, sizeof(CancelOrderField));
-	offset += sizeof(CancelOrderField);
+	ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
+	memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
+	offset += sizeof(ReqCancelOrderField);
 	RspInfo = ::Allocate<RspInfoField>();
 	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
 	offset += sizeof(RspInfoField);
@@ -8124,10 +8197,8 @@ bool RspCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* RspCancelOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "CancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], ClientOrderID:[%d]",
-		CancelOrder->AccountID, CancelOrder->ExchangeID, CancelOrder->InstrumentID, CancelOrder->ClientCancelOrderID, CancelOrder->OrderID, CancelOrder->OrderSysID, CancelOrder->ClientOrderID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -8176,7 +8247,7 @@ int RtnOrderPackage::ToStepStream(char* buff, int size) const
 			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
 		}
 		WriteString(ppos, Items::InstrumentID, Order->InstrumentID);
-		WriteString(ppos, Items::SecurityType, (int)Order->SecurityType);
+		WriteString(ppos, Items::ProductClass, (int)Order->ProductClass);
 		WriteString(ppos, Items::OrderID, Order->OrderID);
 		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
 		{
@@ -8192,11 +8263,6 @@ int RtnOrderPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::VolumeTraded, Order->VolumeTraded);
 		WriteString(ppos, Items::VolumeMultiple, Order->VolumeMultiple);
 		WriteString(ppos, Items::OrderStatus, (int)Order->OrderStatus);
-		if (strlen(Order->StatusMsg) >= sizeof(Order->StatusMsg))
-		{
-			Order->StatusMsg[sizeof(Order->StatusMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::StatusMsg, Order->StatusMsg);
 		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
 		{
 			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
@@ -8223,8 +8289,6 @@ int RtnOrderPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::FrozenCash, Order->FrozenCash);
 		WriteString(ppos, Items::FrozenMargin, Order->FrozenMargin);
 		WriteString(ppos, Items::FrozenCommission, Order->FrozenCommission);
-		WriteString(ppos, Items::FrozenStampTax, Order->FrozenStampTax);
-		WriteString(ppos, Items::FrozenTransferFee, Order->FrozenTransferFee);
 		WriteHexString(ppos, Items::FieldEnd, OrderField::FieldID);
 	}
 	return int(ppos - buff);
@@ -8281,9 +8345,9 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							memcpy(Order->InstrumentID, value.c_str(), len);
 							break;
 						}
-						case Items::SecurityType:
+						case Items::ProductClass:
 						{
-							Order->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
+							Order->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
@@ -8342,12 +8406,6 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							Order->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
 							break;
 						}
-						case Items::StatusMsg:
-						{
-							size_t len = value.length() >= sizeof(Order->StatusMsg) ? sizeof(Order->StatusMsg) - 1 : value.length();
-							memcpy(Order->StatusMsg, value.c_str(), len);
-							break;
-						}
 						case Items::OrderDate:
 						{
 							size_t len = value.length() >= sizeof(Order->OrderDate) ? sizeof(Order->OrderDate) - 1 : value.length();
@@ -8402,16 +8460,6 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							Order->FrozenCommission = atof(value.c_str());
 							break;
 						}
-						case Items::FrozenStampTax:
-						{
-							Order->FrozenStampTax = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenTransferFee:
-						{
-							Order->FrozenTransferFee = atof(value.c_str());
-							break;
-						}
 						default:
 							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for OrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
@@ -8462,8 +8510,7 @@ bool RtnOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 const char* RtnOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], SecurityType:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], StatusMsg:[%s], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], FrozenStampTax:[%f], FrozenTransferFee:[%f]",
-		Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->SecurityType, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->StatusMsg, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission, Order->FrozenStampTax, Order->FrozenTransferFee);
+	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
 	return t_DataStringBuffer;
 }
  
@@ -8512,7 +8559,7 @@ int RtnTradePackage::ToStepStream(char* buff, int size) const
 			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
 		}
 		WriteString(ppos, Items::InstrumentID, Trade->InstrumentID);
-		WriteString(ppos, Items::SecurityType, (int)Trade->SecurityType);
+		WriteString(ppos, Items::ProductClass, (int)Trade->ProductClass);
 		WriteString(ppos, Items::OrderID, Trade->OrderID);
 		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
 		{
@@ -8531,8 +8578,6 @@ int RtnTradePackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::VolumeMultiple, Trade->VolumeMultiple);
 		WriteString(ppos, Items::TradeAmount, Trade->TradeAmount);
 		WriteString(ppos, Items::Commission, Trade->Commission);
-		WriteString(ppos, Items::StampTax, Trade->StampTax);
-		WriteString(ppos, Items::TransferFee, Trade->TransferFee);
 		if (strlen(Trade->TradeDate) >= sizeof(Trade->TradeDate))
 		{
 			Trade->TradeDate[sizeof(Trade->TradeDate) - 1] = 0;
@@ -8599,9 +8644,9 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							memcpy(Trade->InstrumentID, value.c_str(), len);
 							break;
 						}
-						case Items::SecurityType:
+						case Items::ProductClass:
 						{
-							Trade->SecurityType = (SecurityTypeType)(atoi(value.c_str()));
+							Trade->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
@@ -8654,16 +8699,6 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						case Items::Commission:
 						{
 							Trade->Commission = atof(value.c_str());
-							break;
-						}
-						case Items::StampTax:
-						{
-							Trade->StampTax = atof(value.c_str());
-							break;
-						}
-						case Items::TransferFee:
-						{
-							Trade->TransferFee = atof(value.c_str());
 							break;
 						}
 						case Items::TradeDate:
@@ -8728,8 +8763,7 @@ bool RtnTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 const char* RtnTradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], SecurityType:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], StampTax:[%f], TransferFee:[%f], TradeDate:[%s], TradeTime:[%s]",
-		Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->SecurityType, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->StampTax, Trade->TransferFee, Trade->TradeDate, Trade->TradeTime);
+	offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
 	return t_DataStringBuffer;
 }
  
@@ -8930,8 +8964,7 @@ bool RtnMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RtnMoneyTransferPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]",
-		MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+	offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
 	return t_DataStringBuffer;
 }
  
@@ -9070,7 +9103,6 @@ bool RtnAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RtnAccountLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "AccountLogout:AccountID:[%s], ErrorID:[%d], ErrorMsg:[%s]",
-		AccountLogout->AccountID, AccountLogout->ErrorID, AccountLogout->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "AccountLogout:AccountID:[%s], ErrorID:[%d], ErrorMsg:[%s]", AccountLogout->AccountID, AccountLogout->ErrorID, AccountLogout->ErrorMsg);
 	return t_DataStringBuffer;
 }

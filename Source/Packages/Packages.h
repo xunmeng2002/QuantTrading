@@ -157,6 +157,21 @@ public:
 	RspUnSubMarketDataField* RspUnSubMarketData = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
+class ReqSubMarketDataFinishedPackage : public Package
+{
+public:
+	static ReqSubMarketDataFinishedPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x1009;
+	ReqSubMarketDataFinishedField* ReqSubMarketDataFinished = nullptr;
+};
 class RtnDepthMarketDataPackage : public Package
 {
 public:
@@ -169,7 +184,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x1009;
+	static constexpr UShortType PackageID = 0x100A;
 	DepthMarketDataField* DepthMarketData = nullptr;
 };
 class RtnBarMarketDataPackage : public Package
@@ -184,8 +199,38 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x100A;
+	static constexpr UShortType PackageID = 0x100B;
 	BarMarketDataField* BarMarketData = nullptr;
+};
+class RtnSessionBeginPackage : public Package
+{
+public:
+	static RtnSessionBeginPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x100C;
+	SessionBeginField* SessionBegin = nullptr;
+};
+class RtnSessionEndPackage : public Package
+{
+public:
+	static RtnSessionEndPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x100D;
+	SessionEndField* SessionEnd = nullptr;
 };
 class ReqAccountLoginPackage : public Package
 {
@@ -587,7 +632,7 @@ public:
 	virtual const char* GetDebugString() const override;
 public:
 	static constexpr UShortType PackageID = 0x201A;
-	OrderField* Order = nullptr;
+	ReqInsertOrderField* ReqInsertOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
 class ReqCancelOrderPackage : public Package
@@ -618,7 +663,7 @@ public:
 	virtual const char* GetDebugString() const override;
 public:
 	static constexpr UShortType PackageID = 0x201C;
-	CancelOrderField* CancelOrder = nullptr;
+	ReqCancelOrderField* ReqCancelOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
 class RtnOrderPackage : public Package

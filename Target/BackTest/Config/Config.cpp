@@ -37,12 +37,13 @@ void Config::Load(const char* fileName)
 	inFile.close();
 	
 	LogLevel = root["LogLevel"].asInt();
-	ServerConfigPath = root["ServerConfigPath"].asString();
-	MdUser = root["MdUser"].asString();
-	MdPassword = root["MdPassword"].asString();
+	MdDataPath = root["MdDataPath"].asString();
+	CsvPath = root["CsvPath"].asString();
+	DumpPath = root["DumpPath"].asString();
 	SessionFile = root["SessionFile"].asString();
-	EnvironmentFile = root["EnvironmentFile"].asString();
-	SelectedEnvironmentName = root["SelectedEnvironmentName"].asString();
+	MarketDataType = root["MarketDataType"].asString();
+	StartTradingDay = root["StartTradingDay"].asString();
+	EndTradingDay = root["EndTradingDay"].asString();
 	Print();
 }
 
@@ -51,11 +52,12 @@ void Config::Load(const char* fileName)
 void Config::Print()
 {
 	printf("LogLevel:%d\n", LogLevel);
-	printf("ServerConfigPath:%s\n", ServerConfigPath.c_str());
-	printf("MdUser:%s\n", MdUser.c_str());
-	printf("MdPassword:%s\n", MdPassword.c_str());
+	printf("MdDataPath:%s\n", MdDataPath.c_str());
+	printf("CsvPath:%s\n", CsvPath.c_str());
+	printf("DumpPath:%s\n", DumpPath.c_str());
 	printf("SessionFile:%s\n", SessionFile.c_str());
-	printf("EnvironmentFile:%s\n", EnvironmentFile.c_str());
-	printf("SelectedEnvironmentName:%s\n", SelectedEnvironmentName.c_str());
+	printf("MarketDataType:%s\n", MarketDataType.c_str());
+	printf("StartTradingDay:%s\n", StartTradingDay.c_str());
+	printf("EndTradingDay:%s\n", EndTradingDay.c_str());
 }
 

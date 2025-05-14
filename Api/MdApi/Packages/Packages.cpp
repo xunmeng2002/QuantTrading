@@ -139,8 +139,7 @@ bool ReqMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* ReqMdUserLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]",
-		ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]", ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
 	return t_DataStringBuffer;
 }
  
@@ -352,10 +351,8 @@ bool RspMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 const char* RspMdUserLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]",
-		RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -477,8 +474,7 @@ bool ReqMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 const char* ReqMdUserLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogout:UserID:[%s]",
-		ReqMdUserLogout->UserID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogout:UserID:[%s]", ReqMdUserLogout->UserID);
 	return t_DataStringBuffer;
 }
  
@@ -662,10 +658,8 @@ bool RspMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 const char* RspMdUserLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]",
-		RspMdUserLogout->UserID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]", RspMdUserLogout->UserID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -798,8 +792,7 @@ bool ReqSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* ReqSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
-		ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID);
 	return t_DataStringBuffer;
 }
  
@@ -994,10 +987,8 @@ bool RspSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RspSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
-		RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -1130,8 +1121,7 @@ bool ReqUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 const char* ReqUnSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
-		ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
 	return t_DataStringBuffer;
 }
  
@@ -1326,10 +1316,8 @@ bool RspUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 const char* RspUnSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]",
-		RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]",
-		RspInfo->ErrorID, RspInfo->ErrorMsg);
+	offset += sprintf(t_DataStringBuffer + offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
@@ -1373,6 +1361,7 @@ int RtnDepthMarketDataPackage::ToStepStream(char* buff, int size) const
 			DepthMarketData->InstrumentID[sizeof(DepthMarketData->InstrumentID) - 1] = 0;
 		}
 		WriteString(ppos, Items::InstrumentID, DepthMarketData->InstrumentID);
+		WriteString(ppos, Items::UpdateTs, DepthMarketData->UpdateTs);
 		WriteString(ppos, Items::LastPrice, DepthMarketData->LastPrice);
 		WriteString(ppos, Items::PreSettlementPrice, DepthMarketData->PreSettlementPrice);
 		WriteString(ppos, Items::PreClosePrice, DepthMarketData->PreClosePrice);
@@ -1390,7 +1379,6 @@ int RtnDepthMarketDataPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::UpperLimitPrice, DepthMarketData->UpperLimitPrice);
 		WriteString(ppos, Items::LowerLimitPrice, DepthMarketData->LowerLimitPrice);
 		WriteString(ppos, Items::AveragePrice, DepthMarketData->AveragePrice);
-		WriteString(ppos, Items::UpdateTs, DepthMarketData->UpdateTs);
 		WriteString(ppos, Items::AskPrice1, DepthMarketData->AskPrice1);
 		WriteString(ppos, Items::AskPrice2, DepthMarketData->AskPrice2);
 		WriteString(ppos, Items::AskPrice3, DepthMarketData->AskPrice3);
@@ -1481,6 +1469,11 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 							memcpy(DepthMarketData->InstrumentID, value.c_str(), len);
 							break;
 						}
+						case Items::UpdateTs:
+						{
+							DepthMarketData->UpdateTs = atoll(value.c_str());
+							break;
+						}
 						case Items::LastPrice:
 						{
 							DepthMarketData->LastPrice = atof(value.c_str());
@@ -1498,7 +1491,7 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						}
 						case Items::PreOpenInterest:
 						{
-							DepthMarketData->PreOpenInterest = atoll(value.c_str());
+							DepthMarketData->PreOpenInterest = atof(value.c_str());
 							break;
 						}
 						case Items::OpenPrice:
@@ -1543,7 +1536,7 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						}
 						case Items::OpenInterest:
 						{
-							DepthMarketData->OpenInterest = atoll(value.c_str());
+							DepthMarketData->OpenInterest = atof(value.c_str());
 							break;
 						}
 						case Items::SettlementPrice:
@@ -1564,11 +1557,6 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						case Items::AveragePrice:
 						{
 							DepthMarketData->AveragePrice = atof(value.c_str());
-							break;
-						}
-						case Items::UpdateTs:
-						{
-							DepthMarketData->UpdateTs = atoll(value.c_str());
 							break;
 						}
 						case Items::AskPrice1:
@@ -1821,8 +1809,7 @@ bool RtnDepthMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 const char* RtnDepthMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%lld], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%lld], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], UpdateTs:[%lld], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]",
-		DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->UpdateTs, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
+	offset += sprintf(t_DataStringBuffer + offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], UpdateTs:[%lld], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%f], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]", DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->UpdateTs, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
 	return t_DataStringBuffer;
 }
  
@@ -2003,7 +1990,7 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::OpenInterest:
 						{
-							BarMarketData->OpenInterest = atoll(value.c_str());
+							BarMarketData->OpenInterest = atof(value.c_str());
 							break;
 						}
 						default:
@@ -2056,7 +2043,6 @@ bool RtnBarMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 const char* RtnBarMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%lld]",
-		BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+	offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
 	return t_DataStringBuffer;
 }

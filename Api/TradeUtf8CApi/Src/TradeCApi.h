@@ -29,8 +29,8 @@ extern "C"
 	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRspQryOptionInstrument)(OptionInstrumentField* optionInstrument, RspInfoField* rspInfo, int requestID, bool isLast);
 	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRspQryCommissionRate)(CommissionRateField* commissionRate, RspInfoField* rspInfo, int requestID, bool isLast);
 	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRspQryMoneyTransfer)(MoneyTransferField* moneyTransfer, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRspInsertOrder)(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRspCancelOrder)(CancelOrderField* cancelOrder, RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRspInsertOrder)(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRspCancelOrder)(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast);
 	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRtnOrder)(OrderField* order);
 	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRtnTrade)(TradeField* trade);
 	typedef TRADE_CAPI_EXPORT void (TRADE_CAPI_CALL *OnRtnMoneyTransfer)(MoneyTransferField* moneyTransfer);

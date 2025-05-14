@@ -52,14 +52,15 @@ void CThostFtdcMdSpiImpl::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* p
 	package->DepthMarketData->HighestPrice = pDepthMarketData->HighestPrice;
 	package->DepthMarketData->LowestPrice = pDepthMarketData->LowestPrice;
 	package->DepthMarketData->ClosePrice = pDepthMarketData->ClosePrice;
+	package->DepthMarketData->CurrVolume = 0;
 	package->DepthMarketData->Volume = pDepthMarketData->Volume;
+	package->DepthMarketData->CurrTurnover = 0;
 	package->DepthMarketData->Turnover = pDepthMarketData->Turnover;
 	package->DepthMarketData->OpenInterest = pDepthMarketData->OpenInterest;
 	package->DepthMarketData->SettlementPrice = pDepthMarketData->SettlementPrice;
 	package->DepthMarketData->UpperLimitPrice = pDepthMarketData->UpperLimitPrice;
 	package->DepthMarketData->LowerLimitPrice = pDepthMarketData->LowerLimitPrice;
 	package->DepthMarketData->AveragePrice = pDepthMarketData->AveragePrice;
-	package->DepthMarketData->UpdateTs = pDepthMarketData->LastPrice;
 	package->DepthMarketData->UpdateTs = atoll(pDepthMarketData->ActionDay) * 1000000000LL + GetTimeFromTimeString(pDepthMarketData->UpdateTime) * 1000LL + pDepthMarketData->UpdateMillisec;
 
 	package->DepthMarketData->AskPrice1 = pDepthMarketData->AskPrice1;
@@ -96,7 +97,7 @@ void CThostFtdcMdSpiImpl::SubscribeMd(ReqSubMarketDataField* reqSubMd)
 	m_ReqSubMds[reqSubMd->InstrumentID] = reqSubMd;
 	vector<char*> instruments;
 	instruments.push_back(reqSubMd->InstrumentID);
-	int ret = m_MdApi->SubscribeMarketData(instruments.data(), instruments.size());
+	int ret = m_MdApi->SubscribeMarketData(instruments.data(), (int)instruments.size());
 	WriteLog(LogLevel::Info, "SubscribeMd: ExchangeID:%s, InstrumentID:%s, ret:%d", reqSubMd->ExchangeID, reqSubMd->InstrumentID, ret);
 }
 
@@ -126,6 +127,6 @@ void CThostFtdcMdSpiImpl::ReqSubscribeMd()
 	//instruments.push_back("IF2509");
 	instruments.push_back("IF25012");
 
-	int ret = m_MdApi->SubscribeMarketData((char**)instruments.data(), instruments.size());
+	int ret = m_MdApi->SubscribeMarketData((char**)instruments.data(), (int)instruments.size());
 	WriteLog(LogLevel::Info, "SubscribeMarketData: ret[%d]", ret);
 }

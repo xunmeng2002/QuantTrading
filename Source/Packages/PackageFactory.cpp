@@ -46,6 +46,10 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	{
 		return RspUnSubMarketDataPackage::Allocate();
 	}
+	case ReqSubMarketDataFinishedPackage::PackageID:
+	{
+		return ReqSubMarketDataFinishedPackage::Allocate();
+	}
 	case RtnDepthMarketDataPackage::PackageID:
 	{
 		return RtnDepthMarketDataPackage::Allocate();
@@ -53,6 +57,14 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	case RtnBarMarketDataPackage::PackageID:
 	{
 		return RtnBarMarketDataPackage::Allocate();
+	}
+	case RtnSessionBeginPackage::PackageID:
+	{
+		return RtnSessionBeginPackage::Allocate();
+	}
+	case RtnSessionEndPackage::PackageID:
+	{
+		return RtnSessionEndPackage::Allocate();
 	}
 	case ReqAccountLoginPackage::PackageID:
 	{

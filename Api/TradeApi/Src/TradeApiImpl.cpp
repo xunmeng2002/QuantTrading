@@ -76,12 +76,12 @@ void TradeApiImpl::OnMessage(Package* package)
 	}
 	case RspInsertOrderPackage::PackageID:
 	{
-		m_TradeSpi->OnRspInsertOrder(((RspInsertOrderPackage*)package)->Order, ((RspInsertOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		m_TradeSpi->OnRspInsertOrder(((RspInsertOrderPackage*)package)->ReqInsertOrder, ((RspInsertOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspCancelOrderPackage::PackageID:
 	{
-		m_TradeSpi->OnRspCancelOrder(((RspCancelOrderPackage*)package)->CancelOrder, ((RspCancelOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		m_TradeSpi->OnRspCancelOrder(((RspCancelOrderPackage*)package)->ReqCancelOrder, ((RspCancelOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RtnOrderPackage::PackageID:

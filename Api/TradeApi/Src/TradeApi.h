@@ -28,8 +28,8 @@ public:
 	virtual void OnRspQryOptionInstrument(OptionInstrumentField* optionInstrument, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspQryCommissionRate(CommissionRateField* commissionRate, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspQryMoneyTransfer(MoneyTransferField* moneyTransfer, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspInsertOrder(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspCancelOrder(CancelOrderField* cancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRtnOrder(OrderField* order) {}
 	virtual void OnRtnTrade(TradeField* trade) {}
 	virtual void OnRtnMoneyTransfer(MoneyTransferField* moneyTransfer) {}

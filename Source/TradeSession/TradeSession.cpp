@@ -141,23 +141,23 @@ bool TradeSessions::ParseTradeSessions()
 		printf("ParseTradeSessions Failed. JsonStr:%s\n", m_SessionJsonString.c_str());
 		return false;
 	}
-	for (auto i = 0; i < root.size(); ++i)
+	for (auto i = 0u; i < root.size(); ++i)
 	{
 		auto& tradeSessionValue = root[i];
 		TradeSession* tradeSession = new TradeSession();
 		tradeSession->Name = tradeSessionValue["Name"].asString();
-		for (auto j = 0; j < tradeSessionValue["Exchanges"].size(); ++j)
+		for (auto j = 0u; j < tradeSessionValue["Exchanges"].size(); ++j)
 		{
 			auto& exchangesValue = tradeSessionValue["Exchanges"][j];
 			auto exchangeID = exchangesValue["ExchangeID"].asString();
 			tradeSession->ExchangeProducts.insert(make_pair(exchangeID, list<string>()));
-			for (auto k = 0; k < exchangesValue["Products"].size(); ++k)
+			for (auto k = 0u; k < exchangesValue["Products"].size(); ++k)
 			{
 				auto& productValue = exchangesValue["Products"][k];
 				tradeSession->ExchangeProducts[exchangeID].push_back(productValue.asString());
 			}
 		}
-		for (auto j = 0; j < tradeSessionValue["Sections"].size(); ++j)
+		for (auto j = 0u; j < tradeSessionValue["Sections"].size(); ++j)
 		{
 			auto& tradeSectionValue = tradeSessionValue["Sections"][j];
 			TradeSection* tradeSection = new TradeSection();

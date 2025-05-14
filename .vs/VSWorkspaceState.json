@@ -7,16 +7,15 @@
   },
   "ExpandedNodes": [
     "",
-    "\\Source",
-    "\\Source\\DB",
-    "\\Source\\DB\\DBOperate",
+    "\\Api",
+    "\\Api\\ApiBase",
     "\\Target",
-    "\\Target\\BackTest\\DB\\DBOperate",
-    "\\Target\\BackTest\\DB\\DuckDB",
-    "\\Target\\BackTest\\DB\\InitMdb",
-    "\\Target\\BackTest\\DB\\MysqlDB",
-    "\\Target\\BackTest\\DB\\SqliteDB"
+    "\\Target\\BackTest",
+    "\\Target\\BackTest\\DB",
+    "\\Target\\BackTest\\Src",
+    "\\Target\\MdOffer",
+    "\\Target\\MdOffer\\Src"
   ],
-  "SelectedNode": "\\Target\\BackTest",
+  "SelectedNode": "\\Api\\ApiBase\\ApiBase.h",
   "PreviewInSolutionExplorer": false
 }

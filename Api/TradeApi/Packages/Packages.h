@@ -372,7 +372,7 @@ public:
 	virtual const char* GetDebugString() const override;
 public:
 	static constexpr UShortType PackageID = 0x201A;
-	OrderField* Order = nullptr;
+	ReqInsertOrderField* ReqInsertOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
 class ReqCancelOrderPackage : public Package
@@ -403,7 +403,7 @@ public:
 	virtual const char* GetDebugString() const override;
 public:
 	static constexpr UShortType PackageID = 0x201C;
-	CancelOrderField* CancelOrder = nullptr;
+	ReqCancelOrderField* ReqCancelOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
 class RtnOrderPackage : public Package

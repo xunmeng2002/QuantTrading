@@ -72,25 +72,21 @@ public:
 	DateType TradingDay;		//交易日
 	AccountIDType AccountID;		//账户代码
 	AccountTypeType AccountType;		//账户类型
-	MoneyType Asset;		//总资产
-	MoneyType PreAsset;		//上日总资产
-	MoneyType CashAsset;		//现金资产
-	MoneyType PreCashAsset;		//上日现金资产
+	MoneyType Balance;		//权益
+	MoneyType PreBalance;		//上日权益
 	MoneyType Available;		//可用资金
+	MoneyType MarketValue;		//市值
 	MoneyType CashIn;		//现金收入
 	MoneyType CashOut;		//现金支出
 	MoneyType Margin;		//保证金
 	MoneyType Commission;		//手续费
-	MoneyType StampTax;		//印花税
-	MoneyType TransferFee;		//过户费
 	MoneyType FrozenCash;		//冻结资金
 	MoneyType FrozenMargin;		//冻结保证金
 	MoneyType FrozenCommission;		//冻结手续费
-	MoneyType FrozenStampTax;		//冻结印花税
-	MoneyType FrozenTransferFee;		//冻结过户费
-	MoneyType MarketValue;		//市值
-	MoneyType TotalProfit;		//总盈亏
-	MoneyType TodayProfit;		//当日盈亏
+	MoneyType CloseProfitByDate;		//逐日平仓盈亏
+	MoneyType CloseProfitByTrade;		//逐笔平仓盈亏
+	MoneyType PositionProfitByDate;		//逐日持仓盈亏
+	MoneyType PositionProfitByTrade;		//逐笔持仓盈亏
 	MoneyType Deposit;		//入金
 	MoneyType Withdraw;		//出金
 };
@@ -111,27 +107,23 @@ public:
 	AccountTypeType AccountType;		//账户类型
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
-	SecurityTypeType SecurityType;		//证券类别
+	ProductClassType ProductClass;		//品种类型
 	PosiDirectionType PosiDirection;		//持仓方向
 	VolumeType TotalPosition;		//持仓数量
 	VolumeType PositionFrozen;		//冻结持仓
 	VolumeType TodayPosition;		//今日持仓
-	PriceType TotalCostPrice;		//总成本价
-	PriceType TodayCostPrice;		//当日成本价
+	MoneyType MarketValue;		//市值
 	MoneyType CashIn;		//现金收入
 	MoneyType CashOut;		//现金支出
 	MoneyType Margin;		//保证金
 	MoneyType Commission;		//手续费
-	MoneyType StampTax;		//印花税
-	MoneyType TransferFee;		//过户费
-	MoneyType MarketValue;		//市值
 	VolumeMultipleType VolumeMultiple;		//合约乘数
-	MoneyType TotalCost;		//总成本
-	MoneyType TodayCost;		//当日成本
-	MoneyType TotalProfit;		//总盈亏
-	MoneyType TodayProfit;		//当日盈亏
+	MoneyType CloseProfitByDate;		//逐日平仓盈亏
+	MoneyType CloseProfitByTrade;		//逐笔平仓盈亏
+	MoneyType PositionProfitByDate;		//逐日持仓盈亏
+	MoneyType PositionProfitByTrade;		//逐笔持仓盈亏
 	PriceType LastPrice;		//最新价
-	PriceType PrePrice;		//昨收盘价或昨结算价
+	PriceType PreSettlementPrice;		//昨结算价
 };
 
 class ReqQryOrderField
@@ -149,7 +141,7 @@ public:
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
-	SecurityTypeType SecurityType;		//证券类别
+	ProductClassType ProductClass;		//品种类型
 	OrderIDType OrderID;		//委托编号
 	OrderSysIDType OrderSysID;		//系统委托编号
 	DirectionType Direction;		//买卖方向
@@ -161,7 +153,6 @@ public:
 	VolumeType VolumeTraded;		//成交数量
 	VolumeMultipleType VolumeMultiple;		//合约乘数
 	OrderStatusType OrderStatus;		//委托状态
-	MessageType StatusMsg;		//状态信息
 	DateType OrderDate;		//委托日期
 	TimeType OrderTime;		//委托时间
 	DateType CancelDate;		//撤单日期
@@ -172,8 +163,6 @@ public:
 	MoneyType FrozenCash;		//冻结资金
 	MoneyType FrozenMargin;		//冻结保证金
 	MoneyType FrozenCommission;		//冻结手续费
-	MoneyType FrozenStampTax;		//冻结印花税
-	MoneyType FrozenTransferFee;		//冻结过户费
 };
 
 class ReqQryTradeField
@@ -191,7 +180,7 @@ public:
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
-	SecurityTypeType SecurityType;		//证券类别
+	ProductClassType ProductClass;		//品种类型
 	OrderIDType OrderID;		//委托编号
 	OrderSysIDType OrderSysID;		//系统委托编号
 	TradeIDType TradeID;		//成交编号
@@ -202,8 +191,6 @@ public:
 	VolumeMultipleType VolumeMultiple;		//合约乘数
 	MoneyType TradeAmount;		//成交金额
 	MoneyType Commission;		//手续费
-	MoneyType StampTax;		//印花税
-	MoneyType TransferFee;		//过户费
 	DateType TradeDate;		//成交日期
 	TimeType TradeTime;		//成交时间
 };
@@ -225,7 +212,7 @@ public:
 	InstrumentIDType ExchangeInstID;		//交易所合约代码
 	InstrumentNameType InstrumentName;		//合约名称
 	VolumeMultipleType VolumeMultiple;		//合约乘数
-	SecurityTypeType SecurityType;		//证券类别
+	ProductClassType ProductClass;		//品种类型
 };
 
 class ReqQryOptionInstrumentField
@@ -261,7 +248,7 @@ public:
 	static constexpr UShortType FieldID = 0x2016;
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
-	SecurityTypeType SecurityType;		//证券类别
+	ProductClassType ProductClass;		//品种类型
 };
 
 class CommissionRateField
@@ -270,7 +257,7 @@ public:
 	static constexpr UShortType FieldID = 0x2017;
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
-	SecurityTypeType SecurityType;		//证券类别
+	ProductClassType ProductClass;		//品种类型
 	RateType OpenBuyByMoney;		//买开仓费率
 	RateType OpenSellByMoney;		//卖开仓费率
 	RateType CloseBuyByMoney;		//买平仓费率
@@ -331,19 +318,7 @@ public:
 	ClientOrderIDType ClientCancelOrderID;		//客户端撤单委托编号
 	OrderIDType OrderID;		//委托编号
 	OrderSysIDType OrderSysID;		//系统委托编号
-	ClientOrderIDType ClientOrderID;		//客户端委托编号
-};
-
-class CancelOrderField
-{
-public:
-	static constexpr UShortType FieldID = 0x201C;
-	AccountIDType AccountID;		//账户代码
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
-	ClientOrderIDType ClientCancelOrderID;		//客户端撤单委托编号
-	OrderIDType OrderID;		//委托编号
-	OrderSysIDType OrderSysID;		//系统委托编号
+	SessionIDType SessionID;		//会话编号
 	ClientOrderIDType ClientOrderID;		//客户端委托编号
 };
 

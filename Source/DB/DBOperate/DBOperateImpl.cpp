@@ -36,6 +36,11 @@ void DBOperateImpl::FreeRecord()
 		((Product*)Record)->Free();
 		break;
 	}
+	case HotInstrument::TableID:
+	{
+		((HotInstrument*)Record)->Free();
+		break;
+	}
 	case Instrument::TableID:
 	{
 		((Instrument*)Record)->Free();
@@ -61,6 +66,11 @@ void DBOperateImpl::FreeRecord()
 		((Position*)Record)->Free();
 		break;
 	}
+	case PositionDetail::TableID:
+	{
+		((PositionDetail*)Record)->Free();
+		break;
+	}
 	case Order::TableID:
 	{
 		((Order*)Record)->Free();
@@ -74,6 +84,16 @@ void DBOperateImpl::FreeRecord()
 	case DepthMarketData::TableID:
 	{
 		((DepthMarketData*)Record)->Free();
+		break;
+	}
+	case BarMarketData::TableID:
+	{
+		((BarMarketData*)Record)->Free();
+		break;
+	}
+	case MdSubscribe::TableID:
+	{
+		((MdSubscribe*)Record)->Free();
 		break;
 	}
 	default:
@@ -97,6 +117,10 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Product*)Record)->GetDebugString();
 	}
+	case HotInstrument::TableID:
+	{
+		return ((HotInstrument*)Record)->GetDebugString();
+	}
 	case Instrument::TableID:
 	{
 		return ((Instrument*)Record)->GetDebugString();
@@ -117,6 +141,10 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Position*)Record)->GetDebugString();
 	}
+	case PositionDetail::TableID:
+	{
+		return ((PositionDetail*)Record)->GetDebugString();
+	}
 	case Order::TableID:
 	{
 		return ((Order*)Record)->GetDebugString();
@@ -128,6 +156,14 @@ const char* DBOperateImpl::GetDebugString() const
 	case DepthMarketData::TableID:
 	{
 		return ((DepthMarketData*)Record)->GetDebugString();
+	}
+	case BarMarketData::TableID:
+	{
+		return ((BarMarketData*)Record)->GetDebugString();
+	}
+	case MdSubscribe::TableID:
+	{
+		return ((MdSubscribe*)Record)->GetDebugString();
 	}
 	default:
 		break;

@@ -139,7 +139,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x1009;
+	static constexpr UShortType PackageID = 0x100A;
 	DepthMarketDataField* DepthMarketData = nullptr;
 };
 class RtnBarMarketDataPackage : public Package
@@ -154,6 +154,6 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x100A;
+	static constexpr UShortType PackageID = 0x100B;
 	BarMarketDataField* BarMarketData = nullptr;
 };

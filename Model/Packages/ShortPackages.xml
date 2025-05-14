@@ -35,11 +35,20 @@
 		<field name="RspUnSubMarketData"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="RtnDepthMarketData" 			id="0x1009" desc="深度行情推送">
+	<package name="ReqSubMarketDataFinished" 	id="0x1009" desc="行情完成请求">
+		<field name="ReqSubMarketDataFinished"/>
+	</package>
+	<package name="RtnDepthMarketData" 			id="0x100A" desc="深度行情推送">
 		<field name="DepthMarketData"/>
 	</package>
-	<package name="RtnBarMarketData" 			id="0x100A" desc="Bar行情推送">
+	<package name="RtnBarMarketData" 			id="0x100B" desc="Bar行情推送">
 		<field name="BarMarketData"/>
+	</package>
+	<package name="RtnSessionBegin" 			id="0x100C" desc="交易节开始推送">
+		<field name="SessionBegin"/>
+	</package>
+	<package name="RtnSessionEnd" 				id="0x100D" desc="交易节结束推送">
+		<field name="SessionEnd"/>
 	</package>
 	
 	<package name="ReqAccountLogin" 			id="0x2001" desc="账户登录请求">
@@ -130,14 +139,14 @@
 		<field name="ReqInsertOrder"/>
 	</package>
 	<package name="RspInsertOrder" 				id="0x201A" desc="委托应答">
-		<field name="Order"/>
+		<field name="ReqInsertOrder"/>
 		<field name="RspInfo"/>
 	</package>
 	<package name="ReqCancelOrder" 				id="0x201B" desc="撤单请求">
 		<field name="ReqCancelOrder"/>
 	</package>
 	<package name="RspCancelOrder" 				id="0x201C" desc="撤单应答">
-		<field name="CancelOrder"/>
+		<field name="ReqCancelOrder"/>
 		<field name="RspInfo"/>
 	</package>
 	<package name="RtnOrder" 					id="0x201D" desc="委托推送">

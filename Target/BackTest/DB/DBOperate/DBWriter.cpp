@@ -215,6 +215,68 @@ void DBWriter::OnProductTruncate()
 	m_DBOperates.push_back(dbOperate);
 }
 
+void DBWriter::OnHotInstrumentInsert(mdb::HotInstrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = HotInstrument::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnHotInstrumentBatchInsert(std::list<mdb::HotInstrument*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = HotInstrument::TableID;
+	dbOperate->Record = records;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnHotInstrumentErase(mdb::HotInstrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = HotInstrument::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnHotInstrumentEraseByTradingDayIndex(mdb::HotInstrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = HotInstrument::TableID;
+	dbOperate->IndexID = HotInstrumentIndexTradingDay::IndexID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnHotInstrumentUpdate(mdb::HotInstrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = HotInstrument::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnHotInstrumentTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = HotInstrument::TableID;
+	dbOperate->Record = nullptr;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+
 void DBWriter::OnInstrumentInsert(mdb::Instrument* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -409,6 +471,17 @@ void DBWriter::OnCapitalErase(mdb::Capital* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
+void DBWriter::OnCapitalEraseByTradingDayIndex(mdb::Capital* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Capital::TableID;
+	dbOperate->IndexID = CapitalIndexTradingDay::IndexID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
 void DBWriter::OnCapitalUpdate(mdb::Capital* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -471,6 +544,17 @@ void DBWriter::OnPositionEraseByAccountIndex(mdb::Position* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
+void DBWriter::OnPositionEraseByTradingDayIndex(mdb::Position* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->IndexID = PositionIndexTradingDay::IndexID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
 void DBWriter::OnPositionUpdate(mdb::Position* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -486,6 +570,79 @@ void DBWriter::OnPositionTruncate()
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Truncate;
 	dbOperate->TableID = Position::TableID;
+	dbOperate->Record = nullptr;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+
+void DBWriter::OnPositionDetailInsert(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnPositionDetailBatchInsert(std::list<mdb::PositionDetail*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = records;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnPositionDetailErase(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnPositionDetailEraseByTradeMatchIndex(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->IndexID = PositionDetailIndexTradeMatch::IndexID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnPositionDetailEraseByTradingDayIndex(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->IndexID = PositionDetailIndexTradingDay::IndexID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnPositionDetailUpdate(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnPositionDetailTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = PositionDetail::TableID;
 	dbOperate->Record = nullptr;
 
 	lock_guard<mutex> guard(m_Mutex);
@@ -645,6 +802,108 @@ void DBWriter::OnDepthMarketDataTruncate()
 	m_DBOperates.push_back(dbOperate);
 }
 
+void DBWriter::OnBarMarketDataInsert(mdb::BarMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnBarMarketDataBatchInsert(std::list<mdb::BarMarketData*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = records;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnBarMarketDataErase(mdb::BarMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnBarMarketDataUpdate(mdb::BarMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnBarMarketDataTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = nullptr;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+
+void DBWriter::OnMdSubscribeInsert(mdb::MdSubscribe* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnMdSubscribeBatchInsert(std::list<mdb::MdSubscribe*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = records;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnMdSubscribeErase(mdb::MdSubscribe* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnMdSubscribeUpdate(mdb::MdSubscribe* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnMdSubscribeTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = nullptr;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+
 
 void DBWriter::Run()
 {
@@ -751,6 +1010,9 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 	case Product::TableID:
 		m_DB->InsertProduct((Product*)dbOperate->Record);
 		break;
+	case HotInstrument::TableID:
+		m_DB->InsertHotInstrument((HotInstrument*)dbOperate->Record);
+		break;
 	case Instrument::TableID:
 		m_DB->InsertInstrument((Instrument*)dbOperate->Record);
 		break;
@@ -766,6 +1028,9 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 	case Position::TableID:
 		m_DB->InsertPosition((Position*)dbOperate->Record);
 		break;
+	case PositionDetail::TableID:
+		m_DB->InsertPositionDetail((PositionDetail*)dbOperate->Record);
+		break;
 	case Order::TableID:
 		m_DB->InsertOrder((Order*)dbOperate->Record);
 		break;
@@ -774,6 +1039,12 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 		break;
 	case DepthMarketData::TableID:
 		m_DB->InsertDepthMarketData((DepthMarketData*)dbOperate->Record);
+		break;
+	case BarMarketData::TableID:
+		m_DB->InsertBarMarketData((BarMarketData*)dbOperate->Record);
+		break;
+	case MdSubscribe::TableID:
+		m_DB->InsertMdSubscribe((MdSubscribe*)dbOperate->Record);
 		break;
 	default:
 		break;
@@ -803,6 +1074,14 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 	{
 		auto records = (std::list<Product*>*)dbOperate->Record;
 		m_DB->BatchInsertProduct(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case HotInstrument::TableID:
+	{
+		auto records = (std::list<HotInstrument*>*)dbOperate->Record;
+		m_DB->BatchInsertHotInstrument(records);
 		records->clear();
 		delete records;
 		break;
@@ -847,6 +1126,14 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 		delete records;
 		break;
 	}
+	case PositionDetail::TableID:
+	{
+		auto records = (std::list<PositionDetail*>*)dbOperate->Record;
+		m_DB->BatchInsertPositionDetail(records);
+		records->clear();
+		delete records;
+		break;
+	}
 	case Order::TableID:
 	{
 		auto records = (std::list<Order*>*)dbOperate->Record;
@@ -867,6 +1154,22 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 	{
 		auto records = (std::list<DepthMarketData*>*)dbOperate->Record;
 		m_DB->BatchInsertDepthMarketData(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case BarMarketData::TableID:
+	{
+		auto records = (std::list<BarMarketData*>*)dbOperate->Record;
+		m_DB->BatchInsertBarMarketData(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case MdSubscribe::TableID:
+	{
+		auto records = (std::list<MdSubscribe*>*)dbOperate->Record;
+		m_DB->BatchInsertMdSubscribe(records);
 		records->clear();
 		delete records;
 		break;
@@ -892,6 +1195,10 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 		m_DB->DeleteProduct((Product*)dbOperate->Record);
 		((Product*)dbOperate->Record)->Free();
 		break;
+	case HotInstrument::TableID:
+		m_DB->DeleteHotInstrument((HotInstrument*)dbOperate->Record);
+		((HotInstrument*)dbOperate->Record)->Free();
+		break;
 	case Instrument::TableID:
 		m_DB->DeleteInstrument((Instrument*)dbOperate->Record);
 		((Instrument*)dbOperate->Record)->Free();
@@ -912,6 +1219,10 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 		m_DB->DeletePosition((Position*)dbOperate->Record);
 		((Position*)dbOperate->Record)->Free();
 		break;
+	case PositionDetail::TableID:
+		m_DB->DeletePositionDetail((PositionDetail*)dbOperate->Record);
+		((PositionDetail*)dbOperate->Record)->Free();
+		break;
 	case Order::TableID:
 		m_DB->DeleteOrder((Order*)dbOperate->Record);
 		((Order*)dbOperate->Record)->Free();
@@ -924,6 +1235,14 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 		m_DB->DeleteDepthMarketData((DepthMarketData*)dbOperate->Record);
 		((DepthMarketData*)dbOperate->Record)->Free();
 		break;
+	case BarMarketData::TableID:
+		m_DB->DeleteBarMarketData((BarMarketData*)dbOperate->Record);
+		((BarMarketData*)dbOperate->Record)->Free();
+		break;
+	case MdSubscribe::TableID:
+		m_DB->DeleteMdSubscribe((MdSubscribe*)dbOperate->Record);
+		((MdSubscribe*)dbOperate->Record)->Free();
+		break;
 	default:
 		break;
 	}
@@ -932,6 +1251,22 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case HotInstrument::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case HotInstrumentIndexTradingDay::IndexID:
+		{
+			m_DB->DeleteHotInstrumentByTradingDayIndex((HotInstrument*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((HotInstrument*)dbOperate->Record)->Free();
+		break;
+	}
 	case PrimaryAccount::TableID:
 	{
 		switch (dbOperate->IndexID)
@@ -948,6 +1283,22 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 		((PrimaryAccount*)dbOperate->Record)->Free();
 		break;
 	}
+	case Capital::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case CapitalIndexTradingDay::IndexID:
+		{
+			m_DB->DeleteCapitalByTradingDayIndex((Capital*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((Capital*)dbOperate->Record)->Free();
+		break;
+	}
 	case Position::TableID:
 	{
 		switch (dbOperate->IndexID)
@@ -957,11 +1308,37 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 			m_DB->DeletePositionByAccountIndex((Position*)dbOperate->Record);
 			break;
 		}
+		case PositionIndexTradingDay::IndexID:
+		{
+			m_DB->DeletePositionByTradingDayIndex((Position*)dbOperate->Record);
+			break;
+		}
 		default:
 			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
 			break;
 		}
 		((Position*)dbOperate->Record)->Free();
+		break;
+	}
+	case PositionDetail::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case PositionDetailIndexTradeMatch::IndexID:
+		{
+			m_DB->DeletePositionDetailByTradeMatchIndex((PositionDetail*)dbOperate->Record);
+			break;
+		}
+		case PositionDetailIndexTradingDay::IndexID:
+		{
+			m_DB->DeletePositionDetailByTradingDayIndex((PositionDetail*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((PositionDetail*)dbOperate->Record)->Free();
 		break;
 	}
 	default:
@@ -985,6 +1362,10 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		m_DB->UpdateProduct((Product*)dbOperate->Record);
 		((Product*)dbOperate->Record)->Free();
 		break;
+	case HotInstrument::TableID:
+		m_DB->UpdateHotInstrument((HotInstrument*)dbOperate->Record);
+		((HotInstrument*)dbOperate->Record)->Free();
+		break;
 	case Instrument::TableID:
 		m_DB->UpdateInstrument((Instrument*)dbOperate->Record);
 		((Instrument*)dbOperate->Record)->Free();
@@ -1005,6 +1386,10 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		m_DB->UpdatePosition((Position*)dbOperate->Record);
 		((Position*)dbOperate->Record)->Free();
 		break;
+	case PositionDetail::TableID:
+		m_DB->UpdatePositionDetail((PositionDetail*)dbOperate->Record);
+		((PositionDetail*)dbOperate->Record)->Free();
+		break;
 	case Order::TableID:
 		m_DB->UpdateOrder((Order*)dbOperate->Record);
 		((Order*)dbOperate->Record)->Free();
@@ -1016,6 +1401,14 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 	case DepthMarketData::TableID:
 		m_DB->UpdateDepthMarketData((DepthMarketData*)dbOperate->Record);
 		((DepthMarketData*)dbOperate->Record)->Free();
+		break;
+	case BarMarketData::TableID:
+		m_DB->UpdateBarMarketData((BarMarketData*)dbOperate->Record);
+		((BarMarketData*)dbOperate->Record)->Free();
+		break;
+	case MdSubscribe::TableID:
+		m_DB->UpdateMdSubscribe((MdSubscribe*)dbOperate->Record);
+		((MdSubscribe*)dbOperate->Record)->Free();
 		break;
 	default:
 		break;
@@ -1035,6 +1428,9 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 	case Product::TableID:
 		m_DB->TruncateProduct();
 		break;
+	case HotInstrument::TableID:
+		m_DB->TruncateHotInstrument();
+		break;
 	case Instrument::TableID:
 		m_DB->TruncateInstrument();
 		break;
@@ -1050,6 +1446,9 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 	case Position::TableID:
 		m_DB->TruncatePosition();
 		break;
+	case PositionDetail::TableID:
+		m_DB->TruncatePositionDetail();
+		break;
 	case Order::TableID:
 		m_DB->TruncateOrder();
 		break;
@@ -1058,6 +1457,12 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 		break;
 	case DepthMarketData::TableID:
 		m_DB->TruncateDepthMarketData();
+		break;
+	case BarMarketData::TableID:
+		m_DB->TruncateBarMarketData();
+		break;
+	case MdSubscribe::TableID:
+		m_DB->TruncateMdSubscribe();
 		break;
 	default:
 		break;

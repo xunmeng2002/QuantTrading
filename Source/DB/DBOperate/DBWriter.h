@@ -39,6 +39,13 @@ public:
 	virtual void OnProductUpdate(mdb::Product* record) override;
 	virtual void OnProductTruncate() override;
 	
+	virtual void OnHotInstrumentInsert(mdb::HotInstrument* record) override;
+	virtual void OnHotInstrumentBatchInsert(std::list<mdb::HotInstrument*>* records) override;
+	virtual void OnHotInstrumentErase(mdb::HotInstrument* record) override;
+	virtual void OnHotInstrumentEraseByTradingDayIndex(mdb::HotInstrument* record) override;
+	virtual void OnHotInstrumentUpdate(mdb::HotInstrument* record) override;
+	virtual void OnHotInstrumentTruncate() override;
+	
 	virtual void OnInstrumentInsert(mdb::Instrument* record) override;
 	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) override;
 	virtual void OnInstrumentErase(mdb::Instrument* record) override;
@@ -61,6 +68,7 @@ public:
 	virtual void OnCapitalInsert(mdb::Capital* record) override;
 	virtual void OnCapitalBatchInsert(std::list<mdb::Capital*>* records) override;
 	virtual void OnCapitalErase(mdb::Capital* record) override;
+	virtual void OnCapitalEraseByTradingDayIndex(mdb::Capital* record) override;
 	virtual void OnCapitalUpdate(mdb::Capital* record) override;
 	virtual void OnCapitalTruncate() override;
 	
@@ -68,8 +76,17 @@ public:
 	virtual void OnPositionBatchInsert(std::list<mdb::Position*>* records) override;
 	virtual void OnPositionErase(mdb::Position* record) override;
 	virtual void OnPositionEraseByAccountIndex(mdb::Position* record) override;
+	virtual void OnPositionEraseByTradingDayIndex(mdb::Position* record) override;
 	virtual void OnPositionUpdate(mdb::Position* record) override;
 	virtual void OnPositionTruncate() override;
+	
+	virtual void OnPositionDetailInsert(mdb::PositionDetail* record) override;
+	virtual void OnPositionDetailBatchInsert(std::list<mdb::PositionDetail*>* records) override;
+	virtual void OnPositionDetailErase(mdb::PositionDetail* record) override;
+	virtual void OnPositionDetailEraseByTradeMatchIndex(mdb::PositionDetail* record) override;
+	virtual void OnPositionDetailEraseByTradingDayIndex(mdb::PositionDetail* record) override;
+	virtual void OnPositionDetailUpdate(mdb::PositionDetail* record) override;
+	virtual void OnPositionDetailTruncate() override;
 	
 	virtual void OnOrderInsert(mdb::Order* record) override;
 	virtual void OnOrderBatchInsert(std::list<mdb::Order*>* records) override;
@@ -88,6 +105,18 @@ public:
 	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) override;
 	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) override;
 	virtual void OnDepthMarketDataTruncate() override;
+	
+	virtual void OnBarMarketDataInsert(mdb::BarMarketData* record) override;
+	virtual void OnBarMarketDataBatchInsert(std::list<mdb::BarMarketData*>* records) override;
+	virtual void OnBarMarketDataErase(mdb::BarMarketData* record) override;
+	virtual void OnBarMarketDataUpdate(mdb::BarMarketData* record) override;
+	virtual void OnBarMarketDataTruncate() override;
+	
+	virtual void OnMdSubscribeInsert(mdb::MdSubscribe* record) override;
+	virtual void OnMdSubscribeBatchInsert(std::list<mdb::MdSubscribe*>* records) override;
+	virtual void OnMdSubscribeErase(mdb::MdSubscribe* record) override;
+	virtual void OnMdSubscribeUpdate(mdb::MdSubscribe* record) override;
+	virtual void OnMdSubscribeTruncate() override;
 	
 
 protected:

@@ -126,7 +126,6 @@ void TradeSpiWrap::OnRspQryOrder(OrderField* order, RspInfoField* rspInfo, int r
 			TrunsferUtf8ToGbk(order->ExchangeID);
 			TrunsferUtf8ToGbk(order->InstrumentID);
 			TrunsferUtf8ToGbk(order->OrderSysID);
-			TrunsferUtf8ToGbk(order->StatusMsg);
 			TrunsferUtf8ToGbk(order->OrderDate);
 			TrunsferUtf8ToGbk(order->OrderTime);
 			TrunsferUtf8ToGbk(order->CancelDate);
@@ -246,50 +245,43 @@ void TradeSpiWrap::OnRspQryMoneyTransfer(MoneyTransferField* moneyTransfer, RspI
 		m_TradeCSpi->OnRspQryMoneyTransfer(moneyTransfer, rspInfo, requestID, isLast);
 	}
 }
-void TradeSpiWrap::OnRspInsertOrder(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast)
+void TradeSpiWrap::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_TradeCSpi != nullptr)
 	{
 #ifdef WINDOWS
-		if (order != nullptr)
+		if (reqInsertOrder != nullptr)
 		{
-			TrunsferUtf8ToGbk(order->TradingDay);
-			TrunsferUtf8ToGbk(order->AccountID);
-			TrunsferUtf8ToGbk(order->ExchangeID);
-			TrunsferUtf8ToGbk(order->InstrumentID);
-			TrunsferUtf8ToGbk(order->OrderSysID);
-			TrunsferUtf8ToGbk(order->StatusMsg);
-			TrunsferUtf8ToGbk(order->OrderDate);
-			TrunsferUtf8ToGbk(order->OrderTime);
-			TrunsferUtf8ToGbk(order->CancelDate);
-			TrunsferUtf8ToGbk(order->CancelTime);
+			TrunsferUtf8ToGbk(reqInsertOrder->AccountID);
+			TrunsferUtf8ToGbk(reqInsertOrder->ExchangeID);
+			TrunsferUtf8ToGbk(reqInsertOrder->InstrumentID);
 		}
 		if (rspInfo != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
 #endif
-		m_TradeCSpi->OnRspInsertOrder(order, rspInfo, requestID, isLast);
+		m_TradeCSpi->OnRspInsertOrder(reqInsertOrder, rspInfo, requestID, isLast);
 	}
 }
-void TradeSpiWrap::OnRspCancelOrder(CancelOrderField* cancelOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void TradeSpiWrap::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_TradeCSpi != nullptr)
 	{
 #ifdef WINDOWS
-		if (cancelOrder != nullptr)
+		if (reqCancelOrder != nullptr)
 		{
-			TrunsferUtf8ToGbk(cancelOrder->AccountID);
-			TrunsferUtf8ToGbk(cancelOrder->ExchangeID);
-			TrunsferUtf8ToGbk(cancelOrder->InstrumentID);
-			TrunsferUtf8ToGbk(cancelOrder->OrderSysID);
+			TrunsferUtf8ToGbk(reqCancelOrder->AccountID);
+			TrunsferUtf8ToGbk(reqCancelOrder->ExchangeID);
+			TrunsferUtf8ToGbk(reqCancelOrder->InstrumentID);
+			TrunsferUtf8ToGbk(reqCancelOrder->OrderSysID);
 		}
 		if (rspInfo != nullptr)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
 #endif
-		m_TradeCSpi->OnRspCancelOrder(cancelOrder, rspInfo, requestID, isLast);
+		m_TradeCSpi->OnRspCancelOrder(reqCancelOrder, rspInfo, requestID, isLast);
 	}
 }
 void TradeSpiWrap::OnRtnOrder(OrderField* order)
@@ -304,7 +296,6 @@ void TradeSpiWrap::OnRtnOrder(OrderField* order)
 			TrunsferUtf8ToGbk(order->ExchangeID);
 			TrunsferUtf8ToGbk(order->InstrumentID);
 			TrunsferUtf8ToGbk(order->OrderSysID);
-			TrunsferUtf8ToGbk(order->StatusMsg);
 			TrunsferUtf8ToGbk(order->OrderDate);
 			TrunsferUtf8ToGbk(order->OrderTime);
 			TrunsferUtf8ToGbk(order->CancelDate);

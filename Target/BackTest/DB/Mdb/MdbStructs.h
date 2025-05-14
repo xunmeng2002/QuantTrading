@@ -45,8 +45,8 @@ namespace mdb
 		ProductIDType ProductID;
 		//品种名称
 		ProductNameType ProductName;
-		//证券类别
-		SecurityTypeType SecurityType;
+		//品种类型
+		ProductClassType ProductClass;
 		//合约乘数
 		VolumeMultipleType VolumeMultiple;
 		//最小变动价位
@@ -68,10 +68,31 @@ namespace mdb
 		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 	};
-	class Instrument
+	class HotInstrument
 	{
 	public:
 		static constexpr unsigned int TableID = 0x0004;
+		//交易日
+		DateType TradingDay;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//品种代码
+		ProductIDType ProductID;
+		//级别
+		IntType Rank;
+		//合约代码
+		InstrumentIDType InstrumentID;
+		
+		static HotInstrument* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
+	class Instrument
+	{
+	public:
+		static constexpr unsigned int TableID = 0x0005;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
@@ -84,10 +105,12 @@ namespace mdb
 		InstrumentNameType InstrumentName;
 		//品种代码
 		ProductIDType ProductID;
-		//证券类别
-		SecurityTypeType SecurityType;
-		//证券细分类别
-		SecurityDetailTypeType SecurityDetailType;
+		//品种类型
+		ProductClassType ProductClass;
+		//合约类别
+		InstrumentClassType InstrumentClass;
+		//级别
+		IntType Rank;
 		//合约乘数
 		VolumeMultipleType VolumeMultiple;
 		//最小变动价位
@@ -112,7 +135,7 @@ namespace mdb
 	class PrimaryAccount
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0005;
+		static constexpr unsigned int TableID = 0x0006;
 		//交易日
 		DateType TradingDay;
 		//主账户代码
@@ -143,7 +166,7 @@ namespace mdb
 	class Account
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0006;
+		static constexpr unsigned int TableID = 0x0007;
 		//交易日
 		DateType TradingDay;
 		//账户代码
@@ -172,23 +195,21 @@ namespace mdb
 	class Capital
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0007;
+		static constexpr unsigned int TableID = 0x0008;
 		//交易日
 		DateType TradingDay;
 		//账户代码
 		AccountIDType AccountID;
 		//账户类型
 		AccountTypeType AccountType;
-		//总资产
-		MoneyType Asset;
-		//上日总资产
-		MoneyType PreAsset;
-		//现金资产
-		MoneyType CashAsset;
-		//上日现金资产
-		MoneyType PreCashAsset;
+		//权益
+		MoneyType Balance;
+		//上日权益
+		MoneyType PreBalance;
 		//可用资金
 		MoneyType Available;
+		//市值
+		MoneyType MarketValue;
 		//现金收入
 		MoneyType CashIn;
 		//现金支出
@@ -197,26 +218,20 @@ namespace mdb
 		MoneyType Margin;
 		//手续费
 		MoneyType Commission;
-		//印花税
-		MoneyType StampTax;
-		//过户费
-		MoneyType TransferFee;
 		//冻结资金
 		MoneyType FrozenCash;
 		//冻结保证金
 		MoneyType FrozenMargin;
 		//冻结手续费
 		MoneyType FrozenCommission;
-		//冻结印花税
-		MoneyType FrozenStampTax;
-		//冻结过户费
-		MoneyType FrozenTransferFee;
-		//市值
-		MoneyType MarketValue;
-		//总盈亏
-		MoneyType TotalProfit;
-		//当日盈亏
-		MoneyType TodayProfit;
+		//逐日平仓盈亏
+		MoneyType CloseProfitByDate;
+		//逐笔平仓盈亏
+		MoneyType CloseProfitByTrade;
+		//逐日持仓盈亏
+		MoneyType PositionProfitByDate;
+		//逐笔持仓盈亏
+		MoneyType PositionProfitByTrade;
 		//入金
 		MoneyType Deposit;
 		//出金
@@ -231,7 +246,7 @@ namespace mdb
 	class Position
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0008;
+		static constexpr unsigned int TableID = 0x0009;
 		//交易日
 		DateType TradingDay;
 		//账户代码
@@ -242,8 +257,8 @@ namespace mdb
 		ExchangeIDType ExchangeID;
 		//合约代码
 		InstrumentIDType InstrumentID;
-		//证券类别
-		SecurityTypeType SecurityType;
+		//品种类型
+		ProductClassType ProductClass;
 		//持仓方向
 		PosiDirectionType PosiDirection;
 		//持仓数量
@@ -252,6 +267,8 @@ namespace mdb
 		VolumeType PositionFrozen;
 		//今日持仓
 		VolumeType TodayPosition;
+		//市值
+		MoneyType MarketValue;
 		//现金收入
 		MoneyType CashIn;
 		//现金支出
@@ -260,38 +277,89 @@ namespace mdb
 		MoneyType Margin;
 		//手续费
 		MoneyType Commission;
-		//印花税
-		MoneyType StampTax;
-		//过户费
-		MoneyType TransferFee;
 		//冻结资金
 		MoneyType FrozenCash;
 		//冻结保证金
 		MoneyType FrozenMargin;
 		//冻结手续费
 		MoneyType FrozenCommission;
-		//冻结印花税
-		MoneyType FrozenStampTax;
-		//冻结过户费
-		MoneyType FrozenTransferFee;
-		//市值
-		MoneyType MarketValue;
 		//合约乘数
 		VolumeMultipleType VolumeMultiple;
 		//逐日平仓盈亏
-		MoneyType CloseProfit;
+		MoneyType CloseProfitByDate;
 		//逐笔平仓盈亏
-		MoneyType CloseProfitFloat;
+		MoneyType CloseProfitByTrade;
 		//逐日持仓盈亏
-		MoneyType PositionProfit;
+		MoneyType PositionProfitByDate;
 		//逐笔持仓盈亏
-		MoneyType PositionProfitFloat;
-		//最新价
-		PriceType LastPrice;
-		//昨收盘价或昨结算价
-		PriceType PrePrice;
+		MoneyType PositionProfitByTrade;
+		//结算价
+		PriceType SettlementPrice;
+		//昨结算价
+		PriceType PreSettlementPrice;
 		
 		static Position* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
+	class PositionDetail
+	{
+	public:
+		static constexpr unsigned int TableID = 0x000A;
+		//交易日
+		DateType TradingDay;
+		//账户代码
+		AccountIDType AccountID;
+		//账户类型
+		AccountTypeType AccountType;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//合约代码
+		InstrumentIDType InstrumentID;
+		//品种类型
+		ProductClassType ProductClass;
+		//持仓方向
+		PosiDirectionType PosiDirection;
+		//开仓日期
+		DateType OpenDate;
+		//成交编号
+		TradeIDType TradeID;
+		//委托数量
+		VolumeType Volume;
+		//开盘价
+		PriceType OpenPrice;
+		//市值
+		MoneyType MarketValue;
+		//现金收入
+		MoneyType CashIn;
+		//现金支出
+		MoneyType CashOut;
+		//保证金
+		MoneyType Margin;
+		//手续费
+		MoneyType Commission;
+		//合约乘数
+		VolumeMultipleType VolumeMultiple;
+		//逐日平仓盈亏
+		MoneyType CloseProfitByDate;
+		//逐笔平仓盈亏
+		MoneyType CloseProfitByTrade;
+		//逐日持仓盈亏
+		MoneyType PositionProfitByDate;
+		//逐笔持仓盈亏
+		MoneyType PositionProfitByTrade;
+		//结算价
+		PriceType SettlementPrice;
+		//昨结算价
+		PriceType PreSettlementPrice;
+		//平仓数量
+		VolumeType CloseVolume;
+		//平仓金额
+		MoneyType CloseAmount;
+		
+		static PositionDetail* Allocate();
 		void Free();
 		const char* GetString() const;
 		int GetSqlString(char* buff) const;
@@ -300,21 +368,19 @@ namespace mdb
 	class Order
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0009;
+		static constexpr unsigned int TableID = 0x000B;
 		//交易日
 		DateType TradingDay;
 		//账户代码
 		AccountIDType AccountID;
-		//主账户代码
-		AccountIDType PrimaryAccountID;
 		//账户类型
 		AccountTypeType AccountType;
 		//交易所代码
 		ExchangeIDType ExchangeID;
 		//合约代码
 		InstrumentIDType InstrumentID;
-		//证券类别
-		SecurityTypeType SecurityType;
+		//品种类型
+		ProductClassType ProductClass;
 		//委托编号
 		OrderIDType OrderID;
 		//系统委托编号
@@ -365,10 +431,6 @@ namespace mdb
 		MoneyType FrozenMargin;
 		//冻结手续费
 		MoneyType FrozenCommission;
-		//冻结印花税
-		MoneyType FrozenStampTax;
-		//冻结过户费
-		MoneyType FrozenTransferFee;
 		//重建标志
 		BoolType RebuildMark;
 		//是否强平单
@@ -383,21 +445,19 @@ namespace mdb
 	class Trade
 	{
 	public:
-		static constexpr unsigned int TableID = 0x000A;
+		static constexpr unsigned int TableID = 0x000C;
 		//交易日
 		DateType TradingDay;
 		//账户代码
 		AccountIDType AccountID;
-		//主账户代码
-		AccountIDType PrimaryAccountID;
 		//账户类型
 		AccountTypeType AccountType;
 		//交易所代码
 		ExchangeIDType ExchangeID;
 		//合约代码
 		InstrumentIDType InstrumentID;
-		//证券类别
-		SecurityTypeType SecurityType;
+		//品种类型
+		ProductClassType ProductClass;
 		//委托编号
 		OrderIDType OrderID;
 		//系统委托编号
@@ -418,10 +478,6 @@ namespace mdb
 		MoneyType TradeAmount;
 		//手续费
 		MoneyType Commission;
-		//印花税
-		MoneyType StampTax;
-		//过户费
-		MoneyType TransferFee;
 		//成交日期
 		DateType TradeDate;
 		//成交时间
@@ -436,13 +492,15 @@ namespace mdb
 	class DepthMarketData
 	{
 	public:
-		static constexpr unsigned int TableID = 0x000B;
+		static constexpr unsigned int TableID = 0x000D;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
 		ExchangeIDType ExchangeID;
 		//合约代码
 		InstrumentIDType InstrumentID;
+		//更新时间戳
+		Int64Type UpdateTs;
 		//最新价
 		PriceType LastPrice;
 		//昨结算价
@@ -450,7 +508,7 @@ namespace mdb
 		//昨收盘价
 		PriceType PreClosePrice;
 		//上日持仓量
-		VolumeType PreOpenInterest;
+		LargeVolumeType PreOpenInterest;
 		//开盘价
 		PriceType OpenPrice;
 		//最高价
@@ -468,7 +526,7 @@ namespace mdb
 		//成交金额
 		MoneyType Turnover;
 		//持仓量
-		VolumeType OpenInterest;
+		LargeVolumeType OpenInterest;
 		//结算价
 		PriceType SettlementPrice;
 		//涨停板价
@@ -477,8 +535,6 @@ namespace mdb
 		PriceType LowerLimitPrice;
 		//当日均价
 		PriceType AveragePrice;
-		//更新时间戳
-		Int64Type UpdateTs;
 		//申卖价一
 		PriceType AskPrice1;
 		//申卖价二
@@ -566,18 +622,94 @@ namespace mdb
 		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 	};
+	class BarMarketData
+	{
+	public:
+		static constexpr unsigned int TableID = 0x000E;
+		//交易日
+		DateType TradingDay;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//合约代码
+		InstrumentIDType InstrumentID;
+		//Bar精度
+		BarPrecesType BarPreces;
+		//Bar周期
+		IntType BarPeriod;
+		//Bar时间
+		Int64Type BarTime;
+		//更新时间戳
+		Int64Type UpdateTs;
+		//昨结算价
+		PriceType PreSettlementPrice;
+		//昨收盘价
+		PriceType PreClosePrice;
+		//开盘价
+		PriceType Open;
+		//最高价
+		PriceType High;
+		//最低价
+		PriceType Low;
+		//收盘价
+		PriceType Close;
+		//当前数量
+		VolumeType CurrVolume;
+		//委托数量
+		VolumeType Volume;
+		//当前成交金额
+		MoneyType CurrTurnover;
+		//成交金额
+		MoneyType Turnover;
+		//持仓量
+		LargeVolumeType OpenInterest;
+		
+		static BarMarketData* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
+	class MdSubscribe
+	{
+	public:
+		static constexpr unsigned int TableID = 0x000F;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//合约代码
+		InstrumentIDType InstrumentID;
+		//真实合约代码
+		InstrumentIDType RealInstrumentID;
+		//品种代码
+		ProductIDType ProductID;
+		//品种类型
+		ProductClassType ProductClass;
+		//开始交易日
+		DateType StartTradingDay;
+		//结束交易日
+		DateType EndTradingDay;
+		
+		static MdSubscribe* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
 
 	extern thread_local TradingDay t_CompareTradingDay;
 	extern thread_local Exchange t_CompareExchange;
 	extern thread_local Product t_CompareProduct;
+	extern thread_local HotInstrument t_CompareHotInstrument;
 	extern thread_local Instrument t_CompareInstrument;
 	extern thread_local PrimaryAccount t_ComparePrimaryAccount;
 	extern thread_local Account t_CompareAccount;
 	extern thread_local Capital t_CompareCapital;
 	extern thread_local Position t_ComparePosition;
+	extern thread_local PositionDetail t_ComparePositionDetail;
 	extern thread_local Order t_CompareOrder;
 	extern thread_local Trade t_CompareTrade;
 	extern thread_local DepthMarketData t_CompareDepthMarketData;
+	extern thread_local BarMarketData t_CompareBarMarketData;
+	extern thread_local MdSubscribe t_CompareMdSubscribe;
 
 }
 

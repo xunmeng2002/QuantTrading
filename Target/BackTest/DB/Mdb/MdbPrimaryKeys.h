@@ -68,6 +68,27 @@ namespace mdb
 		std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey> m_Index;
 	};
 
+	class HotInstrumentTable;
+	class HotInstrumentPrimaryKey
+	{
+		using iterator = std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey>::iterator;
+		friend class HotInstrumentTable;
+	public:
+		HotInstrumentPrimaryKey(HotInstrumentTable* table, size_t buckets = 1000);
+		HotInstrument* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(HotInstrument* const record);
+		void Erase(HotInstrument* const record);
+		bool CheckInsert(HotInstrument* const record);
+		bool CheckUpdate(const HotInstrument* const oldRecord, const HotInstrument* const newRecord);
+
+	private:
+		HotInstrumentTable* m_Table;
+		std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey> m_Index;
+	};
+
 	class InstrumentTable;
 	class InstrumentPrimaryKey
 	{
@@ -173,6 +194,27 @@ namespace mdb
 		std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey> m_Index;
 	};
 
+	class PositionDetailTable;
+	class PositionDetailPrimaryKey
+	{
+		using iterator = std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey>::iterator;
+		friend class PositionDetailTable;
+	public:
+		PositionDetailPrimaryKey(PositionDetailTable* table, size_t buckets = 1000);
+		PositionDetail* Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIDType& TradeID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(PositionDetail* const record);
+		void Erase(PositionDetail* const record);
+		bool CheckInsert(PositionDetail* const record);
+		bool CheckUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord);
+
+	private:
+		PositionDetailTable* m_Table;
+		std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey> m_Index;
+	};
+
 	class OrderTable;
 	class OrderPrimaryKey
 	{
@@ -251,6 +293,48 @@ namespace mdb
 	private:
 		DepthMarketDataTable* m_Table;
 		std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey> m_Index;
+	};
+
+	class BarMarketDataTable;
+	class BarMarketDataPrimaryKey
+	{
+		using iterator = std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey>::iterator;
+		friend class BarMarketDataTable;
+	public:
+		BarMarketDataPrimaryKey(BarMarketDataTable* table, size_t buckets = 1000);
+		BarMarketData* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(BarMarketData* const record);
+		void Erase(BarMarketData* const record);
+		bool CheckInsert(BarMarketData* const record);
+		bool CheckUpdate(const BarMarketData* const oldRecord, const BarMarketData* const newRecord);
+
+	private:
+		BarMarketDataTable* m_Table;
+		std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey> m_Index;
+	};
+
+	class MdSubscribeTable;
+	class MdSubscribePrimaryKey
+	{
+		using iterator = std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey>::iterator;
+		friend class MdSubscribeTable;
+	public:
+		MdSubscribePrimaryKey(MdSubscribeTable* table, size_t buckets = 1000);
+		MdSubscribe* Select(const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const DateType& StartTradingDay);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(MdSubscribe* const record);
+		void Erase(MdSubscribe* const record);
+		bool CheckInsert(MdSubscribe* const record);
+		bool CheckUpdate(const MdSubscribe* const oldRecord, const MdSubscribe* const newRecord);
+
+	private:
+		MdSubscribeTable* m_Table;
+		std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey> m_Index;
 	};
 
 }

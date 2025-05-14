@@ -3,12 +3,16 @@
 	<table name="TradingDay"/>
 	<table name="Exchange"/>
 	<table name="Product"/>
+	<table name="HotInstrument"/>
 	<table name="Instrument"/>
 	<table name="PrimaryAccount"/>
 	<table name="Account"/>
 	<table name="Capital"/>
 	<table name="Position"/>
+	<table name="PositionDetail"/>
 	<table name="Order"/>
 	<table name="Trade"/>
 	<table name="DepthMarketData"/>
+	<table name="BarMarketData"/>
+	<table name="MdSubscribe"/>
 </dbtables>

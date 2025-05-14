@@ -30,6 +30,13 @@ public:
 	virtual void OnProductUpdate(mdb::Product* record) {}
 	virtual void OnProductTruncate() {}
 	
+	virtual void OnHotInstrumentInsert(mdb::HotInstrument* record) {}
+	virtual void OnHotInstrumentBatchInsert(std::list<mdb::HotInstrument*>* records) {}
+	virtual void OnHotInstrumentErase(mdb::HotInstrument* record) {}
+	virtual void OnHotInstrumentEraseByTradingDayIndex(mdb::HotInstrument* record) {}
+	virtual void OnHotInstrumentUpdate(mdb::HotInstrument* record) {}
+	virtual void OnHotInstrumentTruncate() {}
+	
 	virtual void OnInstrumentInsert(mdb::Instrument* record) {}
 	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) {}
 	virtual void OnInstrumentErase(mdb::Instrument* record) {}
@@ -52,6 +59,7 @@ public:
 	virtual void OnCapitalInsert(mdb::Capital* record) {}
 	virtual void OnCapitalBatchInsert(std::list<mdb::Capital*>* records) {}
 	virtual void OnCapitalErase(mdb::Capital* record) {}
+	virtual void OnCapitalEraseByTradingDayIndex(mdb::Capital* record) {}
 	virtual void OnCapitalUpdate(mdb::Capital* record) {}
 	virtual void OnCapitalTruncate() {}
 	
@@ -59,8 +67,17 @@ public:
 	virtual void OnPositionBatchInsert(std::list<mdb::Position*>* records) {}
 	virtual void OnPositionErase(mdb::Position* record) {}
 	virtual void OnPositionEraseByAccountIndex(mdb::Position* record) {}
+	virtual void OnPositionEraseByTradingDayIndex(mdb::Position* record) {}
 	virtual void OnPositionUpdate(mdb::Position* record) {}
 	virtual void OnPositionTruncate() {}
+	
+	virtual void OnPositionDetailInsert(mdb::PositionDetail* record) {}
+	virtual void OnPositionDetailBatchInsert(std::list<mdb::PositionDetail*>* records) {}
+	virtual void OnPositionDetailErase(mdb::PositionDetail* record) {}
+	virtual void OnPositionDetailEraseByTradeMatchIndex(mdb::PositionDetail* record) {}
+	virtual void OnPositionDetailEraseByTradingDayIndex(mdb::PositionDetail* record) {}
+	virtual void OnPositionDetailUpdate(mdb::PositionDetail* record) {}
+	virtual void OnPositionDetailTruncate() {}
 	
 	virtual void OnOrderInsert(mdb::Order* record) {}
 	virtual void OnOrderBatchInsert(std::list<mdb::Order*>* records) {}
@@ -79,6 +96,18 @@ public:
 	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) {}
 	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) {}
 	virtual void OnDepthMarketDataTruncate() {}
+	
+	virtual void OnBarMarketDataInsert(mdb::BarMarketData* record) {}
+	virtual void OnBarMarketDataBatchInsert(std::list<mdb::BarMarketData*>* records) {}
+	virtual void OnBarMarketDataErase(mdb::BarMarketData* record) {}
+	virtual void OnBarMarketDataUpdate(mdb::BarMarketData* record) {}
+	virtual void OnBarMarketDataTruncate() {}
+	
+	virtual void OnMdSubscribeInsert(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeBatchInsert(std::list<mdb::MdSubscribe*>* records) {}
+	virtual void OnMdSubscribeErase(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeUpdate(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeTruncate() {}
 	
 
 public:

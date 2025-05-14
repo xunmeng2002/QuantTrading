@@ -77,14 +77,15 @@ public:
 class DepthMarketDataField
 {
 public:
-	static constexpr UShortType FieldID = 0x1009;
+	static constexpr UShortType FieldID = 0x100A;
 	DateType TradingDay;		//交易日
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
+	Int64Type UpdateTs;		//更新时间戳
 	PriceType LastPrice;		//最新价
 	PriceType PreSettlementPrice;		//昨结算价
 	PriceType PreClosePrice;		//昨收盘价
-	VolumeType PreOpenInterest;		//上日持仓量
+	LargeVolumeType PreOpenInterest;		//上日持仓量
 	PriceType OpenPrice;		//开盘价
 	PriceType HighestPrice;		//最高价
 	PriceType LowestPrice;		//最低价
@@ -93,12 +94,11 @@ public:
 	VolumeType Volume;		//委托数量
 	MoneyType CurrTurnover;		//当前成交金额
 	MoneyType Turnover;		//成交金额
-	VolumeType OpenInterest;		//持仓量
+	LargeVolumeType OpenInterest;		//持仓量
 	PriceType SettlementPrice;		//结算价
 	PriceType UpperLimitPrice;		//涨停板价
 	PriceType LowerLimitPrice;		//跌停板价
 	PriceType AveragePrice;		//当日均价
-	Int64Type UpdateTs;		//更新时间戳
 	PriceType AskPrice1;		//申卖价一
 	PriceType AskPrice2;		//申卖价二
 	PriceType AskPrice3;		//申卖价三
@@ -144,7 +144,7 @@ public:
 class BarMarketDataField
 {
 public:
-	static constexpr UShortType FieldID = 0x100A;
+	static constexpr UShortType FieldID = 0x100B;
 	DateType TradingDay;		//交易日
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
@@ -162,6 +162,6 @@ public:
 	VolumeType Volume;		//委托数量
 	MoneyType CurrTurnover;		//当前成交金额
 	MoneyType Turnover;		//成交金额
-	VolumeType OpenInterest;		//持仓量
+	LargeVolumeType OpenInterest;		//持仓量
 };
 

@@ -43,6 +43,19 @@ namespace mdb
 		size_t operator()(const Product* const record) const;
 	};
 
+	struct HotInstrumentEqualForHotInstrumentPrimaryKey
+	{
+		bool operator()(const HotInstrument* const left, const HotInstrument* const right) const;
+	};
+	struct HotInstrumentLessForHotInstrumentPrimaryKey
+	{
+		bool operator()(const HotInstrument* const left, const HotInstrument* const right) const;
+	};
+	struct HotInstrumentHashForHotInstrumentPrimaryKey
+	{
+		size_t operator()(const HotInstrument* const record) const;
+	};
+
 	struct InstrumentEqualForInstrumentPrimaryKey
 	{
 		bool operator()(const Instrument* const left, const Instrument* const right) const;
@@ -108,6 +121,19 @@ namespace mdb
 		size_t operator()(const Position* const record) const;
 	};
 
+	struct PositionDetailEqualForPositionDetailPrimaryKey
+	{
+		bool operator()(const PositionDetail* const left, const PositionDetail* const right) const;
+	};
+	struct PositionDetailLessForPositionDetailPrimaryKey
+	{
+		bool operator()(const PositionDetail* const left, const PositionDetail* const right) const;
+	};
+	struct PositionDetailHashForPositionDetailPrimaryKey
+	{
+		size_t operator()(const PositionDetail* const record) const;
+	};
+
 	struct OrderEqualForOrderPrimaryKey
 	{
 		bool operator()(const Order* const left, const Order* const right) const;
@@ -157,6 +183,32 @@ namespace mdb
 	struct DepthMarketDataHashForDepthMarketDataPrimaryKey
 	{
 		size_t operator()(const DepthMarketData* const record) const;
+	};
+
+	struct BarMarketDataEqualForBarMarketDataPrimaryKey
+	{
+		bool operator()(const BarMarketData* const left, const BarMarketData* const right) const;
+	};
+	struct BarMarketDataLessForBarMarketDataPrimaryKey
+	{
+		bool operator()(const BarMarketData* const left, const BarMarketData* const right) const;
+	};
+	struct BarMarketDataHashForBarMarketDataPrimaryKey
+	{
+		size_t operator()(const BarMarketData* const record) const;
+	};
+
+	struct MdSubscribeEqualForMdSubscribePrimaryKey
+	{
+		bool operator()(const MdSubscribe* const left, const MdSubscribe* const right) const;
+	};
+	struct MdSubscribeLessForMdSubscribePrimaryKey
+	{
+		bool operator()(const MdSubscribe* const left, const MdSubscribe* const right) const;
+	};
+	struct MdSubscribeHashForMdSubscribePrimaryKey
+	{
+		size_t operator()(const MdSubscribe* const record) const;
 	};
 
 }

@@ -63,6 +63,35 @@ namespace mdb
 		return std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->ProductID);
 	}
 
+	bool HotInstrumentEqualForHotInstrumentPrimaryKey::operator()(const HotInstrument* const left, const HotInstrument* const right) const
+	{
+		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->ProductID, right->ProductID) == 0 && left->Rank == right->Rank;
+	}
+	bool HotInstrumentLessForHotInstrumentPrimaryKey::operator()(const HotInstrument* const left, const HotInstrument* const right) const
+	{
+		if (strcmp(left->TradingDay, right->TradingDay) < 0)
+			return true;
+		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
+			return false;
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		if (strcmp(left->ProductID, right->ProductID) < 0)
+			return true;
+		else if (strcmp(left->ProductID, right->ProductID) > 0)
+			return false;
+		if (left->Rank < right->Rank)
+			return true;
+		else if (left->Rank > right->Rank)
+			return false;
+		return false;
+	}
+	size_t HotInstrumentHashForHotInstrumentPrimaryKey::operator()(const HotInstrument* const record) const
+	{
+		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->ProductID) + std::hash<int>()(record->Rank);
+	}
+
 	bool InstrumentEqualForInstrumentPrimaryKey::operator()(const Instrument* const left, const Instrument* const right) const
 	{
 		return strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0;
@@ -166,6 +195,47 @@ namespace mdb
 	size_t PositionHashForPositionPrimaryKey::operator()(const Position* const record) const
 	{
 		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->AccountID) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<char>()((char)record->PosiDirection);
+	}
+
+	bool PositionDetailEqualForPositionDetailPrimaryKey::operator()(const PositionDetail* const left, const PositionDetail* const right) const
+	{
+		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->AccountID, right->AccountID) == 0 && strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0 && left->PosiDirection == right->PosiDirection && strcmp(left->OpenDate, right->OpenDate) == 0 && strcmp(left->TradeID, right->TradeID) == 0;
+	}
+	bool PositionDetailLessForPositionDetailPrimaryKey::operator()(const PositionDetail* const left, const PositionDetail* const right) const
+	{
+		if (strcmp(left->TradingDay, right->TradingDay) < 0)
+			return true;
+		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
+			return false;
+		if (strcmp(left->AccountID, right->AccountID) < 0)
+			return true;
+		else if (strcmp(left->AccountID, right->AccountID) > 0)
+			return false;
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
+			return true;
+		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
+			return false;
+		if (left->PosiDirection < right->PosiDirection)
+			return true;
+		else if (left->PosiDirection > right->PosiDirection)
+			return false;
+		if (strcmp(left->OpenDate, right->OpenDate) < 0)
+			return true;
+		else if (strcmp(left->OpenDate, right->OpenDate) > 0)
+			return false;
+		if (strcmp(left->TradeID, right->TradeID) < 0)
+			return true;
+		else if (strcmp(left->TradeID, right->TradeID) > 0)
+			return false;
+		return false;
+	}
+	size_t PositionDetailHashForPositionDetailPrimaryKey::operator()(const PositionDetail* const record) const
+	{
+		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->AccountID) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<char>()((char)record->PosiDirection) + std::hash<string>()(record->OpenDate) + std::hash<string>()(record->TradeID);
 	}
 
 	bool OrderEqualForOrderPrimaryKey::operator()(const Order* const left, const Order* const right) const
@@ -289,6 +359,68 @@ namespace mdb
 	size_t DepthMarketDataHashForDepthMarketDataPrimaryKey::operator()(const DepthMarketData* const record) const
 	{
 		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID);
+	}
+
+	bool BarMarketDataEqualForBarMarketDataPrimaryKey::operator()(const BarMarketData* const left, const BarMarketData* const right) const
+	{
+		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0 && left->BarPreces == right->BarPreces && left->BarPeriod == right->BarPeriod && left->BarTime == right->BarTime;
+	}
+	bool BarMarketDataLessForBarMarketDataPrimaryKey::operator()(const BarMarketData* const left, const BarMarketData* const right) const
+	{
+		if (strcmp(left->TradingDay, right->TradingDay) < 0)
+			return true;
+		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
+			return false;
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
+			return true;
+		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
+			return false;
+		if (left->BarPreces < right->BarPreces)
+			return true;
+		else if (left->BarPreces > right->BarPreces)
+			return false;
+		if (left->BarPeriod < right->BarPeriod)
+			return true;
+		else if (left->BarPeriod > right->BarPeriod)
+			return false;
+		if (left->BarTime < right->BarTime)
+			return true;
+		else if (left->BarTime > right->BarTime)
+			return false;
+		return false;
+	}
+	size_t BarMarketDataHashForBarMarketDataPrimaryKey::operator()(const BarMarketData* const record) const
+	{
+		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<char>()((char)record->BarPreces) + std::hash<int>()(record->BarPeriod) + std::hash<long long>()(record->BarTime);
+	}
+
+	bool MdSubscribeEqualForMdSubscribePrimaryKey::operator()(const MdSubscribe* const left, const MdSubscribe* const right) const
+	{
+		return strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0 && strcmp(left->StartTradingDay, right->StartTradingDay) == 0;
+	}
+	bool MdSubscribeLessForMdSubscribePrimaryKey::operator()(const MdSubscribe* const left, const MdSubscribe* const right) const
+	{
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
+			return true;
+		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
+			return false;
+		if (strcmp(left->StartTradingDay, right->StartTradingDay) < 0)
+			return true;
+		else if (strcmp(left->StartTradingDay, right->StartTradingDay) > 0)
+			return false;
+		return false;
+	}
+	size_t MdSubscribeHashForMdSubscribePrimaryKey::operator()(const MdSubscribe* const record) const
+	{
+		return std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<string>()(record->StartTradingDay);
 	}
 
 }

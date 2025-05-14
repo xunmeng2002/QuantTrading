@@ -99,18 +99,18 @@ void TradeSpiWrap::OnRspQryMoneyTransfer(MoneyTransferField* moneyTransfer, RspI
 		m_TradeCSpi->OnRspQryMoneyTransfer(moneyTransfer, rspInfo, requestID, isLast);
 	}
 }
-void TradeSpiWrap::OnRspInsertOrder(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast)
+void TradeSpiWrap::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_TradeCSpi != nullptr)
 	{
-		m_TradeCSpi->OnRspInsertOrder(order, rspInfo, requestID, isLast);
+		m_TradeCSpi->OnRspInsertOrder(reqInsertOrder, rspInfo, requestID, isLast);
 	}
 }
-void TradeSpiWrap::OnRspCancelOrder(CancelOrderField* cancelOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void TradeSpiWrap::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_TradeCSpi != nullptr)
 	{
-		m_TradeCSpi->OnRspCancelOrder(cancelOrder, rspInfo, requestID, isLast);
+		m_TradeCSpi->OnRspCancelOrder(reqCancelOrder, rspInfo, requestID, isLast);
 	}
 }
 void TradeSpiWrap::OnRtnOrder(OrderField* order)

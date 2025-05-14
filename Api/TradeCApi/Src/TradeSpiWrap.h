@@ -21,8 +21,8 @@ public:
 	virtual void OnRspQryOptionInstrument(OptionInstrumentField* optionInstrument, RspInfoField* rspInfo, int requestID, bool isLast) override;
 	virtual void OnRspQryCommissionRate(CommissionRateField* commissionRate, RspInfoField* rspInfo, int requestID, bool isLast) override;
 	virtual void OnRspQryMoneyTransfer(MoneyTransferField* moneyTransfer, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspInsertOrder(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspCancelOrder(CancelOrderField* cancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) override;
 	virtual void OnRtnOrder(OrderField* order) override;
 	virtual void OnRtnTrade(TradeField* trade) override;
 	virtual void OnRtnMoneyTransfer(MoneyTransferField* moneyTransfer) override;

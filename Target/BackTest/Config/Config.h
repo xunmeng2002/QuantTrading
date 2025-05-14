@@ -15,12 +15,13 @@ public:
 	
 public:
 	int LogLevel;
-	string ServerConfigPath;
-	string MdUser;
-	string MdPassword;
+	string MdDataPath;
+	string CsvPath;
+	string DumpPath;
 	string SessionFile;
-	string EnvironmentFile;
-	string SelectedEnvironmentName;
+	string MarketDataType;
+	string StartTradingDay;
+	string EndTradingDay;
 	
 private:
 	static Config m_Instance;

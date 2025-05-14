@@ -28,13 +28,13 @@
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
 			<item name="ProductName" id="0x200C" type="ProductName" desc="品种名称"/>
-			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
+			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
 			<item name="PriceTick" id="0x6024" type="Price" desc="最小变动价位"/>
-			<item name="MaxMarketOrderVolume" id="0x4024" type="Volume" desc="市价最大下单量"/>
-			<item name="MinMarketOrderVolume" id="0x4023" type="Volume" desc="市价最小下单量"/>
-			<item name="MaxLimitOrderVolume" id="0x4026" type="Volume" desc="限价最大下单量"/>
-			<item name="MinLimitOrderVolume" id="0x4025" type="Volume" desc="限价最小下单量"/>
+			<item name="MaxMarketOrderVolume" id="0x401F" type="Volume" desc="市价最大下单量"/>
+			<item name="MinMarketOrderVolume" id="0x401E" type="Volume" desc="市价最小下单量"/>
+			<item name="MaxLimitOrderVolume" id="0x4021" type="Volume" desc="限价最大下单量"/>
+			<item name="MinLimitOrderVolume" id="0x4020" type="Volume" desc="限价最小下单量"/>
 			<item name="SessionName" id="0x200D" type="SessionName" desc="交易节名称"/>
 		</items>
 		<primarykey>
@@ -44,7 +44,31 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Instrument" id="0x0004" desc="合约" batch="true" session="">
+	<table name="HotInstrument" id="0x0004" desc="主力合约表" batch="" session="">
+		<items>
+			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
+			<item name="Rank" id="0x2902" type="Int" desc="级别"/>
+			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
+			<item name="Rank" id="0x2902" type="Int" desc="级别"/>
+		</primarykey>
+		<uniquekeys/>
+		<indexes>
+			<index name="TradingDay">
+				<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+				<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
+				<item name="Rank" id="0x2902" type="Int" desc="级别"/>
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="Instrument" id="0x0005" desc="合约" batch="true" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
@@ -52,14 +76,15 @@
 			<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
 			<item name="InstrumentName" id="0x2004" type="InstrumentName" desc="合约名称"/>
 			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
-			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
-			<item name="SecurityDetailType" id="0x901D" type="SecurityDetailType" desc="证券细分类别"/>
+			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
+			<item name="InstrumentClass" id="0x9001" type="InstrumentClass" desc="合约类别"/>
+			<item name="Rank" id="0x2902" type="Int" desc="级别"/>
 			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
 			<item name="PriceTick" id="0x6024" type="Price" desc="最小变动价位"/>
-			<item name="MaxMarketOrderVolume" id="0x4024" type="Volume" desc="市价最大下单量"/>
-			<item name="MinMarketOrderVolume" id="0x4023" type="Volume" desc="市价最小下单量"/>
-			<item name="MaxLimitOrderVolume" id="0x4026" type="Volume" desc="限价最大下单量"/>
-			<item name="MinLimitOrderVolume" id="0x4025" type="Volume" desc="限价最小下单量"/>
+			<item name="MaxMarketOrderVolume" id="0x401F" type="Volume" desc="市价最大下单量"/>
+			<item name="MinMarketOrderVolume" id="0x401E" type="Volume" desc="市价最小下单量"/>
+			<item name="MaxLimitOrderVolume" id="0x4021" type="Volume" desc="限价最大下单量"/>
+			<item name="MinLimitOrderVolume" id="0x4020" type="Volume" desc="限价最小下单量"/>
 			<item name="SessionName" id="0x200D" type="SessionName" desc="交易节名称"/>
 		</items>
 		<primarykey>
@@ -69,7 +94,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="PrimaryAccount" id="0x0005" desc="主账户" batch="" session="">
+	<table name="PrimaryAccount" id="0x0006" desc="主账户" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
@@ -92,7 +117,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Account" id="0x0006" desc="账户" batch="" session="">
+	<table name="Account" id="0x0007" desc="账户" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -110,30 +135,26 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Capital" id="0x0007" desc="资金" batch="" session="">
+	<table name="Capital" id="0x0008" desc="资金" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
-			<item name="Asset" id="0x7003" type="Money" desc="总资产"/>
-			<item name="PreAsset" id="0x7004" type="Money" desc="上日总资产"/>
-			<item name="CashAsset" id="0x7005" type="Money" desc="现金资产"/>
-			<item name="PreCashAsset" id="0x7006" type="Money" desc="上日现金资产"/>
+			<item name="Balance" id="0x7001" type="Money" desc="权益"/>
+			<item name="PreBalance" id="0x7002" type="Money" desc="上日权益"/>
 			<item name="Available" id="0x7007" type="Money" desc="可用资金"/>
+			<item name="MarketValue" id="0x701C" type="Money" desc="市值"/>
 			<item name="CashIn" id="0x7015" type="Money" desc="现金收入"/>
 			<item name="CashOut" id="0x7016" type="Money" desc="现金支出"/>
 			<item name="Margin" id="0x7008" type="Money" desc="保证金"/>
 			<item name="Commission" id="0x700A" type="Money" desc="手续费"/>
-			<item name="StampTax" id="0x7018" type="Money" desc="印花税"/>
-			<item name="TransferFee" id="0x701A" type="Money" desc="过户费"/>
-			<item name="FrozenCash" id="0x7025" type="Money" desc="冻结资金"/>
+			<item name="FrozenCash" id="0x7017" type="Money" desc="冻结资金"/>
 			<item name="FrozenMargin" id="0x7009" type="Money" desc="冻结保证金"/>
 			<item name="FrozenCommission" id="0x700B" type="Money" desc="冻结手续费"/>
-			<item name="FrozenStampTax" id="0x7019" type="Money" desc="冻结印花税"/>
-			<item name="FrozenTransferFee" id="0x701B" type="Money" desc="冻结过户费"/>
-			<item name="MarketValue" id="0x701C" type="Money" desc="市值"/>
-			<item name="TotalProfit" id="0x701F" type="Money" desc="总盈亏"/>
-			<item name="TodayProfit" id="0x7020" type="Money" desc="当日盈亏"/>
+			<item name="CloseProfitByDate" id="0x7011" type="Money" desc="逐日平仓盈亏"/>
+			<item name="CloseProfitByTrade" id="0x7010" type="Money" desc="逐笔平仓盈亏"/>
+			<item name="PositionProfitByDate" id="0x700F" type="Money" desc="逐日持仓盈亏"/>
+			<item name="PositionProfitByTrade" id="0x700E" type="Money" desc="逐笔持仓盈亏"/>
 			<item name="Deposit" id="0x7012" type="Money" desc="入金"/>
 			<item name="Withdraw" id="0x7013" type="Money" desc="出金"/>
 		</items>
@@ -141,39 +162,39 @@
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 		</primarykey>
 		<uniquekeys/>
-		<indexes/>
+		<indexes>
+			<index name="TradingDay">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			</index>
+		</indexes>
 	</table>
-	<table name="Position" id="0x0008" desc="持仓" batch="" session="">
+	<table name="Position" id="0x0009" desc="持仓" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
+			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 			<item name="PosiDirection" id="0x9004" type="PosiDirection" desc="持仓方向"/>
 			<item name="TotalPosition" id="0x4019" type="Volume" desc="持仓数量"/>
 			<item name="PositionFrozen" id="0x401A" type="Volume" desc="冻结持仓"/>
 			<item name="TodayPosition" id="0x401C" type="Volume" desc="今日持仓"/>
+			<item name="MarketValue" id="0x701C" type="Money" desc="市值"/>
 			<item name="CashIn" id="0x7015" type="Money" desc="现金收入"/>
 			<item name="CashOut" id="0x7016" type="Money" desc="现金支出"/>
 			<item name="Margin" id="0x7008" type="Money" desc="保证金"/>
 			<item name="Commission" id="0x700A" type="Money" desc="手续费"/>
-			<item name="StampTax" id="0x7018" type="Money" desc="印花税"/>
-			<item name="TransferFee" id="0x701A" type="Money" desc="过户费"/>
-			<item name="FrozenCash" id="0x7025" type="Money" desc="冻结资金"/>
+			<item name="FrozenCash" id="0x7017" type="Money" desc="冻结资金"/>
 			<item name="FrozenMargin" id="0x7009" type="Money" desc="冻结保证金"/>
 			<item name="FrozenCommission" id="0x700B" type="Money" desc="冻结手续费"/>
-			<item name="FrozenStampTax" id="0x7019" type="Money" desc="冻结印花税"/>
-			<item name="FrozenTransferFee" id="0x701B" type="Money" desc="冻结过户费"/>
-			<item name="MarketValue" id="0x701C" type="Money" desc="市值"/>
 			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
-			<item name="CloseProfit" id="0x7011" type="Money" desc="逐日平仓盈亏"/>
-			<item name="CloseProfitFloat" id="0x7010" type="Money" desc="逐笔平仓盈亏"/>
-			<item name="PositionProfit" id="0x700F" type="Money" desc="逐日持仓盈亏"/>
-			<item name="PositionProfitFloat" id="0x700E" type="Money" desc="逐笔持仓盈亏"/>
-			<item name="LastPrice" id="0x6016" type="Price" desc="最新价"/>
-			<item name="PrePrice" id="0x6020" type="Price" desc="昨收盘价或昨结算价"/>
+			<item name="CloseProfitByDate" id="0x7011" type="Money" desc="逐日平仓盈亏"/>
+			<item name="CloseProfitByTrade" id="0x7010" type="Money" desc="逐笔平仓盈亏"/>
+			<item name="PositionProfitByDate" id="0x700F" type="Money" desc="逐日持仓盈亏"/>
+			<item name="PositionProfitByTrade" id="0x700E" type="Money" desc="逐笔持仓盈亏"/>
+			<item name="SettlementPrice" id="0x601F" type="Price" desc="结算价"/>
+			<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
@@ -188,17 +209,70 @@
 				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			</index>
+			<index name="TradingDay">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			</index>
 		</indexes>
 	</table>
-	<table name="Order" id="0x0009" desc="委托" batch="" session="">
+	<table name="PositionDetail" id="0x000A" desc="持仓明细" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-			<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
 			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
+			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
+			<item name="PosiDirection" id="0x9004" type="PosiDirection" desc="持仓方向"/>
+			<item name="OpenDate" id="0x3006" type="Date" desc="开仓日期"/>
+			<item name="TradeID" id="0x101F" type="TradeID" desc="成交编号"/>
+			<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
+			<item name="OpenPrice" id="0x6017" type="Price" desc="开盘价"/>
+			<item name="MarketValue" id="0x701C" type="Money" desc="市值"/>
+			<item name="CashIn" id="0x7015" type="Money" desc="现金收入"/>
+			<item name="CashOut" id="0x7016" type="Money" desc="现金支出"/>
+			<item name="Margin" id="0x7008" type="Money" desc="保证金"/>
+			<item name="Commission" id="0x700A" type="Money" desc="手续费"/>
+			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
+			<item name="CloseProfitByDate" id="0x7011" type="Money" desc="逐日平仓盈亏"/>
+			<item name="CloseProfitByTrade" id="0x7010" type="Money" desc="逐笔平仓盈亏"/>
+			<item name="PositionProfitByDate" id="0x700F" type="Money" desc="逐日持仓盈亏"/>
+			<item name="PositionProfitByTrade" id="0x700E" type="Money" desc="逐笔持仓盈亏"/>
+			<item name="SettlementPrice" id="0x601F" type="Price" desc="结算价"/>
+			<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
+			<item name="CloseVolume" id="0x4022" type="Volume" desc="平仓数量"/>
+			<item name="CloseAmount" id="0x7025" type="Money" desc="平仓金额"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+			<item name="PosiDirection" id="0x9004" type="PosiDirection" desc="持仓方向"/>
+			<item name="OpenDate" id="0x3006" type="Date" desc="开仓日期"/>
+			<item name="TradeID" id="0x101F" type="TradeID" desc="成交编号"/>
+		</primarykey>
+		<uniquekeys/>
+		<indexes>
+			<index name="TradeMatch">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+				<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+				<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+				<item name="PosiDirection" id="0x9004" type="PosiDirection" desc="持仓方向"/>
+			</index>
+			<index name="TradingDay">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="Order" id="0x000B" desc="委托" batch="" session="">
+		<items>
+			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
+			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 			<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 			<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
 			<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
@@ -221,11 +295,9 @@
 			<item name="TradeGroupID" id="0x1020" type="GroupID" desc="交易组代码"/>
 			<item name="RiskGroupID" id="0x1019" type="GroupID" desc="交易组代码"/>
 			<item name="CommissionGroupID" id="0x1007" type="GroupID" desc="交易组代码"/>
-			<item name="FrozenCash" id="0x7025" type="Money" desc="冻结资金"/>
+			<item name="FrozenCash" id="0x7017" type="Money" desc="冻结资金"/>
 			<item name="FrozenMargin" id="0x7009" type="Money" desc="冻结保证金"/>
 			<item name="FrozenCommission" id="0x700B" type="Money" desc="冻结手续费"/>
-			<item name="FrozenStampTax" id="0x7019" type="Money" desc="冻结印花税"/>
-			<item name="FrozenTransferFee" id="0x701B" type="Money" desc="冻结过户费"/>
 			<item name="RebuildMark" id="0x8007" type="Bool" desc="重建标志"/>
 			<item name="IsForceClose" id="0x8003" type="Bool" desc="是否强平单"/>
 		</items>
@@ -248,15 +320,14 @@
 		</uniquekeys>
 		<indexes/>
 	</table>
-	<table name="Trade" id="0x000A" desc="成交" batch="" session="">
+	<table name="Trade" id="0x000C" desc="成交" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-			<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
 			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="SecurityType" id="0x901C" type="SecurityType" desc="证券类别"/>
+			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 			<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 			<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
 			<item name="TradeID" id="0x101F" type="TradeID" desc="成交编号"/>
@@ -267,8 +338,6 @@
 			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
 			<item name="TradeAmount" id="0x7014" type="Money" desc="成交金额"/>
 			<item name="Commission" id="0x700A" type="Money" desc="手续费"/>
-			<item name="StampTax" id="0x7018" type="Money" desc="印花税"/>
-			<item name="TransferFee" id="0x701A" type="Money" desc="过户费"/>
 			<item name="TradeDate" id="0x3005" type="Date" desc="成交日期"/>
 			<item name="TradeTime" id="0x3804" type="Time" desc="成交时间"/>
 		</items>
@@ -281,29 +350,29 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="DepthMarketData" id="0x000B" desc="深度行情" batch="" session="">
+	<table name="DepthMarketData" id="0x000D" desc="深度行情" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+			<item name="UpdateTs" id="0x4202" type="Int64" desc="更新时间戳"/>
 			<item name="LastPrice" id="0x6016" type="Price" desc="最新价"/>
 			<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
 			<item name="PreClosePrice" id="0x6021" type="Price" desc="昨收盘价"/>
-			<item name="PreOpenInterest" id="0x4021" type="Volume" desc="上日持仓量"/>
+			<item name="PreOpenInterest" id="0x4102" type="LargeVolume" desc="上日持仓量"/>
 			<item name="OpenPrice" id="0x6017" type="Price" desc="开盘价"/>
 			<item name="HighestPrice" id="0x6018" type="Price" desc="最高价"/>
 			<item name="LowestPrice" id="0x6019" type="Price" desc="最低价"/>
 			<item name="ClosePrice" id="0x601A" type="Price" desc="收盘价"/>
-			<item name="CurrVolume" id="0x4022" type="Volume" desc="当前数量"/>
+			<item name="CurrVolume" id="0x401D" type="Volume" desc="当前数量"/>
 			<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
 			<item name="CurrTurnover" id="0x7023" type="Money" desc="当前成交金额"/>
 			<item name="Turnover" id="0x7022" type="Money" desc="成交金额"/>
-			<item name="OpenInterest" id="0x4020" type="Volume" desc="持仓量"/>
+			<item name="OpenInterest" id="0x4101" type="LargeVolume" desc="持仓量"/>
 			<item name="SettlementPrice" id="0x601F" type="Price" desc="结算价"/>
 			<item name="UpperLimitPrice" id="0x6025" type="Price" desc="涨停板价"/>
 			<item name="LowerLimitPrice" id="0x6026" type="Price" desc="跌停板价"/>
 			<item name="AveragePrice" id="0x6029" type="Price" desc="当日均价"/>
-			<item name="UpdateTs" id="0x4202" type="Int64" desc="更新时间戳"/>
 			<item name="AskPrice1" id="0x6001" type="Price" desc="申卖价一"/>
 			<item name="AskPrice2" id="0x6002" type="Price" desc="申卖价二"/>
 			<item name="AskPrice3" id="0x6003" type="Price" desc="申卖价三"/>
@@ -349,6 +418,56 @@
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		</primarykey>
+		<uniquekeys/>
+		<indexes/>
+	</table>
+	<table name="BarMarketData" id="0x000E" desc="Bar行情" batch="" session="">
+		<items>
+			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+			<item name="BarPreces" id="0x901A" type="BarPreces" desc="Bar精度"/>
+			<item name="BarPeriod" id="0x1003" type="Int" desc="Bar周期"/>
+			<item name="BarTime" id="0x4201" type="Int64" desc="Bar时间"/>
+			<item name="UpdateTs" id="0x4202" type="Int64" desc="更新时间戳"/>
+			<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
+			<item name="PreClosePrice" id="0x6021" type="Price" desc="昨收盘价"/>
+			<item name="Open" id="0x602A" type="Price" desc="开盘价"/>
+			<item name="High" id="0x602B" type="Price" desc="最高价"/>
+			<item name="Low" id="0x602C" type="Price" desc="最低价"/>
+			<item name="Close" id="0x602D" type="Price" desc="收盘价"/>
+			<item name="CurrVolume" id="0x401D" type="Volume" desc="当前数量"/>
+			<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
+			<item name="CurrTurnover" id="0x7023" type="Money" desc="当前成交金额"/>
+			<item name="Turnover" id="0x7022" type="Money" desc="成交金额"/>
+			<item name="OpenInterest" id="0x4101" type="LargeVolume" desc="持仓量"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+			<item name="BarPreces" id="0x901A" type="BarPreces" desc="Bar精度"/>
+			<item name="BarPeriod" id="0x1003" type="Int" desc="Bar周期"/>
+			<item name="BarTime" id="0x4201" type="Int64" desc="Bar时间"/>
+		</primarykey>
+		<uniquekeys/>
+		<indexes/>
+	</table>
+	<table name="MdSubscribe" id="0x000F" desc="行情订阅" batch="" session="">
+		<items>
+			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+			<item name="RealInstrumentID" id="0x1027" type="InstrumentID" desc="真实合约代码"/>
+			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
+			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
+			<item name="StartTradingDay" id="0x3011" type="Date" desc="开始交易日"/>
+			<item name="EndTradingDay" id="0x3012" type="Date" desc="结束交易日"/>
+		</items>
+		<primarykey>
+			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+			<item name="StartTradingDay" id="0x3011" type="Date" desc="开始交易日"/>
 		</primarykey>
 		<uniquekeys/>
 		<indexes/>

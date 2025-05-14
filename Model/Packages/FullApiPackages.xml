@@ -10,8 +10,11 @@
 	<package name="RspSubMarketData"/>
 	<package name="ReqUnSubMarketData"/>
 	<package name="RspUnSubMarketData"/>
+	<package name="ReqSubMarketDataFinished"/>
 	<package name="RtnDepthMarketData"/>
 	<package name="RtnBarMarketData"/>
+	<package name="RtnSessionBegin"/>
+	<package name="RtnSessionEnd"/>
 	<package name="ReqAccountLogin"/>
 	<package name="RspAccountLogin"/>
 	<package name="ReqAccountLogout"/>

@@ -18,7 +18,9 @@
 	<pump dest="./Source/DB/SqliteDB/SqliteDB.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
 	<pump dest="./Source/DB/SqliteDB/SqliteDB.cpp" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
 	<pump dest="./Source/DB/SqliteDB/SqliteDBSqlString.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
-	
+
+	<pump dest="./Source/DB/DuckDB/DuckDBCommon.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDBCommon.h.tpl" model="./Model/Tables/Tables.xml"/>
+	<pump dest="./Source/DB/DuckDB/DuckDBCommon.cpp" tpl="../Templates/Cpp/DB/DuckDB/DuckDBCommon.cpp.tpl" model="./Model/Tables/Tables.xml"/>
 	<pump dest="./Source/DB/DuckDB/DuckDB.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
 	<pump dest="./Source/DB/DuckDB/DuckDB.cpp" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
 	<pump dest="./Source/DB/DuckDB/DuckDBSqlString.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>

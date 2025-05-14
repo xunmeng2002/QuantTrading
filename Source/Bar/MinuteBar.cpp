@@ -210,7 +210,7 @@ BarMarketDataField* MinuteBar::InitMinuteBarFromDepthMarketData(DepthMarketDataF
 	if (tradeSection == nullptr)
 		return nullptr;
 	long long barMinuteTime = 0LL, updateTsMinuteTime = 0LL;
-	CalculateBarTime(tradeSection, tickDate, tickMinuteTime, barMinuteTime, updateTsMinuteTime);
+	CalculateBarTime(tradeSection, (int)tickDate, tickMinuteTime, barMinuteTime, updateTsMinuteTime);
 	CheckHasLostBar(preBar, depthMd, tradeSession, barMinuteTime);
 
 	auto bar = new BarMarketDataField();

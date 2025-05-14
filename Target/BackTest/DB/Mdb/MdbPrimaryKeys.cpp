@@ -123,6 +123,47 @@ namespace mdb
 		return ProductEqualForProductPrimaryKey()(oldRecord, newRecord);
 	}
 
+	HotInstrumentPrimaryKey::HotInstrumentPrimaryKey(HotInstrumentTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	HotInstrument* HotInstrumentPrimaryKey::Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank)
+	{
+		Strcpy(t_CompareHotInstrument.TradingDay, TradingDay);
+		Strcpy(t_CompareHotInstrument.ExchangeID, ExchangeID);
+		Strcpy(t_CompareHotInstrument.ProductID, ProductID);
+		t_CompareHotInstrument.Rank = Rank;
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareHotInstrument);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<HotInstrumentPrimaryKey::iterator, HotInstrumentPrimaryKey::iterator> HotInstrumentPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool HotInstrumentPrimaryKey::Insert(HotInstrument* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void HotInstrumentPrimaryKey::Erase(HotInstrument* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool HotInstrumentPrimaryKey::CheckInsert(HotInstrument* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool HotInstrumentPrimaryKey::CheckUpdate(const HotInstrument* const oldRecord, const HotInstrument* const newRecord)
+	{
+		return HotInstrumentEqualForHotInstrumentPrimaryKey()(oldRecord, newRecord);
+	}
+
 	InstrumentPrimaryKey::InstrumentPrimaryKey(InstrumentTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -318,6 +359,50 @@ namespace mdb
 		return PositionEqualForPositionPrimaryKey()(oldRecord, newRecord);
 	}
 
+	PositionDetailPrimaryKey::PositionDetailPrimaryKey(PositionDetailTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	PositionDetail* PositionDetailPrimaryKey::Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIDType& TradeID)
+	{
+		Strcpy(t_ComparePositionDetail.TradingDay, TradingDay);
+		Strcpy(t_ComparePositionDetail.AccountID, AccountID);
+		Strcpy(t_ComparePositionDetail.ExchangeID, ExchangeID);
+		Strcpy(t_ComparePositionDetail.InstrumentID, InstrumentID);
+		t_ComparePositionDetail.PosiDirection = PosiDirection;
+		Strcpy(t_ComparePositionDetail.OpenDate, OpenDate);
+		Strcpy(t_ComparePositionDetail.TradeID, TradeID);
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_ComparePositionDetail);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<PositionDetailPrimaryKey::iterator, PositionDetailPrimaryKey::iterator> PositionDetailPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool PositionDetailPrimaryKey::Insert(PositionDetail* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void PositionDetailPrimaryKey::Erase(PositionDetail* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool PositionDetailPrimaryKey::CheckInsert(PositionDetail* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool PositionDetailPrimaryKey::CheckUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord)
+	{
+		return PositionDetailEqualForPositionDetailPrimaryKey()(oldRecord, newRecord);
+	}
+
 	OrderPrimaryKey::OrderPrimaryKey(OrderTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -475,6 +560,89 @@ namespace mdb
 	bool DepthMarketDataPrimaryKey::CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord)
 	{
 		return DepthMarketDataEqualForDepthMarketDataPrimaryKey()(oldRecord, newRecord);
+	}
+
+	BarMarketDataPrimaryKey::BarMarketDataPrimaryKey(BarMarketDataTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	BarMarketData* BarMarketDataPrimaryKey::Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime)
+	{
+		Strcpy(t_CompareBarMarketData.TradingDay, TradingDay);
+		Strcpy(t_CompareBarMarketData.ExchangeID, ExchangeID);
+		Strcpy(t_CompareBarMarketData.InstrumentID, InstrumentID);
+		t_CompareBarMarketData.BarPreces = BarPreces;
+		t_CompareBarMarketData.BarPeriod = BarPeriod;
+		t_CompareBarMarketData.BarTime = BarTime;
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareBarMarketData);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<BarMarketDataPrimaryKey::iterator, BarMarketDataPrimaryKey::iterator> BarMarketDataPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool BarMarketDataPrimaryKey::Insert(BarMarketData* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void BarMarketDataPrimaryKey::Erase(BarMarketData* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool BarMarketDataPrimaryKey::CheckInsert(BarMarketData* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool BarMarketDataPrimaryKey::CheckUpdate(const BarMarketData* const oldRecord, const BarMarketData* const newRecord)
+	{
+		return BarMarketDataEqualForBarMarketDataPrimaryKey()(oldRecord, newRecord);
+	}
+
+	MdSubscribePrimaryKey::MdSubscribePrimaryKey(MdSubscribeTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	MdSubscribe* MdSubscribePrimaryKey::Select(const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const DateType& StartTradingDay)
+	{
+		Strcpy(t_CompareMdSubscribe.ExchangeID, ExchangeID);
+		Strcpy(t_CompareMdSubscribe.InstrumentID, InstrumentID);
+		Strcpy(t_CompareMdSubscribe.StartTradingDay, StartTradingDay);
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareMdSubscribe);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<MdSubscribePrimaryKey::iterator, MdSubscribePrimaryKey::iterator> MdSubscribePrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool MdSubscribePrimaryKey::Insert(MdSubscribe* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void MdSubscribePrimaryKey::Erase(MdSubscribe* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool MdSubscribePrimaryKey::CheckInsert(MdSubscribe* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool MdSubscribePrimaryKey::CheckUpdate(const MdSubscribe* const oldRecord, const MdSubscribe* const newRecord)
+	{
+		return MdSubscribeEqualForMdSubscribePrimaryKey()(oldRecord, newRecord);
 	}
 
 }

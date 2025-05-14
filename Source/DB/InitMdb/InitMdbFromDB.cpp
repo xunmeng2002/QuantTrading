@@ -1,5 +1,5 @@
 ﻿#include "InitMdbFromDB.h"
-#include <vector>
+#include <list>
 
 using namespace std;
 
@@ -14,7 +14,7 @@ namespace mdb
 
 	void InitMdbFromDB::LoadTradingDayTable(Mdb* mdb, DB* db)
 	{
-		vector<TradingDay*> records;
+		list<TradingDay*> records;
 		db->SelectTradingDay(records);
 		for (auto record : records)
 		{
@@ -23,7 +23,7 @@ namespace mdb
 	}
 	void InitMdbFromDB::LoadExchangeTable(Mdb* mdb, DB* db)
 	{
-		vector<Exchange*> records;
+		list<Exchange*> records;
 		db->SelectExchange(records);
 		for (auto record : records)
 		{
@@ -32,16 +32,25 @@ namespace mdb
 	}
 	void InitMdbFromDB::LoadProductTable(Mdb* mdb, DB* db)
 	{
-		vector<Product*> records;
+		list<Product*> records;
 		db->SelectProduct(records);
 		for (auto record : records)
 		{
 			mdb->t_Product->Insert(record);
 		}
 	}
+	void InitMdbFromDB::LoadHotInstrumentTable(Mdb* mdb, DB* db)
+	{
+		list<HotInstrument*> records;
+		db->SelectHotInstrument(records);
+		for (auto record : records)
+		{
+			mdb->t_HotInstrument->Insert(record);
+		}
+	}
 	void InitMdbFromDB::LoadInstrumentTable(Mdb* mdb, DB* db)
 	{
-		vector<Instrument*> records;
+		list<Instrument*> records;
 		db->SelectInstrument(records);
 		for (auto record : records)
 		{
@@ -50,7 +59,7 @@ namespace mdb
 	}
 	void InitMdbFromDB::LoadPrimaryAccountTable(Mdb* mdb, DB* db)
 	{
-		vector<PrimaryAccount*> records;
+		list<PrimaryAccount*> records;
 		db->SelectPrimaryAccount(records);
 		for (auto record : records)
 		{
@@ -59,7 +68,7 @@ namespace mdb
 	}
 	void InitMdbFromDB::LoadAccountTable(Mdb* mdb, DB* db)
 	{
-		vector<Account*> records;
+		list<Account*> records;
 		db->SelectAccount(records);
 		for (auto record : records)
 		{
@@ -68,7 +77,7 @@ namespace mdb
 	}
 	void InitMdbFromDB::LoadCapitalTable(Mdb* mdb, DB* db)
 	{
-		vector<Capital*> records;
+		list<Capital*> records;
 		db->SelectCapital(records);
 		for (auto record : records)
 		{
@@ -77,16 +86,25 @@ namespace mdb
 	}
 	void InitMdbFromDB::LoadPositionTable(Mdb* mdb, DB* db)
 	{
-		vector<Position*> records;
+		list<Position*> records;
 		db->SelectPosition(records);
 		for (auto record : records)
 		{
 			mdb->t_Position->Insert(record);
 		}
 	}
+	void InitMdbFromDB::LoadPositionDetailTable(Mdb* mdb, DB* db)
+	{
+		list<PositionDetail*> records;
+		db->SelectPositionDetail(records);
+		for (auto record : records)
+		{
+			mdb->t_PositionDetail->Insert(record);
+		}
+	}
 	void InitMdbFromDB::LoadOrderTable(Mdb* mdb, DB* db)
 	{
-		vector<Order*> records;
+		list<Order*> records;
 		db->SelectOrder(records);
 		for (auto record : records)
 		{
@@ -95,7 +113,7 @@ namespace mdb
 	}
 	void InitMdbFromDB::LoadTradeTable(Mdb* mdb, DB* db)
 	{
-		vector<Trade*> records;
+		list<Trade*> records;
 		db->SelectTrade(records);
 		for (auto record : records)
 		{
@@ -104,11 +122,29 @@ namespace mdb
 	}
 	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
 	{
-		vector<DepthMarketData*> records;
+		list<DepthMarketData*> records;
 		db->SelectDepthMarketData(records);
 		for (auto record : records)
 		{
 			mdb->t_DepthMarketData->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadBarMarketDataTable(Mdb* mdb, DB* db)
+	{
+		list<BarMarketData*> records;
+		db->SelectBarMarketData(records);
+		for (auto record : records)
+		{
+			mdb->t_BarMarketData->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadMdSubscribeTable(Mdb* mdb, DB* db)
+	{
+		list<MdSubscribe*> records;
+		db->SelectMdSubscribe(records);
+		for (auto record : records)
+		{
+			mdb->t_MdSubscribe->Insert(record);
 		}
 	}
 }
