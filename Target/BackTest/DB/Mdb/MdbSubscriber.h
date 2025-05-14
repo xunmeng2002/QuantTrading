@@ -43,13 +43,6 @@ public:
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) {}
 	virtual void OnInstrumentTruncate() {}
 	
-	virtual void OnPrimaryAccountInsert(mdb::PrimaryAccount* record) {}
-	virtual void OnPrimaryAccountBatchInsert(std::list<mdb::PrimaryAccount*>* records) {}
-	virtual void OnPrimaryAccountErase(mdb::PrimaryAccount* record) {}
-	virtual void OnPrimaryAccountEraseByOfferIDIndex(mdb::PrimaryAccount* record) {}
-	virtual void OnPrimaryAccountUpdate(mdb::PrimaryAccount* record) {}
-	virtual void OnPrimaryAccountTruncate() {}
-	
 	virtual void OnAccountInsert(mdb::Account* record) {}
 	virtual void OnAccountBatchInsert(std::list<mdb::Account*>* records) {}
 	virtual void OnAccountErase(mdb::Account* record) {}

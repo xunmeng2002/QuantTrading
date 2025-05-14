@@ -69,19 +69,6 @@ namespace mdb
 		size_t operator()(const Instrument* const record) const;
 	};
 
-	struct PrimaryAccountEqualForPrimaryAccountPrimaryKey
-	{
-		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
-	};
-	struct PrimaryAccountLessForPrimaryAccountPrimaryKey
-	{
-		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
-	};
-	struct PrimaryAccountHashForPrimaryAccountPrimaryKey
-	{
-		size_t operator()(const PrimaryAccount* const record) const;
-	};
-
 	struct AccountEqualForAccountPrimaryKey
 	{
 		bool operator()(const Account* const left, const Account* const right) const;

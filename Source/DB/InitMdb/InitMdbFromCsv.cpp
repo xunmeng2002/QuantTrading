@@ -60,7 +60,7 @@ namespace mdb
 			}
 
 			auto record = new TradingDay();
-			Strcpy(record->PK, csv_record.GetFieldAsString("PK"));
+			record->PK = csv_record.GetFieldAsInt("PK");
 			Strcpy(record->CurrTradingDay, csv_record.GetFieldAsString("CurrTradingDay"));
 			Strcpy(record->PreTradingDay, csv_record.GetFieldAsString("PreTradingDay"));
 			mdb->t_TradingDay->Insert(record);
@@ -175,8 +175,15 @@ namespace mdb
 			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->ProductID, csv_record.GetFieldAsString("ProductID"));
-			record->Rank = csv_record.GetFieldAsInt("Rank");
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			record->Volume = csv_record.GetFieldAsInt64("Volume");
+			record->MaxVolume = csv_record.GetFieldAsInt64("MaxVolume");
+			record->Turnover = csv_record.GetFieldAsDouble("Turnover");
+			record->MaxTurnover = csv_record.GetFieldAsDouble("MaxTurnover");
+			record->OpenInterest = csv_record.GetFieldAsDouble("OpenInterest");
+			record->MaxOpenInterest = csv_record.GetFieldAsDouble("MaxOpenInterest");
+			record->Rank = csv_record.GetFieldAsInt("Rank");
 			mdb->t_HotInstrument->Insert(record);
 		}
 		file.close();
@@ -209,7 +216,6 @@ namespace mdb
 			}
 
 			auto record = new Instrument();
-			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
 			Strcpy(record->ExchangeInstID, csv_record.GetFieldAsString("ExchangeInstID"));

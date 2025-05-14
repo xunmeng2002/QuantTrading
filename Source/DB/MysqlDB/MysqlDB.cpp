@@ -981,7 +981,7 @@ void MysqlDB::InsertHotInstrument(HotInstrument* record)
 	auto start = steady_clock::now();
 	if (m_HotInstrumentInsertStatement == nullptr)
 	{
-		m_HotInstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_HotInstrument Values(?, ?, ?, ?, ?);");
+		m_HotInstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_HotInstrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForHotInstrumentRecord(m_HotInstrumentInsertStatement, record);
 	
@@ -1065,7 +1065,7 @@ void MysqlDB::UpdateHotInstrument(HotInstrument* record)
 	auto start = steady_clock::now();
 	if (m_HotInstrumentUpdateStatement == nullptr)
 	{
-		m_HotInstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_HotInstrument set InstrumentID = ? where TradingDay = ? and ExchangeID = ? and ProductID = ? and Rank = ?;");
+		m_HotInstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_HotInstrument set InstrumentID = ?, ProductClass = ?, Volume = ?, MaxVolume = ?, Turnover = ?, MaxTurnover = ?, OpenInterest = ?, MaxOpenInterest = ? where TradingDay = ? and ExchangeID = ? and ProductID = ? and Rank = ?;");
 	}
 	SetStatementForHotInstrumentRecordUpdate(m_HotInstrumentUpdateStatement, record);
 	m_HotInstrumentUpdateStatement->executeUpdate();
@@ -1108,7 +1108,7 @@ void MysqlDB::InsertInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentInsertStatement == nullptr)
 	{
-		m_InstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_InstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForInstrumentRecord(m_InstrumentInsertStatement, record);
 	
@@ -1177,7 +1177,7 @@ void MysqlDB::UpdateInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentUpdateStatement == nullptr)
 	{
-		m_InstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_Instrument set TradingDay = ?, ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;");
+		m_InstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_Instrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;");
 	}
 	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
 	m_InstrumentUpdateStatement->executeUpdate();
@@ -2429,7 +2429,7 @@ void MysqlDB::TruncateMdSubscribe()
 
 void MysqlDB::SetStatementForTradingDayRecord(sql::PreparedStatement* statement, TradingDay* record)
 {
-	statement->setString(1, record->PK);
+	statement->setInt(1, record->PK);
 	statement->setString(2, record->CurrTradingDay);
 	statement->setString(3, record->PreTradingDay);
 }
@@ -2437,16 +2437,16 @@ void MysqlDB::SetStatementForTradingDayRecordUpdate(sql::PreparedStatement* stat
 {
 	statement->setString(1, record->CurrTradingDay);
 	statement->setString(2, record->PreTradingDay);
-	statement->setString(3, record->PK);
+	statement->setInt(3, record->PK);
 }
-void MysqlDB::SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const UserIDType& PK)
+void MysqlDB::SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const IntType& PK)
 {
-	statement->setString(1, PK);
+	statement->setInt(1, PK);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<TradingDay*>& records)
 {
 	TradingDay* record = TradingDay::Allocate();
-	Strcpy(record->PK, result->getString(1).c_str());
+	record->PK = result->getInt(1);
 	Strcpy(record->CurrTradingDay, result->getString(2).c_str());
 	Strcpy(record->PreTradingDay, result->getString(3).c_str());
 	records.push_back(record);
@@ -2526,16 +2526,30 @@ void MysqlDB::SetStatementForHotInstrumentRecord(sql::PreparedStatement* stateme
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->ExchangeID);
 	statement->setString(3, record->ProductID);
-	statement->setInt(4, record->Rank);
-	statement->setString(5, record->InstrumentID);
+	statement->setString(4, record->InstrumentID);
+	statement->setInt(5, int(record->ProductClass));
+	statement->setInt64(6, record->Volume);
+	statement->setInt64(7, record->MaxVolume);
+	statement->setDouble(8, record->Turnover);
+	statement->setDouble(9, record->MaxTurnover);
+	statement->setDouble(10, record->OpenInterest);
+	statement->setDouble(11, record->MaxOpenInterest);
+	statement->setInt(12, record->Rank);
 }
 void MysqlDB::SetStatementForHotInstrumentRecordUpdate(sql::PreparedStatement* statement, HotInstrument* record)
 {
 	statement->setString(1, record->InstrumentID);
-	statement->setString(2, record->TradingDay);
-	statement->setString(3, record->ExchangeID);
-	statement->setString(4, record->ProductID);
-	statement->setInt(5, record->Rank);
+	statement->setInt(2, int(record->ProductClass));
+	statement->setInt64(3, record->Volume);
+	statement->setInt64(4, record->MaxVolume);
+	statement->setDouble(5, record->Turnover);
+	statement->setDouble(6, record->MaxTurnover);
+	statement->setDouble(7, record->OpenInterest);
+	statement->setDouble(8, record->MaxOpenInterest);
+	statement->setString(9, record->TradingDay);
+	statement->setString(10, record->ExchangeID);
+	statement->setString(11, record->ProductID);
+	statement->setInt(12, record->Rank);
 }
 void MysqlDB::SetStatementForHotInstrumentPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank)
 {
@@ -2557,47 +2571,52 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<HotInstrument*>& rec
 	Strcpy(record->TradingDay, result->getString(1).c_str());
 	Strcpy(record->ExchangeID, result->getString(2).c_str());
 	Strcpy(record->ProductID, result->getString(3).c_str());
-	record->Rank = result->getInt(4);
-	Strcpy(record->InstrumentID, result->getString(5).c_str());
+	Strcpy(record->InstrumentID, result->getString(4).c_str());
+	record->ProductClass = ProductClassType(result->getInt(5));
+	record->Volume = result->getInt64(6);
+	record->MaxVolume = result->getInt64(7);
+	record->Turnover = result->getDouble(8);
+	record->MaxTurnover = result->getDouble(9);
+	record->OpenInterest = result->getDouble(10);
+	record->MaxOpenInterest = result->getDouble(11);
+	record->Rank = result->getInt(12);
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForInstrumentRecord(sql::PreparedStatement* statement, Instrument* record)
 {
-	statement->setString(1, record->TradingDay);
-	statement->setString(2, record->ExchangeID);
-	statement->setString(3, record->InstrumentID);
-	statement->setString(4, record->ExchangeInstID);
-	statement->setString(5, record->InstrumentName);
-	statement->setString(6, record->ProductID);
-	statement->setInt(7, int(record->ProductClass));
-	statement->setInt(8, int(record->InstrumentClass));
-	statement->setInt(9, record->Rank);
-	statement->setInt(10, record->VolumeMultiple);
-	statement->setDouble(11, record->PriceTick);
-	statement->setInt64(12, record->MaxMarketOrderVolume);
-	statement->setInt64(13, record->MinMarketOrderVolume);
-	statement->setInt64(14, record->MaxLimitOrderVolume);
-	statement->setInt64(15, record->MinLimitOrderVolume);
-	statement->setString(16, record->SessionName);
+	statement->setString(1, record->ExchangeID);
+	statement->setString(2, record->InstrumentID);
+	statement->setString(3, record->ExchangeInstID);
+	statement->setString(4, record->InstrumentName);
+	statement->setString(5, record->ProductID);
+	statement->setInt(6, int(record->ProductClass));
+	statement->setInt(7, int(record->InstrumentClass));
+	statement->setInt(8, record->Rank);
+	statement->setInt(9, record->VolumeMultiple);
+	statement->setDouble(10, record->PriceTick);
+	statement->setInt64(11, record->MaxMarketOrderVolume);
+	statement->setInt64(12, record->MinMarketOrderVolume);
+	statement->setInt64(13, record->MaxLimitOrderVolume);
+	statement->setInt64(14, record->MinLimitOrderVolume);
+	statement->setString(15, record->SessionName);
 }
 void MysqlDB::SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, Instrument* record)
 {
-	statement->setString(1, record->TradingDay);
-	statement->setString(2, record->ExchangeInstID);
-	statement->setString(3, record->InstrumentName);
-	statement->setString(4, record->ProductID);
-	statement->setInt(5, int(record->ProductClass));
-	statement->setInt(6, int(record->InstrumentClass));
-	statement->setInt(7, record->Rank);
-	statement->setInt(8, record->VolumeMultiple);
-	statement->setDouble(9, record->PriceTick);
-	statement->setInt64(10, record->MaxMarketOrderVolume);
-	statement->setInt64(11, record->MinMarketOrderVolume);
-	statement->setInt64(12, record->MaxLimitOrderVolume);
-	statement->setInt64(13, record->MinLimitOrderVolume);
-	statement->setString(14, record->SessionName);
-	statement->setString(15, record->ExchangeID);
-	statement->setString(16, record->InstrumentID);
+	statement->setString(1, record->ExchangeInstID);
+	statement->setString(2, record->InstrumentName);
+	statement->setString(3, record->ProductID);
+	statement->setInt(4, int(record->ProductClass));
+	statement->setInt(5, int(record->InstrumentClass));
+	statement->setInt(6, record->Rank);
+	statement->setInt(7, record->VolumeMultiple);
+	statement->setDouble(8, record->PriceTick);
+	statement->setInt64(9, record->MaxMarketOrderVolume);
+	statement->setInt64(10, record->MinMarketOrderVolume);
+	statement->setInt64(11, record->MaxLimitOrderVolume);
+	statement->setInt64(12, record->MinLimitOrderVolume);
+	statement->setString(13, record->SessionName);
+	statement->setString(14, record->ExchangeID);
+	statement->setString(15, record->InstrumentID);
 }
 void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
@@ -2607,22 +2626,21 @@ void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statem
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Instrument*>& records)
 {
 	Instrument* record = Instrument::Allocate();
-	Strcpy(record->TradingDay, result->getString(1).c_str());
-	Strcpy(record->ExchangeID, result->getString(2).c_str());
-	Strcpy(record->InstrumentID, result->getString(3).c_str());
-	Strcpy(record->ExchangeInstID, result->getString(4).c_str());
-	Strcpy(record->InstrumentName, result->getString(5).c_str());
-	Strcpy(record->ProductID, result->getString(6).c_str());
-	record->ProductClass = ProductClassType(result->getInt(7));
-	record->InstrumentClass = InstrumentClassType(result->getInt(8));
-	record->Rank = result->getInt(9);
-	record->VolumeMultiple = result->getInt(10);
-	record->PriceTick = result->getDouble(11);
-	record->MaxMarketOrderVolume = result->getInt64(12);
-	record->MinMarketOrderVolume = result->getInt64(13);
-	record->MaxLimitOrderVolume = result->getInt64(14);
-	record->MinLimitOrderVolume = result->getInt64(15);
-	Strcpy(record->SessionName, result->getString(16).c_str());
+	Strcpy(record->ExchangeID, result->getString(1).c_str());
+	Strcpy(record->InstrumentID, result->getString(2).c_str());
+	Strcpy(record->ExchangeInstID, result->getString(3).c_str());
+	Strcpy(record->InstrumentName, result->getString(4).c_str());
+	Strcpy(record->ProductID, result->getString(5).c_str());
+	record->ProductClass = ProductClassType(result->getInt(6));
+	record->InstrumentClass = InstrumentClassType(result->getInt(7));
+	record->Rank = result->getInt(8);
+	record->VolumeMultiple = result->getInt(9);
+	record->PriceTick = result->getDouble(10);
+	record->MaxMarketOrderVolume = result->getInt64(11);
+	record->MinMarketOrderVolume = result->getInt64(12);
+	record->MaxLimitOrderVolume = result->getInt64(13);
+	record->MinLimitOrderVolume = result->getInt64(14);
+	Strcpy(record->SessionName, result->getString(15).c_str());
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statement, PrimaryAccount* record)

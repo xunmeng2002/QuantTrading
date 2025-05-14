@@ -137,6 +137,13 @@ public:
 	DateType TradingDay;		//交易日
 };
 
+class MarketDataEndField
+{
+public:
+	static constexpr UShortType FieldID = 0x100D;
+	DateType TradingDay;		//交易日
+};
+
 class ReqInsertOrderField
 {
 public:

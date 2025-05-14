@@ -17,18 +17,18 @@ namespace mdb
 	}
 	const char* TradingDay::GetString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "%s,%s,%s",
+		sprintf(t_MdbDataStringBuffer, "%d,%s,%s",
 			PK, CurrTradingDay, PreTradingDay);
 		return t_MdbDataStringBuffer;
 	}
 	int TradingDay::GetSqlString(char* buff) const
 	{
-		return sprintf(buff, "\n('%s','%s','%s'),",
+		return sprintf(buff, "\n('%d','%s','%s'),",
 			PK, CurrTradingDay, PreTradingDay);
 	}
 	const char* TradingDay::GetDebugString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "TradingDay:PK:[%s], CurrTradingDay:[%s], PreTradingDay:[%s]",
+		sprintf(t_MdbDataStringBuffer, "TradingDay:PK:[%d], CurrTradingDay:[%s], PreTradingDay:[%s]",
 			PK, CurrTradingDay, PreTradingDay);
 		return t_MdbDataStringBuffer;
 	}
@@ -95,19 +95,19 @@ namespace mdb
 	}
 	const char* HotInstrument::GetString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%d,%s",
-			TradingDay, ExchangeID, ProductID, Rank, InstrumentID);
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%s,%d,%lld,%lld,%f,%f,%f,%f,%d",
+			TradingDay, ExchangeID, ProductID, InstrumentID, (int)ProductClass, Volume, MaxVolume, Turnover, MaxTurnover, OpenInterest, MaxOpenInterest, Rank);
 		return t_MdbDataStringBuffer;
 	}
 	int HotInstrument::GetSqlString(char* buff) const
 	{
-		return sprintf(buff, "\n('%s','%s','%s','%d','%s'),",
-			TradingDay, ExchangeID, ProductID, Rank, InstrumentID);
+		return sprintf(buff, "\n('%s','%s','%s','%s','%d','%lld','%lld','%f','%f','%f','%f','%d'),",
+			TradingDay, ExchangeID, ProductID, InstrumentID, (int)ProductClass, Volume, MaxVolume, Turnover, MaxTurnover, OpenInterest, MaxOpenInterest, Rank);
 	}
 	const char* HotInstrument::GetDebugString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "HotInstrument:TradingDay:[%s], ExchangeID:[%s], ProductID:[%s], Rank:[%d], InstrumentID:[%s]",
-			TradingDay, ExchangeID, ProductID, Rank, InstrumentID);
+		sprintf(t_MdbDataStringBuffer, "HotInstrument:TradingDay:[%s], ExchangeID:[%s], ProductID:[%s], InstrumentID:[%s], ProductClass:[%d], Volume:[%lld], MaxVolume:[%lld], Turnover:[%f], MaxTurnover:[%f], OpenInterest:[%f], MaxOpenInterest:[%f], Rank:[%d]",
+			TradingDay, ExchangeID, ProductID, InstrumentID, (int)ProductClass, Volume, MaxVolume, Turnover, MaxTurnover, OpenInterest, MaxOpenInterest, Rank);
 		return t_MdbDataStringBuffer;
 	}
 
@@ -121,19 +121,19 @@ namespace mdb
 	}
 	const char* Instrument::GetString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%s,%s,%s,%d,%d,%d,%d,%f,%lld,%lld,%lld,%lld,%s",
-			TradingDay, ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%s,%s,%d,%d,%d,%d,%f,%lld,%lld,%lld,%lld,%s",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
 		return t_MdbDataStringBuffer;
 	}
 	int Instrument::GetSqlString(char* buff) const
 	{
-		return sprintf(buff, "\n('%s','%s','%s','%s','%s','%s','%d','%d','%d','%d','%f','%lld','%lld','%lld','%lld','%s'),",
-			TradingDay, ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
+		return sprintf(buff, "\n('%s','%s','%s','%s','%s','%d','%d','%d','%d','%f','%lld','%lld','%lld','%lld','%s'),",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
 	}
 	const char* Instrument::GetDebugString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "Instrument:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], InstrumentClass:[%d], Rank:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]",
-			TradingDay, ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
+		sprintf(t_MdbDataStringBuffer, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], InstrumentClass:[%d], Rank:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
 		return t_MdbDataStringBuffer;
 	}
 

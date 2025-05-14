@@ -49,14 +49,6 @@ public:
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) = 0;
 	virtual void TruncateInstrument() = 0;
 
-	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) = 0;
-	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) = 0;
-	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) = 0;
-	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) = 0;
-	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) = 0;
-	virtual void SelectPrimaryAccount(std::list<mdb::PrimaryAccount*>& records) = 0;
-	virtual void TruncatePrimaryAccount() = 0;
-
 	virtual void InsertAccount(mdb::Account* record) = 0;
 	virtual void BatchInsertAccount(std::list<mdb::Account*>* records) = 0;
 	virtual void DeleteAccount(mdb::Account* record) = 0;

@@ -46,11 +46,6 @@ void DBOperateImpl::FreeRecord()
 		((Instrument*)Record)->Free();
 		break;
 	}
-	case PrimaryAccount::TableID:
-	{
-		((PrimaryAccount*)Record)->Free();
-		break;
-	}
 	case Account::TableID:
 	{
 		((Account*)Record)->Free();
@@ -124,10 +119,6 @@ const char* DBOperateImpl::GetDebugString() const
 	case Instrument::TableID:
 	{
 		return ((Instrument*)Record)->GetDebugString();
-	}
-	case PrimaryAccount::TableID:
-	{
-		return ((PrimaryAccount*)Record)->GetDebugString();
 	}
 	case Account::TableID:
 	{

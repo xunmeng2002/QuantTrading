@@ -1,6 +1,6 @@
 ﻿
 CREATE TABLE IF NOT EXISTS `t_TradingDay` (
-  `PK` char(32) COMMENT '主键',
+  `PK` int COMMENT '主键',
   `CurrTradingDay` char(9) COMMENT '当前交易日',
   `PreTradingDay` char(9) COMMENT '昨交易日',
 
@@ -34,15 +34,21 @@ CREATE TABLE IF NOT EXISTS `t_HotInstrument` (
   `TradingDay` char(9) COMMENT '交易日',
   `ExchangeID` char(8) COMMENT '交易所代码',
   `ProductID` char(32) COMMENT '品种代码',
-  `Rank` int COMMENT '级别',
   `InstrumentID` char(32) COMMENT '合约代码',
+  `ProductClass` int COMMENT '品种类型',
+  `Volume` bigint COMMENT '委托数量',
+  `MaxVolume` bigint COMMENT '最大数量',
+  `Turnover` decimal(24,8) COMMENT '成交金额',
+  `MaxTurnover` decimal(24,8) COMMENT '最大成交金额',
+  `OpenInterest` decimal(24,8) COMMENT '持仓量',
+  `MaxOpenInterest` decimal(24,8) COMMENT '最大持仓量',
+  `Rank` int COMMENT '级别',
 
   INDEX TradingDay(ExchangeID, ProductID, Rank, TradingDay),
   PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='主力合约表';
 
 CREATE TABLE IF NOT EXISTS `t_Instrument` (
-  `TradingDay` char(9) COMMENT '交易日',
   `ExchangeID` char(8) COMMENT '交易所代码',
   `InstrumentID` char(32) COMMENT '合约代码',
   `ExchangeInstID` char(32) COMMENT '交易所合约代码',

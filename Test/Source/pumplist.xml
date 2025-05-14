@@ -3,4 +3,9 @@
 	<pump dest="./Test/Source/MdApiMiddle/MdApiMiddle.cpp" tpl="../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
 	<pump dest="./Test/Source/MdApiMiddle/MdSpiMiddle.h" tpl="../Templates/Cpp/ApiTest/SpiMiddle.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml"/>
 	<pump dest="./Test/Source/MdApiMiddle/MdSpiMiddle.cpp" tpl="../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/MdApi.xml ../Model/Types.xml"/>
+	
+	<pump dest="./Test/Source/BackTestApiMiddle/BackTestApiMiddle.h" tpl="../Templates/Cpp/ApiTest/ApiMiddle.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApi.xml"/>
+	<pump dest="./Test/Source/BackTestApiMiddle/BackTestApiMiddle.cpp" tpl="../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApi.xml ../Model/Types.xml"/>
+	<pump dest="./Test/Source/BackTestApiMiddle/BackTestSpiMiddle.h" tpl="../Templates/Cpp/ApiTest/SpiMiddle.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApi.xml"/>
+	<pump dest="./Test/Source/BackTestApiMiddle/BackTestSpiMiddle.cpp" tpl="../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApi.xml ../Model/Types.xml"/>
 </pumplist>

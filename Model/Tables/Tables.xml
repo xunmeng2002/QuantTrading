@@ -2,12 +2,12 @@
 <tables>
 	<table name="TradingDay" id="0x0001" desc="交易日" batch="" session="">
 		<items>
-			<item name="PK" id="0x1023" type="UserID" desc="主键"/>
+			<item name="PK" id="0x2901" type="Int" desc="主键"/>
 			<item name="CurrTradingDay" id="0x300F" type="Date" desc="当前交易日"/>
 			<item name="PreTradingDay" id="0x3010" type="Date" desc="昨交易日"/>
 		</items>
 		<primarykey>
-			<item name="PK" id="0x1023" type="UserID" desc="主键"/>
+			<item name="PK" id="0x2901" type="Int" desc="主键"/>
 		</primarykey>
 		<uniquekeys/>
 		<indexes/>
@@ -49,28 +49,34 @@
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
-			<item name="Rank" id="0x2902" type="Int" desc="级别"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
+			<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
+			<item name="MaxVolume" id="0x4022" type="Volume" desc="最大数量"/>
+			<item name="Turnover" id="0x7022" type="Money" desc="成交金额"/>
+			<item name="MaxTurnover" id="0x7024" type="Money" desc="最大成交金额"/>
+			<item name="OpenInterest" id="0x4101" type="LargeVolume" desc="持仓量"/>
+			<item name="MaxOpenInterest" id="0x4102" type="LargeVolume" desc="最大持仓量"/>
+			<item name="Rank" id="0x2903" type="Int" desc="级别"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
-			<item name="Rank" id="0x2902" type="Int" desc="级别"/>
+			<item name="Rank" id="0x2903" type="Int" desc="级别"/>
 		</primarykey>
 		<uniquekeys/>
 		<indexes>
 			<index name="TradingDay">
 				<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 				<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
-				<item name="Rank" id="0x2902" type="Int" desc="级别"/>
+				<item name="Rank" id="0x2903" type="Int" desc="级别"/>
 				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			</index>
 		</indexes>
 	</table>
 	<table name="Instrument" id="0x0005" desc="合约" batch="true" session="">
 		<items>
-			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 			<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
@@ -78,7 +84,7 @@
 			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
 			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 			<item name="InstrumentClass" id="0x9001" type="InstrumentClass" desc="合约类别"/>
-			<item name="Rank" id="0x2902" type="Int" desc="级别"/>
+			<item name="Rank" id="0x2903" type="Int" desc="级别"/>
 			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
 			<item name="PriceTick" id="0x6024" type="Price" desc="最小变动价位"/>
 			<item name="MaxMarketOrderVolume" id="0x401F" type="Volume" desc="市价最大下单量"/>
@@ -240,7 +246,7 @@
 			<item name="SettlementPrice" id="0x601F" type="Price" desc="结算价"/>
 			<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
 			<item name="CloseVolume" id="0x4022" type="Volume" desc="平仓数量"/>
-			<item name="CloseAmount" id="0x7025" type="Money" desc="平仓金额"/>
+			<item name="CloseAmount" id="0x7026" type="Money" desc="平仓金额"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
@@ -458,7 +464,7 @@
 		<items>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-			<item name="RealInstrumentID" id="0x1027" type="InstrumentID" desc="真实合约代码"/>
+			<item name="RealInstrumentID" id="0x1026" type="InstrumentID" desc="真实合约代码"/>
 			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
 			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 			<item name="StartTradingDay" id="0x3011" type="Date" desc="开始交易日"/>

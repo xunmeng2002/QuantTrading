@@ -4,14 +4,14 @@
 		<field name="NotifyConnect" id="0x0002" desc="连接成功通知">
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
-			<item name="Port" id="0x2901" type="Int" desc="端口"/>
+			<item name="Port" id="0x2902" type="Int" desc="端口"/>
 		</field>
 	</package>
 	<package name="NotifyDisConnect" id="0x0002" desc="断开连接通知">
 		<field name="NotifyDisConnect" id="0x0003" desc="断开连接通知">
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
-			<item name="Port" id="0x2901" type="Int" desc="端口"/>
+			<item name="Port" id="0x2902" type="Int" desc="端口"/>
 		</field>
 	</package>
 	<package name="ReqMdUserLogin" id="0x1001" desc="行情用户登出请求">
@@ -175,6 +175,11 @@
 	</package>
 	<package name="RtnSessionEnd" id="0x100D" desc="交易节结束推送">
 		<field name="SessionEnd" id="0x100D" desc="交易节结束">
+			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+		</field>
+	</package>
+	<package name="RtnMarketDataEnd" id="0x100E" desc="行情结束推送">
+		<field name="MarketDataEnd" id="0x100D" desc="行情结束">
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 		</field>
 	</package>
@@ -469,7 +474,7 @@
 			<item name="MoneyTransferID" id="0x1010" type="SequenceNo" desc="出入金编号"/>
 			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 			<item name="TransferDirection" id="0x901B" type="TransferDirection" desc="转移方向"/>
-			<item name="TransferAmount" id="0x7024" type="Money" desc="转移金额"/>
+			<item name="TransferAmount" id="0x7025" type="Money" desc="转移金额"/>
 			<item name="InfoMessage" id="0x2405" type="Message" desc="备注信息"/>
 			<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
 			<item name="TransferDate" id="0x300C" type="Date" desc="操作日期"/>
@@ -596,7 +601,7 @@
 			<item name="MoneyTransferID" id="0x1010" type="SequenceNo" desc="出入金编号"/>
 			<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 			<item name="TransferDirection" id="0x901B" type="TransferDirection" desc="转移方向"/>
-			<item name="TransferAmount" id="0x7024" type="Money" desc="转移金额"/>
+			<item name="TransferAmount" id="0x7025" type="Money" desc="转移金额"/>
 			<item name="InfoMessage" id="0x2405" type="Message" desc="备注信息"/>
 			<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
 			<item name="TransferDate" id="0x300C" type="Date" desc="操作日期"/>

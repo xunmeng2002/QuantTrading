@@ -53,14 +53,6 @@ public:
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
 	
-	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) override;
-	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) override;
-	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void SelectPrimaryAccount(std::list<mdb::PrimaryAccount*>& records) override;
-	virtual void TruncatePrimaryAccount() override;
-	
 	virtual void InsertAccount(mdb::Account* record) override;
 	virtual void BatchInsertAccount(std::list<mdb::Account*>* records) override;
 	virtual void DeleteAccount(mdb::Account* record) override;
@@ -133,7 +125,7 @@ public:
 private:
 	void SetStatementForTradingDayRecord(sqlite3_stmt* statement, mdb::TradingDay* record);
 	void SetStatementForTradingDayRecordUpdate(sqlite3_stmt* statement, mdb::TradingDay* record);
-	void SetStatementForTradingDayPrimaryKey(sqlite3_stmt* statement, const UserIDType& PK);
+	void SetStatementForTradingDayPrimaryKey(sqlite3_stmt* statement, const IntType& PK);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::TradingDay*>& records);
 	void SetStatementForExchangeRecord(sqlite3_stmt* statement, mdb::Exchange* record);
 	void SetStatementForExchangeRecordUpdate(sqlite3_stmt* statement, mdb::Exchange* record);
@@ -152,11 +144,6 @@ private:
 	void SetStatementForInstrumentRecordUpdate(sqlite3_stmt* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Instrument*>& records);
-	void SetStatementForPrimaryAccountRecord(sqlite3_stmt* statement, mdb::PrimaryAccount* record);
-	void SetStatementForPrimaryAccountRecordUpdate(sqlite3_stmt* statement, mdb::PrimaryAccount* record);
-	void SetStatementForPrimaryAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& PrimaryAccountID);
-	void SetStatementForPrimaryAccountIndexOfferID(sqlite3_stmt* statement, mdb::PrimaryAccount* record);
-	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::PrimaryAccount*>& records);
 	void SetStatementForAccountRecord(sqlite3_stmt* statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(sqlite3_stmt* statement, mdb::Account* record);
 	void SetStatementForAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& AccountID);
@@ -231,12 +218,6 @@ private:
 	sqlite3_stmt* m_InstrumentUpdateStatement;
 	sqlite3_stmt* m_InstrumentSelectStatement;
 	sqlite3_stmt* m_InstrumentTruncateStatement;
-	sqlite3_stmt* m_PrimaryAccountInsertStatement;
-	sqlite3_stmt* m_PrimaryAccountDeleteStatement;
-	sqlite3_stmt* m_PrimaryAccountDeleteByOfferIDIndexStatement;
-	sqlite3_stmt* m_PrimaryAccountUpdateStatement;
-	sqlite3_stmt* m_PrimaryAccountSelectStatement;
-	sqlite3_stmt* m_PrimaryAccountTruncateStatement;
 	sqlite3_stmt* m_AccountInsertStatement;
 	sqlite3_stmt* m_AccountDeleteStatement;
 	sqlite3_stmt* m_AccountUpdateStatement;

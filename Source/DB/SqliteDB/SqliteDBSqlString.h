@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-constexpr const char* CreateSqliteDBTradingDayTableSqlString = "CREATE TABLE IF NOT EXISTS t_TradingDay(PK char(32), CurrTradingDay char(9), PreTradingDay char(9), PRIMARY KEY(PK));";
+constexpr const char* CreateSqliteDBTradingDayTableSqlString = "CREATE TABLE IF NOT EXISTS t_TradingDay(PK int, CurrTradingDay char(9), PreTradingDay char(9), PRIMARY KEY(PK));";
 constexpr const char* TruncateSqliteDBTradingDayTableSqlString = "Delete From t_TradingDay;";
 
 constexpr const char* CreateSqliteDBExchangeTableSqlString = "CREATE TABLE IF NOT EXISTS t_Exchange(ExchangeID char(8), ExchangeName char(64), PRIMARY KEY(ExchangeID));";
@@ -9,10 +9,10 @@ constexpr const char* TruncateSqliteDBExchangeTableSqlString = "Delete From t_Ex
 constexpr const char* CreateSqliteDBProductTableSqlString = "CREATE TABLE IF NOT EXISTS t_Product(ExchangeID char(8), ProductID char(32), ProductName char(32), ProductClass int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName char(32), PRIMARY KEY(ExchangeID, ProductID));";
 constexpr const char* TruncateSqliteDBProductTableSqlString = "Delete From t_Product;";
 
-constexpr const char* CreateSqliteDBHotInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_HotInstrument(TradingDay char(9), ExchangeID char(8), ProductID char(32), Rank int, InstrumentID char(32), PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)); CREATE INDEX IF NOT EXISTS TradingDayIndex ON t_HotInstrument(ExchangeID, ProductID, Rank, TradingDay);";
+constexpr const char* CreateSqliteDBHotInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_HotInstrument(TradingDay char(9), ExchangeID char(8), ProductID char(32), InstrumentID char(32), ProductClass int, Volume bigint, MaxVolume bigint, Turnover double, MaxTurnover double, OpenInterest double, MaxOpenInterest double, Rank int, PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)); CREATE INDEX IF NOT EXISTS TradingDayIndex ON t_HotInstrument(ExchangeID, ProductID, Rank, TradingDay);";
 constexpr const char* TruncateSqliteDBHotInstrumentTableSqlString = "Delete From t_HotInstrument;";
 
-constexpr const char* CreateSqliteDBInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_Instrument(TradingDay char(9), ExchangeID char(8), InstrumentID char(32), ExchangeInstID char(32), InstrumentName char(64), ProductID char(32), ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName char(32), PRIMARY KEY(ExchangeID, InstrumentID));";
+constexpr const char* CreateSqliteDBInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_Instrument(ExchangeID char(8), InstrumentID char(32), ExchangeInstID char(32), InstrumentName char(64), ProductID char(32), ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName char(32), PRIMARY KEY(ExchangeID, InstrumentID));";
 constexpr const char* TruncateSqliteDBInstrumentTableSqlString = "Delete From t_Instrument;";
 
 constexpr const char* CreateSqliteDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(TradingDay char(9), PrimaryAccountID char(32), PrimaryAccountName char(64), AccountClass int, BrokerPassword char(64), OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID)); CREATE INDEX IF NOT EXISTS OfferIDIndex ON t_PrimaryAccount(OfferID);";

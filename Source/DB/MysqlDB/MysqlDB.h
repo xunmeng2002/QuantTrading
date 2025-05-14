@@ -159,7 +159,7 @@ public:
 private:
 	void SetStatementForTradingDayRecord(sql::PreparedStatement* statement, mdb::TradingDay* record);
 	void SetStatementForTradingDayRecordUpdate(sql::PreparedStatement* statement, mdb::TradingDay* record);
-	void SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const UserIDType& PK);
+	void SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const IntType& PK);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::TradingDay*>& records);
 	void SetStatementForExchangeRecord(sql::PreparedStatement* statement, mdb::Exchange* record);
 	void SetStatementForExchangeRecordUpdate(sql::PreparedStatement* statement, mdb::Exchange* record);

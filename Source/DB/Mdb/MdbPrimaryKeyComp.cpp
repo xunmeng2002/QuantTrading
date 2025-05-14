@@ -10,19 +10,19 @@ namespace mdb
 {
 	bool TradingDayEqualForTradingDayPrimaryKey::operator()(const TradingDay* const left, const TradingDay* const right) const
 	{
-		return strcmp(left->PK, right->PK) == 0;
+		return left->PK == right->PK;
 	}
 	bool TradingDayLessForTradingDayPrimaryKey::operator()(const TradingDay* const left, const TradingDay* const right) const
 	{
-		if (strcmp(left->PK, right->PK) < 0)
+		if (left->PK < right->PK)
 			return true;
-		else if (strcmp(left->PK, right->PK) > 0)
+		else if (left->PK > right->PK)
 			return false;
 		return false;
 	}
 	size_t TradingDayHashForTradingDayPrimaryKey::operator()(const TradingDay* const record) const
 	{
-		return std::hash<string>()(record->PK);
+		return std::hash<int>()(record->PK);
 	}
 
 	bool ExchangeEqualForExchangePrimaryKey::operator()(const Exchange* const left, const Exchange* const right) const

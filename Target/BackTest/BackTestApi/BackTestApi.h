@@ -22,6 +22,7 @@ public:
 	virtual void OnRtnBarMarketData(BarMarketDataField* barMarketData) {}
 	virtual void OnRtnSessionBegin(SessionBeginField* sessionBegin) {}
 	virtual void OnRtnSessionEnd(SessionEndField* sessionEnd) {}
+	virtual void OnRtnMarketDataEnd(MarketDataEndField* marketDataEnd) {}
 	virtual void OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRtnOrder(OrderField* order) {}

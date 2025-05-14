@@ -1420,6 +1420,128 @@ const char* RtnSessionEndPackage::GetDebugString() const
 	return t_DataStringBuffer;
 }
  
+RtnMarketDataEndPackage* RtnMarketDataEndPackage::Allocate()
+{
+	return ::Allocate<RtnMarketDataEndPackage>();
+}
+void RtnMarketDataEndPackage::Free()
+{
+	Package::Free();
+	if (MarketDataEnd != nullptr)
+	{
+		::Free<MarketDataEndField>(MarketDataEnd);
+		MarketDataEnd = nullptr;
+	}
+	MemCacheTemplateSingleton<RtnMarketDataEndPackage>::GetInstance().Free(this);
+}
+void RtnMarketDataEndPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RtnMarketDataEndPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (MarketDataEnd != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, MarketDataEndField::FieldID);
+		if (strlen(MarketDataEnd->TradingDay) >= sizeof(MarketDataEnd->TradingDay))
+		{
+			MarketDataEnd->TradingDay[sizeof(MarketDataEnd->TradingDay) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradingDay, MarketDataEnd->TradingDay);
+		WriteHexString(ppos, Items::FieldEnd, MarketDataEndField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RtnMarketDataEndPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case MarketDataEndField::FieldID:
+			{
+				MarketDataEnd = ::Allocate<MarketDataEndField>();
+				memset(MarketDataEnd, 0, sizeof(*MarketDataEnd));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::TradingDay:
+						{
+							size_t len = value.length() >= sizeof(MarketDataEnd->TradingDay) ? sizeof(MarketDataEnd->TradingDay) - 1 : value.length();
+							memcpy(MarketDataEnd->TradingDay, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for MarketDataEndField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnMarketDataEndPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RtnMarketDataEndPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RtnMarketDataEndPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, MarketDataEnd, sizeof(MarketDataEndField));
+	offset += sizeof(MarketDataEndField);
+	return offset;
+}
+bool RtnMarketDataEndPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	MarketDataEnd = ::Allocate<MarketDataEndField>();
+	memcpy(MarketDataEnd, buff + offset, sizeof(MarketDataEndField));
+	offset += sizeof(MarketDataEndField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* RtnMarketDataEndPackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "MarketDataEnd:TradingDay:[%s]", MarketDataEnd->TradingDay);
+	return t_DataStringBuffer;
+}
+ 
 ReqInsertOrderPackage* ReqInsertOrderPackage::Allocate()
 {
 	return ::Allocate<ReqInsertOrderPackage>();

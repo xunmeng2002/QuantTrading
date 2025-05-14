@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-constexpr const char* CreateDuckDBTradingDayTableSqlString = "CREATE TABLE IF NOT EXISTS t_TradingDay(PK varchar, CurrTradingDay varchar, PreTradingDay varchar, PRIMARY KEY(PK));";
+constexpr const char* CreateDuckDBTradingDayTableSqlString = "CREATE TABLE IF NOT EXISTS t_TradingDay(PK int, CurrTradingDay varchar, PreTradingDay varchar, PRIMARY KEY(PK));";
 constexpr const char* TruncateDuckDBTradingDayTableSqlString = "Delete From t_TradingDay;";
 
 constexpr const char* CreateDuckDBExchangeTableSqlString = "CREATE TABLE IF NOT EXISTS t_Exchange(ExchangeID varchar, ExchangeName varchar, PRIMARY KEY(ExchangeID));";
@@ -9,10 +9,10 @@ constexpr const char* TruncateDuckDBExchangeTableSqlString = "Delete From t_Exch
 constexpr const char* CreateDuckDBProductTableSqlString = "CREATE TABLE IF NOT EXISTS t_Product(ExchangeID varchar, ProductID varchar, ProductName varchar, ProductClass int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, ProductID));";
 constexpr const char* TruncateDuckDBProductTableSqlString = "Delete From t_Product;";
 
-constexpr const char* CreateDuckDBHotInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_HotInstrument(TradingDay varchar, ExchangeID varchar, ProductID varchar, Rank int, InstrumentID varchar, PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)); CREATE INDEX IF NOT EXISTS TradingDayIndex ON t_HotInstrument(ExchangeID, ProductID, Rank, TradingDay);";
+constexpr const char* CreateDuckDBHotInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_HotInstrument(TradingDay varchar, ExchangeID varchar, ProductID varchar, InstrumentID varchar, ProductClass int, Volume bigint, MaxVolume bigint, Turnover double, MaxTurnover double, OpenInterest double, MaxOpenInterest double, Rank int, PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)); CREATE INDEX IF NOT EXISTS TradingDayIndex ON t_HotInstrument(ExchangeID, ProductID, Rank, TradingDay);";
 constexpr const char* TruncateDuckDBHotInstrumentTableSqlString = "Delete From t_HotInstrument;";
 
-constexpr const char* CreateDuckDBInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_Instrument(TradingDay varchar, ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));";
+constexpr const char* CreateDuckDBInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_Instrument(ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));";
 constexpr const char* TruncateDuckDBInstrumentTableSqlString = "Delete From t_Instrument;";
 
 constexpr const char* CreateDuckDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(TradingDay varchar, PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, BrokerPassword varchar, OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID)); CREATE INDEX IF NOT EXISTS OfferIDIndex ON t_PrimaryAccount(OfferID);";

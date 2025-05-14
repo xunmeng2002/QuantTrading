@@ -12,7 +12,7 @@ namespace mdb
 		friend class TradingDayTable;
 	public:
 		TradingDayPrimaryKey(TradingDayTable* table, size_t buckets = 1000);
-		TradingDay* Select(const UserIDType& PK);
+		TradingDay* Select(const IntType& PK);
 		std::pair<iterator, iterator> SelectAll();
 		
 	protected:
@@ -108,27 +108,6 @@ namespace mdb
 	private:
 		InstrumentTable* m_Table;
 		std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey> m_Index;
-	};
-
-	class PrimaryAccountTable;
-	class PrimaryAccountPrimaryKey
-	{
-		using iterator = std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey>::iterator;
-		friend class PrimaryAccountTable;
-	public:
-		PrimaryAccountPrimaryKey(PrimaryAccountTable* table, size_t buckets = 1000);
-		PrimaryAccount* Select(const AccountIDType& PrimaryAccountID);
-		std::pair<iterator, iterator> SelectAll();
-		
-	protected:
-		bool Insert(PrimaryAccount* const record);
-		void Erase(PrimaryAccount* const record);
-		bool CheckInsert(PrimaryAccount* const record);
-		bool CheckUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord);
-
-	private:
-		PrimaryAccountTable* m_Table;
-		std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey> m_Index;
 	};
 
 	class AccountTable;

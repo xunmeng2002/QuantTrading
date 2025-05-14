@@ -12,9 +12,9 @@ namespace mdb
 		:m_Table(table), m_Index(buckets)
 	{
 	}
-	TradingDay* TradingDayPrimaryKey::Select(const UserIDType& PK)
+	TradingDay* TradingDayPrimaryKey::Select(const IntType& PK)
 	{
-		Strcpy(t_CompareTradingDay.PK, PK);
+		t_CompareTradingDay.PK = PK;
 		
 		std::shared_lock guard(m_Table->m_SharedMutex);
 		auto it = m_Index.find(&t_CompareTradingDay);

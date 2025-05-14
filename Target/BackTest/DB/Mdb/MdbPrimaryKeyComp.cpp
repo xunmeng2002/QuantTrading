@@ -10,19 +10,19 @@ namespace mdb
 {
 	bool TradingDayEqualForTradingDayPrimaryKey::operator()(const TradingDay* const left, const TradingDay* const right) const
 	{
-		return strcmp(left->PK, right->PK) == 0;
+		return left->PK == right->PK;
 	}
 	bool TradingDayLessForTradingDayPrimaryKey::operator()(const TradingDay* const left, const TradingDay* const right) const
 	{
-		if (strcmp(left->PK, right->PK) < 0)
+		if (left->PK < right->PK)
 			return true;
-		else if (strcmp(left->PK, right->PK) > 0)
+		else if (left->PK > right->PK)
 			return false;
 		return false;
 	}
 	size_t TradingDayHashForTradingDayPrimaryKey::operator()(const TradingDay* const record) const
 	{
-		return std::hash<string>()(record->PK);
+		return std::hash<int>()(record->PK);
 	}
 
 	bool ExchangeEqualForExchangePrimaryKey::operator()(const Exchange* const left, const Exchange* const right) const
@@ -111,23 +111,6 @@ namespace mdb
 	size_t InstrumentHashForInstrumentPrimaryKey::operator()(const Instrument* const record) const
 	{
 		return std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID);
-	}
-
-	bool PrimaryAccountEqualForPrimaryAccountPrimaryKey::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
-	{
-		return strcmp(left->PrimaryAccountID, right->PrimaryAccountID) == 0;
-	}
-	bool PrimaryAccountLessForPrimaryAccountPrimaryKey::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
-	{
-		if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) < 0)
-			return true;
-		else if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) > 0)
-			return false;
-		return false;
-	}
-	size_t PrimaryAccountHashForPrimaryAccountPrimaryKey::operator()(const PrimaryAccount* const record) const
-	{
-		return std::hash<string>()(record->PrimaryAccountID);
 	}
 
 	bool AccountEqualForAccountPrimaryKey::operator()(const Account* const left, const Account* const right) const

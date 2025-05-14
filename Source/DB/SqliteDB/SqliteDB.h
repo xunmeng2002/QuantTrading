@@ -133,7 +133,7 @@ public:
 private:
 	void SetStatementForTradingDayRecord(sqlite3_stmt* statement, mdb::TradingDay* record);
 	void SetStatementForTradingDayRecordUpdate(sqlite3_stmt* statement, mdb::TradingDay* record);
-	void SetStatementForTradingDayPrimaryKey(sqlite3_stmt* statement, const UserIDType& PK);
+	void SetStatementForTradingDayPrimaryKey(sqlite3_stmt* statement, const IntType& PK);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::TradingDay*>& records);
 	void SetStatementForExchangeRecord(sqlite3_stmt* statement, mdb::Exchange* record);
 	void SetStatementForExchangeRecordUpdate(sqlite3_stmt* statement, mdb::Exchange* record);

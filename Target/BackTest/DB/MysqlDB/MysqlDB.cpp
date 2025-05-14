@@ -53,13 +53,6 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
 
-	m_PrimaryAccountInsertStatement = nullptr;
-	m_PrimaryAccountDeleteStatement = nullptr;
-	m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
-	m_PrimaryAccountUpdateStatement = nullptr;
-	m_PrimaryAccountSelectStatement = nullptr;
-	m_PrimaryAccountTruncateStatement = nullptr;
-
 	m_AccountInsertStatement = nullptr;
 	m_AccountDeleteStatement = nullptr;
 	m_AccountUpdateStatement = nullptr;
@@ -302,36 +295,6 @@ void MysqlDB::DisConnect()
 	{
 		m_InstrumentTruncateStatement->close();
 		m_InstrumentTruncateStatement = nullptr;
-	}
-	if (m_PrimaryAccountInsertStatement != nullptr)
-	{
-		m_PrimaryAccountInsertStatement->close();
-		m_PrimaryAccountInsertStatement = nullptr;
-	}
-	if (m_PrimaryAccountDeleteStatement != nullptr)
-	{
-		m_PrimaryAccountDeleteStatement->close();
-		m_PrimaryAccountDeleteStatement = nullptr;
-	}
-	if (m_PrimaryAccountDeleteByOfferIDIndexStatement != nullptr)
-	{
-		m_PrimaryAccountDeleteByOfferIDIndexStatement->close();
-		m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
-	}
-	if (m_PrimaryAccountUpdateStatement != nullptr)
-	{
-		m_PrimaryAccountUpdateStatement->close();
-		m_PrimaryAccountUpdateStatement = nullptr;
-	}
-	if (m_PrimaryAccountSelectStatement != nullptr)
-	{
-		m_PrimaryAccountSelectStatement->close();
-		m_PrimaryAccountSelectStatement = nullptr;
-	}
-	if (m_PrimaryAccountTruncateStatement != nullptr)
-	{
-		m_PrimaryAccountTruncateStatement->close();
-		m_PrimaryAccountTruncateStatement = nullptr;
 	}
 	if (m_AccountInsertStatement != nullptr)
 	{
@@ -596,8 +559,6 @@ void MysqlDB::InitDB()
 	m_Statement->executeUpdate("Insert Into t_HotInstrument select * from Init.t_HotInstrument;");
 	m_Statement->executeUpdate("Truncate Table t_Instrument;");
 	m_Statement->executeUpdate("Insert Into t_Instrument select * from Init.t_Instrument;");
-	m_Statement->executeUpdate("Truncate Table t_PrimaryAccount;");
-	m_Statement->executeUpdate("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
 	m_Statement->executeUpdate("Truncate Table t_Account;");
 	m_Statement->executeUpdate("Insert Into t_Account select * from Init.t_Account;");
 	m_Statement->executeUpdate("Truncate Table t_Capital;");
@@ -628,7 +589,6 @@ void MysqlDB::TruncateTables()
 	TruncateExchange();
 	TruncateProduct();
 	TruncateHotInstrument();
-	TruncatePrimaryAccount();
 	TruncateAccount();
 	TruncateCapital();
 	TruncatePosition();
@@ -981,7 +941,7 @@ void MysqlDB::InsertHotInstrument(HotInstrument* record)
 	auto start = steady_clock::now();
 	if (m_HotInstrumentInsertStatement == nullptr)
 	{
-		m_HotInstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_HotInstrument Values(?, ?, ?, ?, ?);");
+		m_HotInstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_HotInstrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForHotInstrumentRecord(m_HotInstrumentInsertStatement, record);
 	
@@ -1065,7 +1025,7 @@ void MysqlDB::UpdateHotInstrument(HotInstrument* record)
 	auto start = steady_clock::now();
 	if (m_HotInstrumentUpdateStatement == nullptr)
 	{
-		m_HotInstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_HotInstrument set InstrumentID = ? where TradingDay = ? and ExchangeID = ? and ProductID = ? and Rank = ?;");
+		m_HotInstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_HotInstrument set InstrumentID = ?, ProductClass = ?, Volume = ?, MaxVolume = ?, Turnover = ?, MaxTurnover = ?, OpenInterest = ?, MaxOpenInterest = ? where TradingDay = ? and ExchangeID = ? and ProductID = ? and Rank = ?;");
 	}
 	SetStatementForHotInstrumentRecordUpdate(m_HotInstrumentUpdateStatement, record);
 	m_HotInstrumentUpdateStatement->executeUpdate();
@@ -1108,7 +1068,7 @@ void MysqlDB::InsertInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentInsertStatement == nullptr)
 	{
-		m_InstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_InstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForInstrumentRecord(m_InstrumentInsertStatement, record);
 	
@@ -1177,7 +1137,7 @@ void MysqlDB::UpdateInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentUpdateStatement == nullptr)
 	{
-		m_InstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_Instrument set TradingDay = ?, ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;");
+		m_InstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_Instrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;");
 	}
 	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
 	m_InstrumentUpdateStatement->executeUpdate();
@@ -1214,133 +1174,6 @@ void MysqlDB::TruncateInstrument()
 	}
 	m_InstrumentTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
-}
-void MysqlDB::InsertPrimaryAccount(PrimaryAccount* record)
-{
-	auto start = steady_clock::now();
-	if (m_PrimaryAccountInsertStatement == nullptr)
-	{
-		m_PrimaryAccountInsertStatement = m_DBConnection->prepareStatement("insert into t_PrimaryAccount Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-	}
-	SetStatementForPrimaryAccountRecord(m_PrimaryAccountInsertStatement, record);
-	
-	m_PrimaryAccountInsertStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "InsertPrimaryAccount Spend:%lldms", duration);
-	}
-}
-void MysqlDB::BatchInsertPrimaryAccount(std::list<PrimaryAccount*>* records)
-{
-	auto start = steady_clock::now();
-	memset(m_SqlBuff, 0, BuffSize);
-	strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
-	int n = (int)strlen(m_SqlBuff);
-	int i = 0;
-	for (auto it = records->begin(); it != records->end(); ++it, ++i)
-	{
-		if (n > 60000)
-		{
-			m_SqlBuff[n - 1] = ';';
-			try
-			{
-				m_Statement->executeUpdate(m_SqlBuff);
-			}
-			catch(exception e)
-			{
-				WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
-			}
-			memset(m_SqlBuff, 0, BuffSize);
-			strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
-			n = (int)strlen(m_SqlBuff);
-		}
-		n += (*it)->GetSqlString(m_SqlBuff + n);
-	}
-	m_SqlBuff[n - 1] = ';';
-	try
-	{
-		m_Statement->executeUpdate(m_SqlBuff);
-	}
-	catch(exception e)
-	{
-		WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
-	}
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
-}
-void MysqlDB::DeletePrimaryAccount(PrimaryAccount* record)
-{
-	auto start = steady_clock::now();
-	if (m_PrimaryAccountDeleteStatement == nullptr)
-	{
-		m_PrimaryAccountDeleteStatement = m_DBConnection->prepareStatement("delete from t_PrimaryAccount where PrimaryAccountID = ?;");
-	}
-	SetStatementForPrimaryAccountPrimaryKey(m_PrimaryAccountDeleteStatement, record->PrimaryAccountID);
-	m_PrimaryAccountDeleteStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "DeletePrimaryAccount Spend:%lldms", duration);
-	}
-}
-void MysqlDB::DeletePrimaryAccountByOfferIDIndex(PrimaryAccount* record)
-{
-	auto start = steady_clock::now();
-	if (m_PrimaryAccountDeleteByOfferIDIndexStatement == nullptr)
-	{
-		m_PrimaryAccountDeleteByOfferIDIndexStatement = m_DBConnection->prepareStatement("delete from t_PrimaryAccount where OfferID = ?;");
-	}
-	SetStatementForPrimaryAccountIndexOfferID(m_PrimaryAccountDeleteByOfferIDIndexStatement, record);
-	m_PrimaryAccountDeleteByOfferIDIndexStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex Spend:%lldms", duration);
-	}
-}
-void MysqlDB::UpdatePrimaryAccount(PrimaryAccount* record)
-{
-	auto start = steady_clock::now();
-	if (m_PrimaryAccountUpdateStatement == nullptr)
-	{
-		m_PrimaryAccountUpdateStatement = m_DBConnection->prepareStatement("update t_PrimaryAccount set TradingDay = ?, PrimaryAccountName = ?, AccountClass = ?, BrokerPassword = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;");
-	}
-	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
-	m_PrimaryAccountUpdateStatement->executeUpdate();
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount Spend:%lldms", duration);
-	}
-}
-void MysqlDB::SelectPrimaryAccount(std::list<PrimaryAccount*>& records)
-{
-	auto start = steady_clock::now();
-	if (m_PrimaryAccountSelectStatement == nullptr)
-	{
-		m_PrimaryAccountSelectStatement = m_DBConnection->prepareStatement("select * from t_PrimaryAccount;");
-	}
-	auto result = m_PrimaryAccountSelectStatement->executeQuery();
-	while (result->next())
-	{
-		ParseRecord(result, records);
-	}
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "SelectPrimaryAccount Spend:%lldms", duration);
-	}
-}
-void MysqlDB::TruncatePrimaryAccount()
-{
-	auto start = steady_clock::now();
-	if (m_PrimaryAccountTruncateStatement == nullptr)
-	{
-		m_PrimaryAccountTruncateStatement = m_DBConnection->prepareStatement("truncate table t_PrimaryAccount;");
-	}
-	m_PrimaryAccountTruncateStatement->executeQuery();
-	WriteLog(LogLevel::Info, "TruncatePrimaryAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 void MysqlDB::InsertAccount(Account* record)
 {
@@ -2429,7 +2262,7 @@ void MysqlDB::TruncateMdSubscribe()
 
 void MysqlDB::SetStatementForTradingDayRecord(sql::PreparedStatement* statement, TradingDay* record)
 {
-	statement->setString(1, record->PK);
+	statement->setInt(1, record->PK);
 	statement->setString(2, record->CurrTradingDay);
 	statement->setString(3, record->PreTradingDay);
 }
@@ -2437,16 +2270,16 @@ void MysqlDB::SetStatementForTradingDayRecordUpdate(sql::PreparedStatement* stat
 {
 	statement->setString(1, record->CurrTradingDay);
 	statement->setString(2, record->PreTradingDay);
-	statement->setString(3, record->PK);
+	statement->setInt(3, record->PK);
 }
-void MysqlDB::SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const UserIDType& PK)
+void MysqlDB::SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const IntType& PK)
 {
-	statement->setString(1, PK);
+	statement->setInt(1, PK);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<TradingDay*>& records)
 {
 	TradingDay* record = TradingDay::Allocate();
-	Strcpy(record->PK, result->getString(1).c_str());
+	record->PK = result->getInt(1);
 	Strcpy(record->CurrTradingDay, result->getString(2).c_str());
 	Strcpy(record->PreTradingDay, result->getString(3).c_str());
 	records.push_back(record);
@@ -2526,16 +2359,30 @@ void MysqlDB::SetStatementForHotInstrumentRecord(sql::PreparedStatement* stateme
 	statement->setString(1, record->TradingDay);
 	statement->setString(2, record->ExchangeID);
 	statement->setString(3, record->ProductID);
-	statement->setInt(4, record->Rank);
-	statement->setString(5, record->InstrumentID);
+	statement->setString(4, record->InstrumentID);
+	statement->setInt(5, int(record->ProductClass));
+	statement->setInt64(6, record->Volume);
+	statement->setInt64(7, record->MaxVolume);
+	statement->setDouble(8, record->Turnover);
+	statement->setDouble(9, record->MaxTurnover);
+	statement->setDouble(10, record->OpenInterest);
+	statement->setDouble(11, record->MaxOpenInterest);
+	statement->setInt(12, record->Rank);
 }
 void MysqlDB::SetStatementForHotInstrumentRecordUpdate(sql::PreparedStatement* statement, HotInstrument* record)
 {
 	statement->setString(1, record->InstrumentID);
-	statement->setString(2, record->TradingDay);
-	statement->setString(3, record->ExchangeID);
-	statement->setString(4, record->ProductID);
-	statement->setInt(5, record->Rank);
+	statement->setInt(2, int(record->ProductClass));
+	statement->setInt64(3, record->Volume);
+	statement->setInt64(4, record->MaxVolume);
+	statement->setDouble(5, record->Turnover);
+	statement->setDouble(6, record->MaxTurnover);
+	statement->setDouble(7, record->OpenInterest);
+	statement->setDouble(8, record->MaxOpenInterest);
+	statement->setString(9, record->TradingDay);
+	statement->setString(10, record->ExchangeID);
+	statement->setString(11, record->ProductID);
+	statement->setInt(12, record->Rank);
 }
 void MysqlDB::SetStatementForHotInstrumentPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank)
 {
@@ -2557,47 +2404,52 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<HotInstrument*>& rec
 	Strcpy(record->TradingDay, result->getString(1).c_str());
 	Strcpy(record->ExchangeID, result->getString(2).c_str());
 	Strcpy(record->ProductID, result->getString(3).c_str());
-	record->Rank = result->getInt(4);
-	Strcpy(record->InstrumentID, result->getString(5).c_str());
+	Strcpy(record->InstrumentID, result->getString(4).c_str());
+	record->ProductClass = ProductClassType(result->getInt(5));
+	record->Volume = result->getInt64(6);
+	record->MaxVolume = result->getInt64(7);
+	record->Turnover = result->getDouble(8);
+	record->MaxTurnover = result->getDouble(9);
+	record->OpenInterest = result->getDouble(10);
+	record->MaxOpenInterest = result->getDouble(11);
+	record->Rank = result->getInt(12);
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForInstrumentRecord(sql::PreparedStatement* statement, Instrument* record)
 {
-	statement->setString(1, record->TradingDay);
-	statement->setString(2, record->ExchangeID);
-	statement->setString(3, record->InstrumentID);
-	statement->setString(4, record->ExchangeInstID);
-	statement->setString(5, record->InstrumentName);
-	statement->setString(6, record->ProductID);
-	statement->setInt(7, int(record->ProductClass));
-	statement->setInt(8, int(record->InstrumentClass));
-	statement->setInt(9, record->Rank);
-	statement->setInt(10, record->VolumeMultiple);
-	statement->setDouble(11, record->PriceTick);
-	statement->setInt64(12, record->MaxMarketOrderVolume);
-	statement->setInt64(13, record->MinMarketOrderVolume);
-	statement->setInt64(14, record->MaxLimitOrderVolume);
-	statement->setInt64(15, record->MinLimitOrderVolume);
-	statement->setString(16, record->SessionName);
+	statement->setString(1, record->ExchangeID);
+	statement->setString(2, record->InstrumentID);
+	statement->setString(3, record->ExchangeInstID);
+	statement->setString(4, record->InstrumentName);
+	statement->setString(5, record->ProductID);
+	statement->setInt(6, int(record->ProductClass));
+	statement->setInt(7, int(record->InstrumentClass));
+	statement->setInt(8, record->Rank);
+	statement->setInt(9, record->VolumeMultiple);
+	statement->setDouble(10, record->PriceTick);
+	statement->setInt64(11, record->MaxMarketOrderVolume);
+	statement->setInt64(12, record->MinMarketOrderVolume);
+	statement->setInt64(13, record->MaxLimitOrderVolume);
+	statement->setInt64(14, record->MinLimitOrderVolume);
+	statement->setString(15, record->SessionName);
 }
 void MysqlDB::SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, Instrument* record)
 {
-	statement->setString(1, record->TradingDay);
-	statement->setString(2, record->ExchangeInstID);
-	statement->setString(3, record->InstrumentName);
-	statement->setString(4, record->ProductID);
-	statement->setInt(5, int(record->ProductClass));
-	statement->setInt(6, int(record->InstrumentClass));
-	statement->setInt(7, record->Rank);
-	statement->setInt(8, record->VolumeMultiple);
-	statement->setDouble(9, record->PriceTick);
-	statement->setInt64(10, record->MaxMarketOrderVolume);
-	statement->setInt64(11, record->MinMarketOrderVolume);
-	statement->setInt64(12, record->MaxLimitOrderVolume);
-	statement->setInt64(13, record->MinLimitOrderVolume);
-	statement->setString(14, record->SessionName);
-	statement->setString(15, record->ExchangeID);
-	statement->setString(16, record->InstrumentID);
+	statement->setString(1, record->ExchangeInstID);
+	statement->setString(2, record->InstrumentName);
+	statement->setString(3, record->ProductID);
+	statement->setInt(4, int(record->ProductClass));
+	statement->setInt(5, int(record->InstrumentClass));
+	statement->setInt(6, record->Rank);
+	statement->setInt(7, record->VolumeMultiple);
+	statement->setDouble(8, record->PriceTick);
+	statement->setInt64(9, record->MaxMarketOrderVolume);
+	statement->setInt64(10, record->MinMarketOrderVolume);
+	statement->setInt64(11, record->MaxLimitOrderVolume);
+	statement->setInt64(12, record->MinLimitOrderVolume);
+	statement->setString(13, record->SessionName);
+	statement->setString(14, record->ExchangeID);
+	statement->setString(15, record->InstrumentID);
 }
 void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
@@ -2607,71 +2459,21 @@ void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statem
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Instrument*>& records)
 {
 	Instrument* record = Instrument::Allocate();
-	Strcpy(record->TradingDay, result->getString(1).c_str());
-	Strcpy(record->ExchangeID, result->getString(2).c_str());
-	Strcpy(record->InstrumentID, result->getString(3).c_str());
-	Strcpy(record->ExchangeInstID, result->getString(4).c_str());
-	Strcpy(record->InstrumentName, result->getString(5).c_str());
-	Strcpy(record->ProductID, result->getString(6).c_str());
-	record->ProductClass = ProductClassType(result->getInt(7));
-	record->InstrumentClass = InstrumentClassType(result->getInt(8));
-	record->Rank = result->getInt(9);
-	record->VolumeMultiple = result->getInt(10);
-	record->PriceTick = result->getDouble(11);
-	record->MaxMarketOrderVolume = result->getInt64(12);
-	record->MinMarketOrderVolume = result->getInt64(13);
-	record->MaxLimitOrderVolume = result->getInt64(14);
-	record->MinLimitOrderVolume = result->getInt64(15);
-	Strcpy(record->SessionName, result->getString(16).c_str());
-	records.push_back(record);
-}
-void MysqlDB::SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statement, PrimaryAccount* record)
-{
-	statement->setString(1, record->TradingDay);
-	statement->setString(2, record->PrimaryAccountID);
-	statement->setString(3, record->PrimaryAccountName);
-	statement->setInt(4, int(record->AccountClass));
-	statement->setString(5, record->BrokerPassword);
-	statement->setInt(6, record->OfferID);
-	statement->setBoolean(7, record->IsAllowLogin);
-	statement->setBoolean(8, record->IsSimulateAccount);
-	statement->setInt(9, int(record->LoginStatus));
-	statement->setInt(10, int(record->InitStatus));
-}
-void MysqlDB::SetStatementForPrimaryAccountRecordUpdate(sql::PreparedStatement* statement, PrimaryAccount* record)
-{
-	statement->setString(1, record->TradingDay);
-	statement->setString(2, record->PrimaryAccountName);
-	statement->setInt(3, int(record->AccountClass));
-	statement->setString(4, record->BrokerPassword);
-	statement->setInt(5, record->OfferID);
-	statement->setBoolean(6, record->IsAllowLogin);
-	statement->setBoolean(7, record->IsSimulateAccount);
-	statement->setInt(8, int(record->LoginStatus));
-	statement->setInt(9, int(record->InitStatus));
-	statement->setString(10, record->PrimaryAccountID);
-}
-void MysqlDB::SetStatementForPrimaryAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& PrimaryAccountID)
-{
-	statement->setString(1, PrimaryAccountID);
-}
-void MysqlDB::SetStatementForPrimaryAccountIndexOfferID(sql::PreparedStatement* statement, PrimaryAccount* record)
-{
-	statement->setInt(1, record->OfferID);
-}
-void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<PrimaryAccount*>& records)
-{
-	PrimaryAccount* record = PrimaryAccount::Allocate();
-	Strcpy(record->TradingDay, result->getString(1).c_str());
-	Strcpy(record->PrimaryAccountID, result->getString(2).c_str());
-	Strcpy(record->PrimaryAccountName, result->getString(3).c_str());
-	record->AccountClass = AccountClassType(result->getInt(4));
-	Strcpy(record->BrokerPassword, result->getString(5).c_str());
-	record->OfferID = result->getInt(6);
-	record->IsAllowLogin = result->getBoolean(7);
-	record->IsSimulateAccount = result->getBoolean(8);
-	record->LoginStatus = LoginStatusType(result->getInt(9));
-	record->InitStatus = InitStatusType(result->getInt(10));
+	Strcpy(record->ExchangeID, result->getString(1).c_str());
+	Strcpy(record->InstrumentID, result->getString(2).c_str());
+	Strcpy(record->ExchangeInstID, result->getString(3).c_str());
+	Strcpy(record->InstrumentName, result->getString(4).c_str());
+	Strcpy(record->ProductID, result->getString(5).c_str());
+	record->ProductClass = ProductClassType(result->getInt(6));
+	record->InstrumentClass = InstrumentClassType(result->getInt(7));
+	record->Rank = result->getInt(8);
+	record->VolumeMultiple = result->getInt(9);
+	record->PriceTick = result->getDouble(10);
+	record->MaxMarketOrderVolume = result->getInt64(11);
+	record->MinMarketOrderVolume = result->getInt64(12);
+	record->MaxLimitOrderVolume = result->getInt64(13);
+	record->MinLimitOrderVolume = result->getInt64(14);
+	Strcpy(record->SessionName, result->getString(15).c_str());
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForAccountRecord(sql::PreparedStatement* statement, Account* record)

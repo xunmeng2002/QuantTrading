@@ -5,7 +5,6 @@
 	<table name="Product"/>
 	<table name="HotInstrument"/>
 	<table name="Instrument"/>
-	<table name="PrimaryAccount"/>
 	<table name="Account"/>
 	<table name="Capital"/>
 	<table name="Position"/>

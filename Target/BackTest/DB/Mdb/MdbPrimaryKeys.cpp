@@ -12,9 +12,9 @@ namespace mdb
 		:m_Table(table), m_Index(buckets)
 	{
 	}
-	TradingDay* TradingDayPrimaryKey::Select(const UserIDType& PK)
+	TradingDay* TradingDayPrimaryKey::Select(const IntType& PK)
 	{
-		Strcpy(t_CompareTradingDay.PK, PK);
+		t_CompareTradingDay.PK = PK;
 		
 		std::shared_lock guard(m_Table->m_SharedMutex);
 		auto it = m_Index.find(&t_CompareTradingDay);
@@ -201,44 +201,6 @@ namespace mdb
 	bool InstrumentPrimaryKey::CheckUpdate(const Instrument* const oldRecord, const Instrument* const newRecord)
 	{
 		return InstrumentEqualForInstrumentPrimaryKey()(oldRecord, newRecord);
-	}
-
-	PrimaryAccountPrimaryKey::PrimaryAccountPrimaryKey(PrimaryAccountTable* table, size_t buckets)
-		:m_Table(table), m_Index(buckets)
-	{
-	}
-	PrimaryAccount* PrimaryAccountPrimaryKey::Select(const AccountIDType& PrimaryAccountID)
-	{
-		Strcpy(t_ComparePrimaryAccount.PrimaryAccountID, PrimaryAccountID);
-		
-		std::shared_lock guard(m_Table->m_SharedMutex);
-		auto it = m_Index.find(&t_ComparePrimaryAccount);
-		if (it == m_Index.end())
-		{
-			return nullptr;
-		}
-		return *it;
-	}
-	std::pair<PrimaryAccountPrimaryKey::iterator, PrimaryAccountPrimaryKey::iterator> PrimaryAccountPrimaryKey::SelectAll()
-	{
-		std::shared_lock guard(m_Table->m_SharedMutex);
-		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
-	}
-	bool PrimaryAccountPrimaryKey::Insert(PrimaryAccount* const record)
-	{
-		return m_Index.insert(record).second;
-	}
-	void PrimaryAccountPrimaryKey::Erase(PrimaryAccount* const  record)
-	{
-		m_Index.erase(record);
-	}
-	bool PrimaryAccountPrimaryKey::CheckInsert(PrimaryAccount* const record)
-	{
-		return m_Index.find(record) == m_Index.end();
-	}
-	bool PrimaryAccountPrimaryKey::CheckUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord)
-	{
-		return PrimaryAccountEqualForPrimaryAccountPrimaryKey()(oldRecord, newRecord);
 	}
 
 	AccountPrimaryKey::AccountPrimaryKey(AccountTable* table, size_t buckets)

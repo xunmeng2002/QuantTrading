@@ -20,7 +20,6 @@ namespace mdb
 		LoadProductTable(mdb, dir);
 		LoadHotInstrumentTable(mdb, dir);
 		LoadInstrumentTable(mdb, dir);
-		LoadPrimaryAccountTable(mdb, dir);
 		LoadAccountTable(mdb, dir);
 		LoadCapitalTable(mdb, dir);
 		LoadPositionTable(mdb, dir);
@@ -60,7 +59,7 @@ namespace mdb
 			}
 
 			auto record = new TradingDay();
-			Strcpy(record->PK, csv_record.GetFieldAsString("PK"));
+			record->PK = csv_record.GetFieldAsInt("PK");
 			Strcpy(record->CurrTradingDay, csv_record.GetFieldAsString("CurrTradingDay"));
 			Strcpy(record->PreTradingDay, csv_record.GetFieldAsString("PreTradingDay"));
 			mdb->t_TradingDay->Insert(record);
@@ -175,8 +174,15 @@ namespace mdb
 			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->ProductID, csv_record.GetFieldAsString("ProductID"));
-			record->Rank = csv_record.GetFieldAsInt("Rank");
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			record->Volume = csv_record.GetFieldAsInt64("Volume");
+			record->MaxVolume = csv_record.GetFieldAsInt64("MaxVolume");
+			record->Turnover = csv_record.GetFieldAsDouble("Turnover");
+			record->MaxTurnover = csv_record.GetFieldAsDouble("MaxTurnover");
+			record->OpenInterest = csv_record.GetFieldAsDouble("OpenInterest");
+			record->MaxOpenInterest = csv_record.GetFieldAsDouble("MaxOpenInterest");
+			record->Rank = csv_record.GetFieldAsInt("Rank");
 			mdb->t_HotInstrument->Insert(record);
 		}
 		file.close();
@@ -209,7 +215,6 @@ namespace mdb
 			}
 
 			auto record = new Instrument();
-			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
 			Strcpy(record->ExchangeInstID, csv_record.GetFieldAsString("ExchangeInstID"));
@@ -226,48 +231,6 @@ namespace mdb
 			record->MinLimitOrderVolume = csv_record.GetFieldAsInt64("MinLimitOrderVolume");
 			Strcpy(record->SessionName, csv_record.GetFieldAsString("SessionName"));
 			mdb->t_Instrument->Insert(record);
-		}
-		file.close();
-	}
-	void InitMdbFromCsv::LoadPrimaryAccountTable(Mdb* mdb, const char* dir)
-	{
-		char fullPath[260];
-		sprintf(fullPath, "%s/t_PrimaryAccount.csv", dir);
-		fstream file(fullPath, fstream::in);
-		if (!file)
-		{
-			throw std::string(fullPath) + " Open Failed.";
-		}
-
-		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
-		CSVRecord csv_record;
-		if (!csv_record.AnalysisFieldName(HeaderBuffer))
-		{
-			throw std::string("AnalysisFieldName t_PrimaryAccount.csv failed");
-		}
-		while (!file.eof())
-		{
-			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
-			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
-			if (ContentBuffer[0] == '\0')
-				break;
-			if (!csv_record.AnalysisFieldContent(ContentBuffer))
-			{
-				throw std::string("AnalysisFieldContent t_PrimaryAccount.csv failed");
-			}
-
-			auto record = new PrimaryAccount();
-			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
-			Strcpy(record->PrimaryAccountID, csv_record.GetFieldAsString("PrimaryAccountID"));
-			Strcpy(record->PrimaryAccountName, csv_record.GetFieldAsString("PrimaryAccountName"));
-			record->AccountClass = (AccountClassType)csv_record.GetFieldAsInt("AccountClass");
-			Strcpy(record->BrokerPassword, csv_record.GetFieldAsString("BrokerPassword"));
-			record->OfferID = csv_record.GetFieldAsInt("OfferID");
-			record->IsAllowLogin = (bool)csv_record.GetFieldAsInt("IsAllowLogin");
-			record->IsSimulateAccount = (bool)csv_record.GetFieldAsInt("IsSimulateAccount");
-			record->LoginStatus = (LoginStatusType)csv_record.GetFieldAsInt("LoginStatus");
-			record->InitStatus = (InitStatusType)csv_record.GetFieldAsInt("InitStatus");
-			mdb->t_PrimaryAccount->Insert(record);
 		}
 		file.close();
 	}

@@ -58,15 +58,6 @@ public:
 	virtual void TruncateInstrument() override;
 	static void ParseRecord(duckdb_result& result, std::list<mdb::Instrument*>& records);
 	
-	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) override;
-	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) override;
-	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void SelectPrimaryAccount(std::list<mdb::PrimaryAccount*>& records) override;
-	virtual void TruncatePrimaryAccount() override;
-	static void ParseRecord(duckdb_result& result, std::list<mdb::PrimaryAccount*>& records);
-	
 	virtual void InsertAccount(mdb::Account* record) override;
 	virtual void BatchInsertAccount(std::list<mdb::Account*>* records) override;
 	virtual void DeleteAccount(mdb::Account* record) override;
@@ -167,11 +158,6 @@ private:
 	void SetStatementForInstrumentRecord(duckdb_prepared_statement statement, mdb::Instrument* record);
 	void SetStatementForInstrumentRecordUpdate(duckdb_prepared_statement statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement statement, mdb::Instrument* record);
-	bool AppendForPrimaryAccountRecord(duckdb_appender appender, mdb::PrimaryAccount* record);
-	void SetStatementForPrimaryAccountRecord(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
-	void SetStatementForPrimaryAccountRecordUpdate(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
-	void SetStatementForPrimaryAccountPrimaryKey(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
-	void SetStatementForPrimaryAccountIndexOfferID(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
 	bool AppendForAccountRecord(duckdb_appender appender, mdb::Account* record);
 	void SetStatementForAccountRecord(duckdb_prepared_statement statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(duckdb_prepared_statement statement, mdb::Account* record);
@@ -242,11 +228,6 @@ private:
 	duckdb_prepared_statement m_InstrumentUpdateStatement;
 	duckdb_prepared_statement m_InstrumentSelectStatement;
 	duckdb_prepared_statement m_InstrumentTruncateStatement;
-	duckdb_prepared_statement m_PrimaryAccountDeleteStatement;
-	duckdb_prepared_statement m_PrimaryAccountDeleteByOfferIDIndexStatement;
-	duckdb_prepared_statement m_PrimaryAccountUpdateStatement;
-	duckdb_prepared_statement m_PrimaryAccountSelectStatement;
-	duckdb_prepared_statement m_PrimaryAccountTruncateStatement;
 	duckdb_prepared_statement m_AccountDeleteStatement;
 	duckdb_prepared_statement m_AccountUpdateStatement;
 	duckdb_prepared_statement m_AccountSelectStatement;

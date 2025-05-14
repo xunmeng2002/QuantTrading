@@ -1,4 +1,9 @@
 <copylist>
 	<file name="MdApi.dll" dest="../Libs/QuantTrading/" src="./out/build/x64-Debug/Api/MdApi/"/>
 	<file name="MdApi.lib" dest="../Libs/QuantTrading/" src="./out/build/x64-Debug/Api/MdApi/"/>
+	<file name="MdApi.dll" dest="./out/build/x64-Debug/Test/TestMdApi/" src="./out/build/x64-Debug/Api/MdApi/"/>
+
+	<file name="BackTest.dll" dest="../Libs/QuantTrading/" src="./out/build/x64-Debug/Target/BackTest/"/>
+	<file name="BackTest.lib" dest="../Libs/QuantTrading/" src="./out/build/x64-Debug/Target/BackTest/"/>
+	<file name="BackTest.dll" dest="./out/build/x64-Debug/Test/TestBackTest/" src="./out/build/x64-Debug/Target/BackTest/"/>
 </copylist>

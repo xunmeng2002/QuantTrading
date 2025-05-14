@@ -1052,7 +1052,7 @@ void SqliteDB::InsertHotInstrument(HotInstrument* record)
 	auto start = steady_clock::now();
 	if (m_HotInstrumentInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_HotInstrument Values(?, ?, ?, ?, ?);", -1, &m_HotInstrumentInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_HotInstrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_HotInstrumentInsertStatement, nullptr);
 	}
 	SetStatementForHotInstrumentRecord(m_HotInstrumentInsertStatement, record);
 	
@@ -1158,7 +1158,7 @@ void SqliteDB::UpdateHotInstrument(HotInstrument* record)
 	auto start = steady_clock::now();
 	if (m_HotInstrumentUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_HotInstrument set InstrumentID = ? where TradingDay = ? and ExchangeID = ? and ProductID = ? and Rank = ?;", -1, &m_HotInstrumentUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_HotInstrument set InstrumentID = ?, ProductClass = ?, Volume = ?, MaxVolume = ?, Turnover = ?, MaxTurnover = ?, OpenInterest = ?, MaxOpenInterest = ? where TradingDay = ? and ExchangeID = ? and ProductID = ? and Rank = ?;", -1, &m_HotInstrumentUpdateStatement, nullptr);
 	}
 	SetStatementForHotInstrumentRecordUpdate(m_HotInstrumentUpdateStatement, record);
 	
@@ -1217,7 +1217,7 @@ void SqliteDB::InsertInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_InstrumentInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_InstrumentInsertStatement, nullptr);
 	}
 	SetStatementForInstrumentRecord(m_InstrumentInsertStatement, record);
 	
@@ -1301,7 +1301,7 @@ void SqliteDB::UpdateInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_Instrument set TradingDay = ?, ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;", -1, &m_InstrumentUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_Instrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;", -1, &m_InstrumentUpdateStatement, nullptr);
 	}
 	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
 	
@@ -2921,7 +2921,7 @@ void SqliteDB::TruncateMdSubscribe()
 
 void SqliteDB::SetStatementForTradingDayRecord(sqlite3_stmt* statement, TradingDay* record)
 {
-	sqlite3_bind_text(statement, 1, record->PK, sizeof(record->PK), nullptr);
+	sqlite3_bind_int(statement, 1, record->PK);
 	sqlite3_bind_text(statement, 2, record->CurrTradingDay, sizeof(record->CurrTradingDay), nullptr);
 	sqlite3_bind_text(statement, 3, record->PreTradingDay, sizeof(record->PreTradingDay), nullptr);
 }
@@ -2929,16 +2929,16 @@ void SqliteDB::SetStatementForTradingDayRecordUpdate(sqlite3_stmt* statement, Tr
 {
 	sqlite3_bind_text(statement, 1, record->CurrTradingDay, sizeof(record->CurrTradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->PreTradingDay, sizeof(record->PreTradingDay), nullptr);
-	sqlite3_bind_text(statement, 3, record->PK, sizeof(record->PK), nullptr);
+	sqlite3_bind_int(statement, 3, record->PK);
 }
-void SqliteDB::SetStatementForTradingDayPrimaryKey(sqlite3_stmt* statement, const UserIDType& PK)
+void SqliteDB::SetStatementForTradingDayPrimaryKey(sqlite3_stmt* statement, const IntType& PK)
 {
-	sqlite3_bind_text(statement, 1, PK, sizeof(PK), nullptr);
+	sqlite3_bind_int(statement, 1, PK);
 }
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<TradingDay*>& records)
 {
 	TradingDay* record = TradingDay::Allocate();
-	Strcpy(record->PK, (const char*)sqlite3_column_text(statement, 0));
+	record->PK = sqlite3_column_int(statement, 0);
 	Strcpy(record->CurrTradingDay, (const char*)sqlite3_column_text(statement, 1));
 	Strcpy(record->PreTradingDay, (const char*)sqlite3_column_text(statement, 2));
 	records.push_back(record);
@@ -3018,16 +3018,30 @@ void SqliteDB::SetStatementForHotInstrumentRecord(sqlite3_stmt* statement, HotIn
 	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
 	sqlite3_bind_text(statement, 2, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
 	sqlite3_bind_text(statement, 3, record->ProductID, sizeof(record->ProductID), nullptr);
-	sqlite3_bind_int(statement, 4, record->Rank);
-	sqlite3_bind_text(statement, 5, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_text(statement, 4, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_int(statement, 5, int(record->ProductClass));
+	sqlite3_bind_int64(statement, 6, record->Volume);
+	sqlite3_bind_int64(statement, 7, record->MaxVolume);
+	sqlite3_bind_double(statement, 8, record->Turnover);
+	sqlite3_bind_double(statement, 9, record->MaxTurnover);
+	sqlite3_bind_double(statement, 10, record->OpenInterest);
+	sqlite3_bind_double(statement, 11, record->MaxOpenInterest);
+	sqlite3_bind_int(statement, 12, record->Rank);
 }
 void SqliteDB::SetStatementForHotInstrumentRecordUpdate(sqlite3_stmt* statement, HotInstrument* record)
 {
 	sqlite3_bind_text(statement, 1, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_text(statement, 2, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 3, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 4, record->ProductID, sizeof(record->ProductID), nullptr);
-	sqlite3_bind_int(statement, 5, record->Rank);
+	sqlite3_bind_int(statement, 2, int(record->ProductClass));
+	sqlite3_bind_int64(statement, 3, record->Volume);
+	sqlite3_bind_int64(statement, 4, record->MaxVolume);
+	sqlite3_bind_double(statement, 5, record->Turnover);
+	sqlite3_bind_double(statement, 6, record->MaxTurnover);
+	sqlite3_bind_double(statement, 7, record->OpenInterest);
+	sqlite3_bind_double(statement, 8, record->MaxOpenInterest);
+	sqlite3_bind_text(statement, 9, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 10, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 11, record->ProductID, sizeof(record->ProductID), nullptr);
+	sqlite3_bind_int(statement, 12, record->Rank);
 }
 void SqliteDB::SetStatementForHotInstrumentPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank)
 {
@@ -3049,47 +3063,52 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<HotInstrument*>& r
 	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 1));
 	Strcpy(record->ProductID, (const char*)sqlite3_column_text(statement, 2));
-	record->Rank = sqlite3_column_int(statement, 3);
-	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 4));
+	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 3));
+	record->ProductClass = ProductClassType(sqlite3_column_int(statement, 4));
+	record->Volume = sqlite3_column_int64(statement, 5);
+	record->MaxVolume = sqlite3_column_int64(statement, 6);
+	record->Turnover = sqlite3_column_double(statement, 7);
+	record->MaxTurnover = sqlite3_column_double(statement, 8);
+	record->OpenInterest = sqlite3_column_double(statement, 9);
+	record->MaxOpenInterest = sqlite3_column_double(statement, 10);
+	record->Rank = sqlite3_column_int(statement, 11);
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForInstrumentRecord(sqlite3_stmt* statement, Instrument* record)
 {
-	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 2, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 3, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_text(statement, 4, record->ExchangeInstID, sizeof(record->ExchangeInstID), nullptr);
-	sqlite3_bind_text(statement, 5, record->InstrumentName, sizeof(record->InstrumentName), nullptr);
-	sqlite3_bind_text(statement, 6, record->ProductID, sizeof(record->ProductID), nullptr);
-	sqlite3_bind_int(statement, 7, int(record->ProductClass));
-	sqlite3_bind_int(statement, 8, int(record->InstrumentClass));
-	sqlite3_bind_int(statement, 9, record->Rank);
-	sqlite3_bind_int(statement, 10, record->VolumeMultiple);
-	sqlite3_bind_double(statement, 11, record->PriceTick);
-	sqlite3_bind_int64(statement, 12, record->MaxMarketOrderVolume);
-	sqlite3_bind_int64(statement, 13, record->MinMarketOrderVolume);
-	sqlite3_bind_int64(statement, 14, record->MaxLimitOrderVolume);
-	sqlite3_bind_int64(statement, 15, record->MinLimitOrderVolume);
-	sqlite3_bind_text(statement, 16, record->SessionName, sizeof(record->SessionName), nullptr);
+	sqlite3_bind_text(statement, 1, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 2, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_text(statement, 3, record->ExchangeInstID, sizeof(record->ExchangeInstID), nullptr);
+	sqlite3_bind_text(statement, 4, record->InstrumentName, sizeof(record->InstrumentName), nullptr);
+	sqlite3_bind_text(statement, 5, record->ProductID, sizeof(record->ProductID), nullptr);
+	sqlite3_bind_int(statement, 6, int(record->ProductClass));
+	sqlite3_bind_int(statement, 7, int(record->InstrumentClass));
+	sqlite3_bind_int(statement, 8, record->Rank);
+	sqlite3_bind_int(statement, 9, record->VolumeMultiple);
+	sqlite3_bind_double(statement, 10, record->PriceTick);
+	sqlite3_bind_int64(statement, 11, record->MaxMarketOrderVolume);
+	sqlite3_bind_int64(statement, 12, record->MinMarketOrderVolume);
+	sqlite3_bind_int64(statement, 13, record->MaxLimitOrderVolume);
+	sqlite3_bind_int64(statement, 14, record->MinLimitOrderVolume);
+	sqlite3_bind_text(statement, 15, record->SessionName, sizeof(record->SessionName), nullptr);
 }
 void SqliteDB::SetStatementForInstrumentRecordUpdate(sqlite3_stmt* statement, Instrument* record)
 {
-	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 2, record->ExchangeInstID, sizeof(record->ExchangeInstID), nullptr);
-	sqlite3_bind_text(statement, 3, record->InstrumentName, sizeof(record->InstrumentName), nullptr);
-	sqlite3_bind_text(statement, 4, record->ProductID, sizeof(record->ProductID), nullptr);
-	sqlite3_bind_int(statement, 5, int(record->ProductClass));
-	sqlite3_bind_int(statement, 6, int(record->InstrumentClass));
-	sqlite3_bind_int(statement, 7, record->Rank);
-	sqlite3_bind_int(statement, 8, record->VolumeMultiple);
-	sqlite3_bind_double(statement, 9, record->PriceTick);
-	sqlite3_bind_int64(statement, 10, record->MaxMarketOrderVolume);
-	sqlite3_bind_int64(statement, 11, record->MinMarketOrderVolume);
-	sqlite3_bind_int64(statement, 12, record->MaxLimitOrderVolume);
-	sqlite3_bind_int64(statement, 13, record->MinLimitOrderVolume);
-	sqlite3_bind_text(statement, 14, record->SessionName, sizeof(record->SessionName), nullptr);
-	sqlite3_bind_text(statement, 15, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 16, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_text(statement, 1, record->ExchangeInstID, sizeof(record->ExchangeInstID), nullptr);
+	sqlite3_bind_text(statement, 2, record->InstrumentName, sizeof(record->InstrumentName), nullptr);
+	sqlite3_bind_text(statement, 3, record->ProductID, sizeof(record->ProductID), nullptr);
+	sqlite3_bind_int(statement, 4, int(record->ProductClass));
+	sqlite3_bind_int(statement, 5, int(record->InstrumentClass));
+	sqlite3_bind_int(statement, 6, record->Rank);
+	sqlite3_bind_int(statement, 7, record->VolumeMultiple);
+	sqlite3_bind_double(statement, 8, record->PriceTick);
+	sqlite3_bind_int64(statement, 9, record->MaxMarketOrderVolume);
+	sqlite3_bind_int64(statement, 10, record->MinMarketOrderVolume);
+	sqlite3_bind_int64(statement, 11, record->MaxLimitOrderVolume);
+	sqlite3_bind_int64(statement, 12, record->MinLimitOrderVolume);
+	sqlite3_bind_text(statement, 13, record->SessionName, sizeof(record->SessionName), nullptr);
+	sqlite3_bind_text(statement, 14, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 15, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
 }
 void SqliteDB::SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
 {
@@ -3099,22 +3118,21 @@ void SqliteDB::SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, cons
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<Instrument*>& records)
 {
 	Instrument* record = Instrument::Allocate();
-	Strcpy(record->TradingDay, (const char*)sqlite3_column_text(statement, 0));
-	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 1));
-	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 2));
-	Strcpy(record->ExchangeInstID, (const char*)sqlite3_column_text(statement, 3));
-	Strcpy(record->InstrumentName, (const char*)sqlite3_column_text(statement, 4));
-	Strcpy(record->ProductID, (const char*)sqlite3_column_text(statement, 5));
-	record->ProductClass = ProductClassType(sqlite3_column_int(statement, 6));
-	record->InstrumentClass = InstrumentClassType(sqlite3_column_int(statement, 7));
-	record->Rank = sqlite3_column_int(statement, 8);
-	record->VolumeMultiple = sqlite3_column_int(statement, 9);
-	record->PriceTick = sqlite3_column_double(statement, 10);
-	record->MaxMarketOrderVolume = sqlite3_column_int64(statement, 11);
-	record->MinMarketOrderVolume = sqlite3_column_int64(statement, 12);
-	record->MaxLimitOrderVolume = sqlite3_column_int64(statement, 13);
-	record->MinLimitOrderVolume = sqlite3_column_int64(statement, 14);
-	Strcpy(record->SessionName, (const char*)sqlite3_column_text(statement, 15));
+	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 0));
+	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 1));
+	Strcpy(record->ExchangeInstID, (const char*)sqlite3_column_text(statement, 2));
+	Strcpy(record->InstrumentName, (const char*)sqlite3_column_text(statement, 3));
+	Strcpy(record->ProductID, (const char*)sqlite3_column_text(statement, 4));
+	record->ProductClass = ProductClassType(sqlite3_column_int(statement, 5));
+	record->InstrumentClass = InstrumentClassType(sqlite3_column_int(statement, 6));
+	record->Rank = sqlite3_column_int(statement, 7);
+	record->VolumeMultiple = sqlite3_column_int(statement, 8);
+	record->PriceTick = sqlite3_column_double(statement, 9);
+	record->MaxMarketOrderVolume = sqlite3_column_int64(statement, 10);
+	record->MinMarketOrderVolume = sqlite3_column_int64(statement, 11);
+	record->MaxLimitOrderVolume = sqlite3_column_int64(statement, 12);
+	record->MinLimitOrderVolume = sqlite3_column_int64(statement, 13);
+	Strcpy(record->SessionName, (const char*)sqlite3_column_text(statement, 14));
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForPrimaryAccountRecord(sqlite3_stmt* statement, PrimaryAccount* record)

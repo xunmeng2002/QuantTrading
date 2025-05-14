@@ -26,7 +26,6 @@ namespace mdb
 		ProductTable* t_Product;
 		HotInstrumentTable* t_HotInstrument;
 		InstrumentTable* t_Instrument;
-		PrimaryAccountTable* t_PrimaryAccount;
 		AccountTable* t_Account;
 		CapitalTable* t_Capital;
 		PositionTable* t_Position;

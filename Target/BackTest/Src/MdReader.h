@@ -12,7 +12,7 @@ public:
 	~MdReader();
 	bool Init();
 
-	void ReadMdInstrument(std::list<mdb::Instrument*> instruments);
+	void ReadMdInstrument(std::list<mdb::Instrument*>& instruments);
 	void ReadMdTick(std::list<mdb::MdSubscribe*>& mdSubscribes, std::list<mdb::DepthMarketData*>& mdTicks);
 	void ReadMdBar(std::list<mdb::MdSubscribe*>& mdSubscribes, std::list<mdb::BarMarketData*>& mdBars);
 
@@ -21,6 +21,7 @@ private:
 	void ReadMdBarForOneSub(mdb::MdSubscribe* mdSubscribe, std::list<mdb::BarMarketData*>& mdBars);
 
 	void ExecuteQuery(duckdb_result* result);
+	void ParseInstrumentRecord(duckdb_result& result, std::list<mdb::Instrument*>& records);
 
 	void UpdateMdTicks(mdb::MdSubscribe* mdSubscribe, std::list<mdb::DepthMarketData*>& mdTicks);
 	void UpdateMdBars(mdb::MdSubscribe* mdSubscribe, std::list<mdb::BarMarketData*>& mdBars);
@@ -31,8 +32,8 @@ private:
 
 private:
 	std::string m_MdDataPath;
-	std::string m_StartTradingDay;
-	std::string m_EndTradingDay;
+	DateType m_StartTradingDay;
+	DateType m_EndTradingDay;
 	duckdb_database m_Duckdb;
 	duckdb_connection m_DuckdbConnection;
 

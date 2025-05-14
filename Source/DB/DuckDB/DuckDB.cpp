@@ -674,7 +674,7 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<TradingDay*>& records)
 		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
 		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
 
-		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		int* dataColumn0 = (int*)duckdb_vector_get_data(column0);
 		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
 		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
 
@@ -687,10 +687,7 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<TradingDay*>& records)
 		{
 			TradingDay* record = TradingDay::Allocate();
 			memset(record, 0, sizeof(TradingDay));
-			if (duckdb_validity_row_is_valid(validityColumn0, row))
-			{
-				CpyDuckdbString(record->PK, dataColumn0[row]);
-			}
+			if (duckdb_validity_row_is_valid(validityColumn0, row)) record->PK = dataColumn0[row];
 			if (duckdb_validity_row_is_valid(validityColumn1, row))
 			{
 				CpyDuckdbString(record->CurrTradingDay, dataColumn1[row]);
@@ -1135,7 +1132,7 @@ void DuckDB::UpdateHotInstrument(HotInstrument* record)
 	auto start = steady_clock::now();
 	if (m_HotInstrumentUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_HotInstrument set InstrumentID = ? where TradingDay = ? and ExchangeID = ? and ProductID = ? and Rank = ?;", &m_HotInstrumentUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_HotInstrument set InstrumentID = ?, ProductClass = ?, Volume = ?, MaxVolume = ?, Turnover = ?, MaxTurnover = ?, OpenInterest = ?, MaxOpenInterest = ? where TradingDay = ? and ExchangeID = ? and ProductID = ? and Rank = ?;", &m_HotInstrumentUpdateStatement);
 	}
 	SetStatementForHotInstrumentRecordUpdate(m_HotInstrumentUpdateStatement, record);
 	
@@ -1209,18 +1206,39 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<HotInstrument*>& recor
 		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
 		duckdb_vector column3 = duckdb_data_chunk_get_vector(dataChunk, 3);
 		duckdb_vector column4 = duckdb_data_chunk_get_vector(dataChunk, 4);
+		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
+		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
+		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
+		duckdb_vector column8 = duckdb_data_chunk_get_vector(dataChunk, 8);
+		duckdb_vector column9 = duckdb_data_chunk_get_vector(dataChunk, 9);
+		duckdb_vector column10 = duckdb_data_chunk_get_vector(dataChunk, 10);
+		duckdb_vector column11 = duckdb_data_chunk_get_vector(dataChunk, 11);
 
 		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
 		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
 		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
-		int* dataColumn3 = (int*)duckdb_vector_get_data(column3);
-		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
+		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
+		int* dataColumn4 = (int*)duckdb_vector_get_data(column4);
+		int64_t* dataColumn5 = (int64_t*)duckdb_vector_get_data(column5);
+		int64_t* dataColumn6 = (int64_t*)duckdb_vector_get_data(column6);
+		double* dataColumn7 = (double*)duckdb_vector_get_data(column7);
+		double* dataColumn8 = (double*)duckdb_vector_get_data(column8);
+		double* dataColumn9 = (double*)duckdb_vector_get_data(column9);
+		double* dataColumn10 = (double*)duckdb_vector_get_data(column10);
+		int* dataColumn11 = (int*)duckdb_vector_get_data(column11);
 
 		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
 		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
 		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
 		uint64_t* validityColumn3 = duckdb_vector_get_validity(column3);
 		uint64_t* validityColumn4 = duckdb_vector_get_validity(column4);
+		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
+		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
+		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
+		uint64_t* validityColumn8 = duckdb_vector_get_validity(column8);
+		uint64_t* validityColumn9 = duckdb_vector_get_validity(column9);
+		uint64_t* validityColumn10 = duckdb_vector_get_validity(column10);
+		uint64_t* validityColumn11 = duckdb_vector_get_validity(column11);
 
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
@@ -1239,11 +1257,18 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<HotInstrument*>& recor
 			{
 				CpyDuckdbString(record->ProductID, dataColumn2[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn3, row)) record->Rank = dataColumn3[row];
-			if (duckdb_validity_row_is_valid(validityColumn4, row))
+			if (duckdb_validity_row_is_valid(validityColumn3, row))
 			{
-				CpyDuckdbString(record->InstrumentID, dataColumn4[row]);
+				CpyDuckdbString(record->InstrumentID, dataColumn3[row]);
 			}
+			if (duckdb_validity_row_is_valid(validityColumn4, row)) record->ProductClass = ProductClassType(dataColumn4[row]);
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->Volume = dataColumn5[row];
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->MaxVolume = dataColumn6[row];
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->Turnover = dataColumn7[row];
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->MaxTurnover = dataColumn8[row];
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->OpenInterest = dataColumn9[row];
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->MaxOpenInterest = dataColumn10[row];
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Rank = dataColumn11[row];
 			records.push_back(record);
 		}
 	}
@@ -1307,7 +1332,7 @@ void DuckDB::UpdateInstrument(Instrument* record)
 	auto start = steady_clock::now();
 	if (m_InstrumentUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_Instrument set TradingDay = ?, ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;", &m_InstrumentUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_Instrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;", &m_InstrumentUpdateStatement);
 	}
 	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
 	
@@ -1391,24 +1416,22 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Instrument*>& records)
 		duckdb_vector column12 = duckdb_data_chunk_get_vector(dataChunk, 12);
 		duckdb_vector column13 = duckdb_data_chunk_get_vector(dataChunk, 13);
 		duckdb_vector column14 = duckdb_data_chunk_get_vector(dataChunk, 14);
-		duckdb_vector column15 = duckdb_data_chunk_get_vector(dataChunk, 15);
 
 		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
 		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
 		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
 		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
 		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
-		duckdb_string_t* dataColumn5 = (duckdb_string_t*)duckdb_vector_get_data(column5);
+		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
 		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
 		int* dataColumn7 = (int*)duckdb_vector_get_data(column7);
 		int* dataColumn8 = (int*)duckdb_vector_get_data(column8);
-		int* dataColumn9 = (int*)duckdb_vector_get_data(column9);
-		double* dataColumn10 = (double*)duckdb_vector_get_data(column10);
+		double* dataColumn9 = (double*)duckdb_vector_get_data(column9);
+		int64_t* dataColumn10 = (int64_t*)duckdb_vector_get_data(column10);
 		int64_t* dataColumn11 = (int64_t*)duckdb_vector_get_data(column11);
 		int64_t* dataColumn12 = (int64_t*)duckdb_vector_get_data(column12);
 		int64_t* dataColumn13 = (int64_t*)duckdb_vector_get_data(column13);
-		int64_t* dataColumn14 = (int64_t*)duckdb_vector_get_data(column14);
-		duckdb_string_t* dataColumn15 = (duckdb_string_t*)duckdb_vector_get_data(column15);
+		duckdb_string_t* dataColumn14 = (duckdb_string_t*)duckdb_vector_get_data(column14);
 
 		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
 		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
@@ -1425,7 +1448,6 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Instrument*>& records)
 		uint64_t* validityColumn12 = duckdb_vector_get_validity(column12);
 		uint64_t* validityColumn13 = duckdb_vector_get_validity(column13);
 		uint64_t* validityColumn14 = duckdb_vector_get_validity(column14);
-		uint64_t* validityColumn15 = duckdb_vector_get_validity(column15);
 
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
@@ -1434,40 +1456,36 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Instrument*>& records)
 			memset(record, 0, sizeof(Instrument));
 			if (duckdb_validity_row_is_valid(validityColumn0, row))
 			{
-				CpyDuckdbString(record->TradingDay, dataColumn0[row]);
+				CpyDuckdbString(record->ExchangeID, dataColumn0[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn1, row))
 			{
-				CpyDuckdbString(record->ExchangeID, dataColumn1[row]);
+				CpyDuckdbString(record->InstrumentID, dataColumn1[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn2, row))
 			{
-				CpyDuckdbString(record->InstrumentID, dataColumn2[row]);
+				CpyDuckdbString(record->ExchangeInstID, dataColumn2[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn3, row))
 			{
-				CpyDuckdbString(record->ExchangeInstID, dataColumn3[row]);
+				CpyDuckdbString(record->InstrumentName, dataColumn3[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn4, row))
 			{
-				CpyDuckdbString(record->InstrumentName, dataColumn4[row]);
+				CpyDuckdbString(record->ProductID, dataColumn4[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn5, row))
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->ProductClass = ProductClassType(dataColumn5[row]);
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->InstrumentClass = InstrumentClassType(dataColumn6[row]);
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->Rank = dataColumn7[row];
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->VolumeMultiple = dataColumn8[row];
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->PriceTick = dataColumn9[row];
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->MaxMarketOrderVolume = dataColumn10[row];
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->MinMarketOrderVolume = dataColumn11[row];
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->MaxLimitOrderVolume = dataColumn12[row];
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->MinLimitOrderVolume = dataColumn13[row];
+			if (duckdb_validity_row_is_valid(validityColumn14, row))
 			{
-				CpyDuckdbString(record->ProductID, dataColumn5[row]);
-			}
-			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->ProductClass = ProductClassType(dataColumn6[row]);
-			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->InstrumentClass = InstrumentClassType(dataColumn7[row]);
-			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->Rank = dataColumn8[row];
-			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->VolumeMultiple = dataColumn9[row];
-			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->PriceTick = dataColumn10[row];
-			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->MaxMarketOrderVolume = dataColumn11[row];
-			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->MinMarketOrderVolume = dataColumn12[row];
-			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->MaxLimitOrderVolume = dataColumn13[row];
-			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->MinLimitOrderVolume = dataColumn14[row];
-			if (duckdb_validity_row_is_valid(validityColumn15, row))
-			{
-				CpyDuckdbString(record->SessionName, dataColumn15[row]);
+				CpyDuckdbString(record->SessionName, dataColumn14[row]);
 			}
 			records.push_back(record);
 		}
@@ -4066,7 +4084,7 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<MdSubscribe*>& records
 
 bool DuckDB::AppendForTradingDayRecord(duckdb_appender appender, TradingDay* record)
 {
-	duckdb_append_varchar(appender, record->PK);
+	duckdb_append_int32(appender, record->PK);
 	duckdb_append_varchar(appender, record->CurrTradingDay);
 	duckdb_append_varchar(appender, record->PreTradingDay);
 	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
@@ -4078,7 +4096,7 @@ bool DuckDB::AppendForTradingDayRecord(duckdb_appender appender, TradingDay* rec
 }
 void DuckDB::SetStatementForTradingDayRecord(duckdb_prepared_statement statement, TradingDay* record)
 {
-	duckdb_bind_varchar(statement, 1, record->PK);
+	duckdb_bind_int32(statement, 1, record->PK);
 	duckdb_bind_varchar(statement, 2, record->CurrTradingDay);
 	duckdb_bind_varchar(statement, 3, record->PreTradingDay);
 }
@@ -4086,11 +4104,11 @@ void DuckDB::SetStatementForTradingDayRecordUpdate(duckdb_prepared_statement sta
 {
 	duckdb_bind_varchar(statement, 1, record->CurrTradingDay);
 	duckdb_bind_varchar(statement, 2, record->PreTradingDay);
-	duckdb_bind_varchar(statement, 3, record->PK);
+	duckdb_bind_int32(statement, 3, record->PK);
 }
 void DuckDB::SetStatementForTradingDayPrimaryKey(duckdb_prepared_statement statement, TradingDay* record)
 {
-	duckdb_bind_varchar(statement, 1, record->PK);
+	duckdb_bind_int32(statement, 1, record->PK);
 }
 bool DuckDB::AppendForExchangeRecord(duckdb_appender appender, Exchange* record)
 {
@@ -4175,8 +4193,15 @@ bool DuckDB::AppendForHotInstrumentRecord(duckdb_appender appender, HotInstrumen
 	duckdb_append_varchar(appender, record->TradingDay);
 	duckdb_append_varchar(appender, record->ExchangeID);
 	duckdb_append_varchar(appender, record->ProductID);
-	duckdb_append_int32(appender, record->Rank);
 	duckdb_append_varchar(appender, record->InstrumentID);
+	duckdb_append_int32(appender, int(record->ProductClass));
+	duckdb_append_int64(appender, record->Volume);
+	duckdb_append_int64(appender, record->MaxVolume);
+	duckdb_append_double(appender, record->Turnover);
+	duckdb_append_double(appender, record->MaxTurnover);
+	duckdb_append_double(appender, record->OpenInterest);
+	duckdb_append_double(appender, record->MaxOpenInterest);
+	duckdb_append_int32(appender, record->Rank);
 	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "InsertHotInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
@@ -4189,16 +4214,30 @@ void DuckDB::SetStatementForHotInstrumentRecord(duckdb_prepared_statement statem
 	duckdb_bind_varchar(statement, 1, record->TradingDay);
 	duckdb_bind_varchar(statement, 2, record->ExchangeID);
 	duckdb_bind_varchar(statement, 3, record->ProductID);
-	duckdb_bind_int32(statement, 4, record->Rank);
-	duckdb_bind_varchar(statement, 5, record->InstrumentID);
+	duckdb_bind_varchar(statement, 4, record->InstrumentID);
+	duckdb_bind_int32(statement, 5, int(record->ProductClass));
+	duckdb_bind_int64(statement, 6, record->Volume);
+	duckdb_bind_int64(statement, 7, record->MaxVolume);
+	duckdb_bind_double(statement, 8, record->Turnover);
+	duckdb_bind_double(statement, 9, record->MaxTurnover);
+	duckdb_bind_double(statement, 10, record->OpenInterest);
+	duckdb_bind_double(statement, 11, record->MaxOpenInterest);
+	duckdb_bind_int32(statement, 12, record->Rank);
 }
 void DuckDB::SetStatementForHotInstrumentRecordUpdate(duckdb_prepared_statement statement, HotInstrument* record)
 {
 	duckdb_bind_varchar(statement, 1, record->InstrumentID);
-	duckdb_bind_varchar(statement, 2, record->TradingDay);
-	duckdb_bind_varchar(statement, 3, record->ExchangeID);
-	duckdb_bind_varchar(statement, 4, record->ProductID);
-	duckdb_bind_int32(statement, 5, record->Rank);
+	duckdb_bind_int32(statement, 2, int(record->ProductClass));
+	duckdb_bind_int64(statement, 3, record->Volume);
+	duckdb_bind_int64(statement, 4, record->MaxVolume);
+	duckdb_bind_double(statement, 5, record->Turnover);
+	duckdb_bind_double(statement, 6, record->MaxTurnover);
+	duckdb_bind_double(statement, 7, record->OpenInterest);
+	duckdb_bind_double(statement, 8, record->MaxOpenInterest);
+	duckdb_bind_varchar(statement, 9, record->TradingDay);
+	duckdb_bind_varchar(statement, 10, record->ExchangeID);
+	duckdb_bind_varchar(statement, 11, record->ProductID);
+	duckdb_bind_int32(statement, 12, record->Rank);
 }
 void DuckDB::SetStatementForHotInstrumentPrimaryKey(duckdb_prepared_statement statement, HotInstrument* record)
 {
@@ -4216,7 +4255,6 @@ void DuckDB::SetStatementForHotInstrumentIndexTradingDay(duckdb_prepared_stateme
 }
 bool DuckDB::AppendForInstrumentRecord(duckdb_appender appender, Instrument* record)
 {
-	duckdb_append_varchar(appender, record->TradingDay);
 	duckdb_append_varchar(appender, record->ExchangeID);
 	duckdb_append_varchar(appender, record->InstrumentID);
 	duckdb_append_varchar(appender, record->ExchangeInstID);
@@ -4241,41 +4279,39 @@ bool DuckDB::AppendForInstrumentRecord(duckdb_appender appender, Instrument* rec
 }
 void DuckDB::SetStatementForInstrumentRecord(duckdb_prepared_statement statement, Instrument* record)
 {
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_varchar(statement, 2, record->ExchangeID);
-	duckdb_bind_varchar(statement, 3, record->InstrumentID);
-	duckdb_bind_varchar(statement, 4, record->ExchangeInstID);
-	duckdb_bind_varchar(statement, 5, record->InstrumentName);
-	duckdb_bind_varchar(statement, 6, record->ProductID);
-	duckdb_bind_int32(statement, 7, int(record->ProductClass));
-	duckdb_bind_int32(statement, 8, int(record->InstrumentClass));
-	duckdb_bind_int32(statement, 9, record->Rank);
-	duckdb_bind_int32(statement, 10, record->VolumeMultiple);
-	duckdb_bind_double(statement, 11, record->PriceTick);
-	duckdb_bind_int64(statement, 12, record->MaxMarketOrderVolume);
-	duckdb_bind_int64(statement, 13, record->MinMarketOrderVolume);
-	duckdb_bind_int64(statement, 14, record->MaxLimitOrderVolume);
-	duckdb_bind_int64(statement, 15, record->MinLimitOrderVolume);
-	duckdb_bind_varchar(statement, 16, record->SessionName);
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
+	duckdb_bind_varchar(statement, 2, record->InstrumentID);
+	duckdb_bind_varchar(statement, 3, record->ExchangeInstID);
+	duckdb_bind_varchar(statement, 4, record->InstrumentName);
+	duckdb_bind_varchar(statement, 5, record->ProductID);
+	duckdb_bind_int32(statement, 6, int(record->ProductClass));
+	duckdb_bind_int32(statement, 7, int(record->InstrumentClass));
+	duckdb_bind_int32(statement, 8, record->Rank);
+	duckdb_bind_int32(statement, 9, record->VolumeMultiple);
+	duckdb_bind_double(statement, 10, record->PriceTick);
+	duckdb_bind_int64(statement, 11, record->MaxMarketOrderVolume);
+	duckdb_bind_int64(statement, 12, record->MinMarketOrderVolume);
+	duckdb_bind_int64(statement, 13, record->MaxLimitOrderVolume);
+	duckdb_bind_int64(statement, 14, record->MinLimitOrderVolume);
+	duckdb_bind_varchar(statement, 15, record->SessionName);
 }
 void DuckDB::SetStatementForInstrumentRecordUpdate(duckdb_prepared_statement statement, Instrument* record)
 {
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_varchar(statement, 2, record->ExchangeInstID);
-	duckdb_bind_varchar(statement, 3, record->InstrumentName);
-	duckdb_bind_varchar(statement, 4, record->ProductID);
-	duckdb_bind_int32(statement, 5, int(record->ProductClass));
-	duckdb_bind_int32(statement, 6, int(record->InstrumentClass));
-	duckdb_bind_int32(statement, 7, record->Rank);
-	duckdb_bind_int32(statement, 8, record->VolumeMultiple);
-	duckdb_bind_double(statement, 9, record->PriceTick);
-	duckdb_bind_int64(statement, 10, record->MaxMarketOrderVolume);
-	duckdb_bind_int64(statement, 11, record->MinMarketOrderVolume);
-	duckdb_bind_int64(statement, 12, record->MaxLimitOrderVolume);
-	duckdb_bind_int64(statement, 13, record->MinLimitOrderVolume);
-	duckdb_bind_varchar(statement, 14, record->SessionName);
-	duckdb_bind_varchar(statement, 15, record->ExchangeID);
-	duckdb_bind_varchar(statement, 16, record->InstrumentID);
+	duckdb_bind_varchar(statement, 1, record->ExchangeInstID);
+	duckdb_bind_varchar(statement, 2, record->InstrumentName);
+	duckdb_bind_varchar(statement, 3, record->ProductID);
+	duckdb_bind_int32(statement, 4, int(record->ProductClass));
+	duckdb_bind_int32(statement, 5, int(record->InstrumentClass));
+	duckdb_bind_int32(statement, 6, record->Rank);
+	duckdb_bind_int32(statement, 7, record->VolumeMultiple);
+	duckdb_bind_double(statement, 8, record->PriceTick);
+	duckdb_bind_int64(statement, 9, record->MaxMarketOrderVolume);
+	duckdb_bind_int64(statement, 10, record->MinMarketOrderVolume);
+	duckdb_bind_int64(statement, 11, record->MaxLimitOrderVolume);
+	duckdb_bind_int64(statement, 12, record->MinLimitOrderVolume);
+	duckdb_bind_varchar(statement, 13, record->SessionName);
+	duckdb_bind_varchar(statement, 14, record->ExchangeID);
+	duckdb_bind_varchar(statement, 15, record->InstrumentID);
 }
 void DuckDB::SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement statement, Instrument* record)
 {

@@ -24,9 +24,14 @@ SimExchange::SimExchange(const Config& config)
 }
 SimExchange::~SimExchange()
 {
+	delete m_MdReader;
+	m_MdReader = nullptr;
+	delete m_Mdb;
+	m_Mdb = nullptr;
 }
 void SimExchange::Init()
 {
+	m_MdReader->Init();
 	InitMdInstrument();
 	InitMainInstrument();
 	auto capitalPair = m_Mdb->t_Capital->m_PrimaryKey->SelectAll();
@@ -502,8 +507,11 @@ void SimExchange::InitMdInstrument()
 		{
 			for (auto instrument : it.second)
 			{
+				strcpy(instrument->ExchangeInstID, instrument->InstrumentID);
 				strcpy(instrument->InstrumentName, product->ProductName);
 				instrument->ProductClass = product->ProductClass;
+				instrument->InstrumentClass = InstrumentClassType::Normal;
+				instrument->Rank = 0;
 				instrument->VolumeMultiple = product->VolumeMultiple;
 				instrument->PriceTick = product->PriceTick;
 				instrument->MaxMarketOrderVolume = product->MaxMarketOrderVolume;
@@ -522,6 +530,17 @@ void SimExchange::InitMdInstrument()
 		{
 			for (auto instrument : it.second)
 			{
+				strcpy(instrument->ExchangeInstID, instrument->InstrumentID);
+				instrument->InstrumentClass = InstrumentClassType::Normal;
+				instrument->Rank = 0;
+				instrument->VolumeMultiple = 1;
+				instrument->PriceTick = 0;
+				instrument->MaxMarketOrderVolume = 0;
+				instrument->MinMarketOrderVolume = 0;
+				instrument->MaxLimitOrderVolume = 0;
+				instrument->MinLimitOrderVolume = 0;
+				strcpy(instrument->SessionName, "FD0900");
+
 				if (!m_Mdb->t_Instrument->Insert(instrument))
 				{
 					auto oldInstrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(instrument->ExchangeID, instrument->InstrumentID);

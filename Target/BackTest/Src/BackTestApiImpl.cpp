@@ -1,6 +1,7 @@
 #include "BackTestApiImpl.h"
 #include "SimExchange.h"
 #include "Config.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -18,13 +19,20 @@ const char* BackTestApi::GetApiVersion()
 
 BackTestApiImpl::BackTestApiImpl()
 {
+	Logger::GetInstance().Init("BackTest");
+	Logger::GetInstance().SetLogLevel(LogLevel::Info, LogLevel::Info);
+	Logger::GetInstance().Start();
 	auto& config = Config::GetInstance();
 	config.Load(ConfigName);
 	m_SimExchange = new SimExchange(config);
 }
 BackTestApiImpl::~BackTestApiImpl()
 {
-
+	if (m_SimExchange != nullptr)
+	{
+		delete m_SimExchange;
+		m_SimExchange = nullptr;
+	}
 }
 void BackTestApiImpl::Init()
 {
@@ -41,9 +49,7 @@ void BackTestApiImpl::Join()
 void BackTestApiImpl::Release()
 {
 	m_SimExchange->Stop();
-	m_SimExchange->Join();
-	delete m_SimExchange;
-	m_SimExchange = nullptr;
+	Logger::GetInstance().Stop();
 }
 void BackTestApiImpl::RegisterFront(const char* address)
 {

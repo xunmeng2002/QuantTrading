@@ -15,6 +15,7 @@
 	<package name="RtnBarMarketData"/>
 	<package name="RtnSessionBegin"/>
 	<package name="RtnSessionEnd"/>
+	<package name="RtnMarketDataEnd"/>
 	<package name="ReqAccountLogin"/>
 	<package name="RspAccountLogin"/>
 	<package name="ReqAccountLogout"/>

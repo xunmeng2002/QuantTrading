@@ -66,6 +66,10 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	{
 		return RtnSessionEndPackage::Allocate();
 	}
+	case RtnMarketDataEndPackage::PackageID:
+	{
+		return RtnMarketDataEndPackage::Allocate();
+	}
 	case ReqAccountLoginPackage::PackageID:
 	{
 		return ReqAccountLoginPackage::Allocate();

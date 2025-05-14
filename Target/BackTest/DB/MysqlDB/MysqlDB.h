@@ -79,14 +79,6 @@ public:
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
 	
-	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) override;
-	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) override;
-	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) override;
-	virtual void SelectPrimaryAccount(std::list<mdb::PrimaryAccount*>& records) override;
-	virtual void TruncatePrimaryAccount() override;
-	
 	virtual void InsertAccount(mdb::Account* record) override;
 	virtual void BatchInsertAccount(std::list<mdb::Account*>* records) override;
 	virtual void DeleteAccount(mdb::Account* record) override;
@@ -159,7 +151,7 @@ public:
 private:
 	void SetStatementForTradingDayRecord(sql::PreparedStatement* statement, mdb::TradingDay* record);
 	void SetStatementForTradingDayRecordUpdate(sql::PreparedStatement* statement, mdb::TradingDay* record);
-	void SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const UserIDType& PK);
+	void SetStatementForTradingDayPrimaryKey(sql::PreparedStatement* statement, const IntType& PK);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::TradingDay*>& records);
 	void SetStatementForExchangeRecord(sql::PreparedStatement* statement, mdb::Exchange* record);
 	void SetStatementForExchangeRecordUpdate(sql::PreparedStatement* statement, mdb::Exchange* record);
@@ -178,11 +170,6 @@ private:
 	void SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Instrument*>& records);
-	void SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
-	void SetStatementForPrimaryAccountRecordUpdate(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
-	void SetStatementForPrimaryAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& PrimaryAccountID);
-	void SetStatementForPrimaryAccountIndexOfferID(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
-	void ParseRecord(sql::ResultSet* result, std::list<mdb::PrimaryAccount*>& records);
 	void SetStatementForAccountRecord(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID);
@@ -262,12 +249,6 @@ private:
 	sql::PreparedStatement* m_InstrumentUpdateStatement;
 	sql::PreparedStatement* m_InstrumentSelectStatement;
 	sql::PreparedStatement* m_InstrumentTruncateStatement;
-	sql::PreparedStatement* m_PrimaryAccountInsertStatement;
-	sql::PreparedStatement* m_PrimaryAccountDeleteStatement;
-	sql::PreparedStatement* m_PrimaryAccountDeleteByOfferIDIndexStatement;
-	sql::PreparedStatement* m_PrimaryAccountUpdateStatement;
-	sql::PreparedStatement* m_PrimaryAccountSelectStatement;
-	sql::PreparedStatement* m_PrimaryAccountTruncateStatement;
 	sql::PreparedStatement* m_AccountInsertStatement;
 	sql::PreparedStatement* m_AccountDeleteStatement;
 	sql::PreparedStatement* m_AccountUpdateStatement;

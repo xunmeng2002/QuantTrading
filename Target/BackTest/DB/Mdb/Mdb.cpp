@@ -10,7 +10,6 @@ namespace mdb
 		t_Product = new ProductTable(this);
 		t_HotInstrument = new HotInstrumentTable(this);
 		t_Instrument = new InstrumentTable(this);
-		t_PrimaryAccount = new PrimaryAccountTable(this);
 		t_Account = new AccountTable(this);
 		t_Capital = new CapitalTable(this);
 		t_Position = new PositionTable(this);
@@ -28,7 +27,6 @@ namespace mdb
 		t_Product->Subscribe(mdbSubscriber);
 		t_HotInstrument->Subscribe(mdbSubscriber);
 		t_Instrument->Subscribe(mdbSubscriber);
-		t_PrimaryAccount->Subscribe(mdbSubscriber);
 		t_Account->Subscribe(mdbSubscriber);
 		t_Capital->Subscribe(mdbSubscriber);
 		t_Position->Subscribe(mdbSubscriber);
@@ -46,7 +44,6 @@ namespace mdb
 		t_Product->UnSubscribe();
 		t_HotInstrument->UnSubscribe();
 		t_Instrument->UnSubscribe();
-		t_PrimaryAccount->UnSubscribe();
 		t_Account->UnSubscribe();
 		t_Capital->UnSubscribe();
 		t_Position->UnSubscribe();
@@ -64,7 +61,6 @@ namespace mdb
 		t_Product->InitDB();
 		t_HotInstrument->InitDB();
 		t_Instrument->InitDB();
-		t_PrimaryAccount->InitDB();
 		t_Account->InitDB();
 		t_Capital->InitDB();
 		t_Position->InitDB();
@@ -82,7 +78,6 @@ namespace mdb
 		t_Product->m_DBInited = initStatus;
 		t_HotInstrument->m_DBInited = initStatus;
 		t_Instrument->m_DBInited = initStatus;
-		t_PrimaryAccount->m_DBInited = initStatus;
 		t_Account->m_DBInited = initStatus;
 		t_Capital->m_DBInited = initStatus;
 		t_Position->m_DBInited = initStatus;
@@ -100,7 +95,6 @@ namespace mdb
 		t_Product->Dump(dir);
 		t_HotInstrument->Dump(dir);
 		t_Instrument->Dump(dir);
-		t_PrimaryAccount->Dump(dir);
 		t_Account->Dump(dir);
 		t_Capital->Dump(dir);
 		t_Position->Dump(dir);
@@ -118,7 +112,6 @@ namespace mdb
 		t_Product->TruncateTable();
 		t_HotInstrument->TruncateTable();
 		t_Instrument->TruncateTable();
-		t_PrimaryAccount->TruncateTable();
 		t_Account->TruncateTable();
 		t_Capital->TruncateTable();
 		t_Position->TruncateTable();
@@ -141,7 +134,6 @@ namespace mdb
 		t_Product->m_DBInited = false;
 		t_HotInstrument->m_DBInited = false;
 		t_Instrument->m_DBInited = false;
-		t_PrimaryAccount->m_DBInited = false;
 		t_Account->m_DBInited = false;
 		t_Capital->m_DBInited = false;
 		t_Position->m_DBInited = false;

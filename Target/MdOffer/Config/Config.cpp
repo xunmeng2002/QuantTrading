@@ -24,11 +24,9 @@ void Config::Load(const char* fileName)
 	std::ifstream inFile(fileName, std::ios::binary);
 	if (!reader.parse(inFile, root))
 	{
-		std::cout << "Parse Config Failed." << std::endl;
-		std::string s;
-		inFile >> s;
-		std::cout << s << std::endl;
-		throw std::logic_error("Parse Config Failed.");
+		std::string errorMsg = std::string("Parse Config Failed. FileName:") + fileName;
+		std::cout << errorMsg << std::endl;
+		throw std::logic_error(errorMsg);
 	}
 	else
 	{

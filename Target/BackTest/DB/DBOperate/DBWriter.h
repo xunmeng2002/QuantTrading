@@ -52,13 +52,6 @@ public:
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) override;
 	virtual void OnInstrumentTruncate() override;
 	
-	virtual void OnPrimaryAccountInsert(mdb::PrimaryAccount* record) override;
-	virtual void OnPrimaryAccountBatchInsert(std::list<mdb::PrimaryAccount*>* records) override;
-	virtual void OnPrimaryAccountErase(mdb::PrimaryAccount* record) override;
-	virtual void OnPrimaryAccountEraseByOfferIDIndex(mdb::PrimaryAccount* record) override;
-	virtual void OnPrimaryAccountUpdate(mdb::PrimaryAccount* record) override;
-	virtual void OnPrimaryAccountTruncate() override;
-	
 	virtual void OnAccountInsert(mdb::Account* record) override;
 	virtual void OnAccountBatchInsert(std::list<mdb::Account*>* records) override;
 	virtual void OnAccountErase(mdb::Account* record) override;

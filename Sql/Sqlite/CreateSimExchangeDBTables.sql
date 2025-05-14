@@ -1,6 +1,6 @@
 ﻿
 CREATE TABLE IF NOT EXISTS `t_TradingDay` (
-  `PK` text,  -- '主键'
+  `PK` int,  -- '主键'
   `CurrTradingDay` text,  -- '当前交易日'
   `PreTradingDay` text,  -- '昨交易日'
   PRIMARY KEY(PK)
@@ -34,15 +34,21 @@ CREATE TABLE IF NOT EXISTS `t_HotInstrument` (
   `TradingDay` text,  -- '交易日'
   `ExchangeID` text,  -- '交易所代码'
   `ProductID` text,  -- '品种代码'
-  `Rank` int,  -- '级别'
   `InstrumentID` text,  -- '合约代码'
+  `ProductClass` int,  -- '品种类型'
+  `Volume` bigint,  -- '委托数量'
+  `MaxVolume` bigint,  -- '最大数量'
+  `Turnover` double,  -- '成交金额'
+  `MaxTurnover` double,  -- '最大成交金额'
+  `OpenInterest` double,  -- '持仓量'
+  `MaxOpenInterest` double,  -- '最大持仓量'
+  `Rank` int,  -- '级别'
   PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)
 );  -- '主力合约表'
   CREATE INDEX TradingDay ON t_HotInstrument(ExchangeID, ProductID, Rank, TradingDay);
 
 
 CREATE TABLE IF NOT EXISTS `t_Instrument` (
-  `TradingDay` text,  -- '交易日'
   `ExchangeID` text,  -- '交易所代码'
   `InstrumentID` text,  -- '合约代码'
   `ExchangeInstID` text,  -- '交易所合约代码'

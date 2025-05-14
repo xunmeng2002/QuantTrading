@@ -661,7 +661,7 @@ namespace mdb
 			return;
 		}
 
-		fprintf(dumpFile, "TradingDay,ExchangeID,ProductID,Rank,InstrumentID\n");
+		fprintf(dumpFile, "TradingDay,ExchangeID,ProductID,InstrumentID,ProductClass,Volume,MaxVolume,Turnover,MaxTurnover,OpenInterest,MaxOpenInterest,Rank\n");
 		char buff[4096] = { 0 };
 		set<HotInstrument*, HotInstrumentLessForHotInstrumentPrimaryKey> records;
 		std::shared_lock guard(m_SharedMutex);
@@ -811,7 +811,7 @@ namespace mdb
 			return;
 		}
 
-		fprintf(dumpFile, "TradingDay,ExchangeID,InstrumentID,ExchangeInstID,InstrumentName,ProductID,ProductClass,InstrumentClass,Rank,VolumeMultiple,PriceTick,MaxMarketOrderVolume,MinMarketOrderVolume,MaxLimitOrderVolume,MinLimitOrderVolume,SessionName\n");
+		fprintf(dumpFile, "ExchangeID,InstrumentID,ExchangeInstID,InstrumentName,ProductID,ProductClass,InstrumentClass,Rank,VolumeMultiple,PriceTick,MaxMarketOrderVolume,MinMarketOrderVolume,MaxLimitOrderVolume,MinLimitOrderVolume,SessionName\n");
 		char buff[4096] = { 0 };
 		set<Instrument*, InstrumentLessForInstrumentPrimaryKey> records;
 		std::shared_lock guard(m_SharedMutex);

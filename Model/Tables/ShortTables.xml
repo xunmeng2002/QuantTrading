@@ -48,8 +48,15 @@
 			<item name="TradingDay"/>
 			<item name="ExchangeID"/>
 			<item name="ProductID"/>
-			<item name="Rank"/>
 			<item name="InstrumentID"/>
+			<item name="ProductClass"/>
+			<item name="Volume"/>
+			<item name="MaxVolume"/>
+			<item name="Turnover"/>
+			<item name="MaxTurnover"/>
+			<item name="OpenInterest"/>
+			<item name="MaxOpenInterest"/>
+			<item name="Rank"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay"/>

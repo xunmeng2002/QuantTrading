@@ -50,6 +50,9 @@
 	<package name="RtnSessionEnd" 				id="0x100D" desc="交易节结束推送">
 		<field name="SessionEnd"/>
 	</package>
+	<package name="RtnMarketDataEnd" 			id="0x100E" desc="行情结束推送">
+		<field name="MarketDataEnd"/>
+	</package>
 	
 	<package name="ReqAccountLogin" 			id="0x2001" desc="账户登录请求">
 		<field name="ReqAccountLogin"/>

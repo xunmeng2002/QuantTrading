@@ -8,7 +8,7 @@ namespace mdb
 	public:
 		static constexpr unsigned int TableID = 0x0001;
 		//主键
-		UserIDType PK;
+		IntType PK;
 		//当前交易日
 		DateType CurrTradingDay;
 		//昨交易日
@@ -78,10 +78,24 @@ namespace mdb
 		ExchangeIDType ExchangeID;
 		//品种代码
 		ProductIDType ProductID;
-		//级别
-		IntType Rank;
 		//合约代码
 		InstrumentIDType InstrumentID;
+		//品种类型
+		ProductClassType ProductClass;
+		//委托数量
+		VolumeType Volume;
+		//最大数量
+		VolumeType MaxVolume;
+		//成交金额
+		MoneyType Turnover;
+		//最大成交金额
+		MoneyType MaxTurnover;
+		//持仓量
+		LargeVolumeType OpenInterest;
+		//最大持仓量
+		LargeVolumeType MaxOpenInterest;
+		//级别
+		IntType Rank;
 		
 		static HotInstrument* Allocate();
 		void Free();
@@ -93,8 +107,6 @@ namespace mdb
 	{
 	public:
 		static constexpr unsigned int TableID = 0x0005;
-		//交易日
-		DateType TradingDay;
 		//交易所代码
 		ExchangeIDType ExchangeID;
 		//合约代码

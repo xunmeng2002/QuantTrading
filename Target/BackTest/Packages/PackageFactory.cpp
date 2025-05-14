@@ -34,6 +34,10 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	{
 		return RtnSessionEndPackage::Allocate();
 	}
+	case RtnMarketDataEndPackage::PackageID:
+	{
+		return RtnMarketDataEndPackage::Allocate();
+	}
 	case ReqInsertOrderPackage::PackageID:
 	{
 		return ReqInsertOrderPackage::Allocate();
