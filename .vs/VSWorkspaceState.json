@@ -7,15 +7,13 @@
   },
   "ExpandedNodes": [
     "",
-    "\\Model",
     "\\Model\\DB",
-    "\\Source",
     "\\Target",
     "\\Target\\BackTest",
-    "\\Target\\BackTest\\Src",
     "\\Target\\InitBackTestDB\\Src",
-    "\\Test"
+    "\\Test",
+    "\\Test\\TestBackTest\\Src"
   ],
-  "SelectedNode": "\\Target\\BackTest\\Src\\SimExchange.cpp",
+  "SelectedNode": "\\Target\\BackTest\\Src",
   "PreviewInSolutionExplorer": false
 }

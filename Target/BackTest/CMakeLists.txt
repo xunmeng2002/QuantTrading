@@ -26,11 +26,7 @@ add_definitions(-DLIB_BACKTEST_API_EXPORT)
 
 #link_directories(${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0)
 #link_directories(${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0/Debug)
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-	link_directories(${CMAKE_SOURCE_DIR}/../Libs/duckdb/win64/Debug)
-else(CMAKE_BUILD_TYPE MATCHES "Debug")
-	link_directories(${CMAKE_SOURCE_DIR}/../Libs/duckdb/win64/Release)
-endif()
+link_directories(${CMAKE_SOURCE_DIR}/../Libs/duckdb/win64)
 
 add_library(${PROJECT_NAME} SHARED ${all_file})
 
