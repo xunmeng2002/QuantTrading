@@ -42,4 +42,17 @@
 	<pump dest="./Api/TradeUtf8CApi/Src/TradeCApi.cpp" tpl="../Templates/Cpp/Api/Utf8CApi.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml ../Model/Types.xml"/>
 	<pump dest="./Api/TradeUtf8CApi/Src/TradeSpiWrap.h" tpl="../Templates/Cpp/Api/SpiWrap.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml"/>
 	<pump dest="./Api/TradeUtf8CApi/Src/TradeSpiWrap.cpp" tpl="../Templates/Cpp/Api/Utf8SpiWrap.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/TradeApi.xml ../Model/Types.xml"/>
+	
+	
+	<pump dest="../Libs/QuantTrading/include/SimExchangeFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
+	<pump dest="../Libs/QuantTrading/include/SimExchangeApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>	
+	<pump dest="./Api/SimExchangeApi/Src/SimExchangeFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
+	<pump dest="./Api/SimExchangeApi/Src/SimExchangeApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
+	<pump dest="./Api/SimExchangeApi/Src/SimExchangeApiBase.h" tpl="../Templates/Cpp/Api/ApiBase.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
+	<pump dest="./Api/SimExchangeApi/Src/SimExchangeApiBase.cpp" tpl="../Templates/Cpp/Api/ApiBase.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
+	<pump dest="./Api/SimExchangeApi/Src/SimExchangeApiImpl.h" tpl="../Templates/Cpp/Api/ApiImpl.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
+	<pump dest="./Api/SimExchangeApi/Src/SimExchangeApiImpl.cpp" tpl="../Templates/Cpp/Api/ApiImpl.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
+	<pump dest="./Api/SimExchangeApi/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
+	<pump dest="./Api/SimExchangeApi/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml ../Model/Types.xml"/>
+	<pump dest="./Api/SimExchangeApi/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Packages/PackageFactory.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/SimExchangeApi.xml"/>
 </pumplist>

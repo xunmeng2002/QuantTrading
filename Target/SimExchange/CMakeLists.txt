@@ -1,0 +1,31 @@
+SET(PROJECT_NAME "SimExchange")
+project(${PROJECT_NAME})
+message("PROJECT_NAME:" ${PROJECT_NAME})
+
+add_package(Src ./Src)
+add_package(Config ./Config)
+add_package(Packages ./Packages)
+add_package(DBOperate ./DB/DBOperate)
+add_package(InitMdb ./DB/InitMdb)
+add_package(Mdb ./DB/Mdb)
+add_package(DuckDB ./DB/DuckDB)
+#add_package(MysqlDB ./DB/MysqlDB)
+add_package(SqliteDB ./DB/SqliteDB)
+add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)
+add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
+add_package(Packages ${CMAKE_SOURCE_DIR}/Source/Packages)
+
+#include_package(MysqlConnector ${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0/include)
+include_package(duckdb ${CMAKE_SOURCE_DIR}/../Libs/duckdb/include)
+
+#link_directories(${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0)
+#link_directories(${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0/Debug)
+link_directories(${CMAKE_SOURCE_DIR}/../Libs/duckdb/win64)
+
+add_executable(${PROJECT_NAME} ${all_file})
+
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	target_link_libraries(${PROJECT_NAME} PersonalLib.lib duckdb.lib)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	target_link_libraries(${PROJECT_NAME} PersonalLib duckdb pthread)
+endif()

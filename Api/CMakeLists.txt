@@ -7,6 +7,8 @@ add_subdirectory(MdUtf8CApi)
 add_subdirectory(TradeApi)
 add_subdirectory(TradeCApi)
 add_subdirectory(TradeUtf8CApi)
+
+add_subdirectory(SimExchangeApi)
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
