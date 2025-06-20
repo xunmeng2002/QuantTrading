@@ -48,6 +48,7 @@
 		<item name="InstrumentID"/>
 	</field>
 	<field name="ReqSubMarketDataFinished" 		id="0x1009" desc="行情完成请求">
+		<item name="SessionID"/>
 	</field>
 	<field name="DepthMarketData" 				id="0x100A" desc="深度行情">
 		<item name="TradingDay"/>

@@ -79,7 +79,9 @@
 		</field>
 	</package>
 	<package name="ReqSubMarketDataFinished" id="0x1009" desc="行情完成请求">
-		<field name="ReqSubMarketDataFinished" id="0x1009" desc="行情完成请求"/>
+		<field name="ReqSubMarketDataFinished" id="0x1009" desc="行情完成请求">
+			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+		</field>
 	</package>
 	<package name="RtnDepthMarketData" id="0x100A" desc="深度行情推送">
 		<field name="DepthMarketData" id="0x100A" desc="深度行情">

@@ -1614,6 +1614,7 @@ int ReqSubMarketDataFinishedPackage::ToStepStream(char* buff, int size) const
 	if (ReqSubMarketDataFinished != nullptr)
 	{
 		WriteHexString(ppos, Items::FieldStart, ReqSubMarketDataFinishedField::FieldID);
+		WriteString(ppos, Items::SessionID, ReqSubMarketDataFinished->SessionID);
 		WriteHexString(ppos, Items::FieldEnd, ReqSubMarketDataFinishedField::FieldID);
 	}
 	return int(ppos - buff);
@@ -1646,6 +1647,11 @@ bool ReqSubMarketDataFinishedPackage::FromStepStream(char* buff, int startIndex,
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
+						case Items::SessionID:
+						{
+							ReqSubMarketDataFinished->SessionID = atoll(value.c_str());
+							break;
+						}
 						default:
 							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSubMarketDataFinishedField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
@@ -1696,7 +1702,7 @@ bool ReqSubMarketDataFinishedPackage::FromXtpStream(char* buff, int startIndex, 
 const char* ReqSubMarketDataFinishedPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketDataFinished:");
+	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketDataFinished:SessionID:[%lld]", ReqSubMarketDataFinished->SessionID);
 	return t_DataStringBuffer;
 }
  

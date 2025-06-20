@@ -84,6 +84,7 @@ class ReqSubMarketDataFinishedField
 {
 public:
 	static constexpr UShortType FieldID = 0x1009;
+	SessionIDType SessionID;		//会话编号
 };
 class DepthMarketDataField
 {

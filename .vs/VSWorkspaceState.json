@@ -1,18 +1,5 @@
 {
-  "ActiveTargetSystem": "WSL: Ubuntu",
   "DevContainersInfoBarHidden": true,
-  "OutputFoldersPerTargetSystem": {
-    "Local Machine": [
-      "out\\build\\x64-Debug",
-      "out\\install\\x64-Debug"
-    ],
-    "WSL: Ubuntu": [
-      "out\\build\\x64-Debug",
-      "out\\install\\x64-Debug",
-      "out\\build\\WSL-GCC-Debug",
-      "out\\install\\WSL-GCC-Debug"
-    ]
-  },
   "ExpandedNodes": [
     "",
     "\\Target",
@@ -21,5 +8,20 @@
     "\\Test\\TestBackTest"
   ],
   "SelectedNode": "\\Test\\TestBackTest\\Src",
-  "PreviewInSolutionExplorer": false
+  "PreviewInSolutionExplorer": false,
+  "ActiveTargetSystem": "Local Machine",
+  "OutputFoldersPerTargetSystem": {
+    "Local Machine": [
+      "out\\build\\x64-Debug",
+      "out\\install\\x64-Debug",
+      "out\\build\\WSL-GCC-Debug",
+      "out\\install\\WSL-GCC-Debug"
+    ],
+    "WSL: Ubuntu": [
+      "out\\build\\x64-Debug",
+      "out\\install\\x64-Debug",
+      "out\\build\\WSL-GCC-Debug",
+      "out\\install\\WSL-GCC-Debug"
+    ]
+  }
 }

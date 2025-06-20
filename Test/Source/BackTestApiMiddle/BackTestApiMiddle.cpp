@@ -63,8 +63,8 @@ int BackTestApiMiddle::ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* r
 	WriteLog(LogLevel::Info, "ReqSubMarketDataFinished: RequestID:%d", requestID);
 	if (reqSubMarketDataFinished != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSubMarketDataFinishedField:",
-			);
+		WriteLog(LogLevel::Info, "ReqSubMarketDataFinishedField:SessionID:[%lld]",
+			reqSubMarketDataFinished->SessionID);
 	}
 	else
 	{
