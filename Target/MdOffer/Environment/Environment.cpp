@@ -2,7 +2,7 @@
 #include "json/json.h"
 #include <fstream>
 #include <iostream>
-#include <exception>
+#include <stdexcept>
 
 using namespace std;
 
@@ -32,7 +32,7 @@ void ReadEnvironment(const char* environmentFile, std::map<std::string, Environm
 		std::string s;
 		in_file >> s;
 		std::cout << s << std::endl;
-		throw std::exception("Parse Config Failed.");
+		throw std::logic_error("Parse Config Failed.");
 	}
 	else
 	{

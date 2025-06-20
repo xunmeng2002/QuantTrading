@@ -1,5 +1,6 @@
 #include "BackTestSpiImpl.h"
 #include "Logger.h"
+#include <string.h>
 
 BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi)
 	:m_BackTestApi(backTestApi), m_LastOrderTickMd(nullptr), m_LastOrderBarMd(nullptr), m_MaxRequestID(0), m_MaxClientOrderID(0)

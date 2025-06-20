@@ -1,5 +1,5 @@
 #include "FieldsCompare.h"
-
+#include <string.h>
 
 bool std::less<ReqSubMarketDataField>::operator()(const ReqSubMarketDataField* left, const ReqSubMarketDataField* right) const
 {

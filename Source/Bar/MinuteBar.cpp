@@ -2,6 +2,7 @@
 #include "BarUtility.h"
 #include "TimeUtility.h"
 #include "Logger.h"
+#include <limits>
 
 MinuteBar::MinuteBar()
 	:m_BarSubscriber(nullptr)
@@ -132,11 +133,11 @@ BarMarketDataField* MinuteBar::InitLostBarFromPreBar(BarMarketDataField* preBar,
 BarMarketDataField* MinuteBar::InitLostBarFromDepthMd(DepthMarketDataField* depthMd, long long barMinuteTime, long long updateTsMinuteTime)
 {
 	auto price = 0.0;
-	if (depthMd->PreClosePrice != DBL_MAX)
+	if (depthMd->PreClosePrice != std::numeric_limits<double>::max())
 	{
 		price = depthMd->PreClosePrice;
 	}
-	else if (depthMd->PreSettlementPrice != DBL_MAX)
+	else if (depthMd->PreSettlementPrice != std::numeric_limits<double>::max())
 	{
 		price = depthMd->PreSettlementPrice;
 	}

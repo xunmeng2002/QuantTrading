@@ -1,5 +1,6 @@
 #include "Mdb.h"
 #include "TimeUtility.h"
+#include <string.h>
 
 using namespace std;
 using namespace mdb;

@@ -1,4 +1,5 @@
 #include "MdSnap.h"
+#include <string.h>
 
 
 MdSnap MdSnap::m_Instance;
