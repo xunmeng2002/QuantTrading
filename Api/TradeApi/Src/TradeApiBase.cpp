@@ -1,4 +1,4 @@
-#include "TradeApiBase.h"
+﻿#include "TradeApiBase.h"
 #include "TcpSelectClient.h"
 
 extern const char* Version;

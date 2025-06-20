@@ -1,4 +1,4 @@
-#include "MdApiBase.h"
+﻿#include "MdApiBase.h"
 #include "TcpSelectClient.h"
 
 extern const char* Version;

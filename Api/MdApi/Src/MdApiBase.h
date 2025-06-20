@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ApiBase.h"
 #include "MdApi.h"
 #include "ThreadBase.h"
