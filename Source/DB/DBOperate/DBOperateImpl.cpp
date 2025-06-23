@@ -96,6 +96,31 @@ void DBOperateImpl::FreeRecord()
 		((MdSubscribe*)Record)->Free();
 		break;
 	}
+	case SEBroker::TableID:
+	{
+		((SEBroker*)Record)->Free();
+		break;
+	}
+	case SEInstrument::TableID:
+	{
+		((SEInstrument*)Record)->Free();
+		break;
+	}
+	case SEOrder::TableID:
+	{
+		((SEOrder*)Record)->Free();
+		break;
+	}
+	case SETrade::TableID:
+	{
+		((SETrade*)Record)->Free();
+		break;
+	}
+	case SEBrokerLoginSession::TableID:
+	{
+		((SEBrokerLoginSession*)Record)->Free();
+		break;
+	}
 	default:
 		break;
 	}
@@ -164,6 +189,26 @@ const char* DBOperateImpl::GetDebugString() const
 	case MdSubscribe::TableID:
 	{
 		return ((MdSubscribe*)Record)->GetDebugString();
+	}
+	case SEBroker::TableID:
+	{
+		return ((SEBroker*)Record)->GetDebugString();
+	}
+	case SEInstrument::TableID:
+	{
+		return ((SEInstrument*)Record)->GetDebugString();
+	}
+	case SEOrder::TableID:
+	{
+		return ((SEOrder*)Record)->GetDebugString();
+	}
+	case SETrade::TableID:
+	{
+		return ((SETrade*)Record)->GetDebugString();
+	}
+	case SEBrokerLoginSession::TableID:
+	{
+		return ((SEBrokerLoginSession*)Record)->GetDebugString();
 	}
 	default:
 		break;

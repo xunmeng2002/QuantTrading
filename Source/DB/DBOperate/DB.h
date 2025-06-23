@@ -125,4 +125,40 @@ public:
 	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) = 0;
 	virtual void TruncateMdSubscribe() = 0;
 
+	virtual void InsertSEBroker(mdb::SEBroker* record) = 0;
+	virtual void BatchInsertSEBroker(std::list<mdb::SEBroker*>* records) = 0;
+	virtual void DeleteSEBroker(mdb::SEBroker* record) = 0;
+	virtual void UpdateSEBroker(mdb::SEBroker* record) = 0;
+	virtual void SelectSEBroker(std::list<mdb::SEBroker*>& records) = 0;
+	virtual void TruncateSEBroker() = 0;
+
+	virtual void InsertSEInstrument(mdb::SEInstrument* record) = 0;
+	virtual void BatchInsertSEInstrument(std::list<mdb::SEInstrument*>* records) = 0;
+	virtual void DeleteSEInstrument(mdb::SEInstrument* record) = 0;
+	virtual void UpdateSEInstrument(mdb::SEInstrument* record) = 0;
+	virtual void SelectSEInstrument(std::list<mdb::SEInstrument*>& records) = 0;
+	virtual void TruncateSEInstrument() = 0;
+
+	virtual void InsertSEOrder(mdb::SEOrder* record) = 0;
+	virtual void BatchInsertSEOrder(std::list<mdb::SEOrder*>* records) = 0;
+	virtual void DeleteSEOrder(mdb::SEOrder* record) = 0;
+	virtual void UpdateSEOrder(mdb::SEOrder* record) = 0;
+	virtual void SelectSEOrder(std::list<mdb::SEOrder*>& records) = 0;
+	virtual void TruncateSEOrder() = 0;
+
+	virtual void InsertSETrade(mdb::SETrade* record) = 0;
+	virtual void BatchInsertSETrade(std::list<mdb::SETrade*>* records) = 0;
+	virtual void DeleteSETrade(mdb::SETrade* record) = 0;
+	virtual void UpdateSETrade(mdb::SETrade* record) = 0;
+	virtual void SelectSETrade(std::list<mdb::SETrade*>& records) = 0;
+	virtual void TruncateSETrade() = 0;
+
+	virtual void InsertSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) = 0;
+	virtual void BatchInsertSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>* records) = 0;
+	virtual void DeleteSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) = 0;
+	virtual void DeleteSEBrokerLoginSessionByBrokerIDIndex(mdb::SEBrokerLoginSession* record) = 0;
+	virtual void UpdateSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) = 0;
+	virtual void SelectSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>& records) = 0;
+	virtual void TruncateSEBrokerLoginSession() = 0;
+
 };

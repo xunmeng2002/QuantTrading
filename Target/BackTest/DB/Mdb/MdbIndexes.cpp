@@ -6,9 +6,6 @@
 
 namespace mdb
 {
-
-
-
 	HotInstrumentIndexTradingDay::HotInstrumentIndexTradingDay(HotInstrumentTable* table)
 		:m_Table(table)
 	{
@@ -69,9 +66,7 @@ namespace mdb
 		t_CompareHotInstrument.Rank = Rank;
 		Strcpy(t_CompareHotInstrument.TradingDay, TradingDay);
 	}
-
-
-
+	
 	CapitalIndexTradingDay::CapitalIndexTradingDay(CapitalTable* table)
 		:m_Table(table)
 	{
@@ -129,7 +124,7 @@ namespace mdb
 	{
 		Strcpy(t_CompareCapital.TradingDay, TradingDay);
 	}
-
+	
 	PositionIndexAccount::PositionIndexAccount(PositionTable* table)
 		:m_Table(table)
 	{
@@ -188,6 +183,7 @@ namespace mdb
 		Strcpy(t_ComparePosition.TradingDay, TradingDay);
 		Strcpy(t_ComparePosition.AccountID, AccountID);
 	}
+	
 	PositionIndexTradingDay::PositionIndexTradingDay(PositionTable* table)
 		:m_Table(table)
 	{
@@ -245,7 +241,7 @@ namespace mdb
 	{
 		Strcpy(t_ComparePosition.TradingDay, TradingDay);
 	}
-
+	
 	PositionDetailIndexTradeMatch::PositionDetailIndexTradeMatch(PositionDetailTable* table)
 		:m_Table(table)
 	{
@@ -307,6 +303,7 @@ namespace mdb
 		Strcpy(t_ComparePositionDetail.InstrumentID, InstrumentID);
 		t_ComparePositionDetail.PosiDirection = PosiDirection;
 	}
+	
 	PositionDetailIndexTradingDay::PositionDetailIndexTradingDay(PositionDetailTable* table)
 		:m_Table(table)
 	{
@@ -364,10 +361,5 @@ namespace mdb
 	{
 		Strcpy(t_ComparePositionDetail.TradingDay, TradingDay);
 	}
-
-
-
-
-
-
+	
 }

@@ -109,6 +109,37 @@ public:
 	virtual void OnMdSubscribeUpdate(mdb::MdSubscribe* record) {}
 	virtual void OnMdSubscribeTruncate() {}
 	
+	virtual void OnSEBrokerInsert(mdb::SEBroker* record) {}
+	virtual void OnSEBrokerBatchInsert(std::list<mdb::SEBroker*>* records) {}
+	virtual void OnSEBrokerErase(mdb::SEBroker* record) {}
+	virtual void OnSEBrokerUpdate(mdb::SEBroker* record) {}
+	virtual void OnSEBrokerTruncate() {}
+	
+	virtual void OnSEInstrumentInsert(mdb::SEInstrument* record) {}
+	virtual void OnSEInstrumentBatchInsert(std::list<mdb::SEInstrument*>* records) {}
+	virtual void OnSEInstrumentErase(mdb::SEInstrument* record) {}
+	virtual void OnSEInstrumentUpdate(mdb::SEInstrument* record) {}
+	virtual void OnSEInstrumentTruncate() {}
+	
+	virtual void OnSEOrderInsert(mdb::SEOrder* record) {}
+	virtual void OnSEOrderBatchInsert(std::list<mdb::SEOrder*>* records) {}
+	virtual void OnSEOrderErase(mdb::SEOrder* record) {}
+	virtual void OnSEOrderUpdate(mdb::SEOrder* record) {}
+	virtual void OnSEOrderTruncate() {}
+	
+	virtual void OnSETradeInsert(mdb::SETrade* record) {}
+	virtual void OnSETradeBatchInsert(std::list<mdb::SETrade*>* records) {}
+	virtual void OnSETradeErase(mdb::SETrade* record) {}
+	virtual void OnSETradeUpdate(mdb::SETrade* record) {}
+	virtual void OnSETradeTruncate() {}
+	
+	virtual void OnSEBrokerLoginSessionInsert(mdb::SEBrokerLoginSession* record) {}
+	virtual void OnSEBrokerLoginSessionBatchInsert(std::list<mdb::SEBrokerLoginSession*>* records) {}
+	virtual void OnSEBrokerLoginSessionErase(mdb::SEBrokerLoginSession* record) {}
+	virtual void OnSEBrokerLoginSessionEraseByBrokerIDIndex(mdb::SEBrokerLoginSession* record) {}
+	virtual void OnSEBrokerLoginSessionUpdate(mdb::SEBrokerLoginSession* record) {}
+	virtual void OnSEBrokerLoginSessionTruncate() {}
+	
 
 public:
 	std::atomic<bool> m_Connected;

@@ -30,10 +30,29 @@ public:
 	MessageType ErrorMsg;		//错误信息
 };
 
-class ReqSEInsertOrderField
+class ReqSEBrokerLoginField
 {
 public:
 	static constexpr UShortType FieldID = 0x3001;
+	BrokerIDType BrokerID;		//经纪公司代码
+	PasswordType Password;		//密码
+};
+
+class RspSEBrokerLoginField
+{
+public:
+	static constexpr UShortType FieldID = 0x3002;
+	BrokerIDType BrokerID;		//经纪公司代码
+	BrokerNameType BrokerName;		//经纪公司名称
+	SessionIDType SessionID;		//会话编号
+	IPAddressType IPAddress;		//IP地址
+};
+
+class ReqSEInsertOrderField
+{
+public:
+	static constexpr UShortType FieldID = 0x3003;
+	BrokerIDType BrokerID;		//经纪公司代码
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
@@ -42,39 +61,41 @@ public:
 	OrderPriceTypeType OrderPriceType;		//委托价格类型
 	PriceType Price;		//委托价格
 	VolumeType Volume;		//委托数量
-	OrderIDType OrderID;		//委托编号
+	ClientOrderIDType ClientOrderID;		//客户端委托编号
 };
 
 class ReqSECancelOrderField
 {
 public:
-	static constexpr UShortType FieldID = 0x3002;
+	static constexpr UShortType FieldID = 0x3004;
+	BrokerIDType BrokerID;		//经纪公司代码
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
 	OrderIDType CancelOrderID;		//本地撤单编号
 	OrderIDType OrderID;		//委托编号
-	OrderSysIDType OrderSysID;		//系统委托编号
+	ClientOrderIDType ClientOrderID;		//客户端委托编号
 	SessionIDType SessionID;		//会话编号
 };
 
 class ReqQrySEOrderField
 {
 public:
-	static constexpr UShortType FieldID = 0x3003;
+	static constexpr UShortType FieldID = 0x3005;
 	AccountIDType AccountID;		//账户代码
 };
 
 class SEOrderField
 {
 public:
-	static constexpr UShortType FieldID = 0x3004;
+	static constexpr UShortType FieldID = 0x3006;
 	DateType TradingDay;		//交易日
+	BrokerIDType BrokerID;		//经纪公司代码
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
 	ProductClassType ProductClass;		//品种类型
-	OrderSysIDType OrderSysID;		//系统委托编号
+	OrderIDType OrderID;		//委托编号
 	DirectionType Direction;		//买卖方向
 	OffsetFlagType OffsetFlag;		//开平标志
 	OrderPriceTypeType OrderPriceType;		//委托价格类型
@@ -89,27 +110,27 @@ public:
 	DateType CancelDate;		//撤单日期
 	TimeType CancelTime;		//撤单时间
 	SessionIDType SessionID;		//会话编号
-	OrderIDType OrderID;		//委托编号
+	ClientOrderIDType ClientOrderID;		//客户端委托编号
 };
 
 class ReqQrySETradeField
 {
 public:
-	static constexpr UShortType FieldID = 0x3005;
+	static constexpr UShortType FieldID = 0x3007;
 	AccountIDType AccountID;		//账户代码
 };
 
 class SETradeField
 {
 public:
-	static constexpr UShortType FieldID = 0x3006;
+	static constexpr UShortType FieldID = 0x3008;
 	DateType TradingDay;		//交易日
+	BrokerIDType BrokerID;		//经纪公司代码
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
 	ProductClassType ProductClass;		//品种类型
 	OrderIDType OrderID;		//委托编号
-	OrderSysIDType OrderSysID;		//系统委托编号
 	TradeIDType TradeID;		//成交编号
 	DirectionType Direction;		//买卖方向
 	OffsetFlagType OffsetFlag;		//开平标志

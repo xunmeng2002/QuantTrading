@@ -25,7 +25,6 @@ namespace mdb
 		TradingDayTable* m_Table;
 		std::unordered_set<TradingDay*, TradingDayHashForTradingDayPrimaryKey, TradingDayEqualForTradingDayPrimaryKey> m_Index;
 	};
-
 	class ExchangeTable;
 	class ExchangePrimaryKey
 	{
@@ -46,7 +45,6 @@ namespace mdb
 		ExchangeTable* m_Table;
 		std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey> m_Index;
 	};
-
 	class ProductTable;
 	class ProductPrimaryKey
 	{
@@ -67,7 +65,6 @@ namespace mdb
 		ProductTable* m_Table;
 		std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey> m_Index;
 	};
-
 	class HotInstrumentTable;
 	class HotInstrumentPrimaryKey
 	{
@@ -88,7 +85,6 @@ namespace mdb
 		HotInstrumentTable* m_Table;
 		std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey> m_Index;
 	};
-
 	class InstrumentTable;
 	class InstrumentPrimaryKey
 	{
@@ -109,7 +105,6 @@ namespace mdb
 		InstrumentTable* m_Table;
 		std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey> m_Index;
 	};
-
 	class PrimaryAccountTable;
 	class PrimaryAccountPrimaryKey
 	{
@@ -130,7 +125,6 @@ namespace mdb
 		PrimaryAccountTable* m_Table;
 		std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey> m_Index;
 	};
-
 	class AccountTable;
 	class AccountPrimaryKey
 	{
@@ -151,7 +145,6 @@ namespace mdb
 		AccountTable* m_Table;
 		std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey> m_Index;
 	};
-
 	class CapitalTable;
 	class CapitalPrimaryKey
 	{
@@ -172,7 +165,6 @@ namespace mdb
 		CapitalTable* m_Table;
 		std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey> m_Index;
 	};
-
 	class PositionTable;
 	class PositionPrimaryKey
 	{
@@ -193,7 +185,6 @@ namespace mdb
 		PositionTable* m_Table;
 		std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey> m_Index;
 	};
-
 	class PositionDetailTable;
 	class PositionDetailPrimaryKey
 	{
@@ -214,7 +205,6 @@ namespace mdb
 		PositionDetailTable* m_Table;
 		std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey> m_Index;
 	};
-
 	class OrderTable;
 	class OrderPrimaryKey
 	{
@@ -252,7 +242,7 @@ namespace mdb
 		OrderTable* m_Table;
 		std::unordered_set<Order*, OrderHashForClientOrderIDUniqueKey, OrderEqualForClientOrderIDUniqueKey> m_Index;
 	};
-
+	
 	class TradeTable;
 	class TradePrimaryKey
 	{
@@ -273,7 +263,6 @@ namespace mdb
 		TradeTable* m_Table;
 		std::unordered_set<Trade*, TradeHashForTradePrimaryKey, TradeEqualForTradePrimaryKey> m_Index;
 	};
-
 	class DepthMarketDataTable;
 	class DepthMarketDataPrimaryKey
 	{
@@ -294,7 +283,6 @@ namespace mdb
 		DepthMarketDataTable* m_Table;
 		std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey> m_Index;
 	};
-
 	class BarMarketDataTable;
 	class BarMarketDataPrimaryKey
 	{
@@ -315,7 +303,6 @@ namespace mdb
 		BarMarketDataTable* m_Table;
 		std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey> m_Index;
 	};
-
 	class MdSubscribeTable;
 	class MdSubscribePrimaryKey
 	{
@@ -336,5 +323,104 @@ namespace mdb
 		MdSubscribeTable* m_Table;
 		std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey> m_Index;
 	};
+	class SEBrokerTable;
+	class SEBrokerPrimaryKey
+	{
+		using iterator = std::unordered_set<SEBroker*, SEBrokerHashForSEBrokerPrimaryKey, SEBrokerEqualForSEBrokerPrimaryKey>::iterator;
+		friend class SEBrokerTable;
+	public:
+		SEBrokerPrimaryKey(SEBrokerTable* table, size_t buckets = 1000);
+		SEBroker* Select(const BrokerIDType& BrokerID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(SEBroker* const record);
+		void Erase(SEBroker* const record);
+		bool CheckInsert(SEBroker* const record);
+		bool CheckUpdate(const SEBroker* const oldRecord, const SEBroker* const newRecord);
 
+	private:
+		SEBrokerTable* m_Table;
+		std::unordered_set<SEBroker*, SEBrokerHashForSEBrokerPrimaryKey, SEBrokerEqualForSEBrokerPrimaryKey> m_Index;
+	};
+	class SEInstrumentTable;
+	class SEInstrumentPrimaryKey
+	{
+		using iterator = std::unordered_set<SEInstrument*, SEInstrumentHashForSEInstrumentPrimaryKey, SEInstrumentEqualForSEInstrumentPrimaryKey>::iterator;
+		friend class SEInstrumentTable;
+	public:
+		SEInstrumentPrimaryKey(SEInstrumentTable* table, size_t buckets = 1000);
+		SEInstrument* Select(const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(SEInstrument* const record);
+		void Erase(SEInstrument* const record);
+		bool CheckInsert(SEInstrument* const record);
+		bool CheckUpdate(const SEInstrument* const oldRecord, const SEInstrument* const newRecord);
+
+	private:
+		SEInstrumentTable* m_Table;
+		std::unordered_set<SEInstrument*, SEInstrumentHashForSEInstrumentPrimaryKey, SEInstrumentEqualForSEInstrumentPrimaryKey> m_Index;
+	};
+	class SEOrderTable;
+	class SEOrderPrimaryKey
+	{
+		using iterator = std::unordered_set<SEOrder*, SEOrderHashForSEOrderPrimaryKey, SEOrderEqualForSEOrderPrimaryKey>::iterator;
+		friend class SEOrderTable;
+	public:
+		SEOrderPrimaryKey(SEOrderTable* table, size_t buckets = 1000);
+		SEOrder* Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(SEOrder* const record);
+		void Erase(SEOrder* const record);
+		bool CheckInsert(SEOrder* const record);
+		bool CheckUpdate(const SEOrder* const oldRecord, const SEOrder* const newRecord);
+
+	private:
+		SEOrderTable* m_Table;
+		std::unordered_set<SEOrder*, SEOrderHashForSEOrderPrimaryKey, SEOrderEqualForSEOrderPrimaryKey> m_Index;
+	};
+	class SETradeTable;
+	class SETradePrimaryKey
+	{
+		using iterator = std::unordered_set<SETrade*, SETradeHashForSETradePrimaryKey, SETradeEqualForSETradePrimaryKey>::iterator;
+		friend class SETradeTable;
+	public:
+		SETradePrimaryKey(SETradeTable* table, size_t buckets = 1000);
+		SETrade* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(SETrade* const record);
+		void Erase(SETrade* const record);
+		bool CheckInsert(SETrade* const record);
+		bool CheckUpdate(const SETrade* const oldRecord, const SETrade* const newRecord);
+
+	private:
+		SETradeTable* m_Table;
+		std::unordered_set<SETrade*, SETradeHashForSETradePrimaryKey, SETradeEqualForSETradePrimaryKey> m_Index;
+	};
+	class SEBrokerLoginSessionTable;
+	class SEBrokerLoginSessionPrimaryKey
+	{
+		using iterator = std::unordered_set<SEBrokerLoginSession*, SEBrokerLoginSessionHashForSEBrokerLoginSessionPrimaryKey, SEBrokerLoginSessionEqualForSEBrokerLoginSessionPrimaryKey>::iterator;
+		friend class SEBrokerLoginSessionTable;
+	public:
+		SEBrokerLoginSessionPrimaryKey(SEBrokerLoginSessionTable* table, size_t buckets = 1000);
+		SEBrokerLoginSession* Select(const SessionIDType& SessionID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(SEBrokerLoginSession* const record);
+		void Erase(SEBrokerLoginSession* const record);
+		bool CheckInsert(SEBrokerLoginSession* const record);
+		bool CheckUpdate(const SEBrokerLoginSession* const oldRecord, const SEBrokerLoginSession* const newRecord);
+
+	private:
+		SEBrokerLoginSessionTable* m_Table;
+		std::unordered_set<SEBrokerLoginSession*, SEBrokerLoginSessionHashForSEBrokerLoginSessionPrimaryKey, SEBrokerLoginSessionEqualForSEBrokerLoginSessionPrimaryKey> m_Index;
+	};
 }

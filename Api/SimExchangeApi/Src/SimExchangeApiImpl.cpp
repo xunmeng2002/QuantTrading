@@ -24,6 +24,11 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 		m_SimExchangeSpi->OnRspQryInstrument(((RspQryInstrumentPackage*)package)->Instrument, ((RspQryInstrumentPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
+	case RspSEBrokerLoginPackage::PackageID:
+	{
+		m_SimExchangeSpi->OnRspSEBrokerLogin(((RspSEBrokerLoginPackage*)package)->RspSEBrokerLogin, ((RspSEBrokerLoginPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		break;
+	}
 	case RspSEInsertOrderPackage::PackageID:
 	{
 		m_SimExchangeSpi->OnRspSEInsertOrder(((RspSEInsertOrderPackage*)package)->ReqSEInsertOrder, ((RspSEInsertOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
@@ -67,6 +72,17 @@ int SimExchangeApiImpl::ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument
 	reqPackage->Prepare(m_SessionID, false, requestID);
 	reqPackage->ReqQryInstrument = Allocate<ReqQryInstrumentField>();
 	memcpy(reqPackage->ReqQryInstrument, reqQryInstrument, sizeof(ReqQryInstrumentField));
+	
+	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	reqPackage->Free();
+	return result;
+}
+int SimExchangeApiImpl::ReqSEBrokerLogin(ReqSEBrokerLoginField* reqSEBrokerLogin, int requestID)
+{
+	ReqSEBrokerLoginPackage* reqPackage = ReqSEBrokerLoginPackage::Allocate();
+	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->ReqSEBrokerLogin = Allocate<ReqSEBrokerLoginField>();
+	memcpy(reqPackage->ReqSEBrokerLogin, reqSEBrokerLogin, sizeof(ReqSEBrokerLoginField));
 	
 	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Free();

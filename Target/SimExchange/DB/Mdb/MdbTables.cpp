@@ -486,478 +486,6 @@ namespace mdb
 	{
 	}
 
-	InstrumentTable::InstrumentTable(Mdb* mdb)
-		:m_Mdb(mdb)
-	{
-		m_MdbSubscriber = nullptr;
-		m_PrimaryKey = new InstrumentPrimaryKey(this);
-	}
-	InstrumentTable::~InstrumentTable()
-	{
-		delete m_PrimaryKey;
-		m_PrimaryKey = nullptr;
-	}
-	void InstrumentTable::Subscribe(MdbSubscriber* mdbSubscriber)
-	{
-		m_MdbSubscriber = mdbSubscriber;
-	}
-	void InstrumentTable::UnSubscribe()
-	{
-		m_MdbSubscriber = nullptr;
-	}
-	void InstrumentTable::LockShared()
-	{
-		m_SharedMutex.lock_shared();
-	}
-	void InstrumentTable::UnlockShared()
-	{
-		m_SharedMutex.unlock_shared();
-	}
-	void InstrumentTable::InitDB()
-	{
-		m_DBInited = true;
-	}
-	bool InstrumentTable::Insert(Instrument* record)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		if (!m_PrimaryKey->CheckInsert(record))
-		{
-			WriteLog(LogLevel::Warning, "Insert Failed for Instrument:[%s]", record->GetString());
-			record->Free();
-			return false;
-		}
-
-		m_PrimaryKey->Insert(record);
-
-		
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnInstrumentInsert(record);
-		}
-		return true;
-	}
-	void InstrumentTable::BatchInsert(std::list<mdb::Instrument*>* records)
-	{
-		{
-			std::lock_guard guard(m_SharedMutex);
-			for (auto record : *records)
-			{
-				auto newRecord = Instrument::Allocate();
-				memcpy(newRecord, record, sizeof(Instrument));
-				m_PrimaryKey->Insert(newRecord);
-
-			}
-		}
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnInstrumentBatchInsert(records);
-		}
-	}
-	void InstrumentTable::Erase(Instrument* record)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		EraseUniqueKey(record);
-		EraseIndex(record);
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnInstrumentErase(record);
-		}
-		else
-		{
-			record->Free();
-		}
-	}
-	bool InstrumentTable::Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
-		{
-			WriteLog(LogLevel::Warning, "Update Failed for Instrument:[%s]", oldRecord->GetString());
-			WriteLog(LogLevel::Warning, "              New Instrument:[%s]", newRecord->GetString());
-			newRecord->Free();
-			return false;
-		}
-
-		::memcpy((void*)oldRecord, newRecord, sizeof(Instrument));
-
-		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnInstrumentUpdate(newRecord);
-		}
-		else
-		{
-			newRecord->Free();
-		}
-		return true;
-	}
-	void InstrumentTable::TruncateTable()
-	{
-		std::lock_guard guard(m_SharedMutex);
-		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
-		{
-			(*it)->Free();
-		}
-		m_PrimaryKey->m_Index.clear();
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnInstrumentTruncate();
-		}
-	}
-	void InstrumentTable::Dump(const char* dir)
-	{
-		string fileName = string(dir) + "//t_Instrument.csv";
-		FILE* dumpFile = fopen(fileName.c_str(), "w");
-		if (dumpFile == nullptr)
-		{
-			return;
-		}
-
-		fprintf(dumpFile, "ExchangeID,InstrumentID,ExchangeInstID,InstrumentName,ProductID,ProductClass,InstrumentClass,Rank,VolumeMultiple,PriceTick,MaxMarketOrderVolume,MinMarketOrderVolume,MaxLimitOrderVolume,MinLimitOrderVolume,SessionName\n");
-		char buff[4096] = { 0 };
-		set<Instrument*, InstrumentLessForInstrumentPrimaryKey> records;
-		std::shared_lock guard(m_SharedMutex);
-		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
-		{
-			records.insert(*it);
-		}
-		for (auto record : records)
-		{
-			fprintf(dumpFile, "%s\n", record->GetString());
-		}
-		records.clear();
-		fclose(dumpFile);
-	}
-	void InstrumentTable::EraseUniqueKey(Instrument* record)
-	{
-		m_PrimaryKey->Erase(record);
-	}
-	void InstrumentTable::EraseIndex(Instrument* record)
-	{
-	}
-
-	OrderTable::OrderTable(Mdb* mdb)
-		:m_Mdb(mdb)
-	{
-		m_MdbSubscriber = nullptr;
-		m_PrimaryKey = new OrderPrimaryKey(this);
-		m_ClientOrderIDUniqueKey = new OrderUniqueKeyClientOrderID(this);
-	}
-	OrderTable::~OrderTable()
-	{
-		delete m_PrimaryKey;
-		m_PrimaryKey = nullptr;
-		delete m_ClientOrderIDUniqueKey;
-		m_ClientOrderIDUniqueKey = nullptr;
-	}
-	void OrderTable::Subscribe(MdbSubscriber* mdbSubscriber)
-	{
-		m_MdbSubscriber = mdbSubscriber;
-	}
-	void OrderTable::UnSubscribe()
-	{
-		m_MdbSubscriber = nullptr;
-	}
-	void OrderTable::LockShared()
-	{
-		m_SharedMutex.lock_shared();
-	}
-	void OrderTable::UnlockShared()
-	{
-		m_SharedMutex.unlock_shared();
-	}
-	void OrderTable::InitDB()
-	{
-		m_MdbSubscriber->OnOrderTruncate();
-		
-		std::list<Order*>* records = new std::list<Order*>();
-		std::shared_lock guard(m_SharedMutex);
-		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
-		{
-			records->push_back(new Order(**it));
-		}
-		m_MdbSubscriber->OnOrderBatchInsert(records);
-		m_DBInited = true;
-	}
-	bool OrderTable::Insert(Order* record)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		if (!m_PrimaryKey->CheckInsert(record) || !m_ClientOrderIDUniqueKey->CheckInsert(record))
-		{
-			WriteLog(LogLevel::Warning, "Insert Failed for Order:[%s]", record->GetString());
-			record->Free();
-			return false;
-		}
-
-		m_PrimaryKey->Insert(record);
-		m_ClientOrderIDUniqueKey->Insert(record);
-
-		
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnOrderInsert(record);
-		}
-		return true;
-	}
-	void OrderTable::BatchInsert(std::list<mdb::Order*>* records)
-	{
-		{
-			std::lock_guard guard(m_SharedMutex);
-			for (auto record : *records)
-			{
-				auto newRecord = Order::Allocate();
-				memcpy(newRecord, record, sizeof(Order));
-				m_PrimaryKey->Insert(newRecord);
-				m_ClientOrderIDUniqueKey->Insert(newRecord);
-
-			}
-		}
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnOrderBatchInsert(records);
-		}
-	}
-	void OrderTable::Erase(Order* record)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		EraseUniqueKey(record);
-		EraseIndex(record);
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnOrderErase(record);
-		}
-		else
-		{
-			record->Free();
-		}
-	}
-	bool OrderTable::Update(Order* const oldRecord, Order* const newRecord, bool updateDB)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord) || !m_ClientOrderIDUniqueKey->CheckUpdate(oldRecord, newRecord))
-		{
-			WriteLog(LogLevel::Warning, "Update Failed for Order:[%s]", oldRecord->GetString());
-			WriteLog(LogLevel::Warning, "              New Order:[%s]", newRecord->GetString());
-			newRecord->Free();
-			return false;
-		}
-
-		::memcpy((void*)oldRecord, newRecord, sizeof(Order));
-
-		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnOrderUpdate(newRecord);
-		}
-		else
-		{
-			newRecord->Free();
-		}
-		return true;
-	}
-	void OrderTable::TruncateTable()
-	{
-		std::lock_guard guard(m_SharedMutex);
-		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
-		{
-			(*it)->Free();
-		}
-		m_PrimaryKey->m_Index.clear();
-		m_ClientOrderIDUniqueKey->m_Index.clear();
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnOrderTruncate();
-		}
-	}
-	void OrderTable::Dump(const char* dir)
-	{
-		string fileName = string(dir) + "//t_Order.csv";
-		FILE* dumpFile = fopen(fileName.c_str(), "w");
-		if (dumpFile == nullptr)
-		{
-			return;
-		}
-
-		fprintf(dumpFile, "TradingDay,AccountID,AccountType,ExchangeID,InstrumentID,ProductClass,OrderID,OrderSysID,Direction,OffsetFlag,OrderPriceType,Price,Volume,VolumeTotal,VolumeTraded,VolumeMultiple,OrderStatus,OrderDate,OrderTime,CancelDate,CancelTime,SessionID,ClientOrderID,RequestID,OfferID,TradeGroupID,RiskGroupID,CommissionGroupID,FrozenCash,FrozenMargin,FrozenCommission,RebuildMark,IsForceClose\n");
-		char buff[4096] = { 0 };
-		set<Order*, OrderLessForOrderPrimaryKey> records;
-		std::shared_lock guard(m_SharedMutex);
-		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
-		{
-			records.insert(*it);
-		}
-		for (auto record : records)
-		{
-			fprintf(dumpFile, "%s\n", record->GetString());
-		}
-		records.clear();
-		fclose(dumpFile);
-	}
-	void OrderTable::EraseUniqueKey(Order* record)
-	{
-		m_PrimaryKey->Erase(record);
-		m_ClientOrderIDUniqueKey->Erase(record);
-	}
-	void OrderTable::EraseIndex(Order* record)
-	{
-	}
-
-	TradeTable::TradeTable(Mdb* mdb)
-		:m_Mdb(mdb)
-	{
-		m_MdbSubscriber = nullptr;
-		m_PrimaryKey = new TradePrimaryKey(this);
-	}
-	TradeTable::~TradeTable()
-	{
-		delete m_PrimaryKey;
-		m_PrimaryKey = nullptr;
-	}
-	void TradeTable::Subscribe(MdbSubscriber* mdbSubscriber)
-	{
-		m_MdbSubscriber = mdbSubscriber;
-	}
-	void TradeTable::UnSubscribe()
-	{
-		m_MdbSubscriber = nullptr;
-	}
-	void TradeTable::LockShared()
-	{
-		m_SharedMutex.lock_shared();
-	}
-	void TradeTable::UnlockShared()
-	{
-		m_SharedMutex.unlock_shared();
-	}
-	void TradeTable::InitDB()
-	{
-		m_MdbSubscriber->OnTradeTruncate();
-		
-		std::list<Trade*>* records = new std::list<Trade*>();
-		std::shared_lock guard(m_SharedMutex);
-		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
-		{
-			records->push_back(new Trade(**it));
-		}
-		m_MdbSubscriber->OnTradeBatchInsert(records);
-		m_DBInited = true;
-	}
-	bool TradeTable::Insert(Trade* record)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		if (!m_PrimaryKey->CheckInsert(record))
-		{
-			WriteLog(LogLevel::Warning, "Insert Failed for Trade:[%s]", record->GetString());
-			record->Free();
-			return false;
-		}
-
-		m_PrimaryKey->Insert(record);
-
-		
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnTradeInsert(record);
-		}
-		return true;
-	}
-	void TradeTable::BatchInsert(std::list<mdb::Trade*>* records)
-	{
-		{
-			std::lock_guard guard(m_SharedMutex);
-			for (auto record : *records)
-			{
-				auto newRecord = Trade::Allocate();
-				memcpy(newRecord, record, sizeof(Trade));
-				m_PrimaryKey->Insert(newRecord);
-
-			}
-		}
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnTradeBatchInsert(records);
-		}
-	}
-	void TradeTable::Erase(Trade* record)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		EraseUniqueKey(record);
-		EraseIndex(record);
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnTradeErase(record);
-		}
-		else
-		{
-			record->Free();
-		}
-	}
-	bool TradeTable::Update(Trade* const oldRecord, Trade* const newRecord, bool updateDB)
-	{
-		std::lock_guard guard(m_SharedMutex);
-		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
-		{
-			WriteLog(LogLevel::Warning, "Update Failed for Trade:[%s]", oldRecord->GetString());
-			WriteLog(LogLevel::Warning, "              New Trade:[%s]", newRecord->GetString());
-			newRecord->Free();
-			return false;
-		}
-
-		::memcpy((void*)oldRecord, newRecord, sizeof(Trade));
-
-		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnTradeUpdate(newRecord);
-		}
-		else
-		{
-			newRecord->Free();
-		}
-		return true;
-	}
-	void TradeTable::TruncateTable()
-	{
-		std::lock_guard guard(m_SharedMutex);
-		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
-		{
-			(*it)->Free();
-		}
-		m_PrimaryKey->m_Index.clear();
-		if (m_MdbSubscriber != nullptr && m_DBInited)
-		{
-			m_MdbSubscriber->OnTradeTruncate();
-		}
-	}
-	void TradeTable::Dump(const char* dir)
-	{
-		string fileName = string(dir) + "//t_Trade.csv";
-		FILE* dumpFile = fopen(fileName.c_str(), "w");
-		if (dumpFile == nullptr)
-		{
-			return;
-		}
-
-		fprintf(dumpFile, "TradingDay,AccountID,AccountType,ExchangeID,InstrumentID,ProductClass,OrderID,OrderSysID,TradeID,Direction,OffsetFlag,Price,Volume,VolumeMultiple,TradeAmount,Commission,TradeDate,TradeTime\n");
-		char buff[4096] = { 0 };
-		set<Trade*, TradeLessForTradePrimaryKey> records;
-		std::shared_lock guard(m_SharedMutex);
-		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
-		{
-			records.insert(*it);
-		}
-		for (auto record : records)
-		{
-			fprintf(dumpFile, "%s\n", record->GetString());
-		}
-		records.clear();
-		fclose(dumpFile);
-	}
-	void TradeTable::EraseUniqueKey(Trade* record)
-	{
-		m_PrimaryKey->Erase(record);
-	}
-	void TradeTable::EraseIndex(Trade* record)
-	{
-	}
-
 	DepthMarketDataTable::DepthMarketDataTable(Mdb* mdb)
 		:m_Mdb(mdb)
 	{
@@ -1114,6 +642,837 @@ namespace mdb
 	}
 	void DepthMarketDataTable::EraseIndex(DepthMarketData* record)
 	{
+	}
+
+	SEBrokerTable::SEBrokerTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new SEBrokerPrimaryKey(this);
+	}
+	SEBrokerTable::~SEBrokerTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+	}
+	void SEBrokerTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void SEBrokerTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void SEBrokerTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void SEBrokerTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void SEBrokerTable::InitDB()
+	{
+		m_MdbSubscriber->OnSEBrokerTruncate();
+		
+		std::list<SEBroker*>* records = new std::list<SEBroker*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new SEBroker(**it));
+		}
+		m_MdbSubscriber->OnSEBrokerBatchInsert(records);
+		m_DBInited = true;
+	}
+	bool SEBrokerTable::Insert(SEBroker* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for SEBroker:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerInsert(record);
+		}
+		return true;
+	}
+	void SEBrokerTable::BatchInsert(std::list<mdb::SEBroker*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = SEBroker::Allocate();
+				memcpy(newRecord, record, sizeof(SEBroker));
+				m_PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerBatchInsert(records);
+		}
+	}
+	void SEBrokerTable::Erase(SEBroker* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	bool SEBrokerTable::Update(SEBroker* const oldRecord, SEBroker* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for SEBroker:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New SEBroker:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		::memcpy((void*)oldRecord, newRecord, sizeof(SEBroker));
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void SEBrokerTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerTruncate();
+		}
+	}
+	void SEBrokerTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_SEBroker.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "BrokerID,BrokerName,Password\n");
+		char buff[4096] = { 0 };
+		set<SEBroker*, SEBrokerLessForSEBrokerPrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void SEBrokerTable::EraseUniqueKey(SEBroker* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void SEBrokerTable::EraseIndex(SEBroker* record)
+	{
+	}
+
+	SEInstrumentTable::SEInstrumentTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new SEInstrumentPrimaryKey(this);
+	}
+	SEInstrumentTable::~SEInstrumentTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+	}
+	void SEInstrumentTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void SEInstrumentTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void SEInstrumentTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void SEInstrumentTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void SEInstrumentTable::InitDB()
+	{
+		m_MdbSubscriber->OnSEInstrumentTruncate();
+		
+		std::list<SEInstrument*>* records = new std::list<SEInstrument*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new SEInstrument(**it));
+		}
+		m_MdbSubscriber->OnSEInstrumentBatchInsert(records);
+		m_DBInited = true;
+	}
+	bool SEInstrumentTable::Insert(SEInstrument* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for SEInstrument:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEInstrumentInsert(record);
+		}
+		return true;
+	}
+	void SEInstrumentTable::BatchInsert(std::list<mdb::SEInstrument*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = SEInstrument::Allocate();
+				memcpy(newRecord, record, sizeof(SEInstrument));
+				m_PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEInstrumentBatchInsert(records);
+		}
+	}
+	void SEInstrumentTable::Erase(SEInstrument* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEInstrumentErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	bool SEInstrumentTable::Update(SEInstrument* const oldRecord, SEInstrument* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for SEInstrument:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New SEInstrument:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		::memcpy((void*)oldRecord, newRecord, sizeof(SEInstrument));
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEInstrumentUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void SEInstrumentTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEInstrumentTruncate();
+		}
+	}
+	void SEInstrumentTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_SEInstrument.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "ExchangeID,InstrumentID,ExchangeInstID,InstrumentName,ProductID,ProductClass,MaxMarketOrderVolume,MinMarketOrderVolume,MaxLimitOrderVolume,MinLimitOrderVolume,VolumeMultiple,PriceTick,UpperLimitPrice,LowerLimitPrice,SessionName\n");
+		char buff[4096] = { 0 };
+		set<SEInstrument*, SEInstrumentLessForSEInstrumentPrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void SEInstrumentTable::EraseUniqueKey(SEInstrument* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void SEInstrumentTable::EraseIndex(SEInstrument* record)
+	{
+	}
+
+	SEOrderTable::SEOrderTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new SEOrderPrimaryKey(this);
+	}
+	SEOrderTable::~SEOrderTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+	}
+	void SEOrderTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void SEOrderTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void SEOrderTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void SEOrderTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void SEOrderTable::InitDB()
+	{
+		m_MdbSubscriber->OnSEOrderTruncate();
+		
+		std::list<SEOrder*>* records = new std::list<SEOrder*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new SEOrder(**it));
+		}
+		m_MdbSubscriber->OnSEOrderBatchInsert(records);
+		m_DBInited = true;
+	}
+	bool SEOrderTable::Insert(SEOrder* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for SEOrder:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEOrderInsert(record);
+		}
+		return true;
+	}
+	void SEOrderTable::BatchInsert(std::list<mdb::SEOrder*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = SEOrder::Allocate();
+				memcpy(newRecord, record, sizeof(SEOrder));
+				m_PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEOrderBatchInsert(records);
+		}
+	}
+	void SEOrderTable::Erase(SEOrder* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEOrderErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	bool SEOrderTable::Update(SEOrder* const oldRecord, SEOrder* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for SEOrder:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New SEOrder:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		::memcpy((void*)oldRecord, newRecord, sizeof(SEOrder));
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEOrderUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void SEOrderTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEOrderTruncate();
+		}
+	}
+	void SEOrderTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_SEOrder.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "TradingDay,BrokerID,AccountID,ExchangeID,InstrumentID,ProductClass,OrderID,Direction,OffsetFlag,OrderPriceType,Price,Volume,VolumeTotal,VolumeTraded,VolumeMultiple,OrderStatus,OrderDate,OrderTime,CancelDate,CancelTime,SessionID,ClientOrderID\n");
+		char buff[4096] = { 0 };
+		set<SEOrder*, SEOrderLessForSEOrderPrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void SEOrderTable::EraseUniqueKey(SEOrder* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void SEOrderTable::EraseIndex(SEOrder* record)
+	{
+	}
+
+	SETradeTable::SETradeTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new SETradePrimaryKey(this);
+	}
+	SETradeTable::~SETradeTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+	}
+	void SETradeTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void SETradeTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void SETradeTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void SETradeTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void SETradeTable::InitDB()
+	{
+		m_MdbSubscriber->OnSETradeTruncate();
+		
+		std::list<SETrade*>* records = new std::list<SETrade*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new SETrade(**it));
+		}
+		m_MdbSubscriber->OnSETradeBatchInsert(records);
+		m_DBInited = true;
+	}
+	bool SETradeTable::Insert(SETrade* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for SETrade:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSETradeInsert(record);
+		}
+		return true;
+	}
+	void SETradeTable::BatchInsert(std::list<mdb::SETrade*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = SETrade::Allocate();
+				memcpy(newRecord, record, sizeof(SETrade));
+				m_PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSETradeBatchInsert(records);
+		}
+	}
+	void SETradeTable::Erase(SETrade* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSETradeErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	bool SETradeTable::Update(SETrade* const oldRecord, SETrade* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for SETrade:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New SETrade:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		::memcpy((void*)oldRecord, newRecord, sizeof(SETrade));
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSETradeUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void SETradeTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSETradeTruncate();
+		}
+	}
+	void SETradeTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_SETrade.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "TradingDay,BrokerID,AccountID,ExchangeID,InstrumentID,ProductClass,OrderID,TradeID,Direction,OffsetFlag,Price,Volume,VolumeMultiple,TradeAmount,Commission,TradeDate,TradeTime\n");
+		char buff[4096] = { 0 };
+		set<SETrade*, SETradeLessForSETradePrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void SETradeTable::EraseUniqueKey(SETrade* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void SETradeTable::EraseIndex(SETrade* record)
+	{
+	}
+
+	SEBrokerLoginSessionTable::SEBrokerLoginSessionTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new SEBrokerLoginSessionPrimaryKey(this);
+		m_BrokerIDIndex = new SEBrokerLoginSessionIndexBrokerID(this);
+	}
+	SEBrokerLoginSessionTable::~SEBrokerLoginSessionTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+		delete m_BrokerIDIndex;
+		m_BrokerIDIndex = nullptr;
+	}
+	void SEBrokerLoginSessionTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void SEBrokerLoginSessionTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void SEBrokerLoginSessionTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void SEBrokerLoginSessionTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void SEBrokerLoginSessionTable::InitDB()
+	{
+		m_MdbSubscriber->OnSEBrokerLoginSessionTruncate();
+		
+		std::list<SEBrokerLoginSession*>* records = new std::list<SEBrokerLoginSession*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new SEBrokerLoginSession(**it));
+		}
+		m_MdbSubscriber->OnSEBrokerLoginSessionBatchInsert(records);
+		m_DBInited = true;
+	}
+	bool SEBrokerLoginSessionTable::Insert(SEBrokerLoginSession* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for SEBrokerLoginSession:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		m_BrokerIDIndex->Insert(record);
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerLoginSessionInsert(record);
+		}
+		return true;
+	}
+	void SEBrokerLoginSessionTable::BatchInsert(std::list<mdb::SEBrokerLoginSession*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = SEBrokerLoginSession::Allocate();
+				memcpy(newRecord, record, sizeof(SEBrokerLoginSession));
+				m_PrimaryKey->Insert(newRecord);
+
+				m_BrokerIDIndex->Insert(newRecord);
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerLoginSessionBatchInsert(records);
+		}
+	}
+	void SEBrokerLoginSessionTable::Erase(SEBrokerLoginSession* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerLoginSessionErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	int SEBrokerLoginSessionTable::EraseByBrokerIDIndex(const BrokerIDType& BrokerID)
+	{
+		m_BrokerIDIndex->FillCompareRecord(BrokerID);
+		list<SEBrokerLoginSession*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_BrokerIDIndex->m_Index.equal_range(&t_CompareSEBrokerLoginSession);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Free();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = SEBrokerLoginSession::Allocate();
+			memcpy(record, &t_CompareSEBrokerLoginSession, sizeof(SEBrokerLoginSession));
+			m_MdbSubscriber->OnSEBrokerLoginSessionEraseByBrokerIDIndex(record);
+		}
+		return (int)records.size();
+	}
+	bool SEBrokerLoginSessionTable::Update(SEBrokerLoginSession* const oldRecord, SEBrokerLoginSession* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for SEBrokerLoginSession:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New SEBrokerLoginSession:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		bool BrokerIDIndexUpdate = m_BrokerIDIndex->NeedUpdate(oldRecord, newRecord);
+		SEBrokerLoginSessionIndexBrokerID::iterator itBrokerID;
+		if (BrokerIDIndexUpdate)
+		{
+			itBrokerID = m_BrokerIDIndex->FindNode(oldRecord);
+		}
+		::memcpy((void*)oldRecord, newRecord, sizeof(SEBrokerLoginSession));
+		if (BrokerIDIndexUpdate)
+		{
+			m_BrokerIDIndex->Update(itBrokerID);
+		}
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerLoginSessionUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void SEBrokerLoginSessionTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_BrokerIDIndex->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnSEBrokerLoginSessionTruncate();
+		}
+	}
+	void SEBrokerLoginSessionTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_SEBrokerLoginSession.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "BrokerID,SessionID,IPAddress\n");
+		char buff[4096] = { 0 };
+		set<SEBrokerLoginSession*, SEBrokerLoginSessionLessForSEBrokerLoginSessionPrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void SEBrokerLoginSessionTable::EraseUniqueKey(SEBrokerLoginSession* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void SEBrokerLoginSessionTable::EraseIndex(SEBrokerLoginSession* record)
+	{
+		m_BrokerIDIndex->Erase(record);
 	}
 
 }

@@ -2,7 +2,7 @@
 
 
 
-bool OrderLessForPrice::operator()(const mdb::Order* const left, const mdb::Order* const right) const
+bool OrderLessForPrice::operator()(const mdb::SEOrder* const left, const mdb::SEOrder* const right) const
 {
 	if (left->Price < right->Price)
 		return true;
@@ -10,7 +10,7 @@ bool OrderLessForPrice::operator()(const mdb::Order* const left, const mdb::Orde
 		return false;
 	return left->OrderID < right->OrderID;
 }
-bool OrderGreatForPrice::operator()(const mdb::Order* const left, const mdb::Order* const right) const
+bool OrderGreatForPrice::operator()(const mdb::SEOrder* const left, const mdb::SEOrder* const right) const
 {
 	if (left->Price > right->Price)
 		return true;
@@ -18,7 +18,7 @@ bool OrderGreatForPrice::operator()(const mdb::Order* const left, const mdb::Ord
 		return false;
 	return left->OrderID > right->OrderID;
 }
-bool OrderGreatForOrderID::operator()(const mdb::Order* const left, const mdb::Order* const right) const
+bool OrderGreatForOrderID::operator()(const mdb::SEOrder* const left, const mdb::SEOrder* const right) const
 {
 	return left->OrderID < right->OrderID;
 }

@@ -7,9 +7,6 @@ using std::multiset;
 
 namespace mdb
 {
-
-
-
 	class HotInstrumentTable;
 	class HotInstrumentIndexTradingDay
 	{
@@ -34,8 +31,7 @@ namespace mdb
 		HotInstrumentTable* m_Table;
 		multiset<HotInstrument*, HotInstrumentLessForTradingDayIndex> m_Index;
 	};
-
-
+	
 	class PrimaryAccountTable;
 	class PrimaryAccountIndexOfferID
 	{
@@ -60,8 +56,7 @@ namespace mdb
 		PrimaryAccountTable* m_Table;
 		multiset<PrimaryAccount*, PrimaryAccountLessForOfferIDIndex> m_Index;
 	};
-
-
+	
 	class CapitalTable;
 	class CapitalIndexTradingDay
 	{
@@ -86,7 +81,7 @@ namespace mdb
 		CapitalTable* m_Table;
 		multiset<Capital*, CapitalLessForTradingDayIndex> m_Index;
 	};
-
+	
 	class PositionTable;
 	class PositionIndexAccount
 	{
@@ -111,6 +106,7 @@ namespace mdb
 		PositionTable* m_Table;
 		multiset<Position*, PositionLessForAccountIndex> m_Index;
 	};
+	
 	class PositionIndexTradingDay
 	{
 		using iterator = std::multiset<Position*, PositionLessForTradingDayIndex>::iterator;
@@ -134,7 +130,7 @@ namespace mdb
 		PositionTable* m_Table;
 		multiset<Position*, PositionLessForTradingDayIndex> m_Index;
 	};
-
+	
 	class PositionDetailTable;
 	class PositionDetailIndexTradeMatch
 	{
@@ -159,6 +155,7 @@ namespace mdb
 		PositionDetailTable* m_Table;
 		multiset<PositionDetail*, PositionDetailLessForTradeMatchIndex> m_Index;
 	};
+	
 	class PositionDetailIndexTradingDay
 	{
 		using iterator = std::multiset<PositionDetail*, PositionDetailLessForTradingDayIndex>::iterator;
@@ -182,10 +179,30 @@ namespace mdb
 		PositionDetailTable* m_Table;
 		multiset<PositionDetail*, PositionDetailLessForTradingDayIndex> m_Index;
 	};
+	
+	class SEBrokerLoginSessionTable;
+	class SEBrokerLoginSessionIndexBrokerID
+	{
+		using iterator = std::multiset<SEBrokerLoginSession*, SEBrokerLoginSessionLessForBrokerIDIndex>::iterator;
+		friend class SEBrokerLoginSessionTable;
+	public:
+		SEBrokerLoginSessionIndexBrokerID(SEBrokerLoginSessionTable* table);
+		iterator LowerBound(const BrokerIDType& BrokerID);
+		iterator UpperBound(const BrokerIDType& BrokerID);
+		std::pair<iterator, iterator> EqualRange(const BrokerIDType& BrokerID);
+	public:
+		static constexpr unsigned int IndexID = 0x0000;
+	protected:
+		void Insert(SEBrokerLoginSession* const record);
+		void Erase(SEBrokerLoginSession* const record);
+		void Update(iterator it);
+		bool NeedUpdate(const SEBrokerLoginSession* const oldRecord, const SEBrokerLoginSession* const newRecord);
+		iterator FindNode(SEBrokerLoginSession* const record);
+		void FillCompareRecord(const BrokerIDType& BrokerID);
 
-
-
-
-
-
+	private:
+		SEBrokerLoginSessionTable* m_Table;
+		multiset<SEBrokerLoginSession*, SEBrokerLoginSessionLessForBrokerIDIndex> m_Index;
+	};
+	
 }

@@ -144,6 +144,47 @@ public:
 	virtual void TruncateMdSubscribe() override;
 	static void ParseRecord(duckdb_result& result, std::list<mdb::MdSubscribe*>& records);
 	
+	virtual void InsertSEBroker(mdb::SEBroker* record) override;
+	virtual void BatchInsertSEBroker(std::list<mdb::SEBroker*>* records) override;
+	virtual void DeleteSEBroker(mdb::SEBroker* record) override;
+	virtual void UpdateSEBroker(mdb::SEBroker* record) override;
+	virtual void SelectSEBroker(std::list<mdb::SEBroker*>& records) override;
+	virtual void TruncateSEBroker() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::SEBroker*>& records);
+	
+	virtual void InsertSEInstrument(mdb::SEInstrument* record) override;
+	virtual void BatchInsertSEInstrument(std::list<mdb::SEInstrument*>* records) override;
+	virtual void DeleteSEInstrument(mdb::SEInstrument* record) override;
+	virtual void UpdateSEInstrument(mdb::SEInstrument* record) override;
+	virtual void SelectSEInstrument(std::list<mdb::SEInstrument*>& records) override;
+	virtual void TruncateSEInstrument() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::SEInstrument*>& records);
+	
+	virtual void InsertSEOrder(mdb::SEOrder* record) override;
+	virtual void BatchInsertSEOrder(std::list<mdb::SEOrder*>* records) override;
+	virtual void DeleteSEOrder(mdb::SEOrder* record) override;
+	virtual void UpdateSEOrder(mdb::SEOrder* record) override;
+	virtual void SelectSEOrder(std::list<mdb::SEOrder*>& records) override;
+	virtual void TruncateSEOrder() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::SEOrder*>& records);
+	
+	virtual void InsertSETrade(mdb::SETrade* record) override;
+	virtual void BatchInsertSETrade(std::list<mdb::SETrade*>* records) override;
+	virtual void DeleteSETrade(mdb::SETrade* record) override;
+	virtual void UpdateSETrade(mdb::SETrade* record) override;
+	virtual void SelectSETrade(std::list<mdb::SETrade*>& records) override;
+	virtual void TruncateSETrade() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::SETrade*>& records);
+	
+	virtual void InsertSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
+	virtual void BatchInsertSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>* records) override;
+	virtual void DeleteSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
+	virtual void DeleteSEBrokerLoginSessionByBrokerIDIndex(mdb::SEBrokerLoginSession* record) override;
+	virtual void UpdateSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
+	virtual void SelectSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>& records) override;
+	virtual void TruncateSEBrokerLoginSession() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::SEBrokerLoginSession*>& records);
+	
 
 private:
 	bool AppendForTradingDayRecord(duckdb_appender appender, mdb::TradingDay* record);
@@ -213,6 +254,27 @@ private:
 	void SetStatementForMdSubscribeRecord(duckdb_prepared_statement statement, mdb::MdSubscribe* record);
 	void SetStatementForMdSubscribeRecordUpdate(duckdb_prepared_statement statement, mdb::MdSubscribe* record);
 	void SetStatementForMdSubscribePrimaryKey(duckdb_prepared_statement statement, mdb::MdSubscribe* record);
+	bool AppendForSEBrokerRecord(duckdb_appender appender, mdb::SEBroker* record);
+	void SetStatementForSEBrokerRecord(duckdb_prepared_statement statement, mdb::SEBroker* record);
+	void SetStatementForSEBrokerRecordUpdate(duckdb_prepared_statement statement, mdb::SEBroker* record);
+	void SetStatementForSEBrokerPrimaryKey(duckdb_prepared_statement statement, mdb::SEBroker* record);
+	bool AppendForSEInstrumentRecord(duckdb_appender appender, mdb::SEInstrument* record);
+	void SetStatementForSEInstrumentRecord(duckdb_prepared_statement statement, mdb::SEInstrument* record);
+	void SetStatementForSEInstrumentRecordUpdate(duckdb_prepared_statement statement, mdb::SEInstrument* record);
+	void SetStatementForSEInstrumentPrimaryKey(duckdb_prepared_statement statement, mdb::SEInstrument* record);
+	bool AppendForSEOrderRecord(duckdb_appender appender, mdb::SEOrder* record);
+	void SetStatementForSEOrderRecord(duckdb_prepared_statement statement, mdb::SEOrder* record);
+	void SetStatementForSEOrderRecordUpdate(duckdb_prepared_statement statement, mdb::SEOrder* record);
+	void SetStatementForSEOrderPrimaryKey(duckdb_prepared_statement statement, mdb::SEOrder* record);
+	bool AppendForSETradeRecord(duckdb_appender appender, mdb::SETrade* record);
+	void SetStatementForSETradeRecord(duckdb_prepared_statement statement, mdb::SETrade* record);
+	void SetStatementForSETradeRecordUpdate(duckdb_prepared_statement statement, mdb::SETrade* record);
+	void SetStatementForSETradePrimaryKey(duckdb_prepared_statement statement, mdb::SETrade* record);
+	bool AppendForSEBrokerLoginSessionRecord(duckdb_appender appender, mdb::SEBrokerLoginSession* record);
+	void SetStatementForSEBrokerLoginSessionRecord(duckdb_prepared_statement statement, mdb::SEBrokerLoginSession* record);
+	void SetStatementForSEBrokerLoginSessionRecordUpdate(duckdb_prepared_statement statement, mdb::SEBrokerLoginSession* record);
+	void SetStatementForSEBrokerLoginSessionPrimaryKey(duckdb_prepared_statement statement, mdb::SEBrokerLoginSession* record);
+	void SetStatementForSEBrokerLoginSessionIndexBrokerID(duckdb_prepared_statement statement, mdb::SEBrokerLoginSession* record);
 
 
 private:
@@ -288,4 +350,25 @@ private:
 	duckdb_prepared_statement m_MdSubscribeUpdateStatement;
 	duckdb_prepared_statement m_MdSubscribeSelectStatement;
 	duckdb_prepared_statement m_MdSubscribeTruncateStatement;
+	duckdb_prepared_statement m_SEBrokerDeleteStatement;
+	duckdb_prepared_statement m_SEBrokerUpdateStatement;
+	duckdb_prepared_statement m_SEBrokerSelectStatement;
+	duckdb_prepared_statement m_SEBrokerTruncateStatement;
+	duckdb_prepared_statement m_SEInstrumentDeleteStatement;
+	duckdb_prepared_statement m_SEInstrumentUpdateStatement;
+	duckdb_prepared_statement m_SEInstrumentSelectStatement;
+	duckdb_prepared_statement m_SEInstrumentTruncateStatement;
+	duckdb_prepared_statement m_SEOrderDeleteStatement;
+	duckdb_prepared_statement m_SEOrderUpdateStatement;
+	duckdb_prepared_statement m_SEOrderSelectStatement;
+	duckdb_prepared_statement m_SEOrderTruncateStatement;
+	duckdb_prepared_statement m_SETradeDeleteStatement;
+	duckdb_prepared_statement m_SETradeUpdateStatement;
+	duckdb_prepared_statement m_SETradeSelectStatement;
+	duckdb_prepared_statement m_SETradeTruncateStatement;
+	duckdb_prepared_statement m_SEBrokerLoginSessionDeleteStatement;
+	duckdb_prepared_statement m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement;
+	duckdb_prepared_statement m_SEBrokerLoginSessionUpdateStatement;
+	duckdb_prepared_statement m_SEBrokerLoginSessionSelectStatement;
+	duckdb_prepared_statement m_SEBrokerLoginSessionTruncateStatement;
 };

@@ -373,7 +373,18 @@
 		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 		<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 	</field>
-	<field name="ReqSEInsertOrder" id="0x3001" desc="模拟交易委托请求">
+	<field name="ReqSEBrokerLogin" id="0x3001" desc="模拟交易经纪商登录请求">
+		<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
+		<item name="Password" id="0x2801" type="Password" desc="密码"/>
+	</field>
+	<field name="RspSEBrokerLogin" id="0x3002" desc="模拟交易经纪商登录应答">
+		<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
+		<item name="BrokerName" id="0x200E" type="BrokerName" desc="经纪公司名称"/>
+		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+		<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
+	</field>
+	<field name="ReqSEInsertOrder" id="0x3003" desc="模拟交易委托请求">
+		<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
@@ -382,27 +393,29 @@
 		<item name="OrderPriceType" id="0x9008" type="OrderPriceType" desc="委托价格类型"/>
 		<item name="Price" id="0x6015" type="Price" desc="委托价格"/>
 		<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
-		<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
+		<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 	</field>
-	<field name="ReqSECancelOrder" id="0x3002" desc="模拟交易撤单请求">
+	<field name="ReqSECancelOrder" id="0x3004" desc="模拟交易撤单请求">
+		<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 		<item name="CancelOrderID" id="0x1004" type="OrderID" desc="本地撤单编号"/>
 		<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
-		<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
+		<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 	</field>
-	<field name="ReqQrySEOrder" id="0x3003" desc="查询委托请求">
+	<field name="ReqQrySEOrder" id="0x3005" desc="模拟交易查询委托请求">
 		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 	</field>
-	<field name="SEOrder" id="0x3004" desc="委托">
+	<field name="SEOrder" id="0x3006" desc="模拟交易委托">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+		<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
-		<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
+		<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 		<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
 		<item name="OffsetFlag" id="0x9006" type="OffsetFlag" desc="开平标志"/>
 		<item name="OrderPriceType" id="0x9008" type="OrderPriceType" desc="委托价格类型"/>
@@ -417,19 +430,19 @@
 		<item name="CancelDate" id="0x3004" type="Date" desc="撤单日期"/>
 		<item name="CancelTime" id="0x3803" type="Time" desc="撤单时间"/>
 		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
-		<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
+		<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 	</field>
-	<field name="ReqQrySETrade" id="0x3005" desc="查询成交请求">
+	<field name="ReqQrySETrade" id="0x3007" desc="模拟交易查询成交请求">
 		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 	</field>
-	<field name="SETrade" id="0x3006" desc="成交">
+	<field name="SETrade" id="0x3008" desc="模拟交易成交">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+		<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 		<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
-		<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
 		<item name="TradeID" id="0x101F" type="TradeID" desc="成交编号"/>
 		<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
 		<item name="OffsetFlag" id="0x9006" type="OffsetFlag" desc="开平标志"/>
@@ -440,5 +453,25 @@
 		<item name="Commission" id="0x700A" type="Money" desc="手续费"/>
 		<item name="TradeDate" id="0x3005" type="Date" desc="成交日期"/>
 		<item name="TradeTime" id="0x3804" type="Time" desc="成交时间"/>
+	</field>
+	<field name="ReqQrySEInstrument" id="0x3009" desc="模拟交易查询合约请求">
+		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+	</field>
+	<field name="SEInstrument" id="0x300A" desc="模拟交易合约">
+		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
+		<item name="InstrumentName" id="0x2004" type="InstrumentName" desc="合约名称"/>
+		<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
+		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
+		<item name="MaxMarketOrderVolume" id="0x401F" type="Volume" desc="市价最大下单量"/>
+		<item name="MinMarketOrderVolume" id="0x401E" type="Volume" desc="市价最小下单量"/>
+		<item name="MaxLimitOrderVolume" id="0x4021" type="Volume" desc="限价最大下单量"/>
+		<item name="MinLimitOrderVolume" id="0x4020" type="Volume" desc="限价最小下单量"/>
+		<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
+		<item name="PriceTick" id="0x6024" type="Price" desc="最小变动价位"/>
+		<item name="UpperLimitPrice" id="0x6025" type="Price" desc="涨停板价"/>
+		<item name="LowerLimitPrice" id="0x6026" type="Price" desc="跌停板价"/>
 	</field>
 </fields>

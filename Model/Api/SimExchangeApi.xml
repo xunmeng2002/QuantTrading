@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <apipackages prefix="SimExchange">
+	<package name="ReqSEBrokerLogin"/>
+	<package name="RspSEBrokerLogin"/>
 	<package name="ReqSEInsertOrder"/>
 	<package name="RspSEInsertOrder"/>
 	<package name="ReqSECancelOrder"/>
@@ -7,10 +9,11 @@
 	
 	<package name="ReqQrySEOrder"/>
 	<package name="RspQrySEOrder"/>
-	<package name="RtnSEOrder"/>
 	<package name="ReqQrySETrade"/>
 	<package name="RspQrySETrade"/>
-	<package name="RtnSETrade"/>
 	<package name="ReqQryInstrument"/>
 	<package name="RspQryInstrument"/>
+	
+	<package name="RtnSEOrder"/>
+	<package name="RtnSETrade"/>
 </apipackages>

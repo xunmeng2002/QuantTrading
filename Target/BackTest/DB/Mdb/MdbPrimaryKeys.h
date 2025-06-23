@@ -25,7 +25,6 @@ namespace mdb
 		TradingDayTable* m_Table;
 		std::unordered_set<TradingDay*, TradingDayHashForTradingDayPrimaryKey, TradingDayEqualForTradingDayPrimaryKey> m_Index;
 	};
-
 	class ExchangeTable;
 	class ExchangePrimaryKey
 	{
@@ -46,7 +45,6 @@ namespace mdb
 		ExchangeTable* m_Table;
 		std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey> m_Index;
 	};
-
 	class ProductTable;
 	class ProductPrimaryKey
 	{
@@ -67,7 +65,6 @@ namespace mdb
 		ProductTable* m_Table;
 		std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey> m_Index;
 	};
-
 	class HotInstrumentTable;
 	class HotInstrumentPrimaryKey
 	{
@@ -88,7 +85,6 @@ namespace mdb
 		HotInstrumentTable* m_Table;
 		std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey> m_Index;
 	};
-
 	class InstrumentTable;
 	class InstrumentPrimaryKey
 	{
@@ -109,7 +105,6 @@ namespace mdb
 		InstrumentTable* m_Table;
 		std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey> m_Index;
 	};
-
 	class AccountTable;
 	class AccountPrimaryKey
 	{
@@ -130,7 +125,6 @@ namespace mdb
 		AccountTable* m_Table;
 		std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey> m_Index;
 	};
-
 	class CapitalTable;
 	class CapitalPrimaryKey
 	{
@@ -151,7 +145,6 @@ namespace mdb
 		CapitalTable* m_Table;
 		std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey> m_Index;
 	};
-
 	class PositionTable;
 	class PositionPrimaryKey
 	{
@@ -172,7 +165,6 @@ namespace mdb
 		PositionTable* m_Table;
 		std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey> m_Index;
 	};
-
 	class PositionDetailTable;
 	class PositionDetailPrimaryKey
 	{
@@ -193,7 +185,6 @@ namespace mdb
 		PositionDetailTable* m_Table;
 		std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey> m_Index;
 	};
-
 	class OrderTable;
 	class OrderPrimaryKey
 	{
@@ -231,7 +222,7 @@ namespace mdb
 		OrderTable* m_Table;
 		std::unordered_set<Order*, OrderHashForClientOrderIDUniqueKey, OrderEqualForClientOrderIDUniqueKey> m_Index;
 	};
-
+	
 	class TradeTable;
 	class TradePrimaryKey
 	{
@@ -252,7 +243,6 @@ namespace mdb
 		TradeTable* m_Table;
 		std::unordered_set<Trade*, TradeHashForTradePrimaryKey, TradeEqualForTradePrimaryKey> m_Index;
 	};
-
 	class DepthMarketDataTable;
 	class DepthMarketDataPrimaryKey
 	{
@@ -273,7 +263,6 @@ namespace mdb
 		DepthMarketDataTable* m_Table;
 		std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey> m_Index;
 	};
-
 	class BarMarketDataTable;
 	class BarMarketDataPrimaryKey
 	{
@@ -294,7 +283,6 @@ namespace mdb
 		BarMarketDataTable* m_Table;
 		std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey> m_Index;
 	};
-
 	class MdSubscribeTable;
 	class MdSubscribePrimaryKey
 	{
@@ -315,5 +303,4 @@ namespace mdb
 		MdSubscribeTable* m_Table;
 		std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey> m_Index;
 	};
-
 }

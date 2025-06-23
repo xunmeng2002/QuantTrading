@@ -7,9 +7,6 @@ using std::multiset;
 
 namespace mdb
 {
-
-
-
 	class HotInstrumentTable;
 	class HotInstrumentIndexTradingDay
 	{
@@ -34,9 +31,7 @@ namespace mdb
 		HotInstrumentTable* m_Table;
 		multiset<HotInstrument*, HotInstrumentLessForTradingDayIndex> m_Index;
 	};
-
-
-
+	
 	class CapitalTable;
 	class CapitalIndexTradingDay
 	{
@@ -61,7 +56,7 @@ namespace mdb
 		CapitalTable* m_Table;
 		multiset<Capital*, CapitalLessForTradingDayIndex> m_Index;
 	};
-
+	
 	class PositionTable;
 	class PositionIndexAccount
 	{
@@ -86,6 +81,7 @@ namespace mdb
 		PositionTable* m_Table;
 		multiset<Position*, PositionLessForAccountIndex> m_Index;
 	};
+	
 	class PositionIndexTradingDay
 	{
 		using iterator = std::multiset<Position*, PositionLessForTradingDayIndex>::iterator;
@@ -109,7 +105,7 @@ namespace mdb
 		PositionTable* m_Table;
 		multiset<Position*, PositionLessForTradingDayIndex> m_Index;
 	};
-
+	
 	class PositionDetailTable;
 	class PositionDetailIndexTradeMatch
 	{
@@ -134,6 +130,7 @@ namespace mdb
 		PositionDetailTable* m_Table;
 		multiset<PositionDetail*, PositionDetailLessForTradeMatchIndex> m_Index;
 	};
+	
 	class PositionDetailIndexTradingDay
 	{
 		using iterator = std::multiset<PositionDetail*, PositionDetailLessForTradingDayIndex>::iterator;
@@ -157,10 +154,5 @@ namespace mdb
 		PositionDetailTable* m_Table;
 		multiset<PositionDetail*, PositionDetailLessForTradingDayIndex> m_Index;
 	};
-
-
-
-
-
-
+	
 }

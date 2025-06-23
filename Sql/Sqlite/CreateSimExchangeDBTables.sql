@@ -349,4 +349,90 @@ CREATE TABLE IF NOT EXISTS `t_MdSubscribe` (
 );  -- '行情订阅'
 
 
+CREATE TABLE IF NOT EXISTS `t_SEBroker` (
+  `BrokerID` int,  -- '经纪公司代码'
+  `BrokerName` text,  -- '经纪公司名称'
+  `Password` text,  -- '密码'
+  PRIMARY KEY(BrokerID)
+);  -- '模拟交易经纪商'
+
+
+CREATE TABLE IF NOT EXISTS `t_SEInstrument` (
+  `ExchangeID` text,  -- '交易所代码'
+  `InstrumentID` text,  -- '合约代码'
+  `ExchangeInstID` text,  -- '交易所合约代码'
+  `InstrumentName` text,  -- '合约名称'
+  `ProductID` text,  -- '品种代码'
+  `ProductClass` int,  -- '品种类型'
+  `MaxMarketOrderVolume` bigint,  -- '市价最大下单量'
+  `MinMarketOrderVolume` bigint,  -- '市价最小下单量'
+  `MaxLimitOrderVolume` bigint,  -- '限价最大下单量'
+  `MinLimitOrderVolume` bigint,  -- '限价最小下单量'
+  `VolumeMultiple` int,  -- '合约乘数'
+  `PriceTick` double,  -- '最小变动价位'
+  `UpperLimitPrice` double,  -- '涨停板价'
+  `LowerLimitPrice` double,  -- '跌停板价'
+  `SessionName` text,  -- '交易节名称'
+  PRIMARY KEY(ExchangeID, InstrumentID)
+);  -- '模拟交易合约'
+
+
+CREATE TABLE IF NOT EXISTS `t_SEOrder` (
+  `TradingDay` text,  -- '交易日'
+  `BrokerID` int,  -- '经纪公司代码'
+  `AccountID` text,  -- '账户代码'
+  `ExchangeID` text,  -- '交易所代码'
+  `InstrumentID` text,  -- '合约代码'
+  `ProductClass` int,  -- '品种类型'
+  `OrderID` int,  -- '委托编号'
+  `Direction` int,  -- '买卖方向'
+  `OffsetFlag` int,  -- '开平标志'
+  `OrderPriceType` int,  -- '委托价格类型'
+  `Price` double,  -- '委托价格'
+  `Volume` bigint,  -- '委托数量'
+  `VolumeTotal` bigint,  -- '剩余数量'
+  `VolumeTraded` bigint,  -- '成交数量'
+  `VolumeMultiple` int,  -- '合约乘数'
+  `OrderStatus` int,  -- '委托状态'
+  `OrderDate` text,  -- '委托日期'
+  `OrderTime` text,  -- '委托时间'
+  `CancelDate` text,  -- '撤单日期'
+  `CancelTime` text,  -- '撤单时间'
+  `SessionID` bigint,  -- '会话编号'
+  `ClientOrderID` int,  -- '客户端委托编号'
+  PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
+);  -- '模拟交易委托'
+
+
+CREATE TABLE IF NOT EXISTS `t_SETrade` (
+  `TradingDay` text,  -- '交易日'
+  `BrokerID` int,  -- '经纪公司代码'
+  `AccountID` text,  -- '账户代码'
+  `ExchangeID` text,  -- '交易所代码'
+  `InstrumentID` text,  -- '合约代码'
+  `ProductClass` int,  -- '品种类型'
+  `OrderID` int,  -- '委托编号'
+  `TradeID` text,  -- '成交编号'
+  `Direction` int,  -- '买卖方向'
+  `OffsetFlag` int,  -- '开平标志'
+  `Price` double,  -- '委托价格'
+  `Volume` bigint,  -- '委托数量'
+  `VolumeMultiple` int,  -- '合约乘数'
+  `TradeAmount` double,  -- '成交金额'
+  `Commission` double,  -- '手续费'
+  `TradeDate` text,  -- '成交日期'
+  `TradeTime` text,  -- '成交时间'
+  PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
+);  -- '模拟交易成交'
+
+
+CREATE TABLE IF NOT EXISTS `t_SEBrokerLoginSession` (
+  `BrokerID` int,  -- '经纪公司代码'
+  `SessionID` bigint,  -- '会话编号'
+  `IPAddress` text,  -- 'IP地址'
+  PRIMARY KEY(SessionID)
+);  -- '模拟交易经纪商登录会话'
+  CREATE INDEX BrokerID ON t_SEBrokerLoginSession(BrokerID);
+
+
 

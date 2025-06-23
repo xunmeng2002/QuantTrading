@@ -38,33 +38,48 @@ public:
 	virtual void SelectProduct(std::list<mdb::Product*>& records) override;
 	virtual void TruncateProduct() override;
 	
-	virtual void InsertInstrument(mdb::Instrument* record) override;
-	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
-	virtual void DeleteInstrument(mdb::Instrument* record) override;
-	virtual void UpdateInstrument(mdb::Instrument* record) override;
-	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
-	virtual void TruncateInstrument() override;
-	
-	virtual void InsertOrder(mdb::Order* record) override;
-	virtual void BatchInsertOrder(std::list<mdb::Order*>* records) override;
-	virtual void DeleteOrder(mdb::Order* record) override;
-	virtual void UpdateOrder(mdb::Order* record) override;
-	virtual void SelectOrder(std::list<mdb::Order*>& records) override;
-	virtual void TruncateOrder() override;
-	
-	virtual void InsertTrade(mdb::Trade* record) override;
-	virtual void BatchInsertTrade(std::list<mdb::Trade*>* records) override;
-	virtual void DeleteTrade(mdb::Trade* record) override;
-	virtual void UpdateTrade(mdb::Trade* record) override;
-	virtual void SelectTrade(std::list<mdb::Trade*>& records) override;
-	virtual void TruncateTrade() override;
-	
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
 	virtual void TruncateDepthMarketData() override;
+	
+	virtual void InsertSEBroker(mdb::SEBroker* record) override;
+	virtual void BatchInsertSEBroker(std::list<mdb::SEBroker*>* records) override;
+	virtual void DeleteSEBroker(mdb::SEBroker* record) override;
+	virtual void UpdateSEBroker(mdb::SEBroker* record) override;
+	virtual void SelectSEBroker(std::list<mdb::SEBroker*>& records) override;
+	virtual void TruncateSEBroker() override;
+	
+	virtual void InsertSEInstrument(mdb::SEInstrument* record) override;
+	virtual void BatchInsertSEInstrument(std::list<mdb::SEInstrument*>* records) override;
+	virtual void DeleteSEInstrument(mdb::SEInstrument* record) override;
+	virtual void UpdateSEInstrument(mdb::SEInstrument* record) override;
+	virtual void SelectSEInstrument(std::list<mdb::SEInstrument*>& records) override;
+	virtual void TruncateSEInstrument() override;
+	
+	virtual void InsertSEOrder(mdb::SEOrder* record) override;
+	virtual void BatchInsertSEOrder(std::list<mdb::SEOrder*>* records) override;
+	virtual void DeleteSEOrder(mdb::SEOrder* record) override;
+	virtual void UpdateSEOrder(mdb::SEOrder* record) override;
+	virtual void SelectSEOrder(std::list<mdb::SEOrder*>& records) override;
+	virtual void TruncateSEOrder() override;
+	
+	virtual void InsertSETrade(mdb::SETrade* record) override;
+	virtual void BatchInsertSETrade(std::list<mdb::SETrade*>* records) override;
+	virtual void DeleteSETrade(mdb::SETrade* record) override;
+	virtual void UpdateSETrade(mdb::SETrade* record) override;
+	virtual void SelectSETrade(std::list<mdb::SETrade*>& records) override;
+	virtual void TruncateSETrade() override;
+	
+	virtual void InsertSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
+	virtual void BatchInsertSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>* records) override;
+	virtual void DeleteSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
+	virtual void DeleteSEBrokerLoginSessionByBrokerIDIndex(mdb::SEBrokerLoginSession* record) override;
+	virtual void UpdateSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
+	virtual void SelectSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>& records) override;
+	virtual void TruncateSEBrokerLoginSession() override;
 	
 
 private:
@@ -80,22 +95,31 @@ private:
 	void SetStatementForProductRecordUpdate(sqlite3_stmt* statement, mdb::Product* record);
 	void SetStatementForProductPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Product*>& records);
-	void SetStatementForInstrumentRecord(sqlite3_stmt* statement, mdb::Instrument* record);
-	void SetStatementForInstrumentRecordUpdate(sqlite3_stmt* statement, mdb::Instrument* record);
-	void SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
-	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Instrument*>& records);
-	void SetStatementForOrderRecord(sqlite3_stmt* statement, mdb::Order* record);
-	void SetStatementForOrderRecordUpdate(sqlite3_stmt* statement, mdb::Order* record);
-	void SetStatementForOrderPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID);
-	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Order*>& records);
-	void SetStatementForTradeRecord(sqlite3_stmt* statement, mdb::Trade* record);
-	void SetStatementForTradeRecordUpdate(sqlite3_stmt* statement, mdb::Trade* record);
-	void SetStatementForTradePrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction);
-	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Trade*>& records);
 	void SetStatementForDepthMarketDataRecord(sqlite3_stmt* statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecordUpdate(sqlite3_stmt* statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::DepthMarketData*>& records);
+	void SetStatementForSEBrokerRecord(sqlite3_stmt* statement, mdb::SEBroker* record);
+	void SetStatementForSEBrokerRecordUpdate(sqlite3_stmt* statement, mdb::SEBroker* record);
+	void SetStatementForSEBrokerPrimaryKey(sqlite3_stmt* statement, const BrokerIDType& BrokerID);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::SEBroker*>& records);
+	void SetStatementForSEInstrumentRecord(sqlite3_stmt* statement, mdb::SEInstrument* record);
+	void SetStatementForSEInstrumentRecordUpdate(sqlite3_stmt* statement, mdb::SEInstrument* record);
+	void SetStatementForSEInstrumentPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::SEInstrument*>& records);
+	void SetStatementForSEOrderRecord(sqlite3_stmt* statement, mdb::SEOrder* record);
+	void SetStatementForSEOrderRecordUpdate(sqlite3_stmt* statement, mdb::SEOrder* record);
+	void SetStatementForSEOrderPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::SEOrder*>& records);
+	void SetStatementForSETradeRecord(sqlite3_stmt* statement, mdb::SETrade* record);
+	void SetStatementForSETradeRecordUpdate(sqlite3_stmt* statement, mdb::SETrade* record);
+	void SetStatementForSETradePrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::SETrade*>& records);
+	void SetStatementForSEBrokerLoginSessionRecord(sqlite3_stmt* statement, mdb::SEBrokerLoginSession* record);
+	void SetStatementForSEBrokerLoginSessionRecordUpdate(sqlite3_stmt* statement, mdb::SEBrokerLoginSession* record);
+	void SetStatementForSEBrokerLoginSessionPrimaryKey(sqlite3_stmt* statement, const SessionIDType& SessionID);
+	void SetStatementForSEBrokerLoginSessionIndexBrokerID(sqlite3_stmt* statement, mdb::SEBrokerLoginSession* record);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::SEBrokerLoginSession*>& records);
 
 
 private:
@@ -118,24 +142,35 @@ private:
 	sqlite3_stmt* m_ProductUpdateStatement;
 	sqlite3_stmt* m_ProductSelectStatement;
 	sqlite3_stmt* m_ProductTruncateStatement;
-	sqlite3_stmt* m_InstrumentInsertStatement;
-	sqlite3_stmt* m_InstrumentDeleteStatement;
-	sqlite3_stmt* m_InstrumentUpdateStatement;
-	sqlite3_stmt* m_InstrumentSelectStatement;
-	sqlite3_stmt* m_InstrumentTruncateStatement;
-	sqlite3_stmt* m_OrderInsertStatement;
-	sqlite3_stmt* m_OrderDeleteStatement;
-	sqlite3_stmt* m_OrderUpdateStatement;
-	sqlite3_stmt* m_OrderSelectStatement;
-	sqlite3_stmt* m_OrderTruncateStatement;
-	sqlite3_stmt* m_TradeInsertStatement;
-	sqlite3_stmt* m_TradeDeleteStatement;
-	sqlite3_stmt* m_TradeUpdateStatement;
-	sqlite3_stmt* m_TradeSelectStatement;
-	sqlite3_stmt* m_TradeTruncateStatement;
 	sqlite3_stmt* m_DepthMarketDataInsertStatement;
 	sqlite3_stmt* m_DepthMarketDataDeleteStatement;
 	sqlite3_stmt* m_DepthMarketDataUpdateStatement;
 	sqlite3_stmt* m_DepthMarketDataSelectStatement;
 	sqlite3_stmt* m_DepthMarketDataTruncateStatement;
+	sqlite3_stmt* m_SEBrokerInsertStatement;
+	sqlite3_stmt* m_SEBrokerDeleteStatement;
+	sqlite3_stmt* m_SEBrokerUpdateStatement;
+	sqlite3_stmt* m_SEBrokerSelectStatement;
+	sqlite3_stmt* m_SEBrokerTruncateStatement;
+	sqlite3_stmt* m_SEInstrumentInsertStatement;
+	sqlite3_stmt* m_SEInstrumentDeleteStatement;
+	sqlite3_stmt* m_SEInstrumentUpdateStatement;
+	sqlite3_stmt* m_SEInstrumentSelectStatement;
+	sqlite3_stmt* m_SEInstrumentTruncateStatement;
+	sqlite3_stmt* m_SEOrderInsertStatement;
+	sqlite3_stmt* m_SEOrderDeleteStatement;
+	sqlite3_stmt* m_SEOrderUpdateStatement;
+	sqlite3_stmt* m_SEOrderSelectStatement;
+	sqlite3_stmt* m_SEOrderTruncateStatement;
+	sqlite3_stmt* m_SETradeInsertStatement;
+	sqlite3_stmt* m_SETradeDeleteStatement;
+	sqlite3_stmt* m_SETradeUpdateStatement;
+	sqlite3_stmt* m_SETradeSelectStatement;
+	sqlite3_stmt* m_SETradeTruncateStatement;
+	sqlite3_stmt* m_SEBrokerLoginSessionInsertStatement;
+	sqlite3_stmt* m_SEBrokerLoginSessionDeleteStatement;
+	sqlite3_stmt* m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement;
+	sqlite3_stmt* m_SEBrokerLoginSessionUpdateStatement;
+	sqlite3_stmt* m_SEBrokerLoginSessionSelectStatement;
+	sqlite3_stmt* m_SEBrokerLoginSessionTruncateStatement;
 };

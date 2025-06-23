@@ -24,10 +24,12 @@ namespace mdb
 		TradingDayTable* t_TradingDay;
 		ExchangeTable* t_Exchange;
 		ProductTable* t_Product;
-		InstrumentTable* t_Instrument;
-		OrderTable* t_Order;
-		TradeTable* t_Trade;
 		DepthMarketDataTable* t_DepthMarketData;
+		SEBrokerTable* t_SEBroker;
+		SEInstrumentTable* t_SEInstrument;
+		SEOrderTable* t_SEOrder;
+		SETradeTable* t_SETrade;
+		SEBrokerLoginSessionTable* t_SEBrokerLoginSession;
 	};
 }
 

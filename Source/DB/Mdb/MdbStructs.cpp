@@ -397,6 +397,136 @@ namespace mdb
 		return t_MdbDataStringBuffer;
 	}
 
+	SEBroker* SEBroker::Allocate()
+	{
+		return ::Allocate<SEBroker>();
+	}
+	void SEBroker::Free()
+	{
+		::Free<SEBroker>(this);
+	}
+	const char* SEBroker::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%d,%s,%s",
+			BrokerID, BrokerName, Password);
+		return t_MdbDataStringBuffer;
+	}
+	int SEBroker::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%d','%s','%s'),",
+			BrokerID, BrokerName, Password);
+	}
+	const char* SEBroker::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "SEBroker:BrokerID:[%d], BrokerName:[%s], Password:[%s]",
+			BrokerID, BrokerName, Password);
+		return t_MdbDataStringBuffer;
+	}
+
+	SEInstrument* SEInstrument::Allocate()
+	{
+		return ::Allocate<SEInstrument>();
+	}
+	void SEInstrument::Free()
+	{
+		::Free<SEInstrument>(this);
+	}
+	const char* SEInstrument::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%s,%s,%d,%lld,%lld,%lld,%lld,%d,%f,%f,%f,%s",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, VolumeMultiple, PriceTick, UpperLimitPrice, LowerLimitPrice, SessionName);
+		return t_MdbDataStringBuffer;
+	}
+	int SEInstrument::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%s','%s','%s','%s','%d','%lld','%lld','%lld','%lld','%d','%f','%f','%f','%s'),",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, VolumeMultiple, PriceTick, UpperLimitPrice, LowerLimitPrice, SessionName);
+	}
+	const char* SEInstrument::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "SEInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], VolumeMultiple:[%d], PriceTick:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], SessionName:[%s]",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, VolumeMultiple, PriceTick, UpperLimitPrice, LowerLimitPrice, SessionName);
+		return t_MdbDataStringBuffer;
+	}
+
+	SEOrder* SEOrder::Allocate()
+	{
+		return ::Allocate<SEOrder>();
+	}
+	void SEOrder::Free()
+	{
+		::Free<SEOrder>(this);
+	}
+	const char* SEOrder::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%d,%s,%s,%s,%d,%d,%d,%d,%d,%f,%lld,%lld,%lld,%d,%d,%s,%s,%s,%s,%lld,%d",
+			TradingDay, BrokerID, AccountID, ExchangeID, InstrumentID, (int)ProductClass, OrderID, (int)Direction, (int)OffsetFlag, (int)OrderPriceType, Price, Volume, VolumeTotal, VolumeTraded, VolumeMultiple, (int)OrderStatus, OrderDate, OrderTime, CancelDate, CancelTime, SessionID, ClientOrderID);
+		return t_MdbDataStringBuffer;
+	}
+	int SEOrder::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%d','%s','%s','%s','%d','%d','%d','%d','%d','%f','%lld','%lld','%lld','%d','%d','%s','%s','%s','%s','%lld','%d'),",
+			TradingDay, BrokerID, AccountID, ExchangeID, InstrumentID, (int)ProductClass, OrderID, (int)Direction, (int)OffsetFlag, (int)OrderPriceType, Price, Volume, VolumeTotal, VolumeTraded, VolumeMultiple, (int)OrderStatus, OrderDate, OrderTime, CancelDate, CancelTime, SessionID, ClientOrderID);
+	}
+	const char* SEOrder::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "SEOrder:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d]",
+			TradingDay, BrokerID, AccountID, ExchangeID, InstrumentID, (int)ProductClass, OrderID, (int)Direction, (int)OffsetFlag, (int)OrderPriceType, Price, Volume, VolumeTotal, VolumeTraded, VolumeMultiple, (int)OrderStatus, OrderDate, OrderTime, CancelDate, CancelTime, SessionID, ClientOrderID);
+		return t_MdbDataStringBuffer;
+	}
+
+	SETrade* SETrade::Allocate()
+	{
+		return ::Allocate<SETrade>();
+	}
+	void SETrade::Free()
+	{
+		::Free<SETrade>(this);
+	}
+	const char* SETrade::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%d,%s,%s,%s,%d,%d,%s,%d,%d,%f,%lld,%d,%f,%f,%s,%s",
+			TradingDay, BrokerID, AccountID, ExchangeID, InstrumentID, (int)ProductClass, OrderID, TradeID, (int)Direction, (int)OffsetFlag, Price, Volume, VolumeMultiple, TradeAmount, Commission, TradeDate, TradeTime);
+		return t_MdbDataStringBuffer;
+	}
+	int SETrade::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%d','%s','%s','%s','%d','%d','%s','%d','%d','%f','%lld','%d','%f','%f','%s','%s'),",
+			TradingDay, BrokerID, AccountID, ExchangeID, InstrumentID, (int)ProductClass, OrderID, TradeID, (int)Direction, (int)OffsetFlag, Price, Volume, VolumeMultiple, TradeAmount, Commission, TradeDate, TradeTime);
+	}
+	const char* SETrade::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "SETrade:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
+			TradingDay, BrokerID, AccountID, ExchangeID, InstrumentID, (int)ProductClass, OrderID, TradeID, (int)Direction, (int)OffsetFlag, Price, Volume, VolumeMultiple, TradeAmount, Commission, TradeDate, TradeTime);
+		return t_MdbDataStringBuffer;
+	}
+
+	SEBrokerLoginSession* SEBrokerLoginSession::Allocate()
+	{
+		return ::Allocate<SEBrokerLoginSession>();
+	}
+	void SEBrokerLoginSession::Free()
+	{
+		::Free<SEBrokerLoginSession>(this);
+	}
+	const char* SEBrokerLoginSession::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%d,%lld,%s",
+			BrokerID, SessionID, IPAddress);
+		return t_MdbDataStringBuffer;
+	}
+	int SEBrokerLoginSession::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%d','%lld','%s'),",
+			BrokerID, SessionID, IPAddress);
+	}
+	const char* SEBrokerLoginSession::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "SEBrokerLoginSession:BrokerID:[%d], SessionID:[%lld], IPAddress:[%s]",
+			BrokerID, SessionID, IPAddress);
+		return t_MdbDataStringBuffer;
+	}
+
 
 	thread_local TradingDay t_CompareTradingDay;
 	thread_local Exchange t_CompareExchange;
@@ -413,5 +543,10 @@ namespace mdb
 	thread_local DepthMarketData t_CompareDepthMarketData;
 	thread_local BarMarketData t_CompareBarMarketData;
 	thread_local MdSubscribe t_CompareMdSubscribe;
+	thread_local SEBroker t_CompareSEBroker;
+	thread_local SEInstrument t_CompareSEInstrument;
+	thread_local SEOrder t_CompareSEOrder;
+	thread_local SETrade t_CompareSETrade;
+	thread_local SEBrokerLoginSession t_CompareSEBrokerLoginSession;
 
 }

@@ -462,4 +462,151 @@ namespace mdb
 		MdSubscribePrimaryKey* m_PrimaryKey;
 	};
 
+	class SEBrokerTable
+	{
+	public:
+		SEBrokerTable(Mdb* mdb);
+		~SEBrokerTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(SEBroker* record);
+		void BatchInsert(std::list<mdb::SEBroker*>* records);
+		void Erase(SEBroker* record);
+		bool Update(SEBroker* const oldRecord, SEBroker* const newRecord, bool updateDB = true);
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(SEBroker* record);
+		void EraseIndex(SEBroker* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		SEBrokerPrimaryKey* m_PrimaryKey;
+	};
+
+	class SEInstrumentTable
+	{
+	public:
+		SEInstrumentTable(Mdb* mdb);
+		~SEInstrumentTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(SEInstrument* record);
+		void BatchInsert(std::list<mdb::SEInstrument*>* records);
+		void Erase(SEInstrument* record);
+		bool Update(SEInstrument* const oldRecord, SEInstrument* const newRecord, bool updateDB = true);
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(SEInstrument* record);
+		void EraseIndex(SEInstrument* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		SEInstrumentPrimaryKey* m_PrimaryKey;
+	};
+
+	class SEOrderTable
+	{
+	public:
+		SEOrderTable(Mdb* mdb);
+		~SEOrderTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(SEOrder* record);
+		void BatchInsert(std::list<mdb::SEOrder*>* records);
+		void Erase(SEOrder* record);
+		bool Update(SEOrder* const oldRecord, SEOrder* const newRecord, bool updateDB = true);
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(SEOrder* record);
+		void EraseIndex(SEOrder* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		SEOrderPrimaryKey* m_PrimaryKey;
+	};
+
+	class SETradeTable
+	{
+	public:
+		SETradeTable(Mdb* mdb);
+		~SETradeTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(SETrade* record);
+		void BatchInsert(std::list<mdb::SETrade*>* records);
+		void Erase(SETrade* record);
+		bool Update(SETrade* const oldRecord, SETrade* const newRecord, bool updateDB = true);
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(SETrade* record);
+		void EraseIndex(SETrade* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		SETradePrimaryKey* m_PrimaryKey;
+	};
+
+	class SEBrokerLoginSessionTable
+	{
+	public:
+		SEBrokerLoginSessionTable(Mdb* mdb);
+		~SEBrokerLoginSessionTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(SEBrokerLoginSession* record);
+		void BatchInsert(std::list<mdb::SEBrokerLoginSession*>* records);
+		void Erase(SEBrokerLoginSession* record);
+		int EraseByBrokerIDIndex(const BrokerIDType& BrokerID);
+		bool Update(SEBrokerLoginSession* const oldRecord, SEBrokerLoginSession* const newRecord, bool updateDB = true);
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(SEBrokerLoginSession* record);
+		void EraseIndex(SEBrokerLoginSession* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		SEBrokerLoginSessionPrimaryKey* m_PrimaryKey;
+		SEBrokerLoginSessionIndexBrokerID* m_BrokerIDIndex;
+	};
+
 }

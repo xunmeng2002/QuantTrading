@@ -14,6 +14,14 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	{
 		return RspQryInstrumentPackage::Allocate();
 	}
+	case ReqSEBrokerLoginPackage::PackageID:
+	{
+		return ReqSEBrokerLoginPackage::Allocate();
+	}
+	case RspSEBrokerLoginPackage::PackageID:
+	{
+		return RspSEBrokerLoginPackage::Allocate();
+	}
 	case ReqSEInsertOrderPackage::PackageID:
 	{
 		return ReqSEInsertOrderPackage::Allocate();

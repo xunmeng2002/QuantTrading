@@ -118,6 +118,37 @@ public:
 	virtual void OnMdSubscribeUpdate(mdb::MdSubscribe* record) override;
 	virtual void OnMdSubscribeTruncate() override;
 	
+	virtual void OnSEBrokerInsert(mdb::SEBroker* record) override;
+	virtual void OnSEBrokerBatchInsert(std::list<mdb::SEBroker*>* records) override;
+	virtual void OnSEBrokerErase(mdb::SEBroker* record) override;
+	virtual void OnSEBrokerUpdate(mdb::SEBroker* record) override;
+	virtual void OnSEBrokerTruncate() override;
+	
+	virtual void OnSEInstrumentInsert(mdb::SEInstrument* record) override;
+	virtual void OnSEInstrumentBatchInsert(std::list<mdb::SEInstrument*>* records) override;
+	virtual void OnSEInstrumentErase(mdb::SEInstrument* record) override;
+	virtual void OnSEInstrumentUpdate(mdb::SEInstrument* record) override;
+	virtual void OnSEInstrumentTruncate() override;
+	
+	virtual void OnSEOrderInsert(mdb::SEOrder* record) override;
+	virtual void OnSEOrderBatchInsert(std::list<mdb::SEOrder*>* records) override;
+	virtual void OnSEOrderErase(mdb::SEOrder* record) override;
+	virtual void OnSEOrderUpdate(mdb::SEOrder* record) override;
+	virtual void OnSEOrderTruncate() override;
+	
+	virtual void OnSETradeInsert(mdb::SETrade* record) override;
+	virtual void OnSETradeBatchInsert(std::list<mdb::SETrade*>* records) override;
+	virtual void OnSETradeErase(mdb::SETrade* record) override;
+	virtual void OnSETradeUpdate(mdb::SETrade* record) override;
+	virtual void OnSETradeTruncate() override;
+	
+	virtual void OnSEBrokerLoginSessionInsert(mdb::SEBrokerLoginSession* record) override;
+	virtual void OnSEBrokerLoginSessionBatchInsert(std::list<mdb::SEBrokerLoginSession*>* records) override;
+	virtual void OnSEBrokerLoginSessionErase(mdb::SEBrokerLoginSession* record) override;
+	virtual void OnSEBrokerLoginSessionEraseByBrokerIDIndex(mdb::SEBrokerLoginSession* record) override;
+	virtual void OnSEBrokerLoginSessionUpdate(mdb::SEBrokerLoginSession* record) override;
+	virtual void OnSEBrokerLoginSessionTruncate() override;
+	
 
 protected:
 	virtual void Run() override;

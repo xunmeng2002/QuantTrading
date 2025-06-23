@@ -45,7 +45,6 @@ namespace mdb
 	{
 		return TradingDayEqualForTradingDayPrimaryKey()(oldRecord, newRecord);
 	}
-
 	ExchangePrimaryKey::ExchangePrimaryKey(ExchangeTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -83,7 +82,6 @@ namespace mdb
 	{
 		return ExchangeEqualForExchangePrimaryKey()(oldRecord, newRecord);
 	}
-
 	ProductPrimaryKey::ProductPrimaryKey(ProductTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -122,7 +120,6 @@ namespace mdb
 	{
 		return ProductEqualForProductPrimaryKey()(oldRecord, newRecord);
 	}
-
 	HotInstrumentPrimaryKey::HotInstrumentPrimaryKey(HotInstrumentTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -163,7 +160,6 @@ namespace mdb
 	{
 		return HotInstrumentEqualForHotInstrumentPrimaryKey()(oldRecord, newRecord);
 	}
-
 	InstrumentPrimaryKey::InstrumentPrimaryKey(InstrumentTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -202,7 +198,6 @@ namespace mdb
 	{
 		return InstrumentEqualForInstrumentPrimaryKey()(oldRecord, newRecord);
 	}
-
 	AccountPrimaryKey::AccountPrimaryKey(AccountTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -240,7 +235,6 @@ namespace mdb
 	{
 		return AccountEqualForAccountPrimaryKey()(oldRecord, newRecord);
 	}
-
 	CapitalPrimaryKey::CapitalPrimaryKey(CapitalTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -279,7 +273,6 @@ namespace mdb
 	{
 		return CapitalEqualForCapitalPrimaryKey()(oldRecord, newRecord);
 	}
-
 	PositionPrimaryKey::PositionPrimaryKey(PositionTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -321,7 +314,6 @@ namespace mdb
 	{
 		return PositionEqualForPositionPrimaryKey()(oldRecord, newRecord);
 	}
-
 	PositionDetailPrimaryKey::PositionDetailPrimaryKey(PositionDetailTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -365,7 +357,6 @@ namespace mdb
 	{
 		return PositionDetailEqualForPositionDetailPrimaryKey()(oldRecord, newRecord);
 	}
-
 	OrderPrimaryKey::OrderPrimaryKey(OrderTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -443,7 +434,7 @@ namespace mdb
 	{
 		return OrderEqualForClientOrderIDUniqueKey()(oldRecord, newRecord);
 	}
-
+	
 	TradePrimaryKey::TradePrimaryKey(TradeTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -484,7 +475,6 @@ namespace mdb
 	{
 		return TradeEqualForTradePrimaryKey()(oldRecord, newRecord);
 	}
-
 	DepthMarketDataPrimaryKey::DepthMarketDataPrimaryKey(DepthMarketDataTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -524,7 +514,6 @@ namespace mdb
 	{
 		return DepthMarketDataEqualForDepthMarketDataPrimaryKey()(oldRecord, newRecord);
 	}
-
 	BarMarketDataPrimaryKey::BarMarketDataPrimaryKey(BarMarketDataTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -567,7 +556,6 @@ namespace mdb
 	{
 		return BarMarketDataEqualForBarMarketDataPrimaryKey()(oldRecord, newRecord);
 	}
-
 	MdSubscribePrimaryKey::MdSubscribePrimaryKey(MdSubscribeTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -607,5 +595,4 @@ namespace mdb
 	{
 		return MdSubscribeEqualForMdSubscribePrimaryKey()(oldRecord, newRecord);
 	}
-
 }

@@ -39,33 +39,6 @@ namespace mdb
 			mdb->t_Product->Insert(record);
 		}
 	}
-	void InitMdbFromDB::LoadInstrumentTable(Mdb* mdb, DB* db)
-	{
-		list<Instrument*> records;
-		db->SelectInstrument(records);
-		for (auto record : records)
-		{
-			mdb->t_Instrument->Insert(record);
-		}
-	}
-	void InitMdbFromDB::LoadOrderTable(Mdb* mdb, DB* db)
-	{
-		list<Order*> records;
-		db->SelectOrder(records);
-		for (auto record : records)
-		{
-			mdb->t_Order->Insert(record);
-		}
-	}
-	void InitMdbFromDB::LoadTradeTable(Mdb* mdb, DB* db)
-	{
-		list<Trade*> records;
-		db->SelectTrade(records);
-		for (auto record : records)
-		{
-			mdb->t_Trade->Insert(record);
-		}
-	}
 	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
 	{
 		list<DepthMarketData*> records;
@@ -73,6 +46,51 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_DepthMarketData->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadSEBrokerTable(Mdb* mdb, DB* db)
+	{
+		list<SEBroker*> records;
+		db->SelectSEBroker(records);
+		for (auto record : records)
+		{
+			mdb->t_SEBroker->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadSEInstrumentTable(Mdb* mdb, DB* db)
+	{
+		list<SEInstrument*> records;
+		db->SelectSEInstrument(records);
+		for (auto record : records)
+		{
+			mdb->t_SEInstrument->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadSEOrderTable(Mdb* mdb, DB* db)
+	{
+		list<SEOrder*> records;
+		db->SelectSEOrder(records);
+		for (auto record : records)
+		{
+			mdb->t_SEOrder->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadSETradeTable(Mdb* mdb, DB* db)
+	{
+		list<SETrade*> records;
+		db->SelectSETrade(records);
+		for (auto record : records)
+		{
+			mdb->t_SETrade->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadSEBrokerLoginSessionTable(Mdb* mdb, DB* db)
+	{
+		list<SEBrokerLoginSession*> records;
+		db->SelectSEBrokerLoginSession(records);
+		for (auto record : records)
+		{
+			mdb->t_SEBrokerLoginSession->Insert(record);
 		}
 	}
 }

@@ -23,5 +23,10 @@ namespace mdb
 		static void LoadDepthMarketDataTable(Mdb* mdb, const char* dir);
 		static void LoadBarMarketDataTable(Mdb* mdb, const char* dir);
 		static void LoadMdSubscribeTable(Mdb* mdb, const char* dir);
+		static void LoadSEBrokerTable(Mdb* mdb, const char* dir);
+		static void LoadSEInstrumentTable(Mdb* mdb, const char* dir);
+		static void LoadSEOrderTable(Mdb* mdb, const char* dir);
+		static void LoadSETradeTable(Mdb* mdb, const char* dir);
+		static void LoadSEBrokerLoginSessionTable(Mdb* mdb, const char* dir);
 	};
 }

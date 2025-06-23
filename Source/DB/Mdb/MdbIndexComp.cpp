@@ -4,9 +4,6 @@
 
 namespace mdb
 {
-
-
-
 	bool HotInstrumentEqualForTradingDayIndex::operator()(const HotInstrument* const left, const HotInstrument* const right) const
 	{
 		return strcmp(left->ExchangeID, right->ExchangeID) == 0&& strcmp(left->ProductID, right->ProductID) == 0&& left->Rank == right->Rank && strcmp(left->TradingDay, right->TradingDay) == 0;
@@ -31,8 +28,7 @@ namespace mdb
 			return false;
 		return false;
 	}
-
-
+	
 	bool PrimaryAccountEqualForOfferIDIndex::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
 	{
 		return left->OfferID == right->OfferID ;
@@ -45,8 +41,7 @@ namespace mdb
 			return false;
 		return false;
 	}
-
-
+	
 	bool CapitalEqualForTradingDayIndex::operator()(const Capital* const left, const Capital* const right) const
 	{
 		return strcmp(left->TradingDay, right->TradingDay) == 0;
@@ -59,7 +54,7 @@ namespace mdb
 			return false;
 		return false;
 	}
-
+	
 	bool PositionEqualForAccountIndex::operator()(const Position* const left, const Position* const right) const
 	{
 		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountID, right->AccountID) == 0;
@@ -76,6 +71,7 @@ namespace mdb
 			return false;
 		return false;
 	}
+	
 	bool PositionEqualForTradingDayIndex::operator()(const Position* const left, const Position* const right) const
 	{
 		return strcmp(left->TradingDay, right->TradingDay) == 0;
@@ -88,7 +84,7 @@ namespace mdb
 			return false;
 		return false;
 	}
-
+	
 	bool PositionDetailEqualForTradeMatchIndex::operator()(const PositionDetail* const left, const PositionDetail* const right) const
 	{
 		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountID, right->AccountID) == 0&& strcmp(left->ExchangeID, right->ExchangeID) == 0&& strcmp(left->InstrumentID, right->InstrumentID) == 0&& left->PosiDirection == right->PosiDirection ;
@@ -117,6 +113,7 @@ namespace mdb
 			return false;
 		return false;
 	}
+	
 	bool PositionDetailEqualForTradingDayIndex::operator()(const PositionDetail* const left, const PositionDetail* const right) const
 	{
 		return strcmp(left->TradingDay, right->TradingDay) == 0;
@@ -129,10 +126,18 @@ namespace mdb
 			return false;
 		return false;
 	}
-
-
-
-
-
-
+	
+	bool SEBrokerLoginSessionEqualForBrokerIDIndex::operator()(const SEBrokerLoginSession* const left, const SEBrokerLoginSession* const right) const
+	{
+		return left->BrokerID == right->BrokerID ;
+	}
+	bool SEBrokerLoginSessionLessForBrokerIDIndex::operator()(const SEBrokerLoginSession* const left, const SEBrokerLoginSession* const right) const
+	{
+		if (left->BrokerID < right->BrokerID)
+			return true;
+		else if (left->BrokerID > right->BrokerID)
+			return false;
+		return false;
+	}
+	
 }

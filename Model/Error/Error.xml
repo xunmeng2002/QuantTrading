@@ -37,6 +37,7 @@
 	<error name="PrimaryOrderNotExist" 				id="0x101D" desc="主账号委托不存在"/>
 	<error name="SubOrderNotExist" 					id="0x101E" desc="子账号委托不存在"/>
 	<error name="SubAccountNotExist" 				id="0x101F" desc="子账号不存在"/>
+	<error name="BrokerNotExist" 					id="0x1020" desc="经纪商不存在"/>
 		
 	
 	<error name="PrimaryAccountAlreadyExist" 		id="0x2000" desc="主账号已存在"/>
@@ -60,6 +61,7 @@
 	<error name="OrderAlreadyExist" 				id="0x2012" desc="委托已存在"/>
 	<error name="TradeAlreadyExist" 				id="0x2013" desc="成交已存在"/>
 	<error name="AccountAlreadyLogin" 				id="0x2014" desc="账户已登录"/>
+	<error name="SessionAlreadyLogin" 				id="0x2015" desc="本链接已登录"/>
 	
 	
 	
@@ -86,6 +88,7 @@
 	<error name="InvalidPreClosePrice" 				id="0x5008" desc="不合法的昨收盘价"/>
 	<error name="InvalidOffsetFlag" 				id="0x5009" desc="不合法的开平标志"/>
 	<error name="InvalidDirection" 					id="0x500A" desc="不合法的买卖方向"/>
+	<error name="InvalidOrderPriceType" 			id="0x500B" desc="不合法的委托价格类别"/>
 	
 	
 	<error name="CapitalInsufficient" 				id="0x6000" desc="资金不足"/>

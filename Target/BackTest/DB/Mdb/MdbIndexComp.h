@@ -3,9 +3,6 @@
 
 namespace mdb
 {
-
-
-
 	struct HotInstrumentEqualForTradingDayIndex
 	{
 		bool operator()(const HotInstrument* const left, const HotInstrument* const right) const;
@@ -14,9 +11,7 @@ namespace mdb
 	{
 		bool operator()(const HotInstrument* const left, const HotInstrument* const right) const;
 	};
-
-
-
+	
 	struct CapitalEqualForTradingDayIndex
 	{
 		bool operator()(const Capital* const left, const Capital* const right) const;
@@ -25,7 +20,7 @@ namespace mdb
 	{
 		bool operator()(const Capital* const left, const Capital* const right) const;
 	};
-
+	
 	struct PositionEqualForAccountIndex
 	{
 		bool operator()(const Position* const left, const Position* const right) const;
@@ -34,6 +29,7 @@ namespace mdb
 	{
 		bool operator()(const Position* const left, const Position* const right) const;
 	};
+	
 	struct PositionEqualForTradingDayIndex
 	{
 		bool operator()(const Position* const left, const Position* const right) const;
@@ -42,7 +38,7 @@ namespace mdb
 	{
 		bool operator()(const Position* const left, const Position* const right) const;
 	};
-
+	
 	struct PositionDetailEqualForTradeMatchIndex
 	{
 		bool operator()(const PositionDetail* const left, const PositionDetail* const right) const;
@@ -51,6 +47,7 @@ namespace mdb
 	{
 		bool operator()(const PositionDetail* const left, const PositionDetail* const right) const;
 	};
+	
 	struct PositionDetailEqualForTradingDayIndex
 	{
 		bool operator()(const PositionDetail* const left, const PositionDetail* const right) const;
@@ -59,10 +56,5 @@ namespace mdb
 	{
 		bool operator()(const PositionDetail* const left, const PositionDetail* const right) const;
 	};
-
-
-
-
-
-
+	
 }

@@ -119,6 +119,37 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_MdSubscribeSelectStatement = nullptr;
 	m_MdSubscribeTruncateStatement = nullptr;
 
+	m_SEBrokerInsertStatement = nullptr;
+	m_SEBrokerDeleteStatement = nullptr;
+	m_SEBrokerUpdateStatement = nullptr;
+	m_SEBrokerSelectStatement = nullptr;
+	m_SEBrokerTruncateStatement = nullptr;
+
+	m_SEInstrumentInsertStatement = nullptr;
+	m_SEInstrumentDeleteStatement = nullptr;
+	m_SEInstrumentUpdateStatement = nullptr;
+	m_SEInstrumentSelectStatement = nullptr;
+	m_SEInstrumentTruncateStatement = nullptr;
+
+	m_SEOrderInsertStatement = nullptr;
+	m_SEOrderDeleteStatement = nullptr;
+	m_SEOrderUpdateStatement = nullptr;
+	m_SEOrderSelectStatement = nullptr;
+	m_SEOrderTruncateStatement = nullptr;
+
+	m_SETradeInsertStatement = nullptr;
+	m_SETradeDeleteStatement = nullptr;
+	m_SETradeUpdateStatement = nullptr;
+	m_SETradeSelectStatement = nullptr;
+	m_SETradeTruncateStatement = nullptr;
+
+	m_SEBrokerLoginSessionInsertStatement = nullptr;
+	m_SEBrokerLoginSessionDeleteStatement = nullptr;
+	m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement = nullptr;
+	m_SEBrokerLoginSessionUpdateStatement = nullptr;
+	m_SEBrokerLoginSessionSelectStatement = nullptr;
+	m_SEBrokerLoginSessionTruncateStatement = nullptr;
+
 }
 MysqlDB::~MysqlDB()
 {
@@ -583,6 +614,136 @@ void MysqlDB::DisConnect()
 		m_MdSubscribeTruncateStatement->close();
 		m_MdSubscribeTruncateStatement = nullptr;
 	}
+	if (m_SEBrokerInsertStatement != nullptr)
+	{
+		m_SEBrokerInsertStatement->close();
+		m_SEBrokerInsertStatement = nullptr;
+	}
+	if (m_SEBrokerDeleteStatement != nullptr)
+	{
+		m_SEBrokerDeleteStatement->close();
+		m_SEBrokerDeleteStatement = nullptr;
+	}
+	if (m_SEBrokerUpdateStatement != nullptr)
+	{
+		m_SEBrokerUpdateStatement->close();
+		m_SEBrokerUpdateStatement = nullptr;
+	}
+	if (m_SEBrokerSelectStatement != nullptr)
+	{
+		m_SEBrokerSelectStatement->close();
+		m_SEBrokerSelectStatement = nullptr;
+	}
+	if (m_SEBrokerTruncateStatement != nullptr)
+	{
+		m_SEBrokerTruncateStatement->close();
+		m_SEBrokerTruncateStatement = nullptr;
+	}
+	if (m_SEInstrumentInsertStatement != nullptr)
+	{
+		m_SEInstrumentInsertStatement->close();
+		m_SEInstrumentInsertStatement = nullptr;
+	}
+	if (m_SEInstrumentDeleteStatement != nullptr)
+	{
+		m_SEInstrumentDeleteStatement->close();
+		m_SEInstrumentDeleteStatement = nullptr;
+	}
+	if (m_SEInstrumentUpdateStatement != nullptr)
+	{
+		m_SEInstrumentUpdateStatement->close();
+		m_SEInstrumentUpdateStatement = nullptr;
+	}
+	if (m_SEInstrumentSelectStatement != nullptr)
+	{
+		m_SEInstrumentSelectStatement->close();
+		m_SEInstrumentSelectStatement = nullptr;
+	}
+	if (m_SEInstrumentTruncateStatement != nullptr)
+	{
+		m_SEInstrumentTruncateStatement->close();
+		m_SEInstrumentTruncateStatement = nullptr;
+	}
+	if (m_SEOrderInsertStatement != nullptr)
+	{
+		m_SEOrderInsertStatement->close();
+		m_SEOrderInsertStatement = nullptr;
+	}
+	if (m_SEOrderDeleteStatement != nullptr)
+	{
+		m_SEOrderDeleteStatement->close();
+		m_SEOrderDeleteStatement = nullptr;
+	}
+	if (m_SEOrderUpdateStatement != nullptr)
+	{
+		m_SEOrderUpdateStatement->close();
+		m_SEOrderUpdateStatement = nullptr;
+	}
+	if (m_SEOrderSelectStatement != nullptr)
+	{
+		m_SEOrderSelectStatement->close();
+		m_SEOrderSelectStatement = nullptr;
+	}
+	if (m_SEOrderTruncateStatement != nullptr)
+	{
+		m_SEOrderTruncateStatement->close();
+		m_SEOrderTruncateStatement = nullptr;
+	}
+	if (m_SETradeInsertStatement != nullptr)
+	{
+		m_SETradeInsertStatement->close();
+		m_SETradeInsertStatement = nullptr;
+	}
+	if (m_SETradeDeleteStatement != nullptr)
+	{
+		m_SETradeDeleteStatement->close();
+		m_SETradeDeleteStatement = nullptr;
+	}
+	if (m_SETradeUpdateStatement != nullptr)
+	{
+		m_SETradeUpdateStatement->close();
+		m_SETradeUpdateStatement = nullptr;
+	}
+	if (m_SETradeSelectStatement != nullptr)
+	{
+		m_SETradeSelectStatement->close();
+		m_SETradeSelectStatement = nullptr;
+	}
+	if (m_SETradeTruncateStatement != nullptr)
+	{
+		m_SETradeTruncateStatement->close();
+		m_SETradeTruncateStatement = nullptr;
+	}
+	if (m_SEBrokerLoginSessionInsertStatement != nullptr)
+	{
+		m_SEBrokerLoginSessionInsertStatement->close();
+		m_SEBrokerLoginSessionInsertStatement = nullptr;
+	}
+	if (m_SEBrokerLoginSessionDeleteStatement != nullptr)
+	{
+		m_SEBrokerLoginSessionDeleteStatement->close();
+		m_SEBrokerLoginSessionDeleteStatement = nullptr;
+	}
+	if (m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement != nullptr)
+	{
+		m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement->close();
+		m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement = nullptr;
+	}
+	if (m_SEBrokerLoginSessionUpdateStatement != nullptr)
+	{
+		m_SEBrokerLoginSessionUpdateStatement->close();
+		m_SEBrokerLoginSessionUpdateStatement = nullptr;
+	}
+	if (m_SEBrokerLoginSessionSelectStatement != nullptr)
+	{
+		m_SEBrokerLoginSessionSelectStatement->close();
+		m_SEBrokerLoginSessionSelectStatement = nullptr;
+	}
+	if (m_SEBrokerLoginSessionTruncateStatement != nullptr)
+	{
+		m_SEBrokerLoginSessionTruncateStatement->close();
+		m_SEBrokerLoginSessionTruncateStatement = nullptr;
+	}
 }
 void MysqlDB::InitDB()
 {
@@ -616,10 +777,21 @@ void MysqlDB::InitDB()
 	m_Statement->executeUpdate("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
 	m_Statement->executeUpdate("Truncate Table t_MdSubscribe;");
 	m_Statement->executeUpdate("Insert Into t_MdSubscribe select * from Init.t_MdSubscribe;");
+	m_Statement->executeUpdate("Truncate Table t_SEBroker;");
+	m_Statement->executeUpdate("Insert Into t_SEBroker select * from Init.t_SEBroker;");
+	m_Statement->executeUpdate("Truncate Table t_SEInstrument;");
+	m_Statement->executeUpdate("Insert Into t_SEInstrument select * from Init.t_SEInstrument;");
+	m_Statement->executeUpdate("Truncate Table t_SEOrder;");
+	m_Statement->executeUpdate("Insert Into t_SEOrder select * from Init.t_SEOrder;");
+	m_Statement->executeUpdate("Truncate Table t_SETrade;");
+	m_Statement->executeUpdate("Insert Into t_SETrade select * from Init.t_SETrade;");
+	m_Statement->executeUpdate("Truncate Table t_SEBrokerLoginSession;");
+	m_Statement->executeUpdate("Insert Into t_SEBrokerLoginSession select * from Init.t_SEBrokerLoginSession;");
 }
 void MysqlDB::TruncateSessionTables()
 {
 	auto start = steady_clock::now();
+	TruncateSEBrokerLoginSession();
 	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 void MysqlDB::TruncateTables()
@@ -638,6 +810,11 @@ void MysqlDB::TruncateTables()
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
 	TruncateMdSubscribe();
+	TruncateSEBroker();
+	TruncateSEInstrument();
+	TruncateSEOrder();
+	TruncateSETrade();
+	TruncateSEBrokerLoginSession();
 }
 
 void MysqlDB::InsertTradingDay(TradingDay* record)
@@ -2425,6 +2602,581 @@ void MysqlDB::TruncateMdSubscribe()
 	m_MdSubscribeTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateMdSubscribe Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
+void MysqlDB::InsertSEBroker(SEBroker* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerInsertStatement == nullptr)
+	{
+		m_SEBrokerInsertStatement = m_DBConnection->prepareStatement("insert into t_SEBroker Values(?, ?, ?);");
+	}
+	SetStatementForSEBrokerRecord(m_SEBrokerInsertStatement, record);
+	
+	m_SEBrokerInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertSEBroker Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertSEBroker(std::list<SEBroker*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_SEBroker Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertSEBroker Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_SEBroker Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertSEBroker Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertSEBroker RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteSEBroker(SEBroker* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerDeleteStatement == nullptr)
+	{
+		m_SEBrokerDeleteStatement = m_DBConnection->prepareStatement("delete from t_SEBroker where BrokerID = ?;");
+	}
+	SetStatementForSEBrokerPrimaryKey(m_SEBrokerDeleteStatement, record->BrokerID);
+	m_SEBrokerDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEBroker Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateSEBroker(SEBroker* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerUpdateStatement == nullptr)
+	{
+		m_SEBrokerUpdateStatement = m_DBConnection->prepareStatement("update t_SEBroker set BrokerName = ?, Password = ? where BrokerID = ?;");
+	}
+	SetStatementForSEBrokerRecordUpdate(m_SEBrokerUpdateStatement, record);
+	m_SEBrokerUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateSEBroker Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectSEBroker(std::list<SEBroker*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerSelectStatement == nullptr)
+	{
+		m_SEBrokerSelectStatement = m_DBConnection->prepareStatement("select * from t_SEBroker;");
+	}
+	auto result = m_SEBrokerSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectSEBroker Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateSEBroker()
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerTruncateStatement == nullptr)
+	{
+		m_SEBrokerTruncateStatement = m_DBConnection->prepareStatement("truncate table t_SEBroker;");
+	}
+	m_SEBrokerTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateSEBroker Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::InsertSEInstrument(SEInstrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEInstrumentInsertStatement == nullptr)
+	{
+		m_SEInstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_SEInstrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForSEInstrumentRecord(m_SEInstrumentInsertStatement, record);
+	
+	m_SEInstrumentInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertSEInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertSEInstrument(std::list<SEInstrument*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_SEInstrument Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertSEInstrument Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_SEInstrument Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertSEInstrument Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertSEInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteSEInstrument(SEInstrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEInstrumentDeleteStatement == nullptr)
+	{
+		m_SEInstrumentDeleteStatement = m_DBConnection->prepareStatement("delete from t_SEInstrument where ExchangeID = ? and InstrumentID = ?;");
+	}
+	SetStatementForSEInstrumentPrimaryKey(m_SEInstrumentDeleteStatement, record->ExchangeID, record->InstrumentID);
+	m_SEInstrumentDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateSEInstrument(SEInstrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEInstrumentUpdateStatement == nullptr)
+	{
+		m_SEInstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_SEInstrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, VolumeMultiple = ?, PriceTick = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;");
+	}
+	SetStatementForSEInstrumentRecordUpdate(m_SEInstrumentUpdateStatement, record);
+	m_SEInstrumentUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateSEInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectSEInstrument(std::list<SEInstrument*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_SEInstrumentSelectStatement == nullptr)
+	{
+		m_SEInstrumentSelectStatement = m_DBConnection->prepareStatement("select * from t_SEInstrument;");
+	}
+	auto result = m_SEInstrumentSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectSEInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateSEInstrument()
+{
+	auto start = steady_clock::now();
+	if (m_SEInstrumentTruncateStatement == nullptr)
+	{
+		m_SEInstrumentTruncateStatement = m_DBConnection->prepareStatement("truncate table t_SEInstrument;");
+	}
+	m_SEInstrumentTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateSEInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::InsertSEOrder(SEOrder* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEOrderInsertStatement == nullptr)
+	{
+		m_SEOrderInsertStatement = m_DBConnection->prepareStatement("insert into t_SEOrder Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForSEOrderRecord(m_SEOrderInsertStatement, record);
+	
+	m_SEOrderInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertSEOrder Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertSEOrder(std::list<SEOrder*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_SEOrder Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertSEOrder Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_SEOrder Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertSEOrder Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertSEOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteSEOrder(SEOrder* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEOrderDeleteStatement == nullptr)
+	{
+		m_SEOrderDeleteStatement = m_DBConnection->prepareStatement("delete from t_SEOrder where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;");
+	}
+	SetStatementForSEOrderPrimaryKey(m_SEOrderDeleteStatement, record->TradingDay, record->AccountID, record->ExchangeID, record->InstrumentID, record->OrderID);
+	m_SEOrderDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEOrder Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateSEOrder(SEOrder* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEOrderUpdateStatement == nullptr)
+	{
+		m_SEOrderUpdateStatement = m_DBConnection->prepareStatement("update t_SEOrder set BrokerID = ?, ProductClass = ?, Direction = ?, OffsetFlag = ?, OrderPriceType = ?, Price = ?, Volume = ?, VolumeTotal = ?, VolumeTraded = ?, VolumeMultiple = ?, OrderStatus = ?, OrderDate = ?, OrderTime = ?, CancelDate = ?, CancelTime = ?, SessionID = ?, ClientOrderID = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;");
+	}
+	SetStatementForSEOrderRecordUpdate(m_SEOrderUpdateStatement, record);
+	m_SEOrderUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateSEOrder Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectSEOrder(std::list<SEOrder*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_SEOrderSelectStatement == nullptr)
+	{
+		m_SEOrderSelectStatement = m_DBConnection->prepareStatement("select * from t_SEOrder;");
+	}
+	auto result = m_SEOrderSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectSEOrder Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateSEOrder()
+{
+	auto start = steady_clock::now();
+	if (m_SEOrderTruncateStatement == nullptr)
+	{
+		m_SEOrderTruncateStatement = m_DBConnection->prepareStatement("truncate table t_SEOrder;");
+	}
+	m_SEOrderTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateSEOrder Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::InsertSETrade(SETrade* record)
+{
+	auto start = steady_clock::now();
+	if (m_SETradeInsertStatement == nullptr)
+	{
+		m_SETradeInsertStatement = m_DBConnection->prepareStatement("insert into t_SETrade Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForSETradeRecord(m_SETradeInsertStatement, record);
+	
+	m_SETradeInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertSETrade Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertSETrade(std::list<SETrade*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_SETrade Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertSETrade Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_SETrade Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertSETrade Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertSETrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteSETrade(SETrade* record)
+{
+	auto start = steady_clock::now();
+	if (m_SETradeDeleteStatement == nullptr)
+	{
+		m_SETradeDeleteStatement = m_DBConnection->prepareStatement("delete from t_SETrade where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;");
+	}
+	SetStatementForSETradePrimaryKey(m_SETradeDeleteStatement, record->TradingDay, record->ExchangeID, record->TradeID, record->Direction);
+	m_SETradeDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSETrade Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateSETrade(SETrade* record)
+{
+	auto start = steady_clock::now();
+	if (m_SETradeUpdateStatement == nullptr)
+	{
+		m_SETradeUpdateStatement = m_DBConnection->prepareStatement("update t_SETrade set BrokerID = ?, AccountID = ?, InstrumentID = ?, ProductClass = ?, OrderID = ?, OffsetFlag = ?, Price = ?, Volume = ?, VolumeMultiple = ?, TradeAmount = ?, Commission = ?, TradeDate = ?, TradeTime = ? where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;");
+	}
+	SetStatementForSETradeRecordUpdate(m_SETradeUpdateStatement, record);
+	m_SETradeUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateSETrade Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectSETrade(std::list<SETrade*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_SETradeSelectStatement == nullptr)
+	{
+		m_SETradeSelectStatement = m_DBConnection->prepareStatement("select * from t_SETrade;");
+	}
+	auto result = m_SETradeSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectSETrade Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateSETrade()
+{
+	auto start = steady_clock::now();
+	if (m_SETradeTruncateStatement == nullptr)
+	{
+		m_SETradeTruncateStatement = m_DBConnection->prepareStatement("truncate table t_SETrade;");
+	}
+	m_SETradeTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateSETrade Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::InsertSEBrokerLoginSession(SEBrokerLoginSession* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerLoginSessionInsertStatement == nullptr)
+	{
+		m_SEBrokerLoginSessionInsertStatement = m_DBConnection->prepareStatement("insert into t_SEBrokerLoginSession Values(?, ?, ?);");
+	}
+	SetStatementForSEBrokerLoginSessionRecord(m_SEBrokerLoginSessionInsertStatement, record);
+	
+	m_SEBrokerLoginSessionInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertSEBrokerLoginSession Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertSEBrokerLoginSession(std::list<SEBrokerLoginSession*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_SEBrokerLoginSession Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertSEBrokerLoginSession Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_SEBrokerLoginSession Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertSEBrokerLoginSession Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertSEBrokerLoginSession RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteSEBrokerLoginSession(SEBrokerLoginSession* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerLoginSessionDeleteStatement == nullptr)
+	{
+		m_SEBrokerLoginSessionDeleteStatement = m_DBConnection->prepareStatement("delete from t_SEBrokerLoginSession where SessionID = ?;");
+	}
+	SetStatementForSEBrokerLoginSessionPrimaryKey(m_SEBrokerLoginSessionDeleteStatement, record->SessionID);
+	m_SEBrokerLoginSessionDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEBrokerLoginSession Spend:%lldms", duration);
+	}
+}
+void MysqlDB::DeleteSEBrokerLoginSessionByBrokerIDIndex(SEBrokerLoginSession* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement == nullptr)
+	{
+		m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement = m_DBConnection->prepareStatement("delete from t_SEBrokerLoginSession where BrokerID = ?;");
+	}
+	SetStatementForSEBrokerLoginSessionIndexBrokerID(m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement, record);
+	m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEBrokerLoginSessionByBrokerIDIndex Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateSEBrokerLoginSession(SEBrokerLoginSession* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerLoginSessionUpdateStatement == nullptr)
+	{
+		m_SEBrokerLoginSessionUpdateStatement = m_DBConnection->prepareStatement("update t_SEBrokerLoginSession set BrokerID = ?, IPAddress = ? where SessionID = ?;");
+	}
+	SetStatementForSEBrokerLoginSessionRecordUpdate(m_SEBrokerLoginSessionUpdateStatement, record);
+	m_SEBrokerLoginSessionUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateSEBrokerLoginSession Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectSEBrokerLoginSession(std::list<SEBrokerLoginSession*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerLoginSessionSelectStatement == nullptr)
+	{
+		m_SEBrokerLoginSessionSelectStatement = m_DBConnection->prepareStatement("select * from t_SEBrokerLoginSession;");
+	}
+	auto result = m_SEBrokerLoginSessionSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectSEBrokerLoginSession Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateSEBrokerLoginSession()
+{
+	auto start = steady_clock::now();
+	if (m_SEBrokerLoginSessionTruncateStatement == nullptr)
+	{
+		m_SEBrokerLoginSessionTruncateStatement = m_DBConnection->prepareStatement("truncate table t_SEBrokerLoginSession;");
+	}
+	m_SEBrokerLoginSessionTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateSEBrokerLoginSession Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
 
 
 void MysqlDB::SetStatementForTradingDayRecord(sql::PreparedStatement* statement, TradingDay* record)
@@ -3519,6 +4271,273 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<MdSubscribe*>& recor
 	record->ProductClass = ProductClassType(result->getInt(5));
 	Strcpy(record->StartTradingDay, result->getString(6).c_str());
 	Strcpy(record->EndTradingDay, result->getString(7).c_str());
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForSEBrokerRecord(sql::PreparedStatement* statement, SEBroker* record)
+{
+	statement->setInt(1, record->BrokerID);
+	statement->setString(2, record->BrokerName);
+	statement->setString(3, record->Password);
+}
+void MysqlDB::SetStatementForSEBrokerRecordUpdate(sql::PreparedStatement* statement, SEBroker* record)
+{
+	statement->setString(1, record->BrokerName);
+	statement->setString(2, record->Password);
+	statement->setInt(3, record->BrokerID);
+}
+void MysqlDB::SetStatementForSEBrokerPrimaryKey(sql::PreparedStatement* statement, const BrokerIDType& BrokerID)
+{
+	statement->setInt(1, BrokerID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<SEBroker*>& records)
+{
+	SEBroker* record = SEBroker::Allocate();
+	record->BrokerID = result->getInt(1);
+	Strcpy(record->BrokerName, result->getString(2).c_str());
+	Strcpy(record->Password, result->getString(3).c_str());
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForSEInstrumentRecord(sql::PreparedStatement* statement, SEInstrument* record)
+{
+	statement->setString(1, record->ExchangeID);
+	statement->setString(2, record->InstrumentID);
+	statement->setString(3, record->ExchangeInstID);
+	statement->setString(4, record->InstrumentName);
+	statement->setString(5, record->ProductID);
+	statement->setInt(6, int(record->ProductClass));
+	statement->setInt64(7, record->MaxMarketOrderVolume);
+	statement->setInt64(8, record->MinMarketOrderVolume);
+	statement->setInt64(9, record->MaxLimitOrderVolume);
+	statement->setInt64(10, record->MinLimitOrderVolume);
+	statement->setInt(11, record->VolumeMultiple);
+	statement->setDouble(12, record->PriceTick);
+	statement->setDouble(13, record->UpperLimitPrice);
+	statement->setDouble(14, record->LowerLimitPrice);
+	statement->setString(15, record->SessionName);
+}
+void MysqlDB::SetStatementForSEInstrumentRecordUpdate(sql::PreparedStatement* statement, SEInstrument* record)
+{
+	statement->setString(1, record->ExchangeInstID);
+	statement->setString(2, record->InstrumentName);
+	statement->setString(3, record->ProductID);
+	statement->setInt(4, int(record->ProductClass));
+	statement->setInt64(5, record->MaxMarketOrderVolume);
+	statement->setInt64(6, record->MinMarketOrderVolume);
+	statement->setInt64(7, record->MaxLimitOrderVolume);
+	statement->setInt64(8, record->MinLimitOrderVolume);
+	statement->setInt(9, record->VolumeMultiple);
+	statement->setDouble(10, record->PriceTick);
+	statement->setDouble(11, record->UpperLimitPrice);
+	statement->setDouble(12, record->LowerLimitPrice);
+	statement->setString(13, record->SessionName);
+	statement->setString(14, record->ExchangeID);
+	statement->setString(15, record->InstrumentID);
+}
+void MysqlDB::SetStatementForSEInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+{
+	statement->setString(1, ExchangeID);
+	statement->setString(2, InstrumentID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<SEInstrument*>& records)
+{
+	SEInstrument* record = SEInstrument::Allocate();
+	Strcpy(record->ExchangeID, result->getString(1).c_str());
+	Strcpy(record->InstrumentID, result->getString(2).c_str());
+	Strcpy(record->ExchangeInstID, result->getString(3).c_str());
+	Strcpy(record->InstrumentName, result->getString(4).c_str());
+	Strcpy(record->ProductID, result->getString(5).c_str());
+	record->ProductClass = ProductClassType(result->getInt(6));
+	record->MaxMarketOrderVolume = result->getInt64(7);
+	record->MinMarketOrderVolume = result->getInt64(8);
+	record->MaxLimitOrderVolume = result->getInt64(9);
+	record->MinLimitOrderVolume = result->getInt64(10);
+	record->VolumeMultiple = result->getInt(11);
+	record->PriceTick = result->getDouble(12);
+	record->UpperLimitPrice = result->getDouble(13);
+	record->LowerLimitPrice = result->getDouble(14);
+	Strcpy(record->SessionName, result->getString(15).c_str());
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForSEOrderRecord(sql::PreparedStatement* statement, SEOrder* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setInt(2, record->BrokerID);
+	statement->setString(3, record->AccountID);
+	statement->setString(4, record->ExchangeID);
+	statement->setString(5, record->InstrumentID);
+	statement->setInt(6, int(record->ProductClass));
+	statement->setInt(7, record->OrderID);
+	statement->setInt(8, int(record->Direction));
+	statement->setInt(9, int(record->OffsetFlag));
+	statement->setInt(10, int(record->OrderPriceType));
+	statement->setDouble(11, record->Price);
+	statement->setInt64(12, record->Volume);
+	statement->setInt64(13, record->VolumeTotal);
+	statement->setInt64(14, record->VolumeTraded);
+	statement->setInt(15, record->VolumeMultiple);
+	statement->setInt(16, int(record->OrderStatus));
+	statement->setString(17, record->OrderDate);
+	statement->setString(18, record->OrderTime);
+	statement->setString(19, record->CancelDate);
+	statement->setString(20, record->CancelTime);
+	statement->setInt64(21, record->SessionID);
+	statement->setInt(22, record->ClientOrderID);
+}
+void MysqlDB::SetStatementForSEOrderRecordUpdate(sql::PreparedStatement* statement, SEOrder* record)
+{
+	statement->setInt(1, record->BrokerID);
+	statement->setInt(2, int(record->ProductClass));
+	statement->setInt(3, int(record->Direction));
+	statement->setInt(4, int(record->OffsetFlag));
+	statement->setInt(5, int(record->OrderPriceType));
+	statement->setDouble(6, record->Price);
+	statement->setInt64(7, record->Volume);
+	statement->setInt64(8, record->VolumeTotal);
+	statement->setInt64(9, record->VolumeTraded);
+	statement->setInt(10, record->VolumeMultiple);
+	statement->setInt(11, int(record->OrderStatus));
+	statement->setString(12, record->OrderDate);
+	statement->setString(13, record->OrderTime);
+	statement->setString(14, record->CancelDate);
+	statement->setString(15, record->CancelTime);
+	statement->setInt64(16, record->SessionID);
+	statement->setInt(17, record->ClientOrderID);
+	statement->setString(18, record->TradingDay);
+	statement->setString(19, record->AccountID);
+	statement->setString(20, record->ExchangeID);
+	statement->setString(21, record->InstrumentID);
+	statement->setInt(22, record->OrderID);
+}
+void MysqlDB::SetStatementForSEOrderPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID)
+{
+	statement->setString(1, TradingDay);
+	statement->setString(2, AccountID);
+	statement->setString(3, ExchangeID);
+	statement->setString(4, InstrumentID);
+	statement->setInt(5, OrderID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<SEOrder*>& records)
+{
+	SEOrder* record = SEOrder::Allocate();
+	Strcpy(record->TradingDay, result->getString(1).c_str());
+	record->BrokerID = result->getInt(2);
+	Strcpy(record->AccountID, result->getString(3).c_str());
+	Strcpy(record->ExchangeID, result->getString(4).c_str());
+	Strcpy(record->InstrumentID, result->getString(5).c_str());
+	record->ProductClass = ProductClassType(result->getInt(6));
+	record->OrderID = result->getInt(7);
+	record->Direction = DirectionType(result->getInt(8));
+	record->OffsetFlag = OffsetFlagType(result->getInt(9));
+	record->OrderPriceType = OrderPriceTypeType(result->getInt(10));
+	record->Price = result->getDouble(11);
+	record->Volume = result->getInt64(12);
+	record->VolumeTotal = result->getInt64(13);
+	record->VolumeTraded = result->getInt64(14);
+	record->VolumeMultiple = result->getInt(15);
+	record->OrderStatus = OrderStatusType(result->getInt(16));
+	Strcpy(record->OrderDate, result->getString(17).c_str());
+	Strcpy(record->OrderTime, result->getString(18).c_str());
+	Strcpy(record->CancelDate, result->getString(19).c_str());
+	Strcpy(record->CancelTime, result->getString(20).c_str());
+	record->SessionID = result->getInt64(21);
+	record->ClientOrderID = result->getInt(22);
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForSETradeRecord(sql::PreparedStatement* statement, SETrade* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setInt(2, record->BrokerID);
+	statement->setString(3, record->AccountID);
+	statement->setString(4, record->ExchangeID);
+	statement->setString(5, record->InstrumentID);
+	statement->setInt(6, int(record->ProductClass));
+	statement->setInt(7, record->OrderID);
+	statement->setString(8, record->TradeID);
+	statement->setInt(9, int(record->Direction));
+	statement->setInt(10, int(record->OffsetFlag));
+	statement->setDouble(11, record->Price);
+	statement->setInt64(12, record->Volume);
+	statement->setInt(13, record->VolumeMultiple);
+	statement->setDouble(14, record->TradeAmount);
+	statement->setDouble(15, record->Commission);
+	statement->setString(16, record->TradeDate);
+	statement->setString(17, record->TradeTime);
+}
+void MysqlDB::SetStatementForSETradeRecordUpdate(sql::PreparedStatement* statement, SETrade* record)
+{
+	statement->setInt(1, record->BrokerID);
+	statement->setString(2, record->AccountID);
+	statement->setString(3, record->InstrumentID);
+	statement->setInt(4, int(record->ProductClass));
+	statement->setInt(5, record->OrderID);
+	statement->setInt(6, int(record->OffsetFlag));
+	statement->setDouble(7, record->Price);
+	statement->setInt64(8, record->Volume);
+	statement->setInt(9, record->VolumeMultiple);
+	statement->setDouble(10, record->TradeAmount);
+	statement->setDouble(11, record->Commission);
+	statement->setString(12, record->TradeDate);
+	statement->setString(13, record->TradeTime);
+	statement->setString(14, record->TradingDay);
+	statement->setString(15, record->ExchangeID);
+	statement->setString(16, record->TradeID);
+	statement->setInt(17, int(record->Direction));
+}
+void MysqlDB::SetStatementForSETradePrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction)
+{
+	statement->setString(1, TradingDay);
+	statement->setString(2, ExchangeID);
+	statement->setString(3, TradeID);
+	statement->setInt(4, int(Direction));
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<SETrade*>& records)
+{
+	SETrade* record = SETrade::Allocate();
+	Strcpy(record->TradingDay, result->getString(1).c_str());
+	record->BrokerID = result->getInt(2);
+	Strcpy(record->AccountID, result->getString(3).c_str());
+	Strcpy(record->ExchangeID, result->getString(4).c_str());
+	Strcpy(record->InstrumentID, result->getString(5).c_str());
+	record->ProductClass = ProductClassType(result->getInt(6));
+	record->OrderID = result->getInt(7);
+	Strcpy(record->TradeID, result->getString(8).c_str());
+	record->Direction = DirectionType(result->getInt(9));
+	record->OffsetFlag = OffsetFlagType(result->getInt(10));
+	record->Price = result->getDouble(11);
+	record->Volume = result->getInt64(12);
+	record->VolumeMultiple = result->getInt(13);
+	record->TradeAmount = result->getDouble(14);
+	record->Commission = result->getDouble(15);
+	Strcpy(record->TradeDate, result->getString(16).c_str());
+	Strcpy(record->TradeTime, result->getString(17).c_str());
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForSEBrokerLoginSessionRecord(sql::PreparedStatement* statement, SEBrokerLoginSession* record)
+{
+	statement->setInt(1, record->BrokerID);
+	statement->setInt64(2, record->SessionID);
+	statement->setString(3, record->IPAddress);
+}
+void MysqlDB::SetStatementForSEBrokerLoginSessionRecordUpdate(sql::PreparedStatement* statement, SEBrokerLoginSession* record)
+{
+	statement->setInt(1, record->BrokerID);
+	statement->setString(2, record->IPAddress);
+	statement->setInt64(3, record->SessionID);
+}
+void MysqlDB::SetStatementForSEBrokerLoginSessionPrimaryKey(sql::PreparedStatement* statement, const SessionIDType& SessionID)
+{
+	statement->setInt64(1, SessionID);
+}
+void MysqlDB::SetStatementForSEBrokerLoginSessionIndexBrokerID(sql::PreparedStatement* statement, SEBrokerLoginSession* record)
+{
+	statement->setInt(1, record->BrokerID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<SEBrokerLoginSession*>& records)
+{
+	SEBrokerLoginSession* record = SEBrokerLoginSession::Allocate();
+	record->BrokerID = result->getInt(1);
+	record->SessionID = result->getInt64(2);
+	Strcpy(record->IPAddress, result->getString(3).c_str());
 	records.push_back(record);
 }
 

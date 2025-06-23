@@ -36,6 +36,11 @@ namespace mdb
 		DepthMarketDataTable* t_DepthMarketData;
 		BarMarketDataTable* t_BarMarketData;
 		MdSubscribeTable* t_MdSubscribe;
+		SEBrokerTable* t_SEBroker;
+		SEInstrumentTable* t_SEInstrument;
+		SEOrderTable* t_SEOrder;
+		SETradeTable* t_SETrade;
+		SEBrokerLoginSessionTable* t_SEBrokerLoginSession;
 	};
 }
 
