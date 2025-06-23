@@ -164,4 +164,40 @@
 	<package name="RtnAccountLogout" 			id="0x2020" desc="账户登出推送">
 		<field name="AccountLogout"/>
 	</package>
+
+
+	<package name="ReqSEInsertOrder" 				id="0x3001" desc="委托请求">
+		<field name="ReqSEInsertOrder"/>
+	</package>
+	<package name="RspSEInsertOrder" 				id="0x3002" desc="委托应答">
+		<field name="ReqSEInsertOrder"/>
+		<field name="RspInfo"/>
+	</package>
+	<package name="ReqSECancelOrder" 				id="0x3003" desc="撤单请求">
+		<field name="ReqSECancelOrder"/>
+	</package>
+	<package name="RspSECancelOrder" 				id="0x3004" desc="撤单应答">
+		<field name="ReqSECancelOrder"/>
+		<field name="RspInfo"/>
+	</package>
+	<package name="ReqQrySEOrder" 				id="0x3005" desc="查询委托请求">
+		<field name="ReqQrySEOrder"/>
+	</package>
+	<package name="RspQrySEOrder" 				id="0x3006" desc="查询委托应答">
+		<field name="SEOrder"/>
+		<field name="RspInfo"/>
+	</package>
+	<package name="ReqQrySETrade" 				id="0x3007" desc="查询成交请求">
+		<field name="ReqQrySETrade"/>
+	</package>
+	<package name="RspQrySETrade" 				id="0x3008" desc="查询成交应答">
+		<field name="SETrade"/>
+		<field name="RspInfo"/>
+	</package>
+	<package name="RtnSEOrder" 					id="0x3101" desc="委托推送">
+		<field name="SEOrder"/>
+	</package>
+	<package name="RtnSETrade" 					id="0x3102" desc="成交推送">
+		<field name="SETrade"/>
+	</package>
 </packages>

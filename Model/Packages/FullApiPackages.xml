@@ -48,4 +48,14 @@
 	<package name="RtnTrade"/>
 	<package name="RtnMoneyTransfer"/>
 	<package name="RtnAccountLogout"/>
+	<package name="ReqSEInsertOrder"/>
+	<package name="RspSEInsertOrder"/>
+	<package name="ReqSECancelOrder"/>
+	<package name="RspSECancelOrder"/>
+	<package name="ReqQrySEOrder"/>
+	<package name="RspQrySEOrder"/>
+	<package name="ReqQrySETrade"/>
+	<package name="RspQrySETrade"/>
+	<package name="RtnSEOrder"/>
+	<package name="RtnSETrade"/>
 </apipackages>

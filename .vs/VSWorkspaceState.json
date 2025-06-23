@@ -1,14 +1,5 @@
 {
   "DevContainersInfoBarHidden": true,
-  "ExpandedNodes": [
-    "",
-    "\\Target",
-    "\\Target\\MdOffer",
-    "\\Test",
-    "\\Test\\TestBackTest"
-  ],
-  "SelectedNode": "\\Test\\TestBackTest\\Src",
-  "PreviewInSolutionExplorer": false,
   "ActiveTargetSystem": "Local Machine",
   "OutputFoldersPerTargetSystem": {
     "Local Machine": [
@@ -23,5 +14,19 @@
       "out\\build\\WSL-GCC-Debug",
       "out\\install\\WSL-GCC-Debug"
     ]
-  }
+  },
+  "ExpandedNodes": [
+    "",
+    "\\Api",
+    "\\Model\\Configs",
+    "\\Source",
+    "\\Target",
+    "\\Target\\BackTest",
+    "\\Target\\BackTest\\DB",
+    "\\Target\\MdOffer",
+    "\\Target\\SimExchange",
+    "\\Target\\SimExchange\\Src"
+  ],
+  "SelectedNode": "\\Target\\SimExchange\\CMakeLists.txt",
+  "PreviewInSolutionExplorer": false
 }

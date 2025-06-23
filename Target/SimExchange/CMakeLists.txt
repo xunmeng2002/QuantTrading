@@ -4,7 +4,6 @@ message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
 add_package(Config ./Config)
-add_package(Packages ./Packages)
 add_package(DBOperate ./DB/DBOperate)
 add_package(InitMdb ./DB/InitMdb)
 add_package(Mdb ./DB/Mdb)

@@ -375,4 +375,74 @@
 		<item name="SessionID"/>
 		<item name="ClientOrderID"/>
 	</field>
+
+
+	<field name="ReqSEInsertOrder" 				id="0x3001" desc="模拟交易委托请求">
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="Direction"/>
+		<item name="OffsetFlag"/>
+		<item name="OrderPriceType"/>
+		<item name="Price"/>
+		<item name="Volume"/>
+		<item name="OrderID"/>
+	</field>
+	<field name="ReqSECancelOrder" 				id="0x3002" desc="模拟交易撤单请求">
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="CancelOrderID"/>
+		<item name="OrderID"/>
+		<item name="OrderSysID"/>
+		<item name="SessionID"/>
+	</field>
+	<field name="ReqQrySEOrder" 					id="0x3003" desc="查询委托请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="SEOrder" 						id="0x3004" desc="委托">
+		<item name="TradingDay"/>
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="ProductClass"/>
+		<item name="OrderSysID"/>
+		<item name="Direction"/>
+		<item name="OffsetFlag"/>
+		<item name="OrderPriceType"/>
+		<item name="Price"/>
+		<item name="Volume"/>
+		<item name="VolumeTotal"/>
+		<item name="VolumeTraded"/>
+		<item name="VolumeMultiple"/>
+		<item name="OrderStatus"/>
+		<item name="OrderDate"/>
+		<item name="OrderTime"/>
+		<item name="CancelDate"/>
+		<item name="CancelTime"/>
+		<item name="SessionID"/>
+		<item name="OrderID"/>
+	</field>
+	<field name="ReqQrySETrade" 					id="0x3005" desc="查询成交请求">
+		<item name="AccountID"/>
+	</field>
+	<field name="SETrade" 						id="0x3006" desc="成交">
+		<item name="TradingDay"/>
+		<item name="AccountID"/>
+		<item name="ExchangeID"/>
+		<item name="InstrumentID"/>
+		<item name="ProductClass"/>
+		<item name="OrderID"/>
+		<item name="OrderSysID"/>
+		<item name="TradeID"/>
+		<item name="Direction"/>
+		<item name="OffsetFlag"/>
+		<item name="Price"/>
+		<item name="Volume"/>
+		<item name="VolumeMultiple"/>
+		<item name="TradeAmount"/>
+		<item name="Commission"/>
+		<item name="TradeDate"/>
+		<item name="TradeTime"/>
+	</field>
 </fields>

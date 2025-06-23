@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <apipackages prefix="SimExchange">
-	<package name="ReqInsertOrder"/>
-	<package name="RspInsertOrder"/>
-	<package name="ReqCancelOrder"/>
-	<package name="RspCancelOrder"/>
+	<package name="ReqSEInsertOrder"/>
+	<package name="RspSEInsertOrder"/>
+	<package name="ReqSECancelOrder"/>
+	<package name="RspSECancelOrder"/>
 	
-	<package name="ReqQryOrder"/>
-	<package name="RspQryOrder"/>
-	<package name="RtnOrder"/>
-	<package name="ReqQryTrade"/>
-	<package name="RspQryTrade"/>
-	<package name="RtnTrade"/>
+	<package name="ReqQrySEOrder"/>
+	<package name="RspQrySEOrder"/>
+	<package name="RtnSEOrder"/>
+	<package name="ReqQrySETrade"/>
+	<package name="RspQrySETrade"/>
+	<package name="RtnSETrade"/>
 	<package name="ReqQryInstrument"/>
 	<package name="RspQryInstrument"/>
 </apipackages>

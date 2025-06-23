@@ -10,941 +10,6 @@ thread_local char t_DataStringBuffer[10240];
 
 
  
-ReqQryOrderPackage* ReqQryOrderPackage::Allocate()
-{
-	return ::Allocate<ReqQryOrderPackage>();
-}
-void ReqQryOrderPackage::Free()
-{
-	Package::Free();
-	if (ReqQryOrder != nullptr)
-	{
-		::Free<ReqQryOrderField>(ReqQryOrder);
-		ReqQryOrder = nullptr;
-	}
-	MemCacheTemplateSingleton<ReqQryOrderPackage>::GetInstance().Free(this);
-}
-void ReqQryOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
-{
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
-}
-int ReqQryOrderPackage::ToStepStream(char* buff, int size) const
-{
-	char* ppos = buff;
-	if (ReqQryOrder != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, ReqQryOrderField::FieldID);
-		if (strlen(ReqQryOrder->AccountID) >= sizeof(ReqQryOrder->AccountID))
-		{
-			ReqQryOrder->AccountID[sizeof(ReqQryOrder->AccountID) - 1] = 0;
-		}
-		WriteString(ppos, Items::AccountID, ReqQryOrder->AccountID);
-		WriteHexString(ppos, Items::FieldEnd, ReqQryOrderField::FieldID);
-	}
-	return int(ppos - buff);
-}
-bool ReqQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
-{
-	while (startIndex < endIndex)
-	{
-		unsigned short fieldID;
-		int fieldStartIndex;
-		int fieldEndIndex;
-		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
-		{
-			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
-			{
-			case ReqQryOrderField::FieldID:
-			{
-				ReqQryOrder = ::Allocate<ReqQryOrderField>();
-				memset(ReqQryOrder, 0, sizeof(*ReqQryOrder));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::AccountID:
-						{
-							size_t len = value.length() >= sizeof(ReqQryOrder->AccountID) ? sizeof(ReqQryOrder->AccountID) - 1 : value.length();
-							memcpy(ReqQryOrder->AccountID, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryOrderPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
-				return false;
-			}
-			startIndex = fieldEndIndex;
-		}
-		else
-		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqQryOrderPackage");
-			return false;
-		}
-	}
-	return true;
-}
-int ReqQryOrderPackage::ToXtpStream(char* buff, int size) const
-{
-	int offset = 0;
-	memcpy(buff + offset, ReqQryOrder, sizeof(ReqQryOrderField));
-	offset += sizeof(ReqQryOrderField);
-	return offset;
-}
-bool ReqQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
-{
-	int offset = startIndex;
-	ReqQryOrder = ::Allocate<ReqQryOrderField>();
-	memcpy(ReqQryOrder, buff + offset, sizeof(ReqQryOrderField));
-	offset += sizeof(ReqQryOrderField);
-	if (offset != endIndex)
-	{
-		return false;
-	}
-	return true;
-}
-const char* ReqQryOrderPackage::GetDebugString() const
-{
-	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryOrder:AccountID:[%s]", ReqQryOrder->AccountID);
-	return t_DataStringBuffer;
-}
- 
-RspQryOrderPackage* RspQryOrderPackage::Allocate()
-{
-	return ::Allocate<RspQryOrderPackage>();
-}
-void RspQryOrderPackage::Free()
-{
-	Package::Free();
-	if (Order != nullptr)
-	{
-		::Free<OrderField>(Order);
-		Order = nullptr;
-	}
-	if (RspInfo != nullptr)
-	{
-		::Free<RspInfoField>(RspInfo);
-		RspInfo = nullptr;
-	}
-	MemCacheTemplateSingleton<RspQryOrderPackage>::GetInstance().Free(this);
-}
-void RspQryOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
-{
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
-}
-int RspQryOrderPackage::ToStepStream(char* buff, int size) const
-{
-	char* ppos = buff;
-	if (Order != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, OrderField::FieldID);
-		if (strlen(Order->TradingDay) >= sizeof(Order->TradingDay))
-		{
-			Order->TradingDay[sizeof(Order->TradingDay) - 1] = 0;
-		}
-		WriteString(ppos, Items::TradingDay, Order->TradingDay);
-		if (strlen(Order->AccountID) >= sizeof(Order->AccountID))
-		{
-			Order->AccountID[sizeof(Order->AccountID) - 1] = 0;
-		}
-		WriteString(ppos, Items::AccountID, Order->AccountID);
-		if (strlen(Order->ExchangeID) >= sizeof(Order->ExchangeID))
-		{
-			Order->ExchangeID[sizeof(Order->ExchangeID) - 1] = 0;
-		}
-		WriteString(ppos, Items::ExchangeID, Order->ExchangeID);
-		if (strlen(Order->InstrumentID) >= sizeof(Order->InstrumentID))
-		{
-			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
-		}
-		WriteString(ppos, Items::InstrumentID, Order->InstrumentID);
-		WriteString(ppos, Items::ProductClass, (int)Order->ProductClass);
-		WriteString(ppos, Items::OrderID, Order->OrderID);
-		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
-		{
-			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderSysID, Order->OrderSysID);
-		WriteString(ppos, Items::Direction, (int)Order->Direction);
-		WriteString(ppos, Items::OffsetFlag, (int)Order->OffsetFlag);
-		WriteString(ppos, Items::OrderPriceType, (int)Order->OrderPriceType);
-		WriteString(ppos, Items::Price, Order->Price);
-		WriteString(ppos, Items::Volume, Order->Volume);
-		WriteString(ppos, Items::VolumeTotal, Order->VolumeTotal);
-		WriteString(ppos, Items::VolumeTraded, Order->VolumeTraded);
-		WriteString(ppos, Items::VolumeMultiple, Order->VolumeMultiple);
-		WriteString(ppos, Items::OrderStatus, (int)Order->OrderStatus);
-		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
-		{
-			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderDate, Order->OrderDate);
-		if (strlen(Order->OrderTime) >= sizeof(Order->OrderTime))
-		{
-			Order->OrderTime[sizeof(Order->OrderTime) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderTime, Order->OrderTime);
-		if (strlen(Order->CancelDate) >= sizeof(Order->CancelDate))
-		{
-			Order->CancelDate[sizeof(Order->CancelDate) - 1] = 0;
-		}
-		WriteString(ppos, Items::CancelDate, Order->CancelDate);
-		if (strlen(Order->CancelTime) >= sizeof(Order->CancelTime))
-		{
-			Order->CancelTime[sizeof(Order->CancelTime) - 1] = 0;
-		}
-		WriteString(ppos, Items::CancelTime, Order->CancelTime);
-		WriteString(ppos, Items::SessionID, Order->SessionID);
-		WriteString(ppos, Items::ClientOrderID, Order->ClientOrderID);
-		WriteString(ppos, Items::RequestID, Order->RequestID);
-		WriteString(ppos, Items::FrozenCash, Order->FrozenCash);
-		WriteString(ppos, Items::FrozenMargin, Order->FrozenMargin);
-		WriteString(ppos, Items::FrozenCommission, Order->FrozenCommission);
-		WriteHexString(ppos, Items::FieldEnd, OrderField::FieldID);
-	}
-	if (RspInfo != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
-		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
-		{
-			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
-	}
-	return int(ppos - buff);
-}
-bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
-{
-	while (startIndex < endIndex)
-	{
-		unsigned short fieldID;
-		int fieldStartIndex;
-		int fieldEndIndex;
-		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
-		{
-			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
-			{
-			case OrderField::FieldID:
-			{
-				Order = ::Allocate<OrderField>();
-				memset(Order, 0, sizeof(*Order));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::TradingDay:
-						{
-							size_t len = value.length() >= sizeof(Order->TradingDay) ? sizeof(Order->TradingDay) - 1 : value.length();
-							memcpy(Order->TradingDay, value.c_str(), len);
-							break;
-						}
-						case Items::AccountID:
-						{
-							size_t len = value.length() >= sizeof(Order->AccountID) ? sizeof(Order->AccountID) - 1 : value.length();
-							memcpy(Order->AccountID, value.c_str(), len);
-							break;
-						}
-						case Items::ExchangeID:
-						{
-							size_t len = value.length() >= sizeof(Order->ExchangeID) ? sizeof(Order->ExchangeID) - 1 : value.length();
-							memcpy(Order->ExchangeID, value.c_str(), len);
-							break;
-						}
-						case Items::InstrumentID:
-						{
-							size_t len = value.length() >= sizeof(Order->InstrumentID) ? sizeof(Order->InstrumentID) - 1 : value.length();
-							memcpy(Order->InstrumentID, value.c_str(), len);
-							break;
-						}
-						case Items::ProductClass:
-						{
-							Order->ProductClass = (ProductClassType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::OrderID:
-						{
-							Order->OrderID = atoi(value.c_str());
-							break;
-						}
-						case Items::OrderSysID:
-						{
-							size_t len = value.length() >= sizeof(Order->OrderSysID) ? sizeof(Order->OrderSysID) - 1 : value.length();
-							memcpy(Order->OrderSysID, value.c_str(), len);
-							break;
-						}
-						case Items::Direction:
-						{
-							Order->Direction = (DirectionType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::OffsetFlag:
-						{
-							Order->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::OrderPriceType:
-						{
-							Order->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::Price:
-						{
-							Order->Price = atof(value.c_str());
-							break;
-						}
-						case Items::Volume:
-						{
-							Order->Volume = atoll(value.c_str());
-							break;
-						}
-						case Items::VolumeTotal:
-						{
-							Order->VolumeTotal = atoll(value.c_str());
-							break;
-						}
-						case Items::VolumeTraded:
-						{
-							Order->VolumeTraded = atoll(value.c_str());
-							break;
-						}
-						case Items::VolumeMultiple:
-						{
-							Order->VolumeMultiple = atoi(value.c_str());
-							break;
-						}
-						case Items::OrderStatus:
-						{
-							Order->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::OrderDate:
-						{
-							size_t len = value.length() >= sizeof(Order->OrderDate) ? sizeof(Order->OrderDate) - 1 : value.length();
-							memcpy(Order->OrderDate, value.c_str(), len);
-							break;
-						}
-						case Items::OrderTime:
-						{
-							size_t len = value.length() >= sizeof(Order->OrderTime) ? sizeof(Order->OrderTime) - 1 : value.length();
-							memcpy(Order->OrderTime, value.c_str(), len);
-							break;
-						}
-						case Items::CancelDate:
-						{
-							size_t len = value.length() >= sizeof(Order->CancelDate) ? sizeof(Order->CancelDate) - 1 : value.length();
-							memcpy(Order->CancelDate, value.c_str(), len);
-							break;
-						}
-						case Items::CancelTime:
-						{
-							size_t len = value.length() >= sizeof(Order->CancelTime) ? sizeof(Order->CancelTime) - 1 : value.length();
-							memcpy(Order->CancelTime, value.c_str(), len);
-							break;
-						}
-						case Items::SessionID:
-						{
-							Order->SessionID = atoll(value.c_str());
-							break;
-						}
-						case Items::ClientOrderID:
-						{
-							Order->ClientOrderID = atoi(value.c_str());
-							break;
-						}
-						case Items::RequestID:
-						{
-							Order->RequestID = atoi(value.c_str());
-							break;
-						}
-						case Items::FrozenCash:
-						{
-							Order->FrozenCash = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenMargin:
-						{
-							Order->FrozenMargin = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenCommission:
-						{
-							Order->FrozenCommission = atof(value.c_str());
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for OrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOrderPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			case RspInfoField::FieldID:
-			{
-				RspInfo = ::Allocate<RspInfoField>();
-				memset(RspInfo, 0, sizeof(*RspInfo));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::ErrorID:
-						{
-							RspInfo->ErrorID = atoi(value.c_str());
-							break;
-						}
-						case Items::ErrorMsg:
-						{
-							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
-							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOrderPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
-				return false;
-			}
-			startIndex = fieldEndIndex;
-		}
-		else
-		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspQryOrderPackage");
-			return false;
-		}
-	}
-	return true;
-}
-int RspQryOrderPackage::ToXtpStream(char* buff, int size) const
-{
-	int offset = 0;
-	memcpy(buff + offset, Order, sizeof(OrderField));
-	offset += sizeof(OrderField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	return offset;
-}
-bool RspQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
-{
-	int offset = startIndex;
-	Order = ::Allocate<OrderField>();
-	memcpy(Order, buff + offset, sizeof(OrderField));
-	offset += sizeof(OrderField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
-	{
-		return false;
-	}
-	return true;
-}
-const char* RspQryOrderPackage::GetDebugString() const
-{
-	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
-	return t_DataStringBuffer;
-}
- 
-ReqQryTradePackage* ReqQryTradePackage::Allocate()
-{
-	return ::Allocate<ReqQryTradePackage>();
-}
-void ReqQryTradePackage::Free()
-{
-	Package::Free();
-	if (ReqQryTrade != nullptr)
-	{
-		::Free<ReqQryTradeField>(ReqQryTrade);
-		ReqQryTrade = nullptr;
-	}
-	MemCacheTemplateSingleton<ReqQryTradePackage>::GetInstance().Free(this);
-}
-void ReqQryTradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
-{
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
-}
-int ReqQryTradePackage::ToStepStream(char* buff, int size) const
-{
-	char* ppos = buff;
-	if (ReqQryTrade != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, ReqQryTradeField::FieldID);
-		if (strlen(ReqQryTrade->AccountID) >= sizeof(ReqQryTrade->AccountID))
-		{
-			ReqQryTrade->AccountID[sizeof(ReqQryTrade->AccountID) - 1] = 0;
-		}
-		WriteString(ppos, Items::AccountID, ReqQryTrade->AccountID);
-		WriteHexString(ppos, Items::FieldEnd, ReqQryTradeField::FieldID);
-	}
-	return int(ppos - buff);
-}
-bool ReqQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
-{
-	while (startIndex < endIndex)
-	{
-		unsigned short fieldID;
-		int fieldStartIndex;
-		int fieldEndIndex;
-		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
-		{
-			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
-			{
-			case ReqQryTradeField::FieldID:
-			{
-				ReqQryTrade = ::Allocate<ReqQryTradeField>();
-				memset(ReqQryTrade, 0, sizeof(*ReqQryTrade));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::AccountID:
-						{
-							size_t len = value.length() >= sizeof(ReqQryTrade->AccountID) ? sizeof(ReqQryTrade->AccountID) - 1 : value.length();
-							memcpy(ReqQryTrade->AccountID, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryTradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryTradePackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
-				return false;
-			}
-			startIndex = fieldEndIndex;
-		}
-		else
-		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqQryTradePackage");
-			return false;
-		}
-	}
-	return true;
-}
-int ReqQryTradePackage::ToXtpStream(char* buff, int size) const
-{
-	int offset = 0;
-	memcpy(buff + offset, ReqQryTrade, sizeof(ReqQryTradeField));
-	offset += sizeof(ReqQryTradeField);
-	return offset;
-}
-bool ReqQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
-{
-	int offset = startIndex;
-	ReqQryTrade = ::Allocate<ReqQryTradeField>();
-	memcpy(ReqQryTrade, buff + offset, sizeof(ReqQryTradeField));
-	offset += sizeof(ReqQryTradeField);
-	if (offset != endIndex)
-	{
-		return false;
-	}
-	return true;
-}
-const char* ReqQryTradePackage::GetDebugString() const
-{
-	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryTrade:AccountID:[%s]", ReqQryTrade->AccountID);
-	return t_DataStringBuffer;
-}
- 
-RspQryTradePackage* RspQryTradePackage::Allocate()
-{
-	return ::Allocate<RspQryTradePackage>();
-}
-void RspQryTradePackage::Free()
-{
-	Package::Free();
-	if (Trade != nullptr)
-	{
-		::Free<TradeField>(Trade);
-		Trade = nullptr;
-	}
-	if (RspInfo != nullptr)
-	{
-		::Free<RspInfoField>(RspInfo);
-		RspInfo = nullptr;
-	}
-	MemCacheTemplateSingleton<RspQryTradePackage>::GetInstance().Free(this);
-}
-void RspQryTradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
-{
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
-}
-int RspQryTradePackage::ToStepStream(char* buff, int size) const
-{
-	char* ppos = buff;
-	if (Trade != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, TradeField::FieldID);
-		if (strlen(Trade->TradingDay) >= sizeof(Trade->TradingDay))
-		{
-			Trade->TradingDay[sizeof(Trade->TradingDay) - 1] = 0;
-		}
-		WriteString(ppos, Items::TradingDay, Trade->TradingDay);
-		if (strlen(Trade->AccountID) >= sizeof(Trade->AccountID))
-		{
-			Trade->AccountID[sizeof(Trade->AccountID) - 1] = 0;
-		}
-		WriteString(ppos, Items::AccountID, Trade->AccountID);
-		if (strlen(Trade->ExchangeID) >= sizeof(Trade->ExchangeID))
-		{
-			Trade->ExchangeID[sizeof(Trade->ExchangeID) - 1] = 0;
-		}
-		WriteString(ppos, Items::ExchangeID, Trade->ExchangeID);
-		if (strlen(Trade->InstrumentID) >= sizeof(Trade->InstrumentID))
-		{
-			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
-		}
-		WriteString(ppos, Items::InstrumentID, Trade->InstrumentID);
-		WriteString(ppos, Items::ProductClass, (int)Trade->ProductClass);
-		WriteString(ppos, Items::OrderID, Trade->OrderID);
-		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
-		{
-			Trade->OrderSysID[sizeof(Trade->OrderSysID) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderSysID, Trade->OrderSysID);
-		if (strlen(Trade->TradeID) >= sizeof(Trade->TradeID))
-		{
-			Trade->TradeID[sizeof(Trade->TradeID) - 1] = 0;
-		}
-		WriteString(ppos, Items::TradeID, Trade->TradeID);
-		WriteString(ppos, Items::Direction, (int)Trade->Direction);
-		WriteString(ppos, Items::OffsetFlag, (int)Trade->OffsetFlag);
-		WriteString(ppos, Items::Price, Trade->Price);
-		WriteString(ppos, Items::Volume, Trade->Volume);
-		WriteString(ppos, Items::VolumeMultiple, Trade->VolumeMultiple);
-		WriteString(ppos, Items::TradeAmount, Trade->TradeAmount);
-		WriteString(ppos, Items::Commission, Trade->Commission);
-		if (strlen(Trade->TradeDate) >= sizeof(Trade->TradeDate))
-		{
-			Trade->TradeDate[sizeof(Trade->TradeDate) - 1] = 0;
-		}
-		WriteString(ppos, Items::TradeDate, Trade->TradeDate);
-		if (strlen(Trade->TradeTime) >= sizeof(Trade->TradeTime))
-		{
-			Trade->TradeTime[sizeof(Trade->TradeTime) - 1] = 0;
-		}
-		WriteString(ppos, Items::TradeTime, Trade->TradeTime);
-		WriteHexString(ppos, Items::FieldEnd, TradeField::FieldID);
-	}
-	if (RspInfo != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
-		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
-		{
-			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
-	}
-	return int(ppos - buff);
-}
-bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
-{
-	while (startIndex < endIndex)
-	{
-		unsigned short fieldID;
-		int fieldStartIndex;
-		int fieldEndIndex;
-		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
-		{
-			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
-			{
-			case TradeField::FieldID:
-			{
-				Trade = ::Allocate<TradeField>();
-				memset(Trade, 0, sizeof(*Trade));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::TradingDay:
-						{
-							size_t len = value.length() >= sizeof(Trade->TradingDay) ? sizeof(Trade->TradingDay) - 1 : value.length();
-							memcpy(Trade->TradingDay, value.c_str(), len);
-							break;
-						}
-						case Items::AccountID:
-						{
-							size_t len = value.length() >= sizeof(Trade->AccountID) ? sizeof(Trade->AccountID) - 1 : value.length();
-							memcpy(Trade->AccountID, value.c_str(), len);
-							break;
-						}
-						case Items::ExchangeID:
-						{
-							size_t len = value.length() >= sizeof(Trade->ExchangeID) ? sizeof(Trade->ExchangeID) - 1 : value.length();
-							memcpy(Trade->ExchangeID, value.c_str(), len);
-							break;
-						}
-						case Items::InstrumentID:
-						{
-							size_t len = value.length() >= sizeof(Trade->InstrumentID) ? sizeof(Trade->InstrumentID) - 1 : value.length();
-							memcpy(Trade->InstrumentID, value.c_str(), len);
-							break;
-						}
-						case Items::ProductClass:
-						{
-							Trade->ProductClass = (ProductClassType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::OrderID:
-						{
-							Trade->OrderID = atoi(value.c_str());
-							break;
-						}
-						case Items::OrderSysID:
-						{
-							size_t len = value.length() >= sizeof(Trade->OrderSysID) ? sizeof(Trade->OrderSysID) - 1 : value.length();
-							memcpy(Trade->OrderSysID, value.c_str(), len);
-							break;
-						}
-						case Items::TradeID:
-						{
-							size_t len = value.length() >= sizeof(Trade->TradeID) ? sizeof(Trade->TradeID) - 1 : value.length();
-							memcpy(Trade->TradeID, value.c_str(), len);
-							break;
-						}
-						case Items::Direction:
-						{
-							Trade->Direction = (DirectionType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::OffsetFlag:
-						{
-							Trade->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::Price:
-						{
-							Trade->Price = atof(value.c_str());
-							break;
-						}
-						case Items::Volume:
-						{
-							Trade->Volume = atoll(value.c_str());
-							break;
-						}
-						case Items::VolumeMultiple:
-						{
-							Trade->VolumeMultiple = atoi(value.c_str());
-							break;
-						}
-						case Items::TradeAmount:
-						{
-							Trade->TradeAmount = atof(value.c_str());
-							break;
-						}
-						case Items::Commission:
-						{
-							Trade->Commission = atof(value.c_str());
-							break;
-						}
-						case Items::TradeDate:
-						{
-							size_t len = value.length() >= sizeof(Trade->TradeDate) ? sizeof(Trade->TradeDate) - 1 : value.length();
-							memcpy(Trade->TradeDate, value.c_str(), len);
-							break;
-						}
-						case Items::TradeTime:
-						{
-							size_t len = value.length() >= sizeof(Trade->TradeTime) ? sizeof(Trade->TradeTime) - 1 : value.length();
-							memcpy(Trade->TradeTime, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for TradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryTradePackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			case RspInfoField::FieldID:
-			{
-				RspInfo = ::Allocate<RspInfoField>();
-				memset(RspInfo, 0, sizeof(*RspInfo));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::ErrorID:
-						{
-							RspInfo->ErrorID = atoi(value.c_str());
-							break;
-						}
-						case Items::ErrorMsg:
-						{
-							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
-							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryTradePackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
-				return false;
-			}
-			startIndex = fieldEndIndex;
-		}
-		else
-		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspQryTradePackage");
-			return false;
-		}
-	}
-	return true;
-}
-int RspQryTradePackage::ToXtpStream(char* buff, int size) const
-{
-	int offset = 0;
-	memcpy(buff + offset, Trade, sizeof(TradeField));
-	offset += sizeof(TradeField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	return offset;
-}
-bool RspQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
-{
-	int offset = startIndex;
-	Trade = ::Allocate<TradeField>();
-	memcpy(Trade, buff + offset, sizeof(TradeField));
-	offset += sizeof(TradeField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
-	{
-		return false;
-	}
-	return true;
-}
-const char* RspQryTradePackage::GetDebugString() const
-{
-	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
-	return t_DataStringBuffer;
-}
- 
 ReqQryInstrumentPackage* ReqQryInstrumentPackage::Allocate()
 {
 	return ::Allocate<ReqQryInstrumentPackage>();
@@ -1308,57 +373,57 @@ const char* RspQryInstrumentPackage::GetDebugString() const
 	return t_DataStringBuffer;
 }
  
-ReqInsertOrderPackage* ReqInsertOrderPackage::Allocate()
+ReqSEInsertOrderPackage* ReqSEInsertOrderPackage::Allocate()
 {
-	return ::Allocate<ReqInsertOrderPackage>();
+	return ::Allocate<ReqSEInsertOrderPackage>();
 }
-void ReqInsertOrderPackage::Free()
+void ReqSEInsertOrderPackage::Free()
 {
 	Package::Free();
-	if (ReqInsertOrder != nullptr)
+	if (ReqSEInsertOrder != nullptr)
 	{
-		::Free<ReqInsertOrderField>(ReqInsertOrder);
-		ReqInsertOrder = nullptr;
+		::Free<ReqSEInsertOrderField>(ReqSEInsertOrder);
+		ReqSEInsertOrder = nullptr;
 	}
-	MemCacheTemplateSingleton<ReqInsertOrderPackage>::GetInstance().Free(this);
+	MemCacheTemplateSingleton<ReqSEInsertOrderPackage>::GetInstance().Free(this);
 }
-void ReqInsertOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqSEInsertOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
 }
-int ReqInsertOrderPackage::ToStepStream(char* buff, int size) const
+int ReqSEInsertOrderPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (ReqInsertOrder != nullptr)
+	if (ReqSEInsertOrder != nullptr)
 	{
-		WriteHexString(ppos, Items::FieldStart, ReqInsertOrderField::FieldID);
-		if (strlen(ReqInsertOrder->AccountID) >= sizeof(ReqInsertOrder->AccountID))
+		WriteHexString(ppos, Items::FieldStart, ReqSEInsertOrderField::FieldID);
+		if (strlen(ReqSEInsertOrder->AccountID) >= sizeof(ReqSEInsertOrder->AccountID))
 		{
-			ReqInsertOrder->AccountID[sizeof(ReqInsertOrder->AccountID) - 1] = 0;
+			ReqSEInsertOrder->AccountID[sizeof(ReqSEInsertOrder->AccountID) - 1] = 0;
 		}
-		WriteString(ppos, Items::AccountID, ReqInsertOrder->AccountID);
-		if (strlen(ReqInsertOrder->ExchangeID) >= sizeof(ReqInsertOrder->ExchangeID))
+		WriteString(ppos, Items::AccountID, ReqSEInsertOrder->AccountID);
+		if (strlen(ReqSEInsertOrder->ExchangeID) >= sizeof(ReqSEInsertOrder->ExchangeID))
 		{
-			ReqInsertOrder->ExchangeID[sizeof(ReqInsertOrder->ExchangeID) - 1] = 0;
+			ReqSEInsertOrder->ExchangeID[sizeof(ReqSEInsertOrder->ExchangeID) - 1] = 0;
 		}
-		WriteString(ppos, Items::ExchangeID, ReqInsertOrder->ExchangeID);
-		if (strlen(ReqInsertOrder->InstrumentID) >= sizeof(ReqInsertOrder->InstrumentID))
+		WriteString(ppos, Items::ExchangeID, ReqSEInsertOrder->ExchangeID);
+		if (strlen(ReqSEInsertOrder->InstrumentID) >= sizeof(ReqSEInsertOrder->InstrumentID))
 		{
-			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
+			ReqSEInsertOrder->InstrumentID[sizeof(ReqSEInsertOrder->InstrumentID) - 1] = 0;
 		}
-		WriteString(ppos, Items::InstrumentID, ReqInsertOrder->InstrumentID);
-		WriteString(ppos, Items::Direction, (int)ReqInsertOrder->Direction);
-		WriteString(ppos, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
-		WriteString(ppos, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
-		WriteString(ppos, Items::Price, ReqInsertOrder->Price);
-		WriteString(ppos, Items::Volume, ReqInsertOrder->Volume);
-		WriteString(ppos, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
-		WriteHexString(ppos, Items::FieldEnd, ReqInsertOrderField::FieldID);
+		WriteString(ppos, Items::InstrumentID, ReqSEInsertOrder->InstrumentID);
+		WriteString(ppos, Items::Direction, (int)ReqSEInsertOrder->Direction);
+		WriteString(ppos, Items::OffsetFlag, (int)ReqSEInsertOrder->OffsetFlag);
+		WriteString(ppos, Items::OrderPriceType, (int)ReqSEInsertOrder->OrderPriceType);
+		WriteString(ppos, Items::Price, ReqSEInsertOrder->Price);
+		WriteString(ppos, Items::Volume, ReqSEInsertOrder->Volume);
+		WriteString(ppos, Items::OrderID, ReqSEInsertOrder->OrderID);
+		WriteHexString(ppos, Items::FieldEnd, ReqSEInsertOrderField::FieldID);
 	}
 	return int(ppos - buff);
 }
-bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+bool ReqSEInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
@@ -1370,10 +435,10 @@ bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case ReqInsertOrderField::FieldID:
+			case ReqSEInsertOrderField::FieldID:
 			{
-				ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
-				memset(ReqInsertOrder, 0, sizeof(*ReqInsertOrder));
+				ReqSEInsertOrder = ::Allocate<ReqSEInsertOrderField>();
+				memset(ReqSEInsertOrder, 0, sizeof(*ReqSEInsertOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
 					unsigned short  itemID;
@@ -1388,61 +453,61 @@ bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::AccountID:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->AccountID) ? sizeof(ReqInsertOrder->AccountID) - 1 : value.length();
-							memcpy(ReqInsertOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSEInsertOrder->AccountID) ? sizeof(ReqSEInsertOrder->AccountID) - 1 : value.length();
+							memcpy(ReqSEInsertOrder->AccountID, value.c_str(), len);
 							break;
 						}
 						case Items::ExchangeID:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->ExchangeID) ? sizeof(ReqInsertOrder->ExchangeID) - 1 : value.length();
-							memcpy(ReqInsertOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSEInsertOrder->ExchangeID) ? sizeof(ReqSEInsertOrder->ExchangeID) - 1 : value.length();
+							memcpy(ReqSEInsertOrder->ExchangeID, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentID:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->InstrumentID) ? sizeof(ReqInsertOrder->InstrumentID) - 1 : value.length();
-							memcpy(ReqInsertOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSEInsertOrder->InstrumentID) ? sizeof(ReqSEInsertOrder->InstrumentID) - 1 : value.length();
+							memcpy(ReqSEInsertOrder->InstrumentID, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
 						{
-							ReqInsertOrder->Direction = (DirectionType)(atoi(value.c_str()));
+							ReqSEInsertOrder->Direction = (DirectionType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							ReqInsertOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							ReqSEInsertOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderPriceType:
 						{
-							ReqInsertOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							ReqSEInsertOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
 						{
-							ReqInsertOrder->Price = atof(value.c_str());
+							ReqSEInsertOrder->Price = atof(value.c_str());
 							break;
 						}
 						case Items::Volume:
 						{
-							ReqInsertOrder->Volume = atoll(value.c_str());
+							ReqSEInsertOrder->Volume = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::OrderID:
 						{
-							ReqInsertOrder->ClientOrderID = atoi(value.c_str());
+							ReqSEInsertOrder->OrderID = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqInsertOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSEInsertOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqInsertOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqSEInsertOrderPackage FieldID:0x%X", fieldID);
 						return false;
 					}
 				}
@@ -1456,90 +521,90 @@ bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 		}
 		else
 		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqInsertOrderPackage");
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqSEInsertOrderPackage");
 			return false;
 		}
 	}
 	return true;
 }
-int ReqInsertOrderPackage::ToXtpStream(char* buff, int size) const
+int ReqSEInsertOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
-	offset += sizeof(ReqInsertOrderField);
+	memcpy(buff + offset, ReqSEInsertOrder, sizeof(ReqSEInsertOrderField));
+	offset += sizeof(ReqSEInsertOrderField);
 	return offset;
 }
-bool ReqInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+bool ReqSEInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
-	memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
-	offset += sizeof(ReqInsertOrderField);
+	ReqSEInsertOrder = ::Allocate<ReqSEInsertOrderField>();
+	memcpy(ReqSEInsertOrder, buff + offset, sizeof(ReqSEInsertOrderField));
+	offset += sizeof(ReqSEInsertOrderField);
 	if (offset != endIndex)
 	{
 		return false;
 	}
 	return true;
 }
-const char* ReqInsertOrderPackage::GetDebugString() const
+const char* ReqSEInsertOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqSEInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], OrderID:[%d]", ReqSEInsertOrder->AccountID, ReqSEInsertOrder->ExchangeID, ReqSEInsertOrder->InstrumentID, (int)ReqSEInsertOrder->Direction, (int)ReqSEInsertOrder->OffsetFlag, (int)ReqSEInsertOrder->OrderPriceType, ReqSEInsertOrder->Price, ReqSEInsertOrder->Volume, ReqSEInsertOrder->OrderID);
 	return t_DataStringBuffer;
 }
  
-RspInsertOrderPackage* RspInsertOrderPackage::Allocate()
+RspSEInsertOrderPackage* RspSEInsertOrderPackage::Allocate()
 {
-	return ::Allocate<RspInsertOrderPackage>();
+	return ::Allocate<RspSEInsertOrderPackage>();
 }
-void RspInsertOrderPackage::Free()
+void RspSEInsertOrderPackage::Free()
 {
 	Package::Free();
-	if (ReqInsertOrder != nullptr)
+	if (ReqSEInsertOrder != nullptr)
 	{
-		::Free<ReqInsertOrderField>(ReqInsertOrder);
-		ReqInsertOrder = nullptr;
+		::Free<ReqSEInsertOrderField>(ReqSEInsertOrder);
+		ReqSEInsertOrder = nullptr;
 	}
 	if (RspInfo != nullptr)
 	{
 		::Free<RspInfoField>(RspInfo);
 		RspInfo = nullptr;
 	}
-	MemCacheTemplateSingleton<RspInsertOrderPackage>::GetInstance().Free(this);
+	MemCacheTemplateSingleton<RspSEInsertOrderPackage>::GetInstance().Free(this);
 }
-void RspInsertOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspSEInsertOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
 }
-int RspInsertOrderPackage::ToStepStream(char* buff, int size) const
+int RspSEInsertOrderPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (ReqInsertOrder != nullptr)
+	if (ReqSEInsertOrder != nullptr)
 	{
-		WriteHexString(ppos, Items::FieldStart, ReqInsertOrderField::FieldID);
-		if (strlen(ReqInsertOrder->AccountID) >= sizeof(ReqInsertOrder->AccountID))
+		WriteHexString(ppos, Items::FieldStart, ReqSEInsertOrderField::FieldID);
+		if (strlen(ReqSEInsertOrder->AccountID) >= sizeof(ReqSEInsertOrder->AccountID))
 		{
-			ReqInsertOrder->AccountID[sizeof(ReqInsertOrder->AccountID) - 1] = 0;
+			ReqSEInsertOrder->AccountID[sizeof(ReqSEInsertOrder->AccountID) - 1] = 0;
 		}
-		WriteString(ppos, Items::AccountID, ReqInsertOrder->AccountID);
-		if (strlen(ReqInsertOrder->ExchangeID) >= sizeof(ReqInsertOrder->ExchangeID))
+		WriteString(ppos, Items::AccountID, ReqSEInsertOrder->AccountID);
+		if (strlen(ReqSEInsertOrder->ExchangeID) >= sizeof(ReqSEInsertOrder->ExchangeID))
 		{
-			ReqInsertOrder->ExchangeID[sizeof(ReqInsertOrder->ExchangeID) - 1] = 0;
+			ReqSEInsertOrder->ExchangeID[sizeof(ReqSEInsertOrder->ExchangeID) - 1] = 0;
 		}
-		WriteString(ppos, Items::ExchangeID, ReqInsertOrder->ExchangeID);
-		if (strlen(ReqInsertOrder->InstrumentID) >= sizeof(ReqInsertOrder->InstrumentID))
+		WriteString(ppos, Items::ExchangeID, ReqSEInsertOrder->ExchangeID);
+		if (strlen(ReqSEInsertOrder->InstrumentID) >= sizeof(ReqSEInsertOrder->InstrumentID))
 		{
-			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
+			ReqSEInsertOrder->InstrumentID[sizeof(ReqSEInsertOrder->InstrumentID) - 1] = 0;
 		}
-		WriteString(ppos, Items::InstrumentID, ReqInsertOrder->InstrumentID);
-		WriteString(ppos, Items::Direction, (int)ReqInsertOrder->Direction);
-		WriteString(ppos, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
-		WriteString(ppos, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
-		WriteString(ppos, Items::Price, ReqInsertOrder->Price);
-		WriteString(ppos, Items::Volume, ReqInsertOrder->Volume);
-		WriteString(ppos, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
-		WriteHexString(ppos, Items::FieldEnd, ReqInsertOrderField::FieldID);
+		WriteString(ppos, Items::InstrumentID, ReqSEInsertOrder->InstrumentID);
+		WriteString(ppos, Items::Direction, (int)ReqSEInsertOrder->Direction);
+		WriteString(ppos, Items::OffsetFlag, (int)ReqSEInsertOrder->OffsetFlag);
+		WriteString(ppos, Items::OrderPriceType, (int)ReqSEInsertOrder->OrderPriceType);
+		WriteString(ppos, Items::Price, ReqSEInsertOrder->Price);
+		WriteString(ppos, Items::Volume, ReqSEInsertOrder->Volume);
+		WriteString(ppos, Items::OrderID, ReqSEInsertOrder->OrderID);
+		WriteHexString(ppos, Items::FieldEnd, ReqSEInsertOrderField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -1554,7 +619,7 @@ int RspInsertOrderPackage::ToStepStream(char* buff, int size) const
 	}
 	return int(ppos - buff);
 }
-bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+bool RspSEInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
@@ -1566,10 +631,10 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case ReqInsertOrderField::FieldID:
+			case ReqSEInsertOrderField::FieldID:
 			{
-				ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
-				memset(ReqInsertOrder, 0, sizeof(*ReqInsertOrder));
+				ReqSEInsertOrder = ::Allocate<ReqSEInsertOrderField>();
+				memset(ReqSEInsertOrder, 0, sizeof(*ReqSEInsertOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
 					unsigned short  itemID;
@@ -1584,61 +649,61 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::AccountID:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->AccountID) ? sizeof(ReqInsertOrder->AccountID) - 1 : value.length();
-							memcpy(ReqInsertOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSEInsertOrder->AccountID) ? sizeof(ReqSEInsertOrder->AccountID) - 1 : value.length();
+							memcpy(ReqSEInsertOrder->AccountID, value.c_str(), len);
 							break;
 						}
 						case Items::ExchangeID:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->ExchangeID) ? sizeof(ReqInsertOrder->ExchangeID) - 1 : value.length();
-							memcpy(ReqInsertOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSEInsertOrder->ExchangeID) ? sizeof(ReqSEInsertOrder->ExchangeID) - 1 : value.length();
+							memcpy(ReqSEInsertOrder->ExchangeID, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentID:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->InstrumentID) ? sizeof(ReqInsertOrder->InstrumentID) - 1 : value.length();
-							memcpy(ReqInsertOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSEInsertOrder->InstrumentID) ? sizeof(ReqSEInsertOrder->InstrumentID) - 1 : value.length();
+							memcpy(ReqSEInsertOrder->InstrumentID, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
 						{
-							ReqInsertOrder->Direction = (DirectionType)(atoi(value.c_str()));
+							ReqSEInsertOrder->Direction = (DirectionType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							ReqInsertOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							ReqSEInsertOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderPriceType:
 						{
-							ReqInsertOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							ReqSEInsertOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
 						{
-							ReqInsertOrder->Price = atof(value.c_str());
+							ReqSEInsertOrder->Price = atof(value.c_str());
 							break;
 						}
 						case Items::Volume:
 						{
-							ReqInsertOrder->Volume = atoll(value.c_str());
+							ReqSEInsertOrder->Volume = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::OrderID:
 						{
-							ReqInsertOrder->ClientOrderID = atoi(value.c_str());
+							ReqSEInsertOrder->OrderID = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqInsertOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSEInsertOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspInsertOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSEInsertOrderPackage FieldID:0x%X", fieldID);
 						return false;
 					}
 				}
@@ -1679,7 +744,7 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspInsertOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSEInsertOrderPackage FieldID:0x%X", fieldID);
 						return false;
 					}
 				}
@@ -1693,27 +758,27 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 		}
 		else
 		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspInsertOrderPackage");
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspSEInsertOrderPackage");
 			return false;
 		}
 	}
 	return true;
 }
-int RspInsertOrderPackage::ToXtpStream(char* buff, int size) const
+int RspSEInsertOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
-	offset += sizeof(ReqInsertOrderField);
+	memcpy(buff + offset, ReqSEInsertOrder, sizeof(ReqSEInsertOrderField));
+	offset += sizeof(ReqSEInsertOrderField);
 	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 	offset += sizeof(RspInfoField);
 	return offset;
 }
-bool RspInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+bool RspSEInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
-	memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
-	offset += sizeof(ReqInsertOrderField);
+	ReqSEInsertOrder = ::Allocate<ReqSEInsertOrderField>();
+	memcpy(ReqSEInsertOrder, buff + offset, sizeof(ReqSEInsertOrderField));
+	offset += sizeof(ReqSEInsertOrderField);
 	RspInfo = ::Allocate<RspInfoField>();
 	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
 	offset += sizeof(RspInfoField);
@@ -1723,68 +788,67 @@ bool RspInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	}
 	return true;
 }
-const char* RspInsertOrderPackage::GetDebugString() const
+const char* RspSEInsertOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqSEInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], OrderID:[%d]", ReqSEInsertOrder->AccountID, ReqSEInsertOrder->ExchangeID, ReqSEInsertOrder->InstrumentID, (int)ReqSEInsertOrder->Direction, (int)ReqSEInsertOrder->OffsetFlag, (int)ReqSEInsertOrder->OrderPriceType, ReqSEInsertOrder->Price, ReqSEInsertOrder->Volume, ReqSEInsertOrder->OrderID);
 	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
-ReqCancelOrderPackage* ReqCancelOrderPackage::Allocate()
+ReqSECancelOrderPackage* ReqSECancelOrderPackage::Allocate()
 {
-	return ::Allocate<ReqCancelOrderPackage>();
+	return ::Allocate<ReqSECancelOrderPackage>();
 }
-void ReqCancelOrderPackage::Free()
+void ReqSECancelOrderPackage::Free()
 {
 	Package::Free();
-	if (ReqCancelOrder != nullptr)
+	if (ReqSECancelOrder != nullptr)
 	{
-		::Free<ReqCancelOrderField>(ReqCancelOrder);
-		ReqCancelOrder = nullptr;
+		::Free<ReqSECancelOrderField>(ReqSECancelOrder);
+		ReqSECancelOrder = nullptr;
 	}
-	MemCacheTemplateSingleton<ReqCancelOrderPackage>::GetInstance().Free(this);
+	MemCacheTemplateSingleton<ReqSECancelOrderPackage>::GetInstance().Free(this);
 }
-void ReqCancelOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqSECancelOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
 }
-int ReqCancelOrderPackage::ToStepStream(char* buff, int size) const
+int ReqSECancelOrderPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (ReqCancelOrder != nullptr)
+	if (ReqSECancelOrder != nullptr)
 	{
-		WriteHexString(ppos, Items::FieldStart, ReqCancelOrderField::FieldID);
-		if (strlen(ReqCancelOrder->AccountID) >= sizeof(ReqCancelOrder->AccountID))
+		WriteHexString(ppos, Items::FieldStart, ReqSECancelOrderField::FieldID);
+		if (strlen(ReqSECancelOrder->AccountID) >= sizeof(ReqSECancelOrder->AccountID))
 		{
-			ReqCancelOrder->AccountID[sizeof(ReqCancelOrder->AccountID) - 1] = 0;
+			ReqSECancelOrder->AccountID[sizeof(ReqSECancelOrder->AccountID) - 1] = 0;
 		}
-		WriteString(ppos, Items::AccountID, ReqCancelOrder->AccountID);
-		if (strlen(ReqCancelOrder->ExchangeID) >= sizeof(ReqCancelOrder->ExchangeID))
+		WriteString(ppos, Items::AccountID, ReqSECancelOrder->AccountID);
+		if (strlen(ReqSECancelOrder->ExchangeID) >= sizeof(ReqSECancelOrder->ExchangeID))
 		{
-			ReqCancelOrder->ExchangeID[sizeof(ReqCancelOrder->ExchangeID) - 1] = 0;
+			ReqSECancelOrder->ExchangeID[sizeof(ReqSECancelOrder->ExchangeID) - 1] = 0;
 		}
-		WriteString(ppos, Items::ExchangeID, ReqCancelOrder->ExchangeID);
-		if (strlen(ReqCancelOrder->InstrumentID) >= sizeof(ReqCancelOrder->InstrumentID))
+		WriteString(ppos, Items::ExchangeID, ReqSECancelOrder->ExchangeID);
+		if (strlen(ReqSECancelOrder->InstrumentID) >= sizeof(ReqSECancelOrder->InstrumentID))
 		{
-			ReqCancelOrder->InstrumentID[sizeof(ReqCancelOrder->InstrumentID) - 1] = 0;
+			ReqSECancelOrder->InstrumentID[sizeof(ReqSECancelOrder->InstrumentID) - 1] = 0;
 		}
-		WriteString(ppos, Items::InstrumentID, ReqCancelOrder->InstrumentID);
-		WriteString(ppos, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
-		WriteString(ppos, Items::OrderID, ReqCancelOrder->OrderID);
-		if (strlen(ReqCancelOrder->OrderSysID) >= sizeof(ReqCancelOrder->OrderSysID))
+		WriteString(ppos, Items::InstrumentID, ReqSECancelOrder->InstrumentID);
+		WriteString(ppos, Items::CancelOrderID, ReqSECancelOrder->CancelOrderID);
+		WriteString(ppos, Items::OrderID, ReqSECancelOrder->OrderID);
+		if (strlen(ReqSECancelOrder->OrderSysID) >= sizeof(ReqSECancelOrder->OrderSysID))
 		{
-			ReqCancelOrder->OrderSysID[sizeof(ReqCancelOrder->OrderSysID) - 1] = 0;
+			ReqSECancelOrder->OrderSysID[sizeof(ReqSECancelOrder->OrderSysID) - 1] = 0;
 		}
-		WriteString(ppos, Items::OrderSysID, ReqCancelOrder->OrderSysID);
-		WriteString(ppos, Items::SessionID, ReqCancelOrder->SessionID);
-		WriteString(ppos, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
-		WriteHexString(ppos, Items::FieldEnd, ReqCancelOrderField::FieldID);
+		WriteString(ppos, Items::OrderSysID, ReqSECancelOrder->OrderSysID);
+		WriteString(ppos, Items::SessionID, ReqSECancelOrder->SessionID);
+		WriteHexString(ppos, Items::FieldEnd, ReqSECancelOrderField::FieldID);
 	}
 	return int(ppos - buff);
 }
-bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+bool ReqSECancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
@@ -1796,10 +860,10 @@ bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case ReqCancelOrderField::FieldID:
+			case ReqSECancelOrderField::FieldID:
 			{
-				ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
-				memset(ReqCancelOrder, 0, sizeof(*ReqCancelOrder));
+				ReqSECancelOrder = ::Allocate<ReqSECancelOrderField>();
+				memset(ReqSECancelOrder, 0, sizeof(*ReqSECancelOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
 					unsigned short  itemID;
@@ -1814,57 +878,52 @@ bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::AccountID:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->AccountID) ? sizeof(ReqCancelOrder->AccountID) - 1 : value.length();
-							memcpy(ReqCancelOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSECancelOrder->AccountID) ? sizeof(ReqSECancelOrder->AccountID) - 1 : value.length();
+							memcpy(ReqSECancelOrder->AccountID, value.c_str(), len);
 							break;
 						}
 						case Items::ExchangeID:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->ExchangeID) ? sizeof(ReqCancelOrder->ExchangeID) - 1 : value.length();
-							memcpy(ReqCancelOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSECancelOrder->ExchangeID) ? sizeof(ReqSECancelOrder->ExchangeID) - 1 : value.length();
+							memcpy(ReqSECancelOrder->ExchangeID, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentID:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->InstrumentID) ? sizeof(ReqCancelOrder->InstrumentID) - 1 : value.length();
-							memcpy(ReqCancelOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSECancelOrder->InstrumentID) ? sizeof(ReqSECancelOrder->InstrumentID) - 1 : value.length();
+							memcpy(ReqSECancelOrder->InstrumentID, value.c_str(), len);
 							break;
 						}
-						case Items::ClientCancelOrderID:
+						case Items::CancelOrderID:
 						{
-							ReqCancelOrder->ClientCancelOrderID = atoi(value.c_str());
+							ReqSECancelOrder->CancelOrderID = atoi(value.c_str());
 							break;
 						}
 						case Items::OrderID:
 						{
-							ReqCancelOrder->OrderID = atoi(value.c_str());
+							ReqSECancelOrder->OrderID = atoi(value.c_str());
 							break;
 						}
 						case Items::OrderSysID:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->OrderSysID) ? sizeof(ReqCancelOrder->OrderSysID) - 1 : value.length();
-							memcpy(ReqCancelOrder->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSECancelOrder->OrderSysID) ? sizeof(ReqSECancelOrder->OrderSysID) - 1 : value.length();
+							memcpy(ReqSECancelOrder->OrderSysID, value.c_str(), len);
 							break;
 						}
 						case Items::SessionID:
 						{
-							ReqCancelOrder->SessionID = atoll(value.c_str());
-							break;
-						}
-						case Items::ClientOrderID:
-						{
-							ReqCancelOrder->ClientOrderID = atoi(value.c_str());
+							ReqSECancelOrder->SessionID = atoll(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqCancelOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSECancelOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqCancelOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqSECancelOrderPackage FieldID:0x%X", fieldID);
 						return false;
 					}
 				}
@@ -1878,93 +937,92 @@ bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 		}
 		else
 		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqCancelOrderPackage");
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqSECancelOrderPackage");
 			return false;
 		}
 	}
 	return true;
 }
-int ReqCancelOrderPackage::ToXtpStream(char* buff, int size) const
+int ReqSECancelOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
-	offset += sizeof(ReqCancelOrderField);
+	memcpy(buff + offset, ReqSECancelOrder, sizeof(ReqSECancelOrderField));
+	offset += sizeof(ReqSECancelOrderField);
 	return offset;
 }
-bool ReqCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+bool ReqSECancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
-	memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
-	offset += sizeof(ReqCancelOrderField);
+	ReqSECancelOrder = ::Allocate<ReqSECancelOrderField>();
+	memcpy(ReqSECancelOrder, buff + offset, sizeof(ReqSECancelOrderField));
+	offset += sizeof(ReqSECancelOrderField);
 	if (offset != endIndex)
 	{
 		return false;
 	}
 	return true;
 }
-const char* ReqCancelOrderPackage::GetDebugString() const
+const char* ReqSECancelOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqSECancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], CancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld]", ReqSECancelOrder->AccountID, ReqSECancelOrder->ExchangeID, ReqSECancelOrder->InstrumentID, ReqSECancelOrder->CancelOrderID, ReqSECancelOrder->OrderID, ReqSECancelOrder->OrderSysID, ReqSECancelOrder->SessionID);
 	return t_DataStringBuffer;
 }
  
-RspCancelOrderPackage* RspCancelOrderPackage::Allocate()
+RspSECancelOrderPackage* RspSECancelOrderPackage::Allocate()
 {
-	return ::Allocate<RspCancelOrderPackage>();
+	return ::Allocate<RspSECancelOrderPackage>();
 }
-void RspCancelOrderPackage::Free()
+void RspSECancelOrderPackage::Free()
 {
 	Package::Free();
-	if (ReqCancelOrder != nullptr)
+	if (ReqSECancelOrder != nullptr)
 	{
-		::Free<ReqCancelOrderField>(ReqCancelOrder);
-		ReqCancelOrder = nullptr;
+		::Free<ReqSECancelOrderField>(ReqSECancelOrder);
+		ReqSECancelOrder = nullptr;
 	}
 	if (RspInfo != nullptr)
 	{
 		::Free<RspInfoField>(RspInfo);
 		RspInfo = nullptr;
 	}
-	MemCacheTemplateSingleton<RspCancelOrderPackage>::GetInstance().Free(this);
+	MemCacheTemplateSingleton<RspSECancelOrderPackage>::GetInstance().Free(this);
 }
-void RspCancelOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspSECancelOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
 }
-int RspCancelOrderPackage::ToStepStream(char* buff, int size) const
+int RspSECancelOrderPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (ReqCancelOrder != nullptr)
+	if (ReqSECancelOrder != nullptr)
 	{
-		WriteHexString(ppos, Items::FieldStart, ReqCancelOrderField::FieldID);
-		if (strlen(ReqCancelOrder->AccountID) >= sizeof(ReqCancelOrder->AccountID))
+		WriteHexString(ppos, Items::FieldStart, ReqSECancelOrderField::FieldID);
+		if (strlen(ReqSECancelOrder->AccountID) >= sizeof(ReqSECancelOrder->AccountID))
 		{
-			ReqCancelOrder->AccountID[sizeof(ReqCancelOrder->AccountID) - 1] = 0;
+			ReqSECancelOrder->AccountID[sizeof(ReqSECancelOrder->AccountID) - 1] = 0;
 		}
-		WriteString(ppos, Items::AccountID, ReqCancelOrder->AccountID);
-		if (strlen(ReqCancelOrder->ExchangeID) >= sizeof(ReqCancelOrder->ExchangeID))
+		WriteString(ppos, Items::AccountID, ReqSECancelOrder->AccountID);
+		if (strlen(ReqSECancelOrder->ExchangeID) >= sizeof(ReqSECancelOrder->ExchangeID))
 		{
-			ReqCancelOrder->ExchangeID[sizeof(ReqCancelOrder->ExchangeID) - 1] = 0;
+			ReqSECancelOrder->ExchangeID[sizeof(ReqSECancelOrder->ExchangeID) - 1] = 0;
 		}
-		WriteString(ppos, Items::ExchangeID, ReqCancelOrder->ExchangeID);
-		if (strlen(ReqCancelOrder->InstrumentID) >= sizeof(ReqCancelOrder->InstrumentID))
+		WriteString(ppos, Items::ExchangeID, ReqSECancelOrder->ExchangeID);
+		if (strlen(ReqSECancelOrder->InstrumentID) >= sizeof(ReqSECancelOrder->InstrumentID))
 		{
-			ReqCancelOrder->InstrumentID[sizeof(ReqCancelOrder->InstrumentID) - 1] = 0;
+			ReqSECancelOrder->InstrumentID[sizeof(ReqSECancelOrder->InstrumentID) - 1] = 0;
 		}
-		WriteString(ppos, Items::InstrumentID, ReqCancelOrder->InstrumentID);
-		WriteString(ppos, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
-		WriteString(ppos, Items::OrderID, ReqCancelOrder->OrderID);
-		if (strlen(ReqCancelOrder->OrderSysID) >= sizeof(ReqCancelOrder->OrderSysID))
+		WriteString(ppos, Items::InstrumentID, ReqSECancelOrder->InstrumentID);
+		WriteString(ppos, Items::CancelOrderID, ReqSECancelOrder->CancelOrderID);
+		WriteString(ppos, Items::OrderID, ReqSECancelOrder->OrderID);
+		if (strlen(ReqSECancelOrder->OrderSysID) >= sizeof(ReqSECancelOrder->OrderSysID))
 		{
-			ReqCancelOrder->OrderSysID[sizeof(ReqCancelOrder->OrderSysID) - 1] = 0;
+			ReqSECancelOrder->OrderSysID[sizeof(ReqSECancelOrder->OrderSysID) - 1] = 0;
 		}
-		WriteString(ppos, Items::OrderSysID, ReqCancelOrder->OrderSysID);
-		WriteString(ppos, Items::SessionID, ReqCancelOrder->SessionID);
-		WriteString(ppos, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
-		WriteHexString(ppos, Items::FieldEnd, ReqCancelOrderField::FieldID);
+		WriteString(ppos, Items::OrderSysID, ReqSECancelOrder->OrderSysID);
+		WriteString(ppos, Items::SessionID, ReqSECancelOrder->SessionID);
+		WriteHexString(ppos, Items::FieldEnd, ReqSECancelOrderField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -1979,7 +1037,7 @@ int RspCancelOrderPackage::ToStepStream(char* buff, int size) const
 	}
 	return int(ppos - buff);
 }
-bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+bool RspSECancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
@@ -1991,10 +1049,10 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case ReqCancelOrderField::FieldID:
+			case ReqSECancelOrderField::FieldID:
 			{
-				ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
-				memset(ReqCancelOrder, 0, sizeof(*ReqCancelOrder));
+				ReqSECancelOrder = ::Allocate<ReqSECancelOrderField>();
+				memset(ReqSECancelOrder, 0, sizeof(*ReqSECancelOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
 					unsigned short  itemID;
@@ -2009,57 +1067,52 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::AccountID:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->AccountID) ? sizeof(ReqCancelOrder->AccountID) - 1 : value.length();
-							memcpy(ReqCancelOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSECancelOrder->AccountID) ? sizeof(ReqSECancelOrder->AccountID) - 1 : value.length();
+							memcpy(ReqSECancelOrder->AccountID, value.c_str(), len);
 							break;
 						}
 						case Items::ExchangeID:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->ExchangeID) ? sizeof(ReqCancelOrder->ExchangeID) - 1 : value.length();
-							memcpy(ReqCancelOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSECancelOrder->ExchangeID) ? sizeof(ReqSECancelOrder->ExchangeID) - 1 : value.length();
+							memcpy(ReqSECancelOrder->ExchangeID, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentID:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->InstrumentID) ? sizeof(ReqCancelOrder->InstrumentID) - 1 : value.length();
-							memcpy(ReqCancelOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSECancelOrder->InstrumentID) ? sizeof(ReqSECancelOrder->InstrumentID) - 1 : value.length();
+							memcpy(ReqSECancelOrder->InstrumentID, value.c_str(), len);
 							break;
 						}
-						case Items::ClientCancelOrderID:
+						case Items::CancelOrderID:
 						{
-							ReqCancelOrder->ClientCancelOrderID = atoi(value.c_str());
+							ReqSECancelOrder->CancelOrderID = atoi(value.c_str());
 							break;
 						}
 						case Items::OrderID:
 						{
-							ReqCancelOrder->OrderID = atoi(value.c_str());
+							ReqSECancelOrder->OrderID = atoi(value.c_str());
 							break;
 						}
 						case Items::OrderSysID:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->OrderSysID) ? sizeof(ReqCancelOrder->OrderSysID) - 1 : value.length();
-							memcpy(ReqCancelOrder->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSECancelOrder->OrderSysID) ? sizeof(ReqSECancelOrder->OrderSysID) - 1 : value.length();
+							memcpy(ReqSECancelOrder->OrderSysID, value.c_str(), len);
 							break;
 						}
 						case Items::SessionID:
 						{
-							ReqCancelOrder->SessionID = atoll(value.c_str());
-							break;
-						}
-						case Items::ClientOrderID:
-						{
-							ReqCancelOrder->ClientOrderID = atoi(value.c_str());
+							ReqSECancelOrder->SessionID = atoll(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqCancelOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSECancelOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspCancelOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSECancelOrderPackage FieldID:0x%X", fieldID);
 						return false;
 					}
 				}
@@ -2100,7 +1153,7 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspCancelOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSECancelOrderPackage FieldID:0x%X", fieldID);
 						return false;
 					}
 				}
@@ -2114,27 +1167,27 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 		}
 		else
 		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspCancelOrderPackage");
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspSECancelOrderPackage");
 			return false;
 		}
 	}
 	return true;
 }
-int RspCancelOrderPackage::ToXtpStream(char* buff, int size) const
+int RspSECancelOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
-	offset += sizeof(ReqCancelOrderField);
+	memcpy(buff + offset, ReqSECancelOrder, sizeof(ReqSECancelOrderField));
+	offset += sizeof(ReqSECancelOrderField);
 	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 	offset += sizeof(RspInfoField);
 	return offset;
 }
-bool RspCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+bool RspSECancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
-	memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
-	offset += sizeof(ReqCancelOrderField);
+	ReqSECancelOrder = ::Allocate<ReqSECancelOrderField>();
+	memcpy(ReqSECancelOrder, buff + offset, sizeof(ReqSECancelOrderField));
+	offset += sizeof(ReqSECancelOrderField);
 	RspInfo = ::Allocate<RspInfoField>();
 	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
 	offset += sizeof(RspInfoField);
@@ -2144,106 +1197,49 @@ bool RspCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	}
 	return true;
 }
-const char* RspCancelOrderPackage::GetDebugString() const
+const char* RspSECancelOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "ReqSECancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], CancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld]", ReqSECancelOrder->AccountID, ReqSECancelOrder->ExchangeID, ReqSECancelOrder->InstrumentID, ReqSECancelOrder->CancelOrderID, ReqSECancelOrder->OrderID, ReqSECancelOrder->OrderSysID, ReqSECancelOrder->SessionID);
 	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
-RtnOrderPackage* RtnOrderPackage::Allocate()
+ReqQrySEOrderPackage* ReqQrySEOrderPackage::Allocate()
 {
-	return ::Allocate<RtnOrderPackage>();
+	return ::Allocate<ReqQrySEOrderPackage>();
 }
-void RtnOrderPackage::Free()
+void ReqQrySEOrderPackage::Free()
 {
 	Package::Free();
-	if (Order != nullptr)
+	if (ReqQrySEOrder != nullptr)
 	{
-		::Free<OrderField>(Order);
-		Order = nullptr;
+		::Free<ReqQrySEOrderField>(ReqQrySEOrder);
+		ReqQrySEOrder = nullptr;
 	}
-	MemCacheTemplateSingleton<RtnOrderPackage>::GetInstance().Free(this);
+	MemCacheTemplateSingleton<ReqQrySEOrderPackage>::GetInstance().Free(this);
 }
-void RtnOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQrySEOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
 }
-int RtnOrderPackage::ToStepStream(char* buff, int size) const
+int ReqQrySEOrderPackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (Order != nullptr)
+	if (ReqQrySEOrder != nullptr)
 	{
-		WriteHexString(ppos, Items::FieldStart, OrderField::FieldID);
-		if (strlen(Order->TradingDay) >= sizeof(Order->TradingDay))
+		WriteHexString(ppos, Items::FieldStart, ReqQrySEOrderField::FieldID);
+		if (strlen(ReqQrySEOrder->AccountID) >= sizeof(ReqQrySEOrder->AccountID))
 		{
-			Order->TradingDay[sizeof(Order->TradingDay) - 1] = 0;
+			ReqQrySEOrder->AccountID[sizeof(ReqQrySEOrder->AccountID) - 1] = 0;
 		}
-		WriteString(ppos, Items::TradingDay, Order->TradingDay);
-		if (strlen(Order->AccountID) >= sizeof(Order->AccountID))
-		{
-			Order->AccountID[sizeof(Order->AccountID) - 1] = 0;
-		}
-		WriteString(ppos, Items::AccountID, Order->AccountID);
-		if (strlen(Order->ExchangeID) >= sizeof(Order->ExchangeID))
-		{
-			Order->ExchangeID[sizeof(Order->ExchangeID) - 1] = 0;
-		}
-		WriteString(ppos, Items::ExchangeID, Order->ExchangeID);
-		if (strlen(Order->InstrumentID) >= sizeof(Order->InstrumentID))
-		{
-			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
-		}
-		WriteString(ppos, Items::InstrumentID, Order->InstrumentID);
-		WriteString(ppos, Items::ProductClass, (int)Order->ProductClass);
-		WriteString(ppos, Items::OrderID, Order->OrderID);
-		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
-		{
-			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderSysID, Order->OrderSysID);
-		WriteString(ppos, Items::Direction, (int)Order->Direction);
-		WriteString(ppos, Items::OffsetFlag, (int)Order->OffsetFlag);
-		WriteString(ppos, Items::OrderPriceType, (int)Order->OrderPriceType);
-		WriteString(ppos, Items::Price, Order->Price);
-		WriteString(ppos, Items::Volume, Order->Volume);
-		WriteString(ppos, Items::VolumeTotal, Order->VolumeTotal);
-		WriteString(ppos, Items::VolumeTraded, Order->VolumeTraded);
-		WriteString(ppos, Items::VolumeMultiple, Order->VolumeMultiple);
-		WriteString(ppos, Items::OrderStatus, (int)Order->OrderStatus);
-		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
-		{
-			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderDate, Order->OrderDate);
-		if (strlen(Order->OrderTime) >= sizeof(Order->OrderTime))
-		{
-			Order->OrderTime[sizeof(Order->OrderTime) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderTime, Order->OrderTime);
-		if (strlen(Order->CancelDate) >= sizeof(Order->CancelDate))
-		{
-			Order->CancelDate[sizeof(Order->CancelDate) - 1] = 0;
-		}
-		WriteString(ppos, Items::CancelDate, Order->CancelDate);
-		if (strlen(Order->CancelTime) >= sizeof(Order->CancelTime))
-		{
-			Order->CancelTime[sizeof(Order->CancelTime) - 1] = 0;
-		}
-		WriteString(ppos, Items::CancelTime, Order->CancelTime);
-		WriteString(ppos, Items::SessionID, Order->SessionID);
-		WriteString(ppos, Items::ClientOrderID, Order->ClientOrderID);
-		WriteString(ppos, Items::RequestID, Order->RequestID);
-		WriteString(ppos, Items::FrozenCash, Order->FrozenCash);
-		WriteString(ppos, Items::FrozenMargin, Order->FrozenMargin);
-		WriteString(ppos, Items::FrozenCommission, Order->FrozenCommission);
-		WriteHexString(ppos, Items::FieldEnd, OrderField::FieldID);
+		WriteString(ppos, Items::AccountID, ReqQrySEOrder->AccountID);
+		WriteHexString(ppos, Items::FieldEnd, ReqQrySEOrderField::FieldID);
 	}
 	return int(ppos - buff);
 }
-bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+bool ReqQrySEOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
@@ -2255,10 +1251,200 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case OrderField::FieldID:
+			case ReqQrySEOrderField::FieldID:
 			{
-				Order = ::Allocate<OrderField>();
-				memset(Order, 0, sizeof(*Order));
+				ReqQrySEOrder = ::Allocate<ReqQrySEOrderField>();
+				memset(ReqQrySEOrder, 0, sizeof(*ReqQrySEOrder));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::AccountID:
+						{
+							size_t len = value.length() >= sizeof(ReqQrySEOrder->AccountID) ? sizeof(ReqQrySEOrder->AccountID) - 1 : value.length();
+							memcpy(ReqQrySEOrder->AccountID, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQrySEOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQrySEOrderPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqQrySEOrderPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int ReqQrySEOrderPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, ReqQrySEOrder, sizeof(ReqQrySEOrderField));
+	offset += sizeof(ReqQrySEOrderField);
+	return offset;
+}
+bool ReqQrySEOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	ReqQrySEOrder = ::Allocate<ReqQrySEOrderField>();
+	memcpy(ReqQrySEOrder, buff + offset, sizeof(ReqQrySEOrderField));
+	offset += sizeof(ReqQrySEOrderField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* ReqQrySEOrderPackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQrySEOrder:AccountID:[%s]", ReqQrySEOrder->AccountID);
+	return t_DataStringBuffer;
+}
+ 
+RspQrySEOrderPackage* RspQrySEOrderPackage::Allocate()
+{
+	return ::Allocate<RspQrySEOrderPackage>();
+}
+void RspQrySEOrderPackage::Free()
+{
+	Package::Free();
+	if (SEOrder != nullptr)
+	{
+		::Free<SEOrderField>(SEOrder);
+		SEOrder = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
+	}
+	MemCacheTemplateSingleton<RspQrySEOrderPackage>::GetInstance().Free(this);
+}
+void RspQrySEOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RspQrySEOrderPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (SEOrder != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, SEOrderField::FieldID);
+		if (strlen(SEOrder->TradingDay) >= sizeof(SEOrder->TradingDay))
+		{
+			SEOrder->TradingDay[sizeof(SEOrder->TradingDay) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradingDay, SEOrder->TradingDay);
+		if (strlen(SEOrder->AccountID) >= sizeof(SEOrder->AccountID))
+		{
+			SEOrder->AccountID[sizeof(SEOrder->AccountID) - 1] = 0;
+		}
+		WriteString(ppos, Items::AccountID, SEOrder->AccountID);
+		if (strlen(SEOrder->ExchangeID) >= sizeof(SEOrder->ExchangeID))
+		{
+			SEOrder->ExchangeID[sizeof(SEOrder->ExchangeID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ExchangeID, SEOrder->ExchangeID);
+		if (strlen(SEOrder->InstrumentID) >= sizeof(SEOrder->InstrumentID))
+		{
+			SEOrder->InstrumentID[sizeof(SEOrder->InstrumentID) - 1] = 0;
+		}
+		WriteString(ppos, Items::InstrumentID, SEOrder->InstrumentID);
+		WriteString(ppos, Items::ProductClass, (int)SEOrder->ProductClass);
+		if (strlen(SEOrder->OrderSysID) >= sizeof(SEOrder->OrderSysID))
+		{
+			SEOrder->OrderSysID[sizeof(SEOrder->OrderSysID) - 1] = 0;
+		}
+		WriteString(ppos, Items::OrderSysID, SEOrder->OrderSysID);
+		WriteString(ppos, Items::Direction, (int)SEOrder->Direction);
+		WriteString(ppos, Items::OffsetFlag, (int)SEOrder->OffsetFlag);
+		WriteString(ppos, Items::OrderPriceType, (int)SEOrder->OrderPriceType);
+		WriteString(ppos, Items::Price, SEOrder->Price);
+		WriteString(ppos, Items::Volume, SEOrder->Volume);
+		WriteString(ppos, Items::VolumeTotal, SEOrder->VolumeTotal);
+		WriteString(ppos, Items::VolumeTraded, SEOrder->VolumeTraded);
+		WriteString(ppos, Items::VolumeMultiple, SEOrder->VolumeMultiple);
+		WriteString(ppos, Items::OrderStatus, (int)SEOrder->OrderStatus);
+		if (strlen(SEOrder->OrderDate) >= sizeof(SEOrder->OrderDate))
+		{
+			SEOrder->OrderDate[sizeof(SEOrder->OrderDate) - 1] = 0;
+		}
+		WriteString(ppos, Items::OrderDate, SEOrder->OrderDate);
+		if (strlen(SEOrder->OrderTime) >= sizeof(SEOrder->OrderTime))
+		{
+			SEOrder->OrderTime[sizeof(SEOrder->OrderTime) - 1] = 0;
+		}
+		WriteString(ppos, Items::OrderTime, SEOrder->OrderTime);
+		if (strlen(SEOrder->CancelDate) >= sizeof(SEOrder->CancelDate))
+		{
+			SEOrder->CancelDate[sizeof(SEOrder->CancelDate) - 1] = 0;
+		}
+		WriteString(ppos, Items::CancelDate, SEOrder->CancelDate);
+		if (strlen(SEOrder->CancelTime) >= sizeof(SEOrder->CancelTime))
+		{
+			SEOrder->CancelTime[sizeof(SEOrder->CancelTime) - 1] = 0;
+		}
+		WriteString(ppos, Items::CancelTime, SEOrder->CancelTime);
+		WriteString(ppos, Items::SessionID, SEOrder->SessionID);
+		WriteString(ppos, Items::OrderID, SEOrder->OrderID);
+		WriteHexString(ppos, Items::FieldEnd, SEOrderField::FieldID);
+	}
+	if (RspInfo != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RspQrySEOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case SEOrderField::FieldID:
+			{
+				SEOrder = ::Allocate<SEOrderField>();
+				memset(SEOrder, 0, sizeof(*SEOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
 					unsigned short  itemID;
@@ -2273,152 +1459,168 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							break;
 						case Items::TradingDay:
 						{
-							size_t len = value.length() >= sizeof(Order->TradingDay) ? sizeof(Order->TradingDay) - 1 : value.length();
-							memcpy(Order->TradingDay, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->TradingDay) ? sizeof(SEOrder->TradingDay) - 1 : value.length();
+							memcpy(SEOrder->TradingDay, value.c_str(), len);
 							break;
 						}
 						case Items::AccountID:
 						{
-							size_t len = value.length() >= sizeof(Order->AccountID) ? sizeof(Order->AccountID) - 1 : value.length();
-							memcpy(Order->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->AccountID) ? sizeof(SEOrder->AccountID) - 1 : value.length();
+							memcpy(SEOrder->AccountID, value.c_str(), len);
 							break;
 						}
 						case Items::ExchangeID:
 						{
-							size_t len = value.length() >= sizeof(Order->ExchangeID) ? sizeof(Order->ExchangeID) - 1 : value.length();
-							memcpy(Order->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->ExchangeID) ? sizeof(SEOrder->ExchangeID) - 1 : value.length();
+							memcpy(SEOrder->ExchangeID, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentID:
 						{
-							size_t len = value.length() >= sizeof(Order->InstrumentID) ? sizeof(Order->InstrumentID) - 1 : value.length();
-							memcpy(Order->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->InstrumentID) ? sizeof(SEOrder->InstrumentID) - 1 : value.length();
+							memcpy(SEOrder->InstrumentID, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
 						{
-							Order->ProductClass = (ProductClassType)(atoi(value.c_str()));
-							break;
-						}
-						case Items::OrderID:
-						{
-							Order->OrderID = atoi(value.c_str());
+							SEOrder->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderSysID:
 						{
-							size_t len = value.length() >= sizeof(Order->OrderSysID) ? sizeof(Order->OrderSysID) - 1 : value.length();
-							memcpy(Order->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->OrderSysID) ? sizeof(SEOrder->OrderSysID) - 1 : value.length();
+							memcpy(SEOrder->OrderSysID, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
 						{
-							Order->Direction = (DirectionType)(atoi(value.c_str()));
+							SEOrder->Direction = (DirectionType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							Order->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							SEOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderPriceType:
 						{
-							Order->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							SEOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
 						{
-							Order->Price = atof(value.c_str());
+							SEOrder->Price = atof(value.c_str());
 							break;
 						}
 						case Items::Volume:
 						{
-							Order->Volume = atoll(value.c_str());
+							SEOrder->Volume = atoll(value.c_str());
 							break;
 						}
 						case Items::VolumeTotal:
 						{
-							Order->VolumeTotal = atoll(value.c_str());
+							SEOrder->VolumeTotal = atoll(value.c_str());
 							break;
 						}
 						case Items::VolumeTraded:
 						{
-							Order->VolumeTraded = atoll(value.c_str());
+							SEOrder->VolumeTraded = atoll(value.c_str());
 							break;
 						}
 						case Items::VolumeMultiple:
 						{
-							Order->VolumeMultiple = atoi(value.c_str());
+							SEOrder->VolumeMultiple = atoi(value.c_str());
 							break;
 						}
 						case Items::OrderStatus:
 						{
-							Order->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
+							SEOrder->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderDate:
 						{
-							size_t len = value.length() >= sizeof(Order->OrderDate) ? sizeof(Order->OrderDate) - 1 : value.length();
-							memcpy(Order->OrderDate, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->OrderDate) ? sizeof(SEOrder->OrderDate) - 1 : value.length();
+							memcpy(SEOrder->OrderDate, value.c_str(), len);
 							break;
 						}
 						case Items::OrderTime:
 						{
-							size_t len = value.length() >= sizeof(Order->OrderTime) ? sizeof(Order->OrderTime) - 1 : value.length();
-							memcpy(Order->OrderTime, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->OrderTime) ? sizeof(SEOrder->OrderTime) - 1 : value.length();
+							memcpy(SEOrder->OrderTime, value.c_str(), len);
 							break;
 						}
 						case Items::CancelDate:
 						{
-							size_t len = value.length() >= sizeof(Order->CancelDate) ? sizeof(Order->CancelDate) - 1 : value.length();
-							memcpy(Order->CancelDate, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->CancelDate) ? sizeof(SEOrder->CancelDate) - 1 : value.length();
+							memcpy(SEOrder->CancelDate, value.c_str(), len);
 							break;
 						}
 						case Items::CancelTime:
 						{
-							size_t len = value.length() >= sizeof(Order->CancelTime) ? sizeof(Order->CancelTime) - 1 : value.length();
-							memcpy(Order->CancelTime, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SEOrder->CancelTime) ? sizeof(SEOrder->CancelTime) - 1 : value.length();
+							memcpy(SEOrder->CancelTime, value.c_str(), len);
 							break;
 						}
 						case Items::SessionID:
 						{
-							Order->SessionID = atoll(value.c_str());
+							SEOrder->SessionID = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::OrderID:
 						{
-							Order->ClientOrderID = atoi(value.c_str());
-							break;
-						}
-						case Items::RequestID:
-						{
-							Order->RequestID = atoi(value.c_str());
-							break;
-						}
-						case Items::FrozenCash:
-						{
-							Order->FrozenCash = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenMargin:
-						{
-							Order->FrozenMargin = atof(value.c_str());
-							break;
-						}
-						case Items::FrozenCommission:
-						{
-							Order->FrozenCommission = atof(value.c_str());
+							SEOrder->OrderID = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for OrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SEOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQrySEOrderPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ::Allocate<RspInfoField>();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQrySEOrderPackage FieldID:0x%X", fieldID);
 						return false;
 					}
 				}
@@ -2432,117 +1634,79 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 		}
 		else
 		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RtnOrderPackage");
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspQrySEOrderPackage");
 			return false;
 		}
 	}
 	return true;
 }
-int RtnOrderPackage::ToXtpStream(char* buff, int size) const
+int RspQrySEOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Order, sizeof(OrderField));
-	offset += sizeof(OrderField);
+	memcpy(buff + offset, SEOrder, sizeof(SEOrderField));
+	offset += sizeof(SEOrderField);
+	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	return offset;
 }
-bool RtnOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+bool RspQrySEOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Order = ::Allocate<OrderField>();
-	memcpy(Order, buff + offset, sizeof(OrderField));
-	offset += sizeof(OrderField);
+	SEOrder = ::Allocate<SEOrderField>();
+	memcpy(SEOrder, buff + offset, sizeof(SEOrderField));
+	offset += sizeof(SEOrderField);
+	RspInfo = ::Allocate<RspInfoField>();
+	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	if (offset != endIndex)
 	{
 		return false;
 	}
 	return true;
 }
-const char* RtnOrderPackage::GetDebugString() const
+const char* RspQrySEOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+	offset += sprintf(t_DataStringBuffer + offset, "SEOrder:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], OrderID:[%d]", SEOrder->TradingDay, SEOrder->AccountID, SEOrder->ExchangeID, SEOrder->InstrumentID, (int)SEOrder->ProductClass, SEOrder->OrderSysID, (int)SEOrder->Direction, (int)SEOrder->OffsetFlag, (int)SEOrder->OrderPriceType, SEOrder->Price, SEOrder->Volume, SEOrder->VolumeTotal, SEOrder->VolumeTraded, SEOrder->VolumeMultiple, (int)SEOrder->OrderStatus, SEOrder->OrderDate, SEOrder->OrderTime, SEOrder->CancelDate, SEOrder->CancelTime, SEOrder->SessionID, SEOrder->OrderID);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	return t_DataStringBuffer;
 }
  
-RtnTradePackage* RtnTradePackage::Allocate()
+ReqQrySETradePackage* ReqQrySETradePackage::Allocate()
 {
-	return ::Allocate<RtnTradePackage>();
+	return ::Allocate<ReqQrySETradePackage>();
 }
-void RtnTradePackage::Free()
+void ReqQrySETradePackage::Free()
 {
 	Package::Free();
-	if (Trade != nullptr)
+	if (ReqQrySETrade != nullptr)
 	{
-		::Free<TradeField>(Trade);
-		Trade = nullptr;
+		::Free<ReqQrySETradeField>(ReqQrySETrade);
+		ReqQrySETrade = nullptr;
 	}
-	MemCacheTemplateSingleton<RtnTradePackage>::GetInstance().Free(this);
+	MemCacheTemplateSingleton<ReqQrySETradePackage>::GetInstance().Free(this);
 }
-void RtnTradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQrySETradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
 }
-int RtnTradePackage::ToStepStream(char* buff, int size) const
+int ReqQrySETradePackage::ToStepStream(char* buff, int size) const
 {
 	char* ppos = buff;
-	if (Trade != nullptr)
+	if (ReqQrySETrade != nullptr)
 	{
-		WriteHexString(ppos, Items::FieldStart, TradeField::FieldID);
-		if (strlen(Trade->TradingDay) >= sizeof(Trade->TradingDay))
+		WriteHexString(ppos, Items::FieldStart, ReqQrySETradeField::FieldID);
+		if (strlen(ReqQrySETrade->AccountID) >= sizeof(ReqQrySETrade->AccountID))
 		{
-			Trade->TradingDay[sizeof(Trade->TradingDay) - 1] = 0;
+			ReqQrySETrade->AccountID[sizeof(ReqQrySETrade->AccountID) - 1] = 0;
 		}
-		WriteString(ppos, Items::TradingDay, Trade->TradingDay);
-		if (strlen(Trade->AccountID) >= sizeof(Trade->AccountID))
-		{
-			Trade->AccountID[sizeof(Trade->AccountID) - 1] = 0;
-		}
-		WriteString(ppos, Items::AccountID, Trade->AccountID);
-		if (strlen(Trade->ExchangeID) >= sizeof(Trade->ExchangeID))
-		{
-			Trade->ExchangeID[sizeof(Trade->ExchangeID) - 1] = 0;
-		}
-		WriteString(ppos, Items::ExchangeID, Trade->ExchangeID);
-		if (strlen(Trade->InstrumentID) >= sizeof(Trade->InstrumentID))
-		{
-			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
-		}
-		WriteString(ppos, Items::InstrumentID, Trade->InstrumentID);
-		WriteString(ppos, Items::ProductClass, (int)Trade->ProductClass);
-		WriteString(ppos, Items::OrderID, Trade->OrderID);
-		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
-		{
-			Trade->OrderSysID[sizeof(Trade->OrderSysID) - 1] = 0;
-		}
-		WriteString(ppos, Items::OrderSysID, Trade->OrderSysID);
-		if (strlen(Trade->TradeID) >= sizeof(Trade->TradeID))
-		{
-			Trade->TradeID[sizeof(Trade->TradeID) - 1] = 0;
-		}
-		WriteString(ppos, Items::TradeID, Trade->TradeID);
-		WriteString(ppos, Items::Direction, (int)Trade->Direction);
-		WriteString(ppos, Items::OffsetFlag, (int)Trade->OffsetFlag);
-		WriteString(ppos, Items::Price, Trade->Price);
-		WriteString(ppos, Items::Volume, Trade->Volume);
-		WriteString(ppos, Items::VolumeMultiple, Trade->VolumeMultiple);
-		WriteString(ppos, Items::TradeAmount, Trade->TradeAmount);
-		WriteString(ppos, Items::Commission, Trade->Commission);
-		if (strlen(Trade->TradeDate) >= sizeof(Trade->TradeDate))
-		{
-			Trade->TradeDate[sizeof(Trade->TradeDate) - 1] = 0;
-		}
-		WriteString(ppos, Items::TradeDate, Trade->TradeDate);
-		if (strlen(Trade->TradeTime) >= sizeof(Trade->TradeTime))
-		{
-			Trade->TradeTime[sizeof(Trade->TradeTime) - 1] = 0;
-		}
-		WriteString(ppos, Items::TradeTime, Trade->TradeTime);
-		WriteHexString(ppos, Items::FieldEnd, TradeField::FieldID);
+		WriteString(ppos, Items::AccountID, ReqQrySETrade->AccountID);
+		WriteHexString(ppos, Items::FieldEnd, ReqQrySETradeField::FieldID);
 	}
 	return int(ppos - buff);
 }
-bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
+bool ReqQrySETradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
@@ -2554,10 +1718,192 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 			int itemStartIndex = fieldStartIndex;
 			switch (fieldID)
 			{
-			case TradeField::FieldID:
+			case ReqQrySETradeField::FieldID:
 			{
-				Trade = ::Allocate<TradeField>();
-				memset(Trade, 0, sizeof(*Trade));
+				ReqQrySETrade = ::Allocate<ReqQrySETradeField>();
+				memset(ReqQrySETrade, 0, sizeof(*ReqQrySETrade));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::AccountID:
+						{
+							size_t len = value.length() >= sizeof(ReqQrySETrade->AccountID) ? sizeof(ReqQrySETrade->AccountID) - 1 : value.length();
+							memcpy(ReqQrySETrade->AccountID, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQrySETradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQrySETradePackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqQrySETradePackage");
+			return false;
+		}
+	}
+	return true;
+}
+int ReqQrySETradePackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, ReqQrySETrade, sizeof(ReqQrySETradeField));
+	offset += sizeof(ReqQrySETradeField);
+	return offset;
+}
+bool ReqQrySETradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	ReqQrySETrade = ::Allocate<ReqQrySETradeField>();
+	memcpy(ReqQrySETrade, buff + offset, sizeof(ReqQrySETradeField));
+	offset += sizeof(ReqQrySETradeField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* ReqQrySETradePackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "ReqQrySETrade:AccountID:[%s]", ReqQrySETrade->AccountID);
+	return t_DataStringBuffer;
+}
+ 
+RspQrySETradePackage* RspQrySETradePackage::Allocate()
+{
+	return ::Allocate<RspQrySETradePackage>();
+}
+void RspQrySETradePackage::Free()
+{
+	Package::Free();
+	if (SETrade != nullptr)
+	{
+		::Free<SETradeField>(SETrade);
+		SETrade = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
+	}
+	MemCacheTemplateSingleton<RspQrySETradePackage>::GetInstance().Free(this);
+}
+void RspQrySETradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RspQrySETradePackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (SETrade != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, SETradeField::FieldID);
+		if (strlen(SETrade->TradingDay) >= sizeof(SETrade->TradingDay))
+		{
+			SETrade->TradingDay[sizeof(SETrade->TradingDay) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradingDay, SETrade->TradingDay);
+		if (strlen(SETrade->AccountID) >= sizeof(SETrade->AccountID))
+		{
+			SETrade->AccountID[sizeof(SETrade->AccountID) - 1] = 0;
+		}
+		WriteString(ppos, Items::AccountID, SETrade->AccountID);
+		if (strlen(SETrade->ExchangeID) >= sizeof(SETrade->ExchangeID))
+		{
+			SETrade->ExchangeID[sizeof(SETrade->ExchangeID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ExchangeID, SETrade->ExchangeID);
+		if (strlen(SETrade->InstrumentID) >= sizeof(SETrade->InstrumentID))
+		{
+			SETrade->InstrumentID[sizeof(SETrade->InstrumentID) - 1] = 0;
+		}
+		WriteString(ppos, Items::InstrumentID, SETrade->InstrumentID);
+		WriteString(ppos, Items::ProductClass, (int)SETrade->ProductClass);
+		WriteString(ppos, Items::OrderID, SETrade->OrderID);
+		if (strlen(SETrade->OrderSysID) >= sizeof(SETrade->OrderSysID))
+		{
+			SETrade->OrderSysID[sizeof(SETrade->OrderSysID) - 1] = 0;
+		}
+		WriteString(ppos, Items::OrderSysID, SETrade->OrderSysID);
+		if (strlen(SETrade->TradeID) >= sizeof(SETrade->TradeID))
+		{
+			SETrade->TradeID[sizeof(SETrade->TradeID) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradeID, SETrade->TradeID);
+		WriteString(ppos, Items::Direction, (int)SETrade->Direction);
+		WriteString(ppos, Items::OffsetFlag, (int)SETrade->OffsetFlag);
+		WriteString(ppos, Items::Price, SETrade->Price);
+		WriteString(ppos, Items::Volume, SETrade->Volume);
+		WriteString(ppos, Items::VolumeMultiple, SETrade->VolumeMultiple);
+		WriteString(ppos, Items::TradeAmount, SETrade->TradeAmount);
+		WriteString(ppos, Items::Commission, SETrade->Commission);
+		if (strlen(SETrade->TradeDate) >= sizeof(SETrade->TradeDate))
+		{
+			SETrade->TradeDate[sizeof(SETrade->TradeDate) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradeDate, SETrade->TradeDate);
+		if (strlen(SETrade->TradeTime) >= sizeof(SETrade->TradeTime))
+		{
+			SETrade->TradeTime[sizeof(SETrade->TradeTime) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradeTime, SETrade->TradeTime);
+		WriteHexString(ppos, Items::FieldEnd, SETradeField::FieldID);
+	}
+	if (RspInfo != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RspQrySETradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case SETradeField::FieldID:
+			{
+				SETrade = ::Allocate<SETradeField>();
+				memset(SETrade, 0, sizeof(*SETrade));
 				while (itemStartIndex < fieldEndIndex)
 				{
 					unsigned short  itemID;
@@ -2572,106 +1918,147 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							break;
 						case Items::TradingDay:
 						{
-							size_t len = value.length() >= sizeof(Trade->TradingDay) ? sizeof(Trade->TradingDay) - 1 : value.length();
-							memcpy(Trade->TradingDay, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SETrade->TradingDay) ? sizeof(SETrade->TradingDay) - 1 : value.length();
+							memcpy(SETrade->TradingDay, value.c_str(), len);
 							break;
 						}
 						case Items::AccountID:
 						{
-							size_t len = value.length() >= sizeof(Trade->AccountID) ? sizeof(Trade->AccountID) - 1 : value.length();
-							memcpy(Trade->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SETrade->AccountID) ? sizeof(SETrade->AccountID) - 1 : value.length();
+							memcpy(SETrade->AccountID, value.c_str(), len);
 							break;
 						}
 						case Items::ExchangeID:
 						{
-							size_t len = value.length() >= sizeof(Trade->ExchangeID) ? sizeof(Trade->ExchangeID) - 1 : value.length();
-							memcpy(Trade->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SETrade->ExchangeID) ? sizeof(SETrade->ExchangeID) - 1 : value.length();
+							memcpy(SETrade->ExchangeID, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentID:
 						{
-							size_t len = value.length() >= sizeof(Trade->InstrumentID) ? sizeof(Trade->InstrumentID) - 1 : value.length();
-							memcpy(Trade->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SETrade->InstrumentID) ? sizeof(SETrade->InstrumentID) - 1 : value.length();
+							memcpy(SETrade->InstrumentID, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
 						{
-							Trade->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							SETrade->ProductClass = (ProductClassType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
 						{
-							Trade->OrderID = atoi(value.c_str());
+							SETrade->OrderID = atoi(value.c_str());
 							break;
 						}
 						case Items::OrderSysID:
 						{
-							size_t len = value.length() >= sizeof(Trade->OrderSysID) ? sizeof(Trade->OrderSysID) - 1 : value.length();
-							memcpy(Trade->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SETrade->OrderSysID) ? sizeof(SETrade->OrderSysID) - 1 : value.length();
+							memcpy(SETrade->OrderSysID, value.c_str(), len);
 							break;
 						}
 						case Items::TradeID:
 						{
-							size_t len = value.length() >= sizeof(Trade->TradeID) ? sizeof(Trade->TradeID) - 1 : value.length();
-							memcpy(Trade->TradeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SETrade->TradeID) ? sizeof(SETrade->TradeID) - 1 : value.length();
+							memcpy(SETrade->TradeID, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
 						{
-							Trade->Direction = (DirectionType)(atoi(value.c_str()));
+							SETrade->Direction = (DirectionType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							Trade->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							SETrade->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
 						{
-							Trade->Price = atof(value.c_str());
+							SETrade->Price = atof(value.c_str());
 							break;
 						}
 						case Items::Volume:
 						{
-							Trade->Volume = atoll(value.c_str());
+							SETrade->Volume = atoll(value.c_str());
 							break;
 						}
 						case Items::VolumeMultiple:
 						{
-							Trade->VolumeMultiple = atoi(value.c_str());
+							SETrade->VolumeMultiple = atoi(value.c_str());
 							break;
 						}
 						case Items::TradeAmount:
 						{
-							Trade->TradeAmount = atof(value.c_str());
+							SETrade->TradeAmount = atof(value.c_str());
 							break;
 						}
 						case Items::Commission:
 						{
-							Trade->Commission = atof(value.c_str());
+							SETrade->Commission = atof(value.c_str());
 							break;
 						}
 						case Items::TradeDate:
 						{
-							size_t len = value.length() >= sizeof(Trade->TradeDate) ? sizeof(Trade->TradeDate) - 1 : value.length();
-							memcpy(Trade->TradeDate, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SETrade->TradeDate) ? sizeof(SETrade->TradeDate) - 1 : value.length();
+							memcpy(SETrade->TradeDate, value.c_str(), len);
 							break;
 						}
 						case Items::TradeTime:
 						{
-							size_t len = value.length() >= sizeof(Trade->TradeTime) ? sizeof(Trade->TradeTime) - 1 : value.length();
-							memcpy(Trade->TradeTime, value.c_str(), len);
+							size_t len = value.length() >= sizeof(SETrade->TradeTime) ? sizeof(SETrade->TradeTime) - 1 : value.length();
+							memcpy(SETrade->TradeTime, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for TradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SETradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnTradePackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQrySETradePackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ::Allocate<RspInfoField>();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQrySETradePackage FieldID:0x%X", fieldID);
 						return false;
 					}
 				}
@@ -2685,34 +2072,575 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 		}
 		else
 		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RtnTradePackage");
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspQrySETradePackage");
 			return false;
 		}
 	}
 	return true;
 }
-int RtnTradePackage::ToXtpStream(char* buff, int size) const
+int RspQrySETradePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Trade, sizeof(TradeField));
-	offset += sizeof(TradeField);
+	memcpy(buff + offset, SETrade, sizeof(SETradeField));
+	offset += sizeof(SETradeField);
+	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	return offset;
 }
-bool RtnTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+bool RspQrySETradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Trade = ::Allocate<TradeField>();
-	memcpy(Trade, buff + offset, sizeof(TradeField));
-	offset += sizeof(TradeField);
+	SETrade = ::Allocate<SETradeField>();
+	memcpy(SETrade, buff + offset, sizeof(SETradeField));
+	offset += sizeof(SETradeField);
+	RspInfo = ::Allocate<RspInfoField>();
+	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+	offset += sizeof(RspInfoField);
 	if (offset != endIndex)
 	{
 		return false;
 	}
 	return true;
 }
-const char* RtnTradePackage::GetDebugString() const
+const char* RspQrySETradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+	offset += sprintf(t_DataStringBuffer + offset, "SETrade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", SETrade->TradingDay, SETrade->AccountID, SETrade->ExchangeID, SETrade->InstrumentID, (int)SETrade->ProductClass, SETrade->OrderID, SETrade->OrderSysID, SETrade->TradeID, (int)SETrade->Direction, (int)SETrade->OffsetFlag, SETrade->Price, SETrade->Volume, SETrade->VolumeMultiple, SETrade->TradeAmount, SETrade->Commission, SETrade->TradeDate, SETrade->TradeTime);
+	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	return t_DataStringBuffer;
+}
+ 
+RtnSEOrderPackage* RtnSEOrderPackage::Allocate()
+{
+	return ::Allocate<RtnSEOrderPackage>();
+}
+void RtnSEOrderPackage::Free()
+{
+	Package::Free();
+	if (SEOrder != nullptr)
+	{
+		::Free<SEOrderField>(SEOrder);
+		SEOrder = nullptr;
+	}
+	MemCacheTemplateSingleton<RtnSEOrderPackage>::GetInstance().Free(this);
+}
+void RtnSEOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RtnSEOrderPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (SEOrder != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, SEOrderField::FieldID);
+		if (strlen(SEOrder->TradingDay) >= sizeof(SEOrder->TradingDay))
+		{
+			SEOrder->TradingDay[sizeof(SEOrder->TradingDay) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradingDay, SEOrder->TradingDay);
+		if (strlen(SEOrder->AccountID) >= sizeof(SEOrder->AccountID))
+		{
+			SEOrder->AccountID[sizeof(SEOrder->AccountID) - 1] = 0;
+		}
+		WriteString(ppos, Items::AccountID, SEOrder->AccountID);
+		if (strlen(SEOrder->ExchangeID) >= sizeof(SEOrder->ExchangeID))
+		{
+			SEOrder->ExchangeID[sizeof(SEOrder->ExchangeID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ExchangeID, SEOrder->ExchangeID);
+		if (strlen(SEOrder->InstrumentID) >= sizeof(SEOrder->InstrumentID))
+		{
+			SEOrder->InstrumentID[sizeof(SEOrder->InstrumentID) - 1] = 0;
+		}
+		WriteString(ppos, Items::InstrumentID, SEOrder->InstrumentID);
+		WriteString(ppos, Items::ProductClass, (int)SEOrder->ProductClass);
+		if (strlen(SEOrder->OrderSysID) >= sizeof(SEOrder->OrderSysID))
+		{
+			SEOrder->OrderSysID[sizeof(SEOrder->OrderSysID) - 1] = 0;
+		}
+		WriteString(ppos, Items::OrderSysID, SEOrder->OrderSysID);
+		WriteString(ppos, Items::Direction, (int)SEOrder->Direction);
+		WriteString(ppos, Items::OffsetFlag, (int)SEOrder->OffsetFlag);
+		WriteString(ppos, Items::OrderPriceType, (int)SEOrder->OrderPriceType);
+		WriteString(ppos, Items::Price, SEOrder->Price);
+		WriteString(ppos, Items::Volume, SEOrder->Volume);
+		WriteString(ppos, Items::VolumeTotal, SEOrder->VolumeTotal);
+		WriteString(ppos, Items::VolumeTraded, SEOrder->VolumeTraded);
+		WriteString(ppos, Items::VolumeMultiple, SEOrder->VolumeMultiple);
+		WriteString(ppos, Items::OrderStatus, (int)SEOrder->OrderStatus);
+		if (strlen(SEOrder->OrderDate) >= sizeof(SEOrder->OrderDate))
+		{
+			SEOrder->OrderDate[sizeof(SEOrder->OrderDate) - 1] = 0;
+		}
+		WriteString(ppos, Items::OrderDate, SEOrder->OrderDate);
+		if (strlen(SEOrder->OrderTime) >= sizeof(SEOrder->OrderTime))
+		{
+			SEOrder->OrderTime[sizeof(SEOrder->OrderTime) - 1] = 0;
+		}
+		WriteString(ppos, Items::OrderTime, SEOrder->OrderTime);
+		if (strlen(SEOrder->CancelDate) >= sizeof(SEOrder->CancelDate))
+		{
+			SEOrder->CancelDate[sizeof(SEOrder->CancelDate) - 1] = 0;
+		}
+		WriteString(ppos, Items::CancelDate, SEOrder->CancelDate);
+		if (strlen(SEOrder->CancelTime) >= sizeof(SEOrder->CancelTime))
+		{
+			SEOrder->CancelTime[sizeof(SEOrder->CancelTime) - 1] = 0;
+		}
+		WriteString(ppos, Items::CancelTime, SEOrder->CancelTime);
+		WriteString(ppos, Items::SessionID, SEOrder->SessionID);
+		WriteString(ppos, Items::OrderID, SEOrder->OrderID);
+		WriteHexString(ppos, Items::FieldEnd, SEOrderField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RtnSEOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case SEOrderField::FieldID:
+			{
+				SEOrder = ::Allocate<SEOrderField>();
+				memset(SEOrder, 0, sizeof(*SEOrder));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::TradingDay:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->TradingDay) ? sizeof(SEOrder->TradingDay) - 1 : value.length();
+							memcpy(SEOrder->TradingDay, value.c_str(), len);
+							break;
+						}
+						case Items::AccountID:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->AccountID) ? sizeof(SEOrder->AccountID) - 1 : value.length();
+							memcpy(SEOrder->AccountID, value.c_str(), len);
+							break;
+						}
+						case Items::ExchangeID:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->ExchangeID) ? sizeof(SEOrder->ExchangeID) - 1 : value.length();
+							memcpy(SEOrder->ExchangeID, value.c_str(), len);
+							break;
+						}
+						case Items::InstrumentID:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->InstrumentID) ? sizeof(SEOrder->InstrumentID) - 1 : value.length();
+							memcpy(SEOrder->InstrumentID, value.c_str(), len);
+							break;
+						}
+						case Items::ProductClass:
+						{
+							SEOrder->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::OrderSysID:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->OrderSysID) ? sizeof(SEOrder->OrderSysID) - 1 : value.length();
+							memcpy(SEOrder->OrderSysID, value.c_str(), len);
+							break;
+						}
+						case Items::Direction:
+						{
+							SEOrder->Direction = (DirectionType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::OffsetFlag:
+						{
+							SEOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::OrderPriceType:
+						{
+							SEOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::Price:
+						{
+							SEOrder->Price = atof(value.c_str());
+							break;
+						}
+						case Items::Volume:
+						{
+							SEOrder->Volume = atoll(value.c_str());
+							break;
+						}
+						case Items::VolumeTotal:
+						{
+							SEOrder->VolumeTotal = atoll(value.c_str());
+							break;
+						}
+						case Items::VolumeTraded:
+						{
+							SEOrder->VolumeTraded = atoll(value.c_str());
+							break;
+						}
+						case Items::VolumeMultiple:
+						{
+							SEOrder->VolumeMultiple = atoi(value.c_str());
+							break;
+						}
+						case Items::OrderStatus:
+						{
+							SEOrder->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::OrderDate:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->OrderDate) ? sizeof(SEOrder->OrderDate) - 1 : value.length();
+							memcpy(SEOrder->OrderDate, value.c_str(), len);
+							break;
+						}
+						case Items::OrderTime:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->OrderTime) ? sizeof(SEOrder->OrderTime) - 1 : value.length();
+							memcpy(SEOrder->OrderTime, value.c_str(), len);
+							break;
+						}
+						case Items::CancelDate:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->CancelDate) ? sizeof(SEOrder->CancelDate) - 1 : value.length();
+							memcpy(SEOrder->CancelDate, value.c_str(), len);
+							break;
+						}
+						case Items::CancelTime:
+						{
+							size_t len = value.length() >= sizeof(SEOrder->CancelTime) ? sizeof(SEOrder->CancelTime) - 1 : value.length();
+							memcpy(SEOrder->CancelTime, value.c_str(), len);
+							break;
+						}
+						case Items::SessionID:
+						{
+							SEOrder->SessionID = atoll(value.c_str());
+							break;
+						}
+						case Items::OrderID:
+						{
+							SEOrder->OrderID = atoi(value.c_str());
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SEOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnSEOrderPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RtnSEOrderPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RtnSEOrderPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, SEOrder, sizeof(SEOrderField));
+	offset += sizeof(SEOrderField);
+	return offset;
+}
+bool RtnSEOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	SEOrder = ::Allocate<SEOrderField>();
+	memcpy(SEOrder, buff + offset, sizeof(SEOrderField));
+	offset += sizeof(SEOrderField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* RtnSEOrderPackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "SEOrder:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], OrderID:[%d]", SEOrder->TradingDay, SEOrder->AccountID, SEOrder->ExchangeID, SEOrder->InstrumentID, (int)SEOrder->ProductClass, SEOrder->OrderSysID, (int)SEOrder->Direction, (int)SEOrder->OffsetFlag, (int)SEOrder->OrderPriceType, SEOrder->Price, SEOrder->Volume, SEOrder->VolumeTotal, SEOrder->VolumeTraded, SEOrder->VolumeMultiple, (int)SEOrder->OrderStatus, SEOrder->OrderDate, SEOrder->OrderTime, SEOrder->CancelDate, SEOrder->CancelTime, SEOrder->SessionID, SEOrder->OrderID);
+	return t_DataStringBuffer;
+}
+ 
+RtnSETradePackage* RtnSETradePackage::Allocate()
+{
+	return ::Allocate<RtnSETradePackage>();
+}
+void RtnSETradePackage::Free()
+{
+	Package::Free();
+	if (SETrade != nullptr)
+	{
+		::Free<SETradeField>(SETrade);
+		SETrade = nullptr;
+	}
+	MemCacheTemplateSingleton<RtnSETradePackage>::GetInstance().Free(this);
+}
+void RtnSETradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RtnSETradePackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (SETrade != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, SETradeField::FieldID);
+		if (strlen(SETrade->TradingDay) >= sizeof(SETrade->TradingDay))
+		{
+			SETrade->TradingDay[sizeof(SETrade->TradingDay) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradingDay, SETrade->TradingDay);
+		if (strlen(SETrade->AccountID) >= sizeof(SETrade->AccountID))
+		{
+			SETrade->AccountID[sizeof(SETrade->AccountID) - 1] = 0;
+		}
+		WriteString(ppos, Items::AccountID, SETrade->AccountID);
+		if (strlen(SETrade->ExchangeID) >= sizeof(SETrade->ExchangeID))
+		{
+			SETrade->ExchangeID[sizeof(SETrade->ExchangeID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ExchangeID, SETrade->ExchangeID);
+		if (strlen(SETrade->InstrumentID) >= sizeof(SETrade->InstrumentID))
+		{
+			SETrade->InstrumentID[sizeof(SETrade->InstrumentID) - 1] = 0;
+		}
+		WriteString(ppos, Items::InstrumentID, SETrade->InstrumentID);
+		WriteString(ppos, Items::ProductClass, (int)SETrade->ProductClass);
+		WriteString(ppos, Items::OrderID, SETrade->OrderID);
+		if (strlen(SETrade->OrderSysID) >= sizeof(SETrade->OrderSysID))
+		{
+			SETrade->OrderSysID[sizeof(SETrade->OrderSysID) - 1] = 0;
+		}
+		WriteString(ppos, Items::OrderSysID, SETrade->OrderSysID);
+		if (strlen(SETrade->TradeID) >= sizeof(SETrade->TradeID))
+		{
+			SETrade->TradeID[sizeof(SETrade->TradeID) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradeID, SETrade->TradeID);
+		WriteString(ppos, Items::Direction, (int)SETrade->Direction);
+		WriteString(ppos, Items::OffsetFlag, (int)SETrade->OffsetFlag);
+		WriteString(ppos, Items::Price, SETrade->Price);
+		WriteString(ppos, Items::Volume, SETrade->Volume);
+		WriteString(ppos, Items::VolumeMultiple, SETrade->VolumeMultiple);
+		WriteString(ppos, Items::TradeAmount, SETrade->TradeAmount);
+		WriteString(ppos, Items::Commission, SETrade->Commission);
+		if (strlen(SETrade->TradeDate) >= sizeof(SETrade->TradeDate))
+		{
+			SETrade->TradeDate[sizeof(SETrade->TradeDate) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradeDate, SETrade->TradeDate);
+		if (strlen(SETrade->TradeTime) >= sizeof(SETrade->TradeTime))
+		{
+			SETrade->TradeTime[sizeof(SETrade->TradeTime) - 1] = 0;
+		}
+		WriteString(ppos, Items::TradeTime, SETrade->TradeTime);
+		WriteHexString(ppos, Items::FieldEnd, SETradeField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RtnSETradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case SETradeField::FieldID:
+			{
+				SETrade = ::Allocate<SETradeField>();
+				memset(SETrade, 0, sizeof(*SETrade));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::TradingDay:
+						{
+							size_t len = value.length() >= sizeof(SETrade->TradingDay) ? sizeof(SETrade->TradingDay) - 1 : value.length();
+							memcpy(SETrade->TradingDay, value.c_str(), len);
+							break;
+						}
+						case Items::AccountID:
+						{
+							size_t len = value.length() >= sizeof(SETrade->AccountID) ? sizeof(SETrade->AccountID) - 1 : value.length();
+							memcpy(SETrade->AccountID, value.c_str(), len);
+							break;
+						}
+						case Items::ExchangeID:
+						{
+							size_t len = value.length() >= sizeof(SETrade->ExchangeID) ? sizeof(SETrade->ExchangeID) - 1 : value.length();
+							memcpy(SETrade->ExchangeID, value.c_str(), len);
+							break;
+						}
+						case Items::InstrumentID:
+						{
+							size_t len = value.length() >= sizeof(SETrade->InstrumentID) ? sizeof(SETrade->InstrumentID) - 1 : value.length();
+							memcpy(SETrade->InstrumentID, value.c_str(), len);
+							break;
+						}
+						case Items::ProductClass:
+						{
+							SETrade->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::OrderID:
+						{
+							SETrade->OrderID = atoi(value.c_str());
+							break;
+						}
+						case Items::OrderSysID:
+						{
+							size_t len = value.length() >= sizeof(SETrade->OrderSysID) ? sizeof(SETrade->OrderSysID) - 1 : value.length();
+							memcpy(SETrade->OrderSysID, value.c_str(), len);
+							break;
+						}
+						case Items::TradeID:
+						{
+							size_t len = value.length() >= sizeof(SETrade->TradeID) ? sizeof(SETrade->TradeID) - 1 : value.length();
+							memcpy(SETrade->TradeID, value.c_str(), len);
+							break;
+						}
+						case Items::Direction:
+						{
+							SETrade->Direction = (DirectionType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::OffsetFlag:
+						{
+							SETrade->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::Price:
+						{
+							SETrade->Price = atof(value.c_str());
+							break;
+						}
+						case Items::Volume:
+						{
+							SETrade->Volume = atoll(value.c_str());
+							break;
+						}
+						case Items::VolumeMultiple:
+						{
+							SETrade->VolumeMultiple = atoi(value.c_str());
+							break;
+						}
+						case Items::TradeAmount:
+						{
+							SETrade->TradeAmount = atof(value.c_str());
+							break;
+						}
+						case Items::Commission:
+						{
+							SETrade->Commission = atof(value.c_str());
+							break;
+						}
+						case Items::TradeDate:
+						{
+							size_t len = value.length() >= sizeof(SETrade->TradeDate) ? sizeof(SETrade->TradeDate) - 1 : value.length();
+							memcpy(SETrade->TradeDate, value.c_str(), len);
+							break;
+						}
+						case Items::TradeTime:
+						{
+							size_t len = value.length() >= sizeof(SETrade->TradeTime) ? sizeof(SETrade->TradeTime) - 1 : value.length();
+							memcpy(SETrade->TradeTime, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SETradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnSETradePackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RtnSETradePackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RtnSETradePackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	memcpy(buff + offset, SETrade, sizeof(SETradeField));
+	offset += sizeof(SETradeField);
+	return offset;
+}
+bool RtnSETradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	SETrade = ::Allocate<SETradeField>();
+	memcpy(SETrade, buff + offset, sizeof(SETradeField));
+	offset += sizeof(SETradeField);
+	if (offset != endIndex)
+	{
+		return false;
+	}
+	return true;
+}
+const char* RtnSETradePackage::GetDebugString() const
+{
+	int offset = 0;
+	offset += sprintf(t_DataStringBuffer + offset, "SETrade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", SETrade->TradingDay, SETrade->AccountID, SETrade->ExchangeID, SETrade->InstrumentID, (int)SETrade->ProductClass, SETrade->OrderID, SETrade->OrderSysID, SETrade->TradeID, (int)SETrade->Direction, (int)SETrade->OffsetFlag, SETrade->Price, SETrade->Volume, SETrade->VolumeMultiple, SETrade->TradeAmount, SETrade->Commission, SETrade->TradeDate, SETrade->TradeTime);
 	return t_DataStringBuffer;
 }

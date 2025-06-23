@@ -1,5 +1,6 @@
 #include "SimExchange.h"
 #include "InitMdbFromCsv.h"
+#include "Error.h"
 
 using namespace std;
 using namespace mdb;
@@ -18,6 +19,15 @@ void SimExchange::Init()
 {
 
 }
+int SimExchange::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID)
+{
+	return ErrorNone;
+}
+int SimExchange::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
+{
+	return ErrorNone;
+}
+
 void SimExchange::Run()
 {
 

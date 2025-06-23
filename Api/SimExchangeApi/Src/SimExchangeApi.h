@@ -17,13 +17,13 @@ class SimExchangeSpi
 public:
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
-	virtual void OnRspQryOrder(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryTrade(TradeField* trade, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspQryInstrument(InstrumentField* instrument, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRtnOrder(OrderField* order) {}
-	virtual void OnRtnTrade(TradeField* trade) {}
+	virtual void OnRspSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspSECancelOrder(ReqSECancelOrderField* reqSECancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQrySEOrder(SEOrderField* sEOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQrySETrade(SETradeField* sETrade, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRtnSEOrder(SEOrderField* sEOrder) {}
+	virtual void OnRtnSETrade(SETradeField* sETrade) {}
 };
 
 class SIMEXCHANGE_API_EXPORT SimExchangeApi
@@ -37,10 +37,10 @@ public:
 	virtual void RegisterFront(const char* address) = 0;
 	virtual void RegisterSpi(SimExchangeSpi* pSpi) = 0;
 	
-	virtual int ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID) = 0;
-	virtual int ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID) = 0;
 	virtual int ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument, int requestID) = 0;
-	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
-	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
+	virtual int ReqSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, int requestID) = 0;
+	virtual int ReqSECancelOrder(ReqSECancelOrderField* reqSECancelOrder, int requestID) = 0;
+	virtual int ReqQrySEOrder(ReqQrySEOrderField* reqQrySEOrder, int requestID) = 0;
+	virtual int ReqQrySETrade(ReqQrySETradeField* reqQrySETrade, int requestID) = 0;
 };
 

@@ -6,22 +6,6 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 {
 	switch (packageID)
 	{
-	case ReqQryOrderPackage::PackageID:
-	{
-		return ReqQryOrderPackage::Allocate();
-	}
-	case RspQryOrderPackage::PackageID:
-	{
-		return RspQryOrderPackage::Allocate();
-	}
-	case ReqQryTradePackage::PackageID:
-	{
-		return ReqQryTradePackage::Allocate();
-	}
-	case RspQryTradePackage::PackageID:
-	{
-		return RspQryTradePackage::Allocate();
-	}
 	case ReqQryInstrumentPackage::PackageID:
 	{
 		return ReqQryInstrumentPackage::Allocate();
@@ -30,29 +14,45 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	{
 		return RspQryInstrumentPackage::Allocate();
 	}
-	case ReqInsertOrderPackage::PackageID:
+	case ReqSEInsertOrderPackage::PackageID:
 	{
-		return ReqInsertOrderPackage::Allocate();
+		return ReqSEInsertOrderPackage::Allocate();
 	}
-	case RspInsertOrderPackage::PackageID:
+	case RspSEInsertOrderPackage::PackageID:
 	{
-		return RspInsertOrderPackage::Allocate();
+		return RspSEInsertOrderPackage::Allocate();
 	}
-	case ReqCancelOrderPackage::PackageID:
+	case ReqSECancelOrderPackage::PackageID:
 	{
-		return ReqCancelOrderPackage::Allocate();
+		return ReqSECancelOrderPackage::Allocate();
 	}
-	case RspCancelOrderPackage::PackageID:
+	case RspSECancelOrderPackage::PackageID:
 	{
-		return RspCancelOrderPackage::Allocate();
+		return RspSECancelOrderPackage::Allocate();
 	}
-	case RtnOrderPackage::PackageID:
+	case ReqQrySEOrderPackage::PackageID:
 	{
-		return RtnOrderPackage::Allocate();
+		return ReqQrySEOrderPackage::Allocate();
 	}
-	case RtnTradePackage::PackageID:
+	case RspQrySEOrderPackage::PackageID:
 	{
-		return RtnTradePackage::Allocate();
+		return RspQrySEOrderPackage::Allocate();
+	}
+	case ReqQrySETradePackage::PackageID:
+	{
+		return ReqQrySETradePackage::Allocate();
+	}
+	case RspQrySETradePackage::PackageID:
+	{
+		return RspQrySETradePackage::Allocate();
+	}
+	case RtnSEOrderPackage::PackageID:
+	{
+		return RtnSEOrderPackage::Allocate();
+	}
+	case RtnSETradePackage::PackageID:
+	{
+		return RtnSETradePackage::Allocate();
 	}
 	default:
 		break;
