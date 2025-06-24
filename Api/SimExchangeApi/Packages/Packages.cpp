@@ -10,417 +10,6 @@ thread_local char t_DataStringBuffer[10240];
 
 
  
-ReqQryInstrumentPackage* ReqQryInstrumentPackage::Allocate()
-{
-	return ::Allocate<ReqQryInstrumentPackage>();
-}
-void ReqQryInstrumentPackage::Free()
-{
-	Package::Free();
-	if (ReqQryInstrument != nullptr)
-	{
-		::Free<ReqQryInstrumentField>(ReqQryInstrument);
-		ReqQryInstrument = nullptr;
-	}
-	MemCacheTemplateSingleton<ReqQryInstrumentPackage>::GetInstance().Free(this);
-}
-void ReqQryInstrumentPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
-{
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
-}
-int ReqQryInstrumentPackage::ToStepStream(char* buff, int size) const
-{
-	char* ppos = buff;
-	if (ReqQryInstrument != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, ReqQryInstrumentField::FieldID);
-		if (strlen(ReqQryInstrument->ExchangeID) >= sizeof(ReqQryInstrument->ExchangeID))
-		{
-			ReqQryInstrument->ExchangeID[sizeof(ReqQryInstrument->ExchangeID) - 1] = 0;
-		}
-		WriteString(ppos, Items::ExchangeID, ReqQryInstrument->ExchangeID);
-		if (strlen(ReqQryInstrument->InstrumentID) >= sizeof(ReqQryInstrument->InstrumentID))
-		{
-			ReqQryInstrument->InstrumentID[sizeof(ReqQryInstrument->InstrumentID) - 1] = 0;
-		}
-		WriteString(ppos, Items::InstrumentID, ReqQryInstrument->InstrumentID);
-		WriteHexString(ppos, Items::FieldEnd, ReqQryInstrumentField::FieldID);
-	}
-	return int(ppos - buff);
-}
-bool ReqQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int endIndex)
-{
-	while (startIndex < endIndex)
-	{
-		unsigned short fieldID;
-		int fieldStartIndex;
-		int fieldEndIndex;
-		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
-		{
-			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
-			{
-			case ReqQryInstrumentField::FieldID:
-			{
-				ReqQryInstrument = ::Allocate<ReqQryInstrumentField>();
-				memset(ReqQryInstrument, 0, sizeof(*ReqQryInstrument));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::ExchangeID:
-						{
-							size_t len = value.length() >= sizeof(ReqQryInstrument->ExchangeID) ? sizeof(ReqQryInstrument->ExchangeID) - 1 : value.length();
-							memcpy(ReqQryInstrument->ExchangeID, value.c_str(), len);
-							break;
-						}
-						case Items::InstrumentID:
-						{
-							size_t len = value.length() >= sizeof(ReqQryInstrument->InstrumentID) ? sizeof(ReqQryInstrument->InstrumentID) - 1 : value.length();
-							memcpy(ReqQryInstrument->InstrumentID, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryInstrumentField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryInstrumentPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
-				return false;
-			}
-			startIndex = fieldEndIndex;
-		}
-		else
-		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqQryInstrumentPackage");
-			return false;
-		}
-	}
-	return true;
-}
-int ReqQryInstrumentPackage::ToXtpStream(char* buff, int size) const
-{
-	int offset = 0;
-	if (ReqQryInstrument != nullptr)
-	{
-		memcpy(buff + offset, &ReqQryInstrumentField::FieldID, sizeof(UShortType));
-		offset += sizeof(UShortType);
-		memcpy(buff + offset, ReqQryInstrument, sizeof(ReqQryInstrumentField));
-		offset += sizeof(ReqQryInstrumentField);
-	}
-	return offset;
-}
-bool ReqQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
-{
-	int offset = startIndex;
-	while(offset < endIndex)
-	{
-		auto fieldID = *(UShortType*)(buff + offset);
-		offset += sizeof(UShortType);
-		switch (fieldID)
-		{
-		case ReqQryInstrumentField::FieldID:
-		{
-			ReqQryInstrument = ::Allocate<ReqQryInstrumentField>();
-			memcpy(ReqQryInstrument, buff + offset, sizeof(ReqQryInstrumentField));
-			offset += sizeof(ReqQryInstrumentField);	
-			break;
-		}
-		default:
-			return false;
-		}
-	}
-	return offset == endIndex;
-}
-const char* ReqQryInstrumentPackage::GetDebugString() const
-{
-	int offset = 0;
-	if (ReqQryInstrument != nullptr)
-	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryInstrument->ExchangeID, ReqQryInstrument->InstrumentID);
-	}
-	return t_DataStringBuffer;
-}
- 
-RspQryInstrumentPackage* RspQryInstrumentPackage::Allocate()
-{
-	return ::Allocate<RspQryInstrumentPackage>();
-}
-void RspQryInstrumentPackage::Free()
-{
-	Package::Free();
-	if (Instrument != nullptr)
-	{
-		::Free<InstrumentField>(Instrument);
-		Instrument = nullptr;
-	}
-	if (RspInfo != nullptr)
-	{
-		::Free<RspInfoField>(RspInfo);
-		RspInfo = nullptr;
-	}
-	MemCacheTemplateSingleton<RspQryInstrumentPackage>::GetInstance().Free(this);
-}
-void RspQryInstrumentPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
-{
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
-}
-int RspQryInstrumentPackage::ToStepStream(char* buff, int size) const
-{
-	char* ppos = buff;
-	if (Instrument != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, InstrumentField::FieldID);
-		if (strlen(Instrument->ExchangeID) >= sizeof(Instrument->ExchangeID))
-		{
-			Instrument->ExchangeID[sizeof(Instrument->ExchangeID) - 1] = 0;
-		}
-		WriteString(ppos, Items::ExchangeID, Instrument->ExchangeID);
-		if (strlen(Instrument->InstrumentID) >= sizeof(Instrument->InstrumentID))
-		{
-			Instrument->InstrumentID[sizeof(Instrument->InstrumentID) - 1] = 0;
-		}
-		WriteString(ppos, Items::InstrumentID, Instrument->InstrumentID);
-		if (strlen(Instrument->ExchangeInstID) >= sizeof(Instrument->ExchangeInstID))
-		{
-			Instrument->ExchangeInstID[sizeof(Instrument->ExchangeInstID) - 1] = 0;
-		}
-		WriteString(ppos, Items::ExchangeInstID, Instrument->ExchangeInstID);
-		if (strlen(Instrument->InstrumentName) >= sizeof(Instrument->InstrumentName))
-		{
-			Instrument->InstrumentName[sizeof(Instrument->InstrumentName) - 1] = 0;
-		}
-		WriteString(ppos, Items::InstrumentName, Instrument->InstrumentName);
-		WriteString(ppos, Items::VolumeMultiple, Instrument->VolumeMultiple);
-		WriteString(ppos, Items::ProductClass, (int)Instrument->ProductClass);
-		WriteHexString(ppos, Items::FieldEnd, InstrumentField::FieldID);
-	}
-	if (RspInfo != nullptr)
-	{
-		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
-		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
-		{
-			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
-		}
-		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
-	}
-	return int(ppos - buff);
-}
-bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int endIndex)
-{
-	while (startIndex < endIndex)
-	{
-		unsigned short fieldID;
-		int fieldStartIndex;
-		int fieldEndIndex;
-		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
-		{
-			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
-			{
-			case InstrumentField::FieldID:
-			{
-				Instrument = ::Allocate<InstrumentField>();
-				memset(Instrument, 0, sizeof(*Instrument));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::ExchangeID:
-						{
-							size_t len = value.length() >= sizeof(Instrument->ExchangeID) ? sizeof(Instrument->ExchangeID) - 1 : value.length();
-							memcpy(Instrument->ExchangeID, value.c_str(), len);
-							break;
-						}
-						case Items::InstrumentID:
-						{
-							size_t len = value.length() >= sizeof(Instrument->InstrumentID) ? sizeof(Instrument->InstrumentID) - 1 : value.length();
-							memcpy(Instrument->InstrumentID, value.c_str(), len);
-							break;
-						}
-						case Items::ExchangeInstID:
-						{
-							size_t len = value.length() >= sizeof(Instrument->ExchangeInstID) ? sizeof(Instrument->ExchangeInstID) - 1 : value.length();
-							memcpy(Instrument->ExchangeInstID, value.c_str(), len);
-							break;
-						}
-						case Items::InstrumentName:
-						{
-							size_t len = value.length() >= sizeof(Instrument->InstrumentName) ? sizeof(Instrument->InstrumentName) - 1 : value.length();
-							memcpy(Instrument->InstrumentName, value.c_str(), len);
-							break;
-						}
-						case Items::VolumeMultiple:
-						{
-							Instrument->VolumeMultiple = atoi(value.c_str());
-							break;
-						}
-						case Items::ProductClass:
-						{
-							Instrument->ProductClass = (ProductClassType)(atoi(value.c_str()));
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for InstrumentField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryInstrumentPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			case RspInfoField::FieldID:
-			{
-				RspInfo = ::Allocate<RspInfoField>();
-				memset(RspInfo, 0, sizeof(*RspInfo));
-				while (itemStartIndex < fieldEndIndex)
-				{
-					unsigned short  itemID;
-					std::string value;
-					int sohIndex;
-					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
-					{
-						switch (itemID)
-						{
-						case Items::FieldStart:
-						case Items::FieldEnd:
-							break;
-						case Items::ErrorID:
-						{
-							RspInfo->ErrorID = atoi(value.c_str());
-							break;
-						}
-						case Items::ErrorMsg:
-						{
-							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
-							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
-							break;
-						}
-						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
-							return false;
-						}
-						itemStartIndex = sohIndex + 1;
-					}
-					else
-					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryInstrumentPackage FieldID:0x%X", fieldID);
-						return false;
-					}
-				}
-				break;
-			}
-			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
-				return false;
-			}
-			startIndex = fieldEndIndex;
-		}
-		else
-		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspQryInstrumentPackage");
-			return false;
-		}
-	}
-	return true;
-}
-int RspQryInstrumentPackage::ToXtpStream(char* buff, int size) const
-{
-	int offset = 0;
-	if (Instrument != nullptr)
-	{
-		memcpy(buff + offset, &InstrumentField::FieldID, sizeof(UShortType));
-		offset += sizeof(UShortType);
-		memcpy(buff + offset, Instrument, sizeof(InstrumentField));
-		offset += sizeof(InstrumentField);
-	}
-	if (RspInfo != nullptr)
-	{
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
-		offset += sizeof(UShortType);
-		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-		offset += sizeof(RspInfoField);
-	}
-	return offset;
-}
-bool RspQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
-{
-	int offset = startIndex;
-	while(offset < endIndex)
-	{
-		auto fieldID = *(UShortType*)(buff + offset);
-		offset += sizeof(UShortType);
-		switch (fieldID)
-		{
-		case InstrumentField::FieldID:
-		{
-			Instrument = ::Allocate<InstrumentField>();
-			memcpy(Instrument, buff + offset, sizeof(InstrumentField));
-			offset += sizeof(InstrumentField);	
-			break;
-		}
-		case RspInfoField::FieldID:
-		{
-			RspInfo = ::Allocate<RspInfoField>();
-			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-			offset += sizeof(RspInfoField);	
-			break;
-		}
-		default:
-			return false;
-		}
-	}
-	return offset == endIndex;
-}
-const char* RspQryInstrumentPackage::GetDebugString() const
-{
-	int offset = 0;
-	if (Instrument != nullptr)
-	{
-		offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], ProductClass:[%d]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->VolumeMultiple, (int)Instrument->ProductClass);
-	}
-	if (RspInfo != nullptr)
-	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
-	}
-	return t_DataStringBuffer;
-}
- 
 ReqSEBrokerLoginPackage* ReqSEBrokerLoginPackage::Allocate()
 {
 	return ::Allocate<ReqSEBrokerLoginPackage>();
@@ -2736,6 +2325,470 @@ const char* RspQrySETradePackage::GetDebugString() const
 	if (SETrade != nullptr)
 	{
 		offset += sprintf(t_DataStringBuffer + offset, "SETrade:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", SETrade->TradingDay, SETrade->BrokerID, SETrade->AccountID, SETrade->ExchangeID, SETrade->InstrumentID, (int)SETrade->ProductClass, SETrade->OrderID, SETrade->TradeID, (int)SETrade->Direction, (int)SETrade->OffsetFlag, SETrade->Price, SETrade->Volume, SETrade->VolumeMultiple, SETrade->TradeAmount, SETrade->Commission, SETrade->TradeDate, SETrade->TradeTime);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
+	return t_DataStringBuffer;
+}
+ 
+ReqQrySEInstrumentPackage* ReqQrySEInstrumentPackage::Allocate()
+{
+	return ::Allocate<ReqQrySEInstrumentPackage>();
+}
+void ReqQrySEInstrumentPackage::Free()
+{
+	Package::Free();
+	if (ReqQrySEInstrument != nullptr)
+	{
+		::Free<ReqQrySEInstrumentField>(ReqQrySEInstrument);
+		ReqQrySEInstrument = nullptr;
+	}
+	MemCacheTemplateSingleton<ReqQrySEInstrumentPackage>::GetInstance().Free(this);
+}
+void ReqQrySEInstrumentPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int ReqQrySEInstrumentPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (ReqQrySEInstrument != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, ReqQrySEInstrumentField::FieldID);
+		if (strlen(ReqQrySEInstrument->ExchangeID) >= sizeof(ReqQrySEInstrument->ExchangeID))
+		{
+			ReqQrySEInstrument->ExchangeID[sizeof(ReqQrySEInstrument->ExchangeID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ExchangeID, ReqQrySEInstrument->ExchangeID);
+		if (strlen(ReqQrySEInstrument->InstrumentID) >= sizeof(ReqQrySEInstrument->InstrumentID))
+		{
+			ReqQrySEInstrument->InstrumentID[sizeof(ReqQrySEInstrument->InstrumentID) - 1] = 0;
+		}
+		WriteString(ppos, Items::InstrumentID, ReqQrySEInstrument->InstrumentID);
+		WriteHexString(ppos, Items::FieldEnd, ReqQrySEInstrumentField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool ReqQrySEInstrumentPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case ReqQrySEInstrumentField::FieldID:
+			{
+				ReqQrySEInstrument = ::Allocate<ReqQrySEInstrumentField>();
+				memset(ReqQrySEInstrument, 0, sizeof(*ReqQrySEInstrument));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ExchangeID:
+						{
+							size_t len = value.length() >= sizeof(ReqQrySEInstrument->ExchangeID) ? sizeof(ReqQrySEInstrument->ExchangeID) - 1 : value.length();
+							memcpy(ReqQrySEInstrument->ExchangeID, value.c_str(), len);
+							break;
+						}
+						case Items::InstrumentID:
+						{
+							size_t len = value.length() >= sizeof(ReqQrySEInstrument->InstrumentID) ? sizeof(ReqQrySEInstrument->InstrumentID) - 1 : value.length();
+							memcpy(ReqQrySEInstrument->InstrumentID, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQrySEInstrumentField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQrySEInstrumentPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqQrySEInstrumentPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int ReqQrySEInstrumentPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	if (ReqQrySEInstrument != nullptr)
+	{
+		memcpy(buff + offset, &ReqQrySEInstrumentField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQrySEInstrument, sizeof(ReqQrySEInstrumentField));
+		offset += sizeof(ReqQrySEInstrumentField);
+	}
+	return offset;
+}
+bool ReqQrySEInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	while(offset < endIndex)
+	{
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQrySEInstrumentField::FieldID:
+		{
+			ReqQrySEInstrument = ::Allocate<ReqQrySEInstrumentField>();
+			memcpy(ReqQrySEInstrument, buff + offset, sizeof(ReqQrySEInstrumentField));
+			offset += sizeof(ReqQrySEInstrumentField);	
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+	return offset == endIndex;
+}
+const char* ReqQrySEInstrumentPackage::GetDebugString() const
+{
+	int offset = 0;
+	if (ReqQrySEInstrument != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQrySEInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQrySEInstrument->ExchangeID, ReqQrySEInstrument->InstrumentID);
+	}
+	return t_DataStringBuffer;
+}
+ 
+RspQrySEInstrumentPackage* RspQrySEInstrumentPackage::Allocate()
+{
+	return ::Allocate<RspQrySEInstrumentPackage>();
+}
+void RspQrySEInstrumentPackage::Free()
+{
+	Package::Free();
+	if (SEInstrument != nullptr)
+	{
+		::Free<SEInstrumentField>(SEInstrument);
+		SEInstrument = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
+	}
+	MemCacheTemplateSingleton<RspQrySEInstrumentPackage>::GetInstance().Free(this);
+}
+void RspQrySEInstrumentPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RspQrySEInstrumentPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (SEInstrument != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, SEInstrumentField::FieldID);
+		if (strlen(SEInstrument->ExchangeID) >= sizeof(SEInstrument->ExchangeID))
+		{
+			SEInstrument->ExchangeID[sizeof(SEInstrument->ExchangeID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ExchangeID, SEInstrument->ExchangeID);
+		if (strlen(SEInstrument->InstrumentID) >= sizeof(SEInstrument->InstrumentID))
+		{
+			SEInstrument->InstrumentID[sizeof(SEInstrument->InstrumentID) - 1] = 0;
+		}
+		WriteString(ppos, Items::InstrumentID, SEInstrument->InstrumentID);
+		if (strlen(SEInstrument->ExchangeInstID) >= sizeof(SEInstrument->ExchangeInstID))
+		{
+			SEInstrument->ExchangeInstID[sizeof(SEInstrument->ExchangeInstID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ExchangeInstID, SEInstrument->ExchangeInstID);
+		if (strlen(SEInstrument->InstrumentName) >= sizeof(SEInstrument->InstrumentName))
+		{
+			SEInstrument->InstrumentName[sizeof(SEInstrument->InstrumentName) - 1] = 0;
+		}
+		WriteString(ppos, Items::InstrumentName, SEInstrument->InstrumentName);
+		if (strlen(SEInstrument->ProductID) >= sizeof(SEInstrument->ProductID))
+		{
+			SEInstrument->ProductID[sizeof(SEInstrument->ProductID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ProductID, SEInstrument->ProductID);
+		WriteString(ppos, Items::ProductClass, (int)SEInstrument->ProductClass);
+		WriteString(ppos, Items::MaxMarketOrderVolume, SEInstrument->MaxMarketOrderVolume);
+		WriteString(ppos, Items::MinMarketOrderVolume, SEInstrument->MinMarketOrderVolume);
+		WriteString(ppos, Items::MaxLimitOrderVolume, SEInstrument->MaxLimitOrderVolume);
+		WriteString(ppos, Items::MinLimitOrderVolume, SEInstrument->MinLimitOrderVolume);
+		WriteString(ppos, Items::VolumeMultiple, SEInstrument->VolumeMultiple);
+		WriteString(ppos, Items::PriceTick, SEInstrument->PriceTick);
+		WriteString(ppos, Items::UpperLimitPrice, SEInstrument->UpperLimitPrice);
+		WriteString(ppos, Items::LowerLimitPrice, SEInstrument->LowerLimitPrice);
+		WriteHexString(ppos, Items::FieldEnd, SEInstrumentField::FieldID);
+	}
+	if (RspInfo != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RspQrySEInstrumentPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case SEInstrumentField::FieldID:
+			{
+				SEInstrument = ::Allocate<SEInstrumentField>();
+				memset(SEInstrument, 0, sizeof(*SEInstrument));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ExchangeID:
+						{
+							size_t len = value.length() >= sizeof(SEInstrument->ExchangeID) ? sizeof(SEInstrument->ExchangeID) - 1 : value.length();
+							memcpy(SEInstrument->ExchangeID, value.c_str(), len);
+							break;
+						}
+						case Items::InstrumentID:
+						{
+							size_t len = value.length() >= sizeof(SEInstrument->InstrumentID) ? sizeof(SEInstrument->InstrumentID) - 1 : value.length();
+							memcpy(SEInstrument->InstrumentID, value.c_str(), len);
+							break;
+						}
+						case Items::ExchangeInstID:
+						{
+							size_t len = value.length() >= sizeof(SEInstrument->ExchangeInstID) ? sizeof(SEInstrument->ExchangeInstID) - 1 : value.length();
+							memcpy(SEInstrument->ExchangeInstID, value.c_str(), len);
+							break;
+						}
+						case Items::InstrumentName:
+						{
+							size_t len = value.length() >= sizeof(SEInstrument->InstrumentName) ? sizeof(SEInstrument->InstrumentName) - 1 : value.length();
+							memcpy(SEInstrument->InstrumentName, value.c_str(), len);
+							break;
+						}
+						case Items::ProductID:
+						{
+							size_t len = value.length() >= sizeof(SEInstrument->ProductID) ? sizeof(SEInstrument->ProductID) - 1 : value.length();
+							memcpy(SEInstrument->ProductID, value.c_str(), len);
+							break;
+						}
+						case Items::ProductClass:
+						{
+							SEInstrument->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::MaxMarketOrderVolume:
+						{
+							SEInstrument->MaxMarketOrderVolume = atoll(value.c_str());
+							break;
+						}
+						case Items::MinMarketOrderVolume:
+						{
+							SEInstrument->MinMarketOrderVolume = atoll(value.c_str());
+							break;
+						}
+						case Items::MaxLimitOrderVolume:
+						{
+							SEInstrument->MaxLimitOrderVolume = atoll(value.c_str());
+							break;
+						}
+						case Items::MinLimitOrderVolume:
+						{
+							SEInstrument->MinLimitOrderVolume = atoll(value.c_str());
+							break;
+						}
+						case Items::VolumeMultiple:
+						{
+							SEInstrument->VolumeMultiple = atoi(value.c_str());
+							break;
+						}
+						case Items::PriceTick:
+						{
+							SEInstrument->PriceTick = atof(value.c_str());
+							break;
+						}
+						case Items::UpperLimitPrice:
+						{
+							SEInstrument->UpperLimitPrice = atof(value.c_str());
+							break;
+						}
+						case Items::LowerLimitPrice:
+						{
+							SEInstrument->LowerLimitPrice = atof(value.c_str());
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SEInstrumentField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQrySEInstrumentPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ::Allocate<RspInfoField>();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQrySEInstrumentPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspQrySEInstrumentPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RspQrySEInstrumentPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	if (SEInstrument != nullptr)
+	{
+		memcpy(buff + offset, &SEInstrumentField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, SEInstrument, sizeof(SEInstrumentField));
+		offset += sizeof(SEInstrumentField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
+	return offset;
+}
+bool RspQrySEInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	while(offset < endIndex)
+	{
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case SEInstrumentField::FieldID:
+		{
+			SEInstrument = ::Allocate<SEInstrumentField>();
+			memcpy(SEInstrument, buff + offset, sizeof(SEInstrumentField));
+			offset += sizeof(SEInstrumentField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+	return offset == endIndex;
+}
+const char* RspQrySEInstrumentPackage::GetDebugString() const
+{
+	int offset = 0;
+	if (SEInstrument != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "SEInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], VolumeMultiple:[%d], PriceTick:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f]", SEInstrument->ExchangeID, SEInstrument->InstrumentID, SEInstrument->ExchangeInstID, SEInstrument->InstrumentName, SEInstrument->ProductID, (int)SEInstrument->ProductClass, SEInstrument->MaxMarketOrderVolume, SEInstrument->MinMarketOrderVolume, SEInstrument->MaxLimitOrderVolume, SEInstrument->MinLimitOrderVolume, SEInstrument->VolumeMultiple, SEInstrument->PriceTick, SEInstrument->UpperLimitPrice, SEInstrument->LowerLimitPrice);
 	}
 	if (RspInfo != nullptr)
 	{

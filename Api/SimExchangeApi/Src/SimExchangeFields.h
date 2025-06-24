@@ -2,34 +2,6 @@
 #include "Types.h"
 
 
-class ReqQryInstrumentField
-{
-public:
-	static constexpr UShortType FieldID = 0x2012;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
-};
-
-class InstrumentField
-{
-public:
-	static constexpr UShortType FieldID = 0x2013;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
-	InstrumentIDType ExchangeInstID;		//交易所合约代码
-	InstrumentNameType InstrumentName;		//合约名称
-	VolumeMultipleType VolumeMultiple;		//合约乘数
-	ProductClassType ProductClass;		//品种类型
-};
-
-class RspInfoField
-{
-public:
-	static constexpr UShortType FieldID = 0x0001;
-	ErrorIDType ErrorID;		//错误代码
-	MessageType ErrorMsg;		//错误信息
-};
-
 class ReqSEBrokerLoginField
 {
 public:
@@ -46,6 +18,14 @@ public:
 	BrokerNameType BrokerName;		//经纪公司名称
 	SessionIDType SessionID;		//会话编号
 	IPAddressType IPAddress;		//IP地址
+};
+
+class RspInfoField
+{
+public:
+	static constexpr UShortType FieldID = 0x0001;
+	ErrorIDType ErrorID;		//错误代码
+	MessageType ErrorMsg;		//错误信息
 };
 
 class ReqSEInsertOrderField
@@ -141,5 +121,33 @@ public:
 	MoneyType Commission;		//手续费
 	DateType TradeDate;		//成交日期
 	TimeType TradeTime;		//成交时间
+};
+
+class ReqQrySEInstrumentField
+{
+public:
+	static constexpr UShortType FieldID = 0x3009;
+	ExchangeIDType ExchangeID;		//交易所代码
+	InstrumentIDType InstrumentID;		//合约代码
+};
+
+class SEInstrumentField
+{
+public:
+	static constexpr UShortType FieldID = 0x300A;
+	ExchangeIDType ExchangeID;		//交易所代码
+	InstrumentIDType InstrumentID;		//合约代码
+	InstrumentIDType ExchangeInstID;		//交易所合约代码
+	InstrumentNameType InstrumentName;		//合约名称
+	ProductIDType ProductID;		//品种代码
+	ProductClassType ProductClass;		//品种类型
+	VolumeType MaxMarketOrderVolume;		//市价最大下单量
+	VolumeType MinMarketOrderVolume;		//市价最小下单量
+	VolumeType MaxLimitOrderVolume;		//限价最大下单量
+	VolumeType MinLimitOrderVolume;		//限价最小下单量
+	VolumeMultipleType VolumeMultiple;		//合约乘数
+	PriceType PriceTick;		//最小变动价位
+	PriceType UpperLimitPrice;		//涨停板价
+	PriceType LowerLimitPrice;		//跌停板价
 };
 

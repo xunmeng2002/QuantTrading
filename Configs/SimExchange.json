@@ -1,0 +1,6 @@
+{
+	"LogLevel":2,
+	"ServerConfigPath":"../../ServerConfig.json",
+	"CsvPath":"./Csv"
+}
+

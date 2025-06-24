@@ -37,6 +37,10 @@ int main(int argc, char* argv[])
 	tradeFront->Start();
 	mdFront->Start();
 
+	simExchange->Join();
+	tradeFront->Join();
+	mdFront->Join();
+
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();
 	return 0;

@@ -11,8 +11,8 @@
 	<package name="RspQrySEOrder"/>
 	<package name="ReqQrySETrade"/>
 	<package name="RspQrySETrade"/>
-	<package name="ReqQryInstrument"/>
-	<package name="RspQryInstrument"/>
+	<package name="ReqQrySEInstrument"/>
+	<package name="RspQrySEInstrument"/>
 	
 	<package name="RtnSEOrder"/>
 	<package name="RtnSETrade"/>

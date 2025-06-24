@@ -17,15 +17,13 @@
   },
   "ExpandedNodes": [
     "",
-    "\\Model\\Error",
-    "\\Source",
     "\\Target",
-    "\\Target\\BackTest",
-    "\\Target\\MdOffer",
     "\\Target\\SimExchange",
-    "\\Target\\SimExchange\\DB",
-    "\\Target\\SimExchange\\DB\\Mdb"
+    "\\Target\\SimExchange\\Src",
+    "\\Test",
+    "\\Test\\Source",
+    "\\Test\\TestSimExchangeApi\\Src"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
+  "SelectedNode": "\\Target",
   "PreviewInSolutionExplorer": false
 }

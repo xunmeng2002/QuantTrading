@@ -6,14 +6,6 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 {
 	switch (packageID)
 	{
-	case ReqQryInstrumentPackage::PackageID:
-	{
-		return ReqQryInstrumentPackage::Allocate();
-	}
-	case RspQryInstrumentPackage::PackageID:
-	{
-		return RspQryInstrumentPackage::Allocate();
-	}
 	case ReqSEBrokerLoginPackage::PackageID:
 	{
 		return ReqSEBrokerLoginPackage::Allocate();
@@ -53,6 +45,14 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	case RspQrySETradePackage::PackageID:
 	{
 		return RspQrySETradePackage::Allocate();
+	}
+	case ReqQrySEInstrumentPackage::PackageID:
+	{
+		return ReqQrySEInstrumentPackage::Allocate();
+	}
+	case RspQrySEInstrumentPackage::PackageID:
+	{
+		return RspQrySEInstrumentPackage::Allocate();
 	}
 	case RtnSEOrderPackage::PackageID:
 	{

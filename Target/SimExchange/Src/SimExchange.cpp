@@ -106,6 +106,7 @@ void SimExchange::HandlePackages()
 
 void SimExchange::HandleBrokerLogin(ReqSEBrokerLoginPackage* reqPackage)
 {
+	WriteLog(LogLevel::Info, "HandleBrokerLogin %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	auto broker = m_Mdb->t_SEBroker->m_PrimaryKey->Select(reqPackage->ReqSEBrokerLogin->BrokerID);
 	if (broker == nullptr)
@@ -137,6 +138,7 @@ void SimExchange::HandleBrokerLogin(ReqSEBrokerLoginPackage* reqPackage)
 }
 void SimExchange::HandleInsertOrder(ReqSEInsertOrderPackage* reqPackage)
 {
+	WriteLog(LogLevel::Info, "HandleInsertOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -193,6 +195,7 @@ void SimExchange::HandleInsertOrder(ReqSEInsertOrderPackage* reqPackage)
 }
 void SimExchange::HandleCancelOrder(ReqSECancelOrderPackage* reqPackage)
 {
+	WriteLog(LogLevel::Info, "HandleCancelOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -221,6 +224,7 @@ void SimExchange::HandleCancelOrder(ReqSECancelOrderPackage* reqPackage)
 }
 void SimExchange::HandleQryOrder(ReqQrySEOrderPackage* reqPackage)
 {
+	WriteLog(LogLevel::Info, "HandleQryOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -238,7 +242,7 @@ void SimExchange::HandleQryOrder(ReqQrySEOrderPackage* reqPackage)
 		for (auto& it = orderRange.first; it != orderRange.second; )
 		{
 			auto record = *it;
-			SendRspQryOrder(reqPackage, ErrorNone, ++it != orderRange.second, record);
+			SendRspQryOrder(reqPackage, ErrorNone, ++it == orderRange.second, record);
 		}
 		::Free(m_RspQryOrderPackage->SEOrder);
 		m_RspQryOrderPackage->SEOrder = nullptr;
@@ -246,6 +250,7 @@ void SimExchange::HandleQryOrder(ReqQrySEOrderPackage* reqPackage)
 }
 void SimExchange::HandleQryTrade(ReqQrySETradePackage* reqPackage)
 {
+	WriteLog(LogLevel::Info, "HandleQryTrade %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -263,7 +268,7 @@ void SimExchange::HandleQryTrade(ReqQrySETradePackage* reqPackage)
 		for (auto& it = tradeRange.first; it != tradeRange.second; )
 		{
 			auto record = *it;
-			SendRspQryTrade(reqPackage, ErrorNone, ++it != tradeRange.second, record);
+			SendRspQryTrade(reqPackage, ErrorNone, ++it == tradeRange.second, record);
 		}
 		::Free(m_RspQryTradePackage->SETrade);
 		m_RspQryTradePackage->SETrade = nullptr;
@@ -271,6 +276,7 @@ void SimExchange::HandleQryTrade(ReqQrySETradePackage* reqPackage)
 }
 void SimExchange::HandleQryInstrument(ReqQrySEInstrumentPackage* reqPackage)
 {
+	WriteLog(LogLevel::Info, "HandleQryInstrument %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -289,7 +295,7 @@ void SimExchange::HandleQryInstrument(ReqQrySEInstrumentPackage* reqPackage)
 		for (auto& it = range.first; it != range.second; )
 		{
 			auto record = *it;
-			SendRspQryInstrument(reqPackage, ErrorNone, ++it != range.second, record);
+			SendRspQryInstrument(reqPackage, ErrorNone, ++it == range.second, record);
 		}
 	}
 	else
@@ -298,7 +304,7 @@ void SimExchange::HandleQryInstrument(ReqQrySEInstrumentPackage* reqPackage)
 		for (auto& it = range.first; it != range.second; )
 		{
 			auto record = *it;
-			SendRspQryInstrument(reqPackage, ErrorNone, ++it != range.second, record);
+			SendRspQryInstrument(reqPackage, ErrorNone, ++it == range.second, record);
 		}
 	}
 	::Free(m_RspQryInstrumentPackage->SEInstrument);

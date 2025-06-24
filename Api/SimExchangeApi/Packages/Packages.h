@@ -3,37 +3,6 @@
 #include "Package.h"
 
 
-class ReqQryInstrumentPackage : public Package
-{
-public:
-	static ReqQryInstrumentPackage* Allocate();
-	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
-	virtual int ToStepStream(char* buff, int size) const override;
-	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
-	virtual int ToXtpStream(char* buff, int size) const override;
-	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
-	virtual const char* GetDebugString() const override;
-public:
-	static constexpr UShortType PackageID = 0x2011;
-	ReqQryInstrumentField* ReqQryInstrument = nullptr;
-};
-class RspQryInstrumentPackage : public Package
-{
-public:
-	static RspQryInstrumentPackage* Allocate();
-	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
-	virtual int ToStepStream(char* buff, int size) const override;
-	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
-	virtual int ToXtpStream(char* buff, int size) const override;
-	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
-	virtual const char* GetDebugString() const override;
-public:
-	static constexpr UShortType PackageID = 0x2012;
-	InstrumentField* Instrument = nullptr;
-	RspInfoField* RspInfo = nullptr;
-};
 class ReqSEBrokerLoginPackage : public Package
 {
 public:
@@ -187,6 +156,37 @@ public:
 public:
 	static constexpr UShortType PackageID = 0x300A;
 	SETradeField* SETrade = nullptr;
+	RspInfoField* RspInfo = nullptr;
+};
+class ReqQrySEInstrumentPackage : public Package
+{
+public:
+	static ReqQrySEInstrumentPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x300B;
+	ReqQrySEInstrumentField* ReqQrySEInstrument = nullptr;
+};
+class RspQrySEInstrumentPackage : public Package
+{
+public:
+	static RspQrySEInstrumentPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x300C;
+	SEInstrumentField* SEInstrument = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
 class RtnSEOrderPackage : public Package
