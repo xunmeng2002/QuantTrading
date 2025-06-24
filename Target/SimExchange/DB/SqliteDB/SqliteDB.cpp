@@ -47,18 +47,21 @@ SqliteDB::SqliteDB(const std::string& dbName)
 
 	m_SEInstrumentInsertStatement = nullptr;
 	m_SEInstrumentDeleteStatement = nullptr;
+	m_SEInstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_SEInstrumentUpdateStatement = nullptr;
 	m_SEInstrumentSelectStatement = nullptr;
 	m_SEInstrumentTruncateStatement = nullptr;
 
 	m_SEOrderInsertStatement = nullptr;
 	m_SEOrderDeleteStatement = nullptr;
+	m_SEOrderDeleteByAccountIDIndexStatement = nullptr;
 	m_SEOrderUpdateStatement = nullptr;
 	m_SEOrderSelectStatement = nullptr;
 	m_SEOrderTruncateStatement = nullptr;
 
 	m_SETradeInsertStatement = nullptr;
 	m_SETradeDeleteStatement = nullptr;
+	m_SETradeDeleteByAccountIDIndexStatement = nullptr;
 	m_SETradeUpdateStatement = nullptr;
 	m_SETradeSelectStatement = nullptr;
 	m_SETradeTruncateStatement = nullptr;
@@ -232,6 +235,11 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_SEInstrumentDeleteStatement);
 		m_SEInstrumentDeleteStatement = nullptr;
 	}
+	if (m_SEInstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_SEInstrumentDeleteByExchangeIDIndexStatement);
+		m_SEInstrumentDeleteByExchangeIDIndexStatement = nullptr;
+	}
 	if (m_SEInstrumentUpdateStatement != nullptr)
 	{
 		sqlite3_finalize(m_SEInstrumentUpdateStatement);
@@ -257,6 +265,11 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_SEOrderDeleteStatement);
 		m_SEOrderDeleteStatement = nullptr;
 	}
+	if (m_SEOrderDeleteByAccountIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_SEOrderDeleteByAccountIDIndexStatement);
+		m_SEOrderDeleteByAccountIDIndexStatement = nullptr;
+	}
 	if (m_SEOrderUpdateStatement != nullptr)
 	{
 		sqlite3_finalize(m_SEOrderUpdateStatement);
@@ -281,6 +294,11 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_SETradeDeleteStatement);
 		m_SETradeDeleteStatement = nullptr;
+	}
+	if (m_SETradeDeleteByAccountIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_SETradeDeleteByAccountIDIndexStatement);
+		m_SETradeDeleteByAccountIDIndexStatement = nullptr;
 	}
 	if (m_SETradeUpdateStatement != nullptr)
 	{
@@ -1179,6 +1197,28 @@ void SqliteDB::DeleteSEInstrument(SEInstrument* record)
 		WriteLog(LogLevel::Warning, "DeleteSEInstrument Spend:%lldms", duration);
 	}
 }
+void SqliteDB::DeleteSEInstrumentByExchangeIDIndex(SEInstrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEInstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_SEInstrument where ExchangeID = ?;", -1, &m_SEInstrumentDeleteByExchangeIDIndexStatement, nullptr);
+	}
+	SetStatementForSEInstrumentIndexExchangeID(m_SEInstrumentDeleteByExchangeIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_SEInstrumentDeleteByExchangeIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEInstrumentByExchangeIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_SEInstrumentDeleteByExchangeIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEInstrumentByExchangeIDIndex Spend:%lldms", duration);
+	}
+}
 void SqliteDB::UpdateSEInstrument(SEInstrument* record)
 {
 	auto start = steady_clock::now();
@@ -1322,6 +1362,28 @@ void SqliteDB::DeleteSEOrder(SEOrder* record)
 		WriteLog(LogLevel::Warning, "DeleteSEOrder Spend:%lldms", duration);
 	}
 }
+void SqliteDB::DeleteSEOrderByAccountIDIndex(SEOrder* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEOrderDeleteByAccountIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_SEOrder where TradingDay = ? and AccountID = ?;", -1, &m_SEOrderDeleteByAccountIDIndexStatement, nullptr);
+	}
+	SetStatementForSEOrderIndexAccountID(m_SEOrderDeleteByAccountIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_SEOrderDeleteByAccountIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEOrderByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_SEOrderDeleteByAccountIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEOrderByAccountIDIndex Spend:%lldms", duration);
+	}
+}
 void SqliteDB::UpdateSEOrder(SEOrder* record)
 {
 	auto start = steady_clock::now();
@@ -1463,6 +1525,28 @@ void SqliteDB::DeleteSETrade(SETrade* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteSETrade Spend:%lldms", duration);
+	}
+}
+void SqliteDB::DeleteSETradeByAccountIDIndex(SETrade* record)
+{
+	auto start = steady_clock::now();
+	if (m_SETradeDeleteByAccountIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_SETrade where TradingDay = ? and AccountID = ?;", -1, &m_SETradeDeleteByAccountIDIndexStatement, nullptr);
+	}
+	SetStatementForSETradeIndexAccountID(m_SETradeDeleteByAccountIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_SETradeDeleteByAccountIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSETradeByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_SETradeDeleteByAccountIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSETradeByAccountIDIndex Spend:%lldms", duration);
 	}
 }
 void SqliteDB::UpdateSETrade(SETrade* record)
@@ -2050,6 +2134,10 @@ void SqliteDB::SetStatementForSEInstrumentPrimaryKey(sqlite3_stmt* statement, co
 	sqlite3_bind_text(statement, 1, ExchangeID, sizeof(ExchangeID), nullptr);
 	sqlite3_bind_text(statement, 2, InstrumentID, sizeof(InstrumentID), nullptr);
 }
+void SqliteDB::SetStatementForSEInstrumentIndexExchangeID(sqlite3_stmt* statement, SEInstrument* record)
+{
+	sqlite3_bind_text(statement, 1, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+}
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<SEInstrument*>& records)
 {
 	SEInstrument* record = SEInstrument::Allocate();
@@ -2128,6 +2216,11 @@ void SqliteDB::SetStatementForSEOrderPrimaryKey(sqlite3_stmt* statement, const D
 	sqlite3_bind_text(statement, 4, InstrumentID, sizeof(InstrumentID), nullptr);
 	sqlite3_bind_int(statement, 5, OrderID);
 }
+void SqliteDB::SetStatementForSEOrderIndexAccountID(sqlite3_stmt* statement, SEOrder* record)
+{
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
+}
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<SEOrder*>& records)
 {
 	SEOrder* record = SEOrder::Allocate();
@@ -2201,6 +2294,11 @@ void SqliteDB::SetStatementForSETradePrimaryKey(sqlite3_stmt* statement, const D
 	sqlite3_bind_text(statement, 2, ExchangeID, sizeof(ExchangeID), nullptr);
 	sqlite3_bind_text(statement, 3, TradeID, sizeof(TradeID), nullptr);
 	sqlite3_bind_int(statement, 4, int(Direction));
+}
+void SqliteDB::SetStatementForSETradeIndexAccountID(sqlite3_stmt* statement, SETrade* record)
+{
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
 }
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<SETrade*>& records)
 {

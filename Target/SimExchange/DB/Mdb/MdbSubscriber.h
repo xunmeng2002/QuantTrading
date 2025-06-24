@@ -45,18 +45,21 @@ public:
 	virtual void OnSEInstrumentInsert(mdb::SEInstrument* record) {}
 	virtual void OnSEInstrumentBatchInsert(std::list<mdb::SEInstrument*>* records) {}
 	virtual void OnSEInstrumentErase(mdb::SEInstrument* record) {}
+	virtual void OnSEInstrumentEraseByExchangeIDIndex(mdb::SEInstrument* record) {}
 	virtual void OnSEInstrumentUpdate(mdb::SEInstrument* record) {}
 	virtual void OnSEInstrumentTruncate() {}
 	
 	virtual void OnSEOrderInsert(mdb::SEOrder* record) {}
 	virtual void OnSEOrderBatchInsert(std::list<mdb::SEOrder*>* records) {}
 	virtual void OnSEOrderErase(mdb::SEOrder* record) {}
+	virtual void OnSEOrderEraseByAccountIDIndex(mdb::SEOrder* record) {}
 	virtual void OnSEOrderUpdate(mdb::SEOrder* record) {}
 	virtual void OnSEOrderTruncate() {}
 	
 	virtual void OnSETradeInsert(mdb::SETrade* record) {}
 	virtual void OnSETradeBatchInsert(std::list<mdb::SETrade*>* records) {}
 	virtual void OnSETradeErase(mdb::SETrade* record) {}
+	virtual void OnSETradeEraseByAccountIDIndex(mdb::SETrade* record) {}
 	virtual void OnSETradeUpdate(mdb::SETrade* record) {}
 	virtual void OnSETradeTruncate() {}
 	

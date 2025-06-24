@@ -375,6 +375,7 @@ CREATE TABLE IF NOT EXISTS `t_SEInstrument` (
   `SessionName` text,  -- '交易节名称'
   PRIMARY KEY(ExchangeID, InstrumentID)
 );  -- '模拟交易合约'
+  CREATE INDEX ExchangeID ON t_SEInstrument(ExchangeID);
 
 
 CREATE TABLE IF NOT EXISTS `t_SEOrder` (
@@ -402,6 +403,7 @@ CREATE TABLE IF NOT EXISTS `t_SEOrder` (
   `ClientOrderID` int,  -- '客户端委托编号'
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
 );  -- '模拟交易委托'
+  CREATE INDEX AccountID ON t_SEOrder(TradingDay, AccountID);
 
 
 CREATE TABLE IF NOT EXISTS `t_SETrade` (
@@ -424,6 +426,7 @@ CREATE TABLE IF NOT EXISTS `t_SETrade` (
   `TradeTime` text,  -- '成交时间'
   PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
 );  -- '模拟交易成交'
+  CREATE INDEX AccountID ON t_SETrade(TradingDay, AccountID);
 
 
 CREATE TABLE IF NOT EXISTS `t_SEBrokerLoginSession` (

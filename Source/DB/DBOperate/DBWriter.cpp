@@ -985,6 +985,17 @@ void DBWriter::OnSEInstrumentErase(mdb::SEInstrument* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
+void DBWriter::OnSEInstrumentEraseByExchangeIDIndex(mdb::SEInstrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = SEInstrument::TableID;
+	dbOperate->IndexID = SEInstrumentIndexExchangeID::IndexID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
 void DBWriter::OnSEInstrumentUpdate(mdb::SEInstrument* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -1036,6 +1047,17 @@ void DBWriter::OnSEOrderErase(mdb::SEOrder* record)
 	lock_guard<mutex> guard(m_Mutex);
 	m_DBOperates.push_back(dbOperate);
 }
+void DBWriter::OnSEOrderEraseByAccountIDIndex(mdb::SEOrder* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = SEOrder::TableID;
+	dbOperate->IndexID = SEOrderIndexAccountID::IndexID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
 void DBWriter::OnSEOrderUpdate(mdb::SEOrder* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -1082,6 +1104,17 @@ void DBWriter::OnSETradeErase(mdb::SETrade* record)
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Delete;
 	dbOperate->TableID = SETrade::TableID;
+	dbOperate->Record = record;
+
+	lock_guard<mutex> guard(m_Mutex);
+	m_DBOperates.push_back(dbOperate);
+}
+void DBWriter::OnSETradeEraseByAccountIDIndex(mdb::SETrade* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = SETrade::TableID;
+	dbOperate->IndexID = SETradeIndexAccountID::IndexID;
 	dbOperate->Record = record;
 
 	lock_guard<mutex> guard(m_Mutex);
@@ -1680,6 +1713,54 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 			break;
 		}
 		((PositionDetail*)dbOperate->Record)->Free();
+		break;
+	}
+	case SEInstrument::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case SEInstrumentIndexExchangeID::IndexID:
+		{
+			m_DB->DeleteSEInstrumentByExchangeIDIndex((SEInstrument*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((SEInstrument*)dbOperate->Record)->Free();
+		break;
+	}
+	case SEOrder::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case SEOrderIndexAccountID::IndexID:
+		{
+			m_DB->DeleteSEOrderByAccountIDIndex((SEOrder*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((SEOrder*)dbOperate->Record)->Free();
+		break;
+	}
+	case SETrade::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case SETradeIndexAccountID::IndexID:
+		{
+			m_DB->DeleteSETradeByAccountIDIndex((SETrade*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((SETrade*)dbOperate->Record)->Free();
 		break;
 	}
 	case SEBrokerLoginSession::TableID:

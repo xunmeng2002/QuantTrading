@@ -170,6 +170,7 @@ namespace mdb
 		bool Insert(SEInstrument* record);
 		void BatchInsert(std::list<mdb::SEInstrument*>* records);
 		void Erase(SEInstrument* record);
+		int EraseByExchangeIDIndex(const ExchangeIDType& ExchangeID);
 		bool Update(SEInstrument* const oldRecord, SEInstrument* const newRecord, bool updateDB = true);
 		void TruncateTable();
 		void Dump(const char* dir);
@@ -184,6 +185,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		SEInstrumentPrimaryKey* m_PrimaryKey;
+		SEInstrumentIndexExchangeID* m_ExchangeIDIndex;
 	};
 
 	class SEOrderTable
@@ -199,6 +201,7 @@ namespace mdb
 		bool Insert(SEOrder* record);
 		void BatchInsert(std::list<mdb::SEOrder*>* records);
 		void Erase(SEOrder* record);
+		int EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		bool Update(SEOrder* const oldRecord, SEOrder* const newRecord, bool updateDB = true);
 		void TruncateTable();
 		void Dump(const char* dir);
@@ -213,6 +216,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		SEOrderPrimaryKey* m_PrimaryKey;
+		SEOrderIndexAccountID* m_AccountIDIndex;
 	};
 
 	class SETradeTable
@@ -228,6 +232,7 @@ namespace mdb
 		bool Insert(SETrade* record);
 		void BatchInsert(std::list<mdb::SETrade*>* records);
 		void Erase(SETrade* record);
+		int EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		bool Update(SETrade* const oldRecord, SETrade* const newRecord, bool updateDB = true);
 		void TruncateTable();
 		void Dump(const char* dir);
@@ -242,6 +247,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		SETradePrimaryKey* m_PrimaryKey;
+		SETradeIndexAccountID* m_AccountIDIndex;
 	};
 
 	class SEBrokerLoginSessionTable

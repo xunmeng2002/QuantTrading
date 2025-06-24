@@ -121,26 +121,44 @@ bool NotifyConnectPackage::FromStepStream(char* buff, int startIndex, int endInd
 int NotifyConnectPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, NotifyConnect, sizeof(NotifyConnectField));
-	offset += sizeof(NotifyConnectField);
+	if (NotifyConnect != nullptr)
+	{
+		memcpy(buff + offset, &NotifyConnectField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, NotifyConnect, sizeof(NotifyConnectField));
+		offset += sizeof(NotifyConnectField);
+	}
 	return offset;
 }
 bool NotifyConnectPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	NotifyConnect = ::Allocate<NotifyConnectField>();
-	memcpy(NotifyConnect, buff + offset, sizeof(NotifyConnectField));
-	offset += sizeof(NotifyConnectField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case NotifyConnectField::FieldID:
+		{
+			NotifyConnect = ::Allocate<NotifyConnectField>();
+			memcpy(NotifyConnect, buff + offset, sizeof(NotifyConnectField));
+			offset += sizeof(NotifyConnectField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* NotifyConnectPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "NotifyConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyConnect->SessionID, NotifyConnect->IPAddress, NotifyConnect->Port);
+	if (NotifyConnect != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "NotifyConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyConnect->SessionID, NotifyConnect->IPAddress, NotifyConnect->Port);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -255,26 +273,44 @@ bool NotifyDisConnectPackage::FromStepStream(char* buff, int startIndex, int end
 int NotifyDisConnectPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, NotifyDisConnect, sizeof(NotifyDisConnectField));
-	offset += sizeof(NotifyDisConnectField);
+	if (NotifyDisConnect != nullptr)
+	{
+		memcpy(buff + offset, &NotifyDisConnectField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, NotifyDisConnect, sizeof(NotifyDisConnectField));
+		offset += sizeof(NotifyDisConnectField);
+	}
 	return offset;
 }
 bool NotifyDisConnectPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	NotifyDisConnect = ::Allocate<NotifyDisConnectField>();
-	memcpy(NotifyDisConnect, buff + offset, sizeof(NotifyDisConnectField));
-	offset += sizeof(NotifyDisConnectField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case NotifyDisConnectField::FieldID:
+		{
+			NotifyDisConnect = ::Allocate<NotifyDisConnectField>();
+			memcpy(NotifyDisConnect, buff + offset, sizeof(NotifyDisConnectField));
+			offset += sizeof(NotifyDisConnectField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* NotifyDisConnectPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "NotifyDisConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyDisConnect->SessionID, NotifyDisConnect->IPAddress, NotifyDisConnect->Port);
+	if (NotifyDisConnect != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "NotifyDisConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyDisConnect->SessionID, NotifyDisConnect->IPAddress, NotifyDisConnect->Port);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -388,26 +424,44 @@ bool ReqMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 int ReqMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqMdUserLogin, sizeof(ReqMdUserLoginField));
-	offset += sizeof(ReqMdUserLoginField);
+	if (ReqMdUserLogin != nullptr)
+	{
+		memcpy(buff + offset, &ReqMdUserLoginField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqMdUserLogin, sizeof(ReqMdUserLoginField));
+		offset += sizeof(ReqMdUserLoginField);
+	}
 	return offset;
 }
 bool ReqMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqMdUserLogin = ::Allocate<ReqMdUserLoginField>();
-	memcpy(ReqMdUserLogin, buff + offset, sizeof(ReqMdUserLoginField));
-	offset += sizeof(ReqMdUserLoginField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqMdUserLoginField::FieldID:
+		{
+			ReqMdUserLogin = ::Allocate<ReqMdUserLoginField>();
+			memcpy(ReqMdUserLogin, buff + offset, sizeof(ReqMdUserLoginField));
+			offset += sizeof(ReqMdUserLoginField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqMdUserLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]", ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
+	if (ReqMdUserLogin != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]", ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -595,32 +649,62 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 int RspMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspMdUserLogin, sizeof(RspMdUserLoginField));
-	offset += sizeof(RspMdUserLoginField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (RspMdUserLogin != nullptr)
+	{
+		memcpy(buff + offset, &RspMdUserLoginField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspMdUserLogin, sizeof(RspMdUserLoginField));
+		offset += sizeof(RspMdUserLoginField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspMdUserLogin = ::Allocate<RspMdUserLoginField>();
-	memcpy(RspMdUserLogin, buff + offset, sizeof(RspMdUserLoginField));
-	offset += sizeof(RspMdUserLoginField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspMdUserLoginField::FieldID:
+		{
+			RspMdUserLogin = ::Allocate<RspMdUserLoginField>();
+			memcpy(RspMdUserLogin, buff + offset, sizeof(RspMdUserLoginField));
+			offset += sizeof(RspMdUserLoginField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspMdUserLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (RspMdUserLogin != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -723,26 +807,44 @@ bool ReqMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 int ReqMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqMdUserLogout, sizeof(ReqMdUserLogoutField));
-	offset += sizeof(ReqMdUserLogoutField);
+	if (ReqMdUserLogout != nullptr)
+	{
+		memcpy(buff + offset, &ReqMdUserLogoutField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqMdUserLogout, sizeof(ReqMdUserLogoutField));
+		offset += sizeof(ReqMdUserLogoutField);
+	}
 	return offset;
 }
 bool ReqMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqMdUserLogout = ::Allocate<ReqMdUserLogoutField>();
-	memcpy(ReqMdUserLogout, buff + offset, sizeof(ReqMdUserLogoutField));
-	offset += sizeof(ReqMdUserLogoutField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqMdUserLogoutField::FieldID:
+		{
+			ReqMdUserLogout = ::Allocate<ReqMdUserLogoutField>();
+			memcpy(ReqMdUserLogout, buff + offset, sizeof(ReqMdUserLogoutField));
+			offset += sizeof(ReqMdUserLogoutField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqMdUserLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogout:UserID:[%s]", ReqMdUserLogout->UserID);
+	if (ReqMdUserLogout != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogout:UserID:[%s]", ReqMdUserLogout->UserID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -902,32 +1004,62 @@ bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 int RspMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspMdUserLogout, sizeof(RspMdUserLogoutField));
-	offset += sizeof(RspMdUserLogoutField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (RspMdUserLogout != nullptr)
+	{
+		memcpy(buff + offset, &RspMdUserLogoutField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspMdUserLogout, sizeof(RspMdUserLogoutField));
+		offset += sizeof(RspMdUserLogoutField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
-	memcpy(RspMdUserLogout, buff + offset, sizeof(RspMdUserLogoutField));
-	offset += sizeof(RspMdUserLogoutField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspMdUserLogoutField::FieldID:
+		{
+			RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
+			memcpy(RspMdUserLogout, buff + offset, sizeof(RspMdUserLogoutField));
+			offset += sizeof(RspMdUserLogoutField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspMdUserLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]", RspMdUserLogout->UserID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (RspMdUserLogout != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]", RspMdUserLogout->UserID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -1041,26 +1173,44 @@ bool ReqSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 int ReqSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqSubMarketData, sizeof(ReqSubMarketDataField));
-	offset += sizeof(ReqSubMarketDataField);
+	if (ReqSubMarketData != nullptr)
+	{
+		memcpy(buff + offset, &ReqSubMarketDataField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqSubMarketData, sizeof(ReqSubMarketDataField));
+		offset += sizeof(ReqSubMarketDataField);
+	}
 	return offset;
 }
 bool ReqSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqSubMarketData = ::Allocate<ReqSubMarketDataField>();
-	memcpy(ReqSubMarketData, buff + offset, sizeof(ReqSubMarketDataField));
-	offset += sizeof(ReqSubMarketDataField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqSubMarketDataField::FieldID:
+		{
+			ReqSubMarketData = ::Allocate<ReqSubMarketDataField>();
+			memcpy(ReqSubMarketData, buff + offset, sizeof(ReqSubMarketDataField));
+			offset += sizeof(ReqSubMarketDataField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID);
+	if (ReqSubMarketData != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -1231,32 +1381,62 @@ bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 int RspSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspSubMarketData, sizeof(RspSubMarketDataField));
-	offset += sizeof(RspSubMarketDataField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (RspSubMarketData != nullptr)
+	{
+		memcpy(buff + offset, &RspSubMarketDataField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspSubMarketData, sizeof(RspSubMarketDataField));
+		offset += sizeof(RspSubMarketDataField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspSubMarketData = ::Allocate<RspSubMarketDataField>();
-	memcpy(RspSubMarketData, buff + offset, sizeof(RspSubMarketDataField));
-	offset += sizeof(RspSubMarketDataField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspSubMarketDataField::FieldID:
+		{
+			RspSubMarketData = ::Allocate<RspSubMarketDataField>();
+			memcpy(RspSubMarketData, buff + offset, sizeof(RspSubMarketDataField));
+			offset += sizeof(RspSubMarketDataField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (RspSubMarketData != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -1370,26 +1550,44 @@ bool ReqUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 int ReqUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqUnSubMarketData, sizeof(ReqUnSubMarketDataField));
-	offset += sizeof(ReqUnSubMarketDataField);
+	if (ReqUnSubMarketData != nullptr)
+	{
+		memcpy(buff + offset, &ReqUnSubMarketDataField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqUnSubMarketData, sizeof(ReqUnSubMarketDataField));
+		offset += sizeof(ReqUnSubMarketDataField);
+	}
 	return offset;
 }
 bool ReqUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqUnSubMarketData = ::Allocate<ReqUnSubMarketDataField>();
-	memcpy(ReqUnSubMarketData, buff + offset, sizeof(ReqUnSubMarketDataField));
-	offset += sizeof(ReqUnSubMarketDataField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqUnSubMarketDataField::FieldID:
+		{
+			ReqUnSubMarketData = ::Allocate<ReqUnSubMarketDataField>();
+			memcpy(ReqUnSubMarketData, buff + offset, sizeof(ReqUnSubMarketDataField));
+			offset += sizeof(ReqUnSubMarketDataField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqUnSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
+	if (ReqUnSubMarketData != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -1560,32 +1758,62 @@ bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 int RspUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspUnSubMarketData, sizeof(RspUnSubMarketDataField));
-	offset += sizeof(RspUnSubMarketDataField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (RspUnSubMarketData != nullptr)
+	{
+		memcpy(buff + offset, &RspUnSubMarketDataField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspUnSubMarketData, sizeof(RspUnSubMarketDataField));
+		offset += sizeof(RspUnSubMarketDataField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspUnSubMarketData = ::Allocate<RspUnSubMarketDataField>();
-	memcpy(RspUnSubMarketData, buff + offset, sizeof(RspUnSubMarketDataField));
-	offset += sizeof(RspUnSubMarketDataField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspUnSubMarketDataField::FieldID:
+		{
+			RspUnSubMarketData = ::Allocate<RspUnSubMarketDataField>();
+			memcpy(RspUnSubMarketData, buff + offset, sizeof(RspUnSubMarketDataField));
+			offset += sizeof(RspUnSubMarketDataField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspUnSubMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (RspUnSubMarketData != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -1683,26 +1911,44 @@ bool ReqSubMarketDataFinishedPackage::FromStepStream(char* buff, int startIndex,
 int ReqSubMarketDataFinishedPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqSubMarketDataFinished, sizeof(ReqSubMarketDataFinishedField));
-	offset += sizeof(ReqSubMarketDataFinishedField);
+	if (ReqSubMarketDataFinished != nullptr)
+	{
+		memcpy(buff + offset, &ReqSubMarketDataFinishedField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqSubMarketDataFinished, sizeof(ReqSubMarketDataFinishedField));
+		offset += sizeof(ReqSubMarketDataFinishedField);
+	}
 	return offset;
 }
 bool ReqSubMarketDataFinishedPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqSubMarketDataFinished = ::Allocate<ReqSubMarketDataFinishedField>();
-	memcpy(ReqSubMarketDataFinished, buff + offset, sizeof(ReqSubMarketDataFinishedField));
-	offset += sizeof(ReqSubMarketDataFinishedField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqSubMarketDataFinishedField::FieldID:
+		{
+			ReqSubMarketDataFinished = ::Allocate<ReqSubMarketDataFinishedField>();
+			memcpy(ReqSubMarketDataFinished, buff + offset, sizeof(ReqSubMarketDataFinishedField));
+			offset += sizeof(ReqSubMarketDataFinishedField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqSubMarketDataFinishedPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketDataFinished:SessionID:[%lld]", ReqSubMarketDataFinished->SessionID);
+	if (ReqSubMarketDataFinished != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketDataFinished:SessionID:[%lld]", ReqSubMarketDataFinished->SessionID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -2175,26 +2421,44 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 int RtnDepthMarketDataPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, DepthMarketData, sizeof(DepthMarketDataField));
-	offset += sizeof(DepthMarketDataField);
+	if (DepthMarketData != nullptr)
+	{
+		memcpy(buff + offset, &DepthMarketDataField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, DepthMarketData, sizeof(DepthMarketDataField));
+		offset += sizeof(DepthMarketDataField);
+	}
 	return offset;
 }
 bool RtnDepthMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	DepthMarketData = ::Allocate<DepthMarketDataField>();
-	memcpy(DepthMarketData, buff + offset, sizeof(DepthMarketDataField));
-	offset += sizeof(DepthMarketDataField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case DepthMarketDataField::FieldID:
+		{
+			DepthMarketData = ::Allocate<DepthMarketDataField>();
+			memcpy(DepthMarketData, buff + offset, sizeof(DepthMarketDataField));
+			offset += sizeof(DepthMarketDataField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnDepthMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], UpdateTs:[%lld], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%f], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]", DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->UpdateTs, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
+	if (DepthMarketData != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], UpdateTs:[%lld], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%f], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]", DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->UpdateTs, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -2409,26 +2673,44 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 int RtnBarMarketDataPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, BarMarketData, sizeof(BarMarketDataField));
-	offset += sizeof(BarMarketDataField);
+	if (BarMarketData != nullptr)
+	{
+		memcpy(buff + offset, &BarMarketDataField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, BarMarketData, sizeof(BarMarketDataField));
+		offset += sizeof(BarMarketDataField);
+	}
 	return offset;
 }
 bool RtnBarMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	BarMarketData = ::Allocate<BarMarketDataField>();
-	memcpy(BarMarketData, buff + offset, sizeof(BarMarketDataField));
-	offset += sizeof(BarMarketDataField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case BarMarketDataField::FieldID:
+		{
+			BarMarketData = ::Allocate<BarMarketDataField>();
+			memcpy(BarMarketData, buff + offset, sizeof(BarMarketDataField));
+			offset += sizeof(BarMarketDataField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnBarMarketDataPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+	if (BarMarketData != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -2531,26 +2813,44 @@ bool RtnSessionBeginPackage::FromStepStream(char* buff, int startIndex, int endI
 int RtnSessionBeginPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, SessionBegin, sizeof(SessionBeginField));
-	offset += sizeof(SessionBeginField);
+	if (SessionBegin != nullptr)
+	{
+		memcpy(buff + offset, &SessionBeginField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, SessionBegin, sizeof(SessionBeginField));
+		offset += sizeof(SessionBeginField);
+	}
 	return offset;
 }
 bool RtnSessionBeginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	SessionBegin = ::Allocate<SessionBeginField>();
-	memcpy(SessionBegin, buff + offset, sizeof(SessionBeginField));
-	offset += sizeof(SessionBeginField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case SessionBeginField::FieldID:
+		{
+			SessionBegin = ::Allocate<SessionBeginField>();
+			memcpy(SessionBegin, buff + offset, sizeof(SessionBeginField));
+			offset += sizeof(SessionBeginField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnSessionBeginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "SessionBegin:TradingDay:[%s]", SessionBegin->TradingDay);
+	if (SessionBegin != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "SessionBegin:TradingDay:[%s]", SessionBegin->TradingDay);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -2653,26 +2953,44 @@ bool RtnSessionEndPackage::FromStepStream(char* buff, int startIndex, int endInd
 int RtnSessionEndPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, SessionEnd, sizeof(SessionEndField));
-	offset += sizeof(SessionEndField);
+	if (SessionEnd != nullptr)
+	{
+		memcpy(buff + offset, &SessionEndField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, SessionEnd, sizeof(SessionEndField));
+		offset += sizeof(SessionEndField);
+	}
 	return offset;
 }
 bool RtnSessionEndPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	SessionEnd = ::Allocate<SessionEndField>();
-	memcpy(SessionEnd, buff + offset, sizeof(SessionEndField));
-	offset += sizeof(SessionEndField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case SessionEndField::FieldID:
+		{
+			SessionEnd = ::Allocate<SessionEndField>();
+			memcpy(SessionEnd, buff + offset, sizeof(SessionEndField));
+			offset += sizeof(SessionEndField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnSessionEndPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "SessionEnd:TradingDay:[%s]", SessionEnd->TradingDay);
+	if (SessionEnd != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "SessionEnd:TradingDay:[%s]", SessionEnd->TradingDay);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -2775,26 +3093,44 @@ bool RtnMarketDataEndPackage::FromStepStream(char* buff, int startIndex, int end
 int RtnMarketDataEndPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, MarketDataEnd, sizeof(MarketDataEndField));
-	offset += sizeof(MarketDataEndField);
+	if (MarketDataEnd != nullptr)
+	{
+		memcpy(buff + offset, &MarketDataEndField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, MarketDataEnd, sizeof(MarketDataEndField));
+		offset += sizeof(MarketDataEndField);
+	}
 	return offset;
 }
 bool RtnMarketDataEndPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	MarketDataEnd = ::Allocate<MarketDataEndField>();
-	memcpy(MarketDataEnd, buff + offset, sizeof(MarketDataEndField));
-	offset += sizeof(MarketDataEndField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case MarketDataEndField::FieldID:
+		{
+			MarketDataEnd = ::Allocate<MarketDataEndField>();
+			memcpy(MarketDataEnd, buff + offset, sizeof(MarketDataEndField));
+			offset += sizeof(MarketDataEndField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnMarketDataEndPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "MarketDataEnd:TradingDay:[%s]", MarketDataEnd->TradingDay);
+	if (MarketDataEnd != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "MarketDataEnd:TradingDay:[%s]", MarketDataEnd->TradingDay);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -2908,26 +3244,44 @@ bool ReqAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 int ReqAccountLoginPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqAccountLogin, sizeof(ReqAccountLoginField));
-	offset += sizeof(ReqAccountLoginField);
+	if (ReqAccountLogin != nullptr)
+	{
+		memcpy(buff + offset, &ReqAccountLoginField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqAccountLogin, sizeof(ReqAccountLoginField));
+		offset += sizeof(ReqAccountLoginField);
+	}
 	return offset;
 }
 bool ReqAccountLoginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqAccountLogin = ::Allocate<ReqAccountLoginField>();
-	memcpy(ReqAccountLogin, buff + offset, sizeof(ReqAccountLoginField));
-	offset += sizeof(ReqAccountLoginField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqAccountLoginField::FieldID:
+		{
+			ReqAccountLogin = ::Allocate<ReqAccountLoginField>();
+			memcpy(ReqAccountLogin, buff + offset, sizeof(ReqAccountLoginField));
+			offset += sizeof(ReqAccountLoginField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqAccountLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogin:AccountID:[%s], Password:[%s]", ReqAccountLogin->AccountID, ReqAccountLogin->Password);
+	if (ReqAccountLogin != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogin:AccountID:[%s], Password:[%s]", ReqAccountLogin->AccountID, ReqAccountLogin->Password);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -3115,32 +3469,62 @@ bool RspAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 int RspAccountLoginPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspAccountLogin, sizeof(RspAccountLoginField));
-	offset += sizeof(RspAccountLoginField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (RspAccountLogin != nullptr)
+	{
+		memcpy(buff + offset, &RspAccountLoginField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspAccountLogin, sizeof(RspAccountLoginField));
+		offset += sizeof(RspAccountLoginField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspAccountLoginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspAccountLogin = ::Allocate<RspAccountLoginField>();
-	memcpy(RspAccountLogin, buff + offset, sizeof(RspAccountLoginField));
-	offset += sizeof(RspAccountLoginField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspAccountLoginField::FieldID:
+		{
+			RspAccountLogin = ::Allocate<RspAccountLoginField>();
+			memcpy(RspAccountLogin, buff + offset, sizeof(RspAccountLoginField));
+			offset += sizeof(RspAccountLoginField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspAccountLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogin:AccountID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspAccountLogin->AccountID, RspAccountLogin->LoginDate, RspAccountLogin->LoginTime, RspAccountLogin->SessionID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (RspAccountLogin != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogin:AccountID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspAccountLogin->AccountID, RspAccountLogin->LoginDate, RspAccountLogin->LoginTime, RspAccountLogin->SessionID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -3243,26 +3627,44 @@ bool ReqAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 int ReqAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqAccountLogout, sizeof(ReqAccountLogoutField));
-	offset += sizeof(ReqAccountLogoutField);
+	if (ReqAccountLogout != nullptr)
+	{
+		memcpy(buff + offset, &ReqAccountLogoutField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqAccountLogout, sizeof(ReqAccountLogoutField));
+		offset += sizeof(ReqAccountLogoutField);
+	}
 	return offset;
 }
 bool ReqAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqAccountLogout = ::Allocate<ReqAccountLogoutField>();
-	memcpy(ReqAccountLogout, buff + offset, sizeof(ReqAccountLogoutField));
-	offset += sizeof(ReqAccountLogoutField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqAccountLogoutField::FieldID:
+		{
+			ReqAccountLogout = ::Allocate<ReqAccountLogoutField>();
+			memcpy(ReqAccountLogout, buff + offset, sizeof(ReqAccountLogoutField));
+			offset += sizeof(ReqAccountLogoutField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqAccountLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogout:AccountID:[%s]", ReqAccountLogout->AccountID);
+	if (ReqAccountLogout != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogout:AccountID:[%s]", ReqAccountLogout->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -3422,32 +3824,62 @@ bool RspAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 int RspAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspAccountLogout, sizeof(RspAccountLogoutField));
-	offset += sizeof(RspAccountLogoutField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (RspAccountLogout != nullptr)
+	{
+		memcpy(buff + offset, &RspAccountLogoutField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspAccountLogout, sizeof(RspAccountLogoutField));
+		offset += sizeof(RspAccountLogoutField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspAccountLogout = ::Allocate<RspAccountLogoutField>();
-	memcpy(RspAccountLogout, buff + offset, sizeof(RspAccountLogoutField));
-	offset += sizeof(RspAccountLogoutField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspAccountLogoutField::FieldID:
+		{
+			RspAccountLogout = ::Allocate<RspAccountLogoutField>();
+			memcpy(RspAccountLogout, buff + offset, sizeof(RspAccountLogoutField));
+			offset += sizeof(RspAccountLogoutField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspAccountLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogout:AccountID:[%s]", RspAccountLogout->AccountID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (RspAccountLogout != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogout:AccountID:[%s]", RspAccountLogout->AccountID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -3550,26 +3982,44 @@ bool ReqQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 int ReqQryAccountPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryAccount, sizeof(ReqQryAccountField));
-	offset += sizeof(ReqQryAccountField);
+	if (ReqQryAccount != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryAccountField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryAccount, sizeof(ReqQryAccountField));
+		offset += sizeof(ReqQryAccountField);
+	}
 	return offset;
 }
 bool ReqQryAccountPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryAccount = ::Allocate<ReqQryAccountField>();
-	memcpy(ReqQryAccount, buff + offset, sizeof(ReqQryAccountField));
-	offset += sizeof(ReqQryAccountField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryAccountField::FieldID:
+		{
+			ReqQryAccount = ::Allocate<ReqQryAccountField>();
+			memcpy(ReqQryAccount, buff + offset, sizeof(ReqQryAccountField));
+			offset += sizeof(ReqQryAccountField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryAccountPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryAccount:AccountID:[%s]", ReqQryAccount->AccountID);
+	if (ReqQryAccount != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryAccount:AccountID:[%s]", ReqQryAccount->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -3759,32 +4209,62 @@ bool RspQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 int RspQryAccountPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Account, sizeof(AccountField));
-	offset += sizeof(AccountField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (Account != nullptr)
+	{
+		memcpy(buff + offset, &AccountField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, Account, sizeof(AccountField));
+		offset += sizeof(AccountField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryAccountPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Account = ::Allocate<AccountField>();
-	memcpy(Account, buff + offset, sizeof(AccountField));
-	offset += sizeof(AccountField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case AccountField::FieldID:
+		{
+			Account = ::Allocate<AccountField>();
+			memcpy(Account, buff + offset, sizeof(AccountField));
+			offset += sizeof(AccountField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryAccountPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]", Account->AccountID, (int)Account->AccountType, (int)Account->AccountStatus, Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (Account != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]", Account->AccountID, (int)Account->AccountType, (int)Account->AccountStatus, Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -3887,26 +4367,44 @@ bool ReqQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int 
 int ReqQryHolderAccountPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryHolderAccount, sizeof(ReqQryHolderAccountField));
-	offset += sizeof(ReqQryHolderAccountField);
+	if (ReqQryHolderAccount != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryHolderAccountField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryHolderAccount, sizeof(ReqQryHolderAccountField));
+		offset += sizeof(ReqQryHolderAccountField);
+	}
 	return offset;
 }
 bool ReqQryHolderAccountPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryHolderAccount = ::Allocate<ReqQryHolderAccountField>();
-	memcpy(ReqQryHolderAccount, buff + offset, sizeof(ReqQryHolderAccountField));
-	offset += sizeof(ReqQryHolderAccountField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryHolderAccountField::FieldID:
+		{
+			ReqQryHolderAccount = ::Allocate<ReqQryHolderAccountField>();
+			memcpy(ReqQryHolderAccount, buff + offset, sizeof(ReqQryHolderAccountField));
+			offset += sizeof(ReqQryHolderAccountField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryHolderAccountPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryHolderAccount:AccountID:[%s]", ReqQryHolderAccount->AccountID);
+	if (ReqQryHolderAccount != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryHolderAccount:AccountID:[%s]", ReqQryHolderAccount->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -4083,32 +4581,62 @@ bool RspQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int 
 int RspQryHolderAccountPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, HolderAccount, sizeof(HolderAccountField));
-	offset += sizeof(HolderAccountField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (HolderAccount != nullptr)
+	{
+		memcpy(buff + offset, &HolderAccountField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, HolderAccount, sizeof(HolderAccountField));
+		offset += sizeof(HolderAccountField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryHolderAccountPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	HolderAccount = ::Allocate<HolderAccountField>();
-	memcpy(HolderAccount, buff + offset, sizeof(HolderAccountField));
-	offset += sizeof(HolderAccountField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case HolderAccountField::FieldID:
+		{
+			HolderAccount = ::Allocate<HolderAccountField>();
+			memcpy(HolderAccount, buff + offset, sizeof(HolderAccountField));
+			offset += sizeof(HolderAccountField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryHolderAccountPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "HolderAccount:ExchangeID:[%s], HolderAccountID:[%s], PrimaryFlag:[%d]", HolderAccount->ExchangeID, HolderAccount->HolderAccountID, HolderAccount->PrimaryFlag);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (HolderAccount != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "HolderAccount:ExchangeID:[%s], HolderAccountID:[%s], PrimaryFlag:[%d]", HolderAccount->ExchangeID, HolderAccount->HolderAccountID, HolderAccount->PrimaryFlag);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -4211,26 +4739,44 @@ bool ReqQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 int ReqQryCapitalPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryCapital, sizeof(ReqQryCapitalField));
-	offset += sizeof(ReqQryCapitalField);
+	if (ReqQryCapital != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryCapitalField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryCapital, sizeof(ReqQryCapitalField));
+		offset += sizeof(ReqQryCapitalField);
+	}
 	return offset;
 }
 bool ReqQryCapitalPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryCapital = ::Allocate<ReqQryCapitalField>();
-	memcpy(ReqQryCapital, buff + offset, sizeof(ReqQryCapitalField));
-	offset += sizeof(ReqQryCapitalField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryCapitalField::FieldID:
+		{
+			ReqQryCapital = ::Allocate<ReqQryCapitalField>();
+			memcpy(ReqQryCapital, buff + offset, sizeof(ReqQryCapitalField));
+			offset += sizeof(ReqQryCapitalField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryCapitalPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryCapital:AccountID:[%s]", ReqQryCapital->AccountID);
+	if (ReqQryCapital != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryCapital:AccountID:[%s]", ReqQryCapital->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -4509,32 +5055,62 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 int RspQryCapitalPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Capital, sizeof(CapitalField));
-	offset += sizeof(CapitalField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (Capital != nullptr)
+	{
+		memcpy(buff + offset, &CapitalField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, Capital, sizeof(CapitalField));
+		offset += sizeof(CapitalField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryCapitalPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Capital = ::Allocate<CapitalField>();
-	memcpy(Capital, buff + offset, sizeof(CapitalField));
-	offset += sizeof(CapitalField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case CapitalField::FieldID:
+		{
+			Capital = ::Allocate<CapitalField>();
+			memcpy(Capital, buff + offset, sizeof(CapitalField));
+			offset += sizeof(CapitalField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryCapitalPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountID, (int)Capital->AccountType, Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (Capital != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountID, (int)Capital->AccountType, Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -4637,26 +5213,44 @@ bool ReqQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 int ReqQryPositionPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryPosition, sizeof(ReqQryPositionField));
-	offset += sizeof(ReqQryPositionField);
+	if (ReqQryPosition != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryPositionField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryPosition, sizeof(ReqQryPositionField));
+		offset += sizeof(ReqQryPositionField);
+	}
 	return offset;
 }
 bool ReqQryPositionPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryPosition = ::Allocate<ReqQryPositionField>();
-	memcpy(ReqQryPosition, buff + offset, sizeof(ReqQryPositionField));
-	offset += sizeof(ReqQryPositionField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryPositionField::FieldID:
+		{
+			ReqQryPosition = ::Allocate<ReqQryPositionField>();
+			memcpy(ReqQryPosition, buff + offset, sizeof(ReqQryPositionField));
+			offset += sizeof(ReqQryPositionField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryPositionPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryPosition:AccountID:[%s]", ReqQryPosition->AccountID);
+	if (ReqQryPosition != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryPosition:AccountID:[%s]", ReqQryPosition->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -4957,32 +5551,62 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 int RspQryPositionPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Position, sizeof(PositionField));
-	offset += sizeof(PositionField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (Position != nullptr)
+	{
+		memcpy(buff + offset, &PositionField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, Position, sizeof(PositionField));
+		offset += sizeof(PositionField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryPositionPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Position = ::Allocate<PositionField>();
-	memcpy(Position, buff + offset, sizeof(PositionField));
-	offset += sizeof(PositionField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case PositionField::FieldID:
+		{
+			Position = ::Allocate<PositionField>();
+			memcpy(Position, buff + offset, sizeof(PositionField));
+			offset += sizeof(PositionField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryPositionPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountID, (int)Position->AccountType, Position->ExchangeID, Position->InstrumentID, (int)Position->ProductClass, (int)Position->PosiDirection, Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (Position != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountID, (int)Position->AccountType, Position->ExchangeID, Position->InstrumentID, (int)Position->ProductClass, (int)Position->PosiDirection, Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -5085,26 +5709,44 @@ bool ReqQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 int ReqQryOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryOrder, sizeof(ReqQryOrderField));
-	offset += sizeof(ReqQryOrderField);
+	if (ReqQryOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryOrder, sizeof(ReqQryOrderField));
+		offset += sizeof(ReqQryOrderField);
+	}
 	return offset;
 }
 bool ReqQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryOrder = ::Allocate<ReqQryOrderField>();
-	memcpy(ReqQryOrder, buff + offset, sizeof(ReqQryOrderField));
-	offset += sizeof(ReqQryOrderField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryOrderField::FieldID:
+		{
+			ReqQryOrder = ::Allocate<ReqQryOrderField>();
+			memcpy(ReqQryOrder, buff + offset, sizeof(ReqQryOrderField));
+			offset += sizeof(ReqQryOrderField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryOrder:AccountID:[%s]", ReqQryOrder->AccountID);
+	if (ReqQryOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryOrder:AccountID:[%s]", ReqQryOrder->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -5454,32 +6096,62 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 int RspQryOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Order, sizeof(OrderField));
-	offset += sizeof(OrderField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (Order != nullptr)
+	{
+		memcpy(buff + offset, &OrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, Order, sizeof(OrderField));
+		offset += sizeof(OrderField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Order = ::Allocate<OrderField>();
-	memcpy(Order, buff + offset, sizeof(OrderField));
-	offset += sizeof(OrderField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case OrderField::FieldID:
+		{
+			Order = ::Allocate<OrderField>();
+			memcpy(Order, buff + offset, sizeof(OrderField));
+			offset += sizeof(OrderField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (Order != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -5582,26 +6254,44 @@ bool ReqQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 int ReqQryTradePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryTrade, sizeof(ReqQryTradeField));
-	offset += sizeof(ReqQryTradeField);
+	if (ReqQryTrade != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryTradeField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryTrade, sizeof(ReqQryTradeField));
+		offset += sizeof(ReqQryTradeField);
+	}
 	return offset;
 }
 bool ReqQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryTrade = ::Allocate<ReqQryTradeField>();
-	memcpy(ReqQryTrade, buff + offset, sizeof(ReqQryTradeField));
-	offset += sizeof(ReqQryTradeField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryTradeField::FieldID:
+		{
+			ReqQryTrade = ::Allocate<ReqQryTradeField>();
+			memcpy(ReqQryTrade, buff + offset, sizeof(ReqQryTradeField));
+			offset += sizeof(ReqQryTradeField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryTradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryTrade:AccountID:[%s]", ReqQryTrade->AccountID);
+	if (ReqQryTrade != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryTrade:AccountID:[%s]", ReqQryTrade->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -5892,32 +6582,62 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 int RspQryTradePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Trade, sizeof(TradeField));
-	offset += sizeof(TradeField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (Trade != nullptr)
+	{
+		memcpy(buff + offset, &TradeField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, Trade, sizeof(TradeField));
+		offset += sizeof(TradeField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Trade = ::Allocate<TradeField>();
-	memcpy(Trade, buff + offset, sizeof(TradeField));
-	offset += sizeof(TradeField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case TradeField::FieldID:
+		{
+			Trade = ::Allocate<TradeField>();
+			memcpy(Trade, buff + offset, sizeof(TradeField));
+			offset += sizeof(TradeField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryTradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (Trade != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -6031,26 +6751,44 @@ bool ReqQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 int ReqQryInstrumentPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryInstrument, sizeof(ReqQryInstrumentField));
-	offset += sizeof(ReqQryInstrumentField);
+	if (ReqQryInstrument != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryInstrumentField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryInstrument, sizeof(ReqQryInstrumentField));
+		offset += sizeof(ReqQryInstrumentField);
+	}
 	return offset;
 }
 bool ReqQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryInstrument = ::Allocate<ReqQryInstrumentField>();
-	memcpy(ReqQryInstrument, buff + offset, sizeof(ReqQryInstrumentField));
-	offset += sizeof(ReqQryInstrumentField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryInstrumentField::FieldID:
+		{
+			ReqQryInstrument = ::Allocate<ReqQryInstrumentField>();
+			memcpy(ReqQryInstrument, buff + offset, sizeof(ReqQryInstrumentField));
+			offset += sizeof(ReqQryInstrumentField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryInstrument->ExchangeID, ReqQryInstrument->InstrumentID);
+	if (ReqQryInstrument != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryInstrument->ExchangeID, ReqQryInstrument->InstrumentID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -6255,32 +6993,62 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 int RspQryInstrumentPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Instrument, sizeof(InstrumentField));
-	offset += sizeof(InstrumentField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (Instrument != nullptr)
+	{
+		memcpy(buff + offset, &InstrumentField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, Instrument, sizeof(InstrumentField));
+		offset += sizeof(InstrumentField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Instrument = ::Allocate<InstrumentField>();
-	memcpy(Instrument, buff + offset, sizeof(InstrumentField));
-	offset += sizeof(InstrumentField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case InstrumentField::FieldID:
+		{
+			Instrument = ::Allocate<InstrumentField>();
+			memcpy(Instrument, buff + offset, sizeof(InstrumentField));
+			offset += sizeof(InstrumentField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], ProductClass:[%d]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->VolumeMultiple, (int)Instrument->ProductClass);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (Instrument != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], ProductClass:[%d]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->VolumeMultiple, (int)Instrument->ProductClass);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -6394,26 +7162,44 @@ bool ReqQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 int ReqQryOptionInstrumentPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryOptionInstrument, sizeof(ReqQryOptionInstrumentField));
-	offset += sizeof(ReqQryOptionInstrumentField);
+	if (ReqQryOptionInstrument != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryOptionInstrumentField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryOptionInstrument, sizeof(ReqQryOptionInstrumentField));
+		offset += sizeof(ReqQryOptionInstrumentField);
+	}
 	return offset;
 }
 bool ReqQryOptionInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryOptionInstrument = ::Allocate<ReqQryOptionInstrumentField>();
-	memcpy(ReqQryOptionInstrument, buff + offset, sizeof(ReqQryOptionInstrumentField));
-	offset += sizeof(ReqQryOptionInstrumentField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryOptionInstrumentField::FieldID:
+		{
+			ReqQryOptionInstrument = ::Allocate<ReqQryOptionInstrumentField>();
+			memcpy(ReqQryOptionInstrument, buff + offset, sizeof(ReqQryOptionInstrumentField));
+			offset += sizeof(ReqQryOptionInstrumentField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryOptionInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryOptionInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryOptionInstrument->ExchangeID, ReqQryOptionInstrument->InstrumentID);
+	if (ReqQryOptionInstrument != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryOptionInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryOptionInstrument->ExchangeID, ReqQryOptionInstrument->InstrumentID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -6670,32 +7456,62 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 int RspQryOptionInstrumentPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, OptionInstrument, sizeof(OptionInstrumentField));
-	offset += sizeof(OptionInstrumentField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (OptionInstrument != nullptr)
+	{
+		memcpy(buff + offset, &OptionInstrumentField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, OptionInstrument, sizeof(OptionInstrumentField));
+		offset += sizeof(OptionInstrumentField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryOptionInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	OptionInstrument = ::Allocate<OptionInstrumentField>();
-	memcpy(OptionInstrument, buff + offset, sizeof(OptionInstrumentField));
-	offset += sizeof(OptionInstrumentField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case OptionInstrumentField::FieldID:
+		{
+			OptionInstrument = ::Allocate<OptionInstrumentField>();
+			memcpy(OptionInstrument, buff + offset, sizeof(OptionInstrumentField));
+			offset += sizeof(OptionInstrumentField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryOptionInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, (int)OptionInstrument->OptionType, OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (OptionInstrument != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, (int)OptionInstrument->OptionType, OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -6815,26 +7631,44 @@ bool ReqQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 int ReqQryCommissionRatePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryCommissionRate, sizeof(ReqQryCommissionRateField));
-	offset += sizeof(ReqQryCommissionRateField);
+	if (ReqQryCommissionRate != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryCommissionRateField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryCommissionRate, sizeof(ReqQryCommissionRateField));
+		offset += sizeof(ReqQryCommissionRateField);
+	}
 	return offset;
 }
 bool ReqQryCommissionRatePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryCommissionRate = ::Allocate<ReqQryCommissionRateField>();
-	memcpy(ReqQryCommissionRate, buff + offset, sizeof(ReqQryCommissionRateField));
-	offset += sizeof(ReqQryCommissionRateField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryCommissionRateField::FieldID:
+		{
+			ReqQryCommissionRate = ::Allocate<ReqQryCommissionRateField>();
+			memcpy(ReqQryCommissionRate, buff + offset, sizeof(ReqQryCommissionRateField));
+			offset += sizeof(ReqQryCommissionRateField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryCommissionRatePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, (int)ReqQryCommissionRate->ProductClass);
+	if (ReqQryCommissionRate != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, (int)ReqQryCommissionRate->ProductClass);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -7071,32 +7905,62 @@ bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 int RspQryCommissionRatePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, CommissionRate, sizeof(CommissionRateField));
-	offset += sizeof(CommissionRateField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (CommissionRate != nullptr)
+	{
+		memcpy(buff + offset, &CommissionRateField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, CommissionRate, sizeof(CommissionRateField));
+		offset += sizeof(CommissionRateField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryCommissionRatePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	CommissionRate = ::Allocate<CommissionRateField>();
-	memcpy(CommissionRate, buff + offset, sizeof(CommissionRateField));
-	offset += sizeof(CommissionRateField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case CommissionRateField::FieldID:
+		{
+			CommissionRate = ::Allocate<CommissionRateField>();
+			memcpy(CommissionRate, buff + offset, sizeof(CommissionRateField));
+			offset += sizeof(CommissionRateField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryCommissionRatePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountID, CommissionRate->ExchangeID, (int)CommissionRate->ProductClass, CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (CommissionRate != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountID, CommissionRate->ExchangeID, (int)CommissionRate->ProductClass, CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -7199,26 +8063,44 @@ bool ReqQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 int ReqQryMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQryMoneyTransfer, sizeof(ReqQryMoneyTransferField));
-	offset += sizeof(ReqQryMoneyTransferField);
+	if (ReqQryMoneyTransfer != nullptr)
+	{
+		memcpy(buff + offset, &ReqQryMoneyTransferField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQryMoneyTransfer, sizeof(ReqQryMoneyTransferField));
+		offset += sizeof(ReqQryMoneyTransferField);
+	}
 	return offset;
 }
 bool ReqQryMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQryMoneyTransfer = ::Allocate<ReqQryMoneyTransferField>();
-	memcpy(ReqQryMoneyTransfer, buff + offset, sizeof(ReqQryMoneyTransferField));
-	offset += sizeof(ReqQryMoneyTransferField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQryMoneyTransferField::FieldID:
+		{
+			ReqQryMoneyTransfer = ::Allocate<ReqQryMoneyTransferField>();
+			memcpy(ReqQryMoneyTransfer, buff + offset, sizeof(ReqQryMoneyTransferField));
+			offset += sizeof(ReqQryMoneyTransferField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQryMoneyTransferPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQryMoneyTransfer:AccountID:[%s]", ReqQryMoneyTransfer->AccountID);
+	if (ReqQryMoneyTransfer != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryMoneyTransfer:AccountID:[%s]", ReqQryMoneyTransfer->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -7457,32 +8339,62 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 int RspQryMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, MoneyTransfer, sizeof(MoneyTransferField));
-	offset += sizeof(MoneyTransferField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (MoneyTransfer != nullptr)
+	{
+		memcpy(buff + offset, &MoneyTransferField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, MoneyTransfer, sizeof(MoneyTransferField));
+		offset += sizeof(MoneyTransferField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQryMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	MoneyTransfer = ::Allocate<MoneyTransferField>();
-	memcpy(MoneyTransfer, buff + offset, sizeof(MoneyTransferField));
-	offset += sizeof(MoneyTransferField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case MoneyTransferField::FieldID:
+		{
+			MoneyTransfer = ::Allocate<MoneyTransferField>();
+			memcpy(MoneyTransfer, buff + offset, sizeof(MoneyTransferField));
+			offset += sizeof(MoneyTransferField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQryMoneyTransferPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (MoneyTransfer != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -7643,26 +8555,44 @@ bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 int ReqInsertOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
-	offset += sizeof(ReqInsertOrderField);
+	if (ReqInsertOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqInsertOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
+		offset += sizeof(ReqInsertOrderField);
+	}
 	return offset;
 }
 bool ReqInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
-	memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
-	offset += sizeof(ReqInsertOrderField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqInsertOrderField::FieldID:
+		{
+			ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
+			memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
+			offset += sizeof(ReqInsertOrderField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqInsertOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+	if (ReqInsertOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -7880,32 +8810,62 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 int RspInsertOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
-	offset += sizeof(ReqInsertOrderField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (ReqInsertOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqInsertOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
+		offset += sizeof(ReqInsertOrderField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
-	memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
-	offset += sizeof(ReqInsertOrderField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqInsertOrderField::FieldID:
+		{
+			ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
+			memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
+			offset += sizeof(ReqInsertOrderField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspInsertOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (ReqInsertOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -8065,26 +9025,44 @@ bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 int ReqCancelOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
-	offset += sizeof(ReqCancelOrderField);
+	if (ReqCancelOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqCancelOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
+		offset += sizeof(ReqCancelOrderField);
+	}
 	return offset;
 }
 bool ReqCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
-	memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
-	offset += sizeof(ReqCancelOrderField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqCancelOrderField::FieldID:
+		{
+			ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
+			memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
+			offset += sizeof(ReqCancelOrderField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqCancelOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+	if (ReqCancelOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -8301,32 +9279,62 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 int RspCancelOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
-	offset += sizeof(ReqCancelOrderField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (ReqCancelOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqCancelOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
+		offset += sizeof(ReqCancelOrderField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
-	memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
-	offset += sizeof(ReqCancelOrderField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqCancelOrderField::FieldID:
+		{
+			ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
+			memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
+			offset += sizeof(ReqCancelOrderField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspCancelOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (ReqCancelOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -8619,26 +9627,44 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 int RtnOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Order, sizeof(OrderField));
-	offset += sizeof(OrderField);
+	if (Order != nullptr)
+	{
+		memcpy(buff + offset, &OrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, Order, sizeof(OrderField));
+		offset += sizeof(OrderField);
+	}
 	return offset;
 }
 bool RtnOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Order = ::Allocate<OrderField>();
-	memcpy(Order, buff + offset, sizeof(OrderField));
-	offset += sizeof(OrderField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case OrderField::FieldID:
+		{
+			Order = ::Allocate<OrderField>();
+			memcpy(Order, buff + offset, sizeof(OrderField));
+			offset += sizeof(OrderField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+	if (Order != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -8872,26 +9898,44 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 int RtnTradePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, Trade, sizeof(TradeField));
-	offset += sizeof(TradeField);
+	if (Trade != nullptr)
+	{
+		memcpy(buff + offset, &TradeField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, Trade, sizeof(TradeField));
+		offset += sizeof(TradeField);
+	}
 	return offset;
 }
 bool RtnTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	Trade = ::Allocate<TradeField>();
-	memcpy(Trade, buff + offset, sizeof(TradeField));
-	offset += sizeof(TradeField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case TradeField::FieldID:
+		{
+			Trade = ::Allocate<TradeField>();
+			memcpy(Trade, buff + offset, sizeof(TradeField));
+			offset += sizeof(TradeField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnTradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+	if (Trade != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -9073,26 +10117,44 @@ bool RtnMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int end
 int RtnMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, MoneyTransfer, sizeof(MoneyTransferField));
-	offset += sizeof(MoneyTransferField);
+	if (MoneyTransfer != nullptr)
+	{
+		memcpy(buff + offset, &MoneyTransferField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, MoneyTransfer, sizeof(MoneyTransferField));
+		offset += sizeof(MoneyTransferField);
+	}
 	return offset;
 }
 bool RtnMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	MoneyTransfer = ::Allocate<MoneyTransferField>();
-	memcpy(MoneyTransfer, buff + offset, sizeof(MoneyTransferField));
-	offset += sizeof(MoneyTransferField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case MoneyTransferField::FieldID:
+		{
+			MoneyTransfer = ::Allocate<MoneyTransferField>();
+			memcpy(MoneyTransfer, buff + offset, sizeof(MoneyTransferField));
+			offset += sizeof(MoneyTransferField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnMoneyTransferPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+	if (MoneyTransfer != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -9212,26 +10274,44 @@ bool RtnAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 int RtnAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, AccountLogout, sizeof(AccountLogoutField));
-	offset += sizeof(AccountLogoutField);
+	if (AccountLogout != nullptr)
+	{
+		memcpy(buff + offset, &AccountLogoutField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, AccountLogout, sizeof(AccountLogoutField));
+		offset += sizeof(AccountLogoutField);
+	}
 	return offset;
 }
 bool RtnAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	AccountLogout = ::Allocate<AccountLogoutField>();
-	memcpy(AccountLogout, buff + offset, sizeof(AccountLogoutField));
-	offset += sizeof(AccountLogoutField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case AccountLogoutField::FieldID:
+		{
+			AccountLogout = ::Allocate<AccountLogoutField>();
+			memcpy(AccountLogout, buff + offset, sizeof(AccountLogoutField));
+			offset += sizeof(AccountLogoutField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnAccountLogoutPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "AccountLogout:AccountID:[%s], ErrorID:[%d], ErrorMsg:[%s]", AccountLogout->AccountID, AccountLogout->ErrorID, AccountLogout->ErrorMsg);
+	if (AccountLogout != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "AccountLogout:AccountID:[%s], ErrorID:[%d], ErrorMsg:[%s]", AccountLogout->AccountID, AccountLogout->ErrorID, AccountLogout->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -9340,26 +10420,44 @@ bool ReqSEBrokerLoginPackage::FromStepStream(char* buff, int startIndex, int end
 int ReqSEBrokerLoginPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqSEBrokerLogin, sizeof(ReqSEBrokerLoginField));
-	offset += sizeof(ReqSEBrokerLoginField);
+	if (ReqSEBrokerLogin != nullptr)
+	{
+		memcpy(buff + offset, &ReqSEBrokerLoginField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqSEBrokerLogin, sizeof(ReqSEBrokerLoginField));
+		offset += sizeof(ReqSEBrokerLoginField);
+	}
 	return offset;
 }
 bool ReqSEBrokerLoginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqSEBrokerLogin = ::Allocate<ReqSEBrokerLoginField>();
-	memcpy(ReqSEBrokerLogin, buff + offset, sizeof(ReqSEBrokerLoginField));
-	offset += sizeof(ReqSEBrokerLoginField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqSEBrokerLoginField::FieldID:
+		{
+			ReqSEBrokerLogin = ::Allocate<ReqSEBrokerLoginField>();
+			memcpy(ReqSEBrokerLogin, buff + offset, sizeof(ReqSEBrokerLoginField));
+			offset += sizeof(ReqSEBrokerLoginField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqSEBrokerLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSEBrokerLogin:BrokerID:[%d], Password:[%s]", ReqSEBrokerLogin->BrokerID, ReqSEBrokerLogin->Password);
+	if (ReqSEBrokerLogin != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSEBrokerLogin:BrokerID:[%d], Password:[%s]", ReqSEBrokerLogin->BrokerID, ReqSEBrokerLogin->Password);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -9542,32 +10640,62 @@ bool RspSEBrokerLoginPackage::FromStepStream(char* buff, int startIndex, int end
 int RspSEBrokerLoginPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, RspSEBrokerLogin, sizeof(RspSEBrokerLoginField));
-	offset += sizeof(RspSEBrokerLoginField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (RspSEBrokerLogin != nullptr)
+	{
+		memcpy(buff + offset, &RspSEBrokerLoginField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspSEBrokerLogin, sizeof(RspSEBrokerLoginField));
+		offset += sizeof(RspSEBrokerLoginField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspSEBrokerLoginPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	RspSEBrokerLogin = ::Allocate<RspSEBrokerLoginField>();
-	memcpy(RspSEBrokerLogin, buff + offset, sizeof(RspSEBrokerLoginField));
-	offset += sizeof(RspSEBrokerLoginField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspSEBrokerLoginField::FieldID:
+		{
+			RspSEBrokerLogin = ::Allocate<RspSEBrokerLoginField>();
+			memcpy(RspSEBrokerLogin, buff + offset, sizeof(RspSEBrokerLoginField));
+			offset += sizeof(RspSEBrokerLoginField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspSEBrokerLoginPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "RspSEBrokerLogin:BrokerID:[%d], BrokerName:[%s], SessionID:[%lld], IPAddress:[%s]", RspSEBrokerLogin->BrokerID, RspSEBrokerLogin->BrokerName, RspSEBrokerLogin->SessionID, RspSEBrokerLogin->IPAddress);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (RspSEBrokerLogin != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspSEBrokerLogin:BrokerID:[%d], BrokerName:[%s], SessionID:[%lld], IPAddress:[%s]", RspSEBrokerLogin->BrokerID, RspSEBrokerLogin->BrokerName, RspSEBrokerLogin->SessionID, RspSEBrokerLogin->IPAddress);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -9734,26 +10862,44 @@ bool ReqSEInsertOrderPackage::FromStepStream(char* buff, int startIndex, int end
 int ReqSEInsertOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqSEInsertOrder, sizeof(ReqSEInsertOrderField));
-	offset += sizeof(ReqSEInsertOrderField);
+	if (ReqSEInsertOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqSEInsertOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqSEInsertOrder, sizeof(ReqSEInsertOrderField));
+		offset += sizeof(ReqSEInsertOrderField);
+	}
 	return offset;
 }
 bool ReqSEInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqSEInsertOrder = ::Allocate<ReqSEInsertOrderField>();
-	memcpy(ReqSEInsertOrder, buff + offset, sizeof(ReqSEInsertOrderField));
-	offset += sizeof(ReqSEInsertOrderField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqSEInsertOrderField::FieldID:
+		{
+			ReqSEInsertOrder = ::Allocate<ReqSEInsertOrderField>();
+			memcpy(ReqSEInsertOrder, buff + offset, sizeof(ReqSEInsertOrderField));
+			offset += sizeof(ReqSEInsertOrderField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqSEInsertOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSEInsertOrder:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqSEInsertOrder->BrokerID, ReqSEInsertOrder->AccountID, ReqSEInsertOrder->ExchangeID, ReqSEInsertOrder->InstrumentID, (int)ReqSEInsertOrder->Direction, (int)ReqSEInsertOrder->OffsetFlag, (int)ReqSEInsertOrder->OrderPriceType, ReqSEInsertOrder->Price, ReqSEInsertOrder->Volume, ReqSEInsertOrder->ClientOrderID);
+	if (ReqSEInsertOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSEInsertOrder:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqSEInsertOrder->BrokerID, ReqSEInsertOrder->AccountID, ReqSEInsertOrder->ExchangeID, ReqSEInsertOrder->InstrumentID, (int)ReqSEInsertOrder->Direction, (int)ReqSEInsertOrder->OffsetFlag, (int)ReqSEInsertOrder->OrderPriceType, ReqSEInsertOrder->Price, ReqSEInsertOrder->Volume, ReqSEInsertOrder->ClientOrderID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -9977,32 +11123,62 @@ bool RspSEInsertOrderPackage::FromStepStream(char* buff, int startIndex, int end
 int RspSEInsertOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqSEInsertOrder, sizeof(ReqSEInsertOrderField));
-	offset += sizeof(ReqSEInsertOrderField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (ReqSEInsertOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqSEInsertOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqSEInsertOrder, sizeof(ReqSEInsertOrderField));
+		offset += sizeof(ReqSEInsertOrderField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspSEInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqSEInsertOrder = ::Allocate<ReqSEInsertOrderField>();
-	memcpy(ReqSEInsertOrder, buff + offset, sizeof(ReqSEInsertOrderField));
-	offset += sizeof(ReqSEInsertOrderField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqSEInsertOrderField::FieldID:
+		{
+			ReqSEInsertOrder = ::Allocate<ReqSEInsertOrderField>();
+			memcpy(ReqSEInsertOrder, buff + offset, sizeof(ReqSEInsertOrderField));
+			offset += sizeof(ReqSEInsertOrderField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspSEInsertOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSEInsertOrder:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqSEInsertOrder->BrokerID, ReqSEInsertOrder->AccountID, ReqSEInsertOrder->ExchangeID, ReqSEInsertOrder->InstrumentID, (int)ReqSEInsertOrder->Direction, (int)ReqSEInsertOrder->OffsetFlag, (int)ReqSEInsertOrder->OrderPriceType, ReqSEInsertOrder->Price, ReqSEInsertOrder->Volume, ReqSEInsertOrder->ClientOrderID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (ReqSEInsertOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSEInsertOrder:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqSEInsertOrder->BrokerID, ReqSEInsertOrder->AccountID, ReqSEInsertOrder->ExchangeID, ReqSEInsertOrder->InstrumentID, (int)ReqSEInsertOrder->Direction, (int)ReqSEInsertOrder->OffsetFlag, (int)ReqSEInsertOrder->OrderPriceType, ReqSEInsertOrder->Price, ReqSEInsertOrder->Volume, ReqSEInsertOrder->ClientOrderID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -10157,26 +11333,44 @@ bool ReqSECancelOrderPackage::FromStepStream(char* buff, int startIndex, int end
 int ReqSECancelOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqSECancelOrder, sizeof(ReqSECancelOrderField));
-	offset += sizeof(ReqSECancelOrderField);
+	if (ReqSECancelOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqSECancelOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqSECancelOrder, sizeof(ReqSECancelOrderField));
+		offset += sizeof(ReqSECancelOrderField);
+	}
 	return offset;
 }
 bool ReqSECancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqSECancelOrder = ::Allocate<ReqSECancelOrderField>();
-	memcpy(ReqSECancelOrder, buff + offset, sizeof(ReqSECancelOrderField));
-	offset += sizeof(ReqSECancelOrderField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqSECancelOrderField::FieldID:
+		{
+			ReqSECancelOrder = ::Allocate<ReqSECancelOrderField>();
+			memcpy(ReqSECancelOrder, buff + offset, sizeof(ReqSECancelOrderField));
+			offset += sizeof(ReqSECancelOrderField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqSECancelOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSECancelOrder:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], CancelOrderID:[%d], OrderID:[%d], ClientOrderID:[%d], SessionID:[%lld]", ReqSECancelOrder->BrokerID, ReqSECancelOrder->AccountID, ReqSECancelOrder->ExchangeID, ReqSECancelOrder->InstrumentID, ReqSECancelOrder->CancelOrderID, ReqSECancelOrder->OrderID, ReqSECancelOrder->ClientOrderID, ReqSECancelOrder->SessionID);
+	if (ReqSECancelOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSECancelOrder:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], CancelOrderID:[%d], OrderID:[%d], ClientOrderID:[%d], SessionID:[%lld]", ReqSECancelOrder->BrokerID, ReqSECancelOrder->AccountID, ReqSECancelOrder->ExchangeID, ReqSECancelOrder->InstrumentID, ReqSECancelOrder->CancelOrderID, ReqSECancelOrder->OrderID, ReqSECancelOrder->ClientOrderID, ReqSECancelOrder->SessionID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -10388,32 +11582,62 @@ bool RspSECancelOrderPackage::FromStepStream(char* buff, int startIndex, int end
 int RspSECancelOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqSECancelOrder, sizeof(ReqSECancelOrderField));
-	offset += sizeof(ReqSECancelOrderField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (ReqSECancelOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqSECancelOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqSECancelOrder, sizeof(ReqSECancelOrderField));
+		offset += sizeof(ReqSECancelOrderField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspSECancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqSECancelOrder = ::Allocate<ReqSECancelOrderField>();
-	memcpy(ReqSECancelOrder, buff + offset, sizeof(ReqSECancelOrderField));
-	offset += sizeof(ReqSECancelOrderField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqSECancelOrderField::FieldID:
+		{
+			ReqSECancelOrder = ::Allocate<ReqSECancelOrderField>();
+			memcpy(ReqSECancelOrder, buff + offset, sizeof(ReqSECancelOrderField));
+			offset += sizeof(ReqSECancelOrderField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspSECancelOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqSECancelOrder:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], CancelOrderID:[%d], OrderID:[%d], ClientOrderID:[%d], SessionID:[%lld]", ReqSECancelOrder->BrokerID, ReqSECancelOrder->AccountID, ReqSECancelOrder->ExchangeID, ReqSECancelOrder->InstrumentID, ReqSECancelOrder->CancelOrderID, ReqSECancelOrder->OrderID, ReqSECancelOrder->ClientOrderID, ReqSECancelOrder->SessionID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (ReqSECancelOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSECancelOrder:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], CancelOrderID:[%d], OrderID:[%d], ClientOrderID:[%d], SessionID:[%lld]", ReqSECancelOrder->BrokerID, ReqSECancelOrder->AccountID, ReqSECancelOrder->ExchangeID, ReqSECancelOrder->InstrumentID, ReqSECancelOrder->CancelOrderID, ReqSECancelOrder->OrderID, ReqSECancelOrder->ClientOrderID, ReqSECancelOrder->SessionID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -10516,26 +11740,44 @@ bool ReqQrySEOrderPackage::FromStepStream(char* buff, int startIndex, int endInd
 int ReqQrySEOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQrySEOrder, sizeof(ReqQrySEOrderField));
-	offset += sizeof(ReqQrySEOrderField);
+	if (ReqQrySEOrder != nullptr)
+	{
+		memcpy(buff + offset, &ReqQrySEOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQrySEOrder, sizeof(ReqQrySEOrderField));
+		offset += sizeof(ReqQrySEOrderField);
+	}
 	return offset;
 }
 bool ReqQrySEOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQrySEOrder = ::Allocate<ReqQrySEOrderField>();
-	memcpy(ReqQrySEOrder, buff + offset, sizeof(ReqQrySEOrderField));
-	offset += sizeof(ReqQrySEOrderField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQrySEOrderField::FieldID:
+		{
+			ReqQrySEOrder = ::Allocate<ReqQrySEOrderField>();
+			memcpy(ReqQrySEOrder, buff + offset, sizeof(ReqQrySEOrderField));
+			offset += sizeof(ReqQrySEOrderField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQrySEOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQrySEOrder:AccountID:[%s]", ReqQrySEOrder->AccountID);
+	if (ReqQrySEOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQrySEOrder:AccountID:[%s]", ReqQrySEOrder->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -10856,32 +12098,62 @@ bool RspQrySEOrderPackage::FromStepStream(char* buff, int startIndex, int endInd
 int RspQrySEOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, SEOrder, sizeof(SEOrderField));
-	offset += sizeof(SEOrderField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (SEOrder != nullptr)
+	{
+		memcpy(buff + offset, &SEOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, SEOrder, sizeof(SEOrderField));
+		offset += sizeof(SEOrderField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQrySEOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	SEOrder = ::Allocate<SEOrderField>();
-	memcpy(SEOrder, buff + offset, sizeof(SEOrderField));
-	offset += sizeof(SEOrderField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case SEOrderField::FieldID:
+		{
+			SEOrder = ::Allocate<SEOrderField>();
+			memcpy(SEOrder, buff + offset, sizeof(SEOrderField));
+			offset += sizeof(SEOrderField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQrySEOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "SEOrder:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d]", SEOrder->TradingDay, SEOrder->BrokerID, SEOrder->AccountID, SEOrder->ExchangeID, SEOrder->InstrumentID, (int)SEOrder->ProductClass, SEOrder->OrderID, (int)SEOrder->Direction, (int)SEOrder->OffsetFlag, (int)SEOrder->OrderPriceType, SEOrder->Price, SEOrder->Volume, SEOrder->VolumeTotal, SEOrder->VolumeTraded, SEOrder->VolumeMultiple, (int)SEOrder->OrderStatus, SEOrder->OrderDate, SEOrder->OrderTime, SEOrder->CancelDate, SEOrder->CancelTime, SEOrder->SessionID, SEOrder->ClientOrderID);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (SEOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "SEOrder:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d]", SEOrder->TradingDay, SEOrder->BrokerID, SEOrder->AccountID, SEOrder->ExchangeID, SEOrder->InstrumentID, (int)SEOrder->ProductClass, SEOrder->OrderID, (int)SEOrder->Direction, (int)SEOrder->OffsetFlag, (int)SEOrder->OrderPriceType, SEOrder->Price, SEOrder->Volume, SEOrder->VolumeTotal, SEOrder->VolumeTraded, SEOrder->VolumeMultiple, (int)SEOrder->OrderStatus, SEOrder->OrderDate, SEOrder->OrderTime, SEOrder->CancelDate, SEOrder->CancelTime, SEOrder->SessionID, SEOrder->ClientOrderID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -10984,26 +12256,44 @@ bool ReqQrySETradePackage::FromStepStream(char* buff, int startIndex, int endInd
 int ReqQrySETradePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQrySETrade, sizeof(ReqQrySETradeField));
-	offset += sizeof(ReqQrySETradeField);
+	if (ReqQrySETrade != nullptr)
+	{
+		memcpy(buff + offset, &ReqQrySETradeField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQrySETrade, sizeof(ReqQrySETradeField));
+		offset += sizeof(ReqQrySETradeField);
+	}
 	return offset;
 }
 bool ReqQrySETradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQrySETrade = ::Allocate<ReqQrySETradeField>();
-	memcpy(ReqQrySETrade, buff + offset, sizeof(ReqQrySETradeField));
-	offset += sizeof(ReqQrySETradeField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQrySETradeField::FieldID:
+		{
+			ReqQrySETrade = ::Allocate<ReqQrySETradeField>();
+			memcpy(ReqQrySETrade, buff + offset, sizeof(ReqQrySETradeField));
+			offset += sizeof(ReqQrySETradeField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQrySETradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQrySETrade:AccountID:[%s]", ReqQrySETrade->AccountID);
+	if (ReqQrySETrade != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQrySETrade:AccountID:[%s]", ReqQrySETrade->AccountID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -11289,32 +12579,62 @@ bool RspQrySETradePackage::FromStepStream(char* buff, int startIndex, int endInd
 int RspQrySETradePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, SETrade, sizeof(SETradeField));
-	offset += sizeof(SETradeField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (SETrade != nullptr)
+	{
+		memcpy(buff + offset, &SETradeField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, SETrade, sizeof(SETradeField));
+		offset += sizeof(SETradeField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQrySETradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	SETrade = ::Allocate<SETradeField>();
-	memcpy(SETrade, buff + offset, sizeof(SETradeField));
-	offset += sizeof(SETradeField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case SETradeField::FieldID:
+		{
+			SETrade = ::Allocate<SETradeField>();
+			memcpy(SETrade, buff + offset, sizeof(SETradeField));
+			offset += sizeof(SETradeField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQrySETradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "SETrade:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", SETrade->TradingDay, SETrade->BrokerID, SETrade->AccountID, SETrade->ExchangeID, SETrade->InstrumentID, (int)SETrade->ProductClass, SETrade->OrderID, SETrade->TradeID, (int)SETrade->Direction, (int)SETrade->OffsetFlag, SETrade->Price, SETrade->Volume, SETrade->VolumeMultiple, SETrade->TradeAmount, SETrade->Commission, SETrade->TradeDate, SETrade->TradeTime);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (SETrade != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "SETrade:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", SETrade->TradingDay, SETrade->BrokerID, SETrade->AccountID, SETrade->ExchangeID, SETrade->InstrumentID, (int)SETrade->ProductClass, SETrade->OrderID, SETrade->TradeID, (int)SETrade->Direction, (int)SETrade->OffsetFlag, SETrade->Price, SETrade->Volume, SETrade->VolumeMultiple, SETrade->TradeAmount, SETrade->Commission, SETrade->TradeDate, SETrade->TradeTime);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -11428,26 +12748,44 @@ bool ReqQrySEInstrumentPackage::FromStepStream(char* buff, int startIndex, int e
 int ReqQrySEInstrumentPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, ReqQrySEInstrument, sizeof(ReqQrySEInstrumentField));
-	offset += sizeof(ReqQrySEInstrumentField);
+	if (ReqQrySEInstrument != nullptr)
+	{
+		memcpy(buff + offset, &ReqQrySEInstrumentField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqQrySEInstrument, sizeof(ReqQrySEInstrumentField));
+		offset += sizeof(ReqQrySEInstrumentField);
+	}
 	return offset;
 }
 bool ReqQrySEInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	ReqQrySEInstrument = ::Allocate<ReqQrySEInstrumentField>();
-	memcpy(ReqQrySEInstrument, buff + offset, sizeof(ReqQrySEInstrumentField));
-	offset += sizeof(ReqQrySEInstrumentField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqQrySEInstrumentField::FieldID:
+		{
+			ReqQrySEInstrument = ::Allocate<ReqQrySEInstrumentField>();
+			memcpy(ReqQrySEInstrument, buff + offset, sizeof(ReqQrySEInstrumentField));
+			offset += sizeof(ReqQrySEInstrumentField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* ReqQrySEInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "ReqQrySEInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQrySEInstrument->ExchangeID, ReqQrySEInstrument->InstrumentID);
+	if (ReqQrySEInstrument != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQrySEInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQrySEInstrument->ExchangeID, ReqQrySEInstrument->InstrumentID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -11705,32 +13043,62 @@ bool RspQrySEInstrumentPackage::FromStepStream(char* buff, int startIndex, int e
 int RspQrySEInstrumentPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, SEInstrument, sizeof(SEInstrumentField));
-	offset += sizeof(SEInstrumentField);
-	memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
+	if (SEInstrument != nullptr)
+	{
+		memcpy(buff + offset, &SEInstrumentField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, SEInstrument, sizeof(SEInstrumentField));
+		offset += sizeof(SEInstrumentField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
 	return offset;
 }
 bool RspQrySEInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	SEInstrument = ::Allocate<SEInstrumentField>();
-	memcpy(SEInstrument, buff + offset, sizeof(SEInstrumentField));
-	offset += sizeof(SEInstrumentField);
-	RspInfo = ::Allocate<RspInfoField>();
-	memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
-	offset += sizeof(RspInfoField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case SEInstrumentField::FieldID:
+		{
+			SEInstrument = ::Allocate<SEInstrumentField>();
+			memcpy(SEInstrument, buff + offset, sizeof(SEInstrumentField));
+			offset += sizeof(SEInstrumentField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RspQrySEInstrumentPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "SEInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], VolumeMultiple:[%d], PriceTick:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f]", SEInstrument->ExchangeID, SEInstrument->InstrumentID, SEInstrument->ExchangeInstID, SEInstrument->InstrumentName, SEInstrument->ProductID, (int)SEInstrument->ProductClass, SEInstrument->MaxMarketOrderVolume, SEInstrument->MinMarketOrderVolume, SEInstrument->MaxLimitOrderVolume, SEInstrument->MinLimitOrderVolume, SEInstrument->VolumeMultiple, SEInstrument->PriceTick, SEInstrument->UpperLimitPrice, SEInstrument->LowerLimitPrice);
-	offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	if (SEInstrument != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "SEInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], VolumeMultiple:[%d], PriceTick:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f]", SEInstrument->ExchangeID, SEInstrument->InstrumentID, SEInstrument->ExchangeInstID, SEInstrument->InstrumentName, SEInstrument->ProductID, (int)SEInstrument->ProductClass, SEInstrument->MaxMarketOrderVolume, SEInstrument->MinMarketOrderVolume, SEInstrument->MaxLimitOrderVolume, SEInstrument->MinLimitOrderVolume, SEInstrument->VolumeMultiple, SEInstrument->PriceTick, SEInstrument->UpperLimitPrice, SEInstrument->LowerLimitPrice);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -11994,26 +13362,44 @@ bool RtnSEOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 int RtnSEOrderPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, SEOrder, sizeof(SEOrderField));
-	offset += sizeof(SEOrderField);
+	if (SEOrder != nullptr)
+	{
+		memcpy(buff + offset, &SEOrderField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, SEOrder, sizeof(SEOrderField));
+		offset += sizeof(SEOrderField);
+	}
 	return offset;
 }
 bool RtnSEOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	SEOrder = ::Allocate<SEOrderField>();
-	memcpy(SEOrder, buff + offset, sizeof(SEOrderField));
-	offset += sizeof(SEOrderField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case SEOrderField::FieldID:
+		{
+			SEOrder = ::Allocate<SEOrderField>();
+			memcpy(SEOrder, buff + offset, sizeof(SEOrderField));
+			offset += sizeof(SEOrderField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnSEOrderPackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "SEOrder:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d]", SEOrder->TradingDay, SEOrder->BrokerID, SEOrder->AccountID, SEOrder->ExchangeID, SEOrder->InstrumentID, (int)SEOrder->ProductClass, SEOrder->OrderID, (int)SEOrder->Direction, (int)SEOrder->OffsetFlag, (int)SEOrder->OrderPriceType, SEOrder->Price, SEOrder->Volume, SEOrder->VolumeTotal, SEOrder->VolumeTraded, SEOrder->VolumeMultiple, (int)SEOrder->OrderStatus, SEOrder->OrderDate, SEOrder->OrderTime, SEOrder->CancelDate, SEOrder->CancelTime, SEOrder->SessionID, SEOrder->ClientOrderID);
+	if (SEOrder != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "SEOrder:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d]", SEOrder->TradingDay, SEOrder->BrokerID, SEOrder->AccountID, SEOrder->ExchangeID, SEOrder->InstrumentID, (int)SEOrder->ProductClass, SEOrder->OrderID, (int)SEOrder->Direction, (int)SEOrder->OffsetFlag, (int)SEOrder->OrderPriceType, SEOrder->Price, SEOrder->Volume, SEOrder->VolumeTotal, SEOrder->VolumeTraded, SEOrder->VolumeMultiple, (int)SEOrder->OrderStatus, SEOrder->OrderDate, SEOrder->OrderTime, SEOrder->CancelDate, SEOrder->CancelTime, SEOrder->SessionID, SEOrder->ClientOrderID);
+	}
 	return t_DataStringBuffer;
 }
  
@@ -12242,25 +13628,43 @@ bool RtnSETradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 int RtnSETradePackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	memcpy(buff + offset, SETrade, sizeof(SETradeField));
-	offset += sizeof(SETradeField);
+	if (SETrade != nullptr)
+	{
+		memcpy(buff + offset, &SETradeField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, SETrade, sizeof(SETradeField));
+		offset += sizeof(SETradeField);
+	}
 	return offset;
 }
 bool RtnSETradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
-	SETrade = ::Allocate<SETradeField>();
-	memcpy(SETrade, buff + offset, sizeof(SETradeField));
-	offset += sizeof(SETradeField);
-	if (offset != endIndex)
+	while(offset < endIndex)
 	{
-		return false;
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case SETradeField::FieldID:
+		{
+			SETrade = ::Allocate<SETradeField>();
+			memcpy(SETrade, buff + offset, sizeof(SETradeField));
+			offset += sizeof(SETradeField);	
+			break;
+		}
+		default:
+			return false;
+		}
 	}
-	return true;
+	return offset == endIndex;
 }
 const char* RtnSETradePackage::GetDebugString() const
 {
 	int offset = 0;
-	offset += sprintf(t_DataStringBuffer + offset, "SETrade:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", SETrade->TradingDay, SETrade->BrokerID, SETrade->AccountID, SETrade->ExchangeID, SETrade->InstrumentID, (int)SETrade->ProductClass, SETrade->OrderID, SETrade->TradeID, (int)SETrade->Direction, (int)SETrade->OffsetFlag, SETrade->Price, SETrade->Volume, SETrade->VolumeMultiple, SETrade->TradeAmount, SETrade->Commission, SETrade->TradeDate, SETrade->TradeTime);
+	if (SETrade != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "SETrade:TradingDay:[%s], BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", SETrade->TradingDay, SETrade->BrokerID, SETrade->AccountID, SETrade->ExchangeID, SETrade->InstrumentID, (int)SETrade->ProductClass, SETrade->OrderID, SETrade->TradeID, (int)SETrade->Direction, (int)SETrade->OffsetFlag, SETrade->Price, SETrade->Volume, SETrade->VolumeMultiple, SETrade->TradeAmount, SETrade->Commission, SETrade->TradeDate, SETrade->TradeTime);
+	}
 	return t_DataStringBuffer;
 }

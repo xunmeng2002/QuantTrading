@@ -127,18 +127,21 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 
 	m_SEInstrumentInsertStatement = nullptr;
 	m_SEInstrumentDeleteStatement = nullptr;
+	m_SEInstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_SEInstrumentUpdateStatement = nullptr;
 	m_SEInstrumentSelectStatement = nullptr;
 	m_SEInstrumentTruncateStatement = nullptr;
 
 	m_SEOrderInsertStatement = nullptr;
 	m_SEOrderDeleteStatement = nullptr;
+	m_SEOrderDeleteByAccountIDIndexStatement = nullptr;
 	m_SEOrderUpdateStatement = nullptr;
 	m_SEOrderSelectStatement = nullptr;
 	m_SEOrderTruncateStatement = nullptr;
 
 	m_SETradeInsertStatement = nullptr;
 	m_SETradeDeleteStatement = nullptr;
+	m_SETradeDeleteByAccountIDIndexStatement = nullptr;
 	m_SETradeUpdateStatement = nullptr;
 	m_SETradeSelectStatement = nullptr;
 	m_SETradeTruncateStatement = nullptr;
@@ -649,6 +652,11 @@ void MysqlDB::DisConnect()
 		m_SEInstrumentDeleteStatement->close();
 		m_SEInstrumentDeleteStatement = nullptr;
 	}
+	if (m_SEInstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		m_SEInstrumentDeleteByExchangeIDIndexStatement->close();
+		m_SEInstrumentDeleteByExchangeIDIndexStatement = nullptr;
+	}
 	if (m_SEInstrumentUpdateStatement != nullptr)
 	{
 		m_SEInstrumentUpdateStatement->close();
@@ -674,6 +682,11 @@ void MysqlDB::DisConnect()
 		m_SEOrderDeleteStatement->close();
 		m_SEOrderDeleteStatement = nullptr;
 	}
+	if (m_SEOrderDeleteByAccountIDIndexStatement != nullptr)
+	{
+		m_SEOrderDeleteByAccountIDIndexStatement->close();
+		m_SEOrderDeleteByAccountIDIndexStatement = nullptr;
+	}
 	if (m_SEOrderUpdateStatement != nullptr)
 	{
 		m_SEOrderUpdateStatement->close();
@@ -698,6 +711,11 @@ void MysqlDB::DisConnect()
 	{
 		m_SETradeDeleteStatement->close();
 		m_SETradeDeleteStatement = nullptr;
+	}
+	if (m_SETradeDeleteByAccountIDIndexStatement != nullptr)
+	{
+		m_SETradeDeleteByAccountIDIndexStatement->close();
+		m_SETradeDeleteByAccountIDIndexStatement = nullptr;
 	}
 	if (m_SETradeUpdateStatement != nullptr)
 	{
@@ -2783,6 +2801,21 @@ void MysqlDB::DeleteSEInstrument(SEInstrument* record)
 		WriteLog(LogLevel::Warning, "DeleteSEInstrument Spend:%lldms", duration);
 	}
 }
+void MysqlDB::DeleteSEInstrumentByExchangeIDIndex(SEInstrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEInstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		m_SEInstrumentDeleteByExchangeIDIndexStatement = m_DBConnection->prepareStatement("delete from t_SEInstrument where ExchangeID = ?;");
+	}
+	SetStatementForSEInstrumentIndexExchangeID(m_SEInstrumentDeleteByExchangeIDIndexStatement, record);
+	m_SEInstrumentDeleteByExchangeIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEInstrumentByExchangeIDIndex Spend:%lldms", duration);
+	}
+}
 void MysqlDB::UpdateSEInstrument(SEInstrument* record)
 {
 	auto start = steady_clock::now();
@@ -2895,6 +2928,21 @@ void MysqlDB::DeleteSEOrder(SEOrder* record)
 		WriteLog(LogLevel::Warning, "DeleteSEOrder Spend:%lldms", duration);
 	}
 }
+void MysqlDB::DeleteSEOrderByAccountIDIndex(SEOrder* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEOrderDeleteByAccountIDIndexStatement == nullptr)
+	{
+		m_SEOrderDeleteByAccountIDIndexStatement = m_DBConnection->prepareStatement("delete from t_SEOrder where TradingDay = ? and AccountID = ?;");
+	}
+	SetStatementForSEOrderIndexAccountID(m_SEOrderDeleteByAccountIDIndexStatement, record);
+	m_SEOrderDeleteByAccountIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEOrderByAccountIDIndex Spend:%lldms", duration);
+	}
+}
 void MysqlDB::UpdateSEOrder(SEOrder* record)
 {
 	auto start = steady_clock::now();
@@ -3005,6 +3053,21 @@ void MysqlDB::DeleteSETrade(SETrade* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteSETrade Spend:%lldms", duration);
+	}
+}
+void MysqlDB::DeleteSETradeByAccountIDIndex(SETrade* record)
+{
+	auto start = steady_clock::now();
+	if (m_SETradeDeleteByAccountIDIndexStatement == nullptr)
+	{
+		m_SETradeDeleteByAccountIDIndexStatement = m_DBConnection->prepareStatement("delete from t_SETrade where TradingDay = ? and AccountID = ?;");
+	}
+	SetStatementForSETradeIndexAccountID(m_SETradeDeleteByAccountIDIndexStatement, record);
+	m_SETradeDeleteByAccountIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSETradeByAccountIDIndex Spend:%lldms", duration);
 	}
 }
 void MysqlDB::UpdateSETrade(SETrade* record)
@@ -4338,6 +4401,10 @@ void MysqlDB::SetStatementForSEInstrumentPrimaryKey(sql::PreparedStatement* stat
 	statement->setString(1, ExchangeID);
 	statement->setString(2, InstrumentID);
 }
+void MysqlDB::SetStatementForSEInstrumentIndexExchangeID(sql::PreparedStatement* statement, SEInstrument* record)
+{
+	statement->setString(1, record->ExchangeID);
+}
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<SEInstrument*>& records)
 {
 	SEInstrument* record = SEInstrument::Allocate();
@@ -4416,6 +4483,11 @@ void MysqlDB::SetStatementForSEOrderPrimaryKey(sql::PreparedStatement* statement
 	statement->setString(4, InstrumentID);
 	statement->setInt(5, OrderID);
 }
+void MysqlDB::SetStatementForSEOrderIndexAccountID(sql::PreparedStatement* statement, SEOrder* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->AccountID);
+}
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<SEOrder*>& records)
 {
 	SEOrder* record = SEOrder::Allocate();
@@ -4489,6 +4561,11 @@ void MysqlDB::SetStatementForSETradePrimaryKey(sql::PreparedStatement* statement
 	statement->setString(2, ExchangeID);
 	statement->setString(3, TradeID);
 	statement->setInt(4, int(Direction));
+}
+void MysqlDB::SetStatementForSETradeIndexAccountID(sql::PreparedStatement* statement, SETrade* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->AccountID);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<SETrade*>& records)
 {

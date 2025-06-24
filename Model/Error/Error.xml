@@ -61,7 +61,7 @@
 	<error name="OrderAlreadyExist" 				id="0x2012" desc="委托已存在"/>
 	<error name="TradeAlreadyExist" 				id="0x2013" desc="成交已存在"/>
 	<error name="AccountAlreadyLogin" 				id="0x2014" desc="账户已登录"/>
-	<error name="SessionAlreadyLogin" 				id="0x2015" desc="本链接已登录"/>
+	<error name="SessionAlreadyLogin" 				id="0x2015" desc="本连接已登录"/>
 	
 	
 	
@@ -71,6 +71,7 @@
 	<error name="UserNotLogin" 						id="0x3002" desc="用户未登录"/>
 	<error name="TradeOfferNotLogin" 				id="0x3003" desc="交易报盘未登录"/>
 	<error name="TradeOfferAlreadyLogin" 			id="0x3004" desc="交易报盘已登录"/>
+	<error name="SessionNotLogin" 					id="0x3005" desc="本连接未登录"/>
 	
 	
 	<error name="DuplicateOfferID" 					id="0x4000" desc="重复的报盘代码"/>

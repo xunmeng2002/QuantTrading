@@ -512,7 +512,11 @@
 			<item name="InstrumentID"/>
 		</primarykey>
 		<uniquekeys></uniquekeys>
-		<indexes></indexes>
+		<indexes>
+			<index  name="ExchangeID">
+				<item name="ExchangeID"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="SEOrder" 						id="0x1003" desc="模拟交易委托">
 		<items>
@@ -548,7 +552,12 @@
 		</primarykey>
 		<uniquekeys>
 		</uniquekeys>
-		<indexes></indexes>
+		<indexes>
+			<index  name="AccountID">
+				<item name="TradingDay"/>
+				<item name="AccountID"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="SETrade" 						id="0x1004" desc="模拟交易成交">
 		<items>
@@ -577,7 +586,12 @@
 			<item name="Direction"/>
 		</primarykey>
 		<uniquekeys></uniquekeys>
-		<indexes></indexes>
+		<indexes>
+			<index  name="AccountID">
+				<item name="TradingDay"/>
+				<item name="AccountID"/>
+			</index>
+		</indexes>
 	</table>
 	
 	<table name="SEBrokerLoginSession" 			id="0x1201" desc="模拟交易经纪商登录会话" session="true">

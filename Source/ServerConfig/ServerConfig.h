@@ -12,6 +12,8 @@ public:
 	void Print();
 	
 public:
+	string SEMdOfferAddress;
+	string SETradeFrontAddress;
 	string MdOfferAddress;
 	string TradeFrontAddress;
 	string RiskFrontAddress;

@@ -51,6 +51,7 @@ public:
 	virtual void InsertSEInstrument(mdb::SEInstrument* record) = 0;
 	virtual void BatchInsertSEInstrument(std::list<mdb::SEInstrument*>* records) = 0;
 	virtual void DeleteSEInstrument(mdb::SEInstrument* record) = 0;
+	virtual void DeleteSEInstrumentByExchangeIDIndex(mdb::SEInstrument* record) = 0;
 	virtual void UpdateSEInstrument(mdb::SEInstrument* record) = 0;
 	virtual void SelectSEInstrument(std::list<mdb::SEInstrument*>& records) = 0;
 	virtual void TruncateSEInstrument() = 0;
@@ -58,6 +59,7 @@ public:
 	virtual void InsertSEOrder(mdb::SEOrder* record) = 0;
 	virtual void BatchInsertSEOrder(std::list<mdb::SEOrder*>* records) = 0;
 	virtual void DeleteSEOrder(mdb::SEOrder* record) = 0;
+	virtual void DeleteSEOrderByAccountIDIndex(mdb::SEOrder* record) = 0;
 	virtual void UpdateSEOrder(mdb::SEOrder* record) = 0;
 	virtual void SelectSEOrder(std::list<mdb::SEOrder*>& records) = 0;
 	virtual void TruncateSEOrder() = 0;
@@ -65,6 +67,7 @@ public:
 	virtual void InsertSETrade(mdb::SETrade* record) = 0;
 	virtual void BatchInsertSETrade(std::list<mdb::SETrade*>* records) = 0;
 	virtual void DeleteSETrade(mdb::SETrade* record) = 0;
+	virtual void DeleteSETradeByAccountIDIndex(mdb::SETrade* record) = 0;
 	virtual void UpdateSETrade(mdb::SETrade* record) = 0;
 	virtual void SelectSETrade(std::list<mdb::SETrade*>& records) = 0;
 	virtual void TruncateSETrade() = 0;

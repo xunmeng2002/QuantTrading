@@ -374,6 +374,7 @@ CREATE TABLE IF NOT EXISTS `t_SEInstrument` (
   `LowerLimitPrice` decimal(24,8) COMMENT '跌停板价',
   `SessionName` char(32) COMMENT '交易节名称',
 
+  INDEX ExchangeID(ExchangeID),
   PRIMARY KEY(ExchangeID, InstrumentID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易合约';
 
@@ -401,6 +402,7 @@ CREATE TABLE IF NOT EXISTS `t_SEOrder` (
   `SessionID` bigint COMMENT '会话编号',
   `ClientOrderID` int COMMENT '客户端委托编号',
 
+  INDEX AccountID(TradingDay, AccountID),
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易委托';
 
@@ -423,6 +425,7 @@ CREATE TABLE IF NOT EXISTS `t_SETrade` (
   `TradeDate` char(9) COMMENT '成交日期',
   `TradeTime` char(9) COMMENT '成交时间',
 
+  INDEX AccountID(TradingDay, AccountID),
   PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易成交';
 

@@ -104,16 +104,19 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_SEBrokerTruncateStatement = nullptr;
 
 	m_SEInstrumentDeleteStatement = nullptr;
+	m_SEInstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_SEInstrumentUpdateStatement = nullptr;
 	m_SEInstrumentSelectStatement = nullptr;
 	m_SEInstrumentTruncateStatement = nullptr;
 
 	m_SEOrderDeleteStatement = nullptr;
+	m_SEOrderDeleteByAccountIDIndexStatement = nullptr;
 	m_SEOrderUpdateStatement = nullptr;
 	m_SEOrderSelectStatement = nullptr;
 	m_SEOrderTruncateStatement = nullptr;
 
 	m_SETradeDeleteStatement = nullptr;
+	m_SETradeDeleteByAccountIDIndexStatement = nullptr;
 	m_SETradeUpdateStatement = nullptr;
 	m_SETradeSelectStatement = nullptr;
 	m_SETradeTruncateStatement = nullptr;
@@ -517,6 +520,11 @@ void DuckDB::DisConnect()
 		duckdb_destroy_prepare(&m_SEInstrumentDeleteStatement);
 		m_SEInstrumentDeleteStatement = nullptr;
 	}
+	if (m_SEInstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_SEInstrumentDeleteByExchangeIDIndexStatement);
+		m_SEInstrumentDeleteByExchangeIDIndexStatement = nullptr;
+	}
 	if (m_SEInstrumentUpdateStatement != nullptr)
 	{
 		duckdb_destroy_prepare(&m_SEInstrumentUpdateStatement);
@@ -537,6 +545,11 @@ void DuckDB::DisConnect()
 		duckdb_destroy_prepare(&m_SEOrderDeleteStatement);
 		m_SEOrderDeleteStatement = nullptr;
 	}
+	if (m_SEOrderDeleteByAccountIDIndexStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_SEOrderDeleteByAccountIDIndexStatement);
+		m_SEOrderDeleteByAccountIDIndexStatement = nullptr;
+	}
 	if (m_SEOrderUpdateStatement != nullptr)
 	{
 		duckdb_destroy_prepare(&m_SEOrderUpdateStatement);
@@ -556,6 +569,11 @@ void DuckDB::DisConnect()
 	{
 		duckdb_destroy_prepare(&m_SETradeDeleteStatement);
 		m_SETradeDeleteStatement = nullptr;
+	}
+	if (m_SETradeDeleteByAccountIDIndexStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_SETradeDeleteByAccountIDIndexStatement);
+		m_SETradeDeleteByAccountIDIndexStatement = nullptr;
 	}
 	if (m_SETradeUpdateStatement != nullptr)
 	{
@@ -4425,6 +4443,29 @@ void DuckDB::DeleteSEInstrument(SEInstrument* record)
 		WriteLog(LogLevel::Warning, "DeleteSEInstrument Spend:%lldms", duration);
 	}
 }
+void DuckDB::DeleteSEInstrumentByExchangeIDIndex(SEInstrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEInstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_SEInstrument where ExchangeID = ?;", &m_SEInstrumentDeleteByExchangeIDIndexStatement);
+	}
+	SetStatementForSEInstrumentIndexExchangeID(m_SEInstrumentDeleteByExchangeIDIndexStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_SEInstrumentDeleteByExchangeIDIndexStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEInstrumentByExchangeIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEInstrumentByExchangeIDIndex Spend:%lldms", duration);
+	}
+}
 void DuckDB::UpdateSEInstrument(SEInstrument* record)
 {
 	auto start = steady_clock::now();
@@ -4641,6 +4682,29 @@ void DuckDB::DeleteSEOrder(SEOrder* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteSEOrder Spend:%lldms", duration);
+	}
+}
+void DuckDB::DeleteSEOrderByAccountIDIndex(SEOrder* record)
+{
+	auto start = steady_clock::now();
+	if (m_SEOrderDeleteByAccountIDIndexStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_SEOrder where TradingDay = ? and AccountID = ?;", &m_SEOrderDeleteByAccountIDIndexStatement);
+	}
+	SetStatementForSEOrderIndexAccountID(m_SEOrderDeleteByAccountIDIndexStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_SEOrderDeleteByAccountIDIndexStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEOrderByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSEOrderByAccountIDIndex Spend:%lldms", duration);
 	}
 }
 void DuckDB::UpdateSEOrder(SEOrder* record)
@@ -4893,6 +4957,29 @@ void DuckDB::DeleteSETrade(SETrade* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteSETrade Spend:%lldms", duration);
+	}
+}
+void DuckDB::DeleteSETradeByAccountIDIndex(SETrade* record)
+{
+	auto start = steady_clock::now();
+	if (m_SETradeDeleteByAccountIDIndexStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_SETrade where TradingDay = ? and AccountID = ?;", &m_SETradeDeleteByAccountIDIndexStatement);
+	}
+	SetStatementForSETradeIndexAccountID(m_SETradeDeleteByAccountIDIndexStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_SETradeDeleteByAccountIDIndexStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSETradeByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteSETradeByAccountIDIndex Spend:%lldms", duration);
 	}
 }
 void DuckDB::UpdateSETrade(SETrade* record)
@@ -6497,6 +6584,10 @@ void DuckDB::SetStatementForSEInstrumentPrimaryKey(duckdb_prepared_statement sta
 	duckdb_bind_varchar(statement, 1, record->ExchangeID);
 	duckdb_bind_varchar(statement, 2, record->InstrumentID);
 }
+void DuckDB::SetStatementForSEInstrumentIndexExchangeID(duckdb_prepared_statement statement, SEInstrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
+}
 bool DuckDB::AppendForSEOrderRecord(duckdb_appender appender, SEOrder* record)
 {
 	duckdb_append_varchar(appender, record->TradingDay);
@@ -6586,6 +6677,11 @@ void DuckDB::SetStatementForSEOrderPrimaryKey(duckdb_prepared_statement statemen
 	duckdb_bind_varchar(statement, 4, record->InstrumentID);
 	duckdb_bind_int32(statement, 5, record->OrderID);
 }
+void DuckDB::SetStatementForSEOrderIndexAccountID(duckdb_prepared_statement statement, SEOrder* record)
+{
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->AccountID);
+}
 bool DuckDB::AppendForSETradeRecord(duckdb_appender appender, SETrade* record)
 {
 	duckdb_append_varchar(appender, record->TradingDay);
@@ -6658,6 +6754,11 @@ void DuckDB::SetStatementForSETradePrimaryKey(duckdb_prepared_statement statemen
 	duckdb_bind_varchar(statement, 2, record->ExchangeID);
 	duckdb_bind_varchar(statement, 3, record->TradeID);
 	duckdb_bind_int32(statement, 4, int(record->Direction));
+}
+void DuckDB::SetStatementForSETradeIndexAccountID(duckdb_prepared_statement statement, SETrade* record)
+{
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->AccountID);
 }
 bool DuckDB::AppendForSEBrokerLoginSessionRecord(duckdb_appender appender, SEBrokerLoginSession* record)
 {

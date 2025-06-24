@@ -512,7 +512,11 @@
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 		</primarykey>
 		<uniquekeys/>
-		<indexes/>
+		<indexes>
+			<index name="ExchangeID">
+				<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="SEOrder" id="0x1003" desc="模拟交易委托" batch="" session="">
 		<items>
@@ -547,7 +551,12 @@
 			<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
 		</primarykey>
 		<uniquekeys/>
-		<indexes/>
+		<indexes>
+			<index name="AccountID">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="SETrade" id="0x1004" desc="模拟交易成交" batch="" session="">
 		<items>
@@ -576,7 +585,12 @@
 			<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
 		</primarykey>
 		<uniquekeys/>
-		<indexes/>
+		<indexes>
+			<index name="AccountID">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="SEBrokerLoginSession" id="0x1201" desc="模拟交易经纪商登录会话" batch="" session="true">
 		<items>

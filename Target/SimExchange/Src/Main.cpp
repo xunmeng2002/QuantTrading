@@ -1,6 +1,8 @@
 #include "Logger.h"
 #include "Config.h"
 #include "ServerConfig.h"
+#include "MdFront.h"
+#include "TradeFront.h"
 #include "SimExchange.h"
 #include <string.h>
 #ifdef LINUX
@@ -22,9 +24,18 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
 	Logger::GetInstance().Start();
 
-	auto simExchange = new SimExchange(config);
+	TradeFront* tradeFront = new TradeFront(serverConfig.SETradeFrontAddress.c_str());
+	MdFront* mdFront = new MdFront(serverConfig.SEMdOfferAddress.c_str());
+	auto simExchange = new SimExchange(config, tradeFront, mdFront);
+	tradeFront->Subscribe(simExchange);
+	mdFront->Subscribe(simExchange);
 
+	simExchange->Init();
+	tradeFront->Init();
+	mdFront->Init();
 	simExchange->Start();
+	tradeFront->Start();
+	mdFront->Start();
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

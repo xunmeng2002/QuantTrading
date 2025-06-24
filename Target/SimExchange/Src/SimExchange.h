@@ -10,15 +10,17 @@
 #include <map>
 #include <string>
 
-class SimExchange : public ThreadBase
+class SimExchange : public ThreadBase, public ProtocolSubscriber
 {
 public:
-	SimExchange(const Config& config);
+	SimExchange(const Config& config, TradeFront* tradeFront, MdFront* mdFront);
 	~SimExchange();
 
 	void Init();
-	int ReqSEInsertOrder(ReqSEInsertOrderField* reqInsertOrder, int requestID);
-	int ReqSECancelOrder(ReqSECancelOrderField* reqCancelOrder, int requestID);
+
+	virtual void OnProtocolConnect(SessionIDType sessionID, const char* ip, int port) override;
+	virtual void OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port) override;
+	virtual void OnMessage(Package* package) override;
 
 protected:
 	virtual void Run() override;
@@ -30,9 +32,10 @@ private:
 	void HandleCancelOrder(ReqSECancelOrderPackage* reqPackage);
 	void HandleQryOrder(ReqQrySEOrderPackage* reqPackage);
 	void HandleQryTrade(ReqQrySETradePackage* reqPackage);
-	void HandleQryInstrument(ReqQryInstrumentPackage* reqPackage);
+	void HandleQryInstrument(ReqQrySEInstrumentPackage* reqPackage);
 
 
+	bool CheckSessionLogin(const SessionIDType& sessionID);
 	int CheckForInsertOrder(ReqSEInsertOrderField* reqInsertOrder, mdb::SEInstrument* instrument);
 	void CheckMatchForOrderQueue(mdb::SEOrder* order);
 	bool CheckMatchForTwoOrder(mdb::SEOrder* order, mdb::SEOrder* queueOrder);
@@ -41,12 +44,18 @@ private:
 	void SendRspBrokerLogin(ReqSEBrokerLoginPackage* reqPackage, mdb::SEBroker* broker, int errorID);
 	void SendRspInsertOrder(ReqSEInsertOrderPackage* reqPackage, int errorID);
 	void SendRspCancelOrder(ReqSECancelOrderPackage* reqPackage, int errorID);
+	void SendRspQryOrder(ReqQrySEOrderPackage* reqPackage, int errorID, bool isLast, mdb::SEOrder* order = nullptr);
+	void SendRspQryTrade(ReqQrySETradePackage* reqPackage, int errorID, bool isLast, mdb::SETrade* trade = nullptr);
+	void SendRspQryInstrument(ReqQrySEInstrumentPackage* reqPackage, int errorID, bool isLast, mdb::SEInstrument* instrument = nullptr);
+	
 	void SendRtnOrder(mdb::SEOrder* order);
 	void SendRtnTrade(mdb::SETrade* trade);
 
+	Package* GetNextPackage();
 	OrderIDType GetNextOrderID();
 	void GetNextTradeID(TradeIDType& tradeID);
 	void AddOrderToQueue(mdb::SEOrder* order);
+	void RemoveOrderFromQueue(mdb::SEOrder* order);
 
 protected:
 	MdFront* m_MdFront;
@@ -61,6 +70,9 @@ protected:
 	RspSEBrokerLoginPackage* m_RspBrokerLoginPackage;
 	RspSEInsertOrderPackage* m_RspInsertOrderPackage;
 	RspSECancelOrderPackage* m_RspCancelOrderPackage;
+	RspQrySEOrderPackage* m_RspQryOrderPackage;
+	RspQrySETradePackage* m_RspQryTradePackage;
+	RspQrySEInstrumentPackage* m_RspQryInstrumentPackage;
 	RtnSEOrderPackage* m_RtnOrderPackage;
 	RtnSETradePackage* m_RtnTradePackage;
 

@@ -1,4 +1,7 @@
 {
+	"SEMdOfferAddress": "tcp://127.0.0.1:20000",
+	"SETradeFrontAddress": "tcp://127.0.0.1:20001",
+
 	"MdOfferAddress": "tcp://127.0.0.1:10000",
 	"TradeFrontAddress": "tcp://127.0.0.1:10001",
 	"RiskFrontAddress": "tcp://127.0.0.1:10002",

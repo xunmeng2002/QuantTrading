@@ -68,6 +68,7 @@ constexpr unsigned int ErrorPrimaryAccountNotLogin = 0x3001;
 constexpr unsigned int ErrorUserNotLogin = 0x3002;
 constexpr unsigned int ErrorTradeOfferNotLogin = 0x3003;
 constexpr unsigned int ErrorTradeOfferAlreadyLogin = 0x3004;
+constexpr unsigned int ErrorSessionNotLogin = 0x3005;
 constexpr unsigned int ErrorDuplicateOfferID = 0x4000;
 constexpr unsigned int ErrorDuplicateClientOrderID = 0x4001;
 constexpr unsigned int ErrorInvalidOrderPrice = 0x5000;
