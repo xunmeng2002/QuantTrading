@@ -40,3 +40,4 @@ pumptemp.py
 *.sqlitedb
 
 !.vs/*.json
+/.vs

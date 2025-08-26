@@ -16,6 +16,5 @@ protected:
 
 	IOThread* m_IOThread;
 	Protocol* m_Protocol;
-	std::string m_FrontAddress;
 };
 
