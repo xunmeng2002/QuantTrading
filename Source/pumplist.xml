@@ -45,17 +45,17 @@
 	<pump dest="./Source/DB/Mdb/MdbIndexes.h" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml"/>
 	<pump dest="./Source/DB/Mdb/MdbIndexes.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml ../Model/Types.xml"/>
 	
-	<pump dest="./Source/Ctp/6.7.2/StructLogFunc/StructLogFunc.h" tpl="../Templates/Cpp/Libs/CTP/StructLogFunc.h.tpl" model="../Libs/CTP/6.7.2/CtpModel.xml"/>
-	<pump dest="./Source/Ctp/6.7.2/StructLogFunc/StructLogFunc.cpp" tpl="../Templates/Cpp/Libs/CTP/StructLogFunc.cpp.tpl" model="../Libs/CTP/6.7.2/CtpModel.xml"/>
-	<pump dest="./Source/Ctp/6.7.2/TraderApiMiddle/ThostFtdcTraderApiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.h.tpl" model="../Libs/CTP/6.7.2/CtpTraderApi.xml"/>
-	<pump dest="./Source/Ctp/6.7.2/TraderApiMiddle/ThostFtdcTraderApiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.cpp.tpl" model="../Libs/CTP/6.7.2/CtpTraderApi.xml"/>
-	<pump dest="./Source/Ctp/6.7.2/TraderApiMiddle/ThostFtdcTraderSpiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.h.tpl" model="../Libs/CTP/6.7.2/CtpTraderApi.xml"/>
-	<pump dest="./Source/Ctp/6.7.2/TraderApiMiddle/ThostFtdcTraderSpiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.cpp.tpl" model="../Libs/CTP/6.7.2/CtpTraderApi.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/StructLogFunc/StructLogFunc.h" tpl="../Templates/Cpp/Libs/CTP/StructLogFunc.h.tpl" model="../Libs/CTP/6.7.9/CtpModel.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/StructLogFunc/StructLogFunc.cpp" tpl="../Templates/Cpp/Libs/CTP/StructLogFunc.cpp.tpl" model="../Libs/CTP/6.7.9/CtpModel.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/TraderApiMiddle/ThostFtdcTraderApiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.h.tpl" model="../Libs/CTP/6.7.9/CtpTraderApi.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/TraderApiMiddle/ThostFtdcTraderApiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.cpp.tpl" model="../Libs/CTP/6.7.9/CtpTraderApi.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/TraderApiMiddle/ThostFtdcTraderSpiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.h.tpl" model="../Libs/CTP/6.7.9/CtpTraderApi.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/TraderApiMiddle/ThostFtdcTraderSpiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.cpp.tpl" model="../Libs/CTP/6.7.9/CtpTraderApi.xml"/>
 	
-	<pump dest="./Source/Ctp/6.7.2/MdApiMiddle/ThostFtdcMdApiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.h.tpl" model="../Libs/CTP/6.7.2/CtpMdApi.xml"/>
-	<pump dest="./Source/Ctp/6.7.2/MdApiMiddle/ThostFtdcMdApiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.cpp.tpl" model="../Libs/CTP/6.7.2/CtpMdApi.xml"/>
-	<pump dest="./Source/Ctp/6.7.2/MdApiMiddle/ThostFtdcMdSpiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.h.tpl" model="../Libs/CTP/6.7.2/CtpMdApi.xml"/>
-	<pump dest="./Source/Ctp/6.7.2/MdApiMiddle/ThostFtdcMdSpiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.cpp.tpl" model="../Libs/CTP/6.7.2/CtpMdApi.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/MdApiMiddle/ThostFtdcMdApiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.h.tpl" model="../Libs/CTP/6.7.9/CtpMdApi.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/MdApiMiddle/ThostFtdcMdApiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.cpp.tpl" model="../Libs/CTP/6.7.9/CtpMdApi.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/MdApiMiddle/ThostFtdcMdSpiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.h.tpl" model="../Libs/CTP/6.7.9/CtpMdApi.xml"/>
+	<pump dest="./Source/Ctp/6.7.9/MdApiMiddle/ThostFtdcMdSpiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.cpp.tpl" model="../Libs/CTP/6.7.9/CtpMdApi.xml"/>
 	
 	<pump dest="./Source/Packages/Fields.h" tpl="../Templates/Cpp/Packages/Fields.h.tpl" model="./Model/Packages/Fields.xml"/>
 	<pump dest="./Source/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/FullApiPackages.xml"/>

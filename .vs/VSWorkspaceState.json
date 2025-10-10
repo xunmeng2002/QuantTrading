@@ -1,24 +1,16 @@
 {
-  "DevContainersInfoBarHidden": true,
-  "ActiveTargetSystem": "Local Machine",
-  "ExpandedNodes": [
-    "",
-    "\\Target",
-    "\\Target\\SimExchange",
-    "\\Target\\SimExchange\\Src",
-    "\\Test",
-    "\\Test\\Source",
-    "\\Test\\TestSimExchangeApi\\Src"
-  ],
-  "SelectedNode": "\\Target",
-  "PreviewInSolutionExplorer": false,
   "OutputFoldersPerTargetSystem": {
-    "Local Machine": [],
-    "WSL: Ubuntu": [
+    "Local Machine": [
       "out\\build\\x64-Debug",
       "out\\install\\x64-Debug",
       "out\\build\\WSL-GCC-Debug",
       "out\\install\\WSL-GCC-Debug"
     ]
-  }
+  },
+  "ExpandedNodes": [
+    "",
+    "\\Target",
+    "\\Target\\SimExchangeDBInit"
+  ],
+  "PreviewInSolutionExplorer": false
 }

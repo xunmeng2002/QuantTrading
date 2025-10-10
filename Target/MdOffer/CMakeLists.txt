@@ -1,5 +1,5 @@
 SET(PROJECT_NAME "MdOffer")
-SET(APIVersion "6.7.2")
+SET(APIVersion "6.7.9")
 project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
