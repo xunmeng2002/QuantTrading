@@ -15,11 +15,15 @@ add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 add_package(Packages ${CMAKE_SOURCE_DIR}/Source/Packages)
 
 #include_package(MysqlConnector ${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0/include)
-include_package(duckdb ${CMAKE_SOURCE_DIR}/../Libs/duckdb/include)
+include_package(duckdb ${LibsPath}/duckdb/include)
 
-#link_directories(${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0)
-#link_directories(${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0/Debug)
-link_directories(${CMAKE_SOURCE_DIR}/../Libs/duckdb/win64)
+#link_directories(${LibsPath}/MysqlConnector/9.0.0)
+#link_directories(${LibsPath}/MysqlConnector/9.0.0/Debug)
+link_directories(${LibsPath}/duckdb/win64)
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	configure_file("${LibsPath}/duckdb/win64/duckdb.dll" "${CMAKE_CURRENT_BINARY_DIR}/duckdb.dll" COPYONLY)
+	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+endif()
 
 add_executable(${PROJECT_NAME} ${all_file})
 
