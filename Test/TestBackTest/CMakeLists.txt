@@ -18,3 +18,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(${PROJECT_NAME} PersonalLib BackTest)
 endif()
+
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+endif()

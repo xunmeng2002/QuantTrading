@@ -19,3 +19,16 @@ if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(${PROJECT_NAME} PersonalLib SimExchangeApi)
 endif()
+
+
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+
+	add_custom_command(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD 
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+            "$<TARGET_FILE:SimExchangeApi>" 
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:SimExchangeApi>"
+        COMMENT "Copying SimExchangeApi.dll DLL...")
+endif()

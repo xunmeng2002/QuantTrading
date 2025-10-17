@@ -35,3 +35,9 @@ IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(${PROJECT_NAME} PersonalLib pthread duckdb)
 endif()
+
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+	configure_file("${LibsPath}/duckdb/win64/duckdb.dll" "${CMAKE_CURRENT_BINARY_DIR}/duckdb.dll" COPYONLY)
+endif()
+

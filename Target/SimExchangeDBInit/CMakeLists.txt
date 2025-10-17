@@ -17,13 +17,15 @@ add_package(Mdb ../SimExchange/DB/Mdb)
 #else(CMAKE_BUILD_TYPE MATCHES "Debug")
 #	link_directories(${CMAKE_SOURCE_DIR}/../Libs/duckdb/win64/Release)
 #endif()
-IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
-endif()
+
 add_executable(${PROJECT_NAME} ${all_file})
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	target_link_libraries(${PROJECT_NAME} PersonalLib.lib)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(${PROJECT_NAME} PersonalLib pthread)
+endif()
+
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
 endif()

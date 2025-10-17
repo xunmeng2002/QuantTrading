@@ -81,3 +81,12 @@ configure_file(
 add_subdirectory(Api)
 add_subdirectory(Target)
 add_subdirectory(Test)
+
+
+add_custom_target(copy_headers ALL
+    COMMAND ${CMAKE_COMMAND} -E echo "Running copyheader.py..."
+    COMMAND python.exe ${CMAKE_SOURCE_DIR}/copyheader.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Running copyheader.py to copy headers"
+    VERBATIM
+)
