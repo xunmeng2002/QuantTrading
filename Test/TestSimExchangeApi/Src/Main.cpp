@@ -24,9 +24,12 @@ int main(int argc, char* argv[])
 	api->RegisterFront(serverConfig.SETradeFrontAddress.c_str());
 	api->Init();
 
-	std::this_thread::sleep_for(chrono::seconds(20));
+	while (!spi->m_Finished)
+	{
+		std::this_thread::sleep_for(chrono::seconds(1));
+	}
 	spi->ReqQryOrder();
-	std::this_thread::sleep_for(chrono::seconds(5));
+	std::this_thread::sleep_for(chrono::seconds(10));
 
 	api->Release();
 	std::this_thread::sleep_for(chrono::seconds(1));

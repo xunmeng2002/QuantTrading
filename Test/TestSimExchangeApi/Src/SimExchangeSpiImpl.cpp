@@ -1,8 +1,10 @@
 #include "SimExchangeSpiImpl.h"
 #include "Utility.h"
+#include "Logger.h"
+
 
 SimExchangeSpiImpl::SimExchangeSpiImpl(SimExchangeApi* api)
-	:m_SimExchangeApi(api), m_MaxRequestID(0), m_MaxClientOrderID(0)
+	:m_SimExchangeApi(api), m_MaxRequestID(0), m_MaxClientOrderID(0), m_InitStatus(false), m_Finished(false), m_OrderCount(0)
 {
 	strcpy(m_AccountID, "18019749894");
 	m_SEInstrument = new SEInstrumentField();
@@ -20,33 +22,32 @@ void SimExchangeSpiImpl::OnRspSEBrokerLogin(RspSEBrokerLoginField* rspSEBrokerLo
 	SimExchangeSpiMiddle::OnRspSEBrokerLogin(rspSEBrokerLogin, rspInfo, requestID, isLast);
 	ReqQryInstrument();
 }
+void SimExchangeSpiImpl::OnRspSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	SimExchangeSpiMiddle::OnRspSEInsertOrder(reqSEInsertOrder, rspInfo, requestID, isLast);
+	if (++m_OrderCount < 100000 && m_OrderCount % 10 == 0)
+	{
+		ReqInsertOrders();
+	}
+	else if (m_OrderCount >= 100000)
+	{
+		m_Finished = true;
+	}
+}
 void SimExchangeSpiImpl::OnRspQrySEInstrument(SEInstrumentField* sEInstrument, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	SimExchangeSpiMiddle::OnRspQrySEInstrument(sEInstrument, rspInfo, requestID, isLast);
 	if (isLast && sEInstrument != nullptr)
 	{
 		memcpy(m_SEInstrument, sEInstrument, sizeof(SEInstrumentField));
-		auto price = (m_SEInstrument->UpperLimitPrice + m_SEInstrument->LowerLimitPrice) / 2;
-		ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price, 1);
-		ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price - 1, 1);
-		ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price + 1, 1);
-		ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price - 5, 1);
-		ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price, 1);
-		ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price + 1, 1);
-		ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price - 1, 1);
-		ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price + 5, 1);
-		ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::AnyPrice, price, 1);
+		m_InitStatus = true;
+		ReqInsertOrders();
 	}
 }
 
 void SimExchangeSpiImpl::OnRtnSEOrder(SEOrderField* sEOrder)
 {
 	SimExchangeSpiMiddle::OnRtnSEOrder(sEOrder);
-	static int count = 0;
-	if (++count % 3 == 0)
-	{
-		ReqCancelOrder(sEOrder);
-	}
 }
 
 void SimExchangeSpiImpl::ReqQryOrder()
@@ -55,7 +56,24 @@ void SimExchangeSpiImpl::ReqQryOrder()
 	strcpy(qryOrder.AccountID, m_AccountID);
 	m_SimExchangeApi->ReqQrySEOrder(&qryOrder, ++m_MaxRequestID);
 }
-
+void SimExchangeSpiImpl::ReqInsertOrders()
+{
+	if (m_OrderCount % 100 == 0)
+	{
+		WriteLog(LogLevel::Warning, "ReqInsertOrders OrderCount:%d", m_OrderCount);
+	}
+	auto price = (m_SEInstrument->UpperLimitPrice + m_SEInstrument->LowerLimitPrice) / 2;
+	ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price, 1);
+	ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price - 1, 1);
+	ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price + 1, 1);
+	ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price - 5, 1);
+	ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price, 1);
+	ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price, 1);
+	ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price + 1, 1);
+	ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price - 1, 1);
+	ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price + 5, 1);
+	ReqInsertOrder(DirectionType::Sell, OffsetFlagType::Open, OrderPriceTypeType::AnyPrice, price, 1);
+}
 void SimExchangeSpiImpl::ReqBrokerLogin()
 {
 	ReqSEBrokerLoginField brokerLogin;
