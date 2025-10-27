@@ -25,11 +25,11 @@ void SimExchangeSpiImpl::OnRspSEBrokerLogin(RspSEBrokerLoginField* rspSEBrokerLo
 void SimExchangeSpiImpl::OnRspSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	SimExchangeSpiMiddle::OnRspSEInsertOrder(reqSEInsertOrder, rspInfo, requestID, isLast);
-	if (++m_OrderCount < 100000 && m_OrderCount % 10 == 0)
+	if (++m_OrderCount < 10000 && m_OrderCount % 10 == 0)
 	{
 		ReqInsertOrders();
 	}
-	else if (m_OrderCount >= 100000)
+	else if (m_OrderCount >= 10000)
 	{
 		m_Finished = true;
 	}
@@ -58,10 +58,10 @@ void SimExchangeSpiImpl::ReqQryOrder()
 }
 void SimExchangeSpiImpl::ReqInsertOrders()
 {
-	if (m_OrderCount % 100 == 0)
-	{
-		WriteLog(LogLevel::Warning, "ReqInsertOrders OrderCount:%d", m_OrderCount);
-	}
+	//if (m_OrderCount % 100 == 0)
+	//{
+	//	WriteLog(LogLevel::Warning, "ReqInsertOrders OrderCount:%d", m_OrderCount);
+	//}
 	auto price = (m_SEInstrument->UpperLimitPrice + m_SEInstrument->LowerLimitPrice) / 2;
 	ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price, 1);
 	ReqInsertOrder(DirectionType::Buy, OffsetFlagType::Open, OrderPriceTypeType::LimitPrice, price - 1, 1);
