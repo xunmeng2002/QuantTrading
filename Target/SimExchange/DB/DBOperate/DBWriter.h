@@ -88,6 +88,7 @@ protected:
 	DBOperate* GetDBOperate();
 
 private:
+	void AddDBOperate(DBOperate* dbOperate);
 	void InsertRecord(DBOperate* dbOperate);
 	void DeleteRecord(DBOperate* dbOperate);
 	void DeleteRecordByIndex(DBOperate* dbOperate);

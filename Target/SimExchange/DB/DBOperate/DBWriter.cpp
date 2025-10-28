@@ -69,8 +69,7 @@ void DBWriter::OnTradingDayInsert(mdb::TradingDay* record)
 	dbOperate->TableID = TradingDay::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnTradingDayBatchInsert(std::list<mdb::TradingDay*>* records)
 {
@@ -79,8 +78,7 @@ void DBWriter::OnTradingDayBatchInsert(std::list<mdb::TradingDay*>* records)
 	dbOperate->TableID = TradingDay::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnTradingDayErase(mdb::TradingDay* record)
 {
@@ -89,8 +87,7 @@ void DBWriter::OnTradingDayErase(mdb::TradingDay* record)
 	dbOperate->TableID = TradingDay::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnTradingDayUpdate(mdb::TradingDay* record)
 {
@@ -99,8 +96,7 @@ void DBWriter::OnTradingDayUpdate(mdb::TradingDay* record)
 	dbOperate->TableID = TradingDay::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnTradingDayTruncate()
 {
@@ -109,8 +105,7 @@ void DBWriter::OnTradingDayTruncate()
 	dbOperate->TableID = TradingDay::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 void DBWriter::OnExchangeInsert(mdb::Exchange* record)
@@ -120,8 +115,7 @@ void DBWriter::OnExchangeInsert(mdb::Exchange* record)
 	dbOperate->TableID = Exchange::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnExchangeBatchInsert(std::list<mdb::Exchange*>* records)
 {
@@ -130,8 +124,7 @@ void DBWriter::OnExchangeBatchInsert(std::list<mdb::Exchange*>* records)
 	dbOperate->TableID = Exchange::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnExchangeErase(mdb::Exchange* record)
 {
@@ -140,8 +133,7 @@ void DBWriter::OnExchangeErase(mdb::Exchange* record)
 	dbOperate->TableID = Exchange::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnExchangeUpdate(mdb::Exchange* record)
 {
@@ -150,8 +142,7 @@ void DBWriter::OnExchangeUpdate(mdb::Exchange* record)
 	dbOperate->TableID = Exchange::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnExchangeTruncate()
 {
@@ -160,8 +151,7 @@ void DBWriter::OnExchangeTruncate()
 	dbOperate->TableID = Exchange::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 void DBWriter::OnProductInsert(mdb::Product* record)
@@ -171,8 +161,7 @@ void DBWriter::OnProductInsert(mdb::Product* record)
 	dbOperate->TableID = Product::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnProductBatchInsert(std::list<mdb::Product*>* records)
 {
@@ -181,8 +170,7 @@ void DBWriter::OnProductBatchInsert(std::list<mdb::Product*>* records)
 	dbOperate->TableID = Product::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnProductErase(mdb::Product* record)
 {
@@ -191,8 +179,7 @@ void DBWriter::OnProductErase(mdb::Product* record)
 	dbOperate->TableID = Product::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnProductUpdate(mdb::Product* record)
 {
@@ -201,8 +188,7 @@ void DBWriter::OnProductUpdate(mdb::Product* record)
 	dbOperate->TableID = Product::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnProductTruncate()
 {
@@ -211,8 +197,7 @@ void DBWriter::OnProductTruncate()
 	dbOperate->TableID = Product::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 void DBWriter::OnDepthMarketDataInsert(mdb::DepthMarketData* record)
@@ -222,8 +207,7 @@ void DBWriter::OnDepthMarketDataInsert(mdb::DepthMarketData* record)
 	dbOperate->TableID = DepthMarketData::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records)
 {
@@ -232,8 +216,7 @@ void DBWriter::OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* re
 	dbOperate->TableID = DepthMarketData::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnDepthMarketDataErase(mdb::DepthMarketData* record)
 {
@@ -242,8 +225,7 @@ void DBWriter::OnDepthMarketDataErase(mdb::DepthMarketData* record)
 	dbOperate->TableID = DepthMarketData::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnDepthMarketDataUpdate(mdb::DepthMarketData* record)
 {
@@ -252,8 +234,7 @@ void DBWriter::OnDepthMarketDataUpdate(mdb::DepthMarketData* record)
 	dbOperate->TableID = DepthMarketData::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnDepthMarketDataTruncate()
 {
@@ -262,8 +243,7 @@ void DBWriter::OnDepthMarketDataTruncate()
 	dbOperate->TableID = DepthMarketData::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 void DBWriter::OnSEBrokerInsert(mdb::SEBroker* record)
@@ -273,8 +253,7 @@ void DBWriter::OnSEBrokerInsert(mdb::SEBroker* record)
 	dbOperate->TableID = SEBroker::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerBatchInsert(std::list<mdb::SEBroker*>* records)
 {
@@ -283,8 +262,7 @@ void DBWriter::OnSEBrokerBatchInsert(std::list<mdb::SEBroker*>* records)
 	dbOperate->TableID = SEBroker::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerErase(mdb::SEBroker* record)
 {
@@ -293,8 +271,7 @@ void DBWriter::OnSEBrokerErase(mdb::SEBroker* record)
 	dbOperate->TableID = SEBroker::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerUpdate(mdb::SEBroker* record)
 {
@@ -303,8 +280,7 @@ void DBWriter::OnSEBrokerUpdate(mdb::SEBroker* record)
 	dbOperate->TableID = SEBroker::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerTruncate()
 {
@@ -313,8 +289,7 @@ void DBWriter::OnSEBrokerTruncate()
 	dbOperate->TableID = SEBroker::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 void DBWriter::OnSEInstrumentInsert(mdb::SEInstrument* record)
@@ -324,8 +299,7 @@ void DBWriter::OnSEInstrumentInsert(mdb::SEInstrument* record)
 	dbOperate->TableID = SEInstrument::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEInstrumentBatchInsert(std::list<mdb::SEInstrument*>* records)
 {
@@ -334,8 +308,7 @@ void DBWriter::OnSEInstrumentBatchInsert(std::list<mdb::SEInstrument*>* records)
 	dbOperate->TableID = SEInstrument::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEInstrumentErase(mdb::SEInstrument* record)
 {
@@ -344,8 +317,7 @@ void DBWriter::OnSEInstrumentErase(mdb::SEInstrument* record)
 	dbOperate->TableID = SEInstrument::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEInstrumentEraseByExchangeIDIndex(mdb::SEInstrument* record)
 {
@@ -355,8 +327,7 @@ void DBWriter::OnSEInstrumentEraseByExchangeIDIndex(mdb::SEInstrument* record)
 	dbOperate->IndexID = SEInstrumentIndexExchangeID::IndexID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEInstrumentUpdate(mdb::SEInstrument* record)
 {
@@ -365,8 +336,7 @@ void DBWriter::OnSEInstrumentUpdate(mdb::SEInstrument* record)
 	dbOperate->TableID = SEInstrument::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEInstrumentTruncate()
 {
@@ -375,8 +345,7 @@ void DBWriter::OnSEInstrumentTruncate()
 	dbOperate->TableID = SEInstrument::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 void DBWriter::OnSEOrderInsert(mdb::SEOrder* record)
@@ -386,8 +355,7 @@ void DBWriter::OnSEOrderInsert(mdb::SEOrder* record)
 	dbOperate->TableID = SEOrder::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEOrderBatchInsert(std::list<mdb::SEOrder*>* records)
 {
@@ -396,8 +364,7 @@ void DBWriter::OnSEOrderBatchInsert(std::list<mdb::SEOrder*>* records)
 	dbOperate->TableID = SEOrder::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEOrderErase(mdb::SEOrder* record)
 {
@@ -406,8 +373,7 @@ void DBWriter::OnSEOrderErase(mdb::SEOrder* record)
 	dbOperate->TableID = SEOrder::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEOrderEraseByAccountIDIndex(mdb::SEOrder* record)
 {
@@ -417,8 +383,7 @@ void DBWriter::OnSEOrderEraseByAccountIDIndex(mdb::SEOrder* record)
 	dbOperate->IndexID = SEOrderIndexAccountID::IndexID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEOrderUpdate(mdb::SEOrder* record)
 {
@@ -427,8 +392,7 @@ void DBWriter::OnSEOrderUpdate(mdb::SEOrder* record)
 	dbOperate->TableID = SEOrder::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEOrderTruncate()
 {
@@ -437,8 +401,7 @@ void DBWriter::OnSEOrderTruncate()
 	dbOperate->TableID = SEOrder::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 void DBWriter::OnSETradeInsert(mdb::SETrade* record)
@@ -448,8 +411,7 @@ void DBWriter::OnSETradeInsert(mdb::SETrade* record)
 	dbOperate->TableID = SETrade::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSETradeBatchInsert(std::list<mdb::SETrade*>* records)
 {
@@ -458,8 +420,7 @@ void DBWriter::OnSETradeBatchInsert(std::list<mdb::SETrade*>* records)
 	dbOperate->TableID = SETrade::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSETradeErase(mdb::SETrade* record)
 {
@@ -468,8 +429,7 @@ void DBWriter::OnSETradeErase(mdb::SETrade* record)
 	dbOperate->TableID = SETrade::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSETradeEraseByAccountIDIndex(mdb::SETrade* record)
 {
@@ -479,8 +439,7 @@ void DBWriter::OnSETradeEraseByAccountIDIndex(mdb::SETrade* record)
 	dbOperate->IndexID = SETradeIndexAccountID::IndexID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSETradeUpdate(mdb::SETrade* record)
 {
@@ -489,8 +448,7 @@ void DBWriter::OnSETradeUpdate(mdb::SETrade* record)
 	dbOperate->TableID = SETrade::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSETradeTruncate()
 {
@@ -499,8 +457,7 @@ void DBWriter::OnSETradeTruncate()
 	dbOperate->TableID = SETrade::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 void DBWriter::OnSEBrokerLoginSessionInsert(mdb::SEBrokerLoginSession* record)
@@ -510,8 +467,7 @@ void DBWriter::OnSEBrokerLoginSessionInsert(mdb::SEBrokerLoginSession* record)
 	dbOperate->TableID = SEBrokerLoginSession::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerLoginSessionBatchInsert(std::list<mdb::SEBrokerLoginSession*>* records)
 {
@@ -520,8 +476,7 @@ void DBWriter::OnSEBrokerLoginSessionBatchInsert(std::list<mdb::SEBrokerLoginSes
 	dbOperate->TableID = SEBrokerLoginSession::TableID;
 	dbOperate->Record = records;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerLoginSessionErase(mdb::SEBrokerLoginSession* record)
 {
@@ -530,8 +485,7 @@ void DBWriter::OnSEBrokerLoginSessionErase(mdb::SEBrokerLoginSession* record)
 	dbOperate->TableID = SEBrokerLoginSession::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerLoginSessionEraseByBrokerIDIndex(mdb::SEBrokerLoginSession* record)
 {
@@ -541,8 +495,7 @@ void DBWriter::OnSEBrokerLoginSessionEraseByBrokerIDIndex(mdb::SEBrokerLoginSess
 	dbOperate->IndexID = SEBrokerLoginSessionIndexBrokerID::IndexID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerLoginSessionUpdate(mdb::SEBrokerLoginSession* record)
 {
@@ -551,8 +504,7 @@ void DBWriter::OnSEBrokerLoginSessionUpdate(mdb::SEBrokerLoginSession* record)
 	dbOperate->TableID = SEBrokerLoginSession::TableID;
 	dbOperate->Record = record;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 void DBWriter::OnSEBrokerLoginSessionTruncate()
 {
@@ -561,8 +513,7 @@ void DBWriter::OnSEBrokerLoginSessionTruncate()
 	dbOperate->TableID = SEBrokerLoginSession::TableID;
 	dbOperate->Record = nullptr;
 
-	lock_guard<mutex> guard(m_Mutex);
-	m_DBOperates.push_back(dbOperate);
+	AddDBOperate(dbOperate);
 }
 
 
@@ -648,16 +599,20 @@ DBOperate* DBWriter::GetDBOperate()
 	{
 		return nullptr;
 	}
-	static int i = 0;
-	if (++i % 100 == 0)
-	{
-		WriteLog(LogLevel::Info, "TotalOperate:%d, m_DBOperate.size:%d", i, m_DBOperates.size());
-	}
 	auto item = m_DBOperates.front();
 	m_DBOperates.pop_front();
 	return item;
 }
 
+
+void DBWriter::AddDBOperate(DBOperate* dbOperate)
+{
+	{
+		lock_guard<mutex> guard(m_Mutex);
+		m_DBOperates.push_back(dbOperate);
+	}
+	m_ThreadConditionVariable.notify_one();
+}
 void DBWriter::InsertRecord(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
