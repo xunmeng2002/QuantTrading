@@ -60,13 +60,23 @@ void SimExchange::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, 
 }
 void SimExchange::OnMessage(Package* package)
 {
-	lock_guard<mutex> guard(m_Mutex);
-	m_Packages.push_back(package);
+	{
+		lock_guard<mutex> guard(m_Mutex);
+		m_Packages.push_back(package);
+	}
+	m_ThreadConditionVariable.notify_one();
 }
 
 void SimExchange::Run()
 {
 	HandlePackages();
+}
+void SimExchange::CheckPackages()
+{
+	std::unique_lock<std::mutex> guard(m_Mutex);
+	m_ThreadConditionVariable.wait_for(guard, m_TimeOut, [this]() {
+		return !m_Packages.empty();
+		});
 }
 void SimExchange::HandlePackages()
 {

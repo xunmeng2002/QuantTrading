@@ -43,14 +43,14 @@ void MdKernel::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int
 	Strcpy(package->NotifyDisConnect->IPAddress, ip);
 	package->NotifyDisConnect->Port = port;
 
-	std::lock_guard<std::mutex> guard(m_Mutex);
-	m_RecvPackages.push_back(package);
+	OnMessage(package);
 }
 void MdKernel::OnMessage(Package* package)
 {
-	std::lock_guard<std::mutex> guard(m_Mutex);
-	m_RecvPackages.push_back(package);
-
+	{
+		std::lock_guard<std::mutex> guard(m_Mutex);
+		m_RecvPackages.push_back(package);
+	}
 	m_ThreadConditionVariable.notify_one();
 }
 void MdKernel::OnBarMarketData(BarMarketDataField* bar)

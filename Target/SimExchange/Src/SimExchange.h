@@ -24,6 +24,7 @@ public:
 
 protected:
 	virtual void Run() override;
+	void CheckPackages();
 	void HandlePackages();
 
 private:
