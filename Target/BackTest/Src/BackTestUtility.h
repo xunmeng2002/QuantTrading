@@ -14,7 +14,7 @@ struct OrderGreatForPrice
 {
 	bool operator()(const mdb::Order* const left, const mdb::Order* const right) const;
 };
-struct OrderGreatForOrderID
+struct OrderLessForOrderID
 {
 	bool operator()(const mdb::Order* const left, const mdb::Order* const right) const;
 };

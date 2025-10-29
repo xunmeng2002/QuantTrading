@@ -109,8 +109,8 @@ private:
 
 	std::map<std::string, std::set<mdb::Order*, OrderGreatForPrice>> m_BuyOrders;
 	std::map<std::string, std::set<mdb::Order*, OrderLessForPrice>> m_SellOrders;
-	std::map<std::string, std::set<mdb::Order*, OrderGreatForOrderID>> m_MarketBuyOrders;
-	std::map<std::string, std::set<mdb::Order*, OrderGreatForOrderID>> m_MarketSellOrders;
+	std::map<std::string, std::set<mdb::Order*, OrderLessForOrderID>> m_MarketBuyOrders;
+	std::map<std::string, std::set<mdb::Order*, OrderLessForOrderID>> m_MarketSellOrders;
 
 	std::map<std::string, bool> m_InstrumentsHasMatched;
 };

@@ -84,6 +84,6 @@ protected:
 
 	std::map<std::string, std::set<mdb::SEOrder*, OrderGreatForPrice>> m_BuyOrders;
 	std::map<std::string, std::set<mdb::SEOrder*, OrderLessForPrice>> m_SellOrders;
-	std::map<std::string, std::set<mdb::SEOrder*, OrderGreatForOrderID>> m_MarketBuyOrders;
-	std::map<std::string, std::set<mdb::SEOrder*, OrderGreatForOrderID>> m_MarketSellOrders;
+	std::map<std::string, std::set<mdb::SEOrder*, OrderLessForOrderID>> m_MarketBuyOrders;
+	std::map<std::string, std::set<mdb::SEOrder*, OrderLessForOrderID>> m_MarketSellOrders;
 };

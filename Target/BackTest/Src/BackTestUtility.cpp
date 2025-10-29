@@ -28,7 +28,7 @@ bool OrderGreatForPrice::operator()(const mdb::Order* const left, const mdb::Ord
 		return false;
 	return left->OrderID > right->OrderID;
 }
-bool OrderGreatForOrderID::operator()(const mdb::Order* const left, const mdb::Order* const right) const
+bool OrderLessForOrderID::operator()(const mdb::Order* const left, const mdb::Order* const right) const
 {
 	return left->OrderID < right->OrderID;
 }
