@@ -1,0 +1,11 @@
+{
+	"LogLevel":2,
+	"MdDataPath":"C:/baidunetdiskdownload/Cffex",
+	"CsvPath":"./Csv",
+	"DumpPath":"./Dump",
+	"SessionFile":"Sessions.json",
+	"MarketDataType":"2",
+	"StartTradingDay":"20250220",
+	"EndTradingDay":"20250320"
+}
+

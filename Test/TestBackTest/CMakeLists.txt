@@ -21,4 +21,13 @@ endif()
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+    configure_file("${LibsPath}/duckdb/win64/duckdb.dll" "${CMAKE_CURRENT_BINARY_DIR}/duckdb.dll" COPYONLY)
+
+	add_custom_command(
+    TARGET ${PROJECT_NAME}
+    POST_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+        "$<TARGET_FILE:BackTest>" 
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:BackTest>"
+    COMMENT "Copying BackTest.dll DLL...")
 endif()
