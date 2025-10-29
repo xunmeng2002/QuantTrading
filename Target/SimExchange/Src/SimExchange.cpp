@@ -69,6 +69,7 @@ void SimExchange::OnMessage(Package* package)
 
 void SimExchange::Run()
 {
+	CheckPackages();
 	HandlePackages();
 }
 void SimExchange::CheckPackages()
