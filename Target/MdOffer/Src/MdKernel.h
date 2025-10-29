@@ -10,6 +10,8 @@
 #include <map>
 #include <set>
 #include <list>
+#include <mutex>
+#include <condition_variable>
 
 
 class MdKernel : public ThreadBase, public ProtocolSubscriber, public BarSubscriber
@@ -44,6 +46,9 @@ private:
 	MdFront* m_MdFront;
 	CThostFtdcMdSpiImpl* m_MdSpi;
 	MinuteBar* m_MinuteBar;
+
+	std::mutex m_Mutex;
+	std::condition_variable m_ConditionVariable;
 
 	std::set<SessionIDType> m_LoggedSessions;
 	std::set<ReqSubMarketDataField*, std::less<ReqSubMarketDataField>> m_SubscribeInstruments;

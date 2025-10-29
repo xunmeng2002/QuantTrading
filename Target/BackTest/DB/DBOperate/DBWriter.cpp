@@ -2,7 +2,6 @@
 #include "Logger.h"
 #include "MdbIndexes.h"
 #include <cstring>
-#include <mutex>
 
 using namespace std;
 using namespace mdb;
@@ -783,7 +782,7 @@ void DBWriter::CheckConnect()
 void DBWriter::CheckDBOperate()
 {
 	unique_lock<mutex> guard(m_Mutex);
-	m_ThreadConditionVariable.wait_for(guard, m_TimeOut, [&] {return !m_DBOperates.empty(); });
+	m_ConditionVariable.wait_for(guard, m_TimeOut, [&] {return !m_DBOperates.empty(); });
 }
 void DBWriter::HandleDBOperate()
 {
@@ -861,7 +860,7 @@ void DBWriter::AddDBOperate(DBOperate* dbOperate)
 		lock_guard<mutex> guard(m_Mutex);
 		m_DBOperates.push_back(dbOperate);
 	}
-	m_ThreadConditionVariable.notify_one();
+	m_ConditionVariable.notify_one();
 }
 void DBWriter::InsertRecord(DBOperate* dbOperate)
 {

@@ -51,7 +51,7 @@ void MdKernel::OnMessage(Package* package)
 		std::lock_guard<std::mutex> guard(m_Mutex);
 		m_RecvPackages.push_back(package);
 	}
-	m_ThreadConditionVariable.notify_one();
+	m_ConditionVariable.notify_one();
 }
 void MdKernel::OnBarMarketData(BarMarketDataField* bar)
 {
@@ -71,7 +71,7 @@ void MdKernel::Run()
 void MdKernel::CheckEvent()
 {
 	std::unique_lock<std::mutex> guard(m_Mutex);
-	m_ThreadConditionVariable.wait_for(guard, m_TimeOut, [&] {return (!m_RecvPackages.empty()); });
+	m_ConditionVariable.wait_for(guard, m_TimeOut, [&] {return (!m_RecvPackages.empty()); });
 }
 int MdKernel::HandlePackage()
 {

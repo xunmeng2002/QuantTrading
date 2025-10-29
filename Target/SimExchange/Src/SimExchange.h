@@ -9,6 +9,9 @@
 #include <list>
 #include <map>
 #include <string>
+#include <mutex>
+#include <condition_variable>
+
 
 class SimExchange : public ThreadBase, public ProtocolSubscriber
 {
@@ -62,6 +65,8 @@ protected:
 	MdFront* m_MdFront;
 	TradeFront* m_TradeFront;
 	mdb::Mdb* m_Mdb;
+	std::mutex m_Mutex;
+	std::condition_variable m_ConditionVariable;
 
 	DateType m_TradingDay;
 	int m_MaxOrderID;

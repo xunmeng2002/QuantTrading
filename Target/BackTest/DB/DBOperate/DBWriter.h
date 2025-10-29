@@ -8,6 +8,8 @@
 #include "Timer.h"
 #include <list>
 #include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 
 class DBWriter : public ThreadBase, public MdbSubscriber
@@ -132,5 +134,7 @@ private:
 	DB* m_DB;
 	DBSubscriber* m_DBSubscriber;
 	std::list<DBOperate*> m_DBOperates;
+	std::mutex m_Mutex;
+	std::condition_variable m_ConditionVariable;
 };
 

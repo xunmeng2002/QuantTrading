@@ -64,7 +64,7 @@ void SimExchange::OnMessage(Package* package)
 		lock_guard<mutex> guard(m_Mutex);
 		m_Packages.push_back(package);
 	}
-	m_ThreadConditionVariable.notify_one();
+	m_ConditionVariable.notify_one();
 }
 
 void SimExchange::Run()
@@ -75,7 +75,7 @@ void SimExchange::Run()
 void SimExchange::CheckPackages()
 {
 	std::unique_lock<std::mutex> guard(m_Mutex);
-	m_ThreadConditionVariable.wait_for(guard, m_TimeOut, [this]() {
+	m_ConditionVariable.wait_for(guard, m_TimeOut, [this]() {
 		return !m_Packages.empty();
 		});
 }
