@@ -107,7 +107,7 @@ private:
 	DepthMarketDataField m_PushMdTick;
 	BarMarketDataField m_PushMdBar;
 
-	std::map<std::string, std::set<mdb::Order*, OrderGreatForPrice>> m_BuyOrders;
+	std::map<std::string, std::set<mdb::Order*, OrderLessForPriceOpposite>> m_BuyOrders;
 	std::map<std::string, std::set<mdb::Order*, OrderLessForPrice>> m_SellOrders;
 	std::map<std::string, std::set<mdb::Order*, OrderLessForOrderID>> m_MarketBuyOrders;
 	std::map<std::string, std::set<mdb::Order*, OrderLessForOrderID>> m_MarketSellOrders;
