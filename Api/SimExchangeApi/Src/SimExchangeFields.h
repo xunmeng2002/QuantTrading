@@ -28,6 +28,22 @@ public:
 	MessageType ErrorMsg;		//错误信息
 };
 
+class ReqSEBrokerLogoutField
+{
+public:
+	static constexpr UShortType FieldID = 0x3003;
+	BrokerIDType BrokerID;		//经纪公司代码
+};
+
+class RspSEBrokerLogoutField
+{
+public:
+	static constexpr UShortType FieldID = 0x3004;
+	BrokerIDType BrokerID;		//经纪公司代码
+	SessionIDType SessionID;		//会话编号
+	IPAddressType IPAddress;		//IP地址
+};
+
 class ReqSEInsertOrderField
 {
 public:

@@ -58,6 +58,20 @@ int SimExchangeApiMiddle::ReqSEBrokerLogin(ReqSEBrokerLoginField* reqSEBrokerLog
 	}
 	return m_SimExchangeApi->ReqSEBrokerLogin(reqSEBrokerLogin, requestID);
 }
+int SimExchangeApiMiddle::ReqSEBrokerLogout(ReqSEBrokerLogoutField* reqSEBrokerLogout, int requestID)
+{
+	WriteLog(LogLevel::Info, "ReqSEBrokerLogout: RequestID:%d", requestID);
+	if (reqSEBrokerLogout != nullptr)
+	{
+		WriteLog(LogLevel::Info, "ReqSEBrokerLogoutField:BrokerID:[%d]",
+			reqSEBrokerLogout->BrokerID);
+	}
+	else
+	{
+		WriteLog(LogLevel::Info, "reqSEBrokerLogout is nullptr");
+	}
+	return m_SimExchangeApi->ReqSEBrokerLogout(reqSEBrokerLogout, requestID);
+}
 int SimExchangeApiMiddle::ReqSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqSEInsertOrder: RequestID:%d", requestID);

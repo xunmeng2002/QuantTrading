@@ -34,6 +34,28 @@ void SimExchangeSpiMiddle::OnRspSEBrokerLogin(RspSEBrokerLoginField* rspSEBroker
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
+void SimExchangeSpiMiddle::OnRspSEBrokerLogout(RspSEBrokerLogoutField* rspSEBrokerLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	WriteLog(LogLevel::Info, "OnRspSEBrokerLogout: RequestID:%d, IsLast:%d", requestID, isLast);
+	if (rspSEBrokerLogout != nullptr)
+	{
+		WriteLog(LogLevel::Info, "RspSEBrokerLogoutField:BrokerID:[%d], SessionID:[%lld], IPAddress:[%s]",
+			rspSEBrokerLogout->BrokerID, rspSEBrokerLogout->SessionID, rspSEBrokerLogout->IPAddress);
+	}
+	else
+	{
+		WriteLog(LogLevel::Info, "rspSEBrokerLogout is nullptr");
+	}
+	if (rspInfo != nullptr)
+	{
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorID, rspInfo->ErrorMsg);
+	}
+	else
+	{
+		WriteLog(LogLevel::Info, "rspInfo is nullptr");
+	}
+}
 void SimExchangeSpiMiddle::OnRspSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspSEInsertOrder: RequestID:%d, IsLast:%d", requestID, isLast);

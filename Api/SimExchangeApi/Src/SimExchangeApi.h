@@ -18,6 +18,7 @@ public:
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
 	virtual void OnRspSEBrokerLogin(RspSEBrokerLoginField* rspSEBrokerLogin, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspSEBrokerLogout(RspSEBrokerLogoutField* rspSEBrokerLogout, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspSECancelOrder(ReqSECancelOrderField* reqSECancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspQrySEOrder(SEOrderField* sEOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
@@ -39,6 +40,7 @@ public:
 	virtual void RegisterSpi(SimExchangeSpi* pSpi) = 0;
 	
 	virtual int ReqSEBrokerLogin(ReqSEBrokerLoginField* reqSEBrokerLogin, int requestID) = 0;
+	virtual int ReqSEBrokerLogout(ReqSEBrokerLogoutField* reqSEBrokerLogout, int requestID) = 0;
 	virtual int ReqSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, int requestID) = 0;
 	virtual int ReqSECancelOrder(ReqSECancelOrderField* reqSECancelOrder, int requestID) = 0;
 	virtual int ReqQrySEOrder(ReqQrySEOrderField* reqQrySEOrder, int requestID) = 0;

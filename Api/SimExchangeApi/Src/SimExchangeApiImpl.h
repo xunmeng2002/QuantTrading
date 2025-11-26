@@ -11,6 +11,7 @@ public:
 	virtual void OnMessage(Package* package) override;
 	
 	virtual int ReqSEBrokerLogin(ReqSEBrokerLoginField* reqSEBrokerLogin, int requestID) override;
+	virtual int ReqSEBrokerLogout(ReqSEBrokerLogoutField* reqSEBrokerLogout, int requestID) override;
 	virtual int ReqSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, int requestID) override;
 	virtual int ReqSECancelOrder(ReqSECancelOrderField* reqSECancelOrder, int requestID) override;
 	virtual int ReqQrySEOrder(ReqQrySEOrderField* reqQrySEOrder, int requestID) override;

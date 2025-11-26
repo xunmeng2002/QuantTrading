@@ -2,6 +2,9 @@
 <apipackages prefix="SimExchange">
 	<package name="ReqSEBrokerLogin"/>
 	<package name="RspSEBrokerLogin"/>
+	<package name="ReqSEBrokerLogout"/>
+	<package name="RspSEBrokerLogout"/>
+	
 	<package name="ReqSEInsertOrder"/>
 	<package name="RspSEInsertOrder"/>
 	<package name="ReqSECancelOrder"/>

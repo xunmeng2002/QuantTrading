@@ -34,6 +34,37 @@ public:
 	RspSEBrokerLoginField* RspSEBrokerLogin = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
+class ReqSEBrokerLogoutPackage : public Package
+{
+public:
+	static ReqSEBrokerLogoutPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x3003;
+	ReqSEBrokerLogoutField* ReqSEBrokerLogout = nullptr;
+};
+class RspSEBrokerLogoutPackage : public Package
+{
+public:
+	static RspSEBrokerLogoutPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x3004;
+	RspSEBrokerLogoutField* RspSEBrokerLogout = nullptr;
+	RspInfoField* RspInfo = nullptr;
+};
 class ReqSEInsertOrderPackage : public Package
 {
 public:
