@@ -12,7 +12,7 @@ class Item:
 class Table:
     def __init__(self):
         self.Name = ""
-        self.ID = ""
+        self.ID = 0
         self.Desc = ""
         self.Batch = ""
         self.Session = ""
@@ -35,10 +35,17 @@ def GetItems(itemFile, items):
 def GetTables(tableFile, items, tables):
     dom = xml.dom.minidom.parse(tableFile)
     root = dom.documentElement
+    lastID = 0
     for tableNode in root.getElementsByTagName("table"):
         table = Table()
         table.Name = tableNode.getAttribute("name")
-        table.ID = tableNode.getAttribute("id")
+        tableID = tableNode.getAttribute("id")
+        if tableID:
+            table.ID = int(tableID, 16)
+            lastID = table.ID
+        else:
+            lastID += 1
+            table.ID = lastID
         table.Desc = tableNode.getAttribute("desc")
         table.Batch = tableNode.getAttribute("batch")
         table.Session = tableNode.getAttribute("session")
@@ -77,7 +84,7 @@ def AddItemNode(dom, parentNode, item):
 def AddTableNode(dom, parentNode, table):
     tableNode = dom.createElement('table')
     tableNode.setAttribute("name", table.Name)
-    tableNode.setAttribute("id", table.ID)
+    tableNode.setAttribute("id", f"0x{table.ID:04X}")
     tableNode.setAttribute("desc", table.Desc)
     tableNode.setAttribute("batch", table.Batch)
     tableNode.setAttribute("session", table.Session)

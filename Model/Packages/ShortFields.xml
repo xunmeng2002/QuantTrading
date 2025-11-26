@@ -381,22 +381,21 @@
 		<item name="BrokerID"/>
 		<item name="Password"/>
 	</field>
-	<field name="RspSEBrokerLogin" 				id="0x3002" desc="模拟交易经纪商登录应答">
+	<field name="RspSEBrokerLogin" 				desc="模拟交易经纪商登录应答">
 		<item name="BrokerID"/>
 		<item name="BrokerName"/>
 		<item name="SessionID"/>
 		<item name="IPAddress"/>
 	</field>
-	<field name="ReqSEBrokerLogout" 			id="0x3003" desc="模拟交易经纪商登出请求">
+	<field name="ReqSEBrokerLogout" 			desc="模拟交易经纪商登出请求">
 		<item name="BrokerID"/>
 	</field>
-	<field name="RspSEBrokerLogout" 			id="0x3004" desc="模拟交易经纪商登出应答">
+	<field name="RspSEBrokerLogout" 			desc="模拟交易经纪商登出应答">
 		<item name="BrokerID"/>
 		<item name="SessionID"/>
 		<item name="IPAddress"/>
 	</field>
-	
-	<field name="ReqSEInsertOrder" 				id="0x3005" desc="模拟交易委托请求">
+	<field name="ReqSEInsertOrder" 				desc="模拟交易委托请求">
 		<item name="BrokerID"/>
 		<item name="AccountID"/>
 		<item name="ExchangeID"/>
@@ -408,7 +407,7 @@
 		<item name="Volume"/>
 		<item name="ClientOrderID"/>
 	</field>
-	<field name="ReqSECancelOrder" 				id="0x3006" desc="模拟交易撤单请求">
+	<field name="ReqSECancelOrder" 				desc="模拟交易撤单请求">
 		<item name="BrokerID"/>
 		<item name="AccountID"/>
 		<item name="ExchangeID"/>
@@ -418,10 +417,10 @@
 		<item name="ClientOrderID"/>
 		<item name="SessionID"/>
 	</field>
-	<field name="ReqQrySEOrder" 				id="0x3007" desc="模拟交易查询委托请求">
+	<field name="ReqQrySEOrder" 				desc="模拟交易查询委托请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="SEOrder" 						id="0x3008" desc="模拟交易委托">
+	<field name="SEOrder" 						desc="模拟交易委托">
 		<item name="TradingDay"/>
 		<item name="BrokerID"/>
 		<item name="AccountID"/>
@@ -445,10 +444,10 @@
 		<item name="SessionID"/>
 		<item name="ClientOrderID"/>
 	</field>
-	<field name="ReqQrySETrade" 				id="0x3009" desc="模拟交易查询成交请求">
+	<field name="ReqQrySETrade" 				desc="模拟交易查询成交请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="SETrade" 						id="0x300A" desc="模拟交易成交">
+	<field name="SETrade" 						desc="模拟交易成交">
 		<item name="TradingDay"/>
 		<item name="BrokerID"/>
 		<item name="AccountID"/>
@@ -467,11 +466,11 @@
 		<item name="TradeDate"/>
 		<item name="TradeTime"/>
 	</field>
-	<field name="ReqQrySEInstrument" 			id="0x300B" desc="模拟交易查询合约请求">
+	<field name="ReqQrySEInstrument" 			desc="模拟交易查询合约请求">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="SEInstrument" 					id="0x300C" desc="模拟交易合约">
+	<field name="SEInstrument" 					desc="模拟交易合约">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 		<item name="ExchangeInstID"/>

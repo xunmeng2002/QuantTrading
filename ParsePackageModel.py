@@ -12,14 +12,14 @@ class Item:
 class Field:
     def __init__(self):
         self.Name = ""
-        self.ID = ""
+        self.ID = 0
         self.Desc = ""
         self.Items = []
 
 class Package:
     def __init__(self):
         self.Name = ""
-        self.ID = ""
+        self.ID = 0
         self.Desc = ""
         self.Fields = []
 
@@ -37,10 +37,17 @@ def GetItems(itemFile, items):
 def GetFields(fieldFile, items, fields):
     dom = xml.dom.minidom.parse(fieldFile)
     root = dom.documentElement
+    lastID = 0
     for fieldNode in root.getElementsByTagName("field"):
         field = Field()
         field.Name = fieldNode.getAttribute("name")
-        field.ID = fieldNode.getAttribute("id")
+        fieldID = fieldNode.getAttribute("id")
+        if fieldID:
+            field.ID = int(fieldID, 16)
+            lastID = field.ID
+        else:
+            lastID += 1
+            field.ID = lastID
         field.Desc = fieldNode.getAttribute("desc")
         for itemNode in fieldNode.getElementsByTagName("item"):
             itemName = itemNode.getAttribute("name")
@@ -50,10 +57,17 @@ def GetFields(fieldFile, items, fields):
 def GetPackages(packageFile, fields, packages, destFields):
     dom = xml.dom.minidom.parse(packageFile)
     root = dom.documentElement
+    lastID = 0
     for packageNode in root.getElementsByTagName("package"):
         package = Package()
         package.Name = packageNode.getAttribute("name")
-        package.ID = packageNode.getAttribute("id")
+        packageID = packageNode.getAttribute("id")
+        if packageID:
+            package.ID = int(packageID, 16)
+            lastID = package.ID
+        else:
+            lastID += 1
+            package.ID = lastID
         package.Desc = packageNode.getAttribute("desc")
         for fieldNode in packageNode.getElementsByTagName("field"):
             fieldName = fieldNode.getAttribute("name")
@@ -72,7 +86,7 @@ def AddItemNode(dom, parentNode, item):
 def AddFieldNode(dom, parentNode, field):
     fieldNode = dom.createElement('field')
     fieldNode.setAttribute("name", field.Name)
-    fieldNode.setAttribute("id", field.ID)
+    fieldNode.setAttribute("id", f"0x{field.ID:04X}")
     fieldNode.setAttribute("desc", field.Desc)
     for item in field.Items:
         AddItemNode(dom, fieldNode, item)
@@ -81,7 +95,7 @@ def AddFieldNode(dom, parentNode, field):
 def AddPackageNode(dom, parentNode, package):
     packageNode = dom.createElement('package')
     packageNode.setAttribute("name", package.Name)
-    packageNode.setAttribute("id", package.ID)
+    packageNode.setAttribute("id", f"0x{package.ID:04X}")
     packageNode.setAttribute("desc", package.Desc)
     for field in package.Fields:
         AddFieldNode(dom, packageNode, field)

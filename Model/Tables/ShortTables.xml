@@ -489,7 +489,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>	
-	<table name="SEInstrument" 					id="0x1002" desc="模拟交易合约" batch="true">
+	<table name="SEInstrument" 					desc="模拟交易合约" batch="true">
 		<items>
 			<item name="ExchangeID"/>
 			<item name="InstrumentID"/>
@@ -518,7 +518,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="SEOrder" 						id="0x1003" desc="模拟交易委托">
+	<table name="SEOrder" 						desc="模拟交易委托">
 		<items>
 			<item name="TradingDay"/>
 			<item name="BrokerID"/>
@@ -559,7 +559,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="SETrade" 						id="0x1004" desc="模拟交易成交">
+	<table name="SETrade" 						desc="模拟交易成交">
 		<items>
 			<item name="TradingDay"/>
 			<item name="BrokerID"/>
