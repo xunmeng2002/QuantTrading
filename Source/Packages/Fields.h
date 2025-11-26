@@ -522,10 +522,24 @@ public:
 	SessionIDType SessionID;		//会话编号
 	IPAddressType IPAddress;		//IP地址
 };
-class ReqSEInsertOrderField
+class ReqSEBrokerLogoutField
 {
 public:
 	static constexpr UShortType FieldID = 0x3003;
+	BrokerIDType BrokerID;		//经纪公司代码
+};
+class RspSEBrokerLogoutField
+{
+public:
+	static constexpr UShortType FieldID = 0x3004;
+	BrokerIDType BrokerID;		//经纪公司代码
+	SessionIDType SessionID;		//会话编号
+	IPAddressType IPAddress;		//IP地址
+};
+class ReqSEInsertOrderField
+{
+public:
+	static constexpr UShortType FieldID = 0x3005;
 	BrokerIDType BrokerID;		//经纪公司代码
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
@@ -540,7 +554,7 @@ public:
 class ReqSECancelOrderField
 {
 public:
-	static constexpr UShortType FieldID = 0x3004;
+	static constexpr UShortType FieldID = 0x3006;
 	BrokerIDType BrokerID;		//经纪公司代码
 	AccountIDType AccountID;		//账户代码
 	ExchangeIDType ExchangeID;		//交易所代码
@@ -553,13 +567,13 @@ public:
 class ReqQrySEOrderField
 {
 public:
-	static constexpr UShortType FieldID = 0x3005;
+	static constexpr UShortType FieldID = 0x3007;
 	AccountIDType AccountID;		//账户代码
 };
 class SEOrderField
 {
 public:
-	static constexpr UShortType FieldID = 0x3006;
+	static constexpr UShortType FieldID = 0x3008;
 	DateType TradingDay;		//交易日
 	BrokerIDType BrokerID;		//经纪公司代码
 	AccountIDType AccountID;		//账户代码
@@ -586,13 +600,13 @@ public:
 class ReqQrySETradeField
 {
 public:
-	static constexpr UShortType FieldID = 0x3007;
+	static constexpr UShortType FieldID = 0x3009;
 	AccountIDType AccountID;		//账户代码
 };
 class SETradeField
 {
 public:
-	static constexpr UShortType FieldID = 0x3008;
+	static constexpr UShortType FieldID = 0x300A;
 	DateType TradingDay;		//交易日
 	BrokerIDType BrokerID;		//经纪公司代码
 	AccountIDType AccountID;		//账户代码
@@ -614,14 +628,14 @@ public:
 class ReqQrySEInstrumentField
 {
 public:
-	static constexpr UShortType FieldID = 0x3009;
+	static constexpr UShortType FieldID = 0x300B;
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
 };
 class SEInstrumentField
 {
 public:
-	static constexpr UShortType FieldID = 0x300A;
+	static constexpr UShortType FieldID = 0x300C;
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
 	InstrumentIDType ExchangeInstID;		//交易所合约代码

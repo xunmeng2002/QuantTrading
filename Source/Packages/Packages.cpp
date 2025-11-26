@@ -10699,6 +10699,368 @@ const char* RspSEBrokerLoginPackage::GetDebugString() const
 	return t_DataStringBuffer;
 }
  
+ReqSEBrokerLogoutPackage* ReqSEBrokerLogoutPackage::Allocate()
+{
+	return ::Allocate<ReqSEBrokerLogoutPackage>();
+}
+void ReqSEBrokerLogoutPackage::Free()
+{
+	Package::Free();
+	if (ReqSEBrokerLogout != nullptr)
+	{
+		::Free<ReqSEBrokerLogoutField>(ReqSEBrokerLogout);
+		ReqSEBrokerLogout = nullptr;
+	}
+	MemCacheTemplateSingleton<ReqSEBrokerLogoutPackage>::GetInstance().Free(this);
+}
+void ReqSEBrokerLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int ReqSEBrokerLogoutPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (ReqSEBrokerLogout != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, ReqSEBrokerLogoutField::FieldID);
+		WriteString(ppos, Items::BrokerID, ReqSEBrokerLogout->BrokerID);
+		WriteHexString(ppos, Items::FieldEnd, ReqSEBrokerLogoutField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool ReqSEBrokerLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case ReqSEBrokerLogoutField::FieldID:
+			{
+				ReqSEBrokerLogout = ::Allocate<ReqSEBrokerLogoutField>();
+				memset(ReqSEBrokerLogout, 0, sizeof(*ReqSEBrokerLogout));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::BrokerID:
+						{
+							ReqSEBrokerLogout->BrokerID = atoi(value.c_str());
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSEBrokerLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqSEBrokerLogoutPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqSEBrokerLogoutPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int ReqSEBrokerLogoutPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	if (ReqSEBrokerLogout != nullptr)
+	{
+		memcpy(buff + offset, &ReqSEBrokerLogoutField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqSEBrokerLogout, sizeof(ReqSEBrokerLogoutField));
+		offset += sizeof(ReqSEBrokerLogoutField);
+	}
+	return offset;
+}
+bool ReqSEBrokerLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	while(offset < endIndex)
+	{
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqSEBrokerLogoutField::FieldID:
+		{
+			ReqSEBrokerLogout = ::Allocate<ReqSEBrokerLogoutField>();
+			memcpy(ReqSEBrokerLogout, buff + offset, sizeof(ReqSEBrokerLogoutField));
+			offset += sizeof(ReqSEBrokerLogoutField);	
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+	return offset == endIndex;
+}
+const char* ReqSEBrokerLogoutPackage::GetDebugString() const
+{
+	int offset = 0;
+	if (ReqSEBrokerLogout != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSEBrokerLogout:BrokerID:[%d]", ReqSEBrokerLogout->BrokerID);
+	}
+	return t_DataStringBuffer;
+}
+ 
+RspSEBrokerLogoutPackage* RspSEBrokerLogoutPackage::Allocate()
+{
+	return ::Allocate<RspSEBrokerLogoutPackage>();
+}
+void RspSEBrokerLogoutPackage::Free()
+{
+	Package::Free();
+	if (RspSEBrokerLogout != nullptr)
+	{
+		::Free<RspSEBrokerLogoutField>(RspSEBrokerLogout);
+		RspSEBrokerLogout = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		::Free<RspInfoField>(RspInfo);
+		RspInfo = nullptr;
+	}
+	MemCacheTemplateSingleton<RspSEBrokerLogoutPackage>::GetInstance().Free(this);
+}
+void RspSEBrokerLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RspSEBrokerLogoutPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (RspSEBrokerLogout != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspSEBrokerLogoutField::FieldID);
+		WriteString(ppos, Items::BrokerID, RspSEBrokerLogout->BrokerID);
+		WriteString(ppos, Items::SessionID, RspSEBrokerLogout->SessionID);
+		if (strlen(RspSEBrokerLogout->IPAddress) >= sizeof(RspSEBrokerLogout->IPAddress))
+		{
+			RspSEBrokerLogout->IPAddress[sizeof(RspSEBrokerLogout->IPAddress) - 1] = 0;
+		}
+		WriteString(ppos, Items::IPAddress, RspSEBrokerLogout->IPAddress);
+		WriteHexString(ppos, Items::FieldEnd, RspSEBrokerLogoutField::FieldID);
+	}
+	if (RspInfo != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RspSEBrokerLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case RspSEBrokerLogoutField::FieldID:
+			{
+				RspSEBrokerLogout = ::Allocate<RspSEBrokerLogoutField>();
+				memset(RspSEBrokerLogout, 0, sizeof(*RspSEBrokerLogout));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::BrokerID:
+						{
+							RspSEBrokerLogout->BrokerID = atoi(value.c_str());
+							break;
+						}
+						case Items::SessionID:
+						{
+							RspSEBrokerLogout->SessionID = atoll(value.c_str());
+							break;
+						}
+						case Items::IPAddress:
+						{
+							size_t len = value.length() >= sizeof(RspSEBrokerLogout->IPAddress) ? sizeof(RspSEBrokerLogout->IPAddress) - 1 : value.length();
+							memcpy(RspSEBrokerLogout->IPAddress, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspSEBrokerLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSEBrokerLogoutPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ::Allocate<RspInfoField>();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSEBrokerLogoutPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspSEBrokerLogoutPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RspSEBrokerLogoutPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	if (RspSEBrokerLogout != nullptr)
+	{
+		memcpy(buff + offset, &RspSEBrokerLogoutField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspSEBrokerLogout, sizeof(RspSEBrokerLogoutField));
+		offset += sizeof(RspSEBrokerLogoutField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
+	return offset;
+}
+bool RspSEBrokerLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	while(offset < endIndex)
+	{
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspSEBrokerLogoutField::FieldID:
+		{
+			RspSEBrokerLogout = ::Allocate<RspSEBrokerLogoutField>();
+			memcpy(RspSEBrokerLogout, buff + offset, sizeof(RspSEBrokerLogoutField));
+			offset += sizeof(RspSEBrokerLogoutField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ::Allocate<RspInfoField>();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+	return offset == endIndex;
+}
+const char* RspSEBrokerLogoutPackage::GetDebugString() const
+{
+	int offset = 0;
+	if (RspSEBrokerLogout != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspSEBrokerLogout:BrokerID:[%d], SessionID:[%lld], IPAddress:[%s]", RspSEBrokerLogout->BrokerID, RspSEBrokerLogout->SessionID, RspSEBrokerLogout->IPAddress);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
+	return t_DataStringBuffer;
+}
+ 
 ReqSEInsertOrderPackage* ReqSEInsertOrderPackage::Allocate()
 {
 	return ::Allocate<ReqSEInsertOrderPackage>();

@@ -46,7 +46,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3003;
+	static constexpr UShortType PackageID = 0x3005;
 	ReqSEInsertOrderField* ReqSEInsertOrder = nullptr;
 };
 class RspSEInsertOrderPackage : public Package
@@ -61,7 +61,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3004;
+	static constexpr UShortType PackageID = 0x3006;
 	ReqSEInsertOrderField* ReqSEInsertOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -77,7 +77,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3005;
+	static constexpr UShortType PackageID = 0x3007;
 	ReqSECancelOrderField* ReqSECancelOrder = nullptr;
 };
 class RspSECancelOrderPackage : public Package
@@ -92,7 +92,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3006;
+	static constexpr UShortType PackageID = 0x3008;
 	ReqSECancelOrderField* ReqSECancelOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -108,7 +108,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3007;
+	static constexpr UShortType PackageID = 0x3009;
 	ReqQrySEOrderField* ReqQrySEOrder = nullptr;
 };
 class RspQrySEOrderPackage : public Package
@@ -123,7 +123,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3008;
+	static constexpr UShortType PackageID = 0x300A;
 	SEOrderField* SEOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -139,7 +139,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3009;
+	static constexpr UShortType PackageID = 0x300B;
 	ReqQrySETradeField* ReqQrySETrade = nullptr;
 };
 class RspQrySETradePackage : public Package
@@ -154,7 +154,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x300A;
+	static constexpr UShortType PackageID = 0x300C;
 	SETradeField* SETrade = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -170,7 +170,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x300B;
+	static constexpr UShortType PackageID = 0x300D;
 	ReqQrySEInstrumentField* ReqQrySEInstrument = nullptr;
 };
 class RspQrySEInstrumentPackage : public Package
@@ -185,7 +185,7 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x300C;
+	static constexpr UShortType PackageID = 0x300E;
 	SEInstrumentField* SEInstrument = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };

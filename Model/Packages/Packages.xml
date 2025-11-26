@@ -635,8 +635,24 @@
 			<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
 		</field>
 	</package>
-	<package name="ReqSEInsertOrder" id="0x3003" desc="模拟交易委托请求">
-		<field name="ReqSEInsertOrder" id="0x3003" desc="模拟交易委托请求">
+	<package name="ReqSEBrokerLogout" id="0x3003" desc="模拟交易经纪商登出请求">
+		<field name="ReqSEBrokerLogout" id="0x3003" desc="模拟交易经纪商登出请求">
+			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
+		</field>
+	</package>
+	<package name="RspSEBrokerLogout" id="0x3004" desc="模拟交易经纪商登出应答">
+		<field name="RspSEBrokerLogout" id="0x3004" desc="模拟交易经纪商登出应答">
+			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
+			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
+		</field>
+		<field name="RspInfo" id="0x0001" desc="应答信息">
+			<item name="ErrorID" id="0x1009" type="ErrorID" desc="错误代码"/>
+			<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
+		</field>
+	</package>
+	<package name="ReqSEInsertOrder" id="0x3005" desc="模拟交易委托请求">
+		<field name="ReqSEInsertOrder" id="0x3005" desc="模拟交易委托请求">
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
@@ -649,8 +665,8 @@
 			<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 		</field>
 	</package>
-	<package name="RspSEInsertOrder" id="0x3004" desc="模拟交易委托应答">
-		<field name="ReqSEInsertOrder" id="0x3003" desc="模拟交易委托请求">
+	<package name="RspSEInsertOrder" id="0x3006" desc="模拟交易委托应答">
+		<field name="ReqSEInsertOrder" id="0x3005" desc="模拟交易委托请求">
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
@@ -667,8 +683,8 @@
 			<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
 		</field>
 	</package>
-	<package name="ReqSECancelOrder" id="0x3005" desc="模拟交易撤单请求">
-		<field name="ReqSECancelOrder" id="0x3004" desc="模拟交易撤单请求">
+	<package name="ReqSECancelOrder" id="0x3007" desc="模拟交易撤单请求">
+		<field name="ReqSECancelOrder" id="0x3006" desc="模拟交易撤单请求">
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
@@ -679,8 +695,8 @@
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 		</field>
 	</package>
-	<package name="RspSECancelOrder" id="0x3006" desc="模拟交易撤单应答">
-		<field name="ReqSECancelOrder" id="0x3004" desc="模拟交易撤单请求">
+	<package name="RspSECancelOrder" id="0x3008" desc="模拟交易撤单应答">
+		<field name="ReqSECancelOrder" id="0x3006" desc="模拟交易撤单请求">
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
@@ -695,13 +711,13 @@
 			<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
 		</field>
 	</package>
-	<package name="ReqQrySEOrder" id="0x3007" desc="模拟交易查询委托请求">
-		<field name="ReqQrySEOrder" id="0x3005" desc="模拟交易查询委托请求">
+	<package name="ReqQrySEOrder" id="0x3009" desc="模拟交易查询委托请求">
+		<field name="ReqQrySEOrder" id="0x3007" desc="模拟交易查询委托请求">
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 		</field>
 	</package>
-	<package name="RspQrySEOrder" id="0x3008" desc="模拟交易查询委托应答">
-		<field name="SEOrder" id="0x3006" desc="模拟交易委托">
+	<package name="RspQrySEOrder" id="0x300A" desc="模拟交易查询委托应答">
+		<field name="SEOrder" id="0x3008" desc="模拟交易委托">
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -730,13 +746,13 @@
 			<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
 		</field>
 	</package>
-	<package name="ReqQrySETrade" id="0x3009" desc="模拟交易查询成交请求">
-		<field name="ReqQrySETrade" id="0x3007" desc="模拟交易查询成交请求">
+	<package name="ReqQrySETrade" id="0x300B" desc="模拟交易查询成交请求">
+		<field name="ReqQrySETrade" id="0x3009" desc="模拟交易查询成交请求">
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 		</field>
 	</package>
-	<package name="RspQrySETrade" id="0x300A" desc="模拟交易查询成交应答">
-		<field name="SETrade" id="0x3008" desc="模拟交易成交">
+	<package name="RspQrySETrade" id="0x300C" desc="模拟交易查询成交应答">
+		<field name="SETrade" id="0x300A" desc="模拟交易成交">
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -760,14 +776,14 @@
 			<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
 		</field>
 	</package>
-	<package name="ReqQrySEInstrument" id="0x300B" desc="模拟交易查询成交请求">
-		<field name="ReqQrySEInstrument" id="0x3009" desc="模拟交易查询合约请求">
+	<package name="ReqQrySEInstrument" id="0x300D" desc="模拟交易查询成交请求">
+		<field name="ReqQrySEInstrument" id="0x300B" desc="模拟交易查询合约请求">
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 		</field>
 	</package>
-	<package name="RspQrySEInstrument" id="0x300C" desc="模拟交易查询成交应答">
-		<field name="SEInstrument" id="0x300A" desc="模拟交易合约">
+	<package name="RspQrySEInstrument" id="0x300E" desc="模拟交易查询成交应答">
+		<field name="SEInstrument" id="0x300C" desc="模拟交易合约">
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 			<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
@@ -789,7 +805,7 @@
 		</field>
 	</package>
 	<package name="RtnSEOrder" id="0x3101" desc="模拟交易委托推送">
-		<field name="SEOrder" id="0x3006" desc="模拟交易委托">
+		<field name="SEOrder" id="0x3008" desc="模拟交易委托">
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
@@ -815,7 +831,7 @@
 		</field>
 	</package>
 	<package name="RtnSETrade" id="0x3102" desc="模拟交易成交推送">
-		<field name="SETrade" id="0x3008" desc="模拟交易成交">
+		<field name="SETrade" id="0x300A" desc="模拟交易成交">
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
 			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>

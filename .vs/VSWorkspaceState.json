@@ -9,17 +9,12 @@
   },
   "ExpandedNodes": [
     "",
-    "\\Api",
-    "\\Api\\MdApi",
-    "\\Api\\MdApi\\Src",
+    "\\Source",
     "\\Target",
     "\\Target\\BackTest",
-    "\\Target\\BackTest\\Src",
-    "\\Target\\SimExchange",
-    "\\Target\\SimExchangeDBInit\\Src",
-    "\\Target\\SimExchange\\Src",
-    "\\Test"
+    "\\Test",
+    "\\Test\\TestBackTest"
   ],
-  "SelectedNode": "\\Target\\SimExchange\\Src\\SimExchange.h",
+  "SelectedNode": "\\Source",
   "PreviewInSolutionExplorer": false
 }
