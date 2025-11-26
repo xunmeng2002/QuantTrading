@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 	MdFront* mdFront = new MdFront(serverConfig.SEMdOfferAddress.c_str());
 	auto simExchange = new SimExchange(config, tradeFront, mdFront);
 	tradeFront->Subscribe(simExchange);
-	mdFront->Subscribe(simExchange);
+	//mdFront->Subscribe(*);
 
 	simExchange->Init();
 	tradeFront->Init();

@@ -64,6 +64,7 @@ std::map<unsigned int, std::string> g_Errors = {
 	{ErrorAccountNotLogin, (const char*)u8"账户未登录"},
 	{ErrorPrimaryAccountNotLogin, (const char*)u8"主账户未登录"},
 	{ErrorUserNotLogin, (const char*)u8"用户未登录"},
+	{ErrorBrokerNotLogin, (const char*)u8"经纪公司未登录"},
 	{ErrorTradeOfferNotLogin, (const char*)u8"交易报盘未登录"},
 	{ErrorTradeOfferAlreadyLogin, (const char*)u8"交易报盘已登录"},
 	{ErrorSessionNotLogin, (const char*)u8"本连接未登录"},

@@ -22,6 +22,10 @@ SimExchange::SimExchange(const Config& config, TradeFront* tradeFront, MdFront* 
 	m_RspBrokerLoginPackage = Allocate<RspSEBrokerLoginPackage>();
 	m_RspBrokerLoginPackage->RspInfo = Allocate<RspInfoField>();
 	m_RspBrokerLoginPackage->RspSEBrokerLogin = Allocate<RspSEBrokerLoginField>();
+	m_RspBrokerLogoutPackage = Allocate<RspSEBrokerLogoutPackage>();
+	m_RspBrokerLogoutPackage->RspInfo = Allocate<RspInfoField>();
+	m_RspBrokerLogoutPackage->RspSEBrokerLogout = Allocate<RspSEBrokerLogoutField>();
+
 	m_RspInsertOrderPackage = Allocate<RspSEInsertOrderPackage>();
 	m_RspInsertOrderPackage->RspInfo = Allocate<RspInfoField>();
 	m_RspInsertOrderPackage->ReqSEInsertOrder = Allocate<ReqSEInsertOrderField>();
@@ -57,6 +61,13 @@ void SimExchange::OnProtocolConnect(SessionIDType sessionID, const char* ip, int
 void SimExchange::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port)
 {
 	WriteLog(LogLevel::Info, "TradeFront::OnProtocolDisConnect SessionID:%lld, ip:%s, port:%d", sessionID, ip, port);
+	NotifyDisConnectPackage* package = NotifyDisConnectPackage::Allocate();
+	package->Prepare(sessionID, false, 0);
+	package->NotifyDisConnect = Allocate<NotifyDisConnectField>();
+	package->NotifyDisConnect->SessionID = sessionID;
+	strcpy(package->NotifyDisConnect->IPAddress, ip);
+	package->NotifyDisConnect->Port = port;
+	OnMessage(package);
 }
 void SimExchange::OnMessage(Package* package)
 {
@@ -89,8 +100,14 @@ void SimExchange::HandlePackages()
 			break;
 		switch (package->Head.PackageID)
 		{
+		case NotifyDisConnectPackage::PackageID:
+			HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
+			break;
 		case ReqSEBrokerLoginPackage::PackageID:
 			HandleBrokerLogin((ReqSEBrokerLoginPackage*)package);
+			break;
+		case ReqSEBrokerLogoutPackage::PackageID:
+			HandleBrokerLogout((ReqSEBrokerLogoutPackage*)package);
 			break;
 		case ReqSEInsertOrderPackage::PackageID:
 			HandleInsertOrder((ReqSEInsertOrderPackage*)package);
@@ -115,6 +132,15 @@ void SimExchange::HandlePackages()
 	}
 }
 
+void SimExchange::HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage)
+{
+	WriteLog(LogLevel::Info, "HandleNotifyDisConnect %s", notifyPackage->GetDebugString());
+	auto loginSession = m_Mdb->t_SEBrokerLoginSession->m_PrimaryKey->Select(notifyPackage->NotifyDisConnect->SessionID);
+	if (loginSession != nullptr)
+	{
+		m_Mdb->t_SEBrokerLoginSession->Erase(loginSession);
+	}
+}
 void SimExchange::HandleBrokerLogin(ReqSEBrokerLoginPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleBrokerLogin %s", reqPackage->GetDebugString());
@@ -147,6 +173,34 @@ void SimExchange::HandleBrokerLogin(ReqSEBrokerLoginPackage* reqPackage)
 	}
 	SendRspBrokerLogin(reqPackage, broker, errorID);
 }
+void SimExchange::HandleBrokerLogout(ReqSEBrokerLogoutPackage* reqPackage)
+{
+	WriteLog(LogLevel::Info, "HandleBrokerLogout %s", reqPackage->GetDebugString());
+	
+	m_RspBrokerLogoutPackage->Prepare(reqPackage->SessionID, false, reqPackage->Head.MsgSeqNum);
+
+	m_RspBrokerLogoutPackage->RspSEBrokerLogout->BrokerID = reqPackage->ReqSEBrokerLogout->BrokerID;
+	m_RspBrokerLogoutPackage->RspSEBrokerLogout->SessionID = reqPackage->SessionID;
+	auto loginSession = m_Mdb->t_SEBrokerLoginSession->m_PrimaryKey->Select(reqPackage->SessionID);
+	if (loginSession != nullptr)
+	{
+		strcpy(m_RspBrokerLogoutPackage->RspSEBrokerLogout->IPAddress, loginSession->IPAddress);
+		m_Mdb->t_SEBrokerLoginSession->Erase(loginSession);
+
+		m_RspBrokerLogoutPackage->RspInfo->ErrorID = ErrorNone;
+		strcpy(m_RspBrokerLogoutPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorNone));
+	}
+	else
+	{
+		memset(m_RspBrokerLogoutPackage->RspSEBrokerLogout->IPAddress, 0, sizeof(IPAddressType));
+
+		m_RspBrokerLogoutPackage->RspInfo->ErrorID = ErrorBrokerNotLogin;
+		strcpy(m_RspBrokerLogoutPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorBrokerNotLogin));
+	}
+
+	m_TradeFront->Send(m_RspBrokerLogoutPackage);
+}
+
 void SimExchange::HandleInsertOrder(ReqSEInsertOrderPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleInsertOrder %s", reqPackage->GetDebugString());

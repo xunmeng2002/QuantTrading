@@ -22,6 +22,10 @@ void SimExchangeSpiImpl::OnRspSEBrokerLogin(RspSEBrokerLoginField* rspSEBrokerLo
 	SimExchangeSpiMiddle::OnRspSEBrokerLogin(rspSEBrokerLogin, rspInfo, requestID, isLast);
 	ReqQryInstrument();
 }
+void SimExchangeSpiImpl::OnRspSEBrokerLogout(RspSEBrokerLogoutField* rspSEBrokerLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	SimExchangeSpiMiddle::OnRspSEBrokerLogout(rspSEBrokerLogout, rspInfo, requestID, isLast);
+}
 void SimExchangeSpiImpl::OnRspSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	SimExchangeSpiMiddle::OnRspSEInsertOrder(reqSEInsertOrder, rspInfo, requestID, isLast);

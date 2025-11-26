@@ -69,9 +69,11 @@
 	<error name="AccountNotLogin" 					id="0x3000" desc="账户未登录"/>
 	<error name="PrimaryAccountNotLogin" 			id="0x3001" desc="主账户未登录"/>
 	<error name="UserNotLogin" 						id="0x3002" desc="用户未登录"/>
-	<error name="TradeOfferNotLogin" 				id="0x3003" desc="交易报盘未登录"/>
-	<error name="TradeOfferAlreadyLogin" 			id="0x3004" desc="交易报盘已登录"/>
-	<error name="SessionNotLogin" 					id="0x3005" desc="本连接未登录"/>
+	<error name="BrokerNotLogin" 					id="0x3003" desc="经纪公司未登录"/>
+	<error name="TradeOfferNotLogin" 				id="0x3004" desc="交易报盘未登录"/>
+	<error name="TradeOfferAlreadyLogin" 			id="0x3005" desc="交易报盘已登录"/>
+	<error name="SessionNotLogin" 					id="0x3006" desc="本连接未登录"/>
+	
 	
 	
 	<error name="DuplicateOfferID" 					id="0x4000" desc="重复的报盘代码"/>

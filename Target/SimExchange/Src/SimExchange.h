@@ -31,7 +31,10 @@ protected:
 	void HandlePackages();
 
 private:
+	void HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage);
 	void HandleBrokerLogin(ReqSEBrokerLoginPackage* reqPackage);
+	void HandleBrokerLogout(ReqSEBrokerLogoutPackage* reqPackage);
+	
 	void HandleInsertOrder(ReqSEInsertOrderPackage* reqPackage);
 	void HandleCancelOrder(ReqSECancelOrderPackage* reqPackage);
 	void HandleQryOrder(ReqQrySEOrderPackage* reqPackage);
@@ -74,6 +77,7 @@ protected:
 
 	std::list<Package*> m_Packages;
 	RspSEBrokerLoginPackage* m_RspBrokerLoginPackage;
+	RspSEBrokerLogoutPackage* m_RspBrokerLogoutPackage;
 	RspSEInsertOrderPackage* m_RspInsertOrderPackage;
 	RspSECancelOrderPackage* m_RspCancelOrderPackage;
 	RspQrySEOrderPackage* m_RspQryOrderPackage;
