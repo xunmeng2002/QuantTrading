@@ -1,4 +1,4 @@
 <parselist>
-	<pump script="./ParsePackageModel.py" dest="./Model/Packages/Packages.xml ./Model/Packages/FullApiPackages.xml ./Model/Packages/Fields.xml " sources="./Model/Packages/ShortPackages.xml ./Model/Packages/ShortFields.xml ../Model/Items.xml"/>
-	<pump script="./ParseTableModel.py" dest="./Model/Tables/Tables.xml ./Model/Tables/FullDBTables.xml" sources="./Model/Tables/ShortTables.xml ../Model/Items.xml"/>
+	<pump script="./ParsePackageModel.py" dest="./Model/Packages/Packages.xml ./Model/Packages/PackageNames.xml ./Model/Packages/Fields.xml " sources="./Model/Packages/ShortPackages.xml ./Model/Packages/ShortFields.xml ../Model/Items.xml"/>
+	<pump script="./ParseTableModel.py" dest="./Model/Tables/Tables.xml ./Model/Tables/TableNames.xml" sources="./Model/Tables/ShortTables.xml ../Model/Items.xml"/>
 </parselist>
