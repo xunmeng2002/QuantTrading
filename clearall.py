@@ -31,7 +31,9 @@ def Clear(pumpfile):
                 split_dest = dest + targetName + "." + type
                 Remove(split_dest)
         else:
-            Remove(dest)
+            destFiles = dest.split()
+            for destFile in destFiles:
+                Remove(destFile)
 
 def Remove(destFile):
     if os.path.exists(destFile):
