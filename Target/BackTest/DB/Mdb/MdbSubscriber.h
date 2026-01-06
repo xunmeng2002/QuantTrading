@@ -11,7 +11,10 @@ public:
 		:m_Connected(false)
 	{
 	}
-	virtual void TruncateTables() {}
+	virtual void OnCreateTables() {}
+	virtual void OnDropTables() {}
+	virtual void OnTruncateTables() {}
+	
 	virtual void OnTradingDayInsert(mdb::TradingDay* record) {}
 	virtual void OnTradingDayBatchInsert(std::list<mdb::TradingDay*>* records) {}
 	virtual void OnTradingDayErase(mdb::TradingDay* record) {}

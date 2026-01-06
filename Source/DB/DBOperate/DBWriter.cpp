@@ -57,10 +57,31 @@ void DBWriter::DisConnect()
 	m_DBOperates.clear();
 }
 
-void DBWriter::TruncateTables()
+void DBWriter::OnCreateTables()
 {
-	m_DB->TruncateTables();
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::CreateTables;
+	dbOperate->TableID = 0;
+	dbOperate->Record = nullptr;
+	AddDBOperate(dbOperate);
 }
+void DBWriter::OnDropTables()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DropTables;
+	dbOperate->TableID = 0;
+	dbOperate->Record = nullptr;
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnTruncateTables()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::TruncateTables;
+	dbOperate->TableID = 0;
+	dbOperate->Record = nullptr;
+	AddDBOperate(dbOperate);
+}
+
 void DBWriter::OnTradingDayInsert(mdb::TradingDay* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -1121,6 +1142,21 @@ void DBWriter::HandleDBOperate()
 		{
 			switch (dbOperate->Operate)
 			{
+			case DBOperateType::CreateTables:
+			{
+				CreateTables(dbOperate);
+				break;
+			}
+			case DBOperateType::DropTables:
+			{
+				DropTables(dbOperate);
+				break;
+			}
+			case DBOperateType::TruncateTables:
+			{
+				TruncateTables(dbOperate);
+				break;
+			}
 			case DBOperateType::Insert:
 			{
 				InsertRecord(dbOperate);
@@ -1187,6 +1223,19 @@ void DBWriter::AddDBOperate(DBOperate* dbOperate)
 		m_DBOperates.push_back(dbOperate);
 	}
 	m_ConditionVariable.notify_one();
+}
+
+void DBWriter::CreateTables(DBOperate* dbOperate)
+{
+	m_DB->CreateTables();
+}
+void DBWriter::DropTables(DBOperate* dbOperate)
+{
+	m_DB->DropTables();
+}
+void DBWriter::TruncateTables(DBOperate* dbOperate)
+{
+	m_DB->TruncateTables();
 }
 void DBWriter::InsertRecord(DBOperate* dbOperate)
 {

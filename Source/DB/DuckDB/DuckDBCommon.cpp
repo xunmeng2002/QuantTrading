@@ -1,14 +1,14 @@
 ﻿#include "DuckDBCommon.h"
-
+#include <string.h>
 
 void CpyDuckdbString(char* data, duckdb_string_t& str)
 {
 	if (duckdb_string_is_inlined(str))
 	{
-		strcpy(data, str.value.inlined.inlined);
+		memcpy(data, str.value.inlined.inlined, str.value.inlined.length);
 	}
 	else
 	{
-		strcpy(data, str.value.pointer.ptr);
+		memcpy(data, str.value.pointer.ptr, str.value.pointer.length);
 	}
 }

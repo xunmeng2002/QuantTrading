@@ -26,6 +26,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::TradingDay*>* records);
 		void Erase(TradingDay* record);
 		bool Update(TradingDay* const oldRecord, TradingDay* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -55,6 +56,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::Exchange*>* records);
 		void Erase(Exchange* record);
 		bool Update(Exchange* const oldRecord, Exchange* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -84,6 +86,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::Product*>* records);
 		void Erase(Product* record);
 		bool Update(Product* const oldRecord, Product* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -113,6 +116,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::DepthMarketData*>* records);
 		void Erase(DepthMarketData* record);
 		bool Update(DepthMarketData* const oldRecord, DepthMarketData* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -142,6 +146,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::SEBroker*>* records);
 		void Erase(SEBroker* record);
 		bool Update(SEBroker* const oldRecord, SEBroker* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -172,6 +177,7 @@ namespace mdb
 		void Erase(SEInstrument* record);
 		int EraseByExchangeIDIndex(const ExchangeIDType& ExchangeID);
 		bool Update(SEInstrument* const oldRecord, SEInstrument* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -203,6 +209,7 @@ namespace mdb
 		void Erase(SEOrder* record);
 		int EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		bool Update(SEOrder* const oldRecord, SEOrder* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -234,6 +241,7 @@ namespace mdb
 		void Erase(SETrade* record);
 		int EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		bool Update(SETrade* const oldRecord, SETrade* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -265,6 +273,7 @@ namespace mdb
 		void Erase(SEBrokerLoginSession* record);
 		int EraseByBrokerIDIndex(const BrokerIDType& BrokerID);
 		bool Update(SEBrokerLoginSession* const oldRecord, SEBrokerLoginSession* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 

@@ -9,16 +9,12 @@
   },
   "ExpandedNodes": [
     "",
-    "\\Model",
-    "\\Model\\Error",
-    "\\Model\\Tables",
+    "\\Source",
+    "\\Source\\DB",
     "\\Target",
     "\\Target\\SimExchange",
-    "\\Target\\SimExchange\\Src",
-    "\\Test",
-    "\\Test\\TestSimExchangeApi",
-    "\\Test\\TestSimExchangeApi\\Src"
+    "\\Test"
   ],
-  "SelectedNode": "\\Target\\SimExchange\\Src\\Main.cpp",
+  "SelectedNode": "\\Target\\SimExchange\\DB",
   "PreviewInSolutionExplorer": false
 }

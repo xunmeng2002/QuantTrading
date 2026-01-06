@@ -15,6 +15,8 @@ namespace mdb
 		void InitDB();
 		void SetInitStatus(bool initStatus);
 		void Dump(const char* dir);
+		void CreateTables();
+		void DropTables();
 		void TruncateTables();
 		
 		virtual void OnDBConnected() override;
@@ -35,6 +37,8 @@ namespace mdb
 		DepthMarketDataTable* t_DepthMarketData;
 		BarMarketDataTable* t_BarMarketData;
 		MdSubscribeTable* t_MdSubscribe;
+	private:
+		MdbSubscriber* m_MdbSubscriber;
 	};
 }
 

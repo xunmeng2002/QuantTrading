@@ -49,7 +49,14 @@ namespace mdb
 		{
 			records->push_back(new TradingDay(**it));
 		}
-		m_MdbSubscriber->OnTradingDayBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnTradingDayBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool TradingDayTable::Insert(TradingDay* record)
@@ -124,6 +131,15 @@ namespace mdb
 			newRecord->Free();
 		}
 		return true;
+	}
+	void TradingDayTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
 	}
 	void TradingDayTable::TruncateTable()
 	{
@@ -207,7 +223,14 @@ namespace mdb
 		{
 			records->push_back(new Exchange(**it));
 		}
-		m_MdbSubscriber->OnExchangeBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnExchangeBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool ExchangeTable::Insert(Exchange* record)
@@ -282,6 +305,15 @@ namespace mdb
 			newRecord->Free();
 		}
 		return true;
+	}
+	void ExchangeTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
 	}
 	void ExchangeTable::TruncateTable()
 	{
@@ -365,7 +397,14 @@ namespace mdb
 		{
 			records->push_back(new Product(**it));
 		}
-		m_MdbSubscriber->OnProductBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnProductBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool ProductTable::Insert(Product* record)
@@ -440,6 +479,15 @@ namespace mdb
 			newRecord->Free();
 		}
 		return true;
+	}
+	void ProductTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
 	}
 	void ProductTable::TruncateTable()
 	{
@@ -523,7 +571,14 @@ namespace mdb
 		{
 			records->push_back(new DepthMarketData(**it));
 		}
-		m_MdbSubscriber->OnDepthMarketDataBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnDepthMarketDataBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool DepthMarketDataTable::Insert(DepthMarketData* record)
@@ -598,6 +653,15 @@ namespace mdb
 			newRecord->Free();
 		}
 		return true;
+	}
+	void DepthMarketDataTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
 	}
 	void DepthMarketDataTable::TruncateTable()
 	{
@@ -681,7 +745,14 @@ namespace mdb
 		{
 			records->push_back(new SEBroker(**it));
 		}
-		m_MdbSubscriber->OnSEBrokerBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnSEBrokerBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool SEBrokerTable::Insert(SEBroker* record)
@@ -756,6 +827,15 @@ namespace mdb
 			newRecord->Free();
 		}
 		return true;
+	}
+	void SEBrokerTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
 	}
 	void SEBrokerTable::TruncateTable()
 	{
@@ -842,7 +922,14 @@ namespace mdb
 		{
 			records->push_back(new SEInstrument(**it));
 		}
-		m_MdbSubscriber->OnSEInstrumentBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnSEInstrumentBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool SEInstrumentTable::Insert(SEInstrument* record)
@@ -954,6 +1041,16 @@ namespace mdb
 		}
 		return true;
 	}
+	void SEInstrumentTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_ExchangeIDIndex->m_Index.clear();
+	}
 	void SEInstrumentTable::TruncateTable()
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -1041,7 +1138,14 @@ namespace mdb
 		{
 			records->push_back(new SEOrder(**it));
 		}
-		m_MdbSubscriber->OnSEOrderBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnSEOrderBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool SEOrderTable::Insert(SEOrder* record)
@@ -1153,6 +1257,16 @@ namespace mdb
 		}
 		return true;
 	}
+	void SEOrderTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_AccountIDIndex->m_Index.clear();
+	}
 	void SEOrderTable::TruncateTable()
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -1240,7 +1354,14 @@ namespace mdb
 		{
 			records->push_back(new SETrade(**it));
 		}
-		m_MdbSubscriber->OnSETradeBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnSETradeBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool SETradeTable::Insert(SETrade* record)
@@ -1352,6 +1473,16 @@ namespace mdb
 		}
 		return true;
 	}
+	void SETradeTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_AccountIDIndex->m_Index.clear();
+	}
 	void SETradeTable::TruncateTable()
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -1439,7 +1570,14 @@ namespace mdb
 		{
 			records->push_back(new SEBrokerLoginSession(**it));
 		}
-		m_MdbSubscriber->OnSEBrokerLoginSessionBatchInsert(records);
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnSEBrokerLoginSessionBatchInsert(records);
+		}
 		m_DBInited = true;
 	}
 	bool SEBrokerLoginSessionTable::Insert(SEBrokerLoginSession* record)
@@ -1550,6 +1688,16 @@ namespace mdb
 			newRecord->Free();
 		}
 		return true;
+	}
+	void SEBrokerLoginSessionTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_BrokerIDIndex->m_Index.clear();
 	}
 	void SEBrokerLoginSessionTable::TruncateTable()
 	{

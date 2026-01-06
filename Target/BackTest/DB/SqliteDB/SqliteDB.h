@@ -13,10 +13,14 @@ public:
 	virtual bool Connect() override;
 	virtual void DisConnect() override;
 	virtual void InitDB() override;
-	virtual void TruncateSessionTables() override;
+	virtual void CreateTables() override;
+	virtual void DropTables() override;
 	virtual void TruncateTables() override;
+	virtual void TruncateSessionTables() override;
 	
 	bool Exec(const char* sql);
+	virtual void CreateTradingDay() override;
+	virtual void DropTradingDay() override;
 	virtual void InsertTradingDay(mdb::TradingDay* record) override;
 	virtual void BatchInsertTradingDay(std::list<mdb::TradingDay*>* records) override;
 	virtual void DeleteTradingDay(mdb::TradingDay* record) override;
@@ -24,6 +28,8 @@ public:
 	virtual void SelectTradingDay(std::list<mdb::TradingDay*>& records) override;
 	virtual void TruncateTradingDay() override;
 	
+	virtual void CreateExchange() override;
+	virtual void DropExchange() override;
 	virtual void InsertExchange(mdb::Exchange* record) override;
 	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) override;
 	virtual void DeleteExchange(mdb::Exchange* record) override;
@@ -31,6 +37,8 @@ public:
 	virtual void SelectExchange(std::list<mdb::Exchange*>& records) override;
 	virtual void TruncateExchange() override;
 	
+	virtual void CreateProduct() override;
+	virtual void DropProduct() override;
 	virtual void InsertProduct(mdb::Product* record) override;
 	virtual void BatchInsertProduct(std::list<mdb::Product*>* records) override;
 	virtual void DeleteProduct(mdb::Product* record) override;
@@ -38,6 +46,8 @@ public:
 	virtual void SelectProduct(std::list<mdb::Product*>& records) override;
 	virtual void TruncateProduct() override;
 	
+	virtual void CreateHotInstrument() override;
+	virtual void DropHotInstrument() override;
 	virtual void InsertHotInstrument(mdb::HotInstrument* record) override;
 	virtual void BatchInsertHotInstrument(std::list<mdb::HotInstrument*>* records) override;
 	virtual void DeleteHotInstrument(mdb::HotInstrument* record) override;
@@ -46,6 +56,8 @@ public:
 	virtual void SelectHotInstrument(std::list<mdb::HotInstrument*>& records) override;
 	virtual void TruncateHotInstrument() override;
 	
+	virtual void CreateInstrument() override;
+	virtual void DropInstrument() override;
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
@@ -53,6 +65,8 @@ public:
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
 	
+	virtual void CreateAccount() override;
+	virtual void DropAccount() override;
 	virtual void InsertAccount(mdb::Account* record) override;
 	virtual void BatchInsertAccount(std::list<mdb::Account*>* records) override;
 	virtual void DeleteAccount(mdb::Account* record) override;
@@ -60,6 +74,8 @@ public:
 	virtual void SelectAccount(std::list<mdb::Account*>& records) override;
 	virtual void TruncateAccount() override;
 	
+	virtual void CreateCapital() override;
+	virtual void DropCapital() override;
 	virtual void InsertCapital(mdb::Capital* record) override;
 	virtual void BatchInsertCapital(std::list<mdb::Capital*>* records) override;
 	virtual void DeleteCapital(mdb::Capital* record) override;
@@ -68,6 +84,8 @@ public:
 	virtual void SelectCapital(std::list<mdb::Capital*>& records) override;
 	virtual void TruncateCapital() override;
 	
+	virtual void CreatePosition() override;
+	virtual void DropPosition() override;
 	virtual void InsertPosition(mdb::Position* record) override;
 	virtual void BatchInsertPosition(std::list<mdb::Position*>* records) override;
 	virtual void DeletePosition(mdb::Position* record) override;
@@ -77,6 +95,8 @@ public:
 	virtual void SelectPosition(std::list<mdb::Position*>& records) override;
 	virtual void TruncatePosition() override;
 	
+	virtual void CreatePositionDetail() override;
+	virtual void DropPositionDetail() override;
 	virtual void InsertPositionDetail(mdb::PositionDetail* record) override;
 	virtual void BatchInsertPositionDetail(std::list<mdb::PositionDetail*>* records) override;
 	virtual void DeletePositionDetail(mdb::PositionDetail* record) override;
@@ -86,6 +106,8 @@ public:
 	virtual void SelectPositionDetail(std::list<mdb::PositionDetail*>& records) override;
 	virtual void TruncatePositionDetail() override;
 	
+	virtual void CreateOrder() override;
+	virtual void DropOrder() override;
 	virtual void InsertOrder(mdb::Order* record) override;
 	virtual void BatchInsertOrder(std::list<mdb::Order*>* records) override;
 	virtual void DeleteOrder(mdb::Order* record) override;
@@ -93,6 +115,8 @@ public:
 	virtual void SelectOrder(std::list<mdb::Order*>& records) override;
 	virtual void TruncateOrder() override;
 	
+	virtual void CreateTrade() override;
+	virtual void DropTrade() override;
 	virtual void InsertTrade(mdb::Trade* record) override;
 	virtual void BatchInsertTrade(std::list<mdb::Trade*>* records) override;
 	virtual void DeleteTrade(mdb::Trade* record) override;
@@ -100,6 +124,8 @@ public:
 	virtual void SelectTrade(std::list<mdb::Trade*>& records) override;
 	virtual void TruncateTrade() override;
 	
+	virtual void CreateDepthMarketData() override;
+	virtual void DropDepthMarketData() override;
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
@@ -107,6 +133,8 @@ public:
 	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
 	virtual void TruncateDepthMarketData() override;
 	
+	virtual void CreateBarMarketData() override;
+	virtual void DropBarMarketData() override;
 	virtual void InsertBarMarketData(mdb::BarMarketData* record) override;
 	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) override;
 	virtual void DeleteBarMarketData(mdb::BarMarketData* record) override;
@@ -114,6 +142,8 @@ public:
 	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) override;
 	virtual void TruncateBarMarketData() override;
 	
+	virtual void CreateMdSubscribe() override;
+	virtual void DropMdSubscribe() override;
 	virtual void InsertMdSubscribe(mdb::MdSubscribe* record) override;
 	virtual void BatchInsertMdSubscribe(std::list<mdb::MdSubscribe*>* records) override;
 	virtual void DeleteMdSubscribe(mdb::MdSubscribe* record) override;

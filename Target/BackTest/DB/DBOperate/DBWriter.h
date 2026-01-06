@@ -22,7 +22,10 @@ public:
 	bool Connect();
 	void DisConnect();
 	
-	virtual void TruncateTables() override;
+	virtual void OnCreateTables() override;
+	virtual void OnDropTables() override;
+	virtual void OnTruncateTables() override;
+	
 	virtual void OnTradingDayInsert(mdb::TradingDay* record) override;
 	virtual void OnTradingDayBatchInsert(std::list<mdb::TradingDay*>* records) override;
 	virtual void OnTradingDayErase(mdb::TradingDay* record) override;
@@ -123,6 +126,10 @@ protected:
 
 private:
 	void AddDBOperate(DBOperate* dbOperate);
+	
+	void CreateTables(DBOperate* dbOperate);
+	void DropTables(DBOperate* dbOperate);
+	void TruncateTables(DBOperate* dbOperate);
 	void InsertRecord(DBOperate* dbOperate);
 	void DeleteRecord(DBOperate* dbOperate);
 	void DeleteRecordByIndex(DBOperate* dbOperate);

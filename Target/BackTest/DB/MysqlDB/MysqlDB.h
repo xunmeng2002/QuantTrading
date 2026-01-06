@@ -18,8 +18,10 @@ public:
 	virtual bool Connect() override;
 	virtual void DisConnect() override;
 	virtual void InitDB() override;
-	virtual void TruncateSessionTables() override;
+	virtual void CreateTables() override;
+	virtual void DropTables() override;
 	virtual void TruncateTables() override;
+	virtual void TruncateSessionTables() override;
 	
 	template<typename T>
 	void CustomSelectSql(const char* sql, std::list<T*>& records)
@@ -43,6 +45,8 @@ public:
 		m_Statement->executeUpdate(sql);
 	}
 	
+	virtual void CreateTradingDay() override;
+	virtual void DropTradingDay() override;
 	virtual void InsertTradingDay(mdb::TradingDay* record) override;
 	virtual void BatchInsertTradingDay(std::list<mdb::TradingDay*>* records) override;
 	virtual void DeleteTradingDay(mdb::TradingDay* record) override;
@@ -50,6 +54,8 @@ public:
 	virtual void SelectTradingDay(std::list<mdb::TradingDay*>& records) override;
 	virtual void TruncateTradingDay() override;
 	
+	virtual void CreateExchange() override;
+	virtual void DropExchange() override;
 	virtual void InsertExchange(mdb::Exchange* record) override;
 	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) override;
 	virtual void DeleteExchange(mdb::Exchange* record) override;
@@ -57,6 +63,8 @@ public:
 	virtual void SelectExchange(std::list<mdb::Exchange*>& records) override;
 	virtual void TruncateExchange() override;
 	
+	virtual void CreateProduct() override;
+	virtual void DropProduct() override;
 	virtual void InsertProduct(mdb::Product* record) override;
 	virtual void BatchInsertProduct(std::list<mdb::Product*>* records) override;
 	virtual void DeleteProduct(mdb::Product* record) override;
@@ -64,6 +72,8 @@ public:
 	virtual void SelectProduct(std::list<mdb::Product*>& records) override;
 	virtual void TruncateProduct() override;
 	
+	virtual void CreateHotInstrument() override;
+	virtual void DropHotInstrument() override;
 	virtual void InsertHotInstrument(mdb::HotInstrument* record) override;
 	virtual void BatchInsertHotInstrument(std::list<mdb::HotInstrument*>* records) override;
 	virtual void DeleteHotInstrument(mdb::HotInstrument* record) override;
@@ -72,6 +82,8 @@ public:
 	virtual void SelectHotInstrument(std::list<mdb::HotInstrument*>& records) override;
 	virtual void TruncateHotInstrument() override;
 	
+	virtual void CreateInstrument() override;
+	virtual void DropInstrument() override;
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
@@ -79,6 +91,8 @@ public:
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
 	
+	virtual void CreateAccount() override;
+	virtual void DropAccount() override;
 	virtual void InsertAccount(mdb::Account* record) override;
 	virtual void BatchInsertAccount(std::list<mdb::Account*>* records) override;
 	virtual void DeleteAccount(mdb::Account* record) override;
@@ -86,6 +100,8 @@ public:
 	virtual void SelectAccount(std::list<mdb::Account*>& records) override;
 	virtual void TruncateAccount() override;
 	
+	virtual void CreateCapital() override;
+	virtual void DropCapital() override;
 	virtual void InsertCapital(mdb::Capital* record) override;
 	virtual void BatchInsertCapital(std::list<mdb::Capital*>* records) override;
 	virtual void DeleteCapital(mdb::Capital* record) override;
@@ -94,6 +110,8 @@ public:
 	virtual void SelectCapital(std::list<mdb::Capital*>& records) override;
 	virtual void TruncateCapital() override;
 	
+	virtual void CreatePosition() override;
+	virtual void DropPosition() override;
 	virtual void InsertPosition(mdb::Position* record) override;
 	virtual void BatchInsertPosition(std::list<mdb::Position*>* records) override;
 	virtual void DeletePosition(mdb::Position* record) override;
@@ -103,6 +121,8 @@ public:
 	virtual void SelectPosition(std::list<mdb::Position*>& records) override;
 	virtual void TruncatePosition() override;
 	
+	virtual void CreatePositionDetail() override;
+	virtual void DropPositionDetail() override;
 	virtual void InsertPositionDetail(mdb::PositionDetail* record) override;
 	virtual void BatchInsertPositionDetail(std::list<mdb::PositionDetail*>* records) override;
 	virtual void DeletePositionDetail(mdb::PositionDetail* record) override;
@@ -112,6 +132,8 @@ public:
 	virtual void SelectPositionDetail(std::list<mdb::PositionDetail*>& records) override;
 	virtual void TruncatePositionDetail() override;
 	
+	virtual void CreateOrder() override;
+	virtual void DropOrder() override;
 	virtual void InsertOrder(mdb::Order* record) override;
 	virtual void BatchInsertOrder(std::list<mdb::Order*>* records) override;
 	virtual void DeleteOrder(mdb::Order* record) override;
@@ -119,6 +141,8 @@ public:
 	virtual void SelectOrder(std::list<mdb::Order*>& records) override;
 	virtual void TruncateOrder() override;
 	
+	virtual void CreateTrade() override;
+	virtual void DropTrade() override;
 	virtual void InsertTrade(mdb::Trade* record) override;
 	virtual void BatchInsertTrade(std::list<mdb::Trade*>* records) override;
 	virtual void DeleteTrade(mdb::Trade* record) override;
@@ -126,6 +150,8 @@ public:
 	virtual void SelectTrade(std::list<mdb::Trade*>& records) override;
 	virtual void TruncateTrade() override;
 	
+	virtual void CreateDepthMarketData() override;
+	virtual void DropDepthMarketData() override;
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
@@ -133,6 +159,8 @@ public:
 	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
 	virtual void TruncateDepthMarketData() override;
 	
+	virtual void CreateBarMarketData() override;
+	virtual void DropBarMarketData() override;
 	virtual void InsertBarMarketData(mdb::BarMarketData* record) override;
 	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) override;
 	virtual void DeleteBarMarketData(mdb::BarMarketData* record) override;
@@ -140,6 +168,8 @@ public:
 	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) override;
 	virtual void TruncateBarMarketData() override;
 	
+	virtual void CreateMdSubscribe() override;
+	virtual void DropMdSubscribe() override;
 	virtual void InsertMdSubscribe(mdb::MdSubscribe* record) override;
 	virtual void BatchInsertMdSubscribe(std::list<mdb::MdSubscribe*>* records) override;
 	virtual void DeleteMdSubscribe(mdb::MdSubscribe* record) override;
@@ -223,43 +253,59 @@ private:
 	std::string m_Passwd;
 	char* m_SqlBuff;
 
+	sql::PreparedStatement* m_TradingDayCreateStatement;
+	sql::PreparedStatement* m_TradingDayDropStatement;
 	sql::PreparedStatement* m_TradingDayInsertStatement;
 	sql::PreparedStatement* m_TradingDayDeleteStatement;
 	sql::PreparedStatement* m_TradingDayUpdateStatement;
 	sql::PreparedStatement* m_TradingDaySelectStatement;
 	sql::PreparedStatement* m_TradingDayTruncateStatement;
+	sql::PreparedStatement* m_ExchangeCreateStatement;
+	sql::PreparedStatement* m_ExchangeDropStatement;
 	sql::PreparedStatement* m_ExchangeInsertStatement;
 	sql::PreparedStatement* m_ExchangeDeleteStatement;
 	sql::PreparedStatement* m_ExchangeUpdateStatement;
 	sql::PreparedStatement* m_ExchangeSelectStatement;
 	sql::PreparedStatement* m_ExchangeTruncateStatement;
+	sql::PreparedStatement* m_ProductCreateStatement;
+	sql::PreparedStatement* m_ProductDropStatement;
 	sql::PreparedStatement* m_ProductInsertStatement;
 	sql::PreparedStatement* m_ProductDeleteStatement;
 	sql::PreparedStatement* m_ProductUpdateStatement;
 	sql::PreparedStatement* m_ProductSelectStatement;
 	sql::PreparedStatement* m_ProductTruncateStatement;
+	sql::PreparedStatement* m_HotInstrumentCreateStatement;
+	sql::PreparedStatement* m_HotInstrumentDropStatement;
 	sql::PreparedStatement* m_HotInstrumentInsertStatement;
 	sql::PreparedStatement* m_HotInstrumentDeleteStatement;
 	sql::PreparedStatement* m_HotInstrumentDeleteByTradingDayIndexStatement;
 	sql::PreparedStatement* m_HotInstrumentUpdateStatement;
 	sql::PreparedStatement* m_HotInstrumentSelectStatement;
 	sql::PreparedStatement* m_HotInstrumentTruncateStatement;
+	sql::PreparedStatement* m_InstrumentCreateStatement;
+	sql::PreparedStatement* m_InstrumentDropStatement;
 	sql::PreparedStatement* m_InstrumentInsertStatement;
 	sql::PreparedStatement* m_InstrumentDeleteStatement;
 	sql::PreparedStatement* m_InstrumentUpdateStatement;
 	sql::PreparedStatement* m_InstrumentSelectStatement;
 	sql::PreparedStatement* m_InstrumentTruncateStatement;
+	sql::PreparedStatement* m_AccountCreateStatement;
+	sql::PreparedStatement* m_AccountDropStatement;
 	sql::PreparedStatement* m_AccountInsertStatement;
 	sql::PreparedStatement* m_AccountDeleteStatement;
 	sql::PreparedStatement* m_AccountUpdateStatement;
 	sql::PreparedStatement* m_AccountSelectStatement;
 	sql::PreparedStatement* m_AccountTruncateStatement;
+	sql::PreparedStatement* m_CapitalCreateStatement;
+	sql::PreparedStatement* m_CapitalDropStatement;
 	sql::PreparedStatement* m_CapitalInsertStatement;
 	sql::PreparedStatement* m_CapitalDeleteStatement;
 	sql::PreparedStatement* m_CapitalDeleteByTradingDayIndexStatement;
 	sql::PreparedStatement* m_CapitalUpdateStatement;
 	sql::PreparedStatement* m_CapitalSelectStatement;
 	sql::PreparedStatement* m_CapitalTruncateStatement;
+	sql::PreparedStatement* m_PositionCreateStatement;
+	sql::PreparedStatement* m_PositionDropStatement;
 	sql::PreparedStatement* m_PositionInsertStatement;
 	sql::PreparedStatement* m_PositionDeleteStatement;
 	sql::PreparedStatement* m_PositionDeleteByAccountIndexStatement;
@@ -267,6 +313,8 @@ private:
 	sql::PreparedStatement* m_PositionUpdateStatement;
 	sql::PreparedStatement* m_PositionSelectStatement;
 	sql::PreparedStatement* m_PositionTruncateStatement;
+	sql::PreparedStatement* m_PositionDetailCreateStatement;
+	sql::PreparedStatement* m_PositionDetailDropStatement;
 	sql::PreparedStatement* m_PositionDetailInsertStatement;
 	sql::PreparedStatement* m_PositionDetailDeleteStatement;
 	sql::PreparedStatement* m_PositionDetailDeleteByTradeMatchIndexStatement;
@@ -274,26 +322,36 @@ private:
 	sql::PreparedStatement* m_PositionDetailUpdateStatement;
 	sql::PreparedStatement* m_PositionDetailSelectStatement;
 	sql::PreparedStatement* m_PositionDetailTruncateStatement;
+	sql::PreparedStatement* m_OrderCreateStatement;
+	sql::PreparedStatement* m_OrderDropStatement;
 	sql::PreparedStatement* m_OrderInsertStatement;
 	sql::PreparedStatement* m_OrderDeleteStatement;
 	sql::PreparedStatement* m_OrderUpdateStatement;
 	sql::PreparedStatement* m_OrderSelectStatement;
 	sql::PreparedStatement* m_OrderTruncateStatement;
+	sql::PreparedStatement* m_TradeCreateStatement;
+	sql::PreparedStatement* m_TradeDropStatement;
 	sql::PreparedStatement* m_TradeInsertStatement;
 	sql::PreparedStatement* m_TradeDeleteStatement;
 	sql::PreparedStatement* m_TradeUpdateStatement;
 	sql::PreparedStatement* m_TradeSelectStatement;
 	sql::PreparedStatement* m_TradeTruncateStatement;
+	sql::PreparedStatement* m_DepthMarketDataCreateStatement;
+	sql::PreparedStatement* m_DepthMarketDataDropStatement;
 	sql::PreparedStatement* m_DepthMarketDataInsertStatement;
 	sql::PreparedStatement* m_DepthMarketDataDeleteStatement;
 	sql::PreparedStatement* m_DepthMarketDataUpdateStatement;
 	sql::PreparedStatement* m_DepthMarketDataSelectStatement;
 	sql::PreparedStatement* m_DepthMarketDataTruncateStatement;
+	sql::PreparedStatement* m_BarMarketDataCreateStatement;
+	sql::PreparedStatement* m_BarMarketDataDropStatement;
 	sql::PreparedStatement* m_BarMarketDataInsertStatement;
 	sql::PreparedStatement* m_BarMarketDataDeleteStatement;
 	sql::PreparedStatement* m_BarMarketDataUpdateStatement;
 	sql::PreparedStatement* m_BarMarketDataSelectStatement;
 	sql::PreparedStatement* m_BarMarketDataTruncateStatement;
+	sql::PreparedStatement* m_MdSubscribeCreateStatement;
+	sql::PreparedStatement* m_MdSubscribeDropStatement;
 	sql::PreparedStatement* m_MdSubscribeInsertStatement;
 	sql::PreparedStatement* m_MdSubscribeDeleteStatement;
 	sql::PreparedStatement* m_MdSubscribeUpdateStatement;

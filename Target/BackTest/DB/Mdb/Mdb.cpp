@@ -22,6 +22,7 @@ namespace mdb
 	}
 	void Mdb::Subscribe(MdbSubscriber* mdbSubscriber)
 	{
+		m_MdbSubscriber = mdbSubscriber;
 		t_TradingDay->Subscribe(mdbSubscriber);
 		t_Exchange->Subscribe(mdbSubscriber);
 		t_Product->Subscribe(mdbSubscriber);
@@ -105,22 +106,40 @@ namespace mdb
 		t_BarMarketData->Dump(dir);
 		t_MdSubscribe->Dump(dir);
 	}
+	void Mdb::CreateTables()
+	{
+		if (m_MdbSubscriber != nullptr)
+		{
+			m_MdbSubscriber->OnCreateTables();	
+		}
+	}
+	void Mdb::DropTables()
+	{
+		if (m_MdbSubscriber != nullptr)
+		{
+			m_MdbSubscriber->OnDropTables();
+		}
+	}
 	void Mdb::TruncateTables()
 	{
-		t_TradingDay->TruncateTable();
-		t_Exchange->TruncateTable();
-		t_Product->TruncateTable();
-		t_HotInstrument->TruncateTable();
-		t_Instrument->TruncateTable();
-		t_Account->TruncateTable();
-		t_Capital->TruncateTable();
-		t_Position->TruncateTable();
-		t_PositionDetail->TruncateTable();
-		t_Order->TruncateTable();
-		t_Trade->TruncateTable();
-		t_DepthMarketData->TruncateTable();
-		t_BarMarketData->TruncateTable();
-		t_MdSubscribe->TruncateTable();
+		if (m_MdbSubscriber != nullptr)
+		{
+			m_MdbSubscriber->OnTruncateTables();
+		}
+		t_TradingDay->TruncateTables();
+		t_Exchange->TruncateTables();
+		t_Product->TruncateTables();
+		t_HotInstrument->TruncateTables();
+		t_Instrument->TruncateTables();
+		t_Account->TruncateTables();
+		t_Capital->TruncateTables();
+		t_Position->TruncateTables();
+		t_PositionDetail->TruncateTables();
+		t_Order->TruncateTables();
+		t_Trade->TruncateTables();
+		t_DepthMarketData->TruncateTables();
+		t_BarMarketData->TruncateTables();
+		t_MdSubscribe->TruncateTables();
 	}
 	
 	void Mdb::OnDBConnected()

@@ -659,11 +659,51 @@ void DuckDB::InitDB()
 	Exec("Delete From t_SEBrokerLoginSession;");
 	Exec("Insert Into t_SEBrokerLoginSession select * from Init.t_SEBrokerLoginSession;");
 }
-void DuckDB::TruncateSessionTables()
+void DuckDB::CreateTables()
 {
-	auto start = steady_clock::now();
-	TruncateSEBrokerLoginSession();
-	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+	CreateTradingDay();
+	CreateExchange();
+	CreateProduct();
+	CreateHotInstrument();
+	CreateInstrument();
+	CreatePrimaryAccount();
+	CreateAccount();
+	CreateCapital();
+	CreatePosition();
+	CreatePositionDetail();
+	CreateOrder();
+	CreateTrade();
+	CreateDepthMarketData();
+	CreateBarMarketData();
+	CreateMdSubscribe();
+	CreateSEBroker();
+	CreateSEInstrument();
+	CreateSEOrder();
+	CreateSETrade();
+	CreateSEBrokerLoginSession();
+}
+void DuckDB::DropTables()
+{
+	DropTradingDay();
+	DropExchange();
+	DropProduct();
+	DropHotInstrument();
+	DropInstrument();
+	DropPrimaryAccount();
+	DropAccount();
+	DropCapital();
+	DropPosition();
+	DropPositionDetail();
+	DropOrder();
+	DropTrade();
+	DropDepthMarketData();
+	DropBarMarketData();
+	DropMdSubscribe();
+	DropSEBroker();
+	DropSEInstrument();
+	DropSEOrder();
+	DropSETrade();
+	DropSEBrokerLoginSession();
 }
 void DuckDB::TruncateTables()
 {
@@ -687,6 +727,12 @@ void DuckDB::TruncateTables()
 	TruncateSETrade();
 	TruncateSEBrokerLoginSession();
 }
+void DuckDB::TruncateSessionTables()
+{
+	auto start = steady_clock::now();
+	TruncateSEBrokerLoginSession();
+	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
 bool DuckDB::Exec(const char* sql) const
 {
 	duckdb_prepared_statement stmt;
@@ -707,6 +753,32 @@ bool DuckDB::Exec(const char* sql) const
 	return ret == DuckDBSuccess;
 }
 
+void DuckDB::CreateTradingDay()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_TradingDay (PK int, CurrTradingDay varchar, PreTradingDay varchar, PRIMARY KEY(PK));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateTradingDay failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateTradingDay Spend:%lldms", duration);
+}
+void DuckDB::DropTradingDay()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_TradingDay;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropTradingDay failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropTradingDay Spend:%lldms", duration);
+}
 void DuckDB::InsertTradingDay(TradingDay* record)
 {
 	duckdb_appender appender;
@@ -736,7 +808,7 @@ void DuckDB::BatchInsertTradingDay(std::list<TradingDay*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertTradingDay RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertTradingDay RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteTradingDay(TradingDay* record)
 {
@@ -865,6 +937,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<TradingDay*>& records)
 		}
 	}
 }
+void DuckDB::CreateExchange()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Exchange (ExchangeID varchar, ExchangeName varchar, PRIMARY KEY(ExchangeID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateExchange failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms", duration);
+}
+void DuckDB::DropExchange()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Exchange;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropExchange failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms", duration);
+}
 void DuckDB::InsertExchange(Exchange* record)
 {
 	duckdb_appender appender;
@@ -894,7 +992,7 @@ void DuckDB::BatchInsertExchange(std::list<Exchange*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertExchange RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertExchange RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteExchange(Exchange* record)
 {
@@ -1019,6 +1117,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Exchange*>& records)
 		}
 	}
 }
+void DuckDB::CreateProduct()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Product (ExchangeID varchar, ProductID varchar, ProductName varchar, ProductClass int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, ProductID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateProduct failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateProduct Spend:%lldms", duration);
+}
+void DuckDB::DropProduct()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Product;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropProduct failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropProduct Spend:%lldms", duration);
+}
 void DuckDB::InsertProduct(Product* record)
 {
 	duckdb_appender appender;
@@ -1048,7 +1172,7 @@ void DuckDB::BatchInsertProduct(std::list<Product*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertProduct RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertProduct RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteProduct(Product* record)
 {
@@ -1215,6 +1339,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Product*>& records)
 		}
 	}
 }
+void DuckDB::CreateHotInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_HotInstrument (TradingDay varchar, ExchangeID varchar, ProductID varchar, InstrumentID varchar, ProductClass int, Volume bigint, MaxVolume bigint, Turnover double, MaxTurnover double, OpenInterest double, MaxOpenInterest double, Rank int, PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank));CREATE INDEX HotInstrumentTradingDay ON t_HotInstrument(ExchangeID, ProductID, Rank, TradingDay);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateHotInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateHotInstrument Spend:%lldms", duration);
+}
+void DuckDB::DropHotInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX HotInstrumentTradingDay;DROP TABLE IF EXISTS t_HotInstrument;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropHotInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropHotInstrument Spend:%lldms", duration);
+}
 void DuckDB::InsertHotInstrument(HotInstrument* record)
 {
 	duckdb_appender appender;
@@ -1244,7 +1394,7 @@ void DuckDB::BatchInsertHotInstrument(std::list<HotInstrument*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertHotInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertHotInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteHotInstrument(HotInstrument* record)
 {
@@ -1438,6 +1588,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<HotInstrument*>& recor
 		}
 	}
 }
+void DuckDB::CreateInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms", duration);
+}
+void DuckDB::DropInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Instrument;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms", duration);
+}
 void DuckDB::InsertInstrument(Instrument* record)
 {
 	duckdb_appender appender;
@@ -1467,7 +1643,7 @@ void DuckDB::BatchInsertInstrument(std::list<Instrument*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteInstrument(Instrument* record)
 {
@@ -1656,6 +1832,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Instrument*>& records)
 		}
 	}
 }
+void DuckDB::CreatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount (PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, BrokerPassword varchar, OfferID int, IsAllowLogin int, IsSimulateAccount int, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreatePrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms", duration);
+}
+void DuckDB::DropPrimaryAccount()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX PrimaryAccountOfferID;DROP TABLE IF EXISTS t_PrimaryAccount;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropPrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms", duration);
+}
 void DuckDB::InsertPrimaryAccount(PrimaryAccount* record)
 {
 	duckdb_appender appender;
@@ -1685,7 +1887,7 @@ void DuckDB::BatchInsertPrimaryAccount(std::list<PrimaryAccount*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeletePrimaryAccount(PrimaryAccount* record)
 {
@@ -1864,6 +2066,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<PrimaryAccount*>& reco
 		}
 	}
 }
+void DuckDB::CreateAccount()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Account (AccountID varchar, AccountName varchar, AccountType int, AccountStatus int, Password varchar, TradeGroupID int, RiskGroupID int, CommissionGroupID int, PRIMARY KEY(AccountID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateAccount Spend:%lldms", duration);
+}
+void DuckDB::DropAccount()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Account;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropAccount Spend:%lldms", duration);
+}
 void DuckDB::InsertAccount(Account* record)
 {
 	duckdb_appender appender;
@@ -1893,7 +2121,7 @@ void DuckDB::BatchInsertAccount(std::list<Account*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteAccount(Account* record)
 {
@@ -2045,6 +2273,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Account*>& records)
 		}
 	}
 }
+void DuckDB::CreateCapital()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Capital (TradingDay varchar, AccountID varchar, AccountType int, Balance double, PreBalance double, Available double, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, FrozenCash double, FrozenMargin double, FrozenCommission double, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, Deposit double, Withdraw double, PRIMARY KEY(TradingDay, AccountID));CREATE INDEX CapitalTradingDay ON t_Capital(TradingDay);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateCapital failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateCapital Spend:%lldms", duration);
+}
+void DuckDB::DropCapital()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX CapitalTradingDay;DROP TABLE IF EXISTS t_Capital;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropCapital failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropCapital Spend:%lldms", duration);
+}
 void DuckDB::InsertCapital(Capital* record)
 {
 	duckdb_appender appender;
@@ -2074,7 +2328,7 @@ void DuckDB::BatchInsertCapital(std::list<Capital*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertCapital RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertCapital RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteCapital(Capital* record)
 {
@@ -2294,6 +2548,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Capital*>& records)
 		}
 	}
 }
+void DuckDB::CreatePosition()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Position (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, PosiDirection int, TotalPosition bigint, PositionFrozen bigint, TodayPosition bigint, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, FrozenCash double, FrozenMargin double, FrozenCommission double, VolumeMultiple int, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, SettlementPrice double, PreSettlementPrice double, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection));CREATE INDEX PositionAccount ON t_Position(TradingDay, AccountID);CREATE INDEX PositionTradingDay ON t_Position(TradingDay);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreatePosition failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreatePosition Spend:%lldms", duration);
+}
+void DuckDB::DropPosition()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX PositionAccount;DROP INDEX PositionTradingDay;DROP TABLE IF EXISTS t_Position;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropPosition failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropPosition Spend:%lldms", duration);
+}
 void DuckDB::InsertPosition(Position* record)
 {
 	duckdb_appender appender;
@@ -2323,7 +2603,7 @@ void DuckDB::BatchInsertPosition(std::list<Position*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertPosition RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertPosition RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeletePosition(Position* record)
 {
@@ -2592,6 +2872,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Position*>& records)
 		}
 	}
 }
+void DuckDB::CreatePositionDetail()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_PositionDetail (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, PosiDirection int, OpenDate varchar, TradeID varchar, Volume bigint, OpenPrice double, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, VolumeMultiple int, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, SettlementPrice double, PreSettlementPrice double, CloseVolume bigint, CloseAmount double, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection, OpenDate, TradeID));CREATE INDEX PositionDetailTradeMatch ON t_PositionDetail(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection);CREATE INDEX PositionDetailTradingDay ON t_PositionDetail(TradingDay);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreatePositionDetail failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreatePositionDetail Spend:%lldms", duration);
+}
+void DuckDB::DropPositionDetail()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX PositionDetailTradeMatch;DROP INDEX PositionDetailTradingDay;DROP TABLE IF EXISTS t_PositionDetail;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropPositionDetail failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropPositionDetail Spend:%lldms", duration);
+}
 void DuckDB::InsertPositionDetail(PositionDetail* record)
 {
 	duckdb_appender appender;
@@ -2621,7 +2927,7 @@ void DuckDB::BatchInsertPositionDetail(std::list<PositionDetail*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertPositionDetail RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertPositionDetail RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeletePositionDetail(PositionDetail* record)
 {
@@ -2896,6 +3202,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<PositionDetail*>& reco
 		}
 	}
 }
+void DuckDB::CreateOrder()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Order (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, RequestID int, OfferID int, TradeGroupID int, RiskGroupID int, CommissionGroupID int, FrozenCash double, FrozenMargin double, FrozenCommission double, RebuildMark int, IsForceClose int, UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateOrder Spend:%lldms", duration);
+}
+void DuckDB::DropOrder()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Order;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropOrder Spend:%lldms", duration);
+}
 void DuckDB::InsertOrder(Order* record)
 {
 	duckdb_appender appender;
@@ -2925,7 +3257,7 @@ void DuckDB::BatchInsertOrder(std::list<Order*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteOrder(Order* record)
 {
@@ -3195,6 +3527,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Order*>& records)
 		}
 	}
 }
+void DuckDB::CreateTrade()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Trade (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateTrade failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateTrade Spend:%lldms", duration);
+}
+void DuckDB::DropTrade()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Trade;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropTrade failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropTrade Spend:%lldms", duration);
+}
 void DuckDB::InsertTrade(Trade* record)
 {
 	duckdb_appender appender;
@@ -3224,7 +3582,7 @@ void DuckDB::BatchInsertTrade(std::list<Trade*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertTrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertTrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteTrade(Trade* record)
 {
@@ -3431,6 +3789,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Trade*>& records)
 		}
 	}
 }
+void DuckDB::CreateDepthMarketData()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_DepthMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, UpdateTs bigint, LastPrice double, PreSettlementPrice double, PreClosePrice double, PreOpenInterest double, OpenPrice double, HighestPrice double, LowestPrice double, ClosePrice double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, SettlementPrice double, UpperLimitPrice double, LowerLimitPrice double, AveragePrice double, AskPrice1 double, AskPrice2 double, AskPrice3 double, AskPrice4 double, AskPrice5 double, AskPrice6 double, AskPrice7 double, AskPrice8 double, AskPrice9 double, AskPrice10 double, AskVolume1 bigint, AskVolume2 bigint, AskVolume3 bigint, AskVolume4 bigint, AskVolume5 bigint, AskVolume6 bigint, AskVolume7 bigint, AskVolume8 bigint, AskVolume9 bigint, AskVolume10 bigint, BidPrice1 double, BidPrice2 double, BidPrice3 double, BidPrice4 double, BidPrice5 double, BidPrice6 double, BidPrice7 double, BidPrice8 double, BidPrice9 double, BidPrice10 double, BidVolume1 bigint, BidVolume2 bigint, BidVolume3 bigint, BidVolume4 bigint, BidVolume5 bigint, BidVolume6 bigint, BidVolume7 bigint, BidVolume8 bigint, BidVolume9 bigint, BidVolume10 bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateDepthMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms", duration);
+}
+void DuckDB::DropDepthMarketData()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_DepthMarketData;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropDepthMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms", duration);
+}
 void DuckDB::InsertDepthMarketData(DepthMarketData* record)
 {
 	duckdb_appender appender;
@@ -3460,7 +3844,7 @@ void DuckDB::BatchInsertDepthMarketData(std::list<DepthMarketData*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertDepthMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteDepthMarketData(DepthMarketData* record)
 {
@@ -3824,6 +4208,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<DepthMarketData*>& rec
 		}
 	}
 }
+void DuckDB::CreateBarMarketData()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_BarMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, BarPreces int, BarPeriod int, BarTime bigint, UpdateTs bigint, PreSettlementPrice double, PreClosePrice double, Open double, High double, Low double, Close double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateBarMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms", duration);
+}
+void DuckDB::DropBarMarketData()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_BarMarketData;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropBarMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms", duration);
+}
 void DuckDB::InsertBarMarketData(BarMarketData* record)
 {
 	duckdb_appender appender;
@@ -3853,7 +4263,7 @@ void DuckDB::BatchInsertBarMarketData(std::list<BarMarketData*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertBarMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertBarMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteBarMarketData(BarMarketData* record)
 {
@@ -4045,6 +4455,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<BarMarketData*>& recor
 		}
 	}
 }
+void DuckDB::CreateMdSubscribe()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_MdSubscribe (ExchangeID varchar, InstrumentID varchar, RealInstrumentID varchar, ProductID varchar, ProductClass int, StartTradingDay varchar, EndTradingDay varchar, PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateMdSubscribe failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateMdSubscribe Spend:%lldms", duration);
+}
+void DuckDB::DropMdSubscribe()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_MdSubscribe;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropMdSubscribe failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropMdSubscribe Spend:%lldms", duration);
+}
 void DuckDB::InsertMdSubscribe(MdSubscribe* record)
 {
 	duckdb_appender appender;
@@ -4074,7 +4510,7 @@ void DuckDB::BatchInsertMdSubscribe(std::list<MdSubscribe*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertMdSubscribe RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertMdSubscribe RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteMdSubscribe(MdSubscribe* record)
 {
@@ -4231,6 +4667,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<MdSubscribe*>& records
 		}
 	}
 }
+void DuckDB::CreateSEBroker()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SEBroker (BrokerID int, BrokerName varchar, Password varchar, PRIMARY KEY(BrokerID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateSEBroker failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateSEBroker Spend:%lldms", duration);
+}
+void DuckDB::DropSEBroker()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_SEBroker;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropSEBroker failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropSEBroker Spend:%lldms", duration);
+}
 void DuckDB::InsertSEBroker(SEBroker* record)
 {
 	duckdb_appender appender;
@@ -4260,7 +4722,7 @@ void DuckDB::BatchInsertSEBroker(std::list<SEBroker*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertSEBroker RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertSEBroker RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteSEBroker(SEBroker* record)
 {
@@ -4389,6 +4851,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEBroker*>& records)
 		}
 	}
 }
+void DuckDB::CreateSEInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SEInstrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, VolumeMultiple int, PriceTick double, UpperLimitPrice double, LowerLimitPrice double, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX SEInstrumentExchangeID ON t_SEInstrument(ExchangeID);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateSEInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateSEInstrument Spend:%lldms", duration);
+}
+void DuckDB::DropSEInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX SEInstrumentExchangeID;DROP TABLE IF EXISTS t_SEInstrument;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropSEInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropSEInstrument Spend:%lldms", duration);
+}
 void DuckDB::InsertSEInstrument(SEInstrument* record)
 {
 	duckdb_appender appender;
@@ -4418,7 +4906,7 @@ void DuckDB::BatchInsertSEInstrument(std::list<SEInstrument*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertSEInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertSEInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteSEInstrument(SEInstrument* record)
 {
@@ -4630,6 +5118,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEInstrument*>& record
 		}
 	}
 }
+void DuckDB::CreateSEOrder()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SEOrder (TradingDay varchar, BrokerID int, AccountID varchar, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));CREATE INDEX SEOrderAccountID ON t_SEOrder(TradingDay, AccountID);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateSEOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateSEOrder Spend:%lldms", duration);
+}
+void DuckDB::DropSEOrder()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX SEOrderAccountID;DROP TABLE IF EXISTS t_SEOrder;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropSEOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropSEOrder Spend:%lldms", duration);
+}
 void DuckDB::InsertSEOrder(SEOrder* record)
 {
 	duckdb_appender appender;
@@ -4659,7 +5173,7 @@ void DuckDB::BatchInsertSEOrder(std::list<SEOrder*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertSEOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertSEOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteSEOrder(SEOrder* record)
 {
@@ -4905,6 +5419,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEOrder*>& records)
 		}
 	}
 }
+void DuckDB::CreateSETrade()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SETrade (TradingDay varchar, BrokerID int, AccountID varchar, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));CREATE INDEX SETradeAccountID ON t_SETrade(TradingDay, AccountID);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateSETrade failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateSETrade Spend:%lldms", duration);
+}
+void DuckDB::DropSETrade()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX SETradeAccountID;DROP TABLE IF EXISTS t_SETrade;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropSETrade failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropSETrade Spend:%lldms", duration);
+}
 void DuckDB::InsertSETrade(SETrade* record)
 {
 	duckdb_appender appender;
@@ -4934,7 +5474,7 @@ void DuckDB::BatchInsertSETrade(std::list<SETrade*>* records)
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertSETrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertSETrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteSETrade(SETrade* record)
 {
@@ -5157,6 +5697,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SETrade*>& records)
 		}
 	}
 }
+void DuckDB::CreateSEBrokerLoginSession()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession (BrokerID int, SessionID bigint, IPAddress varchar, PRIMARY KEY(SessionID));CREATE INDEX SEBrokerLoginSessionBrokerID ON t_SEBrokerLoginSession(BrokerID);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateSEBrokerLoginSession failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateSEBrokerLoginSession Spend:%lldms", duration);
+}
+void DuckDB::DropSEBrokerLoginSession()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX SEBrokerLoginSessionBrokerID;DROP TABLE IF EXISTS t_SEBrokerLoginSession;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropSEBrokerLoginSession failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropSEBrokerLoginSession Spend:%lldms", duration);
+}
 void DuckDB::InsertSEBrokerLoginSession(SEBrokerLoginSession* record)
 {
 	duckdb_appender appender;
@@ -5186,7 +5752,7 @@ void DuckDB::BatchInsertSEBrokerLoginSession(std::list<SEBrokerLoginSession*>* r
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Warning, "BatchInsertSEBrokerLoginSession RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertSEBrokerLoginSession RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
 void DuckDB::DeleteSEBrokerLoginSession(SEBrokerLoginSession* record)
 {

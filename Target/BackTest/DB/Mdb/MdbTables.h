@@ -26,6 +26,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::TradingDay*>* records);
 		void Erase(TradingDay* record);
 		bool Update(TradingDay* const oldRecord, TradingDay* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -55,6 +56,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::Exchange*>* records);
 		void Erase(Exchange* record);
 		bool Update(Exchange* const oldRecord, Exchange* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -84,6 +86,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::Product*>* records);
 		void Erase(Product* record);
 		bool Update(Product* const oldRecord, Product* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -114,6 +117,7 @@ namespace mdb
 		void Erase(HotInstrument* record);
 		int EraseByTradingDayIndex(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay);
 		bool Update(HotInstrument* const oldRecord, HotInstrument* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -144,6 +148,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::Instrument*>* records);
 		void Erase(Instrument* record);
 		bool Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -173,6 +178,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::Account*>* records);
 		void Erase(Account* record);
 		bool Update(Account* const oldRecord, Account* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -203,6 +209,7 @@ namespace mdb
 		void Erase(Capital* record);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
 		bool Update(Capital* const oldRecord, Capital* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -235,6 +242,7 @@ namespace mdb
 		int EraseByAccountIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
 		bool Update(Position* const oldRecord, Position* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -268,6 +276,7 @@ namespace mdb
 		int EraseByTradeMatchIndex(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
 		bool Update(PositionDetail* const oldRecord, PositionDetail* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -299,6 +308,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::Order*>* records);
 		void Erase(Order* record);
 		bool Update(Order* const oldRecord, Order* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -329,6 +339,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::Trade*>* records);
 		void Erase(Trade* record);
 		bool Update(Trade* const oldRecord, Trade* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -358,6 +369,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::DepthMarketData*>* records);
 		void Erase(DepthMarketData* record);
 		bool Update(DepthMarketData* const oldRecord, DepthMarketData* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -387,6 +399,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::BarMarketData*>* records);
 		void Erase(BarMarketData* record);
 		bool Update(BarMarketData* const oldRecord, BarMarketData* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 
@@ -416,6 +429,7 @@ namespace mdb
 		void BatchInsert(std::list<mdb::MdSubscribe*>* records);
 		void Erase(MdSubscribe* record);
 		bool Update(MdSubscribe* const oldRecord, MdSubscribe* const newRecord, bool updateDB = true);
+		void TruncateTables();
 		void TruncateTable();
 		void Dump(const char* dir);
 

@@ -1198,7 +1198,7 @@ void SimExchange::Match(mdb::Order* order, const PriceType& price, VolumeType vo
 			positionDetail->CloseVolume += currVolume;
 			positionDetail->CloseAmount += closeAmount;
 			positionDetail->CloseProfitByTrade += flag * (price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
-			if (positionDetail->OpenDate == positionDetail->TradingDay)
+			if (strcmp(positionDetail->OpenDate, positionDetail->TradingDay) == 0)
 			{
 				positionDetail->CloseProfitByDate += flag * (price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
 			}

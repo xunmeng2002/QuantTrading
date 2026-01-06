@@ -18,8 +18,10 @@ public:
 	virtual bool Connect() override;
 	virtual void DisConnect() override;
 	virtual void InitDB() override;
-	virtual void TruncateSessionTables() override;
+	virtual void CreateTables() override;
+	virtual void DropTables() override;
 	virtual void TruncateTables() override;
+	virtual void TruncateSessionTables() override;
 	
 	template<typename T>
 	void CustomSelectSql(const char* sql, std::list<T*>& records)
@@ -43,6 +45,8 @@ public:
 		m_Statement->executeUpdate(sql);
 	}
 	
+	virtual void CreateTradingDay() override;
+	virtual void DropTradingDay() override;
 	virtual void InsertTradingDay(mdb::TradingDay* record) override;
 	virtual void BatchInsertTradingDay(std::list<mdb::TradingDay*>* records) override;
 	virtual void DeleteTradingDay(mdb::TradingDay* record) override;
@@ -50,6 +54,8 @@ public:
 	virtual void SelectTradingDay(std::list<mdb::TradingDay*>& records) override;
 	virtual void TruncateTradingDay() override;
 	
+	virtual void CreateExchange() override;
+	virtual void DropExchange() override;
 	virtual void InsertExchange(mdb::Exchange* record) override;
 	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) override;
 	virtual void DeleteExchange(mdb::Exchange* record) override;
@@ -57,6 +63,8 @@ public:
 	virtual void SelectExchange(std::list<mdb::Exchange*>& records) override;
 	virtual void TruncateExchange() override;
 	
+	virtual void CreateProduct() override;
+	virtual void DropProduct() override;
 	virtual void InsertProduct(mdb::Product* record) override;
 	virtual void BatchInsertProduct(std::list<mdb::Product*>* records) override;
 	virtual void DeleteProduct(mdb::Product* record) override;
@@ -64,6 +72,8 @@ public:
 	virtual void SelectProduct(std::list<mdb::Product*>& records) override;
 	virtual void TruncateProduct() override;
 	
+	virtual void CreateDepthMarketData() override;
+	virtual void DropDepthMarketData() override;
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
@@ -71,6 +81,8 @@ public:
 	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
 	virtual void TruncateDepthMarketData() override;
 	
+	virtual void CreateSEBroker() override;
+	virtual void DropSEBroker() override;
 	virtual void InsertSEBroker(mdb::SEBroker* record) override;
 	virtual void BatchInsertSEBroker(std::list<mdb::SEBroker*>* records) override;
 	virtual void DeleteSEBroker(mdb::SEBroker* record) override;
@@ -78,6 +90,8 @@ public:
 	virtual void SelectSEBroker(std::list<mdb::SEBroker*>& records) override;
 	virtual void TruncateSEBroker() override;
 	
+	virtual void CreateSEInstrument() override;
+	virtual void DropSEInstrument() override;
 	virtual void InsertSEInstrument(mdb::SEInstrument* record) override;
 	virtual void BatchInsertSEInstrument(std::list<mdb::SEInstrument*>* records) override;
 	virtual void DeleteSEInstrument(mdb::SEInstrument* record) override;
@@ -86,6 +100,8 @@ public:
 	virtual void SelectSEInstrument(std::list<mdb::SEInstrument*>& records) override;
 	virtual void TruncateSEInstrument() override;
 	
+	virtual void CreateSEOrder() override;
+	virtual void DropSEOrder() override;
 	virtual void InsertSEOrder(mdb::SEOrder* record) override;
 	virtual void BatchInsertSEOrder(std::list<mdb::SEOrder*>* records) override;
 	virtual void DeleteSEOrder(mdb::SEOrder* record) override;
@@ -94,6 +110,8 @@ public:
 	virtual void SelectSEOrder(std::list<mdb::SEOrder*>& records) override;
 	virtual void TruncateSEOrder() override;
 	
+	virtual void CreateSETrade() override;
+	virtual void DropSETrade() override;
 	virtual void InsertSETrade(mdb::SETrade* record) override;
 	virtual void BatchInsertSETrade(std::list<mdb::SETrade*>* records) override;
 	virtual void DeleteSETrade(mdb::SETrade* record) override;
@@ -102,6 +120,8 @@ public:
 	virtual void SelectSETrade(std::list<mdb::SETrade*>& records) override;
 	virtual void TruncateSETrade() override;
 	
+	virtual void CreateSEBrokerLoginSession() override;
+	virtual void DropSEBrokerLoginSession() override;
 	virtual void InsertSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
 	virtual void BatchInsertSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>* records) override;
 	virtual void DeleteSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
@@ -164,49 +184,67 @@ private:
 	std::string m_Passwd;
 	char* m_SqlBuff;
 
+	sql::PreparedStatement* m_TradingDayCreateStatement;
+	sql::PreparedStatement* m_TradingDayDropStatement;
 	sql::PreparedStatement* m_TradingDayInsertStatement;
 	sql::PreparedStatement* m_TradingDayDeleteStatement;
 	sql::PreparedStatement* m_TradingDayUpdateStatement;
 	sql::PreparedStatement* m_TradingDaySelectStatement;
 	sql::PreparedStatement* m_TradingDayTruncateStatement;
+	sql::PreparedStatement* m_ExchangeCreateStatement;
+	sql::PreparedStatement* m_ExchangeDropStatement;
 	sql::PreparedStatement* m_ExchangeInsertStatement;
 	sql::PreparedStatement* m_ExchangeDeleteStatement;
 	sql::PreparedStatement* m_ExchangeUpdateStatement;
 	sql::PreparedStatement* m_ExchangeSelectStatement;
 	sql::PreparedStatement* m_ExchangeTruncateStatement;
+	sql::PreparedStatement* m_ProductCreateStatement;
+	sql::PreparedStatement* m_ProductDropStatement;
 	sql::PreparedStatement* m_ProductInsertStatement;
 	sql::PreparedStatement* m_ProductDeleteStatement;
 	sql::PreparedStatement* m_ProductUpdateStatement;
 	sql::PreparedStatement* m_ProductSelectStatement;
 	sql::PreparedStatement* m_ProductTruncateStatement;
+	sql::PreparedStatement* m_DepthMarketDataCreateStatement;
+	sql::PreparedStatement* m_DepthMarketDataDropStatement;
 	sql::PreparedStatement* m_DepthMarketDataInsertStatement;
 	sql::PreparedStatement* m_DepthMarketDataDeleteStatement;
 	sql::PreparedStatement* m_DepthMarketDataUpdateStatement;
 	sql::PreparedStatement* m_DepthMarketDataSelectStatement;
 	sql::PreparedStatement* m_DepthMarketDataTruncateStatement;
+	sql::PreparedStatement* m_SEBrokerCreateStatement;
+	sql::PreparedStatement* m_SEBrokerDropStatement;
 	sql::PreparedStatement* m_SEBrokerInsertStatement;
 	sql::PreparedStatement* m_SEBrokerDeleteStatement;
 	sql::PreparedStatement* m_SEBrokerUpdateStatement;
 	sql::PreparedStatement* m_SEBrokerSelectStatement;
 	sql::PreparedStatement* m_SEBrokerTruncateStatement;
+	sql::PreparedStatement* m_SEInstrumentCreateStatement;
+	sql::PreparedStatement* m_SEInstrumentDropStatement;
 	sql::PreparedStatement* m_SEInstrumentInsertStatement;
 	sql::PreparedStatement* m_SEInstrumentDeleteStatement;
 	sql::PreparedStatement* m_SEInstrumentDeleteByExchangeIDIndexStatement;
 	sql::PreparedStatement* m_SEInstrumentUpdateStatement;
 	sql::PreparedStatement* m_SEInstrumentSelectStatement;
 	sql::PreparedStatement* m_SEInstrumentTruncateStatement;
+	sql::PreparedStatement* m_SEOrderCreateStatement;
+	sql::PreparedStatement* m_SEOrderDropStatement;
 	sql::PreparedStatement* m_SEOrderInsertStatement;
 	sql::PreparedStatement* m_SEOrderDeleteStatement;
 	sql::PreparedStatement* m_SEOrderDeleteByAccountIDIndexStatement;
 	sql::PreparedStatement* m_SEOrderUpdateStatement;
 	sql::PreparedStatement* m_SEOrderSelectStatement;
 	sql::PreparedStatement* m_SEOrderTruncateStatement;
+	sql::PreparedStatement* m_SETradeCreateStatement;
+	sql::PreparedStatement* m_SETradeDropStatement;
 	sql::PreparedStatement* m_SETradeInsertStatement;
 	sql::PreparedStatement* m_SETradeDeleteStatement;
 	sql::PreparedStatement* m_SETradeDeleteByAccountIDIndexStatement;
 	sql::PreparedStatement* m_SETradeUpdateStatement;
 	sql::PreparedStatement* m_SETradeSelectStatement;
 	sql::PreparedStatement* m_SETradeTruncateStatement;
+	sql::PreparedStatement* m_SEBrokerLoginSessionCreateStatement;
+	sql::PreparedStatement* m_SEBrokerLoginSessionDropStatement;
 	sql::PreparedStatement* m_SEBrokerLoginSessionInsertStatement;
 	sql::PreparedStatement* m_SEBrokerLoginSessionDeleteStatement;
 	sql::PreparedStatement* m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement;

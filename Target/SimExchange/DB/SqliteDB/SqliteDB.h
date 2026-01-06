@@ -13,10 +13,14 @@ public:
 	virtual bool Connect() override;
 	virtual void DisConnect() override;
 	virtual void InitDB() override;
-	virtual void TruncateSessionTables() override;
+	virtual void CreateTables() override;
+	virtual void DropTables() override;
 	virtual void TruncateTables() override;
+	virtual void TruncateSessionTables() override;
 	
 	bool Exec(const char* sql);
+	virtual void CreateTradingDay() override;
+	virtual void DropTradingDay() override;
 	virtual void InsertTradingDay(mdb::TradingDay* record) override;
 	virtual void BatchInsertTradingDay(std::list<mdb::TradingDay*>* records) override;
 	virtual void DeleteTradingDay(mdb::TradingDay* record) override;
@@ -24,6 +28,8 @@ public:
 	virtual void SelectTradingDay(std::list<mdb::TradingDay*>& records) override;
 	virtual void TruncateTradingDay() override;
 	
+	virtual void CreateExchange() override;
+	virtual void DropExchange() override;
 	virtual void InsertExchange(mdb::Exchange* record) override;
 	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) override;
 	virtual void DeleteExchange(mdb::Exchange* record) override;
@@ -31,6 +37,8 @@ public:
 	virtual void SelectExchange(std::list<mdb::Exchange*>& records) override;
 	virtual void TruncateExchange() override;
 	
+	virtual void CreateProduct() override;
+	virtual void DropProduct() override;
 	virtual void InsertProduct(mdb::Product* record) override;
 	virtual void BatchInsertProduct(std::list<mdb::Product*>* records) override;
 	virtual void DeleteProduct(mdb::Product* record) override;
@@ -38,6 +46,8 @@ public:
 	virtual void SelectProduct(std::list<mdb::Product*>& records) override;
 	virtual void TruncateProduct() override;
 	
+	virtual void CreateDepthMarketData() override;
+	virtual void DropDepthMarketData() override;
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
@@ -45,6 +55,8 @@ public:
 	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
 	virtual void TruncateDepthMarketData() override;
 	
+	virtual void CreateSEBroker() override;
+	virtual void DropSEBroker() override;
 	virtual void InsertSEBroker(mdb::SEBroker* record) override;
 	virtual void BatchInsertSEBroker(std::list<mdb::SEBroker*>* records) override;
 	virtual void DeleteSEBroker(mdb::SEBroker* record) override;
@@ -52,6 +64,8 @@ public:
 	virtual void SelectSEBroker(std::list<mdb::SEBroker*>& records) override;
 	virtual void TruncateSEBroker() override;
 	
+	virtual void CreateSEInstrument() override;
+	virtual void DropSEInstrument() override;
 	virtual void InsertSEInstrument(mdb::SEInstrument* record) override;
 	virtual void BatchInsertSEInstrument(std::list<mdb::SEInstrument*>* records) override;
 	virtual void DeleteSEInstrument(mdb::SEInstrument* record) override;
@@ -60,6 +74,8 @@ public:
 	virtual void SelectSEInstrument(std::list<mdb::SEInstrument*>& records) override;
 	virtual void TruncateSEInstrument() override;
 	
+	virtual void CreateSEOrder() override;
+	virtual void DropSEOrder() override;
 	virtual void InsertSEOrder(mdb::SEOrder* record) override;
 	virtual void BatchInsertSEOrder(std::list<mdb::SEOrder*>* records) override;
 	virtual void DeleteSEOrder(mdb::SEOrder* record) override;
@@ -68,6 +84,8 @@ public:
 	virtual void SelectSEOrder(std::list<mdb::SEOrder*>& records) override;
 	virtual void TruncateSEOrder() override;
 	
+	virtual void CreateSETrade() override;
+	virtual void DropSETrade() override;
 	virtual void InsertSETrade(mdb::SETrade* record) override;
 	virtual void BatchInsertSETrade(std::list<mdb::SETrade*>* records) override;
 	virtual void DeleteSETrade(mdb::SETrade* record) override;
@@ -76,6 +94,8 @@ public:
 	virtual void SelectSETrade(std::list<mdb::SETrade*>& records) override;
 	virtual void TruncateSETrade() override;
 	
+	virtual void CreateSEBrokerLoginSession() override;
+	virtual void DropSEBrokerLoginSession() override;
 	virtual void InsertSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;
 	virtual void BatchInsertSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>* records) override;
 	virtual void DeleteSEBrokerLoginSession(mdb::SEBrokerLoginSession* record) override;

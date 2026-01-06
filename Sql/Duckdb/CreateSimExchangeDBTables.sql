@@ -1,441 +1,440 @@
 ﻿
-CREATE TABLE IF NOT EXISTS t_TradingDay (
-  PK int,  -- '主键'
-  CurrTradingDay varchar,  -- '当前交易日'
-  PreTradingDay varchar,  -- '昨交易日'
+CREATE TABLE IF NOT EXISTS t_TradingDay(
+  PK int, 
+  CurrTradingDay varchar, 
+  PreTradingDay varchar, 
   PRIMARY KEY(PK)
 );  -- '交易日'
 
 
-CREATE TABLE IF NOT EXISTS t_Exchange (
-  ExchangeID varchar,  -- '交易所代码'
-  ExchangeName varchar,  -- '交易所名称'
+CREATE TABLE IF NOT EXISTS t_Exchange(
+  ExchangeID varchar, 
+  ExchangeName varchar, 
   PRIMARY KEY(ExchangeID)
 );  -- '交易所'
 
 
-CREATE TABLE IF NOT EXISTS t_Product (
-  ExchangeID varchar,  -- '交易所代码'
-  ProductID varchar,  -- '品种代码'
-  ProductName varchar,  -- '品种名称'
-  ProductClass int,  -- '品种类型'
-  VolumeMultiple int,  -- '合约乘数'
-  PriceTick double,  -- '最小变动价位'
-  MaxMarketOrderVolume bigint,  -- '市价最大下单量'
-  MinMarketOrderVolume bigint,  -- '市价最小下单量'
-  MaxLimitOrderVolume bigint,  -- '限价最大下单量'
-  MinLimitOrderVolume bigint,  -- '限价最小下单量'
-  SessionName varchar,  -- '交易节名称'
+CREATE TABLE IF NOT EXISTS t_Product(
+  ExchangeID varchar, 
+  ProductID varchar, 
+  ProductName varchar, 
+  ProductClass int, 
+  VolumeMultiple int, 
+  PriceTick double, 
+  MaxMarketOrderVolume bigint, 
+  MinMarketOrderVolume bigint, 
+  MaxLimitOrderVolume bigint, 
+  MinLimitOrderVolume bigint, 
+  SessionName varchar, 
   PRIMARY KEY(ExchangeID, ProductID)
 );  -- '品种表'
 
 
-CREATE TABLE IF NOT EXISTS t_HotInstrument (
-  TradingDay varchar,  -- '交易日'
-  ExchangeID varchar,  -- '交易所代码'
-  ProductID varchar,  -- '品种代码'
-  InstrumentID varchar,  -- '合约代码'
-  ProductClass int,  -- '品种类型'
-  Volume bigint,  -- '委托数量'
-  MaxVolume bigint,  -- '最大数量'
-  Turnover double,  -- '成交金额'
-  MaxTurnover double,  -- '最大成交金额'
-  OpenInterest double,  -- '持仓量'
-  MaxOpenInterest double,  -- '最大持仓量'
-  Rank int,  -- '级别'
+CREATE TABLE IF NOT EXISTS t_HotInstrument(
+  TradingDay varchar, 
+  ExchangeID varchar, 
+  ProductID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  Volume bigint, 
+  MaxVolume bigint, 
+  Turnover double, 
+  MaxTurnover double, 
+  OpenInterest double, 
+  MaxOpenInterest double, 
+  Rank int, 
   PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)
 );  -- '主力合约表'
-  CREATE INDEX TradingDay ON t_HotInstrument(ExchangeID, ProductID, Rank, TradingDay);
+  CREATE INDEX HotInstrumentTradingDay ON t_HotInstrument(ExchangeID, ProductID, Rank, TradingDay);
 
 
-CREATE TABLE IF NOT EXISTS t_Instrument (
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  ExchangeInstID varchar,  -- '交易所合约代码'
-  InstrumentName varchar,  -- '合约名称'
-  ProductID varchar,  -- '品种代码'
-  ProductClass int,  -- '品种类型'
-  InstrumentClass int,  -- '合约类别'
-  Rank int,  -- '级别'
-  VolumeMultiple int,  -- '合约乘数'
-  PriceTick double,  -- '最小变动价位'
-  MaxMarketOrderVolume bigint,  -- '市价最大下单量'
-  MinMarketOrderVolume bigint,  -- '市价最小下单量'
-  MaxLimitOrderVolume bigint,  -- '限价最大下单量'
-  MinLimitOrderVolume bigint,  -- '限价最小下单量'
-  SessionName varchar,  -- '交易节名称'
+CREATE TABLE IF NOT EXISTS t_Instrument(
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ExchangeInstID varchar, 
+  InstrumentName varchar, 
+  ProductID varchar, 
+  ProductClass int, 
+  InstrumentClass int, 
+  Rank int, 
+  VolumeMultiple int, 
+  PriceTick double, 
+  MaxMarketOrderVolume bigint, 
+  MinMarketOrderVolume bigint, 
+  MaxLimitOrderVolume bigint, 
+  MinLimitOrderVolume bigint, 
+  SessionName varchar, 
   PRIMARY KEY(ExchangeID, InstrumentID)
 );  -- '合约'
 
 
-CREATE TABLE IF NOT EXISTS t_PrimaryAccount (
-  PrimaryAccountID varchar,  -- '主账户代码'
-  PrimaryAccountName varchar,  -- '主账户名称'
-  AccountClass int,  -- '账户类别'
-  BrokerPassword varchar,  -- '经纪公司密码'
-  OfferID int,  -- '报盘代码'
-  IsAllowLogin int,  -- '是否允许登陆'
-  IsSimulateAccount int,  -- '是否模拟账号'
-  LoginStatus int,  -- '登录状态'
-  InitStatus int,  -- '初始化状态'
+CREATE TABLE IF NOT EXISTS t_PrimaryAccount(
+  PrimaryAccountID varchar, 
+  PrimaryAccountName varchar, 
+  AccountClass int, 
+  BrokerPassword varchar, 
+  OfferID int, 
+  IsAllowLogin int, 
+  IsSimulateAccount int, 
+  LoginStatus int, 
+  InitStatus int, 
   PRIMARY KEY(PrimaryAccountID)
 );  -- '主账户'
-  CREATE INDEX OfferID ON t_PrimaryAccount(OfferID);
+  CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);
 
 
-CREATE TABLE IF NOT EXISTS t_Account (
-  AccountID varchar,  -- '账户代码'
-  AccountName varchar,  -- '账户名称'
-  AccountType int,  -- '账户类型'
-  AccountStatus int,  -- '账户状态'
-  Password varchar,  -- '密码'
-  TradeGroupID int,  -- '交易组代码'
-  RiskGroupID int,  -- '交易组代码'
-  CommissionGroupID int,  -- '交易组代码'
+CREATE TABLE IF NOT EXISTS t_Account(
+  AccountID varchar, 
+  AccountName varchar, 
+  AccountType int, 
+  AccountStatus int, 
+  Password varchar, 
+  TradeGroupID int, 
+  RiskGroupID int, 
+  CommissionGroupID int, 
   PRIMARY KEY(AccountID)
 );  -- '账户'
 
 
-CREATE TABLE IF NOT EXISTS t_Capital (
-  TradingDay varchar,  -- '交易日'
-  AccountID varchar,  -- '账户代码'
-  AccountType int,  -- '账户类型'
-  Balance double,  -- '权益'
-  PreBalance double,  -- '上日权益'
-  Available double,  -- '可用资金'
-  MarketValue double,  -- '市值'
-  CashIn double,  -- '现金收入'
-  CashOut double,  -- '现金支出'
-  Margin double,  -- '保证金'
-  Commission double,  -- '手续费'
-  FrozenCash double,  -- '冻结资金'
-  FrozenMargin double,  -- '冻结保证金'
-  FrozenCommission double,  -- '冻结手续费'
-  CloseProfitByDate double,  -- '逐日平仓盈亏'
-  CloseProfitByTrade double,  -- '逐笔平仓盈亏'
-  PositionProfitByDate double,  -- '逐日持仓盈亏'
-  PositionProfitByTrade double,  -- '逐笔持仓盈亏'
-  Deposit double,  -- '入金'
-  Withdraw double,  -- '出金'
+CREATE TABLE IF NOT EXISTS t_Capital(
+  TradingDay varchar, 
+  AccountID varchar, 
+  AccountType int, 
+  Balance double, 
+  PreBalance double, 
+  Available double, 
+  MarketValue double, 
+  CashIn double, 
+  CashOut double, 
+  Margin double, 
+  Commission double, 
+  FrozenCash double, 
+  FrozenMargin double, 
+  FrozenCommission double, 
+  CloseProfitByDate double, 
+  CloseProfitByTrade double, 
+  PositionProfitByDate double, 
+  PositionProfitByTrade double, 
+  Deposit double, 
+  Withdraw double, 
   PRIMARY KEY(TradingDay, AccountID)
 );  -- '资金'
-  CREATE INDEX TradingDay ON t_Capital(TradingDay);
+  CREATE INDEX CapitalTradingDay ON t_Capital(TradingDay);
 
 
-CREATE TABLE IF NOT EXISTS t_Position (
-  TradingDay varchar,  -- '交易日'
-  AccountID varchar,  -- '账户代码'
-  AccountType int,  -- '账户类型'
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  ProductClass int,  -- '品种类型'
-  PosiDirection int,  -- '持仓方向'
-  TotalPosition bigint,  -- '持仓数量'
-  PositionFrozen bigint,  -- '冻结持仓'
-  TodayPosition bigint,  -- '今日持仓'
-  MarketValue double,  -- '市值'
-  CashIn double,  -- '现金收入'
-  CashOut double,  -- '现金支出'
-  Margin double,  -- '保证金'
-  Commission double,  -- '手续费'
-  FrozenCash double,  -- '冻结资金'
-  FrozenMargin double,  -- '冻结保证金'
-  FrozenCommission double,  -- '冻结手续费'
-  VolumeMultiple int,  -- '合约乘数'
-  CloseProfitByDate double,  -- '逐日平仓盈亏'
-  CloseProfitByTrade double,  -- '逐笔平仓盈亏'
-  PositionProfitByDate double,  -- '逐日持仓盈亏'
-  PositionProfitByTrade double,  -- '逐笔持仓盈亏'
-  SettlementPrice double,  -- '结算价'
-  PreSettlementPrice double,  -- '昨结算价'
+CREATE TABLE IF NOT EXISTS t_Position(
+  TradingDay varchar, 
+  AccountID varchar, 
+  AccountType int, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  PosiDirection int, 
+  TotalPosition bigint, 
+  PositionFrozen bigint, 
+  TodayPosition bigint, 
+  MarketValue double, 
+  CashIn double, 
+  CashOut double, 
+  Margin double, 
+  Commission double, 
+  FrozenCash double, 
+  FrozenMargin double, 
+  FrozenCommission double, 
+  VolumeMultiple int, 
+  CloseProfitByDate double, 
+  CloseProfitByTrade double, 
+  PositionProfitByDate double, 
+  PositionProfitByTrade double, 
+  SettlementPrice double, 
+  PreSettlementPrice double, 
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)
 );  -- '持仓'
-  CREATE INDEX Account ON t_Position(TradingDay, AccountID);
-  CREATE INDEX TradingDay ON t_Position(TradingDay);
+  CREATE INDEX PositionAccount ON t_Position(TradingDay, AccountID);
+  CREATE INDEX PositionTradingDay ON t_Position(TradingDay);
 
 
-CREATE TABLE IF NOT EXISTS t_PositionDetail (
-  TradingDay varchar,  -- '交易日'
-  AccountID varchar,  -- '账户代码'
-  AccountType int,  -- '账户类型'
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  ProductClass int,  -- '品种类型'
-  PosiDirection int,  -- '持仓方向'
-  OpenDate varchar,  -- '开仓日期'
-  TradeID varchar,  -- '成交编号'
-  Volume bigint,  -- '委托数量'
-  OpenPrice double,  -- '开盘价'
-  MarketValue double,  -- '市值'
-  CashIn double,  -- '现金收入'
-  CashOut double,  -- '现金支出'
-  Margin double,  -- '保证金'
-  Commission double,  -- '手续费'
-  VolumeMultiple int,  -- '合约乘数'
-  CloseProfitByDate double,  -- '逐日平仓盈亏'
-  CloseProfitByTrade double,  -- '逐笔平仓盈亏'
-  PositionProfitByDate double,  -- '逐日持仓盈亏'
-  PositionProfitByTrade double,  -- '逐笔持仓盈亏'
-  SettlementPrice double,  -- '结算价'
-  PreSettlementPrice double,  -- '昨结算价'
-  CloseVolume bigint,  -- '平仓数量'
-  CloseAmount double,  -- '平仓金额'
+CREATE TABLE IF NOT EXISTS t_PositionDetail(
+  TradingDay varchar, 
+  AccountID varchar, 
+  AccountType int, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  PosiDirection int, 
+  OpenDate varchar, 
+  TradeID varchar, 
+  Volume bigint, 
+  OpenPrice double, 
+  MarketValue double, 
+  CashIn double, 
+  CashOut double, 
+  Margin double, 
+  Commission double, 
+  VolumeMultiple int, 
+  CloseProfitByDate double, 
+  CloseProfitByTrade double, 
+  PositionProfitByDate double, 
+  PositionProfitByTrade double, 
+  SettlementPrice double, 
+  PreSettlementPrice double, 
+  CloseVolume bigint, 
+  CloseAmount double, 
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection, OpenDate, TradeID)
 );  -- '持仓明细'
-  CREATE INDEX TradeMatch ON t_PositionDetail(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection);
-  CREATE INDEX TradingDay ON t_PositionDetail(TradingDay);
+  CREATE INDEX PositionDetailTradeMatch ON t_PositionDetail(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection);
+  CREATE INDEX PositionDetailTradingDay ON t_PositionDetail(TradingDay);
 
 
-CREATE TABLE IF NOT EXISTS t_Order (
-  TradingDay varchar,  -- '交易日'
-  AccountID varchar,  -- '账户代码'
-  AccountType int,  -- '账户类型'
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  ProductClass int,  -- '品种类型'
-  OrderID int,  -- '委托编号'
-  OrderSysID varchar,  -- '系统委托编号'
-  Direction int,  -- '买卖方向'
-  OffsetFlag int,  -- '开平标志'
-  OrderPriceType int,  -- '委托价格类型'
-  Price double,  -- '委托价格'
-  Volume bigint,  -- '委托数量'
-  VolumeTotal bigint,  -- '剩余数量'
-  VolumeTraded bigint,  -- '成交数量'
-  VolumeMultiple int,  -- '合约乘数'
-  OrderStatus int,  -- '委托状态'
-  OrderDate varchar,  -- '委托日期'
-  OrderTime varchar,  -- '委托时间'
-  CancelDate varchar,  -- '撤单日期'
-  CancelTime varchar,  -- '撤单时间'
-  SessionID bigint,  -- '会话编号'
-  ClientOrderID int,  -- '客户端委托编号'
-  RequestID int,  -- '客户端请求编号'
-  OfferID int,  -- '报盘代码'
-  TradeGroupID int,  -- '交易组代码'
-  RiskGroupID int,  -- '交易组代码'
-  CommissionGroupID int,  -- '交易组代码'
-  FrozenCash double,  -- '冻结资金'
-  FrozenMargin double,  -- '冻结保证金'
-  FrozenCommission double,  -- '冻结手续费'
-  RebuildMark int,  -- '重建标志'
-  IsForceClose int,  -- '是否强平单'
-  UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID),
+CREATE TABLE IF NOT EXISTS t_Order(
+  TradingDay varchar, 
+  AccountID varchar, 
+  AccountType int, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  OrderID int, 
+  OrderSysID varchar, 
+  Direction int, 
+  OffsetFlag int, 
+  OrderPriceType int, 
+  Price double, 
+  Volume bigint, 
+  VolumeTotal bigint, 
+  VolumeTraded bigint, 
+  VolumeMultiple int, 
+  OrderStatus int, 
+  OrderDate varchar, 
+  OrderTime varchar, 
+  CancelDate varchar, 
+  CancelTime varchar, 
+  SessionID bigint, 
+  ClientOrderID int, 
+  RequestID int, 
+  OfferID int, 
+  TradeGroupID int, 
+  RiskGroupID int, 
+  CommissionGroupID int, 
+  FrozenCash double, 
+  FrozenMargin double, 
+  FrozenCommission double, 
+  RebuildMark int, 
+  IsForceClose int, 
+  UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), 
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
 );  -- '委托'
 
 
-CREATE TABLE IF NOT EXISTS t_Trade (
-  TradingDay varchar,  -- '交易日'
-  AccountID varchar,  -- '账户代码'
-  AccountType int,  -- '账户类型'
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  ProductClass int,  -- '品种类型'
-  OrderID int,  -- '委托编号'
-  OrderSysID varchar,  -- '系统委托编号'
-  TradeID varchar,  -- '成交编号'
-  Direction int,  -- '买卖方向'
-  OffsetFlag int,  -- '开平标志'
-  Price double,  -- '委托价格'
-  Volume bigint,  -- '委托数量'
-  VolumeMultiple int,  -- '合约乘数'
-  TradeAmount double,  -- '成交金额'
-  Commission double,  -- '手续费'
-  TradeDate varchar,  -- '成交日期'
-  TradeTime varchar,  -- '成交时间'
+CREATE TABLE IF NOT EXISTS t_Trade(
+  TradingDay varchar, 
+  AccountID varchar, 
+  AccountType int, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  OrderID int, 
+  OrderSysID varchar, 
+  TradeID varchar, 
+  Direction int, 
+  OffsetFlag int, 
+  Price double, 
+  Volume bigint, 
+  VolumeMultiple int, 
+  TradeAmount double, 
+  Commission double, 
+  TradeDate varchar, 
+  TradeTime varchar, 
   PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
 );  -- '成交'
 
 
-CREATE TABLE IF NOT EXISTS t_DepthMarketData (
-  TradingDay varchar,  -- '交易日'
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  UpdateTs bigint,  -- '更新时间戳'
-  LastPrice double,  -- '最新价'
-  PreSettlementPrice double,  -- '昨结算价'
-  PreClosePrice double,  -- '昨收盘价'
-  PreOpenInterest double,  -- '上日持仓量'
-  OpenPrice double,  -- '开盘价'
-  HighestPrice double,  -- '最高价'
-  LowestPrice double,  -- '最低价'
-  ClosePrice double,  -- '收盘价'
-  CurrVolume bigint,  -- '当前数量'
-  Volume bigint,  -- '委托数量'
-  CurrTurnover double,  -- '当前成交金额'
-  Turnover double,  -- '成交金额'
-  OpenInterest double,  -- '持仓量'
-  SettlementPrice double,  -- '结算价'
-  UpperLimitPrice double,  -- '涨停板价'
-  LowerLimitPrice double,  -- '跌停板价'
-  AveragePrice double,  -- '当日均价'
-  AskPrice1 double,  -- '申卖价一'
-  AskPrice2 double,  -- '申卖价二'
-  AskPrice3 double,  -- '申卖价三'
-  AskPrice4 double,  -- '申卖价四'
-  AskPrice5 double,  -- '申卖价五'
-  AskPrice6 double,  -- '申卖价六'
-  AskPrice7 double,  -- '申卖价七'
-  AskPrice8 double,  -- '申卖价八'
-  AskPrice9 double,  -- '申卖价九'
-  AskPrice10 double,  -- '申卖价十'
-  AskVolume1 bigint,  -- '申卖量一'
-  AskVolume2 bigint,  -- '申卖量二'
-  AskVolume3 bigint,  -- '申卖量三'
-  AskVolume4 bigint,  -- '申卖量四'
-  AskVolume5 bigint,  -- '申卖量五'
-  AskVolume6 bigint,  -- '申卖量六'
-  AskVolume7 bigint,  -- '申卖量七'
-  AskVolume8 bigint,  -- '申卖量八'
-  AskVolume9 bigint,  -- '申卖量九'
-  AskVolume10 bigint,  -- '申卖量十'
-  BidPrice1 double,  -- '申买价一'
-  BidPrice2 double,  -- '申买价二'
-  BidPrice3 double,  -- '申买价三'
-  BidPrice4 double,  -- '申买价四'
-  BidPrice5 double,  -- '申买价五'
-  BidPrice6 double,  -- '申买价六'
-  BidPrice7 double,  -- '申买价七'
-  BidPrice8 double,  -- '申买价八'
-  BidPrice9 double,  -- '申买价九'
-  BidPrice10 double,  -- '申买价十'
-  BidVolume1 bigint,  -- '申买量一'
-  BidVolume2 bigint,  -- '申买量二'
-  BidVolume3 bigint,  -- '申买量三'
-  BidVolume4 bigint,  -- '申买量四'
-  BidVolume5 bigint,  -- '申买量五'
-  BidVolume6 bigint,  -- '申买量六'
-  BidVolume7 bigint,  -- '申买量七'
-  BidVolume8 bigint,  -- '申买量八'
-  BidVolume9 bigint,  -- '申买量九'
-  BidVolume10 bigint,  -- '申买量十'
+CREATE TABLE IF NOT EXISTS t_DepthMarketData(
+  TradingDay varchar, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  UpdateTs bigint, 
+  LastPrice double, 
+  PreSettlementPrice double, 
+  PreClosePrice double, 
+  PreOpenInterest double, 
+  OpenPrice double, 
+  HighestPrice double, 
+  LowestPrice double, 
+  ClosePrice double, 
+  CurrVolume bigint, 
+  Volume bigint, 
+  CurrTurnover double, 
+  Turnover double, 
+  OpenInterest double, 
+  SettlementPrice double, 
+  UpperLimitPrice double, 
+  LowerLimitPrice double, 
+  AveragePrice double, 
+  AskPrice1 double, 
+  AskPrice2 double, 
+  AskPrice3 double, 
+  AskPrice4 double, 
+  AskPrice5 double, 
+  AskPrice6 double, 
+  AskPrice7 double, 
+  AskPrice8 double, 
+  AskPrice9 double, 
+  AskPrice10 double, 
+  AskVolume1 bigint, 
+  AskVolume2 bigint, 
+  AskVolume3 bigint, 
+  AskVolume4 bigint, 
+  AskVolume5 bigint, 
+  AskVolume6 bigint, 
+  AskVolume7 bigint, 
+  AskVolume8 bigint, 
+  AskVolume9 bigint, 
+  AskVolume10 bigint, 
+  BidPrice1 double, 
+  BidPrice2 double, 
+  BidPrice3 double, 
+  BidPrice4 double, 
+  BidPrice5 double, 
+  BidPrice6 double, 
+  BidPrice7 double, 
+  BidPrice8 double, 
+  BidPrice9 double, 
+  BidPrice10 double, 
+  BidVolume1 bigint, 
+  BidVolume2 bigint, 
+  BidVolume3 bigint, 
+  BidVolume4 bigint, 
+  BidVolume5 bigint, 
+  BidVolume6 bigint, 
+  BidVolume7 bigint, 
+  BidVolume8 bigint, 
+  BidVolume9 bigint, 
+  BidVolume10 bigint, 
   PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)
 );  -- '深度行情'
 
 
-CREATE TABLE IF NOT EXISTS t_BarMarketData (
-  TradingDay varchar,  -- '交易日'
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  BarPreces int,  -- 'Bar精度'
-  BarPeriod int,  -- 'Bar周期'
-  BarTime bigint,  -- 'Bar时间'
-  UpdateTs bigint,  -- '更新时间戳'
-  PreSettlementPrice double,  -- '昨结算价'
-  PreClosePrice double,  -- '昨收盘价'
-  Open double,  -- '开盘价'
-  High double,  -- '最高价'
-  Low double,  -- '最低价'
-  Close double,  -- '收盘价'
-  CurrVolume bigint,  -- '当前数量'
-  Volume bigint,  -- '委托数量'
-  CurrTurnover double,  -- '当前成交金额'
-  Turnover double,  -- '成交金额'
-  OpenInterest double,  -- '持仓量'
+CREATE TABLE IF NOT EXISTS t_BarMarketData(
+  TradingDay varchar, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  BarPreces int, 
+  BarPeriod int, 
+  BarTime bigint, 
+  UpdateTs bigint, 
+  PreSettlementPrice double, 
+  PreClosePrice double, 
+  Open double, 
+  High double, 
+  Low double, 
+  Close double, 
+  CurrVolume bigint, 
+  Volume bigint, 
+  CurrTurnover double, 
+  Turnover double, 
+  OpenInterest double, 
   PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)
 );  -- 'Bar行情'
 
 
-CREATE TABLE IF NOT EXISTS t_MdSubscribe (
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  RealInstrumentID varchar,  -- '真实合约代码'
-  ProductID varchar,  -- '品种代码'
-  ProductClass int,  -- '品种类型'
-  StartTradingDay varchar,  -- '开始交易日'
-  EndTradingDay varchar,  -- '结束交易日'
+CREATE TABLE IF NOT EXISTS t_MdSubscribe(
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  RealInstrumentID varchar, 
+  ProductID varchar, 
+  ProductClass int, 
+  StartTradingDay varchar, 
+  EndTradingDay varchar, 
   PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)
 );  -- '行情订阅'
 
 
-CREATE TABLE IF NOT EXISTS t_SEBroker (
-  BrokerID int,  -- '经纪公司代码'
-  BrokerName varchar,  -- '经纪公司名称'
-  Password varchar,  -- '密码'
+CREATE TABLE IF NOT EXISTS t_SEBroker(
+  BrokerID int, 
+  BrokerName varchar, 
+  Password varchar, 
   PRIMARY KEY(BrokerID)
 );  -- '模拟交易经纪商'
 
 
-CREATE TABLE IF NOT EXISTS t_SEInstrument (
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  ExchangeInstID varchar,  -- '交易所合约代码'
-  InstrumentName varchar,  -- '合约名称'
-  ProductID varchar,  -- '品种代码'
-  ProductClass int,  -- '品种类型'
-  MaxMarketOrderVolume bigint,  -- '市价最大下单量'
-  MinMarketOrderVolume bigint,  -- '市价最小下单量'
-  MaxLimitOrderVolume bigint,  -- '限价最大下单量'
-  MinLimitOrderVolume bigint,  -- '限价最小下单量'
-  VolumeMultiple int,  -- '合约乘数'
-  PriceTick double,  -- '最小变动价位'
-  UpperLimitPrice double,  -- '涨停板价'
-  LowerLimitPrice double,  -- '跌停板价'
-  SessionName varchar,  -- '交易节名称'
+CREATE TABLE IF NOT EXISTS t_SEInstrument(
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ExchangeInstID varchar, 
+  InstrumentName varchar, 
+  ProductID varchar, 
+  ProductClass int, 
+  MaxMarketOrderVolume bigint, 
+  MinMarketOrderVolume bigint, 
+  MaxLimitOrderVolume bigint, 
+  MinLimitOrderVolume bigint, 
+  VolumeMultiple int, 
+  PriceTick double, 
+  UpperLimitPrice double, 
+  LowerLimitPrice double, 
+  SessionName varchar, 
   PRIMARY KEY(ExchangeID, InstrumentID)
 );  -- '模拟交易合约'
-  CREATE INDEX ExchangeID ON t_SEInstrument(ExchangeID);
+  CREATE INDEX SEInstrumentExchangeID ON t_SEInstrument(ExchangeID);
 
 
-CREATE TABLE IF NOT EXISTS t_SEOrder (
-  TradingDay varchar,  -- '交易日'
-  BrokerID int,  -- '经纪公司代码'
-  AccountID varchar,  -- '账户代码'
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  ProductClass int,  -- '品种类型'
-  OrderID int,  -- '委托编号'
-  Direction int,  -- '买卖方向'
-  OffsetFlag int,  -- '开平标志'
-  OrderPriceType int,  -- '委托价格类型'
-  Price double,  -- '委托价格'
-  Volume bigint,  -- '委托数量'
-  VolumeTotal bigint,  -- '剩余数量'
-  VolumeTraded bigint,  -- '成交数量'
-  VolumeMultiple int,  -- '合约乘数'
-  OrderStatus int,  -- '委托状态'
-  OrderDate varchar,  -- '委托日期'
-  OrderTime varchar,  -- '委托时间'
-  CancelDate varchar,  -- '撤单日期'
-  CancelTime varchar,  -- '撤单时间'
-  SessionID bigint,  -- '会话编号'
-  ClientOrderID int,  -- '客户端委托编号'
+CREATE TABLE IF NOT EXISTS t_SEOrder(
+  TradingDay varchar, 
+  BrokerID int, 
+  AccountID varchar, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  OrderID int, 
+  Direction int, 
+  OffsetFlag int, 
+  OrderPriceType int, 
+  Price double, 
+  Volume bigint, 
+  VolumeTotal bigint, 
+  VolumeTraded bigint, 
+  VolumeMultiple int, 
+  OrderStatus int, 
+  OrderDate varchar, 
+  OrderTime varchar, 
+  CancelDate varchar, 
+  CancelTime varchar, 
+  SessionID bigint, 
+  ClientOrderID int, 
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
 );  -- '模拟交易委托'
-  CREATE INDEX AccountID ON t_SEOrder(TradingDay, AccountID);
+  CREATE INDEX SEOrderAccountID ON t_SEOrder(TradingDay, AccountID);
 
 
-CREATE TABLE IF NOT EXISTS t_SETrade (
-  TradingDay varchar,  -- '交易日'
-  BrokerID int,  -- '经纪公司代码'
-  AccountID varchar,  -- '账户代码'
-  ExchangeID varchar,  -- '交易所代码'
-  InstrumentID varchar,  -- '合约代码'
-  ProductClass int,  -- '品种类型'
-  OrderID int,  -- '委托编号'
-  TradeID varchar,  -- '成交编号'
-  Direction int,  -- '买卖方向'
-  OffsetFlag int,  -- '开平标志'
-  Price double,  -- '委托价格'
-  Volume bigint,  -- '委托数量'
-  VolumeMultiple int,  -- '合约乘数'
-  TradeAmount double,  -- '成交金额'
-  Commission double,  -- '手续费'
-  TradeDate varchar,  -- '成交日期'
-  TradeTime varchar,  -- '成交时间'
+CREATE TABLE IF NOT EXISTS t_SETrade(
+  TradingDay varchar, 
+  BrokerID int, 
+  AccountID varchar, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  OrderID int, 
+  TradeID varchar, 
+  Direction int, 
+  OffsetFlag int, 
+  Price double, 
+  Volume bigint, 
+  VolumeMultiple int, 
+  TradeAmount double, 
+  Commission double, 
+  TradeDate varchar, 
+  TradeTime varchar, 
   PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
 );  -- '模拟交易成交'
-  CREATE INDEX AccountID ON t_SETrade(TradingDay, AccountID);
+  CREATE INDEX SETradeAccountID ON t_SETrade(TradingDay, AccountID);
 
 
-CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession (
-  BrokerID int,  -- '经纪公司代码'
-  SessionID bigint,  -- '会话编号'
-  IPAddress varchar,  -- 'IP地址'
+CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(
+  BrokerID int, 
+  SessionID bigint, 
+  IPAddress varchar, 
   PRIMARY KEY(SessionID)
 );  -- '模拟交易经纪商登录会话'
-  CREATE INDEX BrokerID ON t_SEBrokerLoginSession(BrokerID);
-
+  CREATE INDEX SEBrokerLoginSessionBrokerID ON t_SEBrokerLoginSession(BrokerID);
 
 

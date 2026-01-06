@@ -15,6 +15,8 @@ namespace mdb
 		void InitDB();
 		void SetInitStatus(bool initStatus);
 		void Dump(const char* dir);
+		void CreateTables();
+		void DropTables();
 		void TruncateTables();
 		
 		virtual void OnDBConnected() override;
@@ -41,6 +43,8 @@ namespace mdb
 		SEOrderTable* t_SEOrder;
 		SETradeTable* t_SETrade;
 		SEBrokerLoginSessionTable* t_SEBrokerLoginSession;
+	private:
+		MdbSubscriber* m_MdbSubscriber;
 	};
 }
 
