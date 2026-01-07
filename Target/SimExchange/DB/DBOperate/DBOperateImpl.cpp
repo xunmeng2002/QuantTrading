@@ -40,11 +40,6 @@ void DBOperateImpl::FreeRecord()
 		((Product*)Record)->Free();
 		break;
 	}
-	case DepthMarketData::TableID:
-	{
-		((DepthMarketData*)Record)->Free();
-		break;
-	}
 	case SEBroker::TableID:
 	{
 		((SEBroker*)Record)->Free();
@@ -70,6 +65,11 @@ void DBOperateImpl::FreeRecord()
 		((SEBrokerLoginSession*)Record)->Free();
 		break;
 	}
+	case DepthMarketData::TableID:
+	{
+		((DepthMarketData*)Record)->Free();
+		break;
+	}
 	default:
 		break;
 	}
@@ -91,10 +91,6 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Product*)Record)->GetDebugString();
 	}
-	case DepthMarketData::TableID:
-	{
-		return ((DepthMarketData*)Record)->GetDebugString();
-	}
 	case SEBroker::TableID:
 	{
 		return ((SEBroker*)Record)->GetDebugString();
@@ -114,6 +110,10 @@ const char* DBOperateImpl::GetDebugString() const
 	case SEBrokerLoginSession::TableID:
 	{
 		return ((SEBrokerLoginSession*)Record)->GetDebugString();
+	}
+	case DepthMarketData::TableID:
+	{
+		return ((DepthMarketData*)Record)->GetDebugString();
 	}
 	default:
 		break;

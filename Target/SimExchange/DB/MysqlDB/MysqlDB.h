@@ -72,15 +72,6 @@ public:
 	virtual void SelectProduct(std::list<mdb::Product*>& records) override;
 	virtual void TruncateProduct() override;
 	
-	virtual void CreateDepthMarketData() override;
-	virtual void DropDepthMarketData() override;
-	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
-	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
-	virtual void TruncateDepthMarketData() override;
-	
 	virtual void CreateSEBroker() override;
 	virtual void DropSEBroker() override;
 	virtual void InsertSEBroker(mdb::SEBroker* record) override;
@@ -130,6 +121,15 @@ public:
 	virtual void SelectSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>& records) override;
 	virtual void TruncateSEBrokerLoginSession() override;
 	
+	virtual void CreateDepthMarketData() override;
+	virtual void DropDepthMarketData() override;
+	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
+	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
+	virtual void TruncateDepthMarketData() override;
+	
 
 private:
 	void SetStatementForTradingDayRecord(sql::PreparedStatement* statement, mdb::TradingDay* record);
@@ -144,10 +144,6 @@ private:
 	void SetStatementForProductRecordUpdate(sql::PreparedStatement* statement, mdb::Product* record);
 	void SetStatementForProductPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Product*>& records);
-	void SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
-	void ParseRecord(sql::ResultSet* result, std::list<mdb::DepthMarketData*>& records);
 	void SetStatementForSEBrokerRecord(sql::PreparedStatement* statement, mdb::SEBroker* record);
 	void SetStatementForSEBrokerRecordUpdate(sql::PreparedStatement* statement, mdb::SEBroker* record);
 	void SetStatementForSEBrokerPrimaryKey(sql::PreparedStatement* statement, const BrokerIDType& BrokerID);
@@ -172,6 +168,10 @@ private:
 	void SetStatementForSEBrokerLoginSessionPrimaryKey(sql::PreparedStatement* statement, const SessionIDType& SessionID);
 	void SetStatementForSEBrokerLoginSessionIndexBrokerID(sql::PreparedStatement* statement, mdb::SEBrokerLoginSession* record);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::SEBrokerLoginSession*>& records);
+	void SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void ParseRecord(sql::ResultSet* result, std::list<mdb::DepthMarketData*>& records);
 
 
 private:
@@ -205,13 +205,6 @@ private:
 	sql::PreparedStatement* m_ProductUpdateStatement;
 	sql::PreparedStatement* m_ProductSelectStatement;
 	sql::PreparedStatement* m_ProductTruncateStatement;
-	sql::PreparedStatement* m_DepthMarketDataCreateStatement;
-	sql::PreparedStatement* m_DepthMarketDataDropStatement;
-	sql::PreparedStatement* m_DepthMarketDataInsertStatement;
-	sql::PreparedStatement* m_DepthMarketDataDeleteStatement;
-	sql::PreparedStatement* m_DepthMarketDataUpdateStatement;
-	sql::PreparedStatement* m_DepthMarketDataSelectStatement;
-	sql::PreparedStatement* m_DepthMarketDataTruncateStatement;
 	sql::PreparedStatement* m_SEBrokerCreateStatement;
 	sql::PreparedStatement* m_SEBrokerDropStatement;
 	sql::PreparedStatement* m_SEBrokerInsertStatement;
@@ -251,4 +244,11 @@ private:
 	sql::PreparedStatement* m_SEBrokerLoginSessionUpdateStatement;
 	sql::PreparedStatement* m_SEBrokerLoginSessionSelectStatement;
 	sql::PreparedStatement* m_SEBrokerLoginSessionTruncateStatement;
+	sql::PreparedStatement* m_DepthMarketDataCreateStatement;
+	sql::PreparedStatement* m_DepthMarketDataDropStatement;
+	sql::PreparedStatement* m_DepthMarketDataInsertStatement;
+	sql::PreparedStatement* m_DepthMarketDataDeleteStatement;
+	sql::PreparedStatement* m_DepthMarketDataUpdateStatement;
+	sql::PreparedStatement* m_DepthMarketDataSelectStatement;
+	sql::PreparedStatement* m_DepthMarketDataTruncateStatement;
 };

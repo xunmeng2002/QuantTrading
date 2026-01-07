@@ -360,5 +360,569 @@ namespace mdb
 	{
 	}
 
+	MdSubscribeTable::MdSubscribeTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new MdSubscribePrimaryKey(this);
+	}
+	MdSubscribeTable::~MdSubscribeTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+	}
+	void MdSubscribeTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void MdSubscribeTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void MdSubscribeTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void MdSubscribeTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void MdSubscribeTable::InitDB()
+	{
+		m_MdbSubscriber->OnMdSubscribeTruncate();
+		
+		std::list<MdSubscribe*>* records = new std::list<MdSubscribe*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new MdSubscribe(**it));
+		}
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnMdSubscribeBatchInsert(records);
+		}
+		m_DBInited = true;
+	}
+	bool MdSubscribeTable::Insert(MdSubscribe* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for MdSubscribe:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdSubscribeInsert(record);
+		}
+		return true;
+	}
+	void MdSubscribeTable::BatchInsert(std::list<mdb::MdSubscribe*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = MdSubscribe::Allocate();
+				memcpy(newRecord, record, sizeof(MdSubscribe));
+				m_PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdSubscribeBatchInsert(records);
+		}
+	}
+	void MdSubscribeTable::Erase(MdSubscribe* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdSubscribeErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	bool MdSubscribeTable::Update(MdSubscribe* const oldRecord, MdSubscribe* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for MdSubscribe:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New MdSubscribe:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		::memcpy((void*)oldRecord, newRecord, sizeof(MdSubscribe));
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdSubscribeUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void MdSubscribeTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+	}
+	void MdSubscribeTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdSubscribeTruncate();
+		}
+	}
+	void MdSubscribeTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_MdSubscribe.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "ExchangeID,InstrumentID,RealInstrumentID,ProductID,ProductClass,StartTradingDay,EndTradingDay\n");
+		char buff[4096] = { 0 };
+		set<MdSubscribe*, MdSubscribeLessForMdSubscribePrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void MdSubscribeTable::EraseUniqueKey(MdSubscribe* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void MdSubscribeTable::EraseIndex(MdSubscribe* record)
+	{
+	}
+
+	MdUserTable::MdUserTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new MdUserPrimaryKey(this);
+	}
+	MdUserTable::~MdUserTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+	}
+	void MdUserTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void MdUserTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void MdUserTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void MdUserTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void MdUserTable::InitDB()
+	{
+		m_MdbSubscriber->OnMdUserTruncate();
+		
+		std::list<MdUser*>* records = new std::list<MdUser*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new MdUser(**it));
+		}
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnMdUserBatchInsert(records);
+		}
+		m_DBInited = true;
+	}
+	bool MdUserTable::Insert(MdUser* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for MdUser:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserInsert(record);
+		}
+		return true;
+	}
+	void MdUserTable::BatchInsert(std::list<mdb::MdUser*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = MdUser::Allocate();
+				memcpy(newRecord, record, sizeof(MdUser));
+				m_PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserBatchInsert(records);
+		}
+	}
+	void MdUserTable::Erase(MdUser* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	bool MdUserTable::Update(MdUser* const oldRecord, MdUser* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for MdUser:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New MdUser:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		::memcpy((void*)oldRecord, newRecord, sizeof(MdUser));
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void MdUserTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+	}
+	void MdUserTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserTruncate();
+		}
+	}
+	void MdUserTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_MdUser.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "MdUserID,MdUserName,Password\n");
+		char buff[4096] = { 0 };
+		set<MdUser*, MdUserLessForMdUserPrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void MdUserTable::EraseUniqueKey(MdUser* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void MdUserTable::EraseIndex(MdUser* record)
+	{
+	}
+
+	MdUserLoginSessionTable::MdUserLoginSessionTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new MdUserLoginSessionPrimaryKey(this);
+		m_MdUserIDIndex = new MdUserLoginSessionIndexMdUserID(this);
+	}
+	MdUserLoginSessionTable::~MdUserLoginSessionTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+		delete m_MdUserIDIndex;
+		m_MdUserIDIndex = nullptr;
+	}
+	void MdUserLoginSessionTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void MdUserLoginSessionTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void MdUserLoginSessionTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void MdUserLoginSessionTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void MdUserLoginSessionTable::InitDB()
+	{
+		m_MdbSubscriber->OnMdUserLoginSessionTruncate();
+		
+		std::list<MdUserLoginSession*>* records = new std::list<MdUserLoginSession*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new MdUserLoginSession(**it));
+		}
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnMdUserLoginSessionBatchInsert(records);
+		}
+		m_DBInited = true;
+	}
+	bool MdUserLoginSessionTable::Insert(MdUserLoginSession* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for MdUserLoginSession:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		m_MdUserIDIndex->Insert(record);
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserLoginSessionInsert(record);
+		}
+		return true;
+	}
+	void MdUserLoginSessionTable::BatchInsert(std::list<mdb::MdUserLoginSession*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = MdUserLoginSession::Allocate();
+				memcpy(newRecord, record, sizeof(MdUserLoginSession));
+				m_PrimaryKey->Insert(newRecord);
+
+				m_MdUserIDIndex->Insert(newRecord);
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserLoginSessionBatchInsert(records);
+		}
+	}
+	void MdUserLoginSessionTable::Erase(MdUserLoginSession* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserLoginSessionErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	int MdUserLoginSessionTable::EraseByMdUserIDIndex(const UserIDType& MdUserID)
+	{
+		m_MdUserIDIndex->FillCompareRecord(MdUserID);
+		list<MdUserLoginSession*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_MdUserIDIndex->m_Index.equal_range(&t_CompareMdUserLoginSession);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Free();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = MdUserLoginSession::Allocate();
+			memcpy(record, &t_CompareMdUserLoginSession, sizeof(MdUserLoginSession));
+			m_MdbSubscriber->OnMdUserLoginSessionEraseByMdUserIDIndex(record);
+		}
+		return (int)records.size();
+	}
+	bool MdUserLoginSessionTable::Update(MdUserLoginSession* const oldRecord, MdUserLoginSession* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for MdUserLoginSession:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New MdUserLoginSession:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		bool MdUserIDIndexUpdate = m_MdUserIDIndex->NeedUpdate(oldRecord, newRecord);
+		MdUserLoginSessionIndexMdUserID::iterator itMdUserID;
+		if (MdUserIDIndexUpdate)
+		{
+			itMdUserID = m_MdUserIDIndex->FindNode(oldRecord);
+		}
+		::memcpy((void*)oldRecord, newRecord, sizeof(MdUserLoginSession));
+		if (MdUserIDIndexUpdate)
+		{
+			m_MdUserIDIndex->Update(itMdUserID);
+		}
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserLoginSessionUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void MdUserLoginSessionTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_MdUserIDIndex->m_Index.clear();
+	}
+	void MdUserLoginSessionTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_MdUserIDIndex->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnMdUserLoginSessionTruncate();
+		}
+	}
+	void MdUserLoginSessionTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_MdUserLoginSession.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "MdUserID,SessionID,IPAddress\n");
+		char buff[4096] = { 0 };
+		set<MdUserLoginSession*, MdUserLoginSessionLessForMdUserLoginSessionPrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void MdUserLoginSessionTable::EraseUniqueKey(MdUserLoginSession* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void MdUserLoginSessionTable::EraseIndex(MdUserLoginSession* record)
+	{
+		m_MdUserIDIndex->Erase(record);
+	}
+
 }
 

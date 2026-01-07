@@ -33,4 +33,32 @@ public:
 	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) = 0;
 	virtual void TruncateBarMarketData() = 0;
 
+	virtual void CreateMdSubscribe() = 0;
+	virtual void DropMdSubscribe() = 0;
+	virtual void InsertMdSubscribe(mdb::MdSubscribe* record) = 0;
+	virtual void BatchInsertMdSubscribe(std::list<mdb::MdSubscribe*>* records) = 0;
+	virtual void DeleteMdSubscribe(mdb::MdSubscribe* record) = 0;
+	virtual void UpdateMdSubscribe(mdb::MdSubscribe* record) = 0;
+	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) = 0;
+	virtual void TruncateMdSubscribe() = 0;
+
+	virtual void CreateMdUser() = 0;
+	virtual void DropMdUser() = 0;
+	virtual void InsertMdUser(mdb::MdUser* record) = 0;
+	virtual void BatchInsertMdUser(std::list<mdb::MdUser*>* records) = 0;
+	virtual void DeleteMdUser(mdb::MdUser* record) = 0;
+	virtual void UpdateMdUser(mdb::MdUser* record) = 0;
+	virtual void SelectMdUser(std::list<mdb::MdUser*>& records) = 0;
+	virtual void TruncateMdUser() = 0;
+
+	virtual void CreateMdUserLoginSession() = 0;
+	virtual void DropMdUserLoginSession() = 0;
+	virtual void InsertMdUserLoginSession(mdb::MdUserLoginSession* record) = 0;
+	virtual void BatchInsertMdUserLoginSession(std::list<mdb::MdUserLoginSession*>* records) = 0;
+	virtual void DeleteMdUserLoginSession(mdb::MdUserLoginSession* record) = 0;
+	virtual void DeleteMdUserLoginSessionByMdUserIDIndex(mdb::MdUserLoginSession* record) = 0;
+	virtual void UpdateMdUserLoginSession(mdb::MdUserLoginSession* record) = 0;
+	virtual void SelectMdUserLoginSession(std::list<mdb::MdUserLoginSession*>& records) = 0;
+	virtual void TruncateMdUserLoginSession() = 0;
+
 };

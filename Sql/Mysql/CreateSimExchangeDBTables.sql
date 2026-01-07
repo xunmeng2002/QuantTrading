@@ -248,6 +248,95 @@ CREATE TABLE IF NOT EXISTS `t_Trade` (
   PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='成交';
 
+CREATE TABLE IF NOT EXISTS `t_SEBroker` (
+  `BrokerID` int COMMENT '经纪公司代码',
+  `BrokerName` char(16) COMMENT '经纪公司名称',
+  `Password` char(64) COMMENT '密码',
+
+  PRIMARY KEY(BrokerID)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易经纪商';
+
+CREATE TABLE IF NOT EXISTS `t_SEInstrument` (
+  `ExchangeID` char(8) COMMENT '交易所代码',
+  `InstrumentID` char(32) COMMENT '合约代码',
+  `ExchangeInstID` char(32) COMMENT '交易所合约代码',
+  `InstrumentName` char(64) COMMENT '合约名称',
+  `ProductID` char(32) COMMENT '品种代码',
+  `ProductClass` int COMMENT '品种类型',
+  `MaxMarketOrderVolume` bigint COMMENT '市价最大下单量',
+  `MinMarketOrderVolume` bigint COMMENT '市价最小下单量',
+  `MaxLimitOrderVolume` bigint COMMENT '限价最大下单量',
+  `MinLimitOrderVolume` bigint COMMENT '限价最小下单量',
+  `VolumeMultiple` int COMMENT '合约乘数',
+  `PriceTick` decimal(24,8) COMMENT '最小变动价位',
+  `UpperLimitPrice` decimal(24,8) COMMENT '涨停板价',
+  `LowerLimitPrice` decimal(24,8) COMMENT '跌停板价',
+  `SessionName` char(32) COMMENT '交易节名称',
+
+  INDEX ExchangeID(ExchangeID),
+  PRIMARY KEY(ExchangeID, InstrumentID)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易合约';
+
+CREATE TABLE IF NOT EXISTS `t_SEOrder` (
+  `TradingDay` char(9) COMMENT '交易日',
+  `BrokerID` int COMMENT '经纪公司代码',
+  `AccountID` char(32) COMMENT '账户代码',
+  `ExchangeID` char(8) COMMENT '交易所代码',
+  `InstrumentID` char(32) COMMENT '合约代码',
+  `ProductClass` int COMMENT '品种类型',
+  `OrderID` int COMMENT '委托编号',
+  `Direction` int COMMENT '买卖方向',
+  `OffsetFlag` int COMMENT '开平标志',
+  `OrderPriceType` int COMMENT '委托价格类型',
+  `Price` decimal(24,8) COMMENT '委托价格',
+  `Volume` bigint COMMENT '委托数量',
+  `VolumeTotal` bigint COMMENT '剩余数量',
+  `VolumeTraded` bigint COMMENT '成交数量',
+  `VolumeMultiple` int COMMENT '合约乘数',
+  `OrderStatus` int COMMENT '委托状态',
+  `OrderDate` char(9) COMMENT '委托日期',
+  `OrderTime` char(9) COMMENT '委托时间',
+  `CancelDate` char(9) COMMENT '撤单日期',
+  `CancelTime` char(9) COMMENT '撤单时间',
+  `SessionID` bigint COMMENT '会话编号',
+  `ClientOrderID` int COMMENT '客户端委托编号',
+
+  INDEX AccountID(TradingDay, AccountID),
+  PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易委托';
+
+CREATE TABLE IF NOT EXISTS `t_SETrade` (
+  `TradingDay` char(9) COMMENT '交易日',
+  `BrokerID` int COMMENT '经纪公司代码',
+  `AccountID` char(32) COMMENT '账户代码',
+  `ExchangeID` char(8) COMMENT '交易所代码',
+  `InstrumentID` char(32) COMMENT '合约代码',
+  `ProductClass` int COMMENT '品种类型',
+  `OrderID` int COMMENT '委托编号',
+  `TradeID` char(64) COMMENT '成交编号',
+  `Direction` int COMMENT '买卖方向',
+  `OffsetFlag` int COMMENT '开平标志',
+  `Price` decimal(24,8) COMMENT '委托价格',
+  `Volume` bigint COMMENT '委托数量',
+  `VolumeMultiple` int COMMENT '合约乘数',
+  `TradeAmount` decimal(24,8) COMMENT '成交金额',
+  `Commission` decimal(24,8) COMMENT '手续费',
+  `TradeDate` char(9) COMMENT '成交日期',
+  `TradeTime` char(9) COMMENT '成交时间',
+
+  INDEX AccountID(TradingDay, AccountID),
+  PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易成交';
+
+CREATE TABLE IF NOT EXISTS `t_SEBrokerLoginSession` (
+  `BrokerID` int COMMENT '经纪公司代码',
+  `SessionID` bigint COMMENT '会话编号',
+  `IPAddress` char(16) COMMENT 'IP地址',
+
+  INDEX BrokerID(BrokerID),
+  PRIMARY KEY(SessionID)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易经纪商登录会话';
+
 CREATE TABLE IF NOT EXISTS `t_DepthMarketData` (
   `TradingDay` char(9) COMMENT '交易日',
   `ExchangeID` char(8) COMMENT '交易所代码',
@@ -349,93 +438,21 @@ CREATE TABLE IF NOT EXISTS `t_MdSubscribe` (
   PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='行情订阅';
 
-CREATE TABLE IF NOT EXISTS `t_SEBroker` (
-  `BrokerID` int COMMENT '经纪公司代码',
-  `BrokerName` char(16) COMMENT '经纪公司名称',
+CREATE TABLE IF NOT EXISTS `t_MdUser` (
+  `MdUserID` char(32) COMMENT '行情用户代码',
+  `MdUserName` char(64) COMMENT '行情用户名称',
   `Password` char(64) COMMENT '密码',
 
-  PRIMARY KEY(BrokerID)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易经纪商';
+  PRIMARY KEY(MdUserID)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='账户';
 
-CREATE TABLE IF NOT EXISTS `t_SEInstrument` (
-  `ExchangeID` char(8) COMMENT '交易所代码',
-  `InstrumentID` char(32) COMMENT '合约代码',
-  `ExchangeInstID` char(32) COMMENT '交易所合约代码',
-  `InstrumentName` char(64) COMMENT '合约名称',
-  `ProductID` char(32) COMMENT '品种代码',
-  `ProductClass` int COMMENT '品种类型',
-  `MaxMarketOrderVolume` bigint COMMENT '市价最大下单量',
-  `MinMarketOrderVolume` bigint COMMENT '市价最小下单量',
-  `MaxLimitOrderVolume` bigint COMMENT '限价最大下单量',
-  `MinLimitOrderVolume` bigint COMMENT '限价最小下单量',
-  `VolumeMultiple` int COMMENT '合约乘数',
-  `PriceTick` decimal(24,8) COMMENT '最小变动价位',
-  `UpperLimitPrice` decimal(24,8) COMMENT '涨停板价',
-  `LowerLimitPrice` decimal(24,8) COMMENT '跌停板价',
-  `SessionName` char(32) COMMENT '交易节名称',
-
-  INDEX ExchangeID(ExchangeID),
-  PRIMARY KEY(ExchangeID, InstrumentID)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易合约';
-
-CREATE TABLE IF NOT EXISTS `t_SEOrder` (
-  `TradingDay` char(9) COMMENT '交易日',
-  `BrokerID` int COMMENT '经纪公司代码',
-  `AccountID` char(32) COMMENT '账户代码',
-  `ExchangeID` char(8) COMMENT '交易所代码',
-  `InstrumentID` char(32) COMMENT '合约代码',
-  `ProductClass` int COMMENT '品种类型',
-  `OrderID` int COMMENT '委托编号',
-  `Direction` int COMMENT '买卖方向',
-  `OffsetFlag` int COMMENT '开平标志',
-  `OrderPriceType` int COMMENT '委托价格类型',
-  `Price` decimal(24,8) COMMENT '委托价格',
-  `Volume` bigint COMMENT '委托数量',
-  `VolumeTotal` bigint COMMENT '剩余数量',
-  `VolumeTraded` bigint COMMENT '成交数量',
-  `VolumeMultiple` int COMMENT '合约乘数',
-  `OrderStatus` int COMMENT '委托状态',
-  `OrderDate` char(9) COMMENT '委托日期',
-  `OrderTime` char(9) COMMENT '委托时间',
-  `CancelDate` char(9) COMMENT '撤单日期',
-  `CancelTime` char(9) COMMENT '撤单时间',
-  `SessionID` bigint COMMENT '会话编号',
-  `ClientOrderID` int COMMENT '客户端委托编号',
-
-  INDEX AccountID(TradingDay, AccountID),
-  PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易委托';
-
-CREATE TABLE IF NOT EXISTS `t_SETrade` (
-  `TradingDay` char(9) COMMENT '交易日',
-  `BrokerID` int COMMENT '经纪公司代码',
-  `AccountID` char(32) COMMENT '账户代码',
-  `ExchangeID` char(8) COMMENT '交易所代码',
-  `InstrumentID` char(32) COMMENT '合约代码',
-  `ProductClass` int COMMENT '品种类型',
-  `OrderID` int COMMENT '委托编号',
-  `TradeID` char(64) COMMENT '成交编号',
-  `Direction` int COMMENT '买卖方向',
-  `OffsetFlag` int COMMENT '开平标志',
-  `Price` decimal(24,8) COMMENT '委托价格',
-  `Volume` bigint COMMENT '委托数量',
-  `VolumeMultiple` int COMMENT '合约乘数',
-  `TradeAmount` decimal(24,8) COMMENT '成交金额',
-  `Commission` decimal(24,8) COMMENT '手续费',
-  `TradeDate` char(9) COMMENT '成交日期',
-  `TradeTime` char(9) COMMENT '成交时间',
-
-  INDEX AccountID(TradingDay, AccountID),
-  PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易成交';
-
-CREATE TABLE IF NOT EXISTS `t_SEBrokerLoginSession` (
-  `BrokerID` int COMMENT '经纪公司代码',
+CREATE TABLE IF NOT EXISTS `t_MdUserLoginSession` (
+  `MdUserID` char(32) COMMENT '行情用户代码',
   `SessionID` bigint COMMENT '会话编号',
   `IPAddress` char(16) COMMENT 'IP地址',
 
-  INDEX BrokerID(BrokerID),
+  INDEX MdUserID(MdUserID),
   PRIMARY KEY(SessionID)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易经纪商登录会话';
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='行情用户登录会话';
 
 

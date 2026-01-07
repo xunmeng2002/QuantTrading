@@ -35,6 +35,21 @@ void DBOperateImpl::FreeRecord()
 		((BarMarketData*)Record)->Free();
 		break;
 	}
+	case MdSubscribe::TableID:
+	{
+		((MdSubscribe*)Record)->Free();
+		break;
+	}
+	case MdUser::TableID:
+	{
+		((MdUser*)Record)->Free();
+		break;
+	}
+	case MdUserLoginSession::TableID:
+	{
+		((MdUserLoginSession*)Record)->Free();
+		break;
+	}
 	default:
 		break;
 	}
@@ -51,6 +66,18 @@ const char* DBOperateImpl::GetDebugString() const
 	case BarMarketData::TableID:
 	{
 		return ((BarMarketData*)Record)->GetDebugString();
+	}
+	case MdSubscribe::TableID:
+	{
+		return ((MdSubscribe*)Record)->GetDebugString();
+	}
+	case MdUser::TableID:
+	{
+		return ((MdUser*)Record)->GetDebugString();
+	}
+	case MdUserLoginSession::TableID:
+	{
+		return ((MdUserLoginSession*)Record)->GetDebugString();
 	}
 	default:
 		break;

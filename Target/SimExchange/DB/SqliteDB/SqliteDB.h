@@ -46,15 +46,6 @@ public:
 	virtual void SelectProduct(std::list<mdb::Product*>& records) override;
 	virtual void TruncateProduct() override;
 	
-	virtual void CreateDepthMarketData() override;
-	virtual void DropDepthMarketData() override;
-	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
-	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
-	virtual void TruncateDepthMarketData() override;
-	
 	virtual void CreateSEBroker() override;
 	virtual void DropSEBroker() override;
 	virtual void InsertSEBroker(mdb::SEBroker* record) override;
@@ -104,6 +95,15 @@ public:
 	virtual void SelectSEBrokerLoginSession(std::list<mdb::SEBrokerLoginSession*>& records) override;
 	virtual void TruncateSEBrokerLoginSession() override;
 	
+	virtual void CreateDepthMarketData() override;
+	virtual void DropDepthMarketData() override;
+	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
+	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
+	virtual void TruncateDepthMarketData() override;
+	
 
 private:
 	void SetStatementForTradingDayRecord(sqlite3_stmt* statement, mdb::TradingDay* record);
@@ -118,10 +118,6 @@ private:
 	void SetStatementForProductRecordUpdate(sqlite3_stmt* statement, mdb::Product* record);
 	void SetStatementForProductPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Product*>& records);
-	void SetStatementForDepthMarketDataRecord(sqlite3_stmt* statement, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataRecordUpdate(sqlite3_stmt* statement, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
-	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::DepthMarketData*>& records);
 	void SetStatementForSEBrokerRecord(sqlite3_stmt* statement, mdb::SEBroker* record);
 	void SetStatementForSEBrokerRecordUpdate(sqlite3_stmt* statement, mdb::SEBroker* record);
 	void SetStatementForSEBrokerPrimaryKey(sqlite3_stmt* statement, const BrokerIDType& BrokerID);
@@ -146,6 +142,10 @@ private:
 	void SetStatementForSEBrokerLoginSessionPrimaryKey(sqlite3_stmt* statement, const SessionIDType& SessionID);
 	void SetStatementForSEBrokerLoginSessionIndexBrokerID(sqlite3_stmt* statement, mdb::SEBrokerLoginSession* record);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::SEBrokerLoginSession*>& records);
+	void SetStatementForDepthMarketDataRecord(sqlite3_stmt* statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataRecordUpdate(sqlite3_stmt* statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::DepthMarketData*>& records);
 
 
 private:
@@ -168,11 +168,6 @@ private:
 	sqlite3_stmt* m_ProductUpdateStatement;
 	sqlite3_stmt* m_ProductSelectStatement;
 	sqlite3_stmt* m_ProductTruncateStatement;
-	sqlite3_stmt* m_DepthMarketDataInsertStatement;
-	sqlite3_stmt* m_DepthMarketDataDeleteStatement;
-	sqlite3_stmt* m_DepthMarketDataUpdateStatement;
-	sqlite3_stmt* m_DepthMarketDataSelectStatement;
-	sqlite3_stmt* m_DepthMarketDataTruncateStatement;
 	sqlite3_stmt* m_SEBrokerInsertStatement;
 	sqlite3_stmt* m_SEBrokerDeleteStatement;
 	sqlite3_stmt* m_SEBrokerUpdateStatement;
@@ -202,4 +197,9 @@ private:
 	sqlite3_stmt* m_SEBrokerLoginSessionUpdateStatement;
 	sqlite3_stmt* m_SEBrokerLoginSessionSelectStatement;
 	sqlite3_stmt* m_SEBrokerLoginSessionTruncateStatement;
+	sqlite3_stmt* m_DepthMarketDataInsertStatement;
+	sqlite3_stmt* m_DepthMarketDataDeleteStatement;
+	sqlite3_stmt* m_DepthMarketDataUpdateStatement;
+	sqlite3_stmt* m_DepthMarketDataSelectStatement;
+	sqlite3_stmt* m_DepthMarketDataTruncateStatement;
 };

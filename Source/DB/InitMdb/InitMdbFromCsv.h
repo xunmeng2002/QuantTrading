@@ -20,13 +20,15 @@ namespace mdb
 		static void LoadPositionDetailTable(Mdb* mdb, const char* dir);
 		static void LoadOrderTable(Mdb* mdb, const char* dir);
 		static void LoadTradeTable(Mdb* mdb, const char* dir);
-		static void LoadDepthMarketDataTable(Mdb* mdb, const char* dir);
-		static void LoadBarMarketDataTable(Mdb* mdb, const char* dir);
-		static void LoadMdSubscribeTable(Mdb* mdb, const char* dir);
 		static void LoadSEBrokerTable(Mdb* mdb, const char* dir);
 		static void LoadSEInstrumentTable(Mdb* mdb, const char* dir);
 		static void LoadSEOrderTable(Mdb* mdb, const char* dir);
 		static void LoadSETradeTable(Mdb* mdb, const char* dir);
 		static void LoadSEBrokerLoginSessionTable(Mdb* mdb, const char* dir);
+		static void LoadDepthMarketDataTable(Mdb* mdb, const char* dir);
+		static void LoadBarMarketDataTable(Mdb* mdb, const char* dir);
+		static void LoadMdSubscribeTable(Mdb* mdb, const char* dir);
+		static void LoadMdUserTable(Mdb* mdb, const char* dir);
+		static void LoadMdUserLoginSessionTable(Mdb* mdb, const char* dir);
 	};
 }

@@ -85,21 +85,6 @@ void DBOperateImpl::FreeRecord()
 		((Trade*)Record)->Free();
 		break;
 	}
-	case DepthMarketData::TableID:
-	{
-		((DepthMarketData*)Record)->Free();
-		break;
-	}
-	case BarMarketData::TableID:
-	{
-		((BarMarketData*)Record)->Free();
-		break;
-	}
-	case MdSubscribe::TableID:
-	{
-		((MdSubscribe*)Record)->Free();
-		break;
-	}
 	case SEBroker::TableID:
 	{
 		((SEBroker*)Record)->Free();
@@ -123,6 +108,31 @@ void DBOperateImpl::FreeRecord()
 	case SEBrokerLoginSession::TableID:
 	{
 		((SEBrokerLoginSession*)Record)->Free();
+		break;
+	}
+	case DepthMarketData::TableID:
+	{
+		((DepthMarketData*)Record)->Free();
+		break;
+	}
+	case BarMarketData::TableID:
+	{
+		((BarMarketData*)Record)->Free();
+		break;
+	}
+	case MdSubscribe::TableID:
+	{
+		((MdSubscribe*)Record)->Free();
+		break;
+	}
+	case MdUser::TableID:
+	{
+		((MdUser*)Record)->Free();
+		break;
+	}
+	case MdUserLoginSession::TableID:
+	{
+		((MdUserLoginSession*)Record)->Free();
 		break;
 	}
 	default:
@@ -182,18 +192,6 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Trade*)Record)->GetDebugString();
 	}
-	case DepthMarketData::TableID:
-	{
-		return ((DepthMarketData*)Record)->GetDebugString();
-	}
-	case BarMarketData::TableID:
-	{
-		return ((BarMarketData*)Record)->GetDebugString();
-	}
-	case MdSubscribe::TableID:
-	{
-		return ((MdSubscribe*)Record)->GetDebugString();
-	}
 	case SEBroker::TableID:
 	{
 		return ((SEBroker*)Record)->GetDebugString();
@@ -213,6 +211,26 @@ const char* DBOperateImpl::GetDebugString() const
 	case SEBrokerLoginSession::TableID:
 	{
 		return ((SEBrokerLoginSession*)Record)->GetDebugString();
+	}
+	case DepthMarketData::TableID:
+	{
+		return ((DepthMarketData*)Record)->GetDebugString();
+	}
+	case BarMarketData::TableID:
+	{
+		return ((BarMarketData*)Record)->GetDebugString();
+	}
+	case MdSubscribe::TableID:
+	{
+		return ((MdSubscribe*)Record)->GetDebugString();
+	}
+	case MdUser::TableID:
+	{
+		return ((MdUser*)Record)->GetDebugString();
+	}
+	case MdUserLoginSession::TableID:
+	{
+		return ((MdUserLoginSession*)Record)->GetDebugString();
 	}
 	default:
 		break;

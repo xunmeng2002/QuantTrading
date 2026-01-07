@@ -49,16 +49,6 @@ public:
 	virtual void TruncateProduct() override;
 	static void ParseRecord(duckdb_result& result, std::list<mdb::Product*>& records);
 	
-	virtual void CreateDepthMarketData() override;
-	virtual void DropDepthMarketData() override;
-	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
-	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
-	virtual void TruncateDepthMarketData() override;
-	static void ParseRecord(duckdb_result& result, std::list<mdb::DepthMarketData*>& records);
-	
 	virtual void CreateSEBroker() override;
 	virtual void DropSEBroker() override;
 	virtual void InsertSEBroker(mdb::SEBroker* record) override;
@@ -113,6 +103,16 @@ public:
 	virtual void TruncateSEBrokerLoginSession() override;
 	static void ParseRecord(duckdb_result& result, std::list<mdb::SEBrokerLoginSession*>& records);
 	
+	virtual void CreateDepthMarketData() override;
+	virtual void DropDepthMarketData() override;
+	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
+	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
+	virtual void TruncateDepthMarketData() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::DepthMarketData*>& records);
+	
 
 private:
 	bool AppendForTradingDayRecord(duckdb_appender appender, mdb::TradingDay* record);
@@ -127,10 +127,6 @@ private:
 	void SetStatementForProductRecord(duckdb_prepared_statement statement, mdb::Product* record);
 	void SetStatementForProductRecordUpdate(duckdb_prepared_statement statement, mdb::Product* record);
 	void SetStatementForProductPrimaryKey(duckdb_prepared_statement statement, mdb::Product* record);
-	bool AppendForDepthMarketDataRecord(duckdb_appender appender, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataRecord(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataRecordUpdate(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataPrimaryKey(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
 	bool AppendForSEBrokerRecord(duckdb_appender appender, mdb::SEBroker* record);
 	void SetStatementForSEBrokerRecord(duckdb_prepared_statement statement, mdb::SEBroker* record);
 	void SetStatementForSEBrokerRecordUpdate(duckdb_prepared_statement statement, mdb::SEBroker* record);
@@ -155,6 +151,10 @@ private:
 	void SetStatementForSEBrokerLoginSessionRecordUpdate(duckdb_prepared_statement statement, mdb::SEBrokerLoginSession* record);
 	void SetStatementForSEBrokerLoginSessionPrimaryKey(duckdb_prepared_statement statement, mdb::SEBrokerLoginSession* record);
 	void SetStatementForSEBrokerLoginSessionIndexBrokerID(duckdb_prepared_statement statement, mdb::SEBrokerLoginSession* record);
+	bool AppendForDepthMarketDataRecord(duckdb_appender appender, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataRecord(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataRecordUpdate(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataPrimaryKey(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
 
 
 private:
@@ -175,10 +175,6 @@ private:
 	duckdb_prepared_statement m_ProductUpdateStatement;
 	duckdb_prepared_statement m_ProductSelectStatement;
 	duckdb_prepared_statement m_ProductTruncateStatement;
-	duckdb_prepared_statement m_DepthMarketDataDeleteStatement;
-	duckdb_prepared_statement m_DepthMarketDataUpdateStatement;
-	duckdb_prepared_statement m_DepthMarketDataSelectStatement;
-	duckdb_prepared_statement m_DepthMarketDataTruncateStatement;
 	duckdb_prepared_statement m_SEBrokerDeleteStatement;
 	duckdb_prepared_statement m_SEBrokerUpdateStatement;
 	duckdb_prepared_statement m_SEBrokerSelectStatement;
@@ -203,4 +199,8 @@ private:
 	duckdb_prepared_statement m_SEBrokerLoginSessionUpdateStatement;
 	duckdb_prepared_statement m_SEBrokerLoginSessionSelectStatement;
 	duckdb_prepared_statement m_SEBrokerLoginSessionTruncateStatement;
+	duckdb_prepared_statement m_DepthMarketDataDeleteStatement;
+	duckdb_prepared_statement m_DepthMarketDataUpdateStatement;
+	duckdb_prepared_statement m_DepthMarketDataSelectStatement;
+	duckdb_prepared_statement m_DepthMarketDataTruncateStatement;
 };

@@ -17,6 +17,9 @@ namespace mdb
 
 		LoadDepthMarketDataTable(mdb, dir);
 		LoadBarMarketDataTable(mdb, dir);
+		LoadMdSubscribeTable(mdb, dir);
+		LoadMdUserTable(mdb, dir);
+		LoadMdUserLoginSessionTable(mdb, dir);
 	}
 
 	void InitMdbFromCsv::LoadDepthMarketDataTable(Mdb* mdb, const char* dir)
@@ -159,6 +162,115 @@ namespace mdb
 			record->Turnover = csv_record.GetFieldAsDouble("Turnover");
 			record->OpenInterest = csv_record.GetFieldAsDouble("OpenInterest");
 			mdb->t_BarMarketData->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadMdSubscribeTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_MdSubscribe.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_MdSubscribe.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_MdSubscribe.csv failed");
+			}
+
+			auto record = new MdSubscribe();
+			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
+			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			Strcpy(record->RealInstrumentID, csv_record.GetFieldAsString("RealInstrumentID"));
+			Strcpy(record->ProductID, csv_record.GetFieldAsString("ProductID"));
+			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			Strcpy(record->StartTradingDay, csv_record.GetFieldAsString("StartTradingDay"));
+			Strcpy(record->EndTradingDay, csv_record.GetFieldAsString("EndTradingDay"));
+			mdb->t_MdSubscribe->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadMdUserTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_MdUser.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_MdUser.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_MdUser.csv failed");
+			}
+
+			auto record = new MdUser();
+			Strcpy(record->MdUserID, csv_record.GetFieldAsString("MdUserID"));
+			Strcpy(record->MdUserName, csv_record.GetFieldAsString("MdUserName"));
+			Strcpy(record->Password, csv_record.GetFieldAsString("Password"));
+			mdb->t_MdUser->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadMdUserLoginSessionTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_MdUserLoginSession.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_MdUserLoginSession.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_MdUserLoginSession.csv failed");
+			}
+
+			auto record = new MdUserLoginSession();
+			Strcpy(record->MdUserID, csv_record.GetFieldAsString("MdUserID"));
+			record->SessionID = csv_record.GetFieldAsInt64("SessionID");
+			Strcpy(record->IPAddress, csv_record.GetFieldAsString("IPAddress"));
+			mdb->t_MdUserLoginSession->Insert(record);
 		}
 		file.close();
 	}

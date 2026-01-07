@@ -60,30 +60,6 @@ namespace mdb
 	{
 		return std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->ProductID);
 	}
-	bool DepthMarketDataEqualForDepthMarketDataPrimaryKey::operator()(const DepthMarketData* const left, const DepthMarketData* const right) const
-	{
-		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0;
-	}
-	bool DepthMarketDataLessForDepthMarketDataPrimaryKey::operator()(const DepthMarketData* const left, const DepthMarketData* const right) const
-	{
-		if (strcmp(left->TradingDay, right->TradingDay) < 0)
-			return true;
-		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
-			return false;
-		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
-			return true;
-		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
-			return false;
-		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
-			return true;
-		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
-			return false;
-		return false;
-	}
-	size_t DepthMarketDataHashForDepthMarketDataPrimaryKey::operator()(const DepthMarketData* const record) const
-	{
-		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID);
-	}
 	bool SEBrokerEqualForSEBrokerPrimaryKey::operator()(const SEBroker* const left, const SEBroker* const right) const
 	{
 		return left->BrokerID == right->BrokerID;
@@ -195,5 +171,29 @@ namespace mdb
 	size_t SEBrokerLoginSessionHashForSEBrokerLoginSessionPrimaryKey::operator()(const SEBrokerLoginSession* const record) const
 	{
 		return std::hash<long long>()(record->SessionID);
+	}
+	bool DepthMarketDataEqualForDepthMarketDataPrimaryKey::operator()(const DepthMarketData* const left, const DepthMarketData* const right) const
+	{
+		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0;
+	}
+	bool DepthMarketDataLessForDepthMarketDataPrimaryKey::operator()(const DepthMarketData* const left, const DepthMarketData* const right) const
+	{
+		if (strcmp(left->TradingDay, right->TradingDay) < 0)
+			return true;
+		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
+			return false;
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
+			return true;
+		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
+			return false;
+		return false;
+	}
+	size_t DepthMarketDataHashForDepthMarketDataPrimaryKey::operator()(const DepthMarketData* const record) const
+	{
+		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID);
 	}
 }

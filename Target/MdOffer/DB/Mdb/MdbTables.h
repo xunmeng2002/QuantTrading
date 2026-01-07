@@ -72,4 +72,96 @@ namespace mdb
 		BarMarketDataPrimaryKey* m_PrimaryKey;
 	};
 
+	class MdSubscribeTable
+	{
+	public:
+		MdSubscribeTable(Mdb* mdb);
+		~MdSubscribeTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(MdSubscribe* record);
+		void BatchInsert(std::list<mdb::MdSubscribe*>* records);
+		void Erase(MdSubscribe* record);
+		bool Update(MdSubscribe* const oldRecord, MdSubscribe* const newRecord, bool updateDB = true);
+		void TruncateTables();
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(MdSubscribe* record);
+		void EraseIndex(MdSubscribe* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		MdSubscribePrimaryKey* m_PrimaryKey;
+	};
+
+	class MdUserTable
+	{
+	public:
+		MdUserTable(Mdb* mdb);
+		~MdUserTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(MdUser* record);
+		void BatchInsert(std::list<mdb::MdUser*>* records);
+		void Erase(MdUser* record);
+		bool Update(MdUser* const oldRecord, MdUser* const newRecord, bool updateDB = true);
+		void TruncateTables();
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(MdUser* record);
+		void EraseIndex(MdUser* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		MdUserPrimaryKey* m_PrimaryKey;
+	};
+
+	class MdUserLoginSessionTable
+	{
+	public:
+		MdUserLoginSessionTable(Mdb* mdb);
+		~MdUserLoginSessionTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(MdUserLoginSession* record);
+		void BatchInsert(std::list<mdb::MdUserLoginSession*>* records);
+		void Erase(MdUserLoginSession* record);
+		int EraseByMdUserIDIndex(const UserIDType& MdUserID);
+		bool Update(MdUserLoginSession* const oldRecord, MdUserLoginSession* const newRecord, bool updateDB = true);
+		void TruncateTables();
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(MdUserLoginSession* record);
+		void EraseIndex(MdUserLoginSession* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		MdUserLoginSessionPrimaryKey* m_PrimaryKey;
+		MdUserLoginSessionIndexMdUserID* m_MdUserIDIndex;
+	};
+
 }

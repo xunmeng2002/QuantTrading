@@ -27,6 +27,25 @@ SqliteDB::SqliteDB(const std::string& dbName)
 	m_BarMarketDataSelectStatement = nullptr;
 	m_BarMarketDataTruncateStatement = nullptr;
 
+	m_MdSubscribeInsertStatement = nullptr;
+	m_MdSubscribeDeleteStatement = nullptr;
+	m_MdSubscribeUpdateStatement = nullptr;
+	m_MdSubscribeSelectStatement = nullptr;
+	m_MdSubscribeTruncateStatement = nullptr;
+
+	m_MdUserInsertStatement = nullptr;
+	m_MdUserDeleteStatement = nullptr;
+	m_MdUserUpdateStatement = nullptr;
+	m_MdUserSelectStatement = nullptr;
+	m_MdUserTruncateStatement = nullptr;
+
+	m_MdUserLoginSessionInsertStatement = nullptr;
+	m_MdUserLoginSessionDeleteStatement = nullptr;
+	m_MdUserLoginSessionDeleteByMdUserIDIndexStatement = nullptr;
+	m_MdUserLoginSessionUpdateStatement = nullptr;
+	m_MdUserLoginSessionSelectStatement = nullptr;
+	m_MdUserLoginSessionTruncateStatement = nullptr;
+
 }
 SqliteDB::~SqliteDB()
 {
@@ -104,6 +123,86 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_BarMarketDataTruncateStatement);
 		m_BarMarketDataTruncateStatement = nullptr;
 	}
+	if (m_MdSubscribeInsertStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdSubscribeInsertStatement);
+		m_MdSubscribeInsertStatement = nullptr;
+	}
+	if (m_MdSubscribeDeleteStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdSubscribeDeleteStatement);
+		m_MdSubscribeDeleteStatement = nullptr;
+	}
+	if (m_MdSubscribeUpdateStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdSubscribeUpdateStatement);
+		m_MdSubscribeUpdateStatement = nullptr;
+	}
+	if (m_MdSubscribeSelectStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdSubscribeSelectStatement);
+		m_MdSubscribeSelectStatement = nullptr;
+	}
+	if (m_MdSubscribeTruncateStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdSubscribeTruncateStatement);
+		m_MdSubscribeTruncateStatement = nullptr;
+	}
+	if (m_MdUserInsertStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserInsertStatement);
+		m_MdUserInsertStatement = nullptr;
+	}
+	if (m_MdUserDeleteStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserDeleteStatement);
+		m_MdUserDeleteStatement = nullptr;
+	}
+	if (m_MdUserUpdateStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserUpdateStatement);
+		m_MdUserUpdateStatement = nullptr;
+	}
+	if (m_MdUserSelectStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserSelectStatement);
+		m_MdUserSelectStatement = nullptr;
+	}
+	if (m_MdUserTruncateStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserTruncateStatement);
+		m_MdUserTruncateStatement = nullptr;
+	}
+	if (m_MdUserLoginSessionInsertStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserLoginSessionInsertStatement);
+		m_MdUserLoginSessionInsertStatement = nullptr;
+	}
+	if (m_MdUserLoginSessionDeleteStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserLoginSessionDeleteStatement);
+		m_MdUserLoginSessionDeleteStatement = nullptr;
+	}
+	if (m_MdUserLoginSessionDeleteByMdUserIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserLoginSessionDeleteByMdUserIDIndexStatement);
+		m_MdUserLoginSessionDeleteByMdUserIDIndexStatement = nullptr;
+	}
+	if (m_MdUserLoginSessionUpdateStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserLoginSessionUpdateStatement);
+		m_MdUserLoginSessionUpdateStatement = nullptr;
+	}
+	if (m_MdUserLoginSessionSelectStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserLoginSessionSelectStatement);
+		m_MdUserLoginSessionSelectStatement = nullptr;
+	}
+	if (m_MdUserLoginSessionTruncateStatement != nullptr)
+	{
+		sqlite3_finalize(m_MdUserLoginSessionTruncateStatement);
+		m_MdUserLoginSessionTruncateStatement = nullptr;
+	}
 }
 void SqliteDB::InitDB()
 {
@@ -111,25 +210,41 @@ void SqliteDB::InitDB()
 	Exec("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 	Exec("Truncate Table t_BarMarketData;");
 	Exec("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
+	Exec("Truncate Table t_MdSubscribe;");
+	Exec("Insert Into t_MdSubscribe select * from Init.t_MdSubscribe;");
+	Exec("Truncate Table t_MdUser;");
+	Exec("Insert Into t_MdUser select * from Init.t_MdUser;");
+	Exec("Truncate Table t_MdUserLoginSession;");
+	Exec("Insert Into t_MdUserLoginSession select * from Init.t_MdUserLoginSession;");
 }
 void SqliteDB::CreateTables()
 {
 	CreateDepthMarketData();
 	CreateBarMarketData();
+	CreateMdSubscribe();
+	CreateMdUser();
+	CreateMdUserLoginSession();
 }
 void SqliteDB::DropTables()
 {
 	DropDepthMarketData();
 	DropBarMarketData();
+	DropMdSubscribe();
+	DropMdUser();
+	DropMdUserLoginSession();
 }
 void SqliteDB::TruncateTables()
 {
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
+	TruncateMdSubscribe();
+	TruncateMdUser();
+	TruncateMdUserLoginSession();
 }
 void SqliteDB::TruncateSessionTables()
 {
 	auto start = steady_clock::now();
+	TruncateMdUserLoginSession();
 	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 bool SqliteDB::Exec(const char* sql)
@@ -487,6 +602,541 @@ void SqliteDB::TruncateBarMarketData()
 	
 	WriteLog(LogLevel::Info, "TruncateBarMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
+void SqliteDB::CreateMdSubscribe()
+{
+	auto start = steady_clock::now();
+	char* t_ErrorMsg;
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_MdSubscribe(`ExchangeID` text, `InstrumentID` text, `RealInstrumentID` text, `ProductID` text, `ProductClass` int, `StartTradingDay` text, `EndTradingDay` text, PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay));", nullptr, nullptr, &t_ErrorMsg);
+	if (rc != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "CreateMdSubscribe failed, ErrorMsg:%s", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateMdSubscribe Spend:%lldms", duration);
+}
+void SqliteDB::DropMdSubscribe()
+{
+	auto start = steady_clock::now();
+	char* t_ErrorMsg;
+	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_MdSubscribe;", nullptr, nullptr, &t_ErrorMsg);
+	if (rc != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "DropMdSubscribe failed, ErrorMsg:%s", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropMdSubscribe Spend:%lldms", duration);
+}
+void SqliteDB::InsertMdSubscribe(MdSubscribe* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdSubscribeInsertStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "insert into t_MdSubscribe Values(?, ?, ?, ?, ?, ?, ?);", -1, &m_MdSubscribeInsertStatement, nullptr);
+	}
+	SetStatementForMdSubscribeRecord(m_MdSubscribeInsertStatement, record);
+	
+	auto rc = sqlite3_step(m_MdSubscribeInsertStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "InsertMdSubscribe failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdSubscribeInsertStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertMdSubscribe Spend:%lldms", duration);
+	}
+}
+void SqliteDB::BatchInsertMdSubscribe(std::list<MdSubscribe*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_MdSubscribe Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertMdSubscribe Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_MdSubscribe Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertMdSubscribe Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertMdSubscribe RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void SqliteDB::DeleteMdSubscribe(MdSubscribe* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdSubscribeDeleteStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_MdSubscribe where ExchangeID = ? and InstrumentID = ? and StartTradingDay = ?;", -1, &m_MdSubscribeDeleteStatement, nullptr);
+	}
+	SetStatementForMdSubscribePrimaryKey(m_MdSubscribeDeleteStatement, record->ExchangeID, record->InstrumentID, record->StartTradingDay);
+
+	auto rc = sqlite3_step(m_MdSubscribeDeleteStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdSubscribe failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdSubscribeDeleteStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdSubscribe Spend:%lldms", duration);
+	}
+}
+void SqliteDB::UpdateMdSubscribe(MdSubscribe* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdSubscribeUpdateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "update t_MdSubscribe set RealInstrumentID = ?, ProductID = ?, ProductClass = ?, EndTradingDay = ? where ExchangeID = ? and InstrumentID = ? and StartTradingDay = ?;", -1, &m_MdSubscribeUpdateStatement, nullptr);
+	}
+	SetStatementForMdSubscribeRecordUpdate(m_MdSubscribeUpdateStatement, record);
+	
+	auto rc = sqlite3_step(m_MdSubscribeUpdateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdSubscribe failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdSubscribeUpdateStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdSubscribe Spend:%lldms", duration);
+	}
+}
+void SqliteDB::SelectMdSubscribe(std::list<MdSubscribe*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_MdSubscribeSelectStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "select * from t_MdSubscribe;", -1, &m_MdSubscribeSelectStatement, nullptr);
+	}
+
+	while (sqlite3_step(m_MdSubscribeSelectStatement) == SQLITE_ROW)
+	{
+		ParseRecord(m_MdSubscribeSelectStatement, records);
+	}
+	sqlite3_reset(m_MdSubscribeSelectStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectMdSubscribe Spend:%lldms", duration);
+	}
+}
+void SqliteDB::TruncateMdSubscribe()
+{
+	auto start = steady_clock::now();
+	if (m_MdSubscribeTruncateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_MdSubscribe;", -1, &m_MdSubscribeTruncateStatement, nullptr);
+	}
+
+	auto rc = sqlite3_step(m_MdSubscribeTruncateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "TruncateMdSubscribe failed, ErrorMsg:%s", sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdSubscribeTruncateStatement);
+	
+	WriteLog(LogLevel::Info, "TruncateMdSubscribe Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void SqliteDB::CreateMdUser()
+{
+	auto start = steady_clock::now();
+	char* t_ErrorMsg;
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_MdUser(`MdUserID` text, `MdUserName` text, `Password` text, PRIMARY KEY(MdUserID));", nullptr, nullptr, &t_ErrorMsg);
+	if (rc != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "CreateMdUser failed, ErrorMsg:%s", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateMdUser Spend:%lldms", duration);
+}
+void SqliteDB::DropMdUser()
+{
+	auto start = steady_clock::now();
+	char* t_ErrorMsg;
+	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_MdUser;", nullptr, nullptr, &t_ErrorMsg);
+	if (rc != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "DropMdUser failed, ErrorMsg:%s", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropMdUser Spend:%lldms", duration);
+}
+void SqliteDB::InsertMdUser(MdUser* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserInsertStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "insert into t_MdUser Values(?, ?, ?);", -1, &m_MdUserInsertStatement, nullptr);
+	}
+	SetStatementForMdUserRecord(m_MdUserInsertStatement, record);
+	
+	auto rc = sqlite3_step(m_MdUserInsertStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "InsertMdUser failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserInsertStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertMdUser Spend:%lldms", duration);
+	}
+}
+void SqliteDB::BatchInsertMdUser(std::list<MdUser*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_MdUser Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertMdUser Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_MdUser Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertMdUser Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertMdUser RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void SqliteDB::DeleteMdUser(MdUser* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserDeleteStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_MdUser where MdUserID = ?;", -1, &m_MdUserDeleteStatement, nullptr);
+	}
+	SetStatementForMdUserPrimaryKey(m_MdUserDeleteStatement, record->MdUserID);
+
+	auto rc = sqlite3_step(m_MdUserDeleteStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUser failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserDeleteStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUser Spend:%lldms", duration);
+	}
+}
+void SqliteDB::UpdateMdUser(MdUser* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserUpdateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "update t_MdUser set MdUserName = ?, Password = ? where MdUserID = ?;", -1, &m_MdUserUpdateStatement, nullptr);
+	}
+	SetStatementForMdUserRecordUpdate(m_MdUserUpdateStatement, record);
+	
+	auto rc = sqlite3_step(m_MdUserUpdateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdUser failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserUpdateStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdUser Spend:%lldms", duration);
+	}
+}
+void SqliteDB::SelectMdUser(std::list<MdUser*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserSelectStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "select * from t_MdUser;", -1, &m_MdUserSelectStatement, nullptr);
+	}
+
+	while (sqlite3_step(m_MdUserSelectStatement) == SQLITE_ROW)
+	{
+		ParseRecord(m_MdUserSelectStatement, records);
+	}
+	sqlite3_reset(m_MdUserSelectStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectMdUser Spend:%lldms", duration);
+	}
+}
+void SqliteDB::TruncateMdUser()
+{
+	auto start = steady_clock::now();
+	if (m_MdUserTruncateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_MdUser;", -1, &m_MdUserTruncateStatement, nullptr);
+	}
+
+	auto rc = sqlite3_step(m_MdUserTruncateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "TruncateMdUser failed, ErrorMsg:%s", sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserTruncateStatement);
+	
+	WriteLog(LogLevel::Info, "TruncateMdUser Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void SqliteDB::CreateMdUserLoginSession()
+{
+	auto start = steady_clock::now();
+	char* t_ErrorMsg;
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(`MdUserID` text, `SessionID` bigint, `IPAddress` text, PRIMARY KEY(SessionID));CREATE INDEX MdUserLoginSessionMdUserID ON t_MdUserLoginSession(MdUserID);", nullptr, nullptr, &t_ErrorMsg);
+	if (rc != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "CreateMdUserLoginSession failed, ErrorMsg:%s", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateMdUserLoginSession Spend:%lldms", duration);
+}
+void SqliteDB::DropMdUserLoginSession()
+{
+	auto start = steady_clock::now();
+	char* t_ErrorMsg;
+	auto rc = sqlite3_exec(m_DB, "DROP INDEX MdUserLoginSessionMdUserID;DROP TABLE IF EXISTS t_MdUserLoginSession;", nullptr, nullptr, &t_ErrorMsg);
+	if (rc != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "DropMdUserLoginSession failed, ErrorMsg:%s", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropMdUserLoginSession Spend:%lldms", duration);
+}
+void SqliteDB::InsertMdUserLoginSession(MdUserLoginSession* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserLoginSessionInsertStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "insert into t_MdUserLoginSession Values(?, ?, ?);", -1, &m_MdUserLoginSessionInsertStatement, nullptr);
+	}
+	SetStatementForMdUserLoginSessionRecord(m_MdUserLoginSessionInsertStatement, record);
+	
+	auto rc = sqlite3_step(m_MdUserLoginSessionInsertStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "InsertMdUserLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserLoginSessionInsertStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertMdUserLoginSession Spend:%lldms", duration);
+	}
+}
+void SqliteDB::BatchInsertMdUserLoginSession(std::list<MdUserLoginSession*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_MdUserLoginSession Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertMdUserLoginSession Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_MdUserLoginSession Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertMdUserLoginSession Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertMdUserLoginSession RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void SqliteDB::DeleteMdUserLoginSession(MdUserLoginSession* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserLoginSessionDeleteStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_MdUserLoginSession where SessionID = ?;", -1, &m_MdUserLoginSessionDeleteStatement, nullptr);
+	}
+	SetStatementForMdUserLoginSessionPrimaryKey(m_MdUserLoginSessionDeleteStatement, record->SessionID);
+
+	auto rc = sqlite3_step(m_MdUserLoginSessionDeleteStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUserLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserLoginSessionDeleteStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUserLoginSession Spend:%lldms", duration);
+	}
+}
+void SqliteDB::DeleteMdUserLoginSessionByMdUserIDIndex(MdUserLoginSession* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserLoginSessionDeleteByMdUserIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_MdUserLoginSession where MdUserID = ?;", -1, &m_MdUserLoginSessionDeleteByMdUserIDIndexStatement, nullptr);
+	}
+	SetStatementForMdUserLoginSessionIndexMdUserID(m_MdUserLoginSessionDeleteByMdUserIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_MdUserLoginSessionDeleteByMdUserIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUserLoginSessionByMdUserIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserLoginSessionDeleteByMdUserIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUserLoginSessionByMdUserIDIndex Spend:%lldms", duration);
+	}
+}
+void SqliteDB::UpdateMdUserLoginSession(MdUserLoginSession* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserLoginSessionUpdateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "update t_MdUserLoginSession set MdUserID = ?, IPAddress = ? where SessionID = ?;", -1, &m_MdUserLoginSessionUpdateStatement, nullptr);
+	}
+	SetStatementForMdUserLoginSessionRecordUpdate(m_MdUserLoginSessionUpdateStatement, record);
+	
+	auto rc = sqlite3_step(m_MdUserLoginSessionUpdateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdUserLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserLoginSessionUpdateStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdUserLoginSession Spend:%lldms", duration);
+	}
+}
+void SqliteDB::SelectMdUserLoginSession(std::list<MdUserLoginSession*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserLoginSessionSelectStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "select * from t_MdUserLoginSession;", -1, &m_MdUserLoginSessionSelectStatement, nullptr);
+	}
+
+	while (sqlite3_step(m_MdUserLoginSessionSelectStatement) == SQLITE_ROW)
+	{
+		ParseRecord(m_MdUserLoginSessionSelectStatement, records);
+	}
+	sqlite3_reset(m_MdUserLoginSessionSelectStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectMdUserLoginSession Spend:%lldms", duration);
+	}
+}
+void SqliteDB::TruncateMdUserLoginSession()
+{
+	auto start = steady_clock::now();
+	if (m_MdUserLoginSessionTruncateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_MdUserLoginSession;", -1, &m_MdUserLoginSessionTruncateStatement, nullptr);
+	}
+
+	auto rc = sqlite3_step(m_MdUserLoginSessionTruncateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "TruncateMdUserLoginSession failed, ErrorMsg:%s", sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_MdUserLoginSessionTruncateStatement);
+	
+	WriteLog(LogLevel::Info, "TruncateMdUserLoginSession Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
 
 
 void SqliteDB::SetStatementForDepthMarketDataRecord(sqlite3_stmt* statement, DepthMarketData* record)
@@ -761,6 +1411,96 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<BarMarketData*>& r
 	record->CurrTurnover = sqlite3_column_double(statement, 15);
 	record->Turnover = sqlite3_column_double(statement, 16);
 	record->OpenInterest = sqlite3_column_double(statement, 17);
+	records.push_back(record);
+}
+void SqliteDB::SetStatementForMdSubscribeRecord(sqlite3_stmt* statement, MdSubscribe* record)
+{
+	sqlite3_bind_text(statement, 1, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 2, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_text(statement, 3, record->RealInstrumentID, sizeof(record->RealInstrumentID), nullptr);
+	sqlite3_bind_text(statement, 4, record->ProductID, sizeof(record->ProductID), nullptr);
+	sqlite3_bind_int(statement, 5, int(record->ProductClass));
+	sqlite3_bind_text(statement, 6, record->StartTradingDay, sizeof(record->StartTradingDay), nullptr);
+	sqlite3_bind_text(statement, 7, record->EndTradingDay, sizeof(record->EndTradingDay), nullptr);
+}
+void SqliteDB::SetStatementForMdSubscribeRecordUpdate(sqlite3_stmt* statement, MdSubscribe* record)
+{
+	sqlite3_bind_text(statement, 1, record->RealInstrumentID, sizeof(record->RealInstrumentID), nullptr);
+	sqlite3_bind_text(statement, 2, record->ProductID, sizeof(record->ProductID), nullptr);
+	sqlite3_bind_int(statement, 3, int(record->ProductClass));
+	sqlite3_bind_text(statement, 4, record->EndTradingDay, sizeof(record->EndTradingDay), nullptr);
+	sqlite3_bind_text(statement, 5, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 6, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_text(statement, 7, record->StartTradingDay, sizeof(record->StartTradingDay), nullptr);
+}
+void SqliteDB::SetStatementForMdSubscribePrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const DateType& StartTradingDay)
+{
+	sqlite3_bind_text(statement, 1, ExchangeID, sizeof(ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 2, InstrumentID, sizeof(InstrumentID), nullptr);
+	sqlite3_bind_text(statement, 3, StartTradingDay, sizeof(StartTradingDay), nullptr);
+}
+void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<MdSubscribe*>& records)
+{
+	MdSubscribe* record = MdSubscribe::Allocate();
+	Strcpy(record->ExchangeID, (const char*)sqlite3_column_text(statement, 0));
+	Strcpy(record->InstrumentID, (const char*)sqlite3_column_text(statement, 1));
+	Strcpy(record->RealInstrumentID, (const char*)sqlite3_column_text(statement, 2));
+	Strcpy(record->ProductID, (const char*)sqlite3_column_text(statement, 3));
+	record->ProductClass = ProductClassType(sqlite3_column_int(statement, 4));
+	Strcpy(record->StartTradingDay, (const char*)sqlite3_column_text(statement, 5));
+	Strcpy(record->EndTradingDay, (const char*)sqlite3_column_text(statement, 6));
+	records.push_back(record);
+}
+void SqliteDB::SetStatementForMdUserRecord(sqlite3_stmt* statement, MdUser* record)
+{
+	sqlite3_bind_text(statement, 1, record->MdUserID, sizeof(record->MdUserID), nullptr);
+	sqlite3_bind_text(statement, 2, record->MdUserName, sizeof(record->MdUserName), nullptr);
+	sqlite3_bind_text(statement, 3, record->Password, sizeof(record->Password), nullptr);
+}
+void SqliteDB::SetStatementForMdUserRecordUpdate(sqlite3_stmt* statement, MdUser* record)
+{
+	sqlite3_bind_text(statement, 1, record->MdUserName, sizeof(record->MdUserName), nullptr);
+	sqlite3_bind_text(statement, 2, record->Password, sizeof(record->Password), nullptr);
+	sqlite3_bind_text(statement, 3, record->MdUserID, sizeof(record->MdUserID), nullptr);
+}
+void SqliteDB::SetStatementForMdUserPrimaryKey(sqlite3_stmt* statement, const UserIDType& MdUserID)
+{
+	sqlite3_bind_text(statement, 1, MdUserID, sizeof(MdUserID), nullptr);
+}
+void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<MdUser*>& records)
+{
+	MdUser* record = MdUser::Allocate();
+	Strcpy(record->MdUserID, (const char*)sqlite3_column_text(statement, 0));
+	Strcpy(record->MdUserName, (const char*)sqlite3_column_text(statement, 1));
+	Strcpy(record->Password, (const char*)sqlite3_column_text(statement, 2));
+	records.push_back(record);
+}
+void SqliteDB::SetStatementForMdUserLoginSessionRecord(sqlite3_stmt* statement, MdUserLoginSession* record)
+{
+	sqlite3_bind_text(statement, 1, record->MdUserID, sizeof(record->MdUserID), nullptr);
+	sqlite3_bind_int64(statement, 2, record->SessionID);
+	sqlite3_bind_text(statement, 3, record->IPAddress, sizeof(record->IPAddress), nullptr);
+}
+void SqliteDB::SetStatementForMdUserLoginSessionRecordUpdate(sqlite3_stmt* statement, MdUserLoginSession* record)
+{
+	sqlite3_bind_text(statement, 1, record->MdUserID, sizeof(record->MdUserID), nullptr);
+	sqlite3_bind_text(statement, 2, record->IPAddress, sizeof(record->IPAddress), nullptr);
+	sqlite3_bind_int64(statement, 3, record->SessionID);
+}
+void SqliteDB::SetStatementForMdUserLoginSessionPrimaryKey(sqlite3_stmt* statement, const SessionIDType& SessionID)
+{
+	sqlite3_bind_int64(statement, 1, SessionID);
+}
+void SqliteDB::SetStatementForMdUserLoginSessionIndexMdUserID(sqlite3_stmt* statement, MdUserLoginSession* record)
+{
+	sqlite3_bind_text(statement, 1, record->MdUserID, sizeof(record->MdUserID), nullptr);
+}
+void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<MdUserLoginSession*>& records)
+{
+	MdUserLoginSession* record = MdUserLoginSession::Allocate();
+	Strcpy(record->MdUserID, (const char*)sqlite3_column_text(statement, 0));
+	record->SessionID = sqlite3_column_int64(statement, 1);
+	Strcpy(record->IPAddress, (const char*)sqlite3_column_text(statement, 2));
 	records.push_back(record);
 }
 

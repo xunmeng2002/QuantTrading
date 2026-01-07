@@ -354,129 +354,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="DepthMarketData" 				id="0x000D" desc="深度行情">
-		<items>
-			<item name="TradingDay"/>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="UpdateTs"/>
-			<item name="LastPrice"/>
-			<item name="PreSettlementPrice"/>
-			<item name="PreClosePrice"/>
-			<item name="PreOpenInterest"/>
-			<item name="OpenPrice"/>
-			<item name="HighestPrice"/>
-			<item name="LowestPrice"/>
-			<item name="ClosePrice"/>
-			<item name="CurrVolume"/>
-			<item name="Volume"/>
-			<item name="CurrTurnover"/>
-			<item name="Turnover"/>
-			<item name="OpenInterest"/>
-			<item name="SettlementPrice"/>
-			<item name="UpperLimitPrice"/>
-			<item name="LowerLimitPrice"/>
-			<item name="AveragePrice"/>
-			<item name="AskPrice1"/>
-			<item name="AskPrice2"/>
-			<item name="AskPrice3"/>
-			<item name="AskPrice4"/>
-			<item name="AskPrice5"/>
-			<item name="AskPrice6"/>
-			<item name="AskPrice7"/>
-			<item name="AskPrice8"/>
-			<item name="AskPrice9"/>
-			<item name="AskPrice10"/>
-			<item name="AskVolume1"/>
-			<item name="AskVolume2"/>
-			<item name="AskVolume3"/>
-			<item name="AskVolume4"/>
-			<item name="AskVolume5"/>
-			<item name="AskVolume6"/>
-			<item name="AskVolume7"/>
-			<item name="AskVolume8"/>
-			<item name="AskVolume9"/>
-			<item name="AskVolume10"/>
-			<item name="BidPrice1"/>
-			<item name="BidPrice2"/>
-			<item name="BidPrice3"/>
-			<item name="BidPrice4"/>
-			<item name="BidPrice5"/>
-			<item name="BidPrice6"/>
-			<item name="BidPrice7"/>
-			<item name="BidPrice8"/>
-			<item name="BidPrice9"/>
-			<item name="BidPrice10"/>
-			<item name="BidVolume1"/>
-			<item name="BidVolume2"/>
-			<item name="BidVolume3"/>
-			<item name="BidVolume4"/>
-			<item name="BidVolume5"/>
-			<item name="BidVolume6"/>
-			<item name="BidVolume7"/>
-			<item name="BidVolume8"/>
-			<item name="BidVolume9"/>
-			<item name="BidVolume10"/>
-		</items>
-		<primarykey>
-			<item name="TradingDay"/>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-		</primarykey>
-		<uniquekeys></uniquekeys>
-		<indexes></indexes>
-	</table>
-	<table name="BarMarketData" 				id="0x000E" desc="Bar行情">
-		<items>
-			<item name="TradingDay"/>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="BarPreces"/>
-			<item name="BarPeriod"/>
-			<item name="BarTime"/>
-			<item name="UpdateTs"/>
-			<item name="PreSettlementPrice"/>
-			<item name="PreClosePrice"/>
-			<item name="Open"/>
-			<item name="High"/>
-			<item name="Low"/>
-			<item name="Close"/>
-			<item name="CurrVolume"/>
-			<item name="Volume"/>
-			<item name="CurrTurnover"/>
-			<item name="Turnover"/>
-			<item name="OpenInterest"/>
-		</items>
-		<primarykey>
-			<item name="TradingDay"/>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="BarPreces"/>
-			<item name="BarPeriod"/>
-			<item name="BarTime"/>
-		</primarykey>
-		<uniquekeys></uniquekeys>
-		<indexes></indexes>
-	</table>
-	<table name="MdSubscribe" 					id="0x000F" desc="行情订阅">
-		<items>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="RealInstrumentID"/>
-			<item name="ProductID"/>
-			<item name="ProductClass"/>
-			<item name="StartTradingDay"/>
-			<item name="EndTradingDay"/>
-		</items>
-		<primarykey>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="StartTradingDay"/>
-		</primarykey>
-		<uniquekeys></uniquekeys>
-		<indexes></indexes>
-	</table>
-
+	
 	<table name="SEBroker" 						id="0x1001" desc="模拟交易经纪商">
 		<items>
 			<item name="BrokerID"/>
@@ -593,8 +471,7 @@
 			</index>
 		</indexes>
 	</table>
-	
-	<table name="SEBrokerLoginSession" 			id="0x1201" desc="模拟交易经纪商登录会话" session="true">
+	<table name="SEBrokerLoginSession" 			desc="模拟交易经纪商登录会话" session="true">
 		<items>
 			<item name="BrokerID"/>
 			<item name="SessionID"/>
@@ -608,6 +485,158 @@
 		<indexes>
 			<index name="BrokerID">
 				<item name="BrokerID"/>
+			</index>
+		</indexes>
+	</table>
+	
+	<table name="DepthMarketData" 				id="0x2001" desc="深度行情">
+		<items>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="UpdateTs"/>
+			<item name="LastPrice"/>
+			<item name="PreSettlementPrice"/>
+			<item name="PreClosePrice"/>
+			<item name="PreOpenInterest"/>
+			<item name="OpenPrice"/>
+			<item name="HighestPrice"/>
+			<item name="LowestPrice"/>
+			<item name="ClosePrice"/>
+			<item name="CurrVolume"/>
+			<item name="Volume"/>
+			<item name="CurrTurnover"/>
+			<item name="Turnover"/>
+			<item name="OpenInterest"/>
+			<item name="SettlementPrice"/>
+			<item name="UpperLimitPrice"/>
+			<item name="LowerLimitPrice"/>
+			<item name="AveragePrice"/>
+			<item name="AskPrice1"/>
+			<item name="AskPrice2"/>
+			<item name="AskPrice3"/>
+			<item name="AskPrice4"/>
+			<item name="AskPrice5"/>
+			<item name="AskPrice6"/>
+			<item name="AskPrice7"/>
+			<item name="AskPrice8"/>
+			<item name="AskPrice9"/>
+			<item name="AskPrice10"/>
+			<item name="AskVolume1"/>
+			<item name="AskVolume2"/>
+			<item name="AskVolume3"/>
+			<item name="AskVolume4"/>
+			<item name="AskVolume5"/>
+			<item name="AskVolume6"/>
+			<item name="AskVolume7"/>
+			<item name="AskVolume8"/>
+			<item name="AskVolume9"/>
+			<item name="AskVolume10"/>
+			<item name="BidPrice1"/>
+			<item name="BidPrice2"/>
+			<item name="BidPrice3"/>
+			<item name="BidPrice4"/>
+			<item name="BidPrice5"/>
+			<item name="BidPrice6"/>
+			<item name="BidPrice7"/>
+			<item name="BidPrice8"/>
+			<item name="BidPrice9"/>
+			<item name="BidPrice10"/>
+			<item name="BidVolume1"/>
+			<item name="BidVolume2"/>
+			<item name="BidVolume3"/>
+			<item name="BidVolume4"/>
+			<item name="BidVolume5"/>
+			<item name="BidVolume6"/>
+			<item name="BidVolume7"/>
+			<item name="BidVolume8"/>
+			<item name="BidVolume9"/>
+			<item name="BidVolume10"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="BarMarketData" 				desc="Bar行情">
+		<items>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="BarPreces"/>
+			<item name="BarPeriod"/>
+			<item name="BarTime"/>
+			<item name="UpdateTs"/>
+			<item name="PreSettlementPrice"/>
+			<item name="PreClosePrice"/>
+			<item name="Open"/>
+			<item name="High"/>
+			<item name="Low"/>
+			<item name="Close"/>
+			<item name="CurrVolume"/>
+			<item name="Volume"/>
+			<item name="CurrTurnover"/>
+			<item name="Turnover"/>
+			<item name="OpenInterest"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="BarPreces"/>
+			<item name="BarPeriod"/>
+			<item name="BarTime"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="MdSubscribe" 					desc="行情订阅">
+		<items>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="RealInstrumentID"/>
+			<item name="ProductID"/>
+			<item name="ProductClass"/>
+			<item name="StartTradingDay"/>
+			<item name="EndTradingDay"/>
+		</items>
+		<primarykey>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="StartTradingDay"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="MdUser" 						desc="账户">
+		<items>
+			<item name="MdUserID"/>
+			<item name="MdUserName"/>
+			<item name="Password"/>
+		</items>
+		<primarykey>
+			<item name="MdUserID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="MdUserLoginSession" 			desc="行情用户登录会话" session="true">
+		<items>
+			<item name="MdUserID"/>
+			<item name="SessionID"/>
+			<item name="IPAddress"/>
+		</items>
+		<primarykey>
+			<item name="SessionID"/>
+		</primarykey>
+		<uniquekeys>
+		</uniquekeys>
+		<indexes>
+			<index name="MdUserID">
+				<item name="MdUserID"/>
 			</index>
 		</indexes>
 	</table>

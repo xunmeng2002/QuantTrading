@@ -68,4 +68,60 @@ namespace mdb
 	{
 		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<char>()((char)record->BarPreces) + std::hash<int>()(record->BarPeriod) + std::hash<long long>()(record->BarTime);
 	}
+	bool MdSubscribeEqualForMdSubscribePrimaryKey::operator()(const MdSubscribe* const left, const MdSubscribe* const right) const
+	{
+		return strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0 && strcmp(left->StartTradingDay, right->StartTradingDay) == 0;
+	}
+	bool MdSubscribeLessForMdSubscribePrimaryKey::operator()(const MdSubscribe* const left, const MdSubscribe* const right) const
+	{
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
+			return true;
+		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
+			return false;
+		if (strcmp(left->StartTradingDay, right->StartTradingDay) < 0)
+			return true;
+		else if (strcmp(left->StartTradingDay, right->StartTradingDay) > 0)
+			return false;
+		return false;
+	}
+	size_t MdSubscribeHashForMdSubscribePrimaryKey::operator()(const MdSubscribe* const record) const
+	{
+		return std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<string>()(record->StartTradingDay);
+	}
+	bool MdUserEqualForMdUserPrimaryKey::operator()(const MdUser* const left, const MdUser* const right) const
+	{
+		return strcmp(left->MdUserID, right->MdUserID) == 0;
+	}
+	bool MdUserLessForMdUserPrimaryKey::operator()(const MdUser* const left, const MdUser* const right) const
+	{
+		if (strcmp(left->MdUserID, right->MdUserID) < 0)
+			return true;
+		else if (strcmp(left->MdUserID, right->MdUserID) > 0)
+			return false;
+		return false;
+	}
+	size_t MdUserHashForMdUserPrimaryKey::operator()(const MdUser* const record) const
+	{
+		return std::hash<string>()(record->MdUserID);
+	}
+	bool MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	{
+		return left->SessionID == right->SessionID;
+	}
+	bool MdUserLoginSessionLessForMdUserLoginSessionPrimaryKey::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	{
+		if (left->SessionID < right->SessionID)
+			return true;
+		else if (left->SessionID > right->SessionID)
+			return false;
+		return false;
+	}
+	size_t MdUserLoginSessionHashForMdUserLoginSessionPrimaryKey::operator()(const MdUserLoginSession* const record) const
+	{
+		return std::hash<long long>()(record->SessionID);
+	}
 }

@@ -39,15 +39,6 @@ namespace mdb
 			mdb->t_Product->Insert(record);
 		}
 	}
-	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
-	{
-		list<DepthMarketData*> records;
-		db->SelectDepthMarketData(records);
-		for (auto record : records)
-		{
-			mdb->t_DepthMarketData->Insert(record);
-		}
-	}
 	void InitMdbFromDB::LoadSEBrokerTable(Mdb* mdb, DB* db)
 	{
 		list<SEBroker*> records;
@@ -91,6 +82,15 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_SEBrokerLoginSession->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
+	{
+		list<DepthMarketData*> records;
+		db->SelectDepthMarketData(records);
+		for (auto record : records)
+		{
+			mdb->t_DepthMarketData->Insert(record);
 		}
 	}
 }

@@ -22,13 +22,15 @@ namespace mdb
 		static void LoadPositionDetailTable(Mdb* mdb, DB* db);
 		static void LoadOrderTable(Mdb* mdb, DB* db);
 		static void LoadTradeTable(Mdb* mdb, DB* db);
-		static void LoadDepthMarketDataTable(Mdb* mdb, DB* db);
-		static void LoadBarMarketDataTable(Mdb* mdb, DB* db);
-		static void LoadMdSubscribeTable(Mdb* mdb, DB* db);
 		static void LoadSEBrokerTable(Mdb* mdb, DB* db);
 		static void LoadSEInstrumentTable(Mdb* mdb, DB* db);
 		static void LoadSEOrderTable(Mdb* mdb, DB* db);
 		static void LoadSETradeTable(Mdb* mdb, DB* db);
 		static void LoadSEBrokerLoginSessionTable(Mdb* mdb, DB* db);
+		static void LoadDepthMarketDataTable(Mdb* mdb, DB* db);
+		static void LoadBarMarketDataTable(Mdb* mdb, DB* db);
+		static void LoadMdSubscribeTable(Mdb* mdb, DB* db);
+		static void LoadMdUserTable(Mdb* mdb, DB* db);
+		static void LoadMdUserLoginSessionTable(Mdb* mdb, DB* db);
 	};
 }

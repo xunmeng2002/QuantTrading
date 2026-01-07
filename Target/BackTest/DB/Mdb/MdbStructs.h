@@ -471,7 +471,7 @@ namespace mdb
 	class DepthMarketData
 	{
 	public:
-		static constexpr unsigned int TableID = 0x000D;
+		static constexpr unsigned int TableID = 0x2001;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
@@ -604,7 +604,7 @@ namespace mdb
 	class BarMarketData
 	{
 	public:
-		static constexpr unsigned int TableID = 0x000E;
+		static constexpr unsigned int TableID = 0x2002;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
@@ -651,7 +651,7 @@ namespace mdb
 	class MdSubscribe
 	{
 	public:
-		static constexpr unsigned int TableID = 0x000F;
+		static constexpr unsigned int TableID = 0x2003;
 		//交易所代码
 		ExchangeIDType ExchangeID;
 		//合约代码

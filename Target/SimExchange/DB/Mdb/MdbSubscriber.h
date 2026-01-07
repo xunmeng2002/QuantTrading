@@ -33,12 +33,6 @@ public:
 	virtual void OnProductUpdate(mdb::Product* record) {}
 	virtual void OnProductTruncate() {}
 	
-	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) {}
-	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) {}
-	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) {}
-	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) {}
-	virtual void OnDepthMarketDataTruncate() {}
-	
 	virtual void OnSEBrokerInsert(mdb::SEBroker* record) {}
 	virtual void OnSEBrokerBatchInsert(std::list<mdb::SEBroker*>* records) {}
 	virtual void OnSEBrokerErase(mdb::SEBroker* record) {}
@@ -72,6 +66,12 @@ public:
 	virtual void OnSEBrokerLoginSessionEraseByBrokerIDIndex(mdb::SEBrokerLoginSession* record) {}
 	virtual void OnSEBrokerLoginSessionUpdate(mdb::SEBrokerLoginSession* record) {}
 	virtual void OnSEBrokerLoginSessionTruncate() {}
+	
+	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) {}
+	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataTruncate() {}
 	
 
 public:

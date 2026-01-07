@@ -30,4 +30,31 @@ namespace mdb
 			mdb->t_BarMarketData->Insert(record);
 		}
 	}
+	void InitMdbFromDB::LoadMdSubscribeTable(Mdb* mdb, DB* db)
+	{
+		list<MdSubscribe*> records;
+		db->SelectMdSubscribe(records);
+		for (auto record : records)
+		{
+			mdb->t_MdSubscribe->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadMdUserTable(Mdb* mdb, DB* db)
+	{
+		list<MdUser*> records;
+		db->SelectMdUser(records);
+		for (auto record : records)
+		{
+			mdb->t_MdUser->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadMdUserLoginSessionTable(Mdb* mdb, DB* db)
+	{
+		list<MdUserLoginSession*> records;
+		db->SelectMdUserLoginSession(records);
+		for (auto record : records)
+		{
+			mdb->t_MdUserLoginSession->Insert(record);
+		}
+	}
 }

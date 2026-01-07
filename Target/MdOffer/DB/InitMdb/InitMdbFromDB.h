@@ -12,5 +12,8 @@ namespace mdb
 
 		static void LoadDepthMarketDataTable(Mdb* mdb, DB* db);
 		static void LoadBarMarketDataTable(Mdb* mdb, DB* db);
+		static void LoadMdSubscribeTable(Mdb* mdb, DB* db);
+		static void LoadMdUserTable(Mdb* mdb, DB* db);
+		static void LoadMdUserLoginSessionTable(Mdb* mdb, DB* db);
 	};
 }

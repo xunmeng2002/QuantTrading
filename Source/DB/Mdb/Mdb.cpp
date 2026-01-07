@@ -17,14 +17,16 @@ namespace mdb
 		t_PositionDetail = new PositionDetailTable(this);
 		t_Order = new OrderTable(this);
 		t_Trade = new TradeTable(this);
-		t_DepthMarketData = new DepthMarketDataTable(this);
-		t_BarMarketData = new BarMarketDataTable(this);
-		t_MdSubscribe = new MdSubscribeTable(this);
 		t_SEBroker = new SEBrokerTable(this);
 		t_SEInstrument = new SEInstrumentTable(this);
 		t_SEOrder = new SEOrderTable(this);
 		t_SETrade = new SETradeTable(this);
 		t_SEBrokerLoginSession = new SEBrokerLoginSessionTable(this);
+		t_DepthMarketData = new DepthMarketDataTable(this);
+		t_BarMarketData = new BarMarketDataTable(this);
+		t_MdSubscribe = new MdSubscribeTable(this);
+		t_MdUser = new MdUserTable(this);
+		t_MdUserLoginSession = new MdUserLoginSessionTable(this);
 	}
 	void Mdb::Subscribe(MdbSubscriber* mdbSubscriber)
 	{
@@ -41,14 +43,16 @@ namespace mdb
 		t_PositionDetail->Subscribe(mdbSubscriber);
 		t_Order->Subscribe(mdbSubscriber);
 		t_Trade->Subscribe(mdbSubscriber);
-		t_DepthMarketData->Subscribe(mdbSubscriber);
-		t_BarMarketData->Subscribe(mdbSubscriber);
-		t_MdSubscribe->Subscribe(mdbSubscriber);
 		t_SEBroker->Subscribe(mdbSubscriber);
 		t_SEInstrument->Subscribe(mdbSubscriber);
 		t_SEOrder->Subscribe(mdbSubscriber);
 		t_SETrade->Subscribe(mdbSubscriber);
 		t_SEBrokerLoginSession->Subscribe(mdbSubscriber);
+		t_DepthMarketData->Subscribe(mdbSubscriber);
+		t_BarMarketData->Subscribe(mdbSubscriber);
+		t_MdSubscribe->Subscribe(mdbSubscriber);
+		t_MdUser->Subscribe(mdbSubscriber);
+		t_MdUserLoginSession->Subscribe(mdbSubscriber);
 	}
 	void Mdb::UnSubscribe()
 	{
@@ -64,14 +68,16 @@ namespace mdb
 		t_PositionDetail->UnSubscribe();
 		t_Order->UnSubscribe();
 		t_Trade->UnSubscribe();
-		t_DepthMarketData->UnSubscribe();
-		t_BarMarketData->UnSubscribe();
-		t_MdSubscribe->UnSubscribe();
 		t_SEBroker->UnSubscribe();
 		t_SEInstrument->UnSubscribe();
 		t_SEOrder->UnSubscribe();
 		t_SETrade->UnSubscribe();
 		t_SEBrokerLoginSession->UnSubscribe();
+		t_DepthMarketData->UnSubscribe();
+		t_BarMarketData->UnSubscribe();
+		t_MdSubscribe->UnSubscribe();
+		t_MdUser->UnSubscribe();
+		t_MdUserLoginSession->UnSubscribe();
 	}
 	void Mdb::InitDB()
 	{
@@ -87,14 +93,16 @@ namespace mdb
 		t_PositionDetail->InitDB();
 		t_Order->InitDB();
 		t_Trade->InitDB();
-		t_DepthMarketData->InitDB();
-		t_BarMarketData->InitDB();
-		t_MdSubscribe->InitDB();
 		t_SEBroker->InitDB();
 		t_SEInstrument->InitDB();
 		t_SEOrder->InitDB();
 		t_SETrade->InitDB();
 		t_SEBrokerLoginSession->InitDB();
+		t_DepthMarketData->InitDB();
+		t_BarMarketData->InitDB();
+		t_MdSubscribe->InitDB();
+		t_MdUser->InitDB();
+		t_MdUserLoginSession->InitDB();
 	}
 	void Mdb::SetInitStatus(bool initStatus)
 	{
@@ -110,14 +118,16 @@ namespace mdb
 		t_PositionDetail->m_DBInited = initStatus;
 		t_Order->m_DBInited = initStatus;
 		t_Trade->m_DBInited = initStatus;
-		t_DepthMarketData->m_DBInited = initStatus;
-		t_BarMarketData->m_DBInited = initStatus;
-		t_MdSubscribe->m_DBInited = initStatus;
 		t_SEBroker->m_DBInited = initStatus;
 		t_SEInstrument->m_DBInited = initStatus;
 		t_SEOrder->m_DBInited = initStatus;
 		t_SETrade->m_DBInited = initStatus;
 		t_SEBrokerLoginSession->m_DBInited = initStatus;
+		t_DepthMarketData->m_DBInited = initStatus;
+		t_BarMarketData->m_DBInited = initStatus;
+		t_MdSubscribe->m_DBInited = initStatus;
+		t_MdUser->m_DBInited = initStatus;
+		t_MdUserLoginSession->m_DBInited = initStatus;
 	}
 	void Mdb::Dump(const char* dir)
 	{
@@ -133,14 +143,16 @@ namespace mdb
 		t_PositionDetail->Dump(dir);
 		t_Order->Dump(dir);
 		t_Trade->Dump(dir);
-		t_DepthMarketData->Dump(dir);
-		t_BarMarketData->Dump(dir);
-		t_MdSubscribe->Dump(dir);
 		t_SEBroker->Dump(dir);
 		t_SEInstrument->Dump(dir);
 		t_SEOrder->Dump(dir);
 		t_SETrade->Dump(dir);
 		t_SEBrokerLoginSession->Dump(dir);
+		t_DepthMarketData->Dump(dir);
+		t_BarMarketData->Dump(dir);
+		t_MdSubscribe->Dump(dir);
+		t_MdUser->Dump(dir);
+		t_MdUserLoginSession->Dump(dir);
 	}
 	void Mdb::CreateTables()
 	{
@@ -174,14 +186,16 @@ namespace mdb
 		t_PositionDetail->TruncateTables();
 		t_Order->TruncateTables();
 		t_Trade->TruncateTables();
-		t_DepthMarketData->TruncateTables();
-		t_BarMarketData->TruncateTables();
-		t_MdSubscribe->TruncateTables();
 		t_SEBroker->TruncateTables();
 		t_SEInstrument->TruncateTables();
 		t_SEOrder->TruncateTables();
 		t_SETrade->TruncateTables();
 		t_SEBrokerLoginSession->TruncateTables();
+		t_DepthMarketData->TruncateTables();
+		t_BarMarketData->TruncateTables();
+		t_MdSubscribe->TruncateTables();
+		t_MdUser->TruncateTables();
+		t_MdUserLoginSession->TruncateTables();
 	}
 	
 	void Mdb::OnDBConnected()
@@ -202,13 +216,15 @@ namespace mdb
 		t_PositionDetail->m_DBInited = false;
 		t_Order->m_DBInited = false;
 		t_Trade->m_DBInited = false;
-		t_DepthMarketData->m_DBInited = false;
-		t_BarMarketData->m_DBInited = false;
-		t_MdSubscribe->m_DBInited = false;
 		t_SEBroker->m_DBInited = false;
 		t_SEInstrument->m_DBInited = false;
 		t_SEOrder->m_DBInited = false;
 		t_SETrade->m_DBInited = false;
 		t_SEBrokerLoginSession->m_DBInited = false;
+		t_DepthMarketData->m_DBInited = false;
+		t_BarMarketData->m_DBInited = false;
+		t_MdSubscribe->m_DBInited = false;
+		t_MdUser->m_DBInited = false;
+		t_MdUserLoginSession->m_DBInited = false;
 	}
 }

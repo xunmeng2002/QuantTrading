@@ -27,6 +27,25 @@ public:
 	virtual void OnBarMarketDataUpdate(mdb::BarMarketData* record) {}
 	virtual void OnBarMarketDataTruncate() {}
 	
+	virtual void OnMdSubscribeInsert(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeBatchInsert(std::list<mdb::MdSubscribe*>* records) {}
+	virtual void OnMdSubscribeErase(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeUpdate(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeTruncate() {}
+	
+	virtual void OnMdUserInsert(mdb::MdUser* record) {}
+	virtual void OnMdUserBatchInsert(std::list<mdb::MdUser*>* records) {}
+	virtual void OnMdUserErase(mdb::MdUser* record) {}
+	virtual void OnMdUserUpdate(mdb::MdUser* record) {}
+	virtual void OnMdUserTruncate() {}
+	
+	virtual void OnMdUserLoginSessionInsert(mdb::MdUserLoginSession* record) {}
+	virtual void OnMdUserLoginSessionBatchInsert(std::list<mdb::MdUserLoginSession*>* records) {}
+	virtual void OnMdUserLoginSessionErase(mdb::MdUserLoginSession* record) {}
+	virtual void OnMdUserLoginSessionEraseByMdUserIDIndex(mdb::MdUserLoginSession* record) {}
+	virtual void OnMdUserLoginSessionUpdate(mdb::MdUserLoginSession* record) {}
+	virtual void OnMdUserLoginSessionTruncate() {}
+	
 
 public:
 	std::atomic<bool> m_Connected;

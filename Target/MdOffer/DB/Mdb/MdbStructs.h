@@ -6,7 +6,7 @@ namespace mdb
 	class DepthMarketData
 	{
 	public:
-		static constexpr unsigned int TableID = 0x000D;
+		static constexpr unsigned int TableID = 0x2001;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
@@ -139,7 +139,7 @@ namespace mdb
 	class BarMarketData
 	{
 	public:
-		static constexpr unsigned int TableID = 0x000E;
+		static constexpr unsigned int TableID = 0x2002;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
@@ -183,9 +183,71 @@ namespace mdb
 		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 	};
+	class MdSubscribe
+	{
+	public:
+		static constexpr unsigned int TableID = 0x2003;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//合约代码
+		InstrumentIDType InstrumentID;
+		//真实合约代码
+		InstrumentIDType RealInstrumentID;
+		//品种代码
+		ProductIDType ProductID;
+		//品种类型
+		ProductClassType ProductClass;
+		//开始交易日
+		DateType StartTradingDay;
+		//结束交易日
+		DateType EndTradingDay;
+		
+		static MdSubscribe* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
+	class MdUser
+	{
+	public:
+		static constexpr unsigned int TableID = 0x2004;
+		//行情用户代码
+		UserIDType MdUserID;
+		//行情用户名称
+		UserNameType MdUserName;
+		//密码
+		PasswordType Password;
+		
+		static MdUser* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
+	class MdUserLoginSession
+	{
+	public:
+		static constexpr unsigned int TableID = 0x2005;
+		//行情用户代码
+		UserIDType MdUserID;
+		//会话编号
+		SessionIDType SessionID;
+		//IP地址
+		IPAddressType IPAddress;
+		
+		static MdUserLoginSession* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
 
 	extern thread_local DepthMarketData t_CompareDepthMarketData;
 	extern thread_local BarMarketData t_CompareBarMarketData;
+	extern thread_local MdSubscribe t_CompareMdSubscribe;
+	extern thread_local MdUser t_CompareMdUser;
+	extern thread_local MdUserLoginSession t_CompareMdUserLoginSession;
 
 }
 

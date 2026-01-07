@@ -248,6 +248,95 @@ CREATE TABLE IF NOT EXISTS t_Trade(
 );  -- '成交'
 
 
+CREATE TABLE IF NOT EXISTS t_SEBroker(
+  BrokerID int, 
+  BrokerName varchar, 
+  Password varchar, 
+  PRIMARY KEY(BrokerID)
+);  -- '模拟交易经纪商'
+
+
+CREATE TABLE IF NOT EXISTS t_SEInstrument(
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ExchangeInstID varchar, 
+  InstrumentName varchar, 
+  ProductID varchar, 
+  ProductClass int, 
+  MaxMarketOrderVolume bigint, 
+  MinMarketOrderVolume bigint, 
+  MaxLimitOrderVolume bigint, 
+  MinLimitOrderVolume bigint, 
+  VolumeMultiple int, 
+  PriceTick double, 
+  UpperLimitPrice double, 
+  LowerLimitPrice double, 
+  SessionName varchar, 
+  PRIMARY KEY(ExchangeID, InstrumentID)
+);  -- '模拟交易合约'
+  CREATE INDEX SEInstrumentExchangeID ON t_SEInstrument(ExchangeID);
+
+
+CREATE TABLE IF NOT EXISTS t_SEOrder(
+  TradingDay varchar, 
+  BrokerID int, 
+  AccountID varchar, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  OrderID int, 
+  Direction int, 
+  OffsetFlag int, 
+  OrderPriceType int, 
+  Price double, 
+  Volume bigint, 
+  VolumeTotal bigint, 
+  VolumeTraded bigint, 
+  VolumeMultiple int, 
+  OrderStatus int, 
+  OrderDate varchar, 
+  OrderTime varchar, 
+  CancelDate varchar, 
+  CancelTime varchar, 
+  SessionID bigint, 
+  ClientOrderID int, 
+  PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
+);  -- '模拟交易委托'
+  CREATE INDEX SEOrderAccountID ON t_SEOrder(TradingDay, AccountID);
+
+
+CREATE TABLE IF NOT EXISTS t_SETrade(
+  TradingDay varchar, 
+  BrokerID int, 
+  AccountID varchar, 
+  ExchangeID varchar, 
+  InstrumentID varchar, 
+  ProductClass int, 
+  OrderID int, 
+  TradeID varchar, 
+  Direction int, 
+  OffsetFlag int, 
+  Price double, 
+  Volume bigint, 
+  VolumeMultiple int, 
+  TradeAmount double, 
+  Commission double, 
+  TradeDate varchar, 
+  TradeTime varchar, 
+  PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
+);  -- '模拟交易成交'
+  CREATE INDEX SETradeAccountID ON t_SETrade(TradingDay, AccountID);
+
+
+CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(
+  BrokerID int, 
+  SessionID bigint, 
+  IPAddress varchar, 
+  PRIMARY KEY(SessionID)
+);  -- '模拟交易经纪商登录会话'
+  CREATE INDEX SEBrokerLoginSessionBrokerID ON t_SEBrokerLoginSession(BrokerID);
+
+
 CREATE TABLE IF NOT EXISTS t_DepthMarketData(
   TradingDay varchar, 
   ExchangeID varchar, 
@@ -349,92 +438,20 @@ CREATE TABLE IF NOT EXISTS t_MdSubscribe(
 );  -- '行情订阅'
 
 
-CREATE TABLE IF NOT EXISTS t_SEBroker(
-  BrokerID int, 
-  BrokerName varchar, 
+CREATE TABLE IF NOT EXISTS t_MdUser(
+  MdUserID varchar, 
+  MdUserName varchar, 
   Password varchar, 
-  PRIMARY KEY(BrokerID)
-);  -- '模拟交易经纪商'
+  PRIMARY KEY(MdUserID)
+);  -- '账户'
 
 
-CREATE TABLE IF NOT EXISTS t_SEInstrument(
-  ExchangeID varchar, 
-  InstrumentID varchar, 
-  ExchangeInstID varchar, 
-  InstrumentName varchar, 
-  ProductID varchar, 
-  ProductClass int, 
-  MaxMarketOrderVolume bigint, 
-  MinMarketOrderVolume bigint, 
-  MaxLimitOrderVolume bigint, 
-  MinLimitOrderVolume bigint, 
-  VolumeMultiple int, 
-  PriceTick double, 
-  UpperLimitPrice double, 
-  LowerLimitPrice double, 
-  SessionName varchar, 
-  PRIMARY KEY(ExchangeID, InstrumentID)
-);  -- '模拟交易合约'
-  CREATE INDEX SEInstrumentExchangeID ON t_SEInstrument(ExchangeID);
-
-
-CREATE TABLE IF NOT EXISTS t_SEOrder(
-  TradingDay varchar, 
-  BrokerID int, 
-  AccountID varchar, 
-  ExchangeID varchar, 
-  InstrumentID varchar, 
-  ProductClass int, 
-  OrderID int, 
-  Direction int, 
-  OffsetFlag int, 
-  OrderPriceType int, 
-  Price double, 
-  Volume bigint, 
-  VolumeTotal bigint, 
-  VolumeTraded bigint, 
-  VolumeMultiple int, 
-  OrderStatus int, 
-  OrderDate varchar, 
-  OrderTime varchar, 
-  CancelDate varchar, 
-  CancelTime varchar, 
-  SessionID bigint, 
-  ClientOrderID int, 
-  PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
-);  -- '模拟交易委托'
-  CREATE INDEX SEOrderAccountID ON t_SEOrder(TradingDay, AccountID);
-
-
-CREATE TABLE IF NOT EXISTS t_SETrade(
-  TradingDay varchar, 
-  BrokerID int, 
-  AccountID varchar, 
-  ExchangeID varchar, 
-  InstrumentID varchar, 
-  ProductClass int, 
-  OrderID int, 
-  TradeID varchar, 
-  Direction int, 
-  OffsetFlag int, 
-  Price double, 
-  Volume bigint, 
-  VolumeMultiple int, 
-  TradeAmount double, 
-  Commission double, 
-  TradeDate varchar, 
-  TradeTime varchar, 
-  PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
-);  -- '模拟交易成交'
-  CREATE INDEX SETradeAccountID ON t_SETrade(TradingDay, AccountID);
-
-
-CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(
-  BrokerID int, 
+CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(
+  MdUserID varchar, 
   SessionID bigint, 
   IPAddress varchar, 
   PRIMARY KEY(SessionID)
-);  -- '模拟交易经纪商登录会话'
-  CREATE INDEX SEBrokerLoginSessionBrokerID ON t_SEBrokerLoginSession(BrokerID);
+);  -- '行情用户登录会话'
+  CREATE INDEX MdUserLoginSessionMdUserID ON t_MdUserLoginSession(MdUserID);
 
 

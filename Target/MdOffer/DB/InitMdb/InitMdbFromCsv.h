@@ -10,5 +10,8 @@ namespace mdb
 	private:
 		static void LoadDepthMarketDataTable(Mdb* mdb, const char* dir);
 		static void LoadBarMarketDataTable(Mdb* mdb, const char* dir);
+		static void LoadMdSubscribeTable(Mdb* mdb, const char* dir);
+		static void LoadMdUserTable(Mdb* mdb, const char* dir);
+		static void LoadMdUserLoginSessionTable(Mdb* mdb, const char* dir);
 	};
 }

@@ -25,6 +25,9 @@ namespace mdb
 	public:
 		DepthMarketDataTable* t_DepthMarketData;
 		BarMarketDataTable* t_BarMarketData;
+		MdSubscribeTable* t_MdSubscribe;
+		MdUserTable* t_MdUser;
+		MdUserLoginSessionTable* t_MdUserLoginSession;
 	private:
 		MdbSubscriber* m_MdbSubscriber;
 	};

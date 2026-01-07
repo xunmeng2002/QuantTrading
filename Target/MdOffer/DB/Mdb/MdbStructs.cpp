@@ -59,8 +59,89 @@ namespace mdb
 		return t_MdbDataStringBuffer;
 	}
 
+	MdSubscribe* MdSubscribe::Allocate()
+	{
+		return ::Allocate<MdSubscribe>();
+	}
+	void MdSubscribe::Free()
+	{
+		::Free<MdSubscribe>(this);
+	}
+	const char* MdSubscribe::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%s,%d,%s,%s",
+			ExchangeID, InstrumentID, RealInstrumentID, ProductID, (int)ProductClass, StartTradingDay, EndTradingDay);
+		return t_MdbDataStringBuffer;
+	}
+	int MdSubscribe::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%s','%s','%s','%d','%s','%s'),",
+			ExchangeID, InstrumentID, RealInstrumentID, ProductID, (int)ProductClass, StartTradingDay, EndTradingDay);
+	}
+	const char* MdSubscribe::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "MdSubscribe:ExchangeID:[%s], InstrumentID:[%s], RealInstrumentID:[%s], ProductID:[%s], ProductClass:[%d], StartTradingDay:[%s], EndTradingDay:[%s]",
+			ExchangeID, InstrumentID, RealInstrumentID, ProductID, (int)ProductClass, StartTradingDay, EndTradingDay);
+		return t_MdbDataStringBuffer;
+	}
+
+	MdUser* MdUser::Allocate()
+	{
+		return ::Allocate<MdUser>();
+	}
+	void MdUser::Free()
+	{
+		::Free<MdUser>(this);
+	}
+	const char* MdUser::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%s",
+			MdUserID, MdUserName, Password);
+		return t_MdbDataStringBuffer;
+	}
+	int MdUser::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%s','%s'),",
+			MdUserID, MdUserName, Password);
+	}
+	const char* MdUser::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "MdUser:MdUserID:[%s], MdUserName:[%s], Password:[%s]",
+			MdUserID, MdUserName, Password);
+		return t_MdbDataStringBuffer;
+	}
+
+	MdUserLoginSession* MdUserLoginSession::Allocate()
+	{
+		return ::Allocate<MdUserLoginSession>();
+	}
+	void MdUserLoginSession::Free()
+	{
+		::Free<MdUserLoginSession>(this);
+	}
+	const char* MdUserLoginSession::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%lld,%s",
+			MdUserID, SessionID, IPAddress);
+		return t_MdbDataStringBuffer;
+	}
+	int MdUserLoginSession::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%lld','%s'),",
+			MdUserID, SessionID, IPAddress);
+	}
+	const char* MdUserLoginSession::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "MdUserLoginSession:MdUserID:[%s], SessionID:[%lld], IPAddress:[%s]",
+			MdUserID, SessionID, IPAddress);
+		return t_MdbDataStringBuffer;
+	}
+
 
 	thread_local DepthMarketData t_CompareDepthMarketData;
 	thread_local BarMarketData t_CompareBarMarketData;
+	thread_local MdSubscribe t_CompareMdSubscribe;
+	thread_local MdUser t_CompareMdUser;
+	thread_local MdUserLoginSession t_CompareMdUserLoginSession;
 
 }

@@ -220,52 +220,6 @@ void DBWriter::OnProductTruncate()
 	AddDBOperate(dbOperate);
 }
 
-void DBWriter::OnDepthMarketDataInsert(mdb::DepthMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Insert;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::BatchInsert;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = records;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnDepthMarketDataErase(mdb::DepthMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Delete;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnDepthMarketDataUpdate(mdb::DepthMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Update;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnDepthMarketDataTruncate()
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Truncate;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = nullptr;
-
-	AddDBOperate(dbOperate);
-}
-
 void DBWriter::OnSEBrokerInsert(mdb::SEBroker* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -536,6 +490,52 @@ void DBWriter::OnSEBrokerLoginSessionTruncate()
 	AddDBOperate(dbOperate);
 }
 
+void DBWriter::OnDepthMarketDataInsert(mdb::DepthMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnDepthMarketDataErase(mdb::DepthMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnDepthMarketDataUpdate(mdb::DepthMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnDepthMarketDataTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
 
 void DBWriter::Run()
 {
@@ -674,9 +674,6 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 	case Product::TableID:
 		m_DB->InsertProduct((Product*)dbOperate->Record);
 		break;
-	case DepthMarketData::TableID:
-		m_DB->InsertDepthMarketData((DepthMarketData*)dbOperate->Record);
-		break;
 	case SEBroker::TableID:
 		m_DB->InsertSEBroker((SEBroker*)dbOperate->Record);
 		break;
@@ -691,6 +688,9 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 		break;
 	case SEBrokerLoginSession::TableID:
 		m_DB->InsertSEBrokerLoginSession((SEBrokerLoginSession*)dbOperate->Record);
+		break;
+	case DepthMarketData::TableID:
+		m_DB->InsertDepthMarketData((DepthMarketData*)dbOperate->Record);
 		break;
 	default:
 		break;
@@ -720,14 +720,6 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 	{
 		auto records = (std::list<Product*>*)dbOperate->Record;
 		m_DB->BatchInsertProduct(records);
-		records->clear();
-		delete records;
-		break;
-	}
-	case DepthMarketData::TableID:
-	{
-		auto records = (std::list<DepthMarketData*>*)dbOperate->Record;
-		m_DB->BatchInsertDepthMarketData(records);
 		records->clear();
 		delete records;
 		break;
@@ -772,6 +764,14 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 		delete records;
 		break;
 	}
+	case DepthMarketData::TableID:
+	{
+		auto records = (std::list<DepthMarketData*>*)dbOperate->Record;
+		m_DB->BatchInsertDepthMarketData(records);
+		records->clear();
+		delete records;
+		break;
+	}
 	default:
 		WriteLog(LogLevel::Error, "Unexpected BatchInsert TableID:0x%X", dbOperate->TableID);
 		break;
@@ -793,10 +793,6 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 		m_DB->DeleteProduct((Product*)dbOperate->Record);
 		((Product*)dbOperate->Record)->Free();
 		break;
-	case DepthMarketData::TableID:
-		m_DB->DeleteDepthMarketData((DepthMarketData*)dbOperate->Record);
-		((DepthMarketData*)dbOperate->Record)->Free();
-		break;
 	case SEBroker::TableID:
 		m_DB->DeleteSEBroker((SEBroker*)dbOperate->Record);
 		((SEBroker*)dbOperate->Record)->Free();
@@ -816,6 +812,10 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 	case SEBrokerLoginSession::TableID:
 		m_DB->DeleteSEBrokerLoginSession((SEBrokerLoginSession*)dbOperate->Record);
 		((SEBrokerLoginSession*)dbOperate->Record)->Free();
+		break;
+	case DepthMarketData::TableID:
+		m_DB->DeleteDepthMarketData((DepthMarketData*)dbOperate->Record);
+		((DepthMarketData*)dbOperate->Record)->Free();
 		break;
 	default:
 		break;
@@ -910,10 +910,6 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		m_DB->UpdateProduct((Product*)dbOperate->Record);
 		((Product*)dbOperate->Record)->Free();
 		break;
-	case DepthMarketData::TableID:
-		m_DB->UpdateDepthMarketData((DepthMarketData*)dbOperate->Record);
-		((DepthMarketData*)dbOperate->Record)->Free();
-		break;
 	case SEBroker::TableID:
 		m_DB->UpdateSEBroker((SEBroker*)dbOperate->Record);
 		((SEBroker*)dbOperate->Record)->Free();
@@ -934,6 +930,10 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		m_DB->UpdateSEBrokerLoginSession((SEBrokerLoginSession*)dbOperate->Record);
 		((SEBrokerLoginSession*)dbOperate->Record)->Free();
 		break;
+	case DepthMarketData::TableID:
+		m_DB->UpdateDepthMarketData((DepthMarketData*)dbOperate->Record);
+		((DepthMarketData*)dbOperate->Record)->Free();
+		break;
 	default:
 		break;
 	}
@@ -952,9 +952,6 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 	case Product::TableID:
 		m_DB->TruncateProduct();
 		break;
-	case DepthMarketData::TableID:
-		m_DB->TruncateDepthMarketData();
-		break;
 	case SEBroker::TableID:
 		m_DB->TruncateSEBroker();
 		break;
@@ -969,6 +966,9 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 		break;
 	case SEBrokerLoginSession::TableID:
 		m_DB->TruncateSEBrokerLoginSession();
+		break;
+	case DepthMarketData::TableID:
+		m_DB->TruncateDepthMarketData();
 		break;
 	default:
 		break;

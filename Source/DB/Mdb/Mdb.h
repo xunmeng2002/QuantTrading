@@ -35,14 +35,16 @@ namespace mdb
 		PositionDetailTable* t_PositionDetail;
 		OrderTable* t_Order;
 		TradeTable* t_Trade;
-		DepthMarketDataTable* t_DepthMarketData;
-		BarMarketDataTable* t_BarMarketData;
-		MdSubscribeTable* t_MdSubscribe;
 		SEBrokerTable* t_SEBroker;
 		SEInstrumentTable* t_SEInstrument;
 		SEOrderTable* t_SEOrder;
 		SETradeTable* t_SETrade;
 		SEBrokerLoginSessionTable* t_SEBrokerLoginSession;
+		DepthMarketDataTable* t_DepthMarketData;
+		BarMarketDataTable* t_BarMarketData;
+		MdSubscribeTable* t_MdSubscribe;
+		MdUserTable* t_MdUser;
+		MdUserLoginSessionTable* t_MdUserLoginSession;
 	private:
 		MdbSubscriber* m_MdbSubscriber;
 	};

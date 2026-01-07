@@ -44,12 +44,6 @@ public:
 	virtual void OnProductUpdate(mdb::Product* record) override;
 	virtual void OnProductTruncate() override;
 	
-	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) override;
-	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) override;
-	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) override;
-	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) override;
-	virtual void OnDepthMarketDataTruncate() override;
-	
 	virtual void OnSEBrokerInsert(mdb::SEBroker* record) override;
 	virtual void OnSEBrokerBatchInsert(std::list<mdb::SEBroker*>* records) override;
 	virtual void OnSEBrokerErase(mdb::SEBroker* record) override;
@@ -83,6 +77,12 @@ public:
 	virtual void OnSEBrokerLoginSessionEraseByBrokerIDIndex(mdb::SEBrokerLoginSession* record) override;
 	virtual void OnSEBrokerLoginSessionUpdate(mdb::SEBrokerLoginSession* record) override;
 	virtual void OnSEBrokerLoginSessionTruncate() override;
+	
+	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) override;
+	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) override;
+	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) override;
+	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) override;
+	virtual void OnDepthMarketDataTruncate() override;
 	
 
 protected:

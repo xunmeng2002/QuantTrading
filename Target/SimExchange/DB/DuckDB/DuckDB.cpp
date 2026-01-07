@@ -31,11 +31,6 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_ProductSelectStatement = nullptr;
 	m_ProductTruncateStatement = nullptr;
 
-	m_DepthMarketDataDeleteStatement = nullptr;
-	m_DepthMarketDataUpdateStatement = nullptr;
-	m_DepthMarketDataSelectStatement = nullptr;
-	m_DepthMarketDataTruncateStatement = nullptr;
-
 	m_SEBrokerDeleteStatement = nullptr;
 	m_SEBrokerUpdateStatement = nullptr;
 	m_SEBrokerSelectStatement = nullptr;
@@ -64,6 +59,11 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_SEBrokerLoginSessionUpdateStatement = nullptr;
 	m_SEBrokerLoginSessionSelectStatement = nullptr;
 	m_SEBrokerLoginSessionTruncateStatement = nullptr;
+
+	m_DepthMarketDataDeleteStatement = nullptr;
+	m_DepthMarketDataUpdateStatement = nullptr;
+	m_DepthMarketDataSelectStatement = nullptr;
+	m_DepthMarketDataTruncateStatement = nullptr;
 
 }
 DuckDB::~DuckDB()
@@ -157,26 +157,6 @@ void DuckDB::DisConnect()
 	{
 		duckdb_destroy_prepare(&m_ProductTruncateStatement);
 		m_ProductTruncateStatement = nullptr;
-	}
-	if (m_DepthMarketDataDeleteStatement != nullptr)
-	{
-		duckdb_destroy_prepare(&m_DepthMarketDataDeleteStatement);
-		m_DepthMarketDataDeleteStatement = nullptr;
-	}
-	if (m_DepthMarketDataUpdateStatement != nullptr)
-	{
-		duckdb_destroy_prepare(&m_DepthMarketDataUpdateStatement);
-		m_DepthMarketDataUpdateStatement = nullptr;
-	}
-	if (m_DepthMarketDataSelectStatement != nullptr)
-	{
-		duckdb_destroy_prepare(&m_DepthMarketDataSelectStatement);
-		m_DepthMarketDataSelectStatement = nullptr;
-	}
-	if (m_DepthMarketDataTruncateStatement != nullptr)
-	{
-		duckdb_destroy_prepare(&m_DepthMarketDataTruncateStatement);
-		m_DepthMarketDataTruncateStatement = nullptr;
 	}
 	if (m_SEBrokerDeleteStatement != nullptr)
 	{
@@ -298,6 +278,26 @@ void DuckDB::DisConnect()
 		duckdb_destroy_prepare(&m_SEBrokerLoginSessionTruncateStatement);
 		m_SEBrokerLoginSessionTruncateStatement = nullptr;
 	}
+	if (m_DepthMarketDataDeleteStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_DepthMarketDataDeleteStatement);
+		m_DepthMarketDataDeleteStatement = nullptr;
+	}
+	if (m_DepthMarketDataUpdateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_DepthMarketDataUpdateStatement);
+		m_DepthMarketDataUpdateStatement = nullptr;
+	}
+	if (m_DepthMarketDataSelectStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_DepthMarketDataSelectStatement);
+		m_DepthMarketDataSelectStatement = nullptr;
+	}
+	if (m_DepthMarketDataTruncateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_DepthMarketDataTruncateStatement);
+		m_DepthMarketDataTruncateStatement = nullptr;
+	}
 }
 void DuckDB::InitDB()
 {
@@ -307,8 +307,6 @@ void DuckDB::InitDB()
 	Exec("Insert Into t_Exchange select * from Init.t_Exchange;");
 	Exec("Delete From t_Product;");
 	Exec("Insert Into t_Product select * from Init.t_Product;");
-	Exec("Delete From t_DepthMarketData;");
-	Exec("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 	Exec("Delete From t_SEBroker;");
 	Exec("Insert Into t_SEBroker select * from Init.t_SEBroker;");
 	Exec("Delete From t_SEInstrument;");
@@ -319,42 +317,44 @@ void DuckDB::InitDB()
 	Exec("Insert Into t_SETrade select * from Init.t_SETrade;");
 	Exec("Delete From t_SEBrokerLoginSession;");
 	Exec("Insert Into t_SEBrokerLoginSession select * from Init.t_SEBrokerLoginSession;");
+	Exec("Delete From t_DepthMarketData;");
+	Exec("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 }
 void DuckDB::CreateTables()
 {
 	CreateTradingDay();
 	CreateExchange();
 	CreateProduct();
-	CreateDepthMarketData();
 	CreateSEBroker();
 	CreateSEInstrument();
 	CreateSEOrder();
 	CreateSETrade();
 	CreateSEBrokerLoginSession();
+	CreateDepthMarketData();
 }
 void DuckDB::DropTables()
 {
 	DropTradingDay();
 	DropExchange();
 	DropProduct();
-	DropDepthMarketData();
 	DropSEBroker();
 	DropSEInstrument();
 	DropSEOrder();
 	DropSETrade();
 	DropSEBrokerLoginSession();
+	DropDepthMarketData();
 }
 void DuckDB::TruncateTables()
 {
 	TruncateTradingDay();
 	TruncateExchange();
 	TruncateProduct();
-	TruncateDepthMarketData();
 	TruncateSEBroker();
 	TruncateSEInstrument();
 	TruncateSEOrder();
 	TruncateSETrade();
 	TruncateSEBrokerLoginSession();
+	TruncateDepthMarketData();
 }
 void DuckDB::TruncateSessionTables()
 {
@@ -964,425 +964,6 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Product*>& records)
 			{
 				CpyDuckdbString(record->SessionName, dataColumn10[row]);
 			}
-			records.push_back(record);
-		}
-	}
-}
-void DuckDB::CreateDepthMarketData()
-{
-	auto start = steady_clock::now();
-	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_DepthMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, UpdateTs bigint, LastPrice double, PreSettlementPrice double, PreClosePrice double, PreOpenInterest double, OpenPrice double, HighestPrice double, LowestPrice double, ClosePrice double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, SettlementPrice double, UpperLimitPrice double, LowerLimitPrice double, AveragePrice double, AskPrice1 double, AskPrice2 double, AskPrice3 double, AskPrice4 double, AskPrice5 double, AskPrice6 double, AskPrice7 double, AskPrice8 double, AskPrice9 double, AskPrice10 double, AskVolume1 bigint, AskVolume2 bigint, AskVolume3 bigint, AskVolume4 bigint, AskVolume5 bigint, AskVolume6 bigint, AskVolume7 bigint, AskVolume8 bigint, AskVolume9 bigint, AskVolume10 bigint, BidPrice1 double, BidPrice2 double, BidPrice3 double, BidPrice4 double, BidPrice5 double, BidPrice6 double, BidPrice7 double, BidPrice8 double, BidPrice9 double, BidPrice10 double, BidVolume1 bigint, BidVolume2 bigint, BidVolume3 bigint, BidVolume4 bigint, BidVolume5 bigint, BidVolume6 bigint, BidVolume7 bigint, BidVolume8 bigint, BidVolume9 bigint, BidVolume10 bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));", &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "CreateDepthMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms", duration);
-}
-void DuckDB::DropDepthMarketData()
-{
-	auto start = steady_clock::now();
-	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_DepthMarketData;", &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "DropDepthMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms", duration);
-}
-void DuckDB::InsertDepthMarketData(DepthMarketData* record)
-{
-	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_DepthMarketData", &appender) != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_DepthMarketData Failed. ErrorMsg:%s", duckdb_appender_error(appender));
-		duckdb_appender_destroy(&appender);
-		return;
-	}
-	AppendForDepthMarketDataRecord(appender, record);
-	duckdb_appender_destroy(&appender);
-}
-void DuckDB::BatchInsertDepthMarketData(std::list<DepthMarketData*>* records)
-{
-	auto start = steady_clock::now();
-	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_DepthMarketData", &appender) != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_DepthMarketData Failed. ErrorMsg:%s", duckdb_appender_error(appender));
-		duckdb_appender_destroy(&appender);
-		return;
-	}
-	for (auto record : *records)
-	{
-		AppendForDepthMarketDataRecord(appender, record);
-	}
-	duckdb_appender_destroy(&appender);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "BatchInsertDepthMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
-}
-void DuckDB::DeleteDepthMarketData(DepthMarketData* record)
-{
-	auto start = steady_clock::now();
-	if (m_DepthMarketDataDeleteStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "delete from t_DepthMarketData where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;", &m_DepthMarketDataDeleteStatement);
-	}
-	SetStatementForDepthMarketDataPrimaryKey(m_DepthMarketDataDeleteStatement, record);
-
-	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_DepthMarketDataDeleteStatement, &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "DeleteDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "DeleteDepthMarketData Spend:%lldms", duration);
-	}
-}
-void DuckDB::UpdateDepthMarketData(DepthMarketData* record)
-{
-	auto start = steady_clock::now();
-	if (m_DepthMarketDataUpdateStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "update t_DepthMarketData set UpdateTs = ?, LastPrice = ?, PreSettlementPrice = ?, PreClosePrice = ?, PreOpenInterest = ?, OpenPrice = ?, HighestPrice = ?, LowestPrice = ?, ClosePrice = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ?, SettlementPrice = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, AveragePrice = ?, AskPrice1 = ?, AskPrice2 = ?, AskPrice3 = ?, AskPrice4 = ?, AskPrice5 = ?, AskPrice6 = ?, AskPrice7 = ?, AskPrice8 = ?, AskPrice9 = ?, AskPrice10 = ?, AskVolume1 = ?, AskVolume2 = ?, AskVolume3 = ?, AskVolume4 = ?, AskVolume5 = ?, AskVolume6 = ?, AskVolume7 = ?, AskVolume8 = ?, AskVolume9 = ?, AskVolume10 = ?, BidPrice1 = ?, BidPrice2 = ?, BidPrice3 = ?, BidPrice4 = ?, BidPrice5 = ?, BidPrice6 = ?, BidPrice7 = ?, BidPrice8 = ?, BidPrice9 = ?, BidPrice10 = ?, BidVolume1 = ?, BidVolume2 = ?, BidVolume3 = ?, BidVolume4 = ?, BidVolume5 = ?, BidVolume6 = ?, BidVolume7 = ?, BidVolume8 = ?, BidVolume9 = ?, BidVolume10 = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;", &m_DepthMarketDataUpdateStatement);
-	}
-	SetStatementForDepthMarketDataRecordUpdate(m_DepthMarketDataUpdateStatement, record);
-	
-	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_DepthMarketDataUpdateStatement, &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "UpdateDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
-	}
-}
-void DuckDB::SelectDepthMarketData(std::list<DepthMarketData*>& records)
-{
-	auto start = steady_clock::now();
-	if (m_DepthMarketDataSelectStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "select * from t_DepthMarketData;", &m_DepthMarketDataSelectStatement);
-	}
-
-	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_DepthMarketDataSelectStatement, &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "SelectDepthMarketData ErrorMsg:%s", duckdb_result_error(&result));
-		duckdb_destroy_result(&result);
-		return;
-	}
-
-	ParseRecord(result, records);
-	duckdb_destroy_result(&result);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "SelectDepthMarketData Spend:%lldms", duration);
-	}
-}
-void DuckDB::TruncateDepthMarketData()
-{
-	auto start = steady_clock::now();
-	if (m_DepthMarketDataTruncateStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "delete from t_DepthMarketData;", &m_DepthMarketDataTruncateStatement);
-	}
-
-	auto rc = duckdb_execute_prepared(m_DepthMarketDataTruncateStatement, nullptr);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "TruncateDepthMarketData failed");
-	}
-	
-	WriteLog(LogLevel::Info, "TruncateDepthMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
-}
-void DuckDB::ParseRecord(duckdb_result& result, std::list<DepthMarketData*>& records)
-{
-	while (true)
-	{
-		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
-		if (dataChunk == nullptr)
-		{
-			break;
-		}
-		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
-		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
-		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
-		duckdb_vector column3 = duckdb_data_chunk_get_vector(dataChunk, 3);
-		duckdb_vector column4 = duckdb_data_chunk_get_vector(dataChunk, 4);
-		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
-		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
-		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
-		duckdb_vector column8 = duckdb_data_chunk_get_vector(dataChunk, 8);
-		duckdb_vector column9 = duckdb_data_chunk_get_vector(dataChunk, 9);
-		duckdb_vector column10 = duckdb_data_chunk_get_vector(dataChunk, 10);
-		duckdb_vector column11 = duckdb_data_chunk_get_vector(dataChunk, 11);
-		duckdb_vector column12 = duckdb_data_chunk_get_vector(dataChunk, 12);
-		duckdb_vector column13 = duckdb_data_chunk_get_vector(dataChunk, 13);
-		duckdb_vector column14 = duckdb_data_chunk_get_vector(dataChunk, 14);
-		duckdb_vector column15 = duckdb_data_chunk_get_vector(dataChunk, 15);
-		duckdb_vector column16 = duckdb_data_chunk_get_vector(dataChunk, 16);
-		duckdb_vector column17 = duckdb_data_chunk_get_vector(dataChunk, 17);
-		duckdb_vector column18 = duckdb_data_chunk_get_vector(dataChunk, 18);
-		duckdb_vector column19 = duckdb_data_chunk_get_vector(dataChunk, 19);
-		duckdb_vector column20 = duckdb_data_chunk_get_vector(dataChunk, 20);
-		duckdb_vector column21 = duckdb_data_chunk_get_vector(dataChunk, 21);
-		duckdb_vector column22 = duckdb_data_chunk_get_vector(dataChunk, 22);
-		duckdb_vector column23 = duckdb_data_chunk_get_vector(dataChunk, 23);
-		duckdb_vector column24 = duckdb_data_chunk_get_vector(dataChunk, 24);
-		duckdb_vector column25 = duckdb_data_chunk_get_vector(dataChunk, 25);
-		duckdb_vector column26 = duckdb_data_chunk_get_vector(dataChunk, 26);
-		duckdb_vector column27 = duckdb_data_chunk_get_vector(dataChunk, 27);
-		duckdb_vector column28 = duckdb_data_chunk_get_vector(dataChunk, 28);
-		duckdb_vector column29 = duckdb_data_chunk_get_vector(dataChunk, 29);
-		duckdb_vector column30 = duckdb_data_chunk_get_vector(dataChunk, 30);
-		duckdb_vector column31 = duckdb_data_chunk_get_vector(dataChunk, 31);
-		duckdb_vector column32 = duckdb_data_chunk_get_vector(dataChunk, 32);
-		duckdb_vector column33 = duckdb_data_chunk_get_vector(dataChunk, 33);
-		duckdb_vector column34 = duckdb_data_chunk_get_vector(dataChunk, 34);
-		duckdb_vector column35 = duckdb_data_chunk_get_vector(dataChunk, 35);
-		duckdb_vector column36 = duckdb_data_chunk_get_vector(dataChunk, 36);
-		duckdb_vector column37 = duckdb_data_chunk_get_vector(dataChunk, 37);
-		duckdb_vector column38 = duckdb_data_chunk_get_vector(dataChunk, 38);
-		duckdb_vector column39 = duckdb_data_chunk_get_vector(dataChunk, 39);
-		duckdb_vector column40 = duckdb_data_chunk_get_vector(dataChunk, 40);
-		duckdb_vector column41 = duckdb_data_chunk_get_vector(dataChunk, 41);
-		duckdb_vector column42 = duckdb_data_chunk_get_vector(dataChunk, 42);
-		duckdb_vector column43 = duckdb_data_chunk_get_vector(dataChunk, 43);
-		duckdb_vector column44 = duckdb_data_chunk_get_vector(dataChunk, 44);
-		duckdb_vector column45 = duckdb_data_chunk_get_vector(dataChunk, 45);
-		duckdb_vector column46 = duckdb_data_chunk_get_vector(dataChunk, 46);
-		duckdb_vector column47 = duckdb_data_chunk_get_vector(dataChunk, 47);
-		duckdb_vector column48 = duckdb_data_chunk_get_vector(dataChunk, 48);
-		duckdb_vector column49 = duckdb_data_chunk_get_vector(dataChunk, 49);
-		duckdb_vector column50 = duckdb_data_chunk_get_vector(dataChunk, 50);
-		duckdb_vector column51 = duckdb_data_chunk_get_vector(dataChunk, 51);
-		duckdb_vector column52 = duckdb_data_chunk_get_vector(dataChunk, 52);
-		duckdb_vector column53 = duckdb_data_chunk_get_vector(dataChunk, 53);
-		duckdb_vector column54 = duckdb_data_chunk_get_vector(dataChunk, 54);
-		duckdb_vector column55 = duckdb_data_chunk_get_vector(dataChunk, 55);
-		duckdb_vector column56 = duckdb_data_chunk_get_vector(dataChunk, 56);
-		duckdb_vector column57 = duckdb_data_chunk_get_vector(dataChunk, 57);
-		duckdb_vector column58 = duckdb_data_chunk_get_vector(dataChunk, 58);
-		duckdb_vector column59 = duckdb_data_chunk_get_vector(dataChunk, 59);
-		duckdb_vector column60 = duckdb_data_chunk_get_vector(dataChunk, 60);
-
-		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
-		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
-		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
-		int64_t* dataColumn3 = (int64_t*)duckdb_vector_get_data(column3);
-		double* dataColumn4 = (double*)duckdb_vector_get_data(column4);
-		double* dataColumn5 = (double*)duckdb_vector_get_data(column5);
-		double* dataColumn6 = (double*)duckdb_vector_get_data(column6);
-		double* dataColumn7 = (double*)duckdb_vector_get_data(column7);
-		double* dataColumn8 = (double*)duckdb_vector_get_data(column8);
-		double* dataColumn9 = (double*)duckdb_vector_get_data(column9);
-		double* dataColumn10 = (double*)duckdb_vector_get_data(column10);
-		double* dataColumn11 = (double*)duckdb_vector_get_data(column11);
-		int64_t* dataColumn12 = (int64_t*)duckdb_vector_get_data(column12);
-		int64_t* dataColumn13 = (int64_t*)duckdb_vector_get_data(column13);
-		double* dataColumn14 = (double*)duckdb_vector_get_data(column14);
-		double* dataColumn15 = (double*)duckdb_vector_get_data(column15);
-		double* dataColumn16 = (double*)duckdb_vector_get_data(column16);
-		double* dataColumn17 = (double*)duckdb_vector_get_data(column17);
-		double* dataColumn18 = (double*)duckdb_vector_get_data(column18);
-		double* dataColumn19 = (double*)duckdb_vector_get_data(column19);
-		double* dataColumn20 = (double*)duckdb_vector_get_data(column20);
-		double* dataColumn21 = (double*)duckdb_vector_get_data(column21);
-		double* dataColumn22 = (double*)duckdb_vector_get_data(column22);
-		double* dataColumn23 = (double*)duckdb_vector_get_data(column23);
-		double* dataColumn24 = (double*)duckdb_vector_get_data(column24);
-		double* dataColumn25 = (double*)duckdb_vector_get_data(column25);
-		double* dataColumn26 = (double*)duckdb_vector_get_data(column26);
-		double* dataColumn27 = (double*)duckdb_vector_get_data(column27);
-		double* dataColumn28 = (double*)duckdb_vector_get_data(column28);
-		double* dataColumn29 = (double*)duckdb_vector_get_data(column29);
-		double* dataColumn30 = (double*)duckdb_vector_get_data(column30);
-		int64_t* dataColumn31 = (int64_t*)duckdb_vector_get_data(column31);
-		int64_t* dataColumn32 = (int64_t*)duckdb_vector_get_data(column32);
-		int64_t* dataColumn33 = (int64_t*)duckdb_vector_get_data(column33);
-		int64_t* dataColumn34 = (int64_t*)duckdb_vector_get_data(column34);
-		int64_t* dataColumn35 = (int64_t*)duckdb_vector_get_data(column35);
-		int64_t* dataColumn36 = (int64_t*)duckdb_vector_get_data(column36);
-		int64_t* dataColumn37 = (int64_t*)duckdb_vector_get_data(column37);
-		int64_t* dataColumn38 = (int64_t*)duckdb_vector_get_data(column38);
-		int64_t* dataColumn39 = (int64_t*)duckdb_vector_get_data(column39);
-		int64_t* dataColumn40 = (int64_t*)duckdb_vector_get_data(column40);
-		double* dataColumn41 = (double*)duckdb_vector_get_data(column41);
-		double* dataColumn42 = (double*)duckdb_vector_get_data(column42);
-		double* dataColumn43 = (double*)duckdb_vector_get_data(column43);
-		double* dataColumn44 = (double*)duckdb_vector_get_data(column44);
-		double* dataColumn45 = (double*)duckdb_vector_get_data(column45);
-		double* dataColumn46 = (double*)duckdb_vector_get_data(column46);
-		double* dataColumn47 = (double*)duckdb_vector_get_data(column47);
-		double* dataColumn48 = (double*)duckdb_vector_get_data(column48);
-		double* dataColumn49 = (double*)duckdb_vector_get_data(column49);
-		double* dataColumn50 = (double*)duckdb_vector_get_data(column50);
-		int64_t* dataColumn51 = (int64_t*)duckdb_vector_get_data(column51);
-		int64_t* dataColumn52 = (int64_t*)duckdb_vector_get_data(column52);
-		int64_t* dataColumn53 = (int64_t*)duckdb_vector_get_data(column53);
-		int64_t* dataColumn54 = (int64_t*)duckdb_vector_get_data(column54);
-		int64_t* dataColumn55 = (int64_t*)duckdb_vector_get_data(column55);
-		int64_t* dataColumn56 = (int64_t*)duckdb_vector_get_data(column56);
-		int64_t* dataColumn57 = (int64_t*)duckdb_vector_get_data(column57);
-		int64_t* dataColumn58 = (int64_t*)duckdb_vector_get_data(column58);
-		int64_t* dataColumn59 = (int64_t*)duckdb_vector_get_data(column59);
-		int64_t* dataColumn60 = (int64_t*)duckdb_vector_get_data(column60);
-
-		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
-		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
-		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
-		uint64_t* validityColumn3 = duckdb_vector_get_validity(column3);
-		uint64_t* validityColumn4 = duckdb_vector_get_validity(column4);
-		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
-		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
-		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
-		uint64_t* validityColumn8 = duckdb_vector_get_validity(column8);
-		uint64_t* validityColumn9 = duckdb_vector_get_validity(column9);
-		uint64_t* validityColumn10 = duckdb_vector_get_validity(column10);
-		uint64_t* validityColumn11 = duckdb_vector_get_validity(column11);
-		uint64_t* validityColumn12 = duckdb_vector_get_validity(column12);
-		uint64_t* validityColumn13 = duckdb_vector_get_validity(column13);
-		uint64_t* validityColumn14 = duckdb_vector_get_validity(column14);
-		uint64_t* validityColumn15 = duckdb_vector_get_validity(column15);
-		uint64_t* validityColumn16 = duckdb_vector_get_validity(column16);
-		uint64_t* validityColumn17 = duckdb_vector_get_validity(column17);
-		uint64_t* validityColumn18 = duckdb_vector_get_validity(column18);
-		uint64_t* validityColumn19 = duckdb_vector_get_validity(column19);
-		uint64_t* validityColumn20 = duckdb_vector_get_validity(column20);
-		uint64_t* validityColumn21 = duckdb_vector_get_validity(column21);
-		uint64_t* validityColumn22 = duckdb_vector_get_validity(column22);
-		uint64_t* validityColumn23 = duckdb_vector_get_validity(column23);
-		uint64_t* validityColumn24 = duckdb_vector_get_validity(column24);
-		uint64_t* validityColumn25 = duckdb_vector_get_validity(column25);
-		uint64_t* validityColumn26 = duckdb_vector_get_validity(column26);
-		uint64_t* validityColumn27 = duckdb_vector_get_validity(column27);
-		uint64_t* validityColumn28 = duckdb_vector_get_validity(column28);
-		uint64_t* validityColumn29 = duckdb_vector_get_validity(column29);
-		uint64_t* validityColumn30 = duckdb_vector_get_validity(column30);
-		uint64_t* validityColumn31 = duckdb_vector_get_validity(column31);
-		uint64_t* validityColumn32 = duckdb_vector_get_validity(column32);
-		uint64_t* validityColumn33 = duckdb_vector_get_validity(column33);
-		uint64_t* validityColumn34 = duckdb_vector_get_validity(column34);
-		uint64_t* validityColumn35 = duckdb_vector_get_validity(column35);
-		uint64_t* validityColumn36 = duckdb_vector_get_validity(column36);
-		uint64_t* validityColumn37 = duckdb_vector_get_validity(column37);
-		uint64_t* validityColumn38 = duckdb_vector_get_validity(column38);
-		uint64_t* validityColumn39 = duckdb_vector_get_validity(column39);
-		uint64_t* validityColumn40 = duckdb_vector_get_validity(column40);
-		uint64_t* validityColumn41 = duckdb_vector_get_validity(column41);
-		uint64_t* validityColumn42 = duckdb_vector_get_validity(column42);
-		uint64_t* validityColumn43 = duckdb_vector_get_validity(column43);
-		uint64_t* validityColumn44 = duckdb_vector_get_validity(column44);
-		uint64_t* validityColumn45 = duckdb_vector_get_validity(column45);
-		uint64_t* validityColumn46 = duckdb_vector_get_validity(column46);
-		uint64_t* validityColumn47 = duckdb_vector_get_validity(column47);
-		uint64_t* validityColumn48 = duckdb_vector_get_validity(column48);
-		uint64_t* validityColumn49 = duckdb_vector_get_validity(column49);
-		uint64_t* validityColumn50 = duckdb_vector_get_validity(column50);
-		uint64_t* validityColumn51 = duckdb_vector_get_validity(column51);
-		uint64_t* validityColumn52 = duckdb_vector_get_validity(column52);
-		uint64_t* validityColumn53 = duckdb_vector_get_validity(column53);
-		uint64_t* validityColumn54 = duckdb_vector_get_validity(column54);
-		uint64_t* validityColumn55 = duckdb_vector_get_validity(column55);
-		uint64_t* validityColumn56 = duckdb_vector_get_validity(column56);
-		uint64_t* validityColumn57 = duckdb_vector_get_validity(column57);
-		uint64_t* validityColumn58 = duckdb_vector_get_validity(column58);
-		uint64_t* validityColumn59 = duckdb_vector_get_validity(column59);
-		uint64_t* validityColumn60 = duckdb_vector_get_validity(column60);
-
-		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
-		for (idx_t row = 0LL; row < rowCount; ++row)
-		{
-			DepthMarketData* record = DepthMarketData::Allocate();
-			memset(record, 0, sizeof(DepthMarketData));
-			if (duckdb_validity_row_is_valid(validityColumn0, row))
-			{
-				CpyDuckdbString(record->TradingDay, dataColumn0[row]);
-			}
-			if (duckdb_validity_row_is_valid(validityColumn1, row))
-			{
-				CpyDuckdbString(record->ExchangeID, dataColumn1[row]);
-			}
-			if (duckdb_validity_row_is_valid(validityColumn2, row))
-			{
-				CpyDuckdbString(record->InstrumentID, dataColumn2[row]);
-			}
-			if (duckdb_validity_row_is_valid(validityColumn3, row)) record->UpdateTs = dataColumn3[row];
-			if (duckdb_validity_row_is_valid(validityColumn4, row)) record->LastPrice = dataColumn4[row];
-			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->PreSettlementPrice = dataColumn5[row];
-			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->PreClosePrice = dataColumn6[row];
-			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->PreOpenInterest = dataColumn7[row];
-			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->OpenPrice = dataColumn8[row];
-			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->HighestPrice = dataColumn9[row];
-			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->LowestPrice = dataColumn10[row];
-			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->ClosePrice = dataColumn11[row];
-			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->CurrVolume = dataColumn12[row];
-			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->Volume = dataColumn13[row];
-			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->CurrTurnover = dataColumn14[row];
-			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->Turnover = dataColumn15[row];
-			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->OpenInterest = dataColumn16[row];
-			if (duckdb_validity_row_is_valid(validityColumn17, row)) record->SettlementPrice = dataColumn17[row];
-			if (duckdb_validity_row_is_valid(validityColumn18, row)) record->UpperLimitPrice = dataColumn18[row];
-			if (duckdb_validity_row_is_valid(validityColumn19, row)) record->LowerLimitPrice = dataColumn19[row];
-			if (duckdb_validity_row_is_valid(validityColumn20, row)) record->AveragePrice = dataColumn20[row];
-			if (duckdb_validity_row_is_valid(validityColumn21, row)) record->AskPrice1 = dataColumn21[row];
-			if (duckdb_validity_row_is_valid(validityColumn22, row)) record->AskPrice2 = dataColumn22[row];
-			if (duckdb_validity_row_is_valid(validityColumn23, row)) record->AskPrice3 = dataColumn23[row];
-			if (duckdb_validity_row_is_valid(validityColumn24, row)) record->AskPrice4 = dataColumn24[row];
-			if (duckdb_validity_row_is_valid(validityColumn25, row)) record->AskPrice5 = dataColumn25[row];
-			if (duckdb_validity_row_is_valid(validityColumn26, row)) record->AskPrice6 = dataColumn26[row];
-			if (duckdb_validity_row_is_valid(validityColumn27, row)) record->AskPrice7 = dataColumn27[row];
-			if (duckdb_validity_row_is_valid(validityColumn28, row)) record->AskPrice8 = dataColumn28[row];
-			if (duckdb_validity_row_is_valid(validityColumn29, row)) record->AskPrice9 = dataColumn29[row];
-			if (duckdb_validity_row_is_valid(validityColumn30, row)) record->AskPrice10 = dataColumn30[row];
-			if (duckdb_validity_row_is_valid(validityColumn31, row)) record->AskVolume1 = dataColumn31[row];
-			if (duckdb_validity_row_is_valid(validityColumn32, row)) record->AskVolume2 = dataColumn32[row];
-			if (duckdb_validity_row_is_valid(validityColumn33, row)) record->AskVolume3 = dataColumn33[row];
-			if (duckdb_validity_row_is_valid(validityColumn34, row)) record->AskVolume4 = dataColumn34[row];
-			if (duckdb_validity_row_is_valid(validityColumn35, row)) record->AskVolume5 = dataColumn35[row];
-			if (duckdb_validity_row_is_valid(validityColumn36, row)) record->AskVolume6 = dataColumn36[row];
-			if (duckdb_validity_row_is_valid(validityColumn37, row)) record->AskVolume7 = dataColumn37[row];
-			if (duckdb_validity_row_is_valid(validityColumn38, row)) record->AskVolume8 = dataColumn38[row];
-			if (duckdb_validity_row_is_valid(validityColumn39, row)) record->AskVolume9 = dataColumn39[row];
-			if (duckdb_validity_row_is_valid(validityColumn40, row)) record->AskVolume10 = dataColumn40[row];
-			if (duckdb_validity_row_is_valid(validityColumn41, row)) record->BidPrice1 = dataColumn41[row];
-			if (duckdb_validity_row_is_valid(validityColumn42, row)) record->BidPrice2 = dataColumn42[row];
-			if (duckdb_validity_row_is_valid(validityColumn43, row)) record->BidPrice3 = dataColumn43[row];
-			if (duckdb_validity_row_is_valid(validityColumn44, row)) record->BidPrice4 = dataColumn44[row];
-			if (duckdb_validity_row_is_valid(validityColumn45, row)) record->BidPrice5 = dataColumn45[row];
-			if (duckdb_validity_row_is_valid(validityColumn46, row)) record->BidPrice6 = dataColumn46[row];
-			if (duckdb_validity_row_is_valid(validityColumn47, row)) record->BidPrice7 = dataColumn47[row];
-			if (duckdb_validity_row_is_valid(validityColumn48, row)) record->BidPrice8 = dataColumn48[row];
-			if (duckdb_validity_row_is_valid(validityColumn49, row)) record->BidPrice9 = dataColumn49[row];
-			if (duckdb_validity_row_is_valid(validityColumn50, row)) record->BidPrice10 = dataColumn50[row];
-			if (duckdb_validity_row_is_valid(validityColumn51, row)) record->BidVolume1 = dataColumn51[row];
-			if (duckdb_validity_row_is_valid(validityColumn52, row)) record->BidVolume2 = dataColumn52[row];
-			if (duckdb_validity_row_is_valid(validityColumn53, row)) record->BidVolume3 = dataColumn53[row];
-			if (duckdb_validity_row_is_valid(validityColumn54, row)) record->BidVolume4 = dataColumn54[row];
-			if (duckdb_validity_row_is_valid(validityColumn55, row)) record->BidVolume5 = dataColumn55[row];
-			if (duckdb_validity_row_is_valid(validityColumn56, row)) record->BidVolume6 = dataColumn56[row];
-			if (duckdb_validity_row_is_valid(validityColumn57, row)) record->BidVolume7 = dataColumn57[row];
-			if (duckdb_validity_row_is_valid(validityColumn58, row)) record->BidVolume8 = dataColumn58[row];
-			if (duckdb_validity_row_is_valid(validityColumn59, row)) record->BidVolume9 = dataColumn59[row];
-			if (duckdb_validity_row_is_valid(validityColumn60, row)) record->BidVolume10 = dataColumn60[row];
 			records.push_back(record);
 		}
 	}
@@ -2621,6 +2202,425 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEBrokerLoginSession*>
 		}
 	}
 }
+void DuckDB::CreateDepthMarketData()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_DepthMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, UpdateTs bigint, LastPrice double, PreSettlementPrice double, PreClosePrice double, PreOpenInterest double, OpenPrice double, HighestPrice double, LowestPrice double, ClosePrice double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, SettlementPrice double, UpperLimitPrice double, LowerLimitPrice double, AveragePrice double, AskPrice1 double, AskPrice2 double, AskPrice3 double, AskPrice4 double, AskPrice5 double, AskPrice6 double, AskPrice7 double, AskPrice8 double, AskPrice9 double, AskPrice10 double, AskVolume1 bigint, AskVolume2 bigint, AskVolume3 bigint, AskVolume4 bigint, AskVolume5 bigint, AskVolume6 bigint, AskVolume7 bigint, AskVolume8 bigint, AskVolume9 bigint, AskVolume10 bigint, BidPrice1 double, BidPrice2 double, BidPrice3 double, BidPrice4 double, BidPrice5 double, BidPrice6 double, BidPrice7 double, BidPrice8 double, BidPrice9 double, BidPrice10 double, BidVolume1 bigint, BidVolume2 bigint, BidVolume3 bigint, BidVolume4 bigint, BidVolume5 bigint, BidVolume6 bigint, BidVolume7 bigint, BidVolume8 bigint, BidVolume9 bigint, BidVolume10 bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateDepthMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms", duration);
+}
+void DuckDB::DropDepthMarketData()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_DepthMarketData;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropDepthMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms", duration);
+}
+void DuckDB::InsertDepthMarketData(DepthMarketData* record)
+{
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_DepthMarketData", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_DepthMarketData Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	AppendForDepthMarketDataRecord(appender, record);
+	duckdb_appender_destroy(&appender);
+}
+void DuckDB::BatchInsertDepthMarketData(std::list<DepthMarketData*>* records)
+{
+	auto start = steady_clock::now();
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_DepthMarketData", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_DepthMarketData Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	for (auto record : *records)
+	{
+		AppendForDepthMarketDataRecord(appender, record);
+	}
+	duckdb_appender_destroy(&appender);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "BatchInsertDepthMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void DuckDB::DeleteDepthMarketData(DepthMarketData* record)
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataDeleteStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_DepthMarketData where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;", &m_DepthMarketDataDeleteStatement);
+	}
+	SetStatementForDepthMarketDataPrimaryKey(m_DepthMarketDataDeleteStatement, record);
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_DepthMarketDataDeleteStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteDepthMarketData Spend:%lldms", duration);
+	}
+}
+void DuckDB::UpdateDepthMarketData(DepthMarketData* record)
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataUpdateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "update t_DepthMarketData set UpdateTs = ?, LastPrice = ?, PreSettlementPrice = ?, PreClosePrice = ?, PreOpenInterest = ?, OpenPrice = ?, HighestPrice = ?, LowestPrice = ?, ClosePrice = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ?, SettlementPrice = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, AveragePrice = ?, AskPrice1 = ?, AskPrice2 = ?, AskPrice3 = ?, AskPrice4 = ?, AskPrice5 = ?, AskPrice6 = ?, AskPrice7 = ?, AskPrice8 = ?, AskPrice9 = ?, AskPrice10 = ?, AskVolume1 = ?, AskVolume2 = ?, AskVolume3 = ?, AskVolume4 = ?, AskVolume5 = ?, AskVolume6 = ?, AskVolume7 = ?, AskVolume8 = ?, AskVolume9 = ?, AskVolume10 = ?, BidPrice1 = ?, BidPrice2 = ?, BidPrice3 = ?, BidPrice4 = ?, BidPrice5 = ?, BidPrice6 = ?, BidPrice7 = ?, BidPrice8 = ?, BidPrice9 = ?, BidPrice10 = ?, BidVolume1 = ?, BidVolume2 = ?, BidVolume3 = ?, BidVolume4 = ?, BidVolume5 = ?, BidVolume6 = ?, BidVolume7 = ?, BidVolume8 = ?, BidVolume9 = ?, BidVolume10 = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;", &m_DepthMarketDataUpdateStatement);
+	}
+	SetStatementForDepthMarketDataRecordUpdate(m_DepthMarketDataUpdateStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_DepthMarketDataUpdateStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "UpdateDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
+	}
+}
+void DuckDB::SelectDepthMarketData(std::list<DepthMarketData*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataSelectStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "select * from t_DepthMarketData;", &m_DepthMarketDataSelectStatement);
+	}
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_DepthMarketDataSelectStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "SelectDepthMarketData ErrorMsg:%s", duckdb_result_error(&result));
+		duckdb_destroy_result(&result);
+		return;
+	}
+
+	ParseRecord(result, records);
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectDepthMarketData Spend:%lldms", duration);
+	}
+}
+void DuckDB::TruncateDepthMarketData()
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataTruncateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_DepthMarketData;", &m_DepthMarketDataTruncateStatement);
+	}
+
+	auto rc = duckdb_execute_prepared(m_DepthMarketDataTruncateStatement, nullptr);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "TruncateDepthMarketData failed");
+	}
+	
+	WriteLog(LogLevel::Info, "TruncateDepthMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void DuckDB::ParseRecord(duckdb_result& result, std::list<DepthMarketData*>& records)
+{
+	while (true)
+	{
+		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
+		if (dataChunk == nullptr)
+		{
+			break;
+		}
+		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
+		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
+		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
+		duckdb_vector column3 = duckdb_data_chunk_get_vector(dataChunk, 3);
+		duckdb_vector column4 = duckdb_data_chunk_get_vector(dataChunk, 4);
+		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
+		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
+		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
+		duckdb_vector column8 = duckdb_data_chunk_get_vector(dataChunk, 8);
+		duckdb_vector column9 = duckdb_data_chunk_get_vector(dataChunk, 9);
+		duckdb_vector column10 = duckdb_data_chunk_get_vector(dataChunk, 10);
+		duckdb_vector column11 = duckdb_data_chunk_get_vector(dataChunk, 11);
+		duckdb_vector column12 = duckdb_data_chunk_get_vector(dataChunk, 12);
+		duckdb_vector column13 = duckdb_data_chunk_get_vector(dataChunk, 13);
+		duckdb_vector column14 = duckdb_data_chunk_get_vector(dataChunk, 14);
+		duckdb_vector column15 = duckdb_data_chunk_get_vector(dataChunk, 15);
+		duckdb_vector column16 = duckdb_data_chunk_get_vector(dataChunk, 16);
+		duckdb_vector column17 = duckdb_data_chunk_get_vector(dataChunk, 17);
+		duckdb_vector column18 = duckdb_data_chunk_get_vector(dataChunk, 18);
+		duckdb_vector column19 = duckdb_data_chunk_get_vector(dataChunk, 19);
+		duckdb_vector column20 = duckdb_data_chunk_get_vector(dataChunk, 20);
+		duckdb_vector column21 = duckdb_data_chunk_get_vector(dataChunk, 21);
+		duckdb_vector column22 = duckdb_data_chunk_get_vector(dataChunk, 22);
+		duckdb_vector column23 = duckdb_data_chunk_get_vector(dataChunk, 23);
+		duckdb_vector column24 = duckdb_data_chunk_get_vector(dataChunk, 24);
+		duckdb_vector column25 = duckdb_data_chunk_get_vector(dataChunk, 25);
+		duckdb_vector column26 = duckdb_data_chunk_get_vector(dataChunk, 26);
+		duckdb_vector column27 = duckdb_data_chunk_get_vector(dataChunk, 27);
+		duckdb_vector column28 = duckdb_data_chunk_get_vector(dataChunk, 28);
+		duckdb_vector column29 = duckdb_data_chunk_get_vector(dataChunk, 29);
+		duckdb_vector column30 = duckdb_data_chunk_get_vector(dataChunk, 30);
+		duckdb_vector column31 = duckdb_data_chunk_get_vector(dataChunk, 31);
+		duckdb_vector column32 = duckdb_data_chunk_get_vector(dataChunk, 32);
+		duckdb_vector column33 = duckdb_data_chunk_get_vector(dataChunk, 33);
+		duckdb_vector column34 = duckdb_data_chunk_get_vector(dataChunk, 34);
+		duckdb_vector column35 = duckdb_data_chunk_get_vector(dataChunk, 35);
+		duckdb_vector column36 = duckdb_data_chunk_get_vector(dataChunk, 36);
+		duckdb_vector column37 = duckdb_data_chunk_get_vector(dataChunk, 37);
+		duckdb_vector column38 = duckdb_data_chunk_get_vector(dataChunk, 38);
+		duckdb_vector column39 = duckdb_data_chunk_get_vector(dataChunk, 39);
+		duckdb_vector column40 = duckdb_data_chunk_get_vector(dataChunk, 40);
+		duckdb_vector column41 = duckdb_data_chunk_get_vector(dataChunk, 41);
+		duckdb_vector column42 = duckdb_data_chunk_get_vector(dataChunk, 42);
+		duckdb_vector column43 = duckdb_data_chunk_get_vector(dataChunk, 43);
+		duckdb_vector column44 = duckdb_data_chunk_get_vector(dataChunk, 44);
+		duckdb_vector column45 = duckdb_data_chunk_get_vector(dataChunk, 45);
+		duckdb_vector column46 = duckdb_data_chunk_get_vector(dataChunk, 46);
+		duckdb_vector column47 = duckdb_data_chunk_get_vector(dataChunk, 47);
+		duckdb_vector column48 = duckdb_data_chunk_get_vector(dataChunk, 48);
+		duckdb_vector column49 = duckdb_data_chunk_get_vector(dataChunk, 49);
+		duckdb_vector column50 = duckdb_data_chunk_get_vector(dataChunk, 50);
+		duckdb_vector column51 = duckdb_data_chunk_get_vector(dataChunk, 51);
+		duckdb_vector column52 = duckdb_data_chunk_get_vector(dataChunk, 52);
+		duckdb_vector column53 = duckdb_data_chunk_get_vector(dataChunk, 53);
+		duckdb_vector column54 = duckdb_data_chunk_get_vector(dataChunk, 54);
+		duckdb_vector column55 = duckdb_data_chunk_get_vector(dataChunk, 55);
+		duckdb_vector column56 = duckdb_data_chunk_get_vector(dataChunk, 56);
+		duckdb_vector column57 = duckdb_data_chunk_get_vector(dataChunk, 57);
+		duckdb_vector column58 = duckdb_data_chunk_get_vector(dataChunk, 58);
+		duckdb_vector column59 = duckdb_data_chunk_get_vector(dataChunk, 59);
+		duckdb_vector column60 = duckdb_data_chunk_get_vector(dataChunk, 60);
+
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
+		int64_t* dataColumn3 = (int64_t*)duckdb_vector_get_data(column3);
+		double* dataColumn4 = (double*)duckdb_vector_get_data(column4);
+		double* dataColumn5 = (double*)duckdb_vector_get_data(column5);
+		double* dataColumn6 = (double*)duckdb_vector_get_data(column6);
+		double* dataColumn7 = (double*)duckdb_vector_get_data(column7);
+		double* dataColumn8 = (double*)duckdb_vector_get_data(column8);
+		double* dataColumn9 = (double*)duckdb_vector_get_data(column9);
+		double* dataColumn10 = (double*)duckdb_vector_get_data(column10);
+		double* dataColumn11 = (double*)duckdb_vector_get_data(column11);
+		int64_t* dataColumn12 = (int64_t*)duckdb_vector_get_data(column12);
+		int64_t* dataColumn13 = (int64_t*)duckdb_vector_get_data(column13);
+		double* dataColumn14 = (double*)duckdb_vector_get_data(column14);
+		double* dataColumn15 = (double*)duckdb_vector_get_data(column15);
+		double* dataColumn16 = (double*)duckdb_vector_get_data(column16);
+		double* dataColumn17 = (double*)duckdb_vector_get_data(column17);
+		double* dataColumn18 = (double*)duckdb_vector_get_data(column18);
+		double* dataColumn19 = (double*)duckdb_vector_get_data(column19);
+		double* dataColumn20 = (double*)duckdb_vector_get_data(column20);
+		double* dataColumn21 = (double*)duckdb_vector_get_data(column21);
+		double* dataColumn22 = (double*)duckdb_vector_get_data(column22);
+		double* dataColumn23 = (double*)duckdb_vector_get_data(column23);
+		double* dataColumn24 = (double*)duckdb_vector_get_data(column24);
+		double* dataColumn25 = (double*)duckdb_vector_get_data(column25);
+		double* dataColumn26 = (double*)duckdb_vector_get_data(column26);
+		double* dataColumn27 = (double*)duckdb_vector_get_data(column27);
+		double* dataColumn28 = (double*)duckdb_vector_get_data(column28);
+		double* dataColumn29 = (double*)duckdb_vector_get_data(column29);
+		double* dataColumn30 = (double*)duckdb_vector_get_data(column30);
+		int64_t* dataColumn31 = (int64_t*)duckdb_vector_get_data(column31);
+		int64_t* dataColumn32 = (int64_t*)duckdb_vector_get_data(column32);
+		int64_t* dataColumn33 = (int64_t*)duckdb_vector_get_data(column33);
+		int64_t* dataColumn34 = (int64_t*)duckdb_vector_get_data(column34);
+		int64_t* dataColumn35 = (int64_t*)duckdb_vector_get_data(column35);
+		int64_t* dataColumn36 = (int64_t*)duckdb_vector_get_data(column36);
+		int64_t* dataColumn37 = (int64_t*)duckdb_vector_get_data(column37);
+		int64_t* dataColumn38 = (int64_t*)duckdb_vector_get_data(column38);
+		int64_t* dataColumn39 = (int64_t*)duckdb_vector_get_data(column39);
+		int64_t* dataColumn40 = (int64_t*)duckdb_vector_get_data(column40);
+		double* dataColumn41 = (double*)duckdb_vector_get_data(column41);
+		double* dataColumn42 = (double*)duckdb_vector_get_data(column42);
+		double* dataColumn43 = (double*)duckdb_vector_get_data(column43);
+		double* dataColumn44 = (double*)duckdb_vector_get_data(column44);
+		double* dataColumn45 = (double*)duckdb_vector_get_data(column45);
+		double* dataColumn46 = (double*)duckdb_vector_get_data(column46);
+		double* dataColumn47 = (double*)duckdb_vector_get_data(column47);
+		double* dataColumn48 = (double*)duckdb_vector_get_data(column48);
+		double* dataColumn49 = (double*)duckdb_vector_get_data(column49);
+		double* dataColumn50 = (double*)duckdb_vector_get_data(column50);
+		int64_t* dataColumn51 = (int64_t*)duckdb_vector_get_data(column51);
+		int64_t* dataColumn52 = (int64_t*)duckdb_vector_get_data(column52);
+		int64_t* dataColumn53 = (int64_t*)duckdb_vector_get_data(column53);
+		int64_t* dataColumn54 = (int64_t*)duckdb_vector_get_data(column54);
+		int64_t* dataColumn55 = (int64_t*)duckdb_vector_get_data(column55);
+		int64_t* dataColumn56 = (int64_t*)duckdb_vector_get_data(column56);
+		int64_t* dataColumn57 = (int64_t*)duckdb_vector_get_data(column57);
+		int64_t* dataColumn58 = (int64_t*)duckdb_vector_get_data(column58);
+		int64_t* dataColumn59 = (int64_t*)duckdb_vector_get_data(column59);
+		int64_t* dataColumn60 = (int64_t*)duckdb_vector_get_data(column60);
+
+		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
+		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
+		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
+		uint64_t* validityColumn3 = duckdb_vector_get_validity(column3);
+		uint64_t* validityColumn4 = duckdb_vector_get_validity(column4);
+		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
+		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
+		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
+		uint64_t* validityColumn8 = duckdb_vector_get_validity(column8);
+		uint64_t* validityColumn9 = duckdb_vector_get_validity(column9);
+		uint64_t* validityColumn10 = duckdb_vector_get_validity(column10);
+		uint64_t* validityColumn11 = duckdb_vector_get_validity(column11);
+		uint64_t* validityColumn12 = duckdb_vector_get_validity(column12);
+		uint64_t* validityColumn13 = duckdb_vector_get_validity(column13);
+		uint64_t* validityColumn14 = duckdb_vector_get_validity(column14);
+		uint64_t* validityColumn15 = duckdb_vector_get_validity(column15);
+		uint64_t* validityColumn16 = duckdb_vector_get_validity(column16);
+		uint64_t* validityColumn17 = duckdb_vector_get_validity(column17);
+		uint64_t* validityColumn18 = duckdb_vector_get_validity(column18);
+		uint64_t* validityColumn19 = duckdb_vector_get_validity(column19);
+		uint64_t* validityColumn20 = duckdb_vector_get_validity(column20);
+		uint64_t* validityColumn21 = duckdb_vector_get_validity(column21);
+		uint64_t* validityColumn22 = duckdb_vector_get_validity(column22);
+		uint64_t* validityColumn23 = duckdb_vector_get_validity(column23);
+		uint64_t* validityColumn24 = duckdb_vector_get_validity(column24);
+		uint64_t* validityColumn25 = duckdb_vector_get_validity(column25);
+		uint64_t* validityColumn26 = duckdb_vector_get_validity(column26);
+		uint64_t* validityColumn27 = duckdb_vector_get_validity(column27);
+		uint64_t* validityColumn28 = duckdb_vector_get_validity(column28);
+		uint64_t* validityColumn29 = duckdb_vector_get_validity(column29);
+		uint64_t* validityColumn30 = duckdb_vector_get_validity(column30);
+		uint64_t* validityColumn31 = duckdb_vector_get_validity(column31);
+		uint64_t* validityColumn32 = duckdb_vector_get_validity(column32);
+		uint64_t* validityColumn33 = duckdb_vector_get_validity(column33);
+		uint64_t* validityColumn34 = duckdb_vector_get_validity(column34);
+		uint64_t* validityColumn35 = duckdb_vector_get_validity(column35);
+		uint64_t* validityColumn36 = duckdb_vector_get_validity(column36);
+		uint64_t* validityColumn37 = duckdb_vector_get_validity(column37);
+		uint64_t* validityColumn38 = duckdb_vector_get_validity(column38);
+		uint64_t* validityColumn39 = duckdb_vector_get_validity(column39);
+		uint64_t* validityColumn40 = duckdb_vector_get_validity(column40);
+		uint64_t* validityColumn41 = duckdb_vector_get_validity(column41);
+		uint64_t* validityColumn42 = duckdb_vector_get_validity(column42);
+		uint64_t* validityColumn43 = duckdb_vector_get_validity(column43);
+		uint64_t* validityColumn44 = duckdb_vector_get_validity(column44);
+		uint64_t* validityColumn45 = duckdb_vector_get_validity(column45);
+		uint64_t* validityColumn46 = duckdb_vector_get_validity(column46);
+		uint64_t* validityColumn47 = duckdb_vector_get_validity(column47);
+		uint64_t* validityColumn48 = duckdb_vector_get_validity(column48);
+		uint64_t* validityColumn49 = duckdb_vector_get_validity(column49);
+		uint64_t* validityColumn50 = duckdb_vector_get_validity(column50);
+		uint64_t* validityColumn51 = duckdb_vector_get_validity(column51);
+		uint64_t* validityColumn52 = duckdb_vector_get_validity(column52);
+		uint64_t* validityColumn53 = duckdb_vector_get_validity(column53);
+		uint64_t* validityColumn54 = duckdb_vector_get_validity(column54);
+		uint64_t* validityColumn55 = duckdb_vector_get_validity(column55);
+		uint64_t* validityColumn56 = duckdb_vector_get_validity(column56);
+		uint64_t* validityColumn57 = duckdb_vector_get_validity(column57);
+		uint64_t* validityColumn58 = duckdb_vector_get_validity(column58);
+		uint64_t* validityColumn59 = duckdb_vector_get_validity(column59);
+		uint64_t* validityColumn60 = duckdb_vector_get_validity(column60);
+
+		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
+		for (idx_t row = 0LL; row < rowCount; ++row)
+		{
+			DepthMarketData* record = DepthMarketData::Allocate();
+			memset(record, 0, sizeof(DepthMarketData));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->TradingDay, dataColumn0[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
+			{
+				CpyDuckdbString(record->ExchangeID, dataColumn1[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row))
+			{
+				CpyDuckdbString(record->InstrumentID, dataColumn2[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn3, row)) record->UpdateTs = dataColumn3[row];
+			if (duckdb_validity_row_is_valid(validityColumn4, row)) record->LastPrice = dataColumn4[row];
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->PreSettlementPrice = dataColumn5[row];
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->PreClosePrice = dataColumn6[row];
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->PreOpenInterest = dataColumn7[row];
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->OpenPrice = dataColumn8[row];
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->HighestPrice = dataColumn9[row];
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->LowestPrice = dataColumn10[row];
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->ClosePrice = dataColumn11[row];
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->CurrVolume = dataColumn12[row];
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->Volume = dataColumn13[row];
+			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->CurrTurnover = dataColumn14[row];
+			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->Turnover = dataColumn15[row];
+			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->OpenInterest = dataColumn16[row];
+			if (duckdb_validity_row_is_valid(validityColumn17, row)) record->SettlementPrice = dataColumn17[row];
+			if (duckdb_validity_row_is_valid(validityColumn18, row)) record->UpperLimitPrice = dataColumn18[row];
+			if (duckdb_validity_row_is_valid(validityColumn19, row)) record->LowerLimitPrice = dataColumn19[row];
+			if (duckdb_validity_row_is_valid(validityColumn20, row)) record->AveragePrice = dataColumn20[row];
+			if (duckdb_validity_row_is_valid(validityColumn21, row)) record->AskPrice1 = dataColumn21[row];
+			if (duckdb_validity_row_is_valid(validityColumn22, row)) record->AskPrice2 = dataColumn22[row];
+			if (duckdb_validity_row_is_valid(validityColumn23, row)) record->AskPrice3 = dataColumn23[row];
+			if (duckdb_validity_row_is_valid(validityColumn24, row)) record->AskPrice4 = dataColumn24[row];
+			if (duckdb_validity_row_is_valid(validityColumn25, row)) record->AskPrice5 = dataColumn25[row];
+			if (duckdb_validity_row_is_valid(validityColumn26, row)) record->AskPrice6 = dataColumn26[row];
+			if (duckdb_validity_row_is_valid(validityColumn27, row)) record->AskPrice7 = dataColumn27[row];
+			if (duckdb_validity_row_is_valid(validityColumn28, row)) record->AskPrice8 = dataColumn28[row];
+			if (duckdb_validity_row_is_valid(validityColumn29, row)) record->AskPrice9 = dataColumn29[row];
+			if (duckdb_validity_row_is_valid(validityColumn30, row)) record->AskPrice10 = dataColumn30[row];
+			if (duckdb_validity_row_is_valid(validityColumn31, row)) record->AskVolume1 = dataColumn31[row];
+			if (duckdb_validity_row_is_valid(validityColumn32, row)) record->AskVolume2 = dataColumn32[row];
+			if (duckdb_validity_row_is_valid(validityColumn33, row)) record->AskVolume3 = dataColumn33[row];
+			if (duckdb_validity_row_is_valid(validityColumn34, row)) record->AskVolume4 = dataColumn34[row];
+			if (duckdb_validity_row_is_valid(validityColumn35, row)) record->AskVolume5 = dataColumn35[row];
+			if (duckdb_validity_row_is_valid(validityColumn36, row)) record->AskVolume6 = dataColumn36[row];
+			if (duckdb_validity_row_is_valid(validityColumn37, row)) record->AskVolume7 = dataColumn37[row];
+			if (duckdb_validity_row_is_valid(validityColumn38, row)) record->AskVolume8 = dataColumn38[row];
+			if (duckdb_validity_row_is_valid(validityColumn39, row)) record->AskVolume9 = dataColumn39[row];
+			if (duckdb_validity_row_is_valid(validityColumn40, row)) record->AskVolume10 = dataColumn40[row];
+			if (duckdb_validity_row_is_valid(validityColumn41, row)) record->BidPrice1 = dataColumn41[row];
+			if (duckdb_validity_row_is_valid(validityColumn42, row)) record->BidPrice2 = dataColumn42[row];
+			if (duckdb_validity_row_is_valid(validityColumn43, row)) record->BidPrice3 = dataColumn43[row];
+			if (duckdb_validity_row_is_valid(validityColumn44, row)) record->BidPrice4 = dataColumn44[row];
+			if (duckdb_validity_row_is_valid(validityColumn45, row)) record->BidPrice5 = dataColumn45[row];
+			if (duckdb_validity_row_is_valid(validityColumn46, row)) record->BidPrice6 = dataColumn46[row];
+			if (duckdb_validity_row_is_valid(validityColumn47, row)) record->BidPrice7 = dataColumn47[row];
+			if (duckdb_validity_row_is_valid(validityColumn48, row)) record->BidPrice8 = dataColumn48[row];
+			if (duckdb_validity_row_is_valid(validityColumn49, row)) record->BidPrice9 = dataColumn49[row];
+			if (duckdb_validity_row_is_valid(validityColumn50, row)) record->BidPrice10 = dataColumn50[row];
+			if (duckdb_validity_row_is_valid(validityColumn51, row)) record->BidVolume1 = dataColumn51[row];
+			if (duckdb_validity_row_is_valid(validityColumn52, row)) record->BidVolume2 = dataColumn52[row];
+			if (duckdb_validity_row_is_valid(validityColumn53, row)) record->BidVolume3 = dataColumn53[row];
+			if (duckdb_validity_row_is_valid(validityColumn54, row)) record->BidVolume4 = dataColumn54[row];
+			if (duckdb_validity_row_is_valid(validityColumn55, row)) record->BidVolume5 = dataColumn55[row];
+			if (duckdb_validity_row_is_valid(validityColumn56, row)) record->BidVolume6 = dataColumn56[row];
+			if (duckdb_validity_row_is_valid(validityColumn57, row)) record->BidVolume7 = dataColumn57[row];
+			if (duckdb_validity_row_is_valid(validityColumn58, row)) record->BidVolume8 = dataColumn58[row];
+			if (duckdb_validity_row_is_valid(validityColumn59, row)) record->BidVolume9 = dataColumn59[row];
+			if (duckdb_validity_row_is_valid(validityColumn60, row)) record->BidVolume10 = dataColumn60[row];
+			records.push_back(record);
+		}
+	}
+}
 
 
 bool DuckDB::AppendForTradingDayRecord(duckdb_appender appender, TradingDay* record)
@@ -2728,210 +2728,6 @@ void DuckDB::SetStatementForProductPrimaryKey(duckdb_prepared_statement statemen
 {
 	duckdb_bind_varchar(statement, 1, record->ExchangeID);
 	duckdb_bind_varchar(statement, 2, record->ProductID);
-}
-bool DuckDB::AppendForDepthMarketDataRecord(duckdb_appender appender, DepthMarketData* record)
-{
-	duckdb_append_varchar(appender, record->TradingDay);
-	duckdb_append_varchar(appender, record->ExchangeID);
-	duckdb_append_varchar(appender, record->InstrumentID);
-	duckdb_append_int64(appender, record->UpdateTs);
-	duckdb_append_double(appender, record->LastPrice);
-	duckdb_append_double(appender, record->PreSettlementPrice);
-	duckdb_append_double(appender, record->PreClosePrice);
-	duckdb_append_double(appender, record->PreOpenInterest);
-	duckdb_append_double(appender, record->OpenPrice);
-	duckdb_append_double(appender, record->HighestPrice);
-	duckdb_append_double(appender, record->LowestPrice);
-	duckdb_append_double(appender, record->ClosePrice);
-	duckdb_append_int64(appender, record->CurrVolume);
-	duckdb_append_int64(appender, record->Volume);
-	duckdb_append_double(appender, record->CurrTurnover);
-	duckdb_append_double(appender, record->Turnover);
-	duckdb_append_double(appender, record->OpenInterest);
-	duckdb_append_double(appender, record->SettlementPrice);
-	duckdb_append_double(appender, record->UpperLimitPrice);
-	duckdb_append_double(appender, record->LowerLimitPrice);
-	duckdb_append_double(appender, record->AveragePrice);
-	duckdb_append_double(appender, record->AskPrice1);
-	duckdb_append_double(appender, record->AskPrice2);
-	duckdb_append_double(appender, record->AskPrice3);
-	duckdb_append_double(appender, record->AskPrice4);
-	duckdb_append_double(appender, record->AskPrice5);
-	duckdb_append_double(appender, record->AskPrice6);
-	duckdb_append_double(appender, record->AskPrice7);
-	duckdb_append_double(appender, record->AskPrice8);
-	duckdb_append_double(appender, record->AskPrice9);
-	duckdb_append_double(appender, record->AskPrice10);
-	duckdb_append_int64(appender, record->AskVolume1);
-	duckdb_append_int64(appender, record->AskVolume2);
-	duckdb_append_int64(appender, record->AskVolume3);
-	duckdb_append_int64(appender, record->AskVolume4);
-	duckdb_append_int64(appender, record->AskVolume5);
-	duckdb_append_int64(appender, record->AskVolume6);
-	duckdb_append_int64(appender, record->AskVolume7);
-	duckdb_append_int64(appender, record->AskVolume8);
-	duckdb_append_int64(appender, record->AskVolume9);
-	duckdb_append_int64(appender, record->AskVolume10);
-	duckdb_append_double(appender, record->BidPrice1);
-	duckdb_append_double(appender, record->BidPrice2);
-	duckdb_append_double(appender, record->BidPrice3);
-	duckdb_append_double(appender, record->BidPrice4);
-	duckdb_append_double(appender, record->BidPrice5);
-	duckdb_append_double(appender, record->BidPrice6);
-	duckdb_append_double(appender, record->BidPrice7);
-	duckdb_append_double(appender, record->BidPrice8);
-	duckdb_append_double(appender, record->BidPrice9);
-	duckdb_append_double(appender, record->BidPrice10);
-	duckdb_append_int64(appender, record->BidVolume1);
-	duckdb_append_int64(appender, record->BidVolume2);
-	duckdb_append_int64(appender, record->BidVolume3);
-	duckdb_append_int64(appender, record->BidVolume4);
-	duckdb_append_int64(appender, record->BidVolume5);
-	duckdb_append_int64(appender, record->BidVolume6);
-	duckdb_append_int64(appender, record->BidVolume7);
-	duckdb_append_int64(appender, record->BidVolume8);
-	duckdb_append_int64(appender, record->BidVolume9);
-	duckdb_append_int64(appender, record->BidVolume10);
-	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "InsertDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
-		return false;
-	}
-	return true;
-}
-void DuckDB::SetStatementForDepthMarketDataRecord(duckdb_prepared_statement statement, DepthMarketData* record)
-{
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_varchar(statement, 2, record->ExchangeID);
-	duckdb_bind_varchar(statement, 3, record->InstrumentID);
-	duckdb_bind_int64(statement, 4, record->UpdateTs);
-	duckdb_bind_double(statement, 5, record->LastPrice);
-	duckdb_bind_double(statement, 6, record->PreSettlementPrice);
-	duckdb_bind_double(statement, 7, record->PreClosePrice);
-	duckdb_bind_double(statement, 8, record->PreOpenInterest);
-	duckdb_bind_double(statement, 9, record->OpenPrice);
-	duckdb_bind_double(statement, 10, record->HighestPrice);
-	duckdb_bind_double(statement, 11, record->LowestPrice);
-	duckdb_bind_double(statement, 12, record->ClosePrice);
-	duckdb_bind_int64(statement, 13, record->CurrVolume);
-	duckdb_bind_int64(statement, 14, record->Volume);
-	duckdb_bind_double(statement, 15, record->CurrTurnover);
-	duckdb_bind_double(statement, 16, record->Turnover);
-	duckdb_bind_double(statement, 17, record->OpenInterest);
-	duckdb_bind_double(statement, 18, record->SettlementPrice);
-	duckdb_bind_double(statement, 19, record->UpperLimitPrice);
-	duckdb_bind_double(statement, 20, record->LowerLimitPrice);
-	duckdb_bind_double(statement, 21, record->AveragePrice);
-	duckdb_bind_double(statement, 22, record->AskPrice1);
-	duckdb_bind_double(statement, 23, record->AskPrice2);
-	duckdb_bind_double(statement, 24, record->AskPrice3);
-	duckdb_bind_double(statement, 25, record->AskPrice4);
-	duckdb_bind_double(statement, 26, record->AskPrice5);
-	duckdb_bind_double(statement, 27, record->AskPrice6);
-	duckdb_bind_double(statement, 28, record->AskPrice7);
-	duckdb_bind_double(statement, 29, record->AskPrice8);
-	duckdb_bind_double(statement, 30, record->AskPrice9);
-	duckdb_bind_double(statement, 31, record->AskPrice10);
-	duckdb_bind_int64(statement, 32, record->AskVolume1);
-	duckdb_bind_int64(statement, 33, record->AskVolume2);
-	duckdb_bind_int64(statement, 34, record->AskVolume3);
-	duckdb_bind_int64(statement, 35, record->AskVolume4);
-	duckdb_bind_int64(statement, 36, record->AskVolume5);
-	duckdb_bind_int64(statement, 37, record->AskVolume6);
-	duckdb_bind_int64(statement, 38, record->AskVolume7);
-	duckdb_bind_int64(statement, 39, record->AskVolume8);
-	duckdb_bind_int64(statement, 40, record->AskVolume9);
-	duckdb_bind_int64(statement, 41, record->AskVolume10);
-	duckdb_bind_double(statement, 42, record->BidPrice1);
-	duckdb_bind_double(statement, 43, record->BidPrice2);
-	duckdb_bind_double(statement, 44, record->BidPrice3);
-	duckdb_bind_double(statement, 45, record->BidPrice4);
-	duckdb_bind_double(statement, 46, record->BidPrice5);
-	duckdb_bind_double(statement, 47, record->BidPrice6);
-	duckdb_bind_double(statement, 48, record->BidPrice7);
-	duckdb_bind_double(statement, 49, record->BidPrice8);
-	duckdb_bind_double(statement, 50, record->BidPrice9);
-	duckdb_bind_double(statement, 51, record->BidPrice10);
-	duckdb_bind_int64(statement, 52, record->BidVolume1);
-	duckdb_bind_int64(statement, 53, record->BidVolume2);
-	duckdb_bind_int64(statement, 54, record->BidVolume3);
-	duckdb_bind_int64(statement, 55, record->BidVolume4);
-	duckdb_bind_int64(statement, 56, record->BidVolume5);
-	duckdb_bind_int64(statement, 57, record->BidVolume6);
-	duckdb_bind_int64(statement, 58, record->BidVolume7);
-	duckdb_bind_int64(statement, 59, record->BidVolume8);
-	duckdb_bind_int64(statement, 60, record->BidVolume9);
-	duckdb_bind_int64(statement, 61, record->BidVolume10);
-}
-void DuckDB::SetStatementForDepthMarketDataRecordUpdate(duckdb_prepared_statement statement, DepthMarketData* record)
-{
-	duckdb_bind_int64(statement, 1, record->UpdateTs);
-	duckdb_bind_double(statement, 2, record->LastPrice);
-	duckdb_bind_double(statement, 3, record->PreSettlementPrice);
-	duckdb_bind_double(statement, 4, record->PreClosePrice);
-	duckdb_bind_double(statement, 5, record->PreOpenInterest);
-	duckdb_bind_double(statement, 6, record->OpenPrice);
-	duckdb_bind_double(statement, 7, record->HighestPrice);
-	duckdb_bind_double(statement, 8, record->LowestPrice);
-	duckdb_bind_double(statement, 9, record->ClosePrice);
-	duckdb_bind_int64(statement, 10, record->CurrVolume);
-	duckdb_bind_int64(statement, 11, record->Volume);
-	duckdb_bind_double(statement, 12, record->CurrTurnover);
-	duckdb_bind_double(statement, 13, record->Turnover);
-	duckdb_bind_double(statement, 14, record->OpenInterest);
-	duckdb_bind_double(statement, 15, record->SettlementPrice);
-	duckdb_bind_double(statement, 16, record->UpperLimitPrice);
-	duckdb_bind_double(statement, 17, record->LowerLimitPrice);
-	duckdb_bind_double(statement, 18, record->AveragePrice);
-	duckdb_bind_double(statement, 19, record->AskPrice1);
-	duckdb_bind_double(statement, 20, record->AskPrice2);
-	duckdb_bind_double(statement, 21, record->AskPrice3);
-	duckdb_bind_double(statement, 22, record->AskPrice4);
-	duckdb_bind_double(statement, 23, record->AskPrice5);
-	duckdb_bind_double(statement, 24, record->AskPrice6);
-	duckdb_bind_double(statement, 25, record->AskPrice7);
-	duckdb_bind_double(statement, 26, record->AskPrice8);
-	duckdb_bind_double(statement, 27, record->AskPrice9);
-	duckdb_bind_double(statement, 28, record->AskPrice10);
-	duckdb_bind_int64(statement, 29, record->AskVolume1);
-	duckdb_bind_int64(statement, 30, record->AskVolume2);
-	duckdb_bind_int64(statement, 31, record->AskVolume3);
-	duckdb_bind_int64(statement, 32, record->AskVolume4);
-	duckdb_bind_int64(statement, 33, record->AskVolume5);
-	duckdb_bind_int64(statement, 34, record->AskVolume6);
-	duckdb_bind_int64(statement, 35, record->AskVolume7);
-	duckdb_bind_int64(statement, 36, record->AskVolume8);
-	duckdb_bind_int64(statement, 37, record->AskVolume9);
-	duckdb_bind_int64(statement, 38, record->AskVolume10);
-	duckdb_bind_double(statement, 39, record->BidPrice1);
-	duckdb_bind_double(statement, 40, record->BidPrice2);
-	duckdb_bind_double(statement, 41, record->BidPrice3);
-	duckdb_bind_double(statement, 42, record->BidPrice4);
-	duckdb_bind_double(statement, 43, record->BidPrice5);
-	duckdb_bind_double(statement, 44, record->BidPrice6);
-	duckdb_bind_double(statement, 45, record->BidPrice7);
-	duckdb_bind_double(statement, 46, record->BidPrice8);
-	duckdb_bind_double(statement, 47, record->BidPrice9);
-	duckdb_bind_double(statement, 48, record->BidPrice10);
-	duckdb_bind_int64(statement, 49, record->BidVolume1);
-	duckdb_bind_int64(statement, 50, record->BidVolume2);
-	duckdb_bind_int64(statement, 51, record->BidVolume3);
-	duckdb_bind_int64(statement, 52, record->BidVolume4);
-	duckdb_bind_int64(statement, 53, record->BidVolume5);
-	duckdb_bind_int64(statement, 54, record->BidVolume6);
-	duckdb_bind_int64(statement, 55, record->BidVolume7);
-	duckdb_bind_int64(statement, 56, record->BidVolume8);
-	duckdb_bind_int64(statement, 57, record->BidVolume9);
-	duckdb_bind_int64(statement, 58, record->BidVolume10);
-	duckdb_bind_varchar(statement, 59, record->TradingDay);
-	duckdb_bind_varchar(statement, 60, record->ExchangeID);
-	duckdb_bind_varchar(statement, 61, record->InstrumentID);
-}
-void DuckDB::SetStatementForDepthMarketDataPrimaryKey(duckdb_prepared_statement statement, DepthMarketData* record)
-{
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_varchar(statement, 2, record->ExchangeID);
-	duckdb_bind_varchar(statement, 3, record->InstrumentID);
 }
 bool DuckDB::AppendForSEBrokerRecord(duckdb_appender appender, SEBroker* record)
 {
@@ -3233,5 +3029,209 @@ void DuckDB::SetStatementForSEBrokerLoginSessionPrimaryKey(duckdb_prepared_state
 void DuckDB::SetStatementForSEBrokerLoginSessionIndexBrokerID(duckdb_prepared_statement statement, SEBrokerLoginSession* record)
 {
 	duckdb_bind_int32(statement, 1, record->BrokerID);
+}
+bool DuckDB::AppendForDepthMarketDataRecord(duckdb_appender appender, DepthMarketData* record)
+{
+	duckdb_append_varchar(appender, record->TradingDay);
+	duckdb_append_varchar(appender, record->ExchangeID);
+	duckdb_append_varchar(appender, record->InstrumentID);
+	duckdb_append_int64(appender, record->UpdateTs);
+	duckdb_append_double(appender, record->LastPrice);
+	duckdb_append_double(appender, record->PreSettlementPrice);
+	duckdb_append_double(appender, record->PreClosePrice);
+	duckdb_append_double(appender, record->PreOpenInterest);
+	duckdb_append_double(appender, record->OpenPrice);
+	duckdb_append_double(appender, record->HighestPrice);
+	duckdb_append_double(appender, record->LowestPrice);
+	duckdb_append_double(appender, record->ClosePrice);
+	duckdb_append_int64(appender, record->CurrVolume);
+	duckdb_append_int64(appender, record->Volume);
+	duckdb_append_double(appender, record->CurrTurnover);
+	duckdb_append_double(appender, record->Turnover);
+	duckdb_append_double(appender, record->OpenInterest);
+	duckdb_append_double(appender, record->SettlementPrice);
+	duckdb_append_double(appender, record->UpperLimitPrice);
+	duckdb_append_double(appender, record->LowerLimitPrice);
+	duckdb_append_double(appender, record->AveragePrice);
+	duckdb_append_double(appender, record->AskPrice1);
+	duckdb_append_double(appender, record->AskPrice2);
+	duckdb_append_double(appender, record->AskPrice3);
+	duckdb_append_double(appender, record->AskPrice4);
+	duckdb_append_double(appender, record->AskPrice5);
+	duckdb_append_double(appender, record->AskPrice6);
+	duckdb_append_double(appender, record->AskPrice7);
+	duckdb_append_double(appender, record->AskPrice8);
+	duckdb_append_double(appender, record->AskPrice9);
+	duckdb_append_double(appender, record->AskPrice10);
+	duckdb_append_int64(appender, record->AskVolume1);
+	duckdb_append_int64(appender, record->AskVolume2);
+	duckdb_append_int64(appender, record->AskVolume3);
+	duckdb_append_int64(appender, record->AskVolume4);
+	duckdb_append_int64(appender, record->AskVolume5);
+	duckdb_append_int64(appender, record->AskVolume6);
+	duckdb_append_int64(appender, record->AskVolume7);
+	duckdb_append_int64(appender, record->AskVolume8);
+	duckdb_append_int64(appender, record->AskVolume9);
+	duckdb_append_int64(appender, record->AskVolume10);
+	duckdb_append_double(appender, record->BidPrice1);
+	duckdb_append_double(appender, record->BidPrice2);
+	duckdb_append_double(appender, record->BidPrice3);
+	duckdb_append_double(appender, record->BidPrice4);
+	duckdb_append_double(appender, record->BidPrice5);
+	duckdb_append_double(appender, record->BidPrice6);
+	duckdb_append_double(appender, record->BidPrice7);
+	duckdb_append_double(appender, record->BidPrice8);
+	duckdb_append_double(appender, record->BidPrice9);
+	duckdb_append_double(appender, record->BidPrice10);
+	duckdb_append_int64(appender, record->BidVolume1);
+	duckdb_append_int64(appender, record->BidVolume2);
+	duckdb_append_int64(appender, record->BidVolume3);
+	duckdb_append_int64(appender, record->BidVolume4);
+	duckdb_append_int64(appender, record->BidVolume5);
+	duckdb_append_int64(appender, record->BidVolume6);
+	duckdb_append_int64(appender, record->BidVolume7);
+	duckdb_append_int64(appender, record->BidVolume8);
+	duckdb_append_int64(appender, record->BidVolume9);
+	duckdb_append_int64(appender, record->BidVolume10);
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertDepthMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForDepthMarketDataRecord(duckdb_prepared_statement statement, DepthMarketData* record)
+{
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->ExchangeID);
+	duckdb_bind_varchar(statement, 3, record->InstrumentID);
+	duckdb_bind_int64(statement, 4, record->UpdateTs);
+	duckdb_bind_double(statement, 5, record->LastPrice);
+	duckdb_bind_double(statement, 6, record->PreSettlementPrice);
+	duckdb_bind_double(statement, 7, record->PreClosePrice);
+	duckdb_bind_double(statement, 8, record->PreOpenInterest);
+	duckdb_bind_double(statement, 9, record->OpenPrice);
+	duckdb_bind_double(statement, 10, record->HighestPrice);
+	duckdb_bind_double(statement, 11, record->LowestPrice);
+	duckdb_bind_double(statement, 12, record->ClosePrice);
+	duckdb_bind_int64(statement, 13, record->CurrVolume);
+	duckdb_bind_int64(statement, 14, record->Volume);
+	duckdb_bind_double(statement, 15, record->CurrTurnover);
+	duckdb_bind_double(statement, 16, record->Turnover);
+	duckdb_bind_double(statement, 17, record->OpenInterest);
+	duckdb_bind_double(statement, 18, record->SettlementPrice);
+	duckdb_bind_double(statement, 19, record->UpperLimitPrice);
+	duckdb_bind_double(statement, 20, record->LowerLimitPrice);
+	duckdb_bind_double(statement, 21, record->AveragePrice);
+	duckdb_bind_double(statement, 22, record->AskPrice1);
+	duckdb_bind_double(statement, 23, record->AskPrice2);
+	duckdb_bind_double(statement, 24, record->AskPrice3);
+	duckdb_bind_double(statement, 25, record->AskPrice4);
+	duckdb_bind_double(statement, 26, record->AskPrice5);
+	duckdb_bind_double(statement, 27, record->AskPrice6);
+	duckdb_bind_double(statement, 28, record->AskPrice7);
+	duckdb_bind_double(statement, 29, record->AskPrice8);
+	duckdb_bind_double(statement, 30, record->AskPrice9);
+	duckdb_bind_double(statement, 31, record->AskPrice10);
+	duckdb_bind_int64(statement, 32, record->AskVolume1);
+	duckdb_bind_int64(statement, 33, record->AskVolume2);
+	duckdb_bind_int64(statement, 34, record->AskVolume3);
+	duckdb_bind_int64(statement, 35, record->AskVolume4);
+	duckdb_bind_int64(statement, 36, record->AskVolume5);
+	duckdb_bind_int64(statement, 37, record->AskVolume6);
+	duckdb_bind_int64(statement, 38, record->AskVolume7);
+	duckdb_bind_int64(statement, 39, record->AskVolume8);
+	duckdb_bind_int64(statement, 40, record->AskVolume9);
+	duckdb_bind_int64(statement, 41, record->AskVolume10);
+	duckdb_bind_double(statement, 42, record->BidPrice1);
+	duckdb_bind_double(statement, 43, record->BidPrice2);
+	duckdb_bind_double(statement, 44, record->BidPrice3);
+	duckdb_bind_double(statement, 45, record->BidPrice4);
+	duckdb_bind_double(statement, 46, record->BidPrice5);
+	duckdb_bind_double(statement, 47, record->BidPrice6);
+	duckdb_bind_double(statement, 48, record->BidPrice7);
+	duckdb_bind_double(statement, 49, record->BidPrice8);
+	duckdb_bind_double(statement, 50, record->BidPrice9);
+	duckdb_bind_double(statement, 51, record->BidPrice10);
+	duckdb_bind_int64(statement, 52, record->BidVolume1);
+	duckdb_bind_int64(statement, 53, record->BidVolume2);
+	duckdb_bind_int64(statement, 54, record->BidVolume3);
+	duckdb_bind_int64(statement, 55, record->BidVolume4);
+	duckdb_bind_int64(statement, 56, record->BidVolume5);
+	duckdb_bind_int64(statement, 57, record->BidVolume6);
+	duckdb_bind_int64(statement, 58, record->BidVolume7);
+	duckdb_bind_int64(statement, 59, record->BidVolume8);
+	duckdb_bind_int64(statement, 60, record->BidVolume9);
+	duckdb_bind_int64(statement, 61, record->BidVolume10);
+}
+void DuckDB::SetStatementForDepthMarketDataRecordUpdate(duckdb_prepared_statement statement, DepthMarketData* record)
+{
+	duckdb_bind_int64(statement, 1, record->UpdateTs);
+	duckdb_bind_double(statement, 2, record->LastPrice);
+	duckdb_bind_double(statement, 3, record->PreSettlementPrice);
+	duckdb_bind_double(statement, 4, record->PreClosePrice);
+	duckdb_bind_double(statement, 5, record->PreOpenInterest);
+	duckdb_bind_double(statement, 6, record->OpenPrice);
+	duckdb_bind_double(statement, 7, record->HighestPrice);
+	duckdb_bind_double(statement, 8, record->LowestPrice);
+	duckdb_bind_double(statement, 9, record->ClosePrice);
+	duckdb_bind_int64(statement, 10, record->CurrVolume);
+	duckdb_bind_int64(statement, 11, record->Volume);
+	duckdb_bind_double(statement, 12, record->CurrTurnover);
+	duckdb_bind_double(statement, 13, record->Turnover);
+	duckdb_bind_double(statement, 14, record->OpenInterest);
+	duckdb_bind_double(statement, 15, record->SettlementPrice);
+	duckdb_bind_double(statement, 16, record->UpperLimitPrice);
+	duckdb_bind_double(statement, 17, record->LowerLimitPrice);
+	duckdb_bind_double(statement, 18, record->AveragePrice);
+	duckdb_bind_double(statement, 19, record->AskPrice1);
+	duckdb_bind_double(statement, 20, record->AskPrice2);
+	duckdb_bind_double(statement, 21, record->AskPrice3);
+	duckdb_bind_double(statement, 22, record->AskPrice4);
+	duckdb_bind_double(statement, 23, record->AskPrice5);
+	duckdb_bind_double(statement, 24, record->AskPrice6);
+	duckdb_bind_double(statement, 25, record->AskPrice7);
+	duckdb_bind_double(statement, 26, record->AskPrice8);
+	duckdb_bind_double(statement, 27, record->AskPrice9);
+	duckdb_bind_double(statement, 28, record->AskPrice10);
+	duckdb_bind_int64(statement, 29, record->AskVolume1);
+	duckdb_bind_int64(statement, 30, record->AskVolume2);
+	duckdb_bind_int64(statement, 31, record->AskVolume3);
+	duckdb_bind_int64(statement, 32, record->AskVolume4);
+	duckdb_bind_int64(statement, 33, record->AskVolume5);
+	duckdb_bind_int64(statement, 34, record->AskVolume6);
+	duckdb_bind_int64(statement, 35, record->AskVolume7);
+	duckdb_bind_int64(statement, 36, record->AskVolume8);
+	duckdb_bind_int64(statement, 37, record->AskVolume9);
+	duckdb_bind_int64(statement, 38, record->AskVolume10);
+	duckdb_bind_double(statement, 39, record->BidPrice1);
+	duckdb_bind_double(statement, 40, record->BidPrice2);
+	duckdb_bind_double(statement, 41, record->BidPrice3);
+	duckdb_bind_double(statement, 42, record->BidPrice4);
+	duckdb_bind_double(statement, 43, record->BidPrice5);
+	duckdb_bind_double(statement, 44, record->BidPrice6);
+	duckdb_bind_double(statement, 45, record->BidPrice7);
+	duckdb_bind_double(statement, 46, record->BidPrice8);
+	duckdb_bind_double(statement, 47, record->BidPrice9);
+	duckdb_bind_double(statement, 48, record->BidPrice10);
+	duckdb_bind_int64(statement, 49, record->BidVolume1);
+	duckdb_bind_int64(statement, 50, record->BidVolume2);
+	duckdb_bind_int64(statement, 51, record->BidVolume3);
+	duckdb_bind_int64(statement, 52, record->BidVolume4);
+	duckdb_bind_int64(statement, 53, record->BidVolume5);
+	duckdb_bind_int64(statement, 54, record->BidVolume6);
+	duckdb_bind_int64(statement, 55, record->BidVolume7);
+	duckdb_bind_int64(statement, 56, record->BidVolume8);
+	duckdb_bind_int64(statement, 57, record->BidVolume9);
+	duckdb_bind_int64(statement, 58, record->BidVolume10);
+	duckdb_bind_varchar(statement, 59, record->TradingDay);
+	duckdb_bind_varchar(statement, 60, record->ExchangeID);
+	duckdb_bind_varchar(statement, 61, record->InstrumentID);
+}
+void DuckDB::SetStatementForDepthMarketDataPrimaryKey(duckdb_prepared_statement statement, DepthMarketData* record)
+{
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->ExchangeID);
+	duckdb_bind_varchar(statement, 3, record->InstrumentID);
 }
 
