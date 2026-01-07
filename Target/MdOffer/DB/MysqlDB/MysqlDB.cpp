@@ -1,0 +1,738 @@
+﻿#pragma warning(disable: 4311)
+#include "MysqlDB.h"
+#include "Constant.h"
+#include "Logger.h"
+#include "Utility.h"
+#include "TimeUtility.h"
+#include <string.h>
+#include <cstring>
+
+using namespace mdb;
+using namespace std;
+using namespace std::chrono;
+
+MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::string& passwd)
+{
+	m_Host = host;
+	m_User = user;
+	m_Passwd = passwd;
+	m_SqlBuff = new char[BuffSize];
+
+	m_Driver = sql::mysql::get_driver_instance();
+	m_DBConnection = nullptr;
+	m_Statement = nullptr;
+	
+	m_DepthMarketDataCreateStatement = nullptr;
+	m_DepthMarketDataDropStatement = nullptr;
+	m_DepthMarketDataInsertStatement = nullptr;
+	m_DepthMarketDataDeleteStatement = nullptr;
+	m_DepthMarketDataUpdateStatement = nullptr;
+	m_DepthMarketDataSelectStatement = nullptr;
+	m_DepthMarketDataTruncateStatement = nullptr;
+
+	m_BarMarketDataCreateStatement = nullptr;
+	m_BarMarketDataDropStatement = nullptr;
+	m_BarMarketDataInsertStatement = nullptr;
+	m_BarMarketDataDeleteStatement = nullptr;
+	m_BarMarketDataUpdateStatement = nullptr;
+	m_BarMarketDataSelectStatement = nullptr;
+	m_BarMarketDataTruncateStatement = nullptr;
+
+}
+MysqlDB::~MysqlDB()
+{
+	delete[] m_SqlBuff;
+	DisConnect();
+	if (m_DBConnection != nullptr)
+	{
+		m_DBConnection->close();
+	}
+}
+bool MysqlDB::Connect()
+{
+	try
+	{
+		if (m_Driver == nullptr)
+		{
+			m_Driver = sql::mysql::get_driver_instance();
+		}
+		if (m_DBConnection == nullptr)
+		{
+			m_DBConnection = m_Driver->connect(m_Host, m_User, m_Passwd);
+			if (m_DBConnection == nullptr)
+			{
+				WriteLog(LogLevel::Info, "MysqlDB Connect Failed");
+				return false;
+			}
+		}
+		else
+		{
+			auto result = m_DBConnection->reconnect();
+			WriteLog(LogLevel::Info, "MysqlDB Reconnect Result:[%d]", result);
+			if (!result)
+			{
+				m_Driver = nullptr;
+				m_DBConnection = nullptr;
+				return false;
+			}
+		}
+		m_Statement = m_DBConnection->createStatement();
+	}
+	catch (std::exception e)
+	{
+		WriteLog(LogLevel::Warning, "Connect MysqlDB Failed. Msg:%s", e.what());
+		return false;
+	}
+	return true;
+}
+void MysqlDB::DisConnect()
+{
+	if (m_Statement != nullptr)
+	{
+		m_Statement->close();
+		m_Statement = nullptr;
+	}
+	if (m_DepthMarketDataCreateStatement != nullptr)
+	{
+		m_DepthMarketDataCreateStatement->close();
+		m_DepthMarketDataCreateStatement = nullptr;
+	}
+	if (m_DepthMarketDataDropStatement != nullptr)
+	{
+		m_DepthMarketDataDropStatement->close();
+		m_DepthMarketDataDropStatement = nullptr;
+	}
+	if (m_DepthMarketDataInsertStatement != nullptr)
+	{
+		m_DepthMarketDataInsertStatement->close();
+		m_DepthMarketDataInsertStatement = nullptr;
+	}
+	if (m_DepthMarketDataDeleteStatement != nullptr)
+	{
+		m_DepthMarketDataDeleteStatement->close();
+		m_DepthMarketDataDeleteStatement = nullptr;
+	}
+	if (m_DepthMarketDataUpdateStatement != nullptr)
+	{
+		m_DepthMarketDataUpdateStatement->close();
+		m_DepthMarketDataUpdateStatement = nullptr;
+	}
+	if (m_DepthMarketDataSelectStatement != nullptr)
+	{
+		m_DepthMarketDataSelectStatement->close();
+		m_DepthMarketDataSelectStatement = nullptr;
+	}
+	if (m_DepthMarketDataTruncateStatement != nullptr)
+	{
+		m_DepthMarketDataTruncateStatement->close();
+		m_DepthMarketDataTruncateStatement = nullptr;
+	}
+	if (m_BarMarketDataCreateStatement != nullptr)
+	{
+		m_BarMarketDataCreateStatement->close();
+		m_BarMarketDataCreateStatement = nullptr;
+	}
+	if (m_BarMarketDataDropStatement != nullptr)
+	{
+		m_BarMarketDataDropStatement->close();
+		m_BarMarketDataDropStatement = nullptr;
+	}
+	if (m_BarMarketDataInsertStatement != nullptr)
+	{
+		m_BarMarketDataInsertStatement->close();
+		m_BarMarketDataInsertStatement = nullptr;
+	}
+	if (m_BarMarketDataDeleteStatement != nullptr)
+	{
+		m_BarMarketDataDeleteStatement->close();
+		m_BarMarketDataDeleteStatement = nullptr;
+	}
+	if (m_BarMarketDataUpdateStatement != nullptr)
+	{
+		m_BarMarketDataUpdateStatement->close();
+		m_BarMarketDataUpdateStatement = nullptr;
+	}
+	if (m_BarMarketDataSelectStatement != nullptr)
+	{
+		m_BarMarketDataSelectStatement->close();
+		m_BarMarketDataSelectStatement = nullptr;
+	}
+	if (m_BarMarketDataTruncateStatement != nullptr)
+	{
+		m_BarMarketDataTruncateStatement->close();
+		m_BarMarketDataTruncateStatement = nullptr;
+	}
+}
+void MysqlDB::InitDB()
+{
+	m_Statement->executeUpdate("Truncate Table t_DepthMarketData;");
+	m_Statement->executeUpdate("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
+	m_Statement->executeUpdate("Truncate Table t_BarMarketData;");
+	m_Statement->executeUpdate("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
+}
+void MysqlDB::CreateTables()
+{
+	CreateDepthMarketData();
+	CreateBarMarketData();
+}
+void MysqlDB::DropTables()
+{
+	DropDepthMarketData();
+	DropBarMarketData();
+}
+void MysqlDB::TruncateTables()
+{
+	TruncateDepthMarketData();
+	TruncateBarMarketData();
+}
+void MysqlDB::TruncateSessionTables()
+{
+	auto start = steady_clock::now();
+	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+
+void MysqlDB::CreateDepthMarketData()
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataCreateStatement == nullptr)
+	{
+		m_DepthMarketDataCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_DepthMarketData(`TradingDay` char(9), `ExchangeID` char(8), `InstrumentID` char(32), `UpdateTs` bigint, `LastPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `PreOpenInterest` decimal(24,8), `OpenPrice` decimal(24,8), `HighestPrice` decimal(24,8), `LowestPrice` decimal(24,8), `ClosePrice` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), `SettlementPrice` decimal(24,8), `UpperLimitPrice` decimal(24,8), `LowerLimitPrice` decimal(24,8), `AveragePrice` decimal(24,8), `AskPrice1` decimal(24,8), `AskPrice2` decimal(24,8), `AskPrice3` decimal(24,8), `AskPrice4` decimal(24,8), `AskPrice5` decimal(24,8), `AskPrice6` decimal(24,8), `AskPrice7` decimal(24,8), `AskPrice8` decimal(24,8), `AskPrice9` decimal(24,8), `AskPrice10` decimal(24,8), `AskVolume1` bigint, `AskVolume2` bigint, `AskVolume3` bigint, `AskVolume4` bigint, `AskVolume5` bigint, `AskVolume6` bigint, `AskVolume7` bigint, `AskVolume8` bigint, `AskVolume9` bigint, `AskVolume10` bigint, `BidPrice1` decimal(24,8), `BidPrice2` decimal(24,8), `BidPrice3` decimal(24,8), `BidPrice4` decimal(24,8), `BidPrice5` decimal(24,8), `BidPrice6` decimal(24,8), `BidPrice7` decimal(24,8), `BidPrice8` decimal(24,8), `BidPrice9` decimal(24,8), `BidPrice10` decimal(24,8), `BidVolume1` bigint, `BidVolume2` bigint, `BidVolume3` bigint, `BidVolume4` bigint, `BidVolume5` bigint, `BidVolume6` bigint, `BidVolume7` bigint, `BidVolume8` bigint, `BidVolume9` bigint, `BidVolume10` bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+	}
+	m_DepthMarketDataCreateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms", duration);
+}
+void MysqlDB::DropDepthMarketData()
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataDropStatement == nullptr)
+	{
+		m_DepthMarketDataDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_DepthMarketData;");
+	}
+	m_DepthMarketDataDropStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms", duration);
+}
+void MysqlDB::InsertDepthMarketData(DepthMarketData* record)
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataInsertStatement == nullptr)
+	{
+		m_DepthMarketDataInsertStatement = m_DBConnection->prepareStatement("insert into t_DepthMarketData Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForDepthMarketDataRecord(m_DepthMarketDataInsertStatement, record);
+	
+	m_DepthMarketDataInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertDepthMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertDepthMarketData(std::list<DepthMarketData*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_DepthMarketData Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_DepthMarketData Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertDepthMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteDepthMarketData(DepthMarketData* record)
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataDeleteStatement == nullptr)
+	{
+		m_DepthMarketDataDeleteStatement = m_DBConnection->prepareStatement("delete from t_DepthMarketData where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;");
+	}
+	SetStatementForDepthMarketDataPrimaryKey(m_DepthMarketDataDeleteStatement, record->TradingDay, record->ExchangeID, record->InstrumentID);
+	m_DepthMarketDataDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteDepthMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateDepthMarketData(DepthMarketData* record)
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataUpdateStatement == nullptr)
+	{
+		m_DepthMarketDataUpdateStatement = m_DBConnection->prepareStatement("update t_DepthMarketData set UpdateTs = ?, LastPrice = ?, PreSettlementPrice = ?, PreClosePrice = ?, PreOpenInterest = ?, OpenPrice = ?, HighestPrice = ?, LowestPrice = ?, ClosePrice = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ?, SettlementPrice = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, AveragePrice = ?, AskPrice1 = ?, AskPrice2 = ?, AskPrice3 = ?, AskPrice4 = ?, AskPrice5 = ?, AskPrice6 = ?, AskPrice7 = ?, AskPrice8 = ?, AskPrice9 = ?, AskPrice10 = ?, AskVolume1 = ?, AskVolume2 = ?, AskVolume3 = ?, AskVolume4 = ?, AskVolume5 = ?, AskVolume6 = ?, AskVolume7 = ?, AskVolume8 = ?, AskVolume9 = ?, AskVolume10 = ?, BidPrice1 = ?, BidPrice2 = ?, BidPrice3 = ?, BidPrice4 = ?, BidPrice5 = ?, BidPrice6 = ?, BidPrice7 = ?, BidPrice8 = ?, BidPrice9 = ?, BidPrice10 = ?, BidVolume1 = ?, BidVolume2 = ?, BidVolume3 = ?, BidVolume4 = ?, BidVolume5 = ?, BidVolume6 = ?, BidVolume7 = ?, BidVolume8 = ?, BidVolume9 = ?, BidVolume10 = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ?;");
+	}
+	SetStatementForDepthMarketDataRecordUpdate(m_DepthMarketDataUpdateStatement, record);
+	m_DepthMarketDataUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectDepthMarketData(std::list<DepthMarketData*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataSelectStatement == nullptr)
+	{
+		m_DepthMarketDataSelectStatement = m_DBConnection->prepareStatement("select * from t_DepthMarketData;");
+	}
+	auto result = m_DepthMarketDataSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectDepthMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateDepthMarketData()
+{
+	auto start = steady_clock::now();
+	if (m_DepthMarketDataTruncateStatement == nullptr)
+	{
+		m_DepthMarketDataTruncateStatement = m_DBConnection->prepareStatement("truncate table t_DepthMarketData;");
+	}
+	m_DepthMarketDataTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateDepthMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::CreateBarMarketData()
+{
+	auto start = steady_clock::now();
+	if (m_BarMarketDataCreateStatement == nullptr)
+	{
+		m_BarMarketDataCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` char(9), `ExchangeID` char(8), `InstrumentID` char(32), `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `Open` decimal(24,8), `High` decimal(24,8), `Low` decimal(24,8), `Close` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+	}
+	m_BarMarketDataCreateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms", duration);
+}
+void MysqlDB::DropBarMarketData()
+{
+	auto start = steady_clock::now();
+	if (m_BarMarketDataDropStatement == nullptr)
+	{
+		m_BarMarketDataDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_BarMarketData;");
+	}
+	m_BarMarketDataDropStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms", duration);
+}
+void MysqlDB::InsertBarMarketData(BarMarketData* record)
+{
+	auto start = steady_clock::now();
+	if (m_BarMarketDataInsertStatement == nullptr)
+	{
+		m_BarMarketDataInsertStatement = m_DBConnection->prepareStatement("insert into t_BarMarketData Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForBarMarketDataRecord(m_BarMarketDataInsertStatement, record);
+	
+	m_BarMarketDataInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertBarMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertBarMarketData(std::list<BarMarketData*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_BarMarketData Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertBarMarketData Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_BarMarketData Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertBarMarketData Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertBarMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteBarMarketData(BarMarketData* record)
+{
+	auto start = steady_clock::now();
+	if (m_BarMarketDataDeleteStatement == nullptr)
+	{
+		m_BarMarketDataDeleteStatement = m_DBConnection->prepareStatement("delete from t_BarMarketData where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;");
+	}
+	SetStatementForBarMarketDataPrimaryKey(m_BarMarketDataDeleteStatement, record->TradingDay, record->ExchangeID, record->InstrumentID, record->BarPreces, record->BarPeriod, record->BarTime);
+	m_BarMarketDataDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteBarMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateBarMarketData(BarMarketData* record)
+{
+	auto start = steady_clock::now();
+	if (m_BarMarketDataUpdateStatement == nullptr)
+	{
+		m_BarMarketDataUpdateStatement = m_DBConnection->prepareStatement("update t_BarMarketData set UpdateTs = ?, PreSettlementPrice = ?, PreClosePrice = ?, Open = ?, High = ?, Low = ?, Close = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;");
+	}
+	SetStatementForBarMarketDataRecordUpdate(m_BarMarketDataUpdateStatement, record);
+	m_BarMarketDataUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateBarMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectBarMarketData(std::list<BarMarketData*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_BarMarketDataSelectStatement == nullptr)
+	{
+		m_BarMarketDataSelectStatement = m_DBConnection->prepareStatement("select * from t_BarMarketData;");
+	}
+	auto result = m_BarMarketDataSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectBarMarketData Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateBarMarketData()
+{
+	auto start = steady_clock::now();
+	if (m_BarMarketDataTruncateStatement == nullptr)
+	{
+		m_BarMarketDataTruncateStatement = m_DBConnection->prepareStatement("truncate table t_BarMarketData;");
+	}
+	m_BarMarketDataTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateBarMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+
+
+void MysqlDB::SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, DepthMarketData* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->ExchangeID);
+	statement->setString(3, record->InstrumentID);
+	statement->setInt64(4, record->UpdateTs);
+	statement->setDouble(5, record->LastPrice);
+	statement->setDouble(6, record->PreSettlementPrice);
+	statement->setDouble(7, record->PreClosePrice);
+	statement->setDouble(8, record->PreOpenInterest);
+	statement->setDouble(9, record->OpenPrice);
+	statement->setDouble(10, record->HighestPrice);
+	statement->setDouble(11, record->LowestPrice);
+	statement->setDouble(12, record->ClosePrice);
+	statement->setInt64(13, record->CurrVolume);
+	statement->setInt64(14, record->Volume);
+	statement->setDouble(15, record->CurrTurnover);
+	statement->setDouble(16, record->Turnover);
+	statement->setDouble(17, record->OpenInterest);
+	statement->setDouble(18, record->SettlementPrice);
+	statement->setDouble(19, record->UpperLimitPrice);
+	statement->setDouble(20, record->LowerLimitPrice);
+	statement->setDouble(21, record->AveragePrice);
+	statement->setDouble(22, record->AskPrice1);
+	statement->setDouble(23, record->AskPrice2);
+	statement->setDouble(24, record->AskPrice3);
+	statement->setDouble(25, record->AskPrice4);
+	statement->setDouble(26, record->AskPrice5);
+	statement->setDouble(27, record->AskPrice6);
+	statement->setDouble(28, record->AskPrice7);
+	statement->setDouble(29, record->AskPrice8);
+	statement->setDouble(30, record->AskPrice9);
+	statement->setDouble(31, record->AskPrice10);
+	statement->setInt64(32, record->AskVolume1);
+	statement->setInt64(33, record->AskVolume2);
+	statement->setInt64(34, record->AskVolume3);
+	statement->setInt64(35, record->AskVolume4);
+	statement->setInt64(36, record->AskVolume5);
+	statement->setInt64(37, record->AskVolume6);
+	statement->setInt64(38, record->AskVolume7);
+	statement->setInt64(39, record->AskVolume8);
+	statement->setInt64(40, record->AskVolume9);
+	statement->setInt64(41, record->AskVolume10);
+	statement->setDouble(42, record->BidPrice1);
+	statement->setDouble(43, record->BidPrice2);
+	statement->setDouble(44, record->BidPrice3);
+	statement->setDouble(45, record->BidPrice4);
+	statement->setDouble(46, record->BidPrice5);
+	statement->setDouble(47, record->BidPrice6);
+	statement->setDouble(48, record->BidPrice7);
+	statement->setDouble(49, record->BidPrice8);
+	statement->setDouble(50, record->BidPrice9);
+	statement->setDouble(51, record->BidPrice10);
+	statement->setInt64(52, record->BidVolume1);
+	statement->setInt64(53, record->BidVolume2);
+	statement->setInt64(54, record->BidVolume3);
+	statement->setInt64(55, record->BidVolume4);
+	statement->setInt64(56, record->BidVolume5);
+	statement->setInt64(57, record->BidVolume6);
+	statement->setInt64(58, record->BidVolume7);
+	statement->setInt64(59, record->BidVolume8);
+	statement->setInt64(60, record->BidVolume9);
+	statement->setInt64(61, record->BidVolume10);
+}
+void MysqlDB::SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, DepthMarketData* record)
+{
+	statement->setInt64(1, record->UpdateTs);
+	statement->setDouble(2, record->LastPrice);
+	statement->setDouble(3, record->PreSettlementPrice);
+	statement->setDouble(4, record->PreClosePrice);
+	statement->setDouble(5, record->PreOpenInterest);
+	statement->setDouble(6, record->OpenPrice);
+	statement->setDouble(7, record->HighestPrice);
+	statement->setDouble(8, record->LowestPrice);
+	statement->setDouble(9, record->ClosePrice);
+	statement->setInt64(10, record->CurrVolume);
+	statement->setInt64(11, record->Volume);
+	statement->setDouble(12, record->CurrTurnover);
+	statement->setDouble(13, record->Turnover);
+	statement->setDouble(14, record->OpenInterest);
+	statement->setDouble(15, record->SettlementPrice);
+	statement->setDouble(16, record->UpperLimitPrice);
+	statement->setDouble(17, record->LowerLimitPrice);
+	statement->setDouble(18, record->AveragePrice);
+	statement->setDouble(19, record->AskPrice1);
+	statement->setDouble(20, record->AskPrice2);
+	statement->setDouble(21, record->AskPrice3);
+	statement->setDouble(22, record->AskPrice4);
+	statement->setDouble(23, record->AskPrice5);
+	statement->setDouble(24, record->AskPrice6);
+	statement->setDouble(25, record->AskPrice7);
+	statement->setDouble(26, record->AskPrice8);
+	statement->setDouble(27, record->AskPrice9);
+	statement->setDouble(28, record->AskPrice10);
+	statement->setInt64(29, record->AskVolume1);
+	statement->setInt64(30, record->AskVolume2);
+	statement->setInt64(31, record->AskVolume3);
+	statement->setInt64(32, record->AskVolume4);
+	statement->setInt64(33, record->AskVolume5);
+	statement->setInt64(34, record->AskVolume6);
+	statement->setInt64(35, record->AskVolume7);
+	statement->setInt64(36, record->AskVolume8);
+	statement->setInt64(37, record->AskVolume9);
+	statement->setInt64(38, record->AskVolume10);
+	statement->setDouble(39, record->BidPrice1);
+	statement->setDouble(40, record->BidPrice2);
+	statement->setDouble(41, record->BidPrice3);
+	statement->setDouble(42, record->BidPrice4);
+	statement->setDouble(43, record->BidPrice5);
+	statement->setDouble(44, record->BidPrice6);
+	statement->setDouble(45, record->BidPrice7);
+	statement->setDouble(46, record->BidPrice8);
+	statement->setDouble(47, record->BidPrice9);
+	statement->setDouble(48, record->BidPrice10);
+	statement->setInt64(49, record->BidVolume1);
+	statement->setInt64(50, record->BidVolume2);
+	statement->setInt64(51, record->BidVolume3);
+	statement->setInt64(52, record->BidVolume4);
+	statement->setInt64(53, record->BidVolume5);
+	statement->setInt64(54, record->BidVolume6);
+	statement->setInt64(55, record->BidVolume7);
+	statement->setInt64(56, record->BidVolume8);
+	statement->setInt64(57, record->BidVolume9);
+	statement->setInt64(58, record->BidVolume10);
+	statement->setString(59, record->TradingDay);
+	statement->setString(60, record->ExchangeID);
+	statement->setString(61, record->InstrumentID);
+}
+void MysqlDB::SetStatementForDepthMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+{
+	statement->setString(1, TradingDay);
+	statement->setString(2, ExchangeID);
+	statement->setString(3, InstrumentID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<DepthMarketData*>& records)
+{
+	DepthMarketData* record = DepthMarketData::Allocate();
+	Strcpy(record->TradingDay, result->getString(1).c_str());
+	Strcpy(record->ExchangeID, result->getString(2).c_str());
+	Strcpy(record->InstrumentID, result->getString(3).c_str());
+	record->UpdateTs = result->getInt64(4);
+	record->LastPrice = result->getDouble(5);
+	record->PreSettlementPrice = result->getDouble(6);
+	record->PreClosePrice = result->getDouble(7);
+	record->PreOpenInterest = result->getDouble(8);
+	record->OpenPrice = result->getDouble(9);
+	record->HighestPrice = result->getDouble(10);
+	record->LowestPrice = result->getDouble(11);
+	record->ClosePrice = result->getDouble(12);
+	record->CurrVolume = result->getInt64(13);
+	record->Volume = result->getInt64(14);
+	record->CurrTurnover = result->getDouble(15);
+	record->Turnover = result->getDouble(16);
+	record->OpenInterest = result->getDouble(17);
+	record->SettlementPrice = result->getDouble(18);
+	record->UpperLimitPrice = result->getDouble(19);
+	record->LowerLimitPrice = result->getDouble(20);
+	record->AveragePrice = result->getDouble(21);
+	record->AskPrice1 = result->getDouble(22);
+	record->AskPrice2 = result->getDouble(23);
+	record->AskPrice3 = result->getDouble(24);
+	record->AskPrice4 = result->getDouble(25);
+	record->AskPrice5 = result->getDouble(26);
+	record->AskPrice6 = result->getDouble(27);
+	record->AskPrice7 = result->getDouble(28);
+	record->AskPrice8 = result->getDouble(29);
+	record->AskPrice9 = result->getDouble(30);
+	record->AskPrice10 = result->getDouble(31);
+	record->AskVolume1 = result->getInt64(32);
+	record->AskVolume2 = result->getInt64(33);
+	record->AskVolume3 = result->getInt64(34);
+	record->AskVolume4 = result->getInt64(35);
+	record->AskVolume5 = result->getInt64(36);
+	record->AskVolume6 = result->getInt64(37);
+	record->AskVolume7 = result->getInt64(38);
+	record->AskVolume8 = result->getInt64(39);
+	record->AskVolume9 = result->getInt64(40);
+	record->AskVolume10 = result->getInt64(41);
+	record->BidPrice1 = result->getDouble(42);
+	record->BidPrice2 = result->getDouble(43);
+	record->BidPrice3 = result->getDouble(44);
+	record->BidPrice4 = result->getDouble(45);
+	record->BidPrice5 = result->getDouble(46);
+	record->BidPrice6 = result->getDouble(47);
+	record->BidPrice7 = result->getDouble(48);
+	record->BidPrice8 = result->getDouble(49);
+	record->BidPrice9 = result->getDouble(50);
+	record->BidPrice10 = result->getDouble(51);
+	record->BidVolume1 = result->getInt64(52);
+	record->BidVolume2 = result->getInt64(53);
+	record->BidVolume3 = result->getInt64(54);
+	record->BidVolume4 = result->getInt64(55);
+	record->BidVolume5 = result->getInt64(56);
+	record->BidVolume6 = result->getInt64(57);
+	record->BidVolume7 = result->getInt64(58);
+	record->BidVolume8 = result->getInt64(59);
+	record->BidVolume9 = result->getInt64(60);
+	record->BidVolume10 = result->getInt64(61);
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForBarMarketDataRecord(sql::PreparedStatement* statement, BarMarketData* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->ExchangeID);
+	statement->setString(3, record->InstrumentID);
+	statement->setInt(4, int(record->BarPreces));
+	statement->setInt(5, record->BarPeriod);
+	statement->setInt64(6, record->BarTime);
+	statement->setInt64(7, record->UpdateTs);
+	statement->setDouble(8, record->PreSettlementPrice);
+	statement->setDouble(9, record->PreClosePrice);
+	statement->setDouble(10, record->Open);
+	statement->setDouble(11, record->High);
+	statement->setDouble(12, record->Low);
+	statement->setDouble(13, record->Close);
+	statement->setInt64(14, record->CurrVolume);
+	statement->setInt64(15, record->Volume);
+	statement->setDouble(16, record->CurrTurnover);
+	statement->setDouble(17, record->Turnover);
+	statement->setDouble(18, record->OpenInterest);
+}
+void MysqlDB::SetStatementForBarMarketDataRecordUpdate(sql::PreparedStatement* statement, BarMarketData* record)
+{
+	statement->setInt64(1, record->UpdateTs);
+	statement->setDouble(2, record->PreSettlementPrice);
+	statement->setDouble(3, record->PreClosePrice);
+	statement->setDouble(4, record->Open);
+	statement->setDouble(5, record->High);
+	statement->setDouble(6, record->Low);
+	statement->setDouble(7, record->Close);
+	statement->setInt64(8, record->CurrVolume);
+	statement->setInt64(9, record->Volume);
+	statement->setDouble(10, record->CurrTurnover);
+	statement->setDouble(11, record->Turnover);
+	statement->setDouble(12, record->OpenInterest);
+	statement->setString(13, record->TradingDay);
+	statement->setString(14, record->ExchangeID);
+	statement->setString(15, record->InstrumentID);
+	statement->setInt(16, int(record->BarPreces));
+	statement->setInt(17, record->BarPeriod);
+	statement->setInt64(18, record->BarTime);
+}
+void MysqlDB::SetStatementForBarMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime)
+{
+	statement->setString(1, TradingDay);
+	statement->setString(2, ExchangeID);
+	statement->setString(3, InstrumentID);
+	statement->setInt(4, int(BarPreces));
+	statement->setInt(5, BarPeriod);
+	statement->setInt64(6, BarTime);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<BarMarketData*>& records)
+{
+	BarMarketData* record = BarMarketData::Allocate();
+	Strcpy(record->TradingDay, result->getString(1).c_str());
+	Strcpy(record->ExchangeID, result->getString(2).c_str());
+	Strcpy(record->InstrumentID, result->getString(3).c_str());
+	record->BarPreces = BarPrecesType(result->getInt(4));
+	record->BarPeriod = result->getInt(5);
+	record->BarTime = result->getInt64(6);
+	record->UpdateTs = result->getInt64(7);
+	record->PreSettlementPrice = result->getDouble(8);
+	record->PreClosePrice = result->getDouble(9);
+	record->Open = result->getDouble(10);
+	record->High = result->getDouble(11);
+	record->Low = result->getDouble(12);
+	record->Close = result->getDouble(13);
+	record->CurrVolume = result->getInt64(14);
+	record->Volume = result->getInt64(15);
+	record->CurrTurnover = result->getDouble(16);
+	record->Turnover = result->getDouble(17);
+	record->OpenInterest = result->getDouble(18);
+	records.push_back(record);
+}
+

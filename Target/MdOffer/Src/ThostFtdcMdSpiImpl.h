@@ -18,13 +18,10 @@ public:
 	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast) override;
 	virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData) override;
 
-public:
 	void SetAccountInfo(AccountInfo* accountInfo);
 	void SubscribeMd(ReqSubMarketDataField* reqSubMd);
-
 private:
 	void ReqUserLogin();
-	void ReqSubscribeMd();
 
 private:
 	CThostFtdcMdApi* m_MdApi;

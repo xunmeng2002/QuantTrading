@@ -1,0 +1,36 @@
+﻿#pragma once
+#include "MdbStructs.h"
+#include <string>
+#include <list>
+
+
+class DB
+{
+public:
+	virtual bool Connect() = 0;
+	virtual void DisConnect() = 0;
+	virtual void InitDB() = 0;
+	virtual void CreateTables() = 0;
+	virtual void DropTables() = 0;
+	virtual void TruncateTables() = 0;
+	virtual void TruncateSessionTables() = 0;
+	
+	virtual void CreateDepthMarketData() = 0;
+	virtual void DropDepthMarketData() = 0;
+	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) = 0;
+	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) = 0;
+	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) = 0;
+	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) = 0;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) = 0;
+	virtual void TruncateDepthMarketData() = 0;
+
+	virtual void CreateBarMarketData() = 0;
+	virtual void DropBarMarketData() = 0;
+	virtual void InsertBarMarketData(mdb::BarMarketData* record) = 0;
+	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) = 0;
+	virtual void DeleteBarMarketData(mdb::BarMarketData* record) = 0;
+	virtual void UpdateBarMarketData(mdb::BarMarketData* record) = 0;
+	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) = 0;
+	virtual void TruncateBarMarketData() = 0;
+
+};
