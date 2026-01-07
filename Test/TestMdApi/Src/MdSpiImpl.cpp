@@ -1,5 +1,6 @@
 #include "MdSpiImpl.h"
 #include "Utility.h"
+#include "Config.h"
 
 MdSpiImpl::MdSpiImpl(MdApi* mdApi)
 	:m_MdApi(mdApi), m_RequestID(0)
@@ -27,30 +28,22 @@ void MdSpiImpl::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoFie
 }
 void MdSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
 {
-	if (++m_DepthMdCounts[depthMarketData->InstrumentID] % 10 == 0)
-	{
-		MdSpiMiddle::OnRtnDepthMarketData(depthMarketData);
-	}
+	MdSpiMiddle::OnRtnDepthMarketData(depthMarketData);
 }
 void MdSpiImpl::ReqUserLogin()
 {
 	ReqMdUserLoginField reqMdUserLogin;
 	memset(&reqMdUserLogin, 0, sizeof(ReqMdUserLoginField));
-	Strcpy(reqMdUserLogin.UserID, "MdUser");
-	Strcpy(reqMdUserLogin.Password, "123456");
+	Strcpy(reqMdUserLogin.UserID, Config::GetInstance().MdUser.c_str());
+	Strcpy(reqMdUserLogin.Password, Config::GetInstance().MdPassword.c_str());
 	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
 }
 void MdSpiImpl::ReqSubscribeMd()
 {
-	Strcpy(m_ReqSubMarketData->ExchangeID, "CFFEX");
-	Strcpy(m_ReqSubMarketData->InstrumentID, "IC2509");
-	m_MdApi->ReqSubMarketData(m_ReqSubMarketData, ++m_RequestID);
-
-	Strcpy(m_ReqSubMarketData->ExchangeID, "CFFEX");
-	Strcpy(m_ReqSubMarketData->InstrumentID, "IF2509");
-	m_MdApi->ReqSubMarketData(m_ReqSubMarketData, ++m_RequestID);
-
-	Strcpy(m_ReqSubMarketData->ExchangeID, "CFFEX");
-	Strcpy(m_ReqSubMarketData->InstrumentID, "IM2509");
-	m_MdApi->ReqSubMarketData(m_ReqSubMarketData, ++m_RequestID);
+	for (auto instrument : Config::GetInstance().SubscribeInstruments)
+	{
+		Strcpy(m_ReqSubMarketData->ExchangeID, instrument->ExchangeID.c_str());
+		Strcpy(m_ReqSubMarketData->InstrumentID, instrument->InstrumentID.c_str());
+		m_MdApi->ReqSubMarketData(m_ReqSubMarketData, ++m_RequestID);
+	}
 }

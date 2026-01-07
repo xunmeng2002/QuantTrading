@@ -8,6 +8,7 @@
 #include "MdFront.h"
 #include "MdKernel.h"
 #include "TradeSession.h"
+#include "TimeUtility.h"
 #include <iostream>
 #include <fstream>
 #include <string.h>
@@ -40,10 +41,20 @@ int main(int argc, char* argv[])
 	MdKernel* mdKernel = new MdKernel(config.MdUser.c_str(), config.MdPassword.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str(), 100);
 
-	auto environment = environments[config.SelectedEnvironmentName];
+	auto localTm = GetLocalTm();
+	string environmentName;
+	if (localTm->tm_hour >= 16 || localTm->tm_hour < 9)
+	{
+		environmentName = config.EnvironmentName24;
+	}
+	else
+	{
+		environmentName = config.EnvironmentName;
+	}
+	auto environment = environments[environmentName];
 	if (environment == nullptr)
 	{
-		WriteLog(LogLevel::Error, "environment is nullptr, SelectedEnvironmentName:%s", config.SelectedEnvironmentName.c_str());
+		WriteLog(LogLevel::Error, "environment is nullptr, EnvironmentName:%s", environmentName.c_str());
 		Logger::GetInstance().Stop();
 		Logger::GetInstance().Join();
 		return -1;

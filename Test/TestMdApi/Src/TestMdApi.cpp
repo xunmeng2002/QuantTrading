@@ -1,25 +1,29 @@
 #include "MdApiMiddle.h"
 #include "MdSpiImpl.h"
 #include "Logger.h"
+#include "Config.h"
 #include "ServerConfig.h"
 #include <iostream>
 
 using namespace std;
 
-auto serverConfigFile = "../../ServerConfig.json";
+const char* ConfigName = "TestMdApi.json";
 
 int main(int argc, char* argv[])
 {
+	auto& config = Config::GetInstance();
+	config.Load(ConfigName);
+	auto& serverConfig = ServerConfig::GetInstance();
+	serverConfig.Load(config.ServerConfigPath.c_str());
+
 	Logger::GetInstance().Init(argv[0]);
-	Logger::GetInstance().SetLogLevel(LogLevel::Info, LogLevel::Info);
+	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
 	Logger::GetInstance().Start();
 
-	auto& serverConfig = ServerConfig::GetInstance();
-	serverConfig.Load(serverConfigFile);
 
 	auto api = MdApiMiddle::CreateMdApiMiddle();
 	auto spi = new MdSpiImpl(api);
-	cout << api->GetApiVersion() << endl;
+	cout << "API Version:" << api->GetApiVersion() << endl;
 	api->RegisterSpi(spi);
 	api->RegisterFront(serverConfig.MdOfferAddress.c_str());
 	api->Init();

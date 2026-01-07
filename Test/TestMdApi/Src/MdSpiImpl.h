@@ -24,5 +24,4 @@ private:
 	MdApi* m_MdApi;
 	int m_RequestID;
 	ReqSubMarketDataField* m_ReqSubMarketData;
-	std::map<std::string, int> m_DepthMdCounts;
 };

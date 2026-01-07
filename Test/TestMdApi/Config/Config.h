@@ -18,10 +18,7 @@ public:
 	string ServerConfigPath;
 	string MdUser;
 	string MdPassword;
-	string SessionFile;
-	string EnvironmentFile;
-	string EnvironmentName;
-	string EnvironmentName24;
+	std::list<SubscribeInstrument*> SubscribeInstruments;
 	
 private:
 	static Config m_Instance;

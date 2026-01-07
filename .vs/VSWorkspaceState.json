@@ -9,12 +9,16 @@
   },
   "ExpandedNodes": [
     "",
-    "\\Source",
-    "\\Source\\DB",
+    "\\Model",
+    "\\Model\\Configs",
     "\\Target",
     "\\Target\\SimExchange",
-    "\\Test"
+    "\\Test",
+    "\\Test\\TestBackTest\\Src",
+    "\\Test\\TestMdApi",
+    "\\Test\\TestMdApi\\Config",
+    "\\Test\\TestMdApi\\Src"
   ],
-  "SelectedNode": "\\Target\\SimExchange\\DB",
+  "SelectedNode": "\\Test\\TestMdApi\\Config\\Config.h",
   "PreviewInSolutionExplorer": false
 }

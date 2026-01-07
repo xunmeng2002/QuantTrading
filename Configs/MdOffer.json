@@ -5,6 +5,7 @@
 	"MdPassword":"123456",
 	"SessionFile":"Sessions.json",
 	"EnvironmentFile":"CtpAccountInfo.json",
-	"SelectedEnvironmentName":"SimNow"
+	"EnvironmentName":"SimNow",
+	"EnvironmentName24":"SimNow24"
 }
 

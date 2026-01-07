@@ -78,27 +78,38 @@ int MdKernel::HandlePackage()
 	Package* package = nullptr;
 	while ((package = GetPackage()) != nullptr)
 	{
+		bool needFree = true;
 		switch (package->Head.PackageID)
 		{
 		case NotifyDisConnectPackage::PackageID:
 		{
-			return HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
+			HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
+			break;
 		}
 		case ReqMdUserLoginPackage::PackageID:
 		{
-			return HandleReqMdUserLogin((ReqMdUserLoginPackage*)package);
+			HandleReqMdUserLogin((ReqMdUserLoginPackage*)package);
+			break;
 		}
 		case ReqSubMarketDataPackage::PackageID:
 		{
-			return HandleReqSubMarketData((ReqSubMarketDataPackage*)package);
+			HandleReqSubMarketData((ReqSubMarketDataPackage*)package);
+			break;
 		}
 		case RtnDepthMarketDataPackage::PackageID:
 		{
-			return HandleRtnDepthMarketData((RtnDepthMarketDataPackage*)package);
+			//推送的行情会缓存到MdSnap中，由MdSnap来Free，所以这里设置为false了
+			needFree = false;
+			HandleRtnDepthMarketData((RtnDepthMarketDataPackage*)package);
+			break;
 		}
 		default:
-			package->Free();
+			WriteLog(LogLevel::Warning, "UnExpected PackageID:%d", package->Head.PackageID);
 			break;
+		}
+		if (needFree)
+		{
+			package->Free();
 		}
 	}
 	return 0;
@@ -107,7 +118,6 @@ int MdKernel::HandleNotifyDisConnect(NotifyDisConnectPackage* package)
 {
 	m_LoggedSessions.erase(package->NotifyDisConnect->SessionID);
 	m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionID);
-	package->Free();
 	return 0;
 }
 int MdKernel::HandleReqMdUserLogin(ReqMdUserLoginPackage* package)
@@ -141,8 +151,6 @@ int MdKernel::HandleReqMdUserLogin(ReqMdUserLoginPackage* package)
 
 	m_MdFront->Send(rspPackage);
 	rspPackage->Free();
-
-	package->Free();
 	return 0;
 }
 int MdKernel::HandleReqMdUserLogout(ReqMdUserLogoutPackage* package)
@@ -166,8 +174,6 @@ int MdKernel::HandleReqMdUserLogout(ReqMdUserLogoutPackage* package)
 
 	m_MdFront->Send(rspPackage);
 	rspPackage->Free();
-
-	package->Free();
 	return 0;
 }
 int MdKernel::HandleReqSubMarketData(ReqSubMarketDataPackage* package)
@@ -207,7 +213,6 @@ int MdKernel::HandleReqSubMarketData(ReqSubMarketDataPackage* package)
 	Strcpy(rspPackage->RspSubMarketData->InstrumentID, reqSubMarketData->InstrumentID);
 	m_MdFront->Send(rspPackage);
 	rspPackage->Free();
-	package->Free();
 
 	auto rtnDepthMdPackage = MdSnap::GetInstance().GetDepthMd(reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID);
 	if (rtnDepthMdPackage != nullptr)

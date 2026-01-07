@@ -3,6 +3,7 @@ project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
+add_package(Config ./Config)
 add_package(TestUtility ${CMAKE_SOURCE_DIR}/Test/Source/TestUtility)
 add_package(MdApiMiddle ${CMAKE_SOURCE_DIR}/Test/Source/MdApiMiddle)
 add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)

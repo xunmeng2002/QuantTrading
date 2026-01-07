@@ -38,10 +38,13 @@ void Config::Load(const char* fileName)
 	ServerConfigPath = root["ServerConfigPath"].asString();
 	MdUser = root["MdUser"].asString();
 	MdPassword = root["MdPassword"].asString();
-	SessionFile = root["SessionFile"].asString();
-	EnvironmentFile = root["EnvironmentFile"].asString();
-	EnvironmentName = root["EnvironmentName"].asString();
-	EnvironmentName24 = root["EnvironmentName24"].asString();
+	for (auto& subValue : root["SubscribeInstruments"])
+	{
+		SubscribeInstrument* subRecord = new SubscribeInstrument();
+		subRecord->ExchangeID = subValue["ExchangeID"].asString();
+		subRecord->InstrumentID = subValue["InstrumentID"].asString();
+		SubscribeInstruments.push_back(subRecord);
+	}
 	Print();
 }
 
@@ -53,9 +56,14 @@ void Config::Print()
 	printf("ServerConfigPath:%s\n", ServerConfigPath.c_str());
 	printf("MdUser:%s\n", MdUser.c_str());
 	printf("MdPassword:%s\n", MdPassword.c_str());
-	printf("SessionFile:%s\n", SessionFile.c_str());
-	printf("EnvironmentFile:%s\n", EnvironmentFile.c_str());
-	printf("EnvironmentName:%s\n", EnvironmentName.c_str());
-	printf("EnvironmentName24:%s\n", EnvironmentName24.c_str());
+	printf("SubscribeInstruments:[\n");
+	for (auto record : SubscribeInstruments)
+	{
+		printf("{\n");
+		printf("\tExchangeID:%s, InstrumentID:%s, \n",
+			record->ExchangeID.c_str(), record->InstrumentID.c_str());
+		printf("},\n");
+	}
+	printf("]\n");
 }
 
