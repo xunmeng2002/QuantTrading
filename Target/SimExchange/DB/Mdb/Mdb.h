@@ -26,12 +26,12 @@ namespace mdb
 		TradingDayTable* t_TradingDay;
 		ExchangeTable* t_Exchange;
 		ProductTable* t_Product;
+		DepthMarketDataTable* t_DepthMarketData;
 		SEBrokerTable* t_SEBroker;
 		SEInstrumentTable* t_SEInstrument;
 		SEOrderTable* t_SEOrder;
 		SETradeTable* t_SETrade;
 		SEBrokerLoginSessionTable* t_SEBrokerLoginSession;
-		DepthMarketDataTable* t_DepthMarketData;
 	private:
 		MdbSubscriber* m_MdbSubscriber;
 	};

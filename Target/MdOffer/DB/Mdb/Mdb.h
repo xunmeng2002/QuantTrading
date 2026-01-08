@@ -23,6 +23,8 @@ namespace mdb
 		virtual void OnDBDisConnected() override;
 
 	public:
+		ExchangeTable* t_Exchange;
+		InstrumentTable* t_Instrument;
 		DepthMarketDataTable* t_DepthMarketData;
 		BarMarketDataTable* t_BarMarketData;
 		MdSubscribeTable* t_MdSubscribe;

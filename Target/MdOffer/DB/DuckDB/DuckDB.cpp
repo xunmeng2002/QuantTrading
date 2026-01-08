@@ -16,6 +16,16 @@ DuckDB::DuckDB(const std::string& dbName)
 {
 	m_SqlBuff = new char[BuffSize];
 
+	m_ExchangeDeleteStatement = nullptr;
+	m_ExchangeUpdateStatement = nullptr;
+	m_ExchangeSelectStatement = nullptr;
+	m_ExchangeTruncateStatement = nullptr;
+
+	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentUpdateStatement = nullptr;
+	m_InstrumentSelectStatement = nullptr;
+	m_InstrumentTruncateStatement = nullptr;
+
 	m_DepthMarketDataDeleteStatement = nullptr;
 	m_DepthMarketDataUpdateStatement = nullptr;
 	m_DepthMarketDataSelectStatement = nullptr;
@@ -74,6 +84,46 @@ void DuckDB::DisConnect()
 	{
 		duckdb_close(&m_DB);
 		m_DB = nullptr;
+	}
+	if (m_ExchangeDeleteStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_ExchangeDeleteStatement);
+		m_ExchangeDeleteStatement = nullptr;
+	}
+	if (m_ExchangeUpdateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_ExchangeUpdateStatement);
+		m_ExchangeUpdateStatement = nullptr;
+	}
+	if (m_ExchangeSelectStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_ExchangeSelectStatement);
+		m_ExchangeSelectStatement = nullptr;
+	}
+	if (m_ExchangeTruncateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_ExchangeTruncateStatement);
+		m_ExchangeTruncateStatement = nullptr;
+	}
+	if (m_InstrumentDeleteStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentDeleteStatement);
+		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentUpdateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentUpdateStatement);
+		m_InstrumentUpdateStatement = nullptr;
+	}
+	if (m_InstrumentSelectStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentSelectStatement);
+		m_InstrumentSelectStatement = nullptr;
+	}
+	if (m_InstrumentTruncateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentTruncateStatement);
+		m_InstrumentTruncateStatement = nullptr;
 	}
 	if (m_DepthMarketDataDeleteStatement != nullptr)
 	{
@@ -183,6 +233,10 @@ void DuckDB::DisConnect()
 }
 void DuckDB::InitDB()
 {
+	Exec("Delete From t_Exchange;");
+	Exec("Insert Into t_Exchange select * from Init.t_Exchange;");
+	Exec("Delete From t_Instrument;");
+	Exec("Insert Into t_Instrument select * from Init.t_Instrument;");
 	Exec("Delete From t_DepthMarketData;");
 	Exec("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 	Exec("Delete From t_BarMarketData;");
@@ -196,6 +250,8 @@ void DuckDB::InitDB()
 }
 void DuckDB::CreateTables()
 {
+	CreateExchange();
+	CreateInstrument();
 	CreateDepthMarketData();
 	CreateBarMarketData();
 	CreateMdSubscribe();
@@ -204,6 +260,8 @@ void DuckDB::CreateTables()
 }
 void DuckDB::DropTables()
 {
+	DropExchange();
+	DropInstrument();
 	DropDepthMarketData();
 	DropBarMarketData();
 	DropMdSubscribe();
@@ -212,6 +270,7 @@ void DuckDB::DropTables()
 }
 void DuckDB::TruncateTables()
 {
+	TruncateExchange();
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
 	TruncateMdSubscribe();
@@ -244,6 +303,430 @@ bool DuckDB::Exec(const char* sql) const
 	return ret == DuckDBSuccess;
 }
 
+void DuckDB::CreateExchange()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Exchange (ExchangeID varchar, ExchangeName varchar, PRIMARY KEY(ExchangeID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateExchange failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms", duration);
+}
+void DuckDB::DropExchange()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Exchange;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropExchange failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms", duration);
+}
+void DuckDB::InsertExchange(Exchange* record)
+{
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Exchange", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Exchange Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	AppendForExchangeRecord(appender, record);
+	duckdb_appender_destroy(&appender);
+}
+void DuckDB::BatchInsertExchange(std::list<Exchange*>* records)
+{
+	auto start = steady_clock::now();
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Exchange", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Exchange Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	for (auto record : *records)
+	{
+		AppendForExchangeRecord(appender, record);
+	}
+	duckdb_appender_destroy(&appender);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "BatchInsertExchange RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void DuckDB::DeleteExchange(Exchange* record)
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeDeleteStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Exchange where ExchangeID = ?;", &m_ExchangeDeleteStatement);
+	}
+	SetStatementForExchangePrimaryKey(m_ExchangeDeleteStatement, record);
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_ExchangeDeleteStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteExchange failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteExchange Spend:%lldms", duration);
+	}
+}
+void DuckDB::UpdateExchange(Exchange* record)
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeUpdateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "update t_Exchange set ExchangeName = ? where ExchangeID = ?;", &m_ExchangeUpdateStatement);
+	}
+	SetStatementForExchangeRecordUpdate(m_ExchangeUpdateStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_ExchangeUpdateStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "UpdateExchange failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateExchange Spend:%lldms", duration);
+	}
+}
+void DuckDB::SelectExchange(std::list<Exchange*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeSelectStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "select * from t_Exchange;", &m_ExchangeSelectStatement);
+	}
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_ExchangeSelectStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "SelectExchange ErrorMsg:%s", duckdb_result_error(&result));
+		duckdb_destroy_result(&result);
+		return;
+	}
+
+	ParseRecord(result, records);
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectExchange Spend:%lldms", duration);
+	}
+}
+void DuckDB::TruncateExchange()
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeTruncateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Exchange;", &m_ExchangeTruncateStatement);
+	}
+
+	auto rc = duckdb_execute_prepared(m_ExchangeTruncateStatement, nullptr);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "TruncateExchange failed");
+	}
+	
+	WriteLog(LogLevel::Info, "TruncateExchange Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void DuckDB::ParseRecord(duckdb_result& result, std::list<Exchange*>& records)
+{
+	while (true)
+	{
+		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
+		if (dataChunk == nullptr)
+		{
+			break;
+		}
+		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
+		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
+
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+
+		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
+		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
+
+		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
+		for (idx_t row = 0LL; row < rowCount; ++row)
+		{
+			Exchange* record = Exchange::Allocate();
+			memset(record, 0, sizeof(Exchange));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->ExchangeID, dataColumn0[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
+			{
+				CpyDuckdbString(record->ExchangeName, dataColumn1[row]);
+			}
+			records.push_back(record);
+		}
+	}
+}
+void DuckDB::CreateInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms", duration);
+}
+void DuckDB::DropInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Instrument;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms", duration);
+}
+void DuckDB::InsertInstrument(Instrument* record)
+{
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Instrument", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Instrument Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	AppendForInstrumentRecord(appender, record);
+	duckdb_appender_destroy(&appender);
+}
+void DuckDB::BatchInsertInstrument(std::list<Instrument*>* records)
+{
+	auto start = steady_clock::now();
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Instrument", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Instrument Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	for (auto record : *records)
+	{
+		AppendForInstrumentRecord(appender, record);
+	}
+	duckdb_appender_destroy(&appender);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "BatchInsertInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void DuckDB::DeleteInstrument(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Instrument where ExchangeID = ? and InstrumentID = ?;", &m_InstrumentDeleteStatement);
+	}
+	SetStatementForInstrumentPrimaryKey(m_InstrumentDeleteStatement, record);
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_InstrumentDeleteStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void DuckDB::UpdateInstrument(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentUpdateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "update t_Instrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;", &m_InstrumentUpdateStatement);
+	}
+	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_InstrumentUpdateStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "UpdateInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateInstrument Spend:%lldms", duration);
+	}
+}
+void DuckDB::SelectInstrument(std::list<Instrument*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentSelectStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "select * from t_Instrument;", &m_InstrumentSelectStatement);
+	}
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_InstrumentSelectStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "SelectInstrument ErrorMsg:%s", duckdb_result_error(&result));
+		duckdb_destroy_result(&result);
+		return;
+	}
+
+	ParseRecord(result, records);
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectInstrument Spend:%lldms", duration);
+	}
+}
+void DuckDB::TruncateInstrument()
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentTruncateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Instrument;", &m_InstrumentTruncateStatement);
+	}
+
+	auto rc = duckdb_execute_prepared(m_InstrumentTruncateStatement, nullptr);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "TruncateInstrument failed");
+	}
+	
+	WriteLog(LogLevel::Info, "TruncateInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void DuckDB::ParseRecord(duckdb_result& result, std::list<Instrument*>& records)
+{
+	while (true)
+	{
+		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
+		if (dataChunk == nullptr)
+		{
+			break;
+		}
+		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
+		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
+		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
+		duckdb_vector column3 = duckdb_data_chunk_get_vector(dataChunk, 3);
+		duckdb_vector column4 = duckdb_data_chunk_get_vector(dataChunk, 4);
+		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
+		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
+		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
+		duckdb_vector column8 = duckdb_data_chunk_get_vector(dataChunk, 8);
+		duckdb_vector column9 = duckdb_data_chunk_get_vector(dataChunk, 9);
+		duckdb_vector column10 = duckdb_data_chunk_get_vector(dataChunk, 10);
+		duckdb_vector column11 = duckdb_data_chunk_get_vector(dataChunk, 11);
+		duckdb_vector column12 = duckdb_data_chunk_get_vector(dataChunk, 12);
+		duckdb_vector column13 = duckdb_data_chunk_get_vector(dataChunk, 13);
+		duckdb_vector column14 = duckdb_data_chunk_get_vector(dataChunk, 14);
+
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
+		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
+		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
+		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
+		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
+		int* dataColumn7 = (int*)duckdb_vector_get_data(column7);
+		int* dataColumn8 = (int*)duckdb_vector_get_data(column8);
+		double* dataColumn9 = (double*)duckdb_vector_get_data(column9);
+		int64_t* dataColumn10 = (int64_t*)duckdb_vector_get_data(column10);
+		int64_t* dataColumn11 = (int64_t*)duckdb_vector_get_data(column11);
+		int64_t* dataColumn12 = (int64_t*)duckdb_vector_get_data(column12);
+		int64_t* dataColumn13 = (int64_t*)duckdb_vector_get_data(column13);
+		duckdb_string_t* dataColumn14 = (duckdb_string_t*)duckdb_vector_get_data(column14);
+
+		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
+		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
+		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
+		uint64_t* validityColumn3 = duckdb_vector_get_validity(column3);
+		uint64_t* validityColumn4 = duckdb_vector_get_validity(column4);
+		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
+		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
+		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
+		uint64_t* validityColumn8 = duckdb_vector_get_validity(column8);
+		uint64_t* validityColumn9 = duckdb_vector_get_validity(column9);
+		uint64_t* validityColumn10 = duckdb_vector_get_validity(column10);
+		uint64_t* validityColumn11 = duckdb_vector_get_validity(column11);
+		uint64_t* validityColumn12 = duckdb_vector_get_validity(column12);
+		uint64_t* validityColumn13 = duckdb_vector_get_validity(column13);
+		uint64_t* validityColumn14 = duckdb_vector_get_validity(column14);
+
+		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
+		for (idx_t row = 0LL; row < rowCount; ++row)
+		{
+			Instrument* record = Instrument::Allocate();
+			memset(record, 0, sizeof(Instrument));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->ExchangeID, dataColumn0[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
+			{
+				CpyDuckdbString(record->InstrumentID, dataColumn1[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row))
+			{
+				CpyDuckdbString(record->ExchangeInstID, dataColumn2[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn3, row))
+			{
+				CpyDuckdbString(record->InstrumentName, dataColumn3[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn4, row))
+			{
+				CpyDuckdbString(record->ProductID, dataColumn4[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->ProductClass = ProductClassType(dataColumn5[row]);
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->InstrumentClass = InstrumentClassType(dataColumn6[row]);
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->Rank = dataColumn7[row];
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->VolumeMultiple = dataColumn8[row];
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->PriceTick = dataColumn9[row];
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->MaxMarketOrderVolume = dataColumn10[row];
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->MinMarketOrderVolume = dataColumn11[row];
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->MaxLimitOrderVolume = dataColumn12[row];
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->MinLimitOrderVolume = dataColumn13[row];
+			if (duckdb_validity_row_is_valid(validityColumn14, row))
+			{
+				CpyDuckdbString(record->SessionName, dataColumn14[row]);
+			}
+			records.push_back(record);
+		}
+	}
+}
 void DuckDB::CreateDepthMarketData()
 {
 	auto start = steady_clock::now();
@@ -1518,6 +2001,96 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<MdUserLoginSession*>& 
 }
 
 
+bool DuckDB::AppendForExchangeRecord(duckdb_appender appender, Exchange* record)
+{
+	duckdb_append_varchar(appender, record->ExchangeID);
+	duckdb_append_varchar(appender, record->ExchangeName);
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertExchange failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForExchangeRecord(duckdb_prepared_statement statement, Exchange* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
+	duckdb_bind_varchar(statement, 2, record->ExchangeName);
+}
+void DuckDB::SetStatementForExchangeRecordUpdate(duckdb_prepared_statement statement, Exchange* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeName);
+	duckdb_bind_varchar(statement, 2, record->ExchangeID);
+}
+void DuckDB::SetStatementForExchangePrimaryKey(duckdb_prepared_statement statement, Exchange* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
+}
+bool DuckDB::AppendForInstrumentRecord(duckdb_appender appender, Instrument* record)
+{
+	duckdb_append_varchar(appender, record->ExchangeID);
+	duckdb_append_varchar(appender, record->InstrumentID);
+	duckdb_append_varchar(appender, record->ExchangeInstID);
+	duckdb_append_varchar(appender, record->InstrumentName);
+	duckdb_append_varchar(appender, record->ProductID);
+	duckdb_append_int32(appender, int(record->ProductClass));
+	duckdb_append_int32(appender, int(record->InstrumentClass));
+	duckdb_append_int32(appender, record->Rank);
+	duckdb_append_int32(appender, record->VolumeMultiple);
+	duckdb_append_double(appender, record->PriceTick);
+	duckdb_append_int64(appender, record->MaxMarketOrderVolume);
+	duckdb_append_int64(appender, record->MinMarketOrderVolume);
+	duckdb_append_int64(appender, record->MaxLimitOrderVolume);
+	duckdb_append_int64(appender, record->MinLimitOrderVolume);
+	duckdb_append_varchar(appender, record->SessionName);
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForInstrumentRecord(duckdb_prepared_statement statement, Instrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
+	duckdb_bind_varchar(statement, 2, record->InstrumentID);
+	duckdb_bind_varchar(statement, 3, record->ExchangeInstID);
+	duckdb_bind_varchar(statement, 4, record->InstrumentName);
+	duckdb_bind_varchar(statement, 5, record->ProductID);
+	duckdb_bind_int32(statement, 6, int(record->ProductClass));
+	duckdb_bind_int32(statement, 7, int(record->InstrumentClass));
+	duckdb_bind_int32(statement, 8, record->Rank);
+	duckdb_bind_int32(statement, 9, record->VolumeMultiple);
+	duckdb_bind_double(statement, 10, record->PriceTick);
+	duckdb_bind_int64(statement, 11, record->MaxMarketOrderVolume);
+	duckdb_bind_int64(statement, 12, record->MinMarketOrderVolume);
+	duckdb_bind_int64(statement, 13, record->MaxLimitOrderVolume);
+	duckdb_bind_int64(statement, 14, record->MinLimitOrderVolume);
+	duckdb_bind_varchar(statement, 15, record->SessionName);
+}
+void DuckDB::SetStatementForInstrumentRecordUpdate(duckdb_prepared_statement statement, Instrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeInstID);
+	duckdb_bind_varchar(statement, 2, record->InstrumentName);
+	duckdb_bind_varchar(statement, 3, record->ProductID);
+	duckdb_bind_int32(statement, 4, int(record->ProductClass));
+	duckdb_bind_int32(statement, 5, int(record->InstrumentClass));
+	duckdb_bind_int32(statement, 6, record->Rank);
+	duckdb_bind_int32(statement, 7, record->VolumeMultiple);
+	duckdb_bind_double(statement, 8, record->PriceTick);
+	duckdb_bind_int64(statement, 9, record->MaxMarketOrderVolume);
+	duckdb_bind_int64(statement, 10, record->MinMarketOrderVolume);
+	duckdb_bind_int64(statement, 11, record->MaxLimitOrderVolume);
+	duckdb_bind_int64(statement, 12, record->MinLimitOrderVolume);
+	duckdb_bind_varchar(statement, 13, record->SessionName);
+	duckdb_bind_varchar(statement, 14, record->ExchangeID);
+	duckdb_bind_varchar(statement, 15, record->InstrumentID);
+}
+void DuckDB::SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement statement, Instrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
+	duckdb_bind_varchar(statement, 2, record->InstrumentID);
+}
 bool DuckDB::AppendForDepthMarketDataRecord(duckdb_appender appender, DepthMarketData* record)
 {
 	duckdb_append_varchar(appender, record->TradingDay);

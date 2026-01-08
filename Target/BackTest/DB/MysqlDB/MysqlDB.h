@@ -91,6 +91,33 @@ public:
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
 	
+	virtual void CreateDepthMarketData() override;
+	virtual void DropDepthMarketData() override;
+	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
+	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
+	virtual void TruncateDepthMarketData() override;
+	
+	virtual void CreateBarMarketData() override;
+	virtual void DropBarMarketData() override;
+	virtual void InsertBarMarketData(mdb::BarMarketData* record) override;
+	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) override;
+	virtual void DeleteBarMarketData(mdb::BarMarketData* record) override;
+	virtual void UpdateBarMarketData(mdb::BarMarketData* record) override;
+	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) override;
+	virtual void TruncateBarMarketData() override;
+	
+	virtual void CreateMdSubscribe() override;
+	virtual void DropMdSubscribe() override;
+	virtual void InsertMdSubscribe(mdb::MdSubscribe* record) override;
+	virtual void BatchInsertMdSubscribe(std::list<mdb::MdSubscribe*>* records) override;
+	virtual void DeleteMdSubscribe(mdb::MdSubscribe* record) override;
+	virtual void UpdateMdSubscribe(mdb::MdSubscribe* record) override;
+	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) override;
+	virtual void TruncateMdSubscribe() override;
+	
 	virtual void CreateAccount() override;
 	virtual void DropAccount() override;
 	virtual void InsertAccount(mdb::Account* record) override;
@@ -150,33 +177,6 @@ public:
 	virtual void SelectTrade(std::list<mdb::Trade*>& records) override;
 	virtual void TruncateTrade() override;
 	
-	virtual void CreateDepthMarketData() override;
-	virtual void DropDepthMarketData() override;
-	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
-	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
-	virtual void TruncateDepthMarketData() override;
-	
-	virtual void CreateBarMarketData() override;
-	virtual void DropBarMarketData() override;
-	virtual void InsertBarMarketData(mdb::BarMarketData* record) override;
-	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) override;
-	virtual void DeleteBarMarketData(mdb::BarMarketData* record) override;
-	virtual void UpdateBarMarketData(mdb::BarMarketData* record) override;
-	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) override;
-	virtual void TruncateBarMarketData() override;
-	
-	virtual void CreateMdSubscribe() override;
-	virtual void DropMdSubscribe() override;
-	virtual void InsertMdSubscribe(mdb::MdSubscribe* record) override;
-	virtual void BatchInsertMdSubscribe(std::list<mdb::MdSubscribe*>* records) override;
-	virtual void DeleteMdSubscribe(mdb::MdSubscribe* record) override;
-	virtual void UpdateMdSubscribe(mdb::MdSubscribe* record) override;
-	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) override;
-	virtual void TruncateMdSubscribe() override;
-	
 
 private:
 	void SetStatementForTradingDayRecord(sql::PreparedStatement* statement, mdb::TradingDay* record);
@@ -200,6 +200,18 @@ private:
 	void SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Instrument*>& records);
+	void SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
+	void SetStatementForDepthMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void ParseRecord(sql::ResultSet* result, std::list<mdb::DepthMarketData*>& records);
+	void SetStatementForBarMarketDataRecord(sql::PreparedStatement* statement, mdb::BarMarketData* record);
+	void SetStatementForBarMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::BarMarketData* record);
+	void SetStatementForBarMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime);
+	void ParseRecord(sql::ResultSet* result, std::list<mdb::BarMarketData*>& records);
+	void SetStatementForMdSubscribeRecord(sql::PreparedStatement* statement, mdb::MdSubscribe* record);
+	void SetStatementForMdSubscribeRecordUpdate(sql::PreparedStatement* statement, mdb::MdSubscribe* record);
+	void SetStatementForMdSubscribePrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const DateType& StartTradingDay);
+	void ParseRecord(sql::ResultSet* result, std::list<mdb::MdSubscribe*>& records);
 	void SetStatementForAccountRecord(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID);
@@ -229,18 +241,6 @@ private:
 	void SetStatementForTradeRecordUpdate(sql::PreparedStatement* statement, mdb::Trade* record);
 	void SetStatementForTradePrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Trade*>& records);
-	void SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
-	void SetStatementForDepthMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
-	void ParseRecord(sql::ResultSet* result, std::list<mdb::DepthMarketData*>& records);
-	void SetStatementForBarMarketDataRecord(sql::PreparedStatement* statement, mdb::BarMarketData* record);
-	void SetStatementForBarMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::BarMarketData* record);
-	void SetStatementForBarMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime);
-	void ParseRecord(sql::ResultSet* result, std::list<mdb::BarMarketData*>& records);
-	void SetStatementForMdSubscribeRecord(sql::PreparedStatement* statement, mdb::MdSubscribe* record);
-	void SetStatementForMdSubscribeRecordUpdate(sql::PreparedStatement* statement, mdb::MdSubscribe* record);
-	void SetStatementForMdSubscribePrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const DateType& StartTradingDay);
-	void ParseRecord(sql::ResultSet* result, std::list<mdb::MdSubscribe*>& records);
 
 
 private:
@@ -289,6 +289,27 @@ private:
 	sql::PreparedStatement* m_InstrumentUpdateStatement;
 	sql::PreparedStatement* m_InstrumentSelectStatement;
 	sql::PreparedStatement* m_InstrumentTruncateStatement;
+	sql::PreparedStatement* m_DepthMarketDataCreateStatement;
+	sql::PreparedStatement* m_DepthMarketDataDropStatement;
+	sql::PreparedStatement* m_DepthMarketDataInsertStatement;
+	sql::PreparedStatement* m_DepthMarketDataDeleteStatement;
+	sql::PreparedStatement* m_DepthMarketDataUpdateStatement;
+	sql::PreparedStatement* m_DepthMarketDataSelectStatement;
+	sql::PreparedStatement* m_DepthMarketDataTruncateStatement;
+	sql::PreparedStatement* m_BarMarketDataCreateStatement;
+	sql::PreparedStatement* m_BarMarketDataDropStatement;
+	sql::PreparedStatement* m_BarMarketDataInsertStatement;
+	sql::PreparedStatement* m_BarMarketDataDeleteStatement;
+	sql::PreparedStatement* m_BarMarketDataUpdateStatement;
+	sql::PreparedStatement* m_BarMarketDataSelectStatement;
+	sql::PreparedStatement* m_BarMarketDataTruncateStatement;
+	sql::PreparedStatement* m_MdSubscribeCreateStatement;
+	sql::PreparedStatement* m_MdSubscribeDropStatement;
+	sql::PreparedStatement* m_MdSubscribeInsertStatement;
+	sql::PreparedStatement* m_MdSubscribeDeleteStatement;
+	sql::PreparedStatement* m_MdSubscribeUpdateStatement;
+	sql::PreparedStatement* m_MdSubscribeSelectStatement;
+	sql::PreparedStatement* m_MdSubscribeTruncateStatement;
 	sql::PreparedStatement* m_AccountCreateStatement;
 	sql::PreparedStatement* m_AccountDropStatement;
 	sql::PreparedStatement* m_AccountInsertStatement;
@@ -336,25 +357,4 @@ private:
 	sql::PreparedStatement* m_TradeUpdateStatement;
 	sql::PreparedStatement* m_TradeSelectStatement;
 	sql::PreparedStatement* m_TradeTruncateStatement;
-	sql::PreparedStatement* m_DepthMarketDataCreateStatement;
-	sql::PreparedStatement* m_DepthMarketDataDropStatement;
-	sql::PreparedStatement* m_DepthMarketDataInsertStatement;
-	sql::PreparedStatement* m_DepthMarketDataDeleteStatement;
-	sql::PreparedStatement* m_DepthMarketDataUpdateStatement;
-	sql::PreparedStatement* m_DepthMarketDataSelectStatement;
-	sql::PreparedStatement* m_DepthMarketDataTruncateStatement;
-	sql::PreparedStatement* m_BarMarketDataCreateStatement;
-	sql::PreparedStatement* m_BarMarketDataDropStatement;
-	sql::PreparedStatement* m_BarMarketDataInsertStatement;
-	sql::PreparedStatement* m_BarMarketDataDeleteStatement;
-	sql::PreparedStatement* m_BarMarketDataUpdateStatement;
-	sql::PreparedStatement* m_BarMarketDataSelectStatement;
-	sql::PreparedStatement* m_BarMarketDataTruncateStatement;
-	sql::PreparedStatement* m_MdSubscribeCreateStatement;
-	sql::PreparedStatement* m_MdSubscribeDropStatement;
-	sql::PreparedStatement* m_MdSubscribeInsertStatement;
-	sql::PreparedStatement* m_MdSubscribeDeleteStatement;
-	sql::PreparedStatement* m_MdSubscribeUpdateStatement;
-	sql::PreparedStatement* m_MdSubscribeSelectStatement;
-	sql::PreparedStatement* m_MdSubscribeTruncateStatement;
 };

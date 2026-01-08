@@ -19,6 +19,26 @@ public:
 	virtual void TruncateSessionTables() override;
 	
 	bool Exec(const char* sql) const;
+	virtual void CreateExchange() override;
+	virtual void DropExchange() override;
+	virtual void InsertExchange(mdb::Exchange* record) override;
+	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) override;
+	virtual void DeleteExchange(mdb::Exchange* record) override;
+	virtual void UpdateExchange(mdb::Exchange* record) override;
+	virtual void SelectExchange(std::list<mdb::Exchange*>& records) override;
+	virtual void TruncateExchange() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::Exchange*>& records);
+	
+	virtual void CreateInstrument() override;
+	virtual void DropInstrument() override;
+	virtual void InsertInstrument(mdb::Instrument* record) override;
+	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
+	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void UpdateInstrument(mdb::Instrument* record) override;
+	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
+	virtual void TruncateInstrument() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::Instrument*>& records);
+	
 	virtual void CreateDepthMarketData() override;
 	virtual void DropDepthMarketData() override;
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
@@ -72,6 +92,14 @@ public:
 	
 
 private:
+	bool AppendForExchangeRecord(duckdb_appender appender, mdb::Exchange* record);
+	void SetStatementForExchangeRecord(duckdb_prepared_statement statement, mdb::Exchange* record);
+	void SetStatementForExchangeRecordUpdate(duckdb_prepared_statement statement, mdb::Exchange* record);
+	void SetStatementForExchangePrimaryKey(duckdb_prepared_statement statement, mdb::Exchange* record);
+	bool AppendForInstrumentRecord(duckdb_appender appender, mdb::Instrument* record);
+	void SetStatementForInstrumentRecord(duckdb_prepared_statement statement, mdb::Instrument* record);
+	void SetStatementForInstrumentRecordUpdate(duckdb_prepared_statement statement, mdb::Instrument* record);
+	void SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement statement, mdb::Instrument* record);
 	bool AppendForDepthMarketDataRecord(duckdb_appender appender, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecord(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecordUpdate(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
@@ -101,6 +129,14 @@ private:
 	duckdb_connection m_Connection;
 	char* m_SqlBuff;
 
+	duckdb_prepared_statement m_ExchangeDeleteStatement;
+	duckdb_prepared_statement m_ExchangeUpdateStatement;
+	duckdb_prepared_statement m_ExchangeSelectStatement;
+	duckdb_prepared_statement m_ExchangeTruncateStatement;
+	duckdb_prepared_statement m_InstrumentDeleteStatement;
+	duckdb_prepared_statement m_InstrumentUpdateStatement;
+	duckdb_prepared_statement m_InstrumentSelectStatement;
+	duckdb_prepared_statement m_InstrumentTruncateStatement;
 	duckdb_prepared_statement m_DepthMarketDataDeleteStatement;
 	duckdb_prepared_statement m_DepthMarketDataUpdateStatement;
 	duckdb_prepared_statement m_DepthMarketDataSelectStatement;

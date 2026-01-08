@@ -50,6 +50,21 @@ void DBOperateImpl::FreeRecord()
 		((Instrument*)Record)->Free();
 		break;
 	}
+	case DepthMarketData::TableID:
+	{
+		((DepthMarketData*)Record)->Free();
+		break;
+	}
+	case BarMarketData::TableID:
+	{
+		((BarMarketData*)Record)->Free();
+		break;
+	}
+	case MdSubscribe::TableID:
+	{
+		((MdSubscribe*)Record)->Free();
+		break;
+	}
 	case Account::TableID:
 	{
 		((Account*)Record)->Free();
@@ -78,21 +93,6 @@ void DBOperateImpl::FreeRecord()
 	case Trade::TableID:
 	{
 		((Trade*)Record)->Free();
-		break;
-	}
-	case DepthMarketData::TableID:
-	{
-		((DepthMarketData*)Record)->Free();
-		break;
-	}
-	case BarMarketData::TableID:
-	{
-		((BarMarketData*)Record)->Free();
-		break;
-	}
-	case MdSubscribe::TableID:
-	{
-		((MdSubscribe*)Record)->Free();
 		break;
 	}
 	default:
@@ -124,6 +124,18 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Instrument*)Record)->GetDebugString();
 	}
+	case DepthMarketData::TableID:
+	{
+		return ((DepthMarketData*)Record)->GetDebugString();
+	}
+	case BarMarketData::TableID:
+	{
+		return ((BarMarketData*)Record)->GetDebugString();
+	}
+	case MdSubscribe::TableID:
+	{
+		return ((MdSubscribe*)Record)->GetDebugString();
+	}
 	case Account::TableID:
 	{
 		return ((Account*)Record)->GetDebugString();
@@ -147,18 +159,6 @@ const char* DBOperateImpl::GetDebugString() const
 	case Trade::TableID:
 	{
 		return ((Trade*)Record)->GetDebugString();
-	}
-	case DepthMarketData::TableID:
-	{
-		return ((DepthMarketData*)Record)->GetDebugString();
-	}
-	case BarMarketData::TableID:
-	{
-		return ((BarMarketData*)Record)->GetDebugString();
-	}
-	case MdSubscribe::TableID:
-	{
-		return ((MdSubscribe*)Record)->GetDebugString();
 	}
 	default:
 		break;

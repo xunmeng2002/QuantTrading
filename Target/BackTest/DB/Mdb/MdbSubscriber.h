@@ -46,6 +46,24 @@ public:
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) {}
 	virtual void OnInstrumentTruncate() {}
 	
+	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) {}
+	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) {}
+	virtual void OnDepthMarketDataTruncate() {}
+	
+	virtual void OnBarMarketDataInsert(mdb::BarMarketData* record) {}
+	virtual void OnBarMarketDataBatchInsert(std::list<mdb::BarMarketData*>* records) {}
+	virtual void OnBarMarketDataErase(mdb::BarMarketData* record) {}
+	virtual void OnBarMarketDataUpdate(mdb::BarMarketData* record) {}
+	virtual void OnBarMarketDataTruncate() {}
+	
+	virtual void OnMdSubscribeInsert(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeBatchInsert(std::list<mdb::MdSubscribe*>* records) {}
+	virtual void OnMdSubscribeErase(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeUpdate(mdb::MdSubscribe* record) {}
+	virtual void OnMdSubscribeTruncate() {}
+	
 	virtual void OnAccountInsert(mdb::Account* record) {}
 	virtual void OnAccountBatchInsert(std::list<mdb::Account*>* records) {}
 	virtual void OnAccountErase(mdb::Account* record) {}
@@ -86,24 +104,6 @@ public:
 	virtual void OnTradeErase(mdb::Trade* record) {}
 	virtual void OnTradeUpdate(mdb::Trade* record) {}
 	virtual void OnTradeTruncate() {}
-	
-	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) {}
-	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) {}
-	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) {}
-	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) {}
-	virtual void OnDepthMarketDataTruncate() {}
-	
-	virtual void OnBarMarketDataInsert(mdb::BarMarketData* record) {}
-	virtual void OnBarMarketDataBatchInsert(std::list<mdb::BarMarketData*>* records) {}
-	virtual void OnBarMarketDataErase(mdb::BarMarketData* record) {}
-	virtual void OnBarMarketDataUpdate(mdb::BarMarketData* record) {}
-	virtual void OnBarMarketDataTruncate() {}
-	
-	virtual void OnMdSubscribeInsert(mdb::MdSubscribe* record) {}
-	virtual void OnMdSubscribeBatchInsert(std::list<mdb::MdSubscribe*>* records) {}
-	virtual void OnMdSubscribeErase(mdb::MdSubscribe* record) {}
-	virtual void OnMdSubscribeUpdate(mdb::MdSubscribe* record) {}
-	virtual void OnMdSubscribeTruncate() {}
 	
 
 public:

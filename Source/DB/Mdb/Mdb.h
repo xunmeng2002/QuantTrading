@@ -28,6 +28,11 @@ namespace mdb
 		ProductTable* t_Product;
 		HotInstrumentTable* t_HotInstrument;
 		InstrumentTable* t_Instrument;
+		DepthMarketDataTable* t_DepthMarketData;
+		BarMarketDataTable* t_BarMarketData;
+		MdSubscribeTable* t_MdSubscribe;
+		MdUserTable* t_MdUser;
+		MdUserLoginSessionTable* t_MdUserLoginSession;
 		PrimaryAccountTable* t_PrimaryAccount;
 		AccountTable* t_Account;
 		CapitalTable* t_Capital;
@@ -40,11 +45,6 @@ namespace mdb
 		SEOrderTable* t_SEOrder;
 		SETradeTable* t_SETrade;
 		SEBrokerLoginSessionTable* t_SEBrokerLoginSession;
-		DepthMarketDataTable* t_DepthMarketData;
-		BarMarketDataTable* t_BarMarketData;
-		MdSubscribeTable* t_MdSubscribe;
-		MdUserTable* t_MdUser;
-		MdUserLoginSessionTable* t_MdUserLoginSession;
 	private:
 		MdbSubscriber* m_MdbSubscriber;
 	};

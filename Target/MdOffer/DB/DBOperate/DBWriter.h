@@ -26,6 +26,18 @@ public:
 	virtual void OnDropTables() override;
 	virtual void OnTruncateTables() override;
 	
+	virtual void OnExchangeInsert(mdb::Exchange* record) override;
+	virtual void OnExchangeBatchInsert(std::list<mdb::Exchange*>* records) override;
+	virtual void OnExchangeErase(mdb::Exchange* record) override;
+	virtual void OnExchangeUpdate(mdb::Exchange* record) override;
+	virtual void OnExchangeTruncate() override;
+	
+	virtual void OnInstrumentInsert(mdb::Instrument* record) override;
+	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) override;
+	virtual void OnInstrumentErase(mdb::Instrument* record) override;
+	virtual void OnInstrumentUpdate(mdb::Instrument* record) override;
+	virtual void OnInstrumentTruncate() override;
+	
 	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) override;
 	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) override;

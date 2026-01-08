@@ -45,6 +45,24 @@ public:
 		m_Statement->executeUpdate(sql);
 	}
 	
+	virtual void CreateExchange() override;
+	virtual void DropExchange() override;
+	virtual void InsertExchange(mdb::Exchange* record) override;
+	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) override;
+	virtual void DeleteExchange(mdb::Exchange* record) override;
+	virtual void UpdateExchange(mdb::Exchange* record) override;
+	virtual void SelectExchange(std::list<mdb::Exchange*>& records) override;
+	virtual void TruncateExchange() override;
+	
+	virtual void CreateInstrument() override;
+	virtual void DropInstrument() override;
+	virtual void InsertInstrument(mdb::Instrument* record) override;
+	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
+	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void UpdateInstrument(mdb::Instrument* record) override;
+	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
+	virtual void TruncateInstrument() override;
+	
 	virtual void CreateDepthMarketData() override;
 	virtual void DropDepthMarketData() override;
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
@@ -93,6 +111,14 @@ public:
 	
 
 private:
+	void SetStatementForExchangeRecord(sql::PreparedStatement* statement, mdb::Exchange* record);
+	void SetStatementForExchangeRecordUpdate(sql::PreparedStatement* statement, mdb::Exchange* record);
+	void SetStatementForExchangePrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID);
+	void ParseRecord(sql::ResultSet* result, std::list<mdb::Exchange*>& records);
+	void SetStatementForInstrumentRecord(sql::PreparedStatement* statement, mdb::Instrument* record);
+	void SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, mdb::Instrument* record);
+	void SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void ParseRecord(sql::ResultSet* result, std::list<mdb::Instrument*>& records);
 	void SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
@@ -126,6 +152,20 @@ private:
 	std::string m_Passwd;
 	char* m_SqlBuff;
 
+	sql::PreparedStatement* m_ExchangeCreateStatement;
+	sql::PreparedStatement* m_ExchangeDropStatement;
+	sql::PreparedStatement* m_ExchangeInsertStatement;
+	sql::PreparedStatement* m_ExchangeDeleteStatement;
+	sql::PreparedStatement* m_ExchangeUpdateStatement;
+	sql::PreparedStatement* m_ExchangeSelectStatement;
+	sql::PreparedStatement* m_ExchangeTruncateStatement;
+	sql::PreparedStatement* m_InstrumentCreateStatement;
+	sql::PreparedStatement* m_InstrumentDropStatement;
+	sql::PreparedStatement* m_InstrumentInsertStatement;
+	sql::PreparedStatement* m_InstrumentDeleteStatement;
+	sql::PreparedStatement* m_InstrumentUpdateStatement;
+	sql::PreparedStatement* m_InstrumentSelectStatement;
+	sql::PreparedStatement* m_InstrumentTruncateStatement;
 	sql::PreparedStatement* m_DepthMarketDataCreateStatement;
 	sql::PreparedStatement* m_DepthMarketDataDropStatement;
 	sql::PreparedStatement* m_DepthMarketDataInsertStatement;

@@ -15,6 +15,21 @@ constexpr const char* TruncateSqliteDBHotInstrumentTableSqlString = "Delete From
 constexpr const char* CreateSqliteDBInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_Instrument(ExchangeID char(8), InstrumentID char(32), ExchangeInstID char(32), InstrumentName char(64), ProductID char(32), ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName char(32), PRIMARY KEY(ExchangeID, InstrumentID));";
 constexpr const char* TruncateSqliteDBInstrumentTableSqlString = "Delete From t_Instrument;";
 
+constexpr const char* CreateSqliteDBDepthMarketDataTableSqlString = "CREATE TABLE IF NOT EXISTS t_DepthMarketData(TradingDay char(9), ExchangeID char(8), InstrumentID char(32), UpdateTs bigint, LastPrice double, PreSettlementPrice double, PreClosePrice double, PreOpenInterest double, OpenPrice double, HighestPrice double, LowestPrice double, ClosePrice double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, SettlementPrice double, UpperLimitPrice double, LowerLimitPrice double, AveragePrice double, AskPrice1 double, AskPrice2 double, AskPrice3 double, AskPrice4 double, AskPrice5 double, AskPrice6 double, AskPrice7 double, AskPrice8 double, AskPrice9 double, AskPrice10 double, AskVolume1 bigint, AskVolume2 bigint, AskVolume3 bigint, AskVolume4 bigint, AskVolume5 bigint, AskVolume6 bigint, AskVolume7 bigint, AskVolume8 bigint, AskVolume9 bigint, AskVolume10 bigint, BidPrice1 double, BidPrice2 double, BidPrice3 double, BidPrice4 double, BidPrice5 double, BidPrice6 double, BidPrice7 double, BidPrice8 double, BidPrice9 double, BidPrice10 double, BidVolume1 bigint, BidVolume2 bigint, BidVolume3 bigint, BidVolume4 bigint, BidVolume5 bigint, BidVolume6 bigint, BidVolume7 bigint, BidVolume8 bigint, BidVolume9 bigint, BidVolume10 bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));";
+constexpr const char* TruncateSqliteDBDepthMarketDataTableSqlString = "Delete From t_DepthMarketData;";
+
+constexpr const char* CreateSqliteDBBarMarketDataTableSqlString = "CREATE TABLE IF NOT EXISTS t_BarMarketData(TradingDay char(9), ExchangeID char(8), InstrumentID char(32), BarPreces int, BarPeriod int, BarTime bigint, UpdateTs bigint, PreSettlementPrice double, PreClosePrice double, Open double, High double, Low double, Close double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));";
+constexpr const char* TruncateSqliteDBBarMarketDataTableSqlString = "Delete From t_BarMarketData;";
+
+constexpr const char* CreateSqliteDBMdSubscribeTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdSubscribe(ExchangeID char(8), InstrumentID char(32), RealInstrumentID char(32), ProductID char(32), ProductClass int, StartTradingDay char(9), EndTradingDay char(9), PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay));";
+constexpr const char* TruncateSqliteDBMdSubscribeTableSqlString = "Delete From t_MdSubscribe;";
+
+constexpr const char* CreateSqliteDBMdUserTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUser(MdUserID char(32), MdUserName char(64), Password char(64), PRIMARY KEY(MdUserID));";
+constexpr const char* TruncateSqliteDBMdUserTableSqlString = "Delete From t_MdUser;";
+
+constexpr const char* CreateSqliteDBMdUserLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(MdUserID char(32), SessionID bigint, IPAddress char(16), PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS MdUserIDIndex ON t_MdUserLoginSession(MdUserID);";
+constexpr const char* TruncateSqliteDBMdUserLoginSessionTableSqlString = "Delete From t_MdUserLoginSession;";
+
 constexpr const char* CreateSqliteDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(PrimaryAccountID char(32), PrimaryAccountName char(64), AccountClass int, BrokerPassword char(64), OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID)); CREATE INDEX IF NOT EXISTS OfferIDIndex ON t_PrimaryAccount(OfferID);";
 constexpr const char* TruncateSqliteDBPrimaryAccountTableSqlString = "Delete From t_PrimaryAccount;";
 
@@ -50,19 +65,4 @@ constexpr const char* TruncateSqliteDBSETradeTableSqlString = "Delete From t_SET
 
 constexpr const char* CreateSqliteDBSEBrokerLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(BrokerID int, SessionID bigint, IPAddress char(16), PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS BrokerIDIndex ON t_SEBrokerLoginSession(BrokerID);";
 constexpr const char* TruncateSqliteDBSEBrokerLoginSessionTableSqlString = "Delete From t_SEBrokerLoginSession;";
-
-constexpr const char* CreateSqliteDBDepthMarketDataTableSqlString = "CREATE TABLE IF NOT EXISTS t_DepthMarketData(TradingDay char(9), ExchangeID char(8), InstrumentID char(32), UpdateTs bigint, LastPrice double, PreSettlementPrice double, PreClosePrice double, PreOpenInterest double, OpenPrice double, HighestPrice double, LowestPrice double, ClosePrice double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, SettlementPrice double, UpperLimitPrice double, LowerLimitPrice double, AveragePrice double, AskPrice1 double, AskPrice2 double, AskPrice3 double, AskPrice4 double, AskPrice5 double, AskPrice6 double, AskPrice7 double, AskPrice8 double, AskPrice9 double, AskPrice10 double, AskVolume1 bigint, AskVolume2 bigint, AskVolume3 bigint, AskVolume4 bigint, AskVolume5 bigint, AskVolume6 bigint, AskVolume7 bigint, AskVolume8 bigint, AskVolume9 bigint, AskVolume10 bigint, BidPrice1 double, BidPrice2 double, BidPrice3 double, BidPrice4 double, BidPrice5 double, BidPrice6 double, BidPrice7 double, BidPrice8 double, BidPrice9 double, BidPrice10 double, BidVolume1 bigint, BidVolume2 bigint, BidVolume3 bigint, BidVolume4 bigint, BidVolume5 bigint, BidVolume6 bigint, BidVolume7 bigint, BidVolume8 bigint, BidVolume9 bigint, BidVolume10 bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));";
-constexpr const char* TruncateSqliteDBDepthMarketDataTableSqlString = "Delete From t_DepthMarketData;";
-
-constexpr const char* CreateSqliteDBBarMarketDataTableSqlString = "CREATE TABLE IF NOT EXISTS t_BarMarketData(TradingDay char(9), ExchangeID char(8), InstrumentID char(32), BarPreces int, BarPeriod int, BarTime bigint, UpdateTs bigint, PreSettlementPrice double, PreClosePrice double, Open double, High double, Low double, Close double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));";
-constexpr const char* TruncateSqliteDBBarMarketDataTableSqlString = "Delete From t_BarMarketData;";
-
-constexpr const char* CreateSqliteDBMdSubscribeTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdSubscribe(ExchangeID char(8), InstrumentID char(32), RealInstrumentID char(32), ProductID char(32), ProductClass int, StartTradingDay char(9), EndTradingDay char(9), PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay));";
-constexpr const char* TruncateSqliteDBMdSubscribeTableSqlString = "Delete From t_MdSubscribe;";
-
-constexpr const char* CreateSqliteDBMdUserTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUser(MdUserID char(32), MdUserName char(64), Password char(64), PRIMARY KEY(MdUserID));";
-constexpr const char* TruncateSqliteDBMdUserTableSqlString = "Delete From t_MdUser;";
-
-constexpr const char* CreateSqliteDBMdUserLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(MdUserID char(32), SessionID bigint, IPAddress char(16), PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS MdUserIDIndex ON t_MdUserLoginSession(MdUserID);";
-constexpr const char* TruncateSqliteDBMdUserLoginSessionTableSqlString = "Delete From t_MdUserLoginSession;";
 

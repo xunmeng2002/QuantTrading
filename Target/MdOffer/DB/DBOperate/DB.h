@@ -15,6 +15,24 @@ public:
 	virtual void TruncateTables() = 0;
 	virtual void TruncateSessionTables() = 0;
 	
+	virtual void CreateExchange() = 0;
+	virtual void DropExchange() = 0;
+	virtual void InsertExchange(mdb::Exchange* record) = 0;
+	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) = 0;
+	virtual void DeleteExchange(mdb::Exchange* record) = 0;
+	virtual void UpdateExchange(mdb::Exchange* record) = 0;
+	virtual void SelectExchange(std::list<mdb::Exchange*>& records) = 0;
+	virtual void TruncateExchange() = 0;
+
+	virtual void CreateInstrument() = 0;
+	virtual void DropInstrument() = 0;
+	virtual void InsertInstrument(mdb::Instrument* record) = 0;
+	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) = 0;
+	virtual void DeleteInstrument(mdb::Instrument* record) = 0;
+	virtual void UpdateInstrument(mdb::Instrument* record) = 0;
+	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) = 0;
+	virtual void TruncateInstrument() = 0;
+
 	virtual void CreateDepthMarketData() = 0;
 	virtual void DropDepthMarketData() = 0;
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) = 0;

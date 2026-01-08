@@ -29,6 +29,19 @@ namespace mdb
 		return false;
 	}
 	
+	bool MdUserLoginSessionEqualForMdUserIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	{
+		return strcmp(left->MdUserID, right->MdUserID) == 0;
+	}
+	bool MdUserLoginSessionLessForMdUserIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	{
+		if (strcmp(left->MdUserID, right->MdUserID) < 0)
+			return true;
+		else if (strcmp(left->MdUserID, right->MdUserID) > 0)
+			return false;
+		return false;
+	}
+	
 	bool PrimaryAccountEqualForOfferIDIndex::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
 	{
 		return left->OfferID == right->OfferID ;
@@ -183,19 +196,6 @@ namespace mdb
 		if (left->BrokerID < right->BrokerID)
 			return true;
 		else if (left->BrokerID > right->BrokerID)
-			return false;
-		return false;
-	}
-	
-	bool MdUserLoginSessionEqualForMdUserIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
-	{
-		return strcmp(left->MdUserID, right->MdUserID) == 0;
-	}
-	bool MdUserLoginSessionLessForMdUserIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
-	{
-		if (strcmp(left->MdUserID, right->MdUserID) < 0)
-			return true;
-		else if (strcmp(left->MdUserID, right->MdUserID) > 0)
 			return false;
 		return false;
 	}

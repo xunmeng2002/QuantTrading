@@ -64,6 +64,42 @@ namespace mdb
 	{
 		size_t operator()(const Instrument* const record) const;
 	};
+	struct DepthMarketDataEqualForDepthMarketDataPrimaryKey
+	{
+		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
+	};
+	struct DepthMarketDataLessForDepthMarketDataPrimaryKey
+	{
+		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
+	};
+	struct DepthMarketDataHashForDepthMarketDataPrimaryKey
+	{
+		size_t operator()(const DepthMarketData* const record) const;
+	};
+	struct BarMarketDataEqualForBarMarketDataPrimaryKey
+	{
+		bool operator()(const BarMarketData* const left, const BarMarketData* const right) const;
+	};
+	struct BarMarketDataLessForBarMarketDataPrimaryKey
+	{
+		bool operator()(const BarMarketData* const left, const BarMarketData* const right) const;
+	};
+	struct BarMarketDataHashForBarMarketDataPrimaryKey
+	{
+		size_t operator()(const BarMarketData* const record) const;
+	};
+	struct MdSubscribeEqualForMdSubscribePrimaryKey
+	{
+		bool operator()(const MdSubscribe* const left, const MdSubscribe* const right) const;
+	};
+	struct MdSubscribeLessForMdSubscribePrimaryKey
+	{
+		bool operator()(const MdSubscribe* const left, const MdSubscribe* const right) const;
+	};
+	struct MdSubscribeHashForMdSubscribePrimaryKey
+	{
+		size_t operator()(const MdSubscribe* const record) const;
+	};
 	struct AccountEqualForAccountPrimaryKey
 	{
 		bool operator()(const Account* const left, const Account* const right) const;
@@ -148,42 +184,6 @@ namespace mdb
 	struct TradeHashForTradePrimaryKey
 	{
 		size_t operator()(const Trade* const record) const;
-	};
-	struct DepthMarketDataEqualForDepthMarketDataPrimaryKey
-	{
-		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
-	};
-	struct DepthMarketDataLessForDepthMarketDataPrimaryKey
-	{
-		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
-	};
-	struct DepthMarketDataHashForDepthMarketDataPrimaryKey
-	{
-		size_t operator()(const DepthMarketData* const record) const;
-	};
-	struct BarMarketDataEqualForBarMarketDataPrimaryKey
-	{
-		bool operator()(const BarMarketData* const left, const BarMarketData* const right) const;
-	};
-	struct BarMarketDataLessForBarMarketDataPrimaryKey
-	{
-		bool operator()(const BarMarketData* const left, const BarMarketData* const right) const;
-	};
-	struct BarMarketDataHashForBarMarketDataPrimaryKey
-	{
-		size_t operator()(const BarMarketData* const record) const;
-	};
-	struct MdSubscribeEqualForMdSubscribePrimaryKey
-	{
-		bool operator()(const MdSubscribe* const left, const MdSubscribe* const right) const;
-	};
-	struct MdSubscribeLessForMdSubscribePrimaryKey
-	{
-		bool operator()(const MdSubscribe* const left, const MdSubscribe* const right) const;
-	};
-	struct MdSubscribeHashForMdSubscribePrimaryKey
-	{
-		size_t operator()(const MdSubscribe* const record) const;
 	};
 }
 

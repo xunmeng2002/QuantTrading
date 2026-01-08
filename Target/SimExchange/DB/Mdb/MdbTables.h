@@ -102,6 +102,36 @@ namespace mdb
 		ProductPrimaryKey* m_PrimaryKey;
 	};
 
+	class DepthMarketDataTable
+	{
+	public:
+		DepthMarketDataTable(Mdb* mdb);
+		~DepthMarketDataTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(DepthMarketData* record);
+		void BatchInsert(std::list<mdb::DepthMarketData*>* records);
+		void Erase(DepthMarketData* record);
+		bool Update(DepthMarketData* const oldRecord, DepthMarketData* const newRecord, bool updateDB = true);
+		void TruncateTables();
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(DepthMarketData* record);
+		void EraseIndex(DepthMarketData* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		DepthMarketDataPrimaryKey* m_PrimaryKey;
+	};
+
 	class SEBrokerTable
 	{
 	public:
@@ -258,36 +288,6 @@ namespace mdb
 		std::shared_mutex m_SharedMutex;
 		SEBrokerLoginSessionPrimaryKey* m_PrimaryKey;
 		SEBrokerLoginSessionIndexBrokerID* m_BrokerIDIndex;
-	};
-
-	class DepthMarketDataTable
-	{
-	public:
-		DepthMarketDataTable(Mdb* mdb);
-		~DepthMarketDataTable();
-		void Subscribe(MdbSubscriber* mdbSubscriber);
-		void UnSubscribe();
-		void LockShared();
-		void UnlockShared();
-		void InitDB();
-		bool Insert(DepthMarketData* record);
-		void BatchInsert(std::list<mdb::DepthMarketData*>* records);
-		void Erase(DepthMarketData* record);
-		bool Update(DepthMarketData* const oldRecord, DepthMarketData* const newRecord, bool updateDB = true);
-		void TruncateTables();
-		void TruncateTable();
-		void Dump(const char* dir);
-
-	private:
-		void EraseUniqueKey(DepthMarketData* record);
-		void EraseIndex(DepthMarketData* record);
-
-	public:
-		std::atomic<bool> m_DBInited;
-		Mdb* m_Mdb;
-		MdbSubscriber* m_MdbSubscriber;
-		std::shared_mutex m_SharedMutex;
-		DepthMarketDataPrimaryKey* m_PrimaryKey;
 	};
 
 }

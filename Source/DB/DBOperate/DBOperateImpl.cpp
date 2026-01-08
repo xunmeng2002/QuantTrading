@@ -50,6 +50,31 @@ void DBOperateImpl::FreeRecord()
 		((Instrument*)Record)->Free();
 		break;
 	}
+	case DepthMarketData::TableID:
+	{
+		((DepthMarketData*)Record)->Free();
+		break;
+	}
+	case BarMarketData::TableID:
+	{
+		((BarMarketData*)Record)->Free();
+		break;
+	}
+	case MdSubscribe::TableID:
+	{
+		((MdSubscribe*)Record)->Free();
+		break;
+	}
+	case MdUser::TableID:
+	{
+		((MdUser*)Record)->Free();
+		break;
+	}
+	case MdUserLoginSession::TableID:
+	{
+		((MdUserLoginSession*)Record)->Free();
+		break;
+	}
 	case PrimaryAccount::TableID:
 	{
 		((PrimaryAccount*)Record)->Free();
@@ -110,31 +135,6 @@ void DBOperateImpl::FreeRecord()
 		((SEBrokerLoginSession*)Record)->Free();
 		break;
 	}
-	case DepthMarketData::TableID:
-	{
-		((DepthMarketData*)Record)->Free();
-		break;
-	}
-	case BarMarketData::TableID:
-	{
-		((BarMarketData*)Record)->Free();
-		break;
-	}
-	case MdSubscribe::TableID:
-	{
-		((MdSubscribe*)Record)->Free();
-		break;
-	}
-	case MdUser::TableID:
-	{
-		((MdUser*)Record)->Free();
-		break;
-	}
-	case MdUserLoginSession::TableID:
-	{
-		((MdUserLoginSession*)Record)->Free();
-		break;
-	}
 	default:
 		break;
 	}
@@ -163,6 +163,26 @@ const char* DBOperateImpl::GetDebugString() const
 	case Instrument::TableID:
 	{
 		return ((Instrument*)Record)->GetDebugString();
+	}
+	case DepthMarketData::TableID:
+	{
+		return ((DepthMarketData*)Record)->GetDebugString();
+	}
+	case BarMarketData::TableID:
+	{
+		return ((BarMarketData*)Record)->GetDebugString();
+	}
+	case MdSubscribe::TableID:
+	{
+		return ((MdSubscribe*)Record)->GetDebugString();
+	}
+	case MdUser::TableID:
+	{
+		return ((MdUser*)Record)->GetDebugString();
+	}
+	case MdUserLoginSession::TableID:
+	{
+		return ((MdUserLoginSession*)Record)->GetDebugString();
 	}
 	case PrimaryAccount::TableID:
 	{
@@ -211,26 +231,6 @@ const char* DBOperateImpl::GetDebugString() const
 	case SEBrokerLoginSession::TableID:
 	{
 		return ((SEBrokerLoginSession*)Record)->GetDebugString();
-	}
-	case DepthMarketData::TableID:
-	{
-		return ((DepthMarketData*)Record)->GetDebugString();
-	}
-	case BarMarketData::TableID:
-	{
-		return ((BarMarketData*)Record)->GetDebugString();
-	}
-	case MdSubscribe::TableID:
-	{
-		return ((MdSubscribe*)Record)->GetDebugString();
-	}
-	case MdUser::TableID:
-	{
-		return ((MdUser*)Record)->GetDebugString();
-	}
-	case MdUserLoginSession::TableID:
-	{
-		return ((MdUserLoginSession*)Record)->GetDebugString();
 	}
 	default:
 		break;

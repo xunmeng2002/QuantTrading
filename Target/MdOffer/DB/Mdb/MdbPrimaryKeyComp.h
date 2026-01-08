@@ -4,6 +4,30 @@
 
 namespace mdb
 {
+	struct ExchangeEqualForExchangePrimaryKey
+	{
+		bool operator()(const Exchange* const left, const Exchange* const right) const;
+	};
+	struct ExchangeLessForExchangePrimaryKey
+	{
+		bool operator()(const Exchange* const left, const Exchange* const right) const;
+	};
+	struct ExchangeHashForExchangePrimaryKey
+	{
+		size_t operator()(const Exchange* const record) const;
+	};
+	struct InstrumentEqualForInstrumentPrimaryKey
+	{
+		bool operator()(const Instrument* const left, const Instrument* const right) const;
+	};
+	struct InstrumentLessForInstrumentPrimaryKey
+	{
+		bool operator()(const Instrument* const left, const Instrument* const right) const;
+	};
+	struct InstrumentHashForInstrumentPrimaryKey
+	{
+		size_t operator()(const Instrument* const record) const;
+	};
 	struct DepthMarketDataEqualForDepthMarketDataPrimaryKey
 	{
 		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;

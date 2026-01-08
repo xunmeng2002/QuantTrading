@@ -5,6 +5,11 @@
 	<table name="Product"/>
 	<table name="HotInstrument"/>
 	<table name="Instrument"/>
+	<table name="DepthMarketData"/>
+	<table name="BarMarketData"/>
+	<table name="MdSubscribe"/>
+	<table name="MdUser"/>
+	<table name="MdUserLoginSession"/>
 	<table name="PrimaryAccount"/>
 	<table name="Account"/>
 	<table name="Capital"/>
@@ -17,9 +22,4 @@
 	<table name="SEOrder"/>
 	<table name="SETrade"/>
 	<table name="SEBrokerLoginSession"/>
-	<table name="DepthMarketData"/>
-	<table name="BarMarketData"/>
-	<table name="MdSubscribe"/>
-	<table name="MdUser"/>
-	<table name="MdUserLoginSession"/>
 </dbtables>

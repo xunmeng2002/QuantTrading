@@ -12,6 +12,338 @@ using std::list;
 
 namespace mdb
 {
+	ExchangeTable::ExchangeTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new ExchangePrimaryKey(this);
+	}
+	ExchangeTable::~ExchangeTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+	}
+	void ExchangeTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void ExchangeTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void ExchangeTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void ExchangeTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void ExchangeTable::InitDB()
+	{
+		m_MdbSubscriber->OnExchangeTruncate();
+		
+		std::list<Exchange*>* records = new std::list<Exchange*>();
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records->push_back(new Exchange(**it));
+		}
+		if (records->empty())
+		{
+			delete records;
+		}
+		else
+		{
+			m_MdbSubscriber->OnExchangeBatchInsert(records);
+		}
+		m_DBInited = true;
+	}
+	bool ExchangeTable::Insert(Exchange* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for Exchange:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnExchangeInsert(record);
+		}
+		return true;
+	}
+	void ExchangeTable::BatchInsert(std::list<mdb::Exchange*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = Exchange::Allocate();
+				memcpy(newRecord, record, sizeof(Exchange));
+				m_PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnExchangeBatchInsert(records);
+		}
+	}
+	void ExchangeTable::Erase(Exchange* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnExchangeErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	bool ExchangeTable::Update(Exchange* const oldRecord, Exchange* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for Exchange:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New Exchange:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		::memcpy((void*)oldRecord, newRecord, sizeof(Exchange));
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnExchangeUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void ExchangeTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+	}
+	void ExchangeTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnExchangeTruncate();
+		}
+	}
+	void ExchangeTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_Exchange.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "ExchangeID,ExchangeName\n");
+		char buff[4096] = { 0 };
+		set<Exchange*, ExchangeLessForExchangePrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void ExchangeTable::EraseUniqueKey(Exchange* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void ExchangeTable::EraseIndex(Exchange* record)
+	{
+	}
+
+	InstrumentTable::InstrumentTable(Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new InstrumentPrimaryKey(this);
+	}
+	InstrumentTable::~InstrumentTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+	}
+	void InstrumentTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void InstrumentTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void InstrumentTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void InstrumentTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void InstrumentTable::InitDB()
+	{
+		m_DBInited = true;
+	}
+	bool InstrumentTable::Insert(Instrument* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for Instrument:[%s]", record->GetString());
+			record->Free();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnInstrumentInsert(record);
+		}
+		return true;
+	}
+	void InstrumentTable::BatchInsert(std::list<mdb::Instrument*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = Instrument::Allocate();
+				memcpy(newRecord, record, sizeof(Instrument));
+				m_PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnInstrumentBatchInsert(records);
+		}
+	}
+	void InstrumentTable::Erase(Instrument* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnInstrumentErase(record);
+		}
+		else
+		{
+			record->Free();
+		}
+	}
+	bool InstrumentTable::Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for Instrument:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New Instrument:[%s]", newRecord->GetString());
+			newRecord->Free();
+			return false;
+		}
+
+		::memcpy((void*)oldRecord, newRecord, sizeof(Instrument));
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnInstrumentUpdate(newRecord);
+		}
+		else
+		{
+			newRecord->Free();
+		}
+		return true;
+	}
+	void InstrumentTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+	}
+	void InstrumentTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Free();
+		}
+		m_PrimaryKey->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnInstrumentTruncate();
+		}
+	}
+	void InstrumentTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_Instrument.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "ExchangeID,InstrumentID,ExchangeInstID,InstrumentName,ProductID,ProductClass,InstrumentClass,Rank,VolumeMultiple,PriceTick,MaxMarketOrderVolume,MinMarketOrderVolume,MaxLimitOrderVolume,MinLimitOrderVolume,SessionName\n");
+		char buff[4096] = { 0 };
+		set<Instrument*, InstrumentLessForInstrumentPrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void InstrumentTable::EraseUniqueKey(Instrument* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void InstrumentTable::EraseIndex(Instrument* record)
+	{
+	}
+
 	DepthMarketDataTable::DepthMarketDataTable(Mdb* mdb)
 		:m_Mdb(mdb)
 	{

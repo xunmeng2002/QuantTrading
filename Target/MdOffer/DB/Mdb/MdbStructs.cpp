@@ -7,6 +7,58 @@ namespace mdb
 {
 	thread_local char t_MdbDataStringBuffer[10240];
 
+	Exchange* Exchange::Allocate()
+	{
+		return ::Allocate<Exchange>();
+	}
+	void Exchange::Free()
+	{
+		::Free<Exchange>(this);
+	}
+	const char* Exchange::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%s",
+			ExchangeID, ExchangeName);
+		return t_MdbDataStringBuffer;
+	}
+	int Exchange::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%s'),",
+			ExchangeID, ExchangeName);
+	}
+	const char* Exchange::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "Exchange:ExchangeID:[%s], ExchangeName:[%s]",
+			ExchangeID, ExchangeName);
+		return t_MdbDataStringBuffer;
+	}
+
+	Instrument* Instrument::Allocate()
+	{
+		return ::Allocate<Instrument>();
+	}
+	void Instrument::Free()
+	{
+		::Free<Instrument>(this);
+	}
+	const char* Instrument::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%s,%s,%s,%d,%d,%d,%d,%f,%lld,%lld,%lld,%lld,%s",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
+		return t_MdbDataStringBuffer;
+	}
+	int Instrument::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%s','%s','%s','%s','%d','%d','%d','%d','%f','%lld','%lld','%lld','%lld','%s'),",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
+	}
+	const char* Instrument::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], InstrumentClass:[%d], Rank:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]",
+			ExchangeID, InstrumentID, ExchangeInstID, InstrumentName, ProductID, (int)ProductClass, (int)InstrumentClass, Rank, VolumeMultiple, PriceTick, MaxMarketOrderVolume, MinMarketOrderVolume, MaxLimitOrderVolume, MinLimitOrderVolume, SessionName);
+		return t_MdbDataStringBuffer;
+	}
+
 	DepthMarketData* DepthMarketData::Allocate()
 	{
 		return ::Allocate<DepthMarketData>();
@@ -138,6 +190,8 @@ namespace mdb
 	}
 
 
+	thread_local Exchange t_CompareExchange;
+	thread_local Instrument t_CompareInstrument;
 	thread_local DepthMarketData t_CompareDepthMarketData;
 	thread_local BarMarketData t_CompareBarMarketData;
 	thread_local MdSubscribe t_CompareMdSubscribe;

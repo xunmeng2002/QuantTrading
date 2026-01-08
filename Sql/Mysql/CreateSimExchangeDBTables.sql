@@ -68,6 +68,124 @@ CREATE TABLE IF NOT EXISTS `t_Instrument` (
   PRIMARY KEY(ExchangeID, InstrumentID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='合约';
 
+CREATE TABLE IF NOT EXISTS `t_DepthMarketData` (
+  `TradingDay` char(9) COMMENT '交易日',
+  `ExchangeID` char(8) COMMENT '交易所代码',
+  `InstrumentID` char(32) COMMENT '合约代码',
+  `UpdateTs` bigint COMMENT '更新时间戳',
+  `LastPrice` decimal(24,8) COMMENT '最新价',
+  `PreSettlementPrice` decimal(24,8) COMMENT '昨结算价',
+  `PreClosePrice` decimal(24,8) COMMENT '昨收盘价',
+  `PreOpenInterest` decimal(24,8) COMMENT '上日持仓量',
+  `OpenPrice` decimal(24,8) COMMENT '开盘价',
+  `HighestPrice` decimal(24,8) COMMENT '最高价',
+  `LowestPrice` decimal(24,8) COMMENT '最低价',
+  `ClosePrice` decimal(24,8) COMMENT '收盘价',
+  `CurrVolume` bigint COMMENT '当前数量',
+  `Volume` bigint COMMENT '委托数量',
+  `CurrTurnover` decimal(24,8) COMMENT '当前成交金额',
+  `Turnover` decimal(24,8) COMMENT '成交金额',
+  `OpenInterest` decimal(24,8) COMMENT '持仓量',
+  `SettlementPrice` decimal(24,8) COMMENT '结算价',
+  `UpperLimitPrice` decimal(24,8) COMMENT '涨停板价',
+  `LowerLimitPrice` decimal(24,8) COMMENT '跌停板价',
+  `AveragePrice` decimal(24,8) COMMENT '当日均价',
+  `AskPrice1` decimal(24,8) COMMENT '申卖价一',
+  `AskPrice2` decimal(24,8) COMMENT '申卖价二',
+  `AskPrice3` decimal(24,8) COMMENT '申卖价三',
+  `AskPrice4` decimal(24,8) COMMENT '申卖价四',
+  `AskPrice5` decimal(24,8) COMMENT '申卖价五',
+  `AskPrice6` decimal(24,8) COMMENT '申卖价六',
+  `AskPrice7` decimal(24,8) COMMENT '申卖价七',
+  `AskPrice8` decimal(24,8) COMMENT '申卖价八',
+  `AskPrice9` decimal(24,8) COMMENT '申卖价九',
+  `AskPrice10` decimal(24,8) COMMENT '申卖价十',
+  `AskVolume1` bigint COMMENT '申卖量一',
+  `AskVolume2` bigint COMMENT '申卖量二',
+  `AskVolume3` bigint COMMENT '申卖量三',
+  `AskVolume4` bigint COMMENT '申卖量四',
+  `AskVolume5` bigint COMMENT '申卖量五',
+  `AskVolume6` bigint COMMENT '申卖量六',
+  `AskVolume7` bigint COMMENT '申卖量七',
+  `AskVolume8` bigint COMMENT '申卖量八',
+  `AskVolume9` bigint COMMENT '申卖量九',
+  `AskVolume10` bigint COMMENT '申卖量十',
+  `BidPrice1` decimal(24,8) COMMENT '申买价一',
+  `BidPrice2` decimal(24,8) COMMENT '申买价二',
+  `BidPrice3` decimal(24,8) COMMENT '申买价三',
+  `BidPrice4` decimal(24,8) COMMENT '申买价四',
+  `BidPrice5` decimal(24,8) COMMENT '申买价五',
+  `BidPrice6` decimal(24,8) COMMENT '申买价六',
+  `BidPrice7` decimal(24,8) COMMENT '申买价七',
+  `BidPrice8` decimal(24,8) COMMENT '申买价八',
+  `BidPrice9` decimal(24,8) COMMENT '申买价九',
+  `BidPrice10` decimal(24,8) COMMENT '申买价十',
+  `BidVolume1` bigint COMMENT '申买量一',
+  `BidVolume2` bigint COMMENT '申买量二',
+  `BidVolume3` bigint COMMENT '申买量三',
+  `BidVolume4` bigint COMMENT '申买量四',
+  `BidVolume5` bigint COMMENT '申买量五',
+  `BidVolume6` bigint COMMENT '申买量六',
+  `BidVolume7` bigint COMMENT '申买量七',
+  `BidVolume8` bigint COMMENT '申买量八',
+  `BidVolume9` bigint COMMENT '申买量九',
+  `BidVolume10` bigint COMMENT '申买量十',
+
+  PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='深度行情';
+
+CREATE TABLE IF NOT EXISTS `t_BarMarketData` (
+  `TradingDay` char(9) COMMENT '交易日',
+  `ExchangeID` char(8) COMMENT '交易所代码',
+  `InstrumentID` char(32) COMMENT '合约代码',
+  `BarPreces` int COMMENT 'Bar精度',
+  `BarPeriod` int COMMENT 'Bar周期',
+  `BarTime` bigint COMMENT 'Bar时间',
+  `UpdateTs` bigint COMMENT '更新时间戳',
+  `PreSettlementPrice` decimal(24,8) COMMENT '昨结算价',
+  `PreClosePrice` decimal(24,8) COMMENT '昨收盘价',
+  `Open` decimal(24,8) COMMENT '开盘价',
+  `High` decimal(24,8) COMMENT '最高价',
+  `Low` decimal(24,8) COMMENT '最低价',
+  `Close` decimal(24,8) COMMENT '收盘价',
+  `CurrVolume` bigint COMMENT '当前数量',
+  `Volume` bigint COMMENT '委托数量',
+  `CurrTurnover` decimal(24,8) COMMENT '当前成交金额',
+  `Turnover` decimal(24,8) COMMENT '成交金额',
+  `OpenInterest` decimal(24,8) COMMENT '持仓量',
+
+  PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='Bar行情';
+
+CREATE TABLE IF NOT EXISTS `t_MdSubscribe` (
+  `ExchangeID` char(8) COMMENT '交易所代码',
+  `InstrumentID` char(32) COMMENT '合约代码',
+  `RealInstrumentID` char(32) COMMENT '真实合约代码',
+  `ProductID` char(32) COMMENT '品种代码',
+  `ProductClass` int COMMENT '品种类型',
+  `StartTradingDay` char(9) COMMENT '开始交易日',
+  `EndTradingDay` char(9) COMMENT '结束交易日',
+
+  PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='行情订阅';
+
+CREATE TABLE IF NOT EXISTS `t_MdUser` (
+  `MdUserID` char(32) COMMENT '行情用户代码',
+  `MdUserName` char(64) COMMENT '行情用户名称',
+  `Password` char(64) COMMENT '密码',
+
+  PRIMARY KEY(MdUserID)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='账户';
+
+CREATE TABLE IF NOT EXISTS `t_MdUserLoginSession` (
+  `MdUserID` char(32) COMMENT '行情用户代码',
+  `SessionID` bigint COMMENT '会话编号',
+  `IPAddress` char(16) COMMENT 'IP地址',
+
+  INDEX MdUserID(MdUserID),
+  PRIMARY KEY(SessionID)
+) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='行情用户登录会话';
+
 CREATE TABLE IF NOT EXISTS `t_PrimaryAccount` (
   `PrimaryAccountID` char(32) COMMENT '主账户代码',
   `PrimaryAccountName` char(64) COMMENT '主账户名称',
@@ -336,123 +454,5 @@ CREATE TABLE IF NOT EXISTS `t_SEBrokerLoginSession` (
   INDEX BrokerID(BrokerID),
   PRIMARY KEY(SessionID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='模拟交易经纪商登录会话';
-
-CREATE TABLE IF NOT EXISTS `t_DepthMarketData` (
-  `TradingDay` char(9) COMMENT '交易日',
-  `ExchangeID` char(8) COMMENT '交易所代码',
-  `InstrumentID` char(32) COMMENT '合约代码',
-  `UpdateTs` bigint COMMENT '更新时间戳',
-  `LastPrice` decimal(24,8) COMMENT '最新价',
-  `PreSettlementPrice` decimal(24,8) COMMENT '昨结算价',
-  `PreClosePrice` decimal(24,8) COMMENT '昨收盘价',
-  `PreOpenInterest` decimal(24,8) COMMENT '上日持仓量',
-  `OpenPrice` decimal(24,8) COMMENT '开盘价',
-  `HighestPrice` decimal(24,8) COMMENT '最高价',
-  `LowestPrice` decimal(24,8) COMMENT '最低价',
-  `ClosePrice` decimal(24,8) COMMENT '收盘价',
-  `CurrVolume` bigint COMMENT '当前数量',
-  `Volume` bigint COMMENT '委托数量',
-  `CurrTurnover` decimal(24,8) COMMENT '当前成交金额',
-  `Turnover` decimal(24,8) COMMENT '成交金额',
-  `OpenInterest` decimal(24,8) COMMENT '持仓量',
-  `SettlementPrice` decimal(24,8) COMMENT '结算价',
-  `UpperLimitPrice` decimal(24,8) COMMENT '涨停板价',
-  `LowerLimitPrice` decimal(24,8) COMMENT '跌停板价',
-  `AveragePrice` decimal(24,8) COMMENT '当日均价',
-  `AskPrice1` decimal(24,8) COMMENT '申卖价一',
-  `AskPrice2` decimal(24,8) COMMENT '申卖价二',
-  `AskPrice3` decimal(24,8) COMMENT '申卖价三',
-  `AskPrice4` decimal(24,8) COMMENT '申卖价四',
-  `AskPrice5` decimal(24,8) COMMENT '申卖价五',
-  `AskPrice6` decimal(24,8) COMMENT '申卖价六',
-  `AskPrice7` decimal(24,8) COMMENT '申卖价七',
-  `AskPrice8` decimal(24,8) COMMENT '申卖价八',
-  `AskPrice9` decimal(24,8) COMMENT '申卖价九',
-  `AskPrice10` decimal(24,8) COMMENT '申卖价十',
-  `AskVolume1` bigint COMMENT '申卖量一',
-  `AskVolume2` bigint COMMENT '申卖量二',
-  `AskVolume3` bigint COMMENT '申卖量三',
-  `AskVolume4` bigint COMMENT '申卖量四',
-  `AskVolume5` bigint COMMENT '申卖量五',
-  `AskVolume6` bigint COMMENT '申卖量六',
-  `AskVolume7` bigint COMMENT '申卖量七',
-  `AskVolume8` bigint COMMENT '申卖量八',
-  `AskVolume9` bigint COMMENT '申卖量九',
-  `AskVolume10` bigint COMMENT '申卖量十',
-  `BidPrice1` decimal(24,8) COMMENT '申买价一',
-  `BidPrice2` decimal(24,8) COMMENT '申买价二',
-  `BidPrice3` decimal(24,8) COMMENT '申买价三',
-  `BidPrice4` decimal(24,8) COMMENT '申买价四',
-  `BidPrice5` decimal(24,8) COMMENT '申买价五',
-  `BidPrice6` decimal(24,8) COMMENT '申买价六',
-  `BidPrice7` decimal(24,8) COMMENT '申买价七',
-  `BidPrice8` decimal(24,8) COMMENT '申买价八',
-  `BidPrice9` decimal(24,8) COMMENT '申买价九',
-  `BidPrice10` decimal(24,8) COMMENT '申买价十',
-  `BidVolume1` bigint COMMENT '申买量一',
-  `BidVolume2` bigint COMMENT '申买量二',
-  `BidVolume3` bigint COMMENT '申买量三',
-  `BidVolume4` bigint COMMENT '申买量四',
-  `BidVolume5` bigint COMMENT '申买量五',
-  `BidVolume6` bigint COMMENT '申买量六',
-  `BidVolume7` bigint COMMENT '申买量七',
-  `BidVolume8` bigint COMMENT '申买量八',
-  `BidVolume9` bigint COMMENT '申买量九',
-  `BidVolume10` bigint COMMENT '申买量十',
-
-  PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='深度行情';
-
-CREATE TABLE IF NOT EXISTS `t_BarMarketData` (
-  `TradingDay` char(9) COMMENT '交易日',
-  `ExchangeID` char(8) COMMENT '交易所代码',
-  `InstrumentID` char(32) COMMENT '合约代码',
-  `BarPreces` int COMMENT 'Bar精度',
-  `BarPeriod` int COMMENT 'Bar周期',
-  `BarTime` bigint COMMENT 'Bar时间',
-  `UpdateTs` bigint COMMENT '更新时间戳',
-  `PreSettlementPrice` decimal(24,8) COMMENT '昨结算价',
-  `PreClosePrice` decimal(24,8) COMMENT '昨收盘价',
-  `Open` decimal(24,8) COMMENT '开盘价',
-  `High` decimal(24,8) COMMENT '最高价',
-  `Low` decimal(24,8) COMMENT '最低价',
-  `Close` decimal(24,8) COMMENT '收盘价',
-  `CurrVolume` bigint COMMENT '当前数量',
-  `Volume` bigint COMMENT '委托数量',
-  `CurrTurnover` decimal(24,8) COMMENT '当前成交金额',
-  `Turnover` decimal(24,8) COMMENT '成交金额',
-  `OpenInterest` decimal(24,8) COMMENT '持仓量',
-
-  PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='Bar行情';
-
-CREATE TABLE IF NOT EXISTS `t_MdSubscribe` (
-  `ExchangeID` char(8) COMMENT '交易所代码',
-  `InstrumentID` char(32) COMMENT '合约代码',
-  `RealInstrumentID` char(32) COMMENT '真实合约代码',
-  `ProductID` char(32) COMMENT '品种代码',
-  `ProductClass` int COMMENT '品种类型',
-  `StartTradingDay` char(9) COMMENT '开始交易日',
-  `EndTradingDay` char(9) COMMENT '结束交易日',
-
-  PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='行情订阅';
-
-CREATE TABLE IF NOT EXISTS `t_MdUser` (
-  `MdUserID` char(32) COMMENT '行情用户代码',
-  `MdUserName` char(64) COMMENT '行情用户名称',
-  `Password` char(64) COMMENT '密码',
-
-  PRIMARY KEY(MdUserID)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='账户';
-
-CREATE TABLE IF NOT EXISTS `t_MdUserLoginSession` (
-  `MdUserID` char(32) COMMENT '行情用户代码',
-  `SessionID` bigint COMMENT '会话编号',
-  `IPAddress` char(16) COMMENT 'IP地址',
-
-  INDEX MdUserID(MdUserID),
-  PRIMARY KEY(SessionID)
-) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='行情用户登录会话';
 
 

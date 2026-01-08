@@ -11,14 +11,15 @@
     "",
     "\\Model",
     "\\Model\\Configs",
+    "\\Model\\DB",
+    "\\Source",
+    "\\Source\\Bar",
     "\\Target",
-    "\\Target\\SimExchange",
-    "\\Test",
-    "\\Test\\TestBackTest\\Src",
-    "\\Test\\TestMdApi",
-    "\\Test\\TestMdApi\\Config",
-    "\\Test\\TestMdApi\\Src"
+    "\\Target\\MdOffer",
+    "\\Target\\MdOffer\\DB",
+    "\\Target\\MdOffer\\Src",
+    "\\Target\\SimExchange"
   ],
-  "SelectedNode": "\\Test\\TestMdApi\\Config\\Config.h",
+  "SelectedNode": "\\Model\\DB\\MdOfferTableNames.xml",
   "PreviewInSolutionExplorer": false
 }

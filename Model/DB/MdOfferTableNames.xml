@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dbtables prefix="MdOffer">
+	<table name="Exchange"/>
+	<table name="Instrument"/>
 	<table name="DepthMarketData"/>
 	<table name="BarMarketData"/>
 	<table name="MdSubscribe"/>

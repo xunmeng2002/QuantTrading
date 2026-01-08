@@ -22,6 +22,22 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_DBConnection = nullptr;
 	m_Statement = nullptr;
 	
+	m_ExchangeCreateStatement = nullptr;
+	m_ExchangeDropStatement = nullptr;
+	m_ExchangeInsertStatement = nullptr;
+	m_ExchangeDeleteStatement = nullptr;
+	m_ExchangeUpdateStatement = nullptr;
+	m_ExchangeSelectStatement = nullptr;
+	m_ExchangeTruncateStatement = nullptr;
+
+	m_InstrumentCreateStatement = nullptr;
+	m_InstrumentDropStatement = nullptr;
+	m_InstrumentInsertStatement = nullptr;
+	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentUpdateStatement = nullptr;
+	m_InstrumentSelectStatement = nullptr;
+	m_InstrumentTruncateStatement = nullptr;
+
 	m_DepthMarketDataCreateStatement = nullptr;
 	m_DepthMarketDataDropStatement = nullptr;
 	m_DepthMarketDataInsertStatement = nullptr;
@@ -116,6 +132,76 @@ void MysqlDB::DisConnect()
 	{
 		m_Statement->close();
 		m_Statement = nullptr;
+	}
+	if (m_ExchangeCreateStatement != nullptr)
+	{
+		m_ExchangeCreateStatement->close();
+		m_ExchangeCreateStatement = nullptr;
+	}
+	if (m_ExchangeDropStatement != nullptr)
+	{
+		m_ExchangeDropStatement->close();
+		m_ExchangeDropStatement = nullptr;
+	}
+	if (m_ExchangeInsertStatement != nullptr)
+	{
+		m_ExchangeInsertStatement->close();
+		m_ExchangeInsertStatement = nullptr;
+	}
+	if (m_ExchangeDeleteStatement != nullptr)
+	{
+		m_ExchangeDeleteStatement->close();
+		m_ExchangeDeleteStatement = nullptr;
+	}
+	if (m_ExchangeUpdateStatement != nullptr)
+	{
+		m_ExchangeUpdateStatement->close();
+		m_ExchangeUpdateStatement = nullptr;
+	}
+	if (m_ExchangeSelectStatement != nullptr)
+	{
+		m_ExchangeSelectStatement->close();
+		m_ExchangeSelectStatement = nullptr;
+	}
+	if (m_ExchangeTruncateStatement != nullptr)
+	{
+		m_ExchangeTruncateStatement->close();
+		m_ExchangeTruncateStatement = nullptr;
+	}
+	if (m_InstrumentCreateStatement != nullptr)
+	{
+		m_InstrumentCreateStatement->close();
+		m_InstrumentCreateStatement = nullptr;
+	}
+	if (m_InstrumentDropStatement != nullptr)
+	{
+		m_InstrumentDropStatement->close();
+		m_InstrumentDropStatement = nullptr;
+	}
+	if (m_InstrumentInsertStatement != nullptr)
+	{
+		m_InstrumentInsertStatement->close();
+		m_InstrumentInsertStatement = nullptr;
+	}
+	if (m_InstrumentDeleteStatement != nullptr)
+	{
+		m_InstrumentDeleteStatement->close();
+		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentUpdateStatement != nullptr)
+	{
+		m_InstrumentUpdateStatement->close();
+		m_InstrumentUpdateStatement = nullptr;
+	}
+	if (m_InstrumentSelectStatement != nullptr)
+	{
+		m_InstrumentSelectStatement->close();
+		m_InstrumentSelectStatement = nullptr;
+	}
+	if (m_InstrumentTruncateStatement != nullptr)
+	{
+		m_InstrumentTruncateStatement->close();
+		m_InstrumentTruncateStatement = nullptr;
 	}
 	if (m_DepthMarketDataCreateStatement != nullptr)
 	{
@@ -300,6 +386,10 @@ void MysqlDB::DisConnect()
 }
 void MysqlDB::InitDB()
 {
+	m_Statement->executeUpdate("Truncate Table t_Exchange;");
+	m_Statement->executeUpdate("Insert Into t_Exchange select * from Init.t_Exchange;");
+	m_Statement->executeUpdate("Truncate Table t_Instrument;");
+	m_Statement->executeUpdate("Insert Into t_Instrument select * from Init.t_Instrument;");
 	m_Statement->executeUpdate("Truncate Table t_DepthMarketData;");
 	m_Statement->executeUpdate("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 	m_Statement->executeUpdate("Truncate Table t_BarMarketData;");
@@ -313,6 +403,8 @@ void MysqlDB::InitDB()
 }
 void MysqlDB::CreateTables()
 {
+	CreateExchange();
+	CreateInstrument();
 	CreateDepthMarketData();
 	CreateBarMarketData();
 	CreateMdSubscribe();
@@ -321,6 +413,8 @@ void MysqlDB::CreateTables()
 }
 void MysqlDB::DropTables()
 {
+	DropExchange();
+	DropInstrument();
 	DropDepthMarketData();
 	DropBarMarketData();
 	DropMdSubscribe();
@@ -329,6 +423,7 @@ void MysqlDB::DropTables()
 }
 void MysqlDB::TruncateTables()
 {
+	TruncateExchange();
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
 	TruncateMdSubscribe();
@@ -342,6 +437,274 @@ void MysqlDB::TruncateSessionTables()
 	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 
+void MysqlDB::CreateExchange()
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeCreateStatement == nullptr)
+	{
+		m_ExchangeCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Exchange(`ExchangeID` char(8), `ExchangeName` char(64), PRIMARY KEY(ExchangeID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+	}
+	m_ExchangeCreateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms", duration);
+}
+void MysqlDB::DropExchange()
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeDropStatement == nullptr)
+	{
+		m_ExchangeDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Exchange;");
+	}
+	m_ExchangeDropStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms", duration);
+}
+void MysqlDB::InsertExchange(Exchange* record)
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeInsertStatement == nullptr)
+	{
+		m_ExchangeInsertStatement = m_DBConnection->prepareStatement("insert into t_Exchange Values(?, ?);");
+	}
+	SetStatementForExchangeRecord(m_ExchangeInsertStatement, record);
+	
+	m_ExchangeInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertExchange Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertExchange(std::list<Exchange*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Exchange Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Exchange Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertExchange Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertExchange RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteExchange(Exchange* record)
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeDeleteStatement == nullptr)
+	{
+		m_ExchangeDeleteStatement = m_DBConnection->prepareStatement("delete from t_Exchange where ExchangeID = ?;");
+	}
+	SetStatementForExchangePrimaryKey(m_ExchangeDeleteStatement, record->ExchangeID);
+	m_ExchangeDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteExchange Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateExchange(Exchange* record)
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeUpdateStatement == nullptr)
+	{
+		m_ExchangeUpdateStatement = m_DBConnection->prepareStatement("update t_Exchange set ExchangeName = ? where ExchangeID = ?;");
+	}
+	SetStatementForExchangeRecordUpdate(m_ExchangeUpdateStatement, record);
+	m_ExchangeUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateExchange Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectExchange(std::list<Exchange*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeSelectStatement == nullptr)
+	{
+		m_ExchangeSelectStatement = m_DBConnection->prepareStatement("select * from t_Exchange;");
+	}
+	auto result = m_ExchangeSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectExchange Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateExchange()
+{
+	auto start = steady_clock::now();
+	if (m_ExchangeTruncateStatement == nullptr)
+	{
+		m_ExchangeTruncateStatement = m_DBConnection->prepareStatement("truncate table t_Exchange;");
+	}
+	m_ExchangeTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateExchange Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::CreateInstrument()
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentCreateStatement == nullptr)
+	{
+		m_InstrumentCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` char(8), `InstrumentID` char(32), `ExchangeInstID` char(32), `InstrumentName` char(64), `ProductID` char(32), `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), PRIMARY KEY(ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+	}
+	m_InstrumentCreateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms", duration);
+}
+void MysqlDB::DropInstrument()
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDropStatement == nullptr)
+	{
+		m_InstrumentDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Instrument;");
+	}
+	m_InstrumentDropStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms", duration);
+}
+void MysqlDB::InsertInstrument(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentInsertStatement == nullptr)
+	{
+		m_InstrumentInsertStatement = m_DBConnection->prepareStatement("insert into t_Instrument Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForInstrumentRecord(m_InstrumentInsertStatement, record);
+	
+	m_InstrumentInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertInstrument(std::list<Instrument*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_Instrument Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_Instrument Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertInstrument Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteInstrument(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteStatement == nullptr)
+	{
+		m_InstrumentDeleteStatement = m_DBConnection->prepareStatement("delete from t_Instrument where ExchangeID = ? and InstrumentID = ?;");
+	}
+	SetStatementForInstrumentPrimaryKey(m_InstrumentDeleteStatement, record->ExchangeID, record->InstrumentID);
+	m_InstrumentDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateInstrument(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentUpdateStatement == nullptr)
+	{
+		m_InstrumentUpdateStatement = m_DBConnection->prepareStatement("update t_Instrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;");
+	}
+	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
+	m_InstrumentUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectInstrument(std::list<Instrument*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentSelectStatement == nullptr)
+	{
+		m_InstrumentSelectStatement = m_DBConnection->prepareStatement("select * from t_Instrument;");
+	}
+	auto result = m_InstrumentSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateInstrument()
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentTruncateStatement == nullptr)
+	{
+		m_InstrumentTruncateStatement = m_DBConnection->prepareStatement("truncate table t_Instrument;");
+	}
+	m_InstrumentTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
 void MysqlDB::CreateDepthMarketData()
 {
 	auto start = steady_clock::now();
@@ -1029,6 +1392,88 @@ void MysqlDB::TruncateMdUserLoginSession()
 }
 
 
+void MysqlDB::SetStatementForExchangeRecord(sql::PreparedStatement* statement, Exchange* record)
+{
+	statement->setString(1, record->ExchangeID);
+	statement->setString(2, record->ExchangeName);
+}
+void MysqlDB::SetStatementForExchangeRecordUpdate(sql::PreparedStatement* statement, Exchange* record)
+{
+	statement->setString(1, record->ExchangeName);
+	statement->setString(2, record->ExchangeID);
+}
+void MysqlDB::SetStatementForExchangePrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID)
+{
+	statement->setString(1, ExchangeID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Exchange*>& records)
+{
+	Exchange* record = Exchange::Allocate();
+	Strcpy(record->ExchangeID, result->getString(1).c_str());
+	Strcpy(record->ExchangeName, result->getString(2).c_str());
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForInstrumentRecord(sql::PreparedStatement* statement, Instrument* record)
+{
+	statement->setString(1, record->ExchangeID);
+	statement->setString(2, record->InstrumentID);
+	statement->setString(3, record->ExchangeInstID);
+	statement->setString(4, record->InstrumentName);
+	statement->setString(5, record->ProductID);
+	statement->setInt(6, int(record->ProductClass));
+	statement->setInt(7, int(record->InstrumentClass));
+	statement->setInt(8, record->Rank);
+	statement->setInt(9, record->VolumeMultiple);
+	statement->setDouble(10, record->PriceTick);
+	statement->setInt64(11, record->MaxMarketOrderVolume);
+	statement->setInt64(12, record->MinMarketOrderVolume);
+	statement->setInt64(13, record->MaxLimitOrderVolume);
+	statement->setInt64(14, record->MinLimitOrderVolume);
+	statement->setString(15, record->SessionName);
+}
+void MysqlDB::SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, Instrument* record)
+{
+	statement->setString(1, record->ExchangeInstID);
+	statement->setString(2, record->InstrumentName);
+	statement->setString(3, record->ProductID);
+	statement->setInt(4, int(record->ProductClass));
+	statement->setInt(5, int(record->InstrumentClass));
+	statement->setInt(6, record->Rank);
+	statement->setInt(7, record->VolumeMultiple);
+	statement->setDouble(8, record->PriceTick);
+	statement->setInt64(9, record->MaxMarketOrderVolume);
+	statement->setInt64(10, record->MinMarketOrderVolume);
+	statement->setInt64(11, record->MaxLimitOrderVolume);
+	statement->setInt64(12, record->MinLimitOrderVolume);
+	statement->setString(13, record->SessionName);
+	statement->setString(14, record->ExchangeID);
+	statement->setString(15, record->InstrumentID);
+}
+void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+{
+	statement->setString(1, ExchangeID);
+	statement->setString(2, InstrumentID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Instrument*>& records)
+{
+	Instrument* record = Instrument::Allocate();
+	Strcpy(record->ExchangeID, result->getString(1).c_str());
+	Strcpy(record->InstrumentID, result->getString(2).c_str());
+	Strcpy(record->ExchangeInstID, result->getString(3).c_str());
+	Strcpy(record->InstrumentName, result->getString(4).c_str());
+	Strcpy(record->ProductID, result->getString(5).c_str());
+	record->ProductClass = ProductClassType(result->getInt(6));
+	record->InstrumentClass = InstrumentClassType(result->getInt(7));
+	record->Rank = result->getInt(8);
+	record->VolumeMultiple = result->getInt(9);
+	record->PriceTick = result->getDouble(10);
+	record->MaxMarketOrderVolume = result->getInt64(11);
+	record->MinMarketOrderVolume = result->getInt64(12);
+	record->MaxLimitOrderVolume = result->getInt64(13);
+	record->MinLimitOrderVolume = result->getInt64(14);
+	Strcpy(record->SessionName, result->getString(15).c_str());
+	records.push_back(record);
+}
 void MysqlDB::SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, DepthMarketData* record)
 {
 	statement->setString(1, record->TradingDay);

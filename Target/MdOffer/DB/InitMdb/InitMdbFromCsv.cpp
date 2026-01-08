@@ -15,6 +15,8 @@ namespace mdb
 	void InitMdbFromCsv::LoadTables(Mdb* mdb, const char* dir)
 	{
 
+		LoadExchangeTable(mdb, dir);
+		LoadInstrumentTable(mdb, dir);
 		LoadDepthMarketDataTable(mdb, dir);
 		LoadBarMarketDataTable(mdb, dir);
 		LoadMdSubscribeTable(mdb, dir);
@@ -22,6 +24,87 @@ namespace mdb
 		LoadMdUserLoginSessionTable(mdb, dir);
 	}
 
+	void InitMdbFromCsv::LoadExchangeTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_Exchange.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_Exchange.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_Exchange.csv failed");
+			}
+
+			auto record = new Exchange();
+			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
+			Strcpy(record->ExchangeName, csv_record.GetFieldAsString("ExchangeName"));
+			mdb->t_Exchange->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadInstrumentTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_Instrument.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_Instrument.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_Instrument.csv failed");
+			}
+
+			auto record = new Instrument();
+			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
+			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			Strcpy(record->ExchangeInstID, csv_record.GetFieldAsString("ExchangeInstID"));
+			Strcpy(record->InstrumentName, csv_record.GetFieldAsString("InstrumentName"));
+			Strcpy(record->ProductID, csv_record.GetFieldAsString("ProductID"));
+			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			record->InstrumentClass = (InstrumentClassType)csv_record.GetFieldAsInt("InstrumentClass");
+			record->Rank = csv_record.GetFieldAsInt("Rank");
+			record->VolumeMultiple = csv_record.GetFieldAsInt("VolumeMultiple");
+			record->PriceTick = csv_record.GetFieldAsDouble("PriceTick");
+			record->MaxMarketOrderVolume = csv_record.GetFieldAsInt64("MaxMarketOrderVolume");
+			record->MinMarketOrderVolume = csv_record.GetFieldAsInt64("MinMarketOrderVolume");
+			record->MaxLimitOrderVolume = csv_record.GetFieldAsInt64("MaxLimitOrderVolume");
+			record->MinLimitOrderVolume = csv_record.GetFieldAsInt64("MinLimitOrderVolume");
+			Strcpy(record->SessionName, csv_record.GetFieldAsString("SessionName"));
+			mdb->t_Instrument->Insert(record);
+		}
+		file.close();
+	}
 	void InitMdbFromCsv::LoadDepthMarketDataTable(Mdb* mdb, const char* dir)
 	{
 		char fullPath[260];

@@ -8,6 +8,42 @@ using std::string;
 
 namespace mdb
 {
+	bool ExchangeEqualForExchangePrimaryKey::operator()(const Exchange* const left, const Exchange* const right) const
+	{
+		return strcmp(left->ExchangeID, right->ExchangeID) == 0;
+	}
+	bool ExchangeLessForExchangePrimaryKey::operator()(const Exchange* const left, const Exchange* const right) const
+	{
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		return false;
+	}
+	size_t ExchangeHashForExchangePrimaryKey::operator()(const Exchange* const record) const
+	{
+		return std::hash<string>()(record->ExchangeID);
+	}
+	bool InstrumentEqualForInstrumentPrimaryKey::operator()(const Instrument* const left, const Instrument* const right) const
+	{
+		return strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0;
+	}
+	bool InstrumentLessForInstrumentPrimaryKey::operator()(const Instrument* const left, const Instrument* const right) const
+	{
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
+			return true;
+		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
+			return false;
+		return false;
+	}
+	size_t InstrumentHashForInstrumentPrimaryKey::operator()(const Instrument* const record) const
+	{
+		return std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID);
+	}
 	bool DepthMarketDataEqualForDepthMarketDataPrimaryKey::operator()(const DepthMarketData* const left, const DepthMarketData* const right) const
 	{
 		return strcmp(left->TradingDay, right->TradingDay) == 0 && strcmp(left->ExchangeID, right->ExchangeID) == 0 && strcmp(left->InstrumentID, right->InstrumentID) == 0;

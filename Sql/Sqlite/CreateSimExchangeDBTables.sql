@@ -68,6 +68,124 @@ CREATE TABLE IF NOT EXISTS t_Instrument(
 );
 
 
+CREATE TABLE IF NOT EXISTS t_DepthMarketData(
+  `TradingDay` text, 
+  `ExchangeID` text, 
+  `InstrumentID` text, 
+  `UpdateTs` bigint, 
+  `LastPrice` double, 
+  `PreSettlementPrice` double, 
+  `PreClosePrice` double, 
+  `PreOpenInterest` double, 
+  `OpenPrice` double, 
+  `HighestPrice` double, 
+  `LowestPrice` double, 
+  `ClosePrice` double, 
+  `CurrVolume` bigint, 
+  `Volume` bigint, 
+  `CurrTurnover` double, 
+  `Turnover` double, 
+  `OpenInterest` double, 
+  `SettlementPrice` double, 
+  `UpperLimitPrice` double, 
+  `LowerLimitPrice` double, 
+  `AveragePrice` double, 
+  `AskPrice1` double, 
+  `AskPrice2` double, 
+  `AskPrice3` double, 
+  `AskPrice4` double, 
+  `AskPrice5` double, 
+  `AskPrice6` double, 
+  `AskPrice7` double, 
+  `AskPrice8` double, 
+  `AskPrice9` double, 
+  `AskPrice10` double, 
+  `AskVolume1` bigint, 
+  `AskVolume2` bigint, 
+  `AskVolume3` bigint, 
+  `AskVolume4` bigint, 
+  `AskVolume5` bigint, 
+  `AskVolume6` bigint, 
+  `AskVolume7` bigint, 
+  `AskVolume8` bigint, 
+  `AskVolume9` bigint, 
+  `AskVolume10` bigint, 
+  `BidPrice1` double, 
+  `BidPrice2` double, 
+  `BidPrice3` double, 
+  `BidPrice4` double, 
+  `BidPrice5` double, 
+  `BidPrice6` double, 
+  `BidPrice7` double, 
+  `BidPrice8` double, 
+  `BidPrice9` double, 
+  `BidPrice10` double, 
+  `BidVolume1` bigint, 
+  `BidVolume2` bigint, 
+  `BidVolume3` bigint, 
+  `BidVolume4` bigint, 
+  `BidVolume5` bigint, 
+  `BidVolume6` bigint, 
+  `BidVolume7` bigint, 
+  `BidVolume8` bigint, 
+  `BidVolume9` bigint, 
+  `BidVolume10` bigint, 
+  PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)
+);
+
+
+CREATE TABLE IF NOT EXISTS t_BarMarketData(
+  `TradingDay` text, 
+  `ExchangeID` text, 
+  `InstrumentID` text, 
+  `BarPreces` int, 
+  `BarPeriod` int, 
+  `BarTime` bigint, 
+  `UpdateTs` bigint, 
+  `PreSettlementPrice` double, 
+  `PreClosePrice` double, 
+  `Open` double, 
+  `High` double, 
+  `Low` double, 
+  `Close` double, 
+  `CurrVolume` bigint, 
+  `Volume` bigint, 
+  `CurrTurnover` double, 
+  `Turnover` double, 
+  `OpenInterest` double, 
+  PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)
+);
+
+
+CREATE TABLE IF NOT EXISTS t_MdSubscribe(
+  `ExchangeID` text, 
+  `InstrumentID` text, 
+  `RealInstrumentID` text, 
+  `ProductID` text, 
+  `ProductClass` int, 
+  `StartTradingDay` text, 
+  `EndTradingDay` text, 
+  PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)
+);
+
+
+CREATE TABLE IF NOT EXISTS t_MdUser(
+  `MdUserID` text, 
+  `MdUserName` text, 
+  `Password` text, 
+  PRIMARY KEY(MdUserID)
+);
+
+
+CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(
+  `MdUserID` text, 
+  `SessionID` bigint, 
+  `IPAddress` text, 
+  PRIMARY KEY(SessionID)
+);
+CREATE INDEX MdUserLoginSessionMdUserID ON t_MdUserLoginSession(MdUserID);
+
+
 CREATE TABLE IF NOT EXISTS t_PrimaryAccount(
   `PrimaryAccountID` text, 
   `PrimaryAccountName` text, 
@@ -335,123 +453,5 @@ CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(
   PRIMARY KEY(SessionID)
 );
 CREATE INDEX SEBrokerLoginSessionBrokerID ON t_SEBrokerLoginSession(BrokerID);
-
-
-CREATE TABLE IF NOT EXISTS t_DepthMarketData(
-  `TradingDay` text, 
-  `ExchangeID` text, 
-  `InstrumentID` text, 
-  `UpdateTs` bigint, 
-  `LastPrice` double, 
-  `PreSettlementPrice` double, 
-  `PreClosePrice` double, 
-  `PreOpenInterest` double, 
-  `OpenPrice` double, 
-  `HighestPrice` double, 
-  `LowestPrice` double, 
-  `ClosePrice` double, 
-  `CurrVolume` bigint, 
-  `Volume` bigint, 
-  `CurrTurnover` double, 
-  `Turnover` double, 
-  `OpenInterest` double, 
-  `SettlementPrice` double, 
-  `UpperLimitPrice` double, 
-  `LowerLimitPrice` double, 
-  `AveragePrice` double, 
-  `AskPrice1` double, 
-  `AskPrice2` double, 
-  `AskPrice3` double, 
-  `AskPrice4` double, 
-  `AskPrice5` double, 
-  `AskPrice6` double, 
-  `AskPrice7` double, 
-  `AskPrice8` double, 
-  `AskPrice9` double, 
-  `AskPrice10` double, 
-  `AskVolume1` bigint, 
-  `AskVolume2` bigint, 
-  `AskVolume3` bigint, 
-  `AskVolume4` bigint, 
-  `AskVolume5` bigint, 
-  `AskVolume6` bigint, 
-  `AskVolume7` bigint, 
-  `AskVolume8` bigint, 
-  `AskVolume9` bigint, 
-  `AskVolume10` bigint, 
-  `BidPrice1` double, 
-  `BidPrice2` double, 
-  `BidPrice3` double, 
-  `BidPrice4` double, 
-  `BidPrice5` double, 
-  `BidPrice6` double, 
-  `BidPrice7` double, 
-  `BidPrice8` double, 
-  `BidPrice9` double, 
-  `BidPrice10` double, 
-  `BidVolume1` bigint, 
-  `BidVolume2` bigint, 
-  `BidVolume3` bigint, 
-  `BidVolume4` bigint, 
-  `BidVolume5` bigint, 
-  `BidVolume6` bigint, 
-  `BidVolume7` bigint, 
-  `BidVolume8` bigint, 
-  `BidVolume9` bigint, 
-  `BidVolume10` bigint, 
-  PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)
-);
-
-
-CREATE TABLE IF NOT EXISTS t_BarMarketData(
-  `TradingDay` text, 
-  `ExchangeID` text, 
-  `InstrumentID` text, 
-  `BarPreces` int, 
-  `BarPeriod` int, 
-  `BarTime` bigint, 
-  `UpdateTs` bigint, 
-  `PreSettlementPrice` double, 
-  `PreClosePrice` double, 
-  `Open` double, 
-  `High` double, 
-  `Low` double, 
-  `Close` double, 
-  `CurrVolume` bigint, 
-  `Volume` bigint, 
-  `CurrTurnover` double, 
-  `Turnover` double, 
-  `OpenInterest` double, 
-  PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)
-);
-
-
-CREATE TABLE IF NOT EXISTS t_MdSubscribe(
-  `ExchangeID` text, 
-  `InstrumentID` text, 
-  `RealInstrumentID` text, 
-  `ProductID` text, 
-  `ProductClass` int, 
-  `StartTradingDay` text, 
-  `EndTradingDay` text, 
-  PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)
-);
-
-
-CREATE TABLE IF NOT EXISTS t_MdUser(
-  `MdUserID` text, 
-  `MdUserName` text, 
-  `Password` text, 
-  PRIMARY KEY(MdUserID)
-);
-
-
-CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(
-  `MdUserID` text, 
-  `SessionID` bigint, 
-  `IPAddress` text, 
-  PRIMARY KEY(SessionID)
-);
-CREATE INDEX MdUserLoginSessionMdUserID ON t_MdUserLoginSession(MdUserID);
 
 

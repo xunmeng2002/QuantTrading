@@ -65,6 +65,26 @@ namespace mdb
 		ProductTable* m_Table;
 		std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey> m_Index;
 	};
+	class DepthMarketDataTable;
+	class DepthMarketDataPrimaryKey
+	{
+		using iterator = std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey>::iterator;
+		friend class DepthMarketDataTable;
+	public:
+		DepthMarketDataPrimaryKey(DepthMarketDataTable* table, size_t buckets = 1000);
+		DepthMarketData* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(DepthMarketData* const record);
+		void Erase(DepthMarketData* const record);
+		bool CheckInsert(DepthMarketData* const record);
+		bool CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord);
+
+	private:
+		DepthMarketDataTable* m_Table;
+		std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey> m_Index;
+	};
 	class SEBrokerTable;
 	class SEBrokerPrimaryKey
 	{
@@ -164,25 +184,5 @@ namespace mdb
 	private:
 		SEBrokerLoginSessionTable* m_Table;
 		std::unordered_set<SEBrokerLoginSession*, SEBrokerLoginSessionHashForSEBrokerLoginSessionPrimaryKey, SEBrokerLoginSessionEqualForSEBrokerLoginSessionPrimaryKey> m_Index;
-	};
-	class DepthMarketDataTable;
-	class DepthMarketDataPrimaryKey
-	{
-		using iterator = std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey>::iterator;
-		friend class DepthMarketDataTable;
-	public:
-		DepthMarketDataPrimaryKey(DepthMarketDataTable* table, size_t buckets = 1000);
-		DepthMarketData* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
-		std::pair<iterator, iterator> SelectAll();
-		
-	protected:
-		bool Insert(DepthMarketData* const record);
-		void Erase(DepthMarketData* const record);
-		bool CheckInsert(DepthMarketData* const record);
-		bool CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord);
-
-	private:
-		DepthMarketDataTable* m_Table;
-		std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey> m_Index;
 	};
 }

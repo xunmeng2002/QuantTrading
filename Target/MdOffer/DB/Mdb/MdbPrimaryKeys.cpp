@@ -8,6 +8,81 @@ using std::unordered_set;
 
 namespace mdb
 {
+	ExchangePrimaryKey::ExchangePrimaryKey(ExchangeTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	Exchange* ExchangePrimaryKey::Select(const ExchangeIDType& ExchangeID)
+	{
+		Strcpy(t_CompareExchange.ExchangeID, ExchangeID);
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareExchange);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<ExchangePrimaryKey::iterator, ExchangePrimaryKey::iterator> ExchangePrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool ExchangePrimaryKey::Insert(Exchange* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void ExchangePrimaryKey::Erase(Exchange* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool ExchangePrimaryKey::CheckInsert(Exchange* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool ExchangePrimaryKey::CheckUpdate(const Exchange* const oldRecord, const Exchange* const newRecord)
+	{
+		return ExchangeEqualForExchangePrimaryKey()(oldRecord, newRecord);
+	}
+	InstrumentPrimaryKey::InstrumentPrimaryKey(InstrumentTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	Instrument* InstrumentPrimaryKey::Select(const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+	{
+		Strcpy(t_CompareInstrument.ExchangeID, ExchangeID);
+		Strcpy(t_CompareInstrument.InstrumentID, InstrumentID);
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareInstrument);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<InstrumentPrimaryKey::iterator, InstrumentPrimaryKey::iterator> InstrumentPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool InstrumentPrimaryKey::Insert(Instrument* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void InstrumentPrimaryKey::Erase(Instrument* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool InstrumentPrimaryKey::CheckInsert(Instrument* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool InstrumentPrimaryKey::CheckUpdate(const Instrument* const oldRecord, const Instrument* const newRecord)
+	{
+		return InstrumentEqualForInstrumentPrimaryKey()(oldRecord, newRecord);
+	}
 	DepthMarketDataPrimaryKey::DepthMarketDataPrimaryKey(DepthMarketDataTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{

@@ -82,6 +82,98 @@ void DBWriter::OnTruncateTables()
 	AddDBOperate(dbOperate);
 }
 
+void DBWriter::OnExchangeInsert(mdb::Exchange* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = Exchange::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnExchangeBatchInsert(std::list<mdb::Exchange*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Exchange::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnExchangeErase(mdb::Exchange* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = Exchange::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnExchangeUpdate(mdb::Exchange* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = Exchange::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnExchangeTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = Exchange::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
+void DBWriter::OnInstrumentInsert(mdb::Instrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = Instrument::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Instrument::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnInstrumentErase(mdb::Instrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = Instrument::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnInstrumentUpdate(mdb::Instrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = Instrument::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnInstrumentTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = Instrument::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
 void DBWriter::OnDepthMarketDataInsert(mdb::DepthMarketData* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -451,6 +543,12 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case Exchange::TableID:
+		m_DB->InsertExchange((Exchange*)dbOperate->Record);
+		break;
+	case Instrument::TableID:
+		m_DB->InsertInstrument((Instrument*)dbOperate->Record);
+		break;
 	case DepthMarketData::TableID:
 		m_DB->InsertDepthMarketData((DepthMarketData*)dbOperate->Record);
 		break;
@@ -474,6 +572,22 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case Exchange::TableID:
+	{
+		auto records = (std::list<Exchange*>*)dbOperate->Record;
+		m_DB->BatchInsertExchange(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Instrument::TableID:
+	{
+		auto records = (std::list<Instrument*>*)dbOperate->Record;
+		m_DB->BatchInsertInstrument(records);
+		records->clear();
+		delete records;
+		break;
+	}
 	case DepthMarketData::TableID:
 	{
 		auto records = (std::list<DepthMarketData*>*)dbOperate->Record;
@@ -523,6 +637,14 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case Exchange::TableID:
+		m_DB->DeleteExchange((Exchange*)dbOperate->Record);
+		((Exchange*)dbOperate->Record)->Free();
+		break;
+	case Instrument::TableID:
+		m_DB->DeleteInstrument((Instrument*)dbOperate->Record);
+		((Instrument*)dbOperate->Record)->Free();
+		break;
 	case DepthMarketData::TableID:
 		m_DB->DeleteDepthMarketData((DepthMarketData*)dbOperate->Record);
 		((DepthMarketData*)dbOperate->Record)->Free();
@@ -576,6 +698,14 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case Exchange::TableID:
+		m_DB->UpdateExchange((Exchange*)dbOperate->Record);
+		((Exchange*)dbOperate->Record)->Free();
+		break;
+	case Instrument::TableID:
+		m_DB->UpdateInstrument((Instrument*)dbOperate->Record);
+		((Instrument*)dbOperate->Record)->Free();
+		break;
 	case DepthMarketData::TableID:
 		m_DB->UpdateDepthMarketData((DepthMarketData*)dbOperate->Record);
 		((DepthMarketData*)dbOperate->Record)->Free();
@@ -605,6 +735,12 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case Exchange::TableID:
+		m_DB->TruncateExchange();
+		break;
+	case Instrument::TableID:
+		m_DB->TruncateInstrument();
+		break;
 	case DepthMarketData::TableID:
 		m_DB->TruncateDepthMarketData();
 		break;

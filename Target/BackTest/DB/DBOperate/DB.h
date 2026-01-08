@@ -61,6 +61,33 @@ public:
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) = 0;
 	virtual void TruncateInstrument() = 0;
 
+	virtual void CreateDepthMarketData() = 0;
+	virtual void DropDepthMarketData() = 0;
+	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) = 0;
+	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) = 0;
+	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) = 0;
+	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) = 0;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) = 0;
+	virtual void TruncateDepthMarketData() = 0;
+
+	virtual void CreateBarMarketData() = 0;
+	virtual void DropBarMarketData() = 0;
+	virtual void InsertBarMarketData(mdb::BarMarketData* record) = 0;
+	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) = 0;
+	virtual void DeleteBarMarketData(mdb::BarMarketData* record) = 0;
+	virtual void UpdateBarMarketData(mdb::BarMarketData* record) = 0;
+	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) = 0;
+	virtual void TruncateBarMarketData() = 0;
+
+	virtual void CreateMdSubscribe() = 0;
+	virtual void DropMdSubscribe() = 0;
+	virtual void InsertMdSubscribe(mdb::MdSubscribe* record) = 0;
+	virtual void BatchInsertMdSubscribe(std::list<mdb::MdSubscribe*>* records) = 0;
+	virtual void DeleteMdSubscribe(mdb::MdSubscribe* record) = 0;
+	virtual void UpdateMdSubscribe(mdb::MdSubscribe* record) = 0;
+	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) = 0;
+	virtual void TruncateMdSubscribe() = 0;
+
 	virtual void CreateAccount() = 0;
 	virtual void DropAccount() = 0;
 	virtual void InsertAccount(mdb::Account* record) = 0;
@@ -119,32 +146,5 @@ public:
 	virtual void UpdateTrade(mdb::Trade* record) = 0;
 	virtual void SelectTrade(std::list<mdb::Trade*>& records) = 0;
 	virtual void TruncateTrade() = 0;
-
-	virtual void CreateDepthMarketData() = 0;
-	virtual void DropDepthMarketData() = 0;
-	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) = 0;
-	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) = 0;
-	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) = 0;
-	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) = 0;
-	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) = 0;
-	virtual void TruncateDepthMarketData() = 0;
-
-	virtual void CreateBarMarketData() = 0;
-	virtual void DropBarMarketData() = 0;
-	virtual void InsertBarMarketData(mdb::BarMarketData* record) = 0;
-	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) = 0;
-	virtual void DeleteBarMarketData(mdb::BarMarketData* record) = 0;
-	virtual void UpdateBarMarketData(mdb::BarMarketData* record) = 0;
-	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) = 0;
-	virtual void TruncateBarMarketData() = 0;
-
-	virtual void CreateMdSubscribe() = 0;
-	virtual void DropMdSubscribe() = 0;
-	virtual void InsertMdSubscribe(mdb::MdSubscribe* record) = 0;
-	virtual void BatchInsertMdSubscribe(std::list<mdb::MdSubscribe*>* records) = 0;
-	virtual void DeleteMdSubscribe(mdb::MdSubscribe* record) = 0;
-	virtual void UpdateMdSubscribe(mdb::MdSubscribe* record) = 0;
-	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) = 0;
-	virtual void TruncateMdSubscribe() = 0;
 
 };

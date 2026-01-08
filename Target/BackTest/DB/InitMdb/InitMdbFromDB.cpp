@@ -57,6 +57,33 @@ namespace mdb
 			mdb->t_Instrument->Insert(record);
 		}
 	}
+	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
+	{
+		list<DepthMarketData*> records;
+		db->SelectDepthMarketData(records);
+		for (auto record : records)
+		{
+			mdb->t_DepthMarketData->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadBarMarketDataTable(Mdb* mdb, DB* db)
+	{
+		list<BarMarketData*> records;
+		db->SelectBarMarketData(records);
+		for (auto record : records)
+		{
+			mdb->t_BarMarketData->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadMdSubscribeTable(Mdb* mdb, DB* db)
+	{
+		list<MdSubscribe*> records;
+		db->SelectMdSubscribe(records);
+		for (auto record : records)
+		{
+			mdb->t_MdSubscribe->Insert(record);
+		}
+	}
 	void InitMdbFromDB::LoadAccountTable(Mdb* mdb, DB* db)
 	{
 		list<Account*> records;
@@ -109,33 +136,6 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_Trade->Insert(record);
-		}
-	}
-	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
-	{
-		list<DepthMarketData*> records;
-		db->SelectDepthMarketData(records);
-		for (auto record : records)
-		{
-			mdb->t_DepthMarketData->Insert(record);
-		}
-	}
-	void InitMdbFromDB::LoadBarMarketDataTable(Mdb* mdb, DB* db)
-	{
-		list<BarMarketData*> records;
-		db->SelectBarMarketData(records);
-		for (auto record : records)
-		{
-			mdb->t_BarMarketData->Insert(record);
-		}
-	}
-	void InitMdbFromDB::LoadMdSubscribeTable(Mdb* mdb, DB* db)
-	{
-		list<MdSubscribe*> records;
-		db->SelectMdSubscribe(records);
-		for (auto record : records)
-		{
-			mdb->t_MdSubscribe->Insert(record);
 		}
 	}
 }

@@ -322,6 +322,144 @@ void DBWriter::OnInstrumentTruncate()
 	AddDBOperate(dbOperate);
 }
 
+void DBWriter::OnDepthMarketDataInsert(mdb::DepthMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnDepthMarketDataErase(mdb::DepthMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnDepthMarketDataUpdate(mdb::DepthMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnDepthMarketDataTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = DepthMarketData::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
+void DBWriter::OnBarMarketDataInsert(mdb::BarMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnBarMarketDataBatchInsert(std::list<mdb::BarMarketData*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnBarMarketDataErase(mdb::BarMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnBarMarketDataUpdate(mdb::BarMarketData* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnBarMarketDataTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = BarMarketData::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
+void DBWriter::OnMdSubscribeInsert(mdb::MdSubscribe* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnMdSubscribeBatchInsert(std::list<mdb::MdSubscribe*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnMdSubscribeErase(mdb::MdSubscribe* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnMdSubscribeUpdate(mdb::MdSubscribe* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnMdSubscribeTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = MdSubscribe::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
 void DBWriter::OnAccountInsert(mdb::Account* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -648,144 +786,6 @@ void DBWriter::OnTradeTruncate()
 	AddDBOperate(dbOperate);
 }
 
-void DBWriter::OnDepthMarketDataInsert(mdb::DepthMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Insert;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::BatchInsert;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = records;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnDepthMarketDataErase(mdb::DepthMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Delete;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnDepthMarketDataUpdate(mdb::DepthMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Update;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnDepthMarketDataTruncate()
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Truncate;
-	dbOperate->TableID = DepthMarketData::TableID;
-	dbOperate->Record = nullptr;
-
-	AddDBOperate(dbOperate);
-}
-
-void DBWriter::OnBarMarketDataInsert(mdb::BarMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Insert;
-	dbOperate->TableID = BarMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnBarMarketDataBatchInsert(std::list<mdb::BarMarketData*>* records)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::BatchInsert;
-	dbOperate->TableID = BarMarketData::TableID;
-	dbOperate->Record = records;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnBarMarketDataErase(mdb::BarMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Delete;
-	dbOperate->TableID = BarMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnBarMarketDataUpdate(mdb::BarMarketData* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Update;
-	dbOperate->TableID = BarMarketData::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnBarMarketDataTruncate()
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Truncate;
-	dbOperate->TableID = BarMarketData::TableID;
-	dbOperate->Record = nullptr;
-
-	AddDBOperate(dbOperate);
-}
-
-void DBWriter::OnMdSubscribeInsert(mdb::MdSubscribe* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Insert;
-	dbOperate->TableID = MdSubscribe::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnMdSubscribeBatchInsert(std::list<mdb::MdSubscribe*>* records)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::BatchInsert;
-	dbOperate->TableID = MdSubscribe::TableID;
-	dbOperate->Record = records;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnMdSubscribeErase(mdb::MdSubscribe* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Delete;
-	dbOperate->TableID = MdSubscribe::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnMdSubscribeUpdate(mdb::MdSubscribe* record)
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Update;
-	dbOperate->TableID = MdSubscribe::TableID;
-	dbOperate->Record = record;
-
-	AddDBOperate(dbOperate);
-}
-void DBWriter::OnMdSubscribeTruncate()
-{
-	DBOperate* dbOperate = DBOperate::Allocate();
-	dbOperate->Operate = DBOperateType::Truncate;
-	dbOperate->TableID = MdSubscribe::TableID;
-	dbOperate->Record = nullptr;
-
-	AddDBOperate(dbOperate);
-}
-
 
 void DBWriter::Run()
 {
@@ -930,6 +930,15 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 	case Instrument::TableID:
 		m_DB->InsertInstrument((Instrument*)dbOperate->Record);
 		break;
+	case DepthMarketData::TableID:
+		m_DB->InsertDepthMarketData((DepthMarketData*)dbOperate->Record);
+		break;
+	case BarMarketData::TableID:
+		m_DB->InsertBarMarketData((BarMarketData*)dbOperate->Record);
+		break;
+	case MdSubscribe::TableID:
+		m_DB->InsertMdSubscribe((MdSubscribe*)dbOperate->Record);
+		break;
 	case Account::TableID:
 		m_DB->InsertAccount((Account*)dbOperate->Record);
 		break;
@@ -947,15 +956,6 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 		break;
 	case Trade::TableID:
 		m_DB->InsertTrade((Trade*)dbOperate->Record);
-		break;
-	case DepthMarketData::TableID:
-		m_DB->InsertDepthMarketData((DepthMarketData*)dbOperate->Record);
-		break;
-	case BarMarketData::TableID:
-		m_DB->InsertBarMarketData((BarMarketData*)dbOperate->Record);
-		break;
-	case MdSubscribe::TableID:
-		m_DB->InsertMdSubscribe((MdSubscribe*)dbOperate->Record);
 		break;
 	default:
 		break;
@@ -1001,6 +1001,30 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 	{
 		auto records = (std::list<Instrument*>*)dbOperate->Record;
 		m_DB->BatchInsertInstrument(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case DepthMarketData::TableID:
+	{
+		auto records = (std::list<DepthMarketData*>*)dbOperate->Record;
+		m_DB->BatchInsertDepthMarketData(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case BarMarketData::TableID:
+	{
+		auto records = (std::list<BarMarketData*>*)dbOperate->Record;
+		m_DB->BatchInsertBarMarketData(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case MdSubscribe::TableID:
+	{
+		auto records = (std::list<MdSubscribe*>*)dbOperate->Record;
+		m_DB->BatchInsertMdSubscribe(records);
 		records->clear();
 		delete records;
 		break;
@@ -1053,30 +1077,6 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 		delete records;
 		break;
 	}
-	case DepthMarketData::TableID:
-	{
-		auto records = (std::list<DepthMarketData*>*)dbOperate->Record;
-		m_DB->BatchInsertDepthMarketData(records);
-		records->clear();
-		delete records;
-		break;
-	}
-	case BarMarketData::TableID:
-	{
-		auto records = (std::list<BarMarketData*>*)dbOperate->Record;
-		m_DB->BatchInsertBarMarketData(records);
-		records->clear();
-		delete records;
-		break;
-	}
-	case MdSubscribe::TableID:
-	{
-		auto records = (std::list<MdSubscribe*>*)dbOperate->Record;
-		m_DB->BatchInsertMdSubscribe(records);
-		records->clear();
-		delete records;
-		break;
-	}
 	default:
 		WriteLog(LogLevel::Error, "Unexpected BatchInsert TableID:0x%X", dbOperate->TableID);
 		break;
@@ -1106,6 +1106,18 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 		m_DB->DeleteInstrument((Instrument*)dbOperate->Record);
 		((Instrument*)dbOperate->Record)->Free();
 		break;
+	case DepthMarketData::TableID:
+		m_DB->DeleteDepthMarketData((DepthMarketData*)dbOperate->Record);
+		((DepthMarketData*)dbOperate->Record)->Free();
+		break;
+	case BarMarketData::TableID:
+		m_DB->DeleteBarMarketData((BarMarketData*)dbOperate->Record);
+		((BarMarketData*)dbOperate->Record)->Free();
+		break;
+	case MdSubscribe::TableID:
+		m_DB->DeleteMdSubscribe((MdSubscribe*)dbOperate->Record);
+		((MdSubscribe*)dbOperate->Record)->Free();
+		break;
 	case Account::TableID:
 		m_DB->DeleteAccount((Account*)dbOperate->Record);
 		((Account*)dbOperate->Record)->Free();
@@ -1129,18 +1141,6 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 	case Trade::TableID:
 		m_DB->DeleteTrade((Trade*)dbOperate->Record);
 		((Trade*)dbOperate->Record)->Free();
-		break;
-	case DepthMarketData::TableID:
-		m_DB->DeleteDepthMarketData((DepthMarketData*)dbOperate->Record);
-		((DepthMarketData*)dbOperate->Record)->Free();
-		break;
-	case BarMarketData::TableID:
-		m_DB->DeleteBarMarketData((BarMarketData*)dbOperate->Record);
-		((BarMarketData*)dbOperate->Record)->Free();
-		break;
-	case MdSubscribe::TableID:
-		m_DB->DeleteMdSubscribe((MdSubscribe*)dbOperate->Record);
-		((MdSubscribe*)dbOperate->Record)->Free();
 		break;
 	default:
 		break;
@@ -1253,6 +1253,18 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		m_DB->UpdateInstrument((Instrument*)dbOperate->Record);
 		((Instrument*)dbOperate->Record)->Free();
 		break;
+	case DepthMarketData::TableID:
+		m_DB->UpdateDepthMarketData((DepthMarketData*)dbOperate->Record);
+		((DepthMarketData*)dbOperate->Record)->Free();
+		break;
+	case BarMarketData::TableID:
+		m_DB->UpdateBarMarketData((BarMarketData*)dbOperate->Record);
+		((BarMarketData*)dbOperate->Record)->Free();
+		break;
+	case MdSubscribe::TableID:
+		m_DB->UpdateMdSubscribe((MdSubscribe*)dbOperate->Record);
+		((MdSubscribe*)dbOperate->Record)->Free();
+		break;
 	case Account::TableID:
 		m_DB->UpdateAccount((Account*)dbOperate->Record);
 		((Account*)dbOperate->Record)->Free();
@@ -1276,18 +1288,6 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 	case Trade::TableID:
 		m_DB->UpdateTrade((Trade*)dbOperate->Record);
 		((Trade*)dbOperate->Record)->Free();
-		break;
-	case DepthMarketData::TableID:
-		m_DB->UpdateDepthMarketData((DepthMarketData*)dbOperate->Record);
-		((DepthMarketData*)dbOperate->Record)->Free();
-		break;
-	case BarMarketData::TableID:
-		m_DB->UpdateBarMarketData((BarMarketData*)dbOperate->Record);
-		((BarMarketData*)dbOperate->Record)->Free();
-		break;
-	case MdSubscribe::TableID:
-		m_DB->UpdateMdSubscribe((MdSubscribe*)dbOperate->Record);
-		((MdSubscribe*)dbOperate->Record)->Free();
 		break;
 	default:
 		break;
@@ -1313,6 +1313,15 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 	case Instrument::TableID:
 		m_DB->TruncateInstrument();
 		break;
+	case DepthMarketData::TableID:
+		m_DB->TruncateDepthMarketData();
+		break;
+	case BarMarketData::TableID:
+		m_DB->TruncateBarMarketData();
+		break;
+	case MdSubscribe::TableID:
+		m_DB->TruncateMdSubscribe();
+		break;
 	case Account::TableID:
 		m_DB->TruncateAccount();
 		break;
@@ -1330,15 +1339,6 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 		break;
 	case Trade::TableID:
 		m_DB->TruncateTrade();
-		break;
-	case DepthMarketData::TableID:
-		m_DB->TruncateDepthMarketData();
-		break;
-	case BarMarketData::TableID:
-		m_DB->TruncateBarMarketData();
-		break;
-	case MdSubscribe::TableID:
-		m_DB->TruncateMdSubscribe();
 		break;
 	default:
 		break;

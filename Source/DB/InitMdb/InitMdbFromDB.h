@@ -15,6 +15,11 @@ namespace mdb
 		static void LoadProductTable(Mdb* mdb, DB* db);
 		static void LoadHotInstrumentTable(Mdb* mdb, DB* db);
 		static void LoadInstrumentTable(Mdb* mdb, DB* db);
+		static void LoadDepthMarketDataTable(Mdb* mdb, DB* db);
+		static void LoadBarMarketDataTable(Mdb* mdb, DB* db);
+		static void LoadMdSubscribeTable(Mdb* mdb, DB* db);
+		static void LoadMdUserTable(Mdb* mdb, DB* db);
+		static void LoadMdUserLoginSessionTable(Mdb* mdb, DB* db);
 		static void LoadPrimaryAccountTable(Mdb* mdb, DB* db);
 		static void LoadAccountTable(Mdb* mdb, DB* db);
 		static void LoadCapitalTable(Mdb* mdb, DB* db);
@@ -27,10 +32,5 @@ namespace mdb
 		static void LoadSEOrderTable(Mdb* mdb, DB* db);
 		static void LoadSETradeTable(Mdb* mdb, DB* db);
 		static void LoadSEBrokerLoginSessionTable(Mdb* mdb, DB* db);
-		static void LoadDepthMarketDataTable(Mdb* mdb, DB* db);
-		static void LoadBarMarketDataTable(Mdb* mdb, DB* db);
-		static void LoadMdSubscribeTable(Mdb* mdb, DB* db);
-		static void LoadMdUserTable(Mdb* mdb, DB* db);
-		static void LoadMdUserLoginSessionTable(Mdb* mdb, DB* db);
 	};
 }

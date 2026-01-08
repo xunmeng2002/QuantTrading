@@ -5,6 +5,46 @@
 
 namespace mdb
 {
+	class ExchangeTable;
+	class ExchangePrimaryKey
+	{
+		using iterator = std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey>::iterator;
+		friend class ExchangeTable;
+	public:
+		ExchangePrimaryKey(ExchangeTable* table, size_t buckets = 1000);
+		Exchange* Select(const ExchangeIDType& ExchangeID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(Exchange* const record);
+		void Erase(Exchange* const record);
+		bool CheckInsert(Exchange* const record);
+		bool CheckUpdate(const Exchange* const oldRecord, const Exchange* const newRecord);
+
+	private:
+		ExchangeTable* m_Table;
+		std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey> m_Index;
+	};
+	class InstrumentTable;
+	class InstrumentPrimaryKey
+	{
+		using iterator = std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey>::iterator;
+		friend class InstrumentTable;
+	public:
+		InstrumentPrimaryKey(InstrumentTable* table, size_t buckets = 1000);
+		Instrument* Select(const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(Instrument* const record);
+		void Erase(Instrument* const record);
+		bool CheckInsert(Instrument* const record);
+		bool CheckUpdate(const Instrument* const oldRecord, const Instrument* const newRecord);
+
+	private:
+		InstrumentTable* m_Table;
+		std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey> m_Index;
+	};
 	class DepthMarketDataTable;
 	class DepthMarketDataPrimaryKey
 	{

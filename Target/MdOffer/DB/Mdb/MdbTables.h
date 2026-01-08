@@ -12,6 +12,66 @@
 namespace mdb
 {
 	class Mdb;
+	class ExchangeTable
+	{
+	public:
+		ExchangeTable(Mdb* mdb);
+		~ExchangeTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(Exchange* record);
+		void BatchInsert(std::list<mdb::Exchange*>* records);
+		void Erase(Exchange* record);
+		bool Update(Exchange* const oldRecord, Exchange* const newRecord, bool updateDB = true);
+		void TruncateTables();
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(Exchange* record);
+		void EraseIndex(Exchange* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		ExchangePrimaryKey* m_PrimaryKey;
+	};
+
+	class InstrumentTable
+	{
+	public:
+		InstrumentTable(Mdb* mdb);
+		~InstrumentTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(Instrument* record);
+		void BatchInsert(std::list<mdb::Instrument*>* records);
+		void Erase(Instrument* record);
+		bool Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB = true);
+		void TruncateTables();
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(Instrument* record);
+		void EraseIndex(Instrument* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		InstrumentPrimaryKey* m_PrimaryKey;
+	};
+
 	class DepthMarketDataTable
 	{
 	public:

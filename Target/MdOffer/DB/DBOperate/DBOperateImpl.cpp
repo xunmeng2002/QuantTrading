@@ -25,6 +25,16 @@ void DBOperateImpl::FreeRecord()
 	}
 	switch(TableID)
 	{
+	case Exchange::TableID:
+	{
+		((Exchange*)Record)->Free();
+		break;
+	}
+	case Instrument::TableID:
+	{
+		((Instrument*)Record)->Free();
+		break;
+	}
 	case DepthMarketData::TableID:
 	{
 		((DepthMarketData*)Record)->Free();
@@ -59,6 +69,14 @@ const char* DBOperateImpl::GetDebugString() const
 {
 	switch (TableID)
 	{
+	case Exchange::TableID:
+	{
+		return ((Exchange*)Record)->GetDebugString();
+	}
+	case Instrument::TableID:
+	{
+		return ((Instrument*)Record)->GetDebugString();
+	}
 	case DepthMarketData::TableID:
 	{
 		return ((DepthMarketData*)Record)->GetDebugString();

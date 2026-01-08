@@ -19,6 +19,24 @@ public:
 	virtual void TruncateSessionTables() override;
 	
 	bool Exec(const char* sql);
+	virtual void CreateExchange() override;
+	virtual void DropExchange() override;
+	virtual void InsertExchange(mdb::Exchange* record) override;
+	virtual void BatchInsertExchange(std::list<mdb::Exchange*>* records) override;
+	virtual void DeleteExchange(mdb::Exchange* record) override;
+	virtual void UpdateExchange(mdb::Exchange* record) override;
+	virtual void SelectExchange(std::list<mdb::Exchange*>& records) override;
+	virtual void TruncateExchange() override;
+	
+	virtual void CreateInstrument() override;
+	virtual void DropInstrument() override;
+	virtual void InsertInstrument(mdb::Instrument* record) override;
+	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
+	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void UpdateInstrument(mdb::Instrument* record) override;
+	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
+	virtual void TruncateInstrument() override;
+	
 	virtual void CreateDepthMarketData() override;
 	virtual void DropDepthMarketData() override;
 	virtual void InsertDepthMarketData(mdb::DepthMarketData* record) override;
@@ -67,6 +85,14 @@ public:
 	
 
 private:
+	void SetStatementForExchangeRecord(sqlite3_stmt* statement, mdb::Exchange* record);
+	void SetStatementForExchangeRecordUpdate(sqlite3_stmt* statement, mdb::Exchange* record);
+	void SetStatementForExchangePrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Exchange*>& records);
+	void SetStatementForInstrumentRecord(sqlite3_stmt* statement, mdb::Instrument* record);
+	void SetStatementForInstrumentRecordUpdate(sqlite3_stmt* statement, mdb::Instrument* record);
+	void SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Instrument*>& records);
 	void SetStatementForDepthMarketDataRecord(sqlite3_stmt* statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecordUpdate(sqlite3_stmt* statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
@@ -95,6 +121,16 @@ private:
 	sqlite3* m_DB;
 	char* m_SqlBuff;
 
+	sqlite3_stmt* m_ExchangeInsertStatement;
+	sqlite3_stmt* m_ExchangeDeleteStatement;
+	sqlite3_stmt* m_ExchangeUpdateStatement;
+	sqlite3_stmt* m_ExchangeSelectStatement;
+	sqlite3_stmt* m_ExchangeTruncateStatement;
+	sqlite3_stmt* m_InstrumentInsertStatement;
+	sqlite3_stmt* m_InstrumentDeleteStatement;
+	sqlite3_stmt* m_InstrumentUpdateStatement;
+	sqlite3_stmt* m_InstrumentSelectStatement;
+	sqlite3_stmt* m_InstrumentTruncateStatement;
 	sqlite3_stmt* m_DepthMarketDataInsertStatement;
 	sqlite3_stmt* m_DepthMarketDataDeleteStatement;
 	sqlite3_stmt* m_DepthMarketDataUpdateStatement;

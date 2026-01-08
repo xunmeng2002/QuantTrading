@@ -12,6 +12,24 @@ namespace mdb
 	{
 	}
 
+	void InitMdbFromDB::LoadExchangeTable(Mdb* mdb, DB* db)
+	{
+		list<Exchange*> records;
+		db->SelectExchange(records);
+		for (auto record : records)
+		{
+			mdb->t_Exchange->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadInstrumentTable(Mdb* mdb, DB* db)
+	{
+		list<Instrument*> records;
+		db->SelectInstrument(records);
+		for (auto record : records)
+		{
+			mdb->t_Instrument->Insert(record);
+		}
+	}
 	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
 	{
 		list<DepthMarketData*> records;

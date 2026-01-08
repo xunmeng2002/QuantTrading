@@ -120,6 +120,45 @@ namespace mdb
 	{
 		return ProductEqualForProductPrimaryKey()(oldRecord, newRecord);
 	}
+	DepthMarketDataPrimaryKey::DepthMarketDataPrimaryKey(DepthMarketDataTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	DepthMarketData* DepthMarketDataPrimaryKey::Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
+	{
+		Strcpy(t_CompareDepthMarketData.TradingDay, TradingDay);
+		Strcpy(t_CompareDepthMarketData.ExchangeID, ExchangeID);
+		Strcpy(t_CompareDepthMarketData.InstrumentID, InstrumentID);
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareDepthMarketData);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<DepthMarketDataPrimaryKey::iterator, DepthMarketDataPrimaryKey::iterator> DepthMarketDataPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool DepthMarketDataPrimaryKey::Insert(DepthMarketData* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void DepthMarketDataPrimaryKey::Erase(DepthMarketData* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool DepthMarketDataPrimaryKey::CheckInsert(DepthMarketData* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool DepthMarketDataPrimaryKey::CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord)
+	{
+		return DepthMarketDataEqualForDepthMarketDataPrimaryKey()(oldRecord, newRecord);
+	}
 	SEBrokerPrimaryKey::SEBrokerPrimaryKey(SEBrokerTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{
@@ -312,44 +351,5 @@ namespace mdb
 	bool SEBrokerLoginSessionPrimaryKey::CheckUpdate(const SEBrokerLoginSession* const oldRecord, const SEBrokerLoginSession* const newRecord)
 	{
 		return SEBrokerLoginSessionEqualForSEBrokerLoginSessionPrimaryKey()(oldRecord, newRecord);
-	}
-	DepthMarketDataPrimaryKey::DepthMarketDataPrimaryKey(DepthMarketDataTable* table, size_t buckets)
-		:m_Table(table), m_Index(buckets)
-	{
-	}
-	DepthMarketData* DepthMarketDataPrimaryKey::Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID)
-	{
-		Strcpy(t_CompareDepthMarketData.TradingDay, TradingDay);
-		Strcpy(t_CompareDepthMarketData.ExchangeID, ExchangeID);
-		Strcpy(t_CompareDepthMarketData.InstrumentID, InstrumentID);
-		
-		std::shared_lock guard(m_Table->m_SharedMutex);
-		auto it = m_Index.find(&t_CompareDepthMarketData);
-		if (it == m_Index.end())
-		{
-			return nullptr;
-		}
-		return *it;
-	}
-	std::pair<DepthMarketDataPrimaryKey::iterator, DepthMarketDataPrimaryKey::iterator> DepthMarketDataPrimaryKey::SelectAll()
-	{
-		std::shared_lock guard(m_Table->m_SharedMutex);
-		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
-	}
-	bool DepthMarketDataPrimaryKey::Insert(DepthMarketData* const record)
-	{
-		return m_Index.insert(record).second;
-	}
-	void DepthMarketDataPrimaryKey::Erase(DepthMarketData* const  record)
-	{
-		m_Index.erase(record);
-	}
-	bool DepthMarketDataPrimaryKey::CheckInsert(DepthMarketData* const record)
-	{
-		return m_Index.find(record) == m_Index.end();
-	}
-	bool DepthMarketDataPrimaryKey::CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord)
-	{
-		return DepthMarketDataEqualForDepthMarketDataPrimaryKey()(oldRecord, newRecord);
 	}
 }

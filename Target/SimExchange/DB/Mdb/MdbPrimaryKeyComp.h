@@ -40,6 +40,18 @@ namespace mdb
 	{
 		size_t operator()(const Product* const record) const;
 	};
+	struct DepthMarketDataEqualForDepthMarketDataPrimaryKey
+	{
+		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
+	};
+	struct DepthMarketDataLessForDepthMarketDataPrimaryKey
+	{
+		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
+	};
+	struct DepthMarketDataHashForDepthMarketDataPrimaryKey
+	{
+		size_t operator()(const DepthMarketData* const record) const;
+	};
 	struct SEBrokerEqualForSEBrokerPrimaryKey
 	{
 		bool operator()(const SEBroker* const left, const SEBroker* const right) const;
@@ -99,18 +111,6 @@ namespace mdb
 	struct SEBrokerLoginSessionHashForSEBrokerLoginSessionPrimaryKey
 	{
 		size_t operator()(const SEBrokerLoginSession* const record) const;
-	};
-	struct DepthMarketDataEqualForDepthMarketDataPrimaryKey
-	{
-		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
-	};
-	struct DepthMarketDataLessForDepthMarketDataPrimaryKey
-	{
-		bool operator()(const DepthMarketData* const left, const DepthMarketData* const right) const;
-	};
-	struct DepthMarketDataHashForDepthMarketDataPrimaryKey
-	{
-		size_t operator()(const DepthMarketData* const record) const;
 	};
 }
 

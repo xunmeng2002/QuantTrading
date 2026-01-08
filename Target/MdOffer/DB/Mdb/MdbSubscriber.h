@@ -15,6 +15,18 @@ public:
 	virtual void OnDropTables() {}
 	virtual void OnTruncateTables() {}
 	
+	virtual void OnExchangeInsert(mdb::Exchange* record) {}
+	virtual void OnExchangeBatchInsert(std::list<mdb::Exchange*>* records) {}
+	virtual void OnExchangeErase(mdb::Exchange* record) {}
+	virtual void OnExchangeUpdate(mdb::Exchange* record) {}
+	virtual void OnExchangeTruncate() {}
+	
+	virtual void OnInstrumentInsert(mdb::Instrument* record) {}
+	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) {}
+	virtual void OnInstrumentErase(mdb::Instrument* record) {}
+	virtual void OnInstrumentUpdate(mdb::Instrument* record) {}
+	virtual void OnInstrumentTruncate() {}
+	
 	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) {}
 	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) {}
 	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) {}

@@ -3,6 +3,62 @@
 
 namespace mdb
 {
+	class Exchange
+	{
+	public:
+		static constexpr unsigned int TableID = 0x0002;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//交易所名称
+		ExchangeNameType ExchangeName;
+		
+		static Exchange* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
+	class Instrument
+	{
+	public:
+		static constexpr unsigned int TableID = 0x0005;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//合约代码
+		InstrumentIDType InstrumentID;
+		//交易所合约代码
+		InstrumentIDType ExchangeInstID;
+		//合约名称
+		InstrumentNameType InstrumentName;
+		//品种代码
+		ProductIDType ProductID;
+		//品种类型
+		ProductClassType ProductClass;
+		//合约类别
+		InstrumentClassType InstrumentClass;
+		//级别
+		IntType Rank;
+		//合约乘数
+		VolumeMultipleType VolumeMultiple;
+		//最小变动价位
+		PriceType PriceTick;
+		//市价最大下单量
+		VolumeType MaxMarketOrderVolume;
+		//市价最小下单量
+		VolumeType MinMarketOrderVolume;
+		//限价最大下单量
+		VolumeType MaxLimitOrderVolume;
+		//限价最小下单量
+		VolumeType MinLimitOrderVolume;
+		//交易节名称
+		SessionNameType SessionName;
+		
+		static Instrument* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
 	class DepthMarketData
 	{
 	public:
@@ -243,6 +299,8 @@ namespace mdb
 		const char* GetDebugString() const;
 	};
 
+	extern thread_local Exchange t_CompareExchange;
+	extern thread_local Instrument t_CompareInstrument;
 	extern thread_local DepthMarketData t_CompareDepthMarketData;
 	extern thread_local BarMarketData t_CompareBarMarketData;
 	extern thread_local MdSubscribe t_CompareMdSubscribe;
