@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "ServerConfig.h"
 #include "Environment.h"
+#include "TimeUtility.h"
 #include "Mdb.h"
 #include "DBWriter.h"
 #include "DuckDB.h"
@@ -13,7 +14,6 @@
 #include "MdFront.h"
 #include "MdKernel.h"
 #include "TradeSession.h"
-#include "TimeUtility.h"
 #include <iostream>
 #include <fstream>
 #include <string.h>
@@ -39,6 +39,25 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
 	Logger::GetInstance().Start();
+
+	auto localTm = GetLocalTm();
+	string environmentName;
+	if (localTm->tm_hour >= 16 || localTm->tm_hour < 9)
+	{
+		environmentName = config.EnvironmentName24;
+	}
+	else
+	{
+		environmentName = config.EnvironmentName;
+	}
+	auto environment = environments[environmentName];
+	if (environment == nullptr)
+	{
+		WriteLog(LogLevel::Error, "environment is nullptr, EnvironmentName:%s", environmentName.c_str());
+		Logger::GetInstance().Stop();
+		Logger::GetInstance().Join();
+		return -1;
+	}
 
 	std::ifstream inFile(config.SessionFile.c_str());
 	TradeSessions::m_SessionJsonString = std::string((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
@@ -69,24 +88,6 @@ int main(int argc, char* argv[])
 	dbWriter->Subscribe(mdKernel);
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str(), 100);
 
-	auto localTm = GetLocalTm();
-	string environmentName;
-	if (localTm->tm_hour >= 16 || localTm->tm_hour < 9)
-	{
-		environmentName = config.EnvironmentName24;
-	}
-	else
-	{
-		environmentName = config.EnvironmentName;
-	}
-	auto environment = environments[environmentName];
-	if (environment == nullptr)
-	{
-		WriteLog(LogLevel::Error, "environment is nullptr, EnvironmentName:%s", environmentName.c_str());
-		Logger::GetInstance().Stop();
-		Logger::GetInstance().Join();
-		return -1;
-	}
 	CThostFtdcMdApi* mdApi = CThostFtdcMdApiMiddle::CreateFtdcMdApi();
 	cout << "API Version:" << mdApi->GetApiVersion() << endl;
 	CThostFtdcMdSpiImpl* mdSpi = new CThostFtdcMdSpiImpl(mdApi, mdKernel);

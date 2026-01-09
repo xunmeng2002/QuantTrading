@@ -1,0 +1,107 @@
+#pragma warning(disable:4819)
+#include "ThostFtdcTraderApiMiddle.h"
+#include "ThostFtdcTraderSpiImpl.h"
+#include "Logger.h"
+#include "Config.h"
+#include "ServerConfig.h"
+#include "Environment.h"
+#include "TimeUtility.h"
+#include "Mdb.h"
+#include "DBWriter.h"
+#include "DuckDB.h"
+#include "SqliteDB.h"
+#include "MysqlDB.h"
+#include <iostream>
+#include <map>
+#include <string.h>
+
+using namespace std;
+using namespace mdb;
+
+const char* ConfigName = "Init.json";
+
+int main(int argc, char* argv[])
+{
+	auto& config = Config::GetInstance();
+	config.Load(ConfigName);
+	auto& serverConfig = ServerConfig::GetInstance();
+	serverConfig.Load(config.ServerConfigPath.c_str());
+
+	map<string, Environment*> environments;
+	ReadEnvironment(config.EnvironmentFile.c_str(), environments);
+
+	Logger::GetInstance().Init(argv[0]);
+	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
+	Logger::GetInstance().Start();
+
+	auto localTm = GetLocalTm();
+	string environmentName;
+	if (localTm->tm_hour >= 16 || localTm->tm_hour < 9)
+	{
+		environmentName = config.EnvironmentName24;
+	}
+	else
+	{
+		environmentName = config.EnvironmentName;
+	}
+	auto environment = environments[environmentName];
+	if (environment == nullptr)
+	{
+		WriteLog(LogLevel::Error, "environment is nullptr, EnvironmentName:%s", environmentName.c_str());
+		Logger::GetInstance().Stop();
+		Logger::GetInstance().Join();
+		return -1;
+	}
+
+	DB* db;
+	auto dbType = DBTypeType(config.DbType[0]);
+	switch (dbType)
+	{
+	case DBTypeType::DuckDB:
+		db = new DuckDB(config.DbHost);
+		break;
+	case DBTypeType::SqliteDB:
+		db = new SqliteDB(config.DbHost);
+		break;
+	case DBTypeType::MysqlDB:
+		db = new MysqlDB(config.DbHost, config.DbUser, config.DbPassword);
+		break;
+	default:
+		WriteLog(LogLevel::Error, "Unsupported DBType:%c", config.DbType[0]);
+		return -1;
+	}
+	DBWriter* dbWriter = new DBWriter(db);
+	Mdb* mdb = new Mdb();
+	mdb->Subscribe(dbWriter);
+	dbWriter->Subscribe(mdb);
+
+	CThostFtdcTraderApi* traderApi = CThostFtdcTraderApiMiddle::CreateFtdcTraderApi();
+	cout << "API Version:" << traderApi->GetApiVersion() << endl;
+	CThostFtdcTraderSpiImpl* traderSpi = new CThostFtdcTraderSpiImpl(traderApi, mdb);
+	traderSpi->SetAccountInfo(environment->Accounts[0]);
+	traderApi->RegisterSpi(traderSpi);
+	for (auto frontInfo : environment->Fronts)
+	{
+		traderApi->RegisterFront(frontInfo->TradeFront);
+	}
+	traderApi->SubscribePrivateTopic(THOST_TE_RESUME_TYPE::THOST_TERT_RESTART);
+	traderApi->SubscribePublicTopic(THOST_TE_RESUME_TYPE::THOST_TERT_RESTART);
+	traderApi->Init();
+	dbWriter->Start();
+
+	while (!traderSpi->m_QryFinished)
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+	std::this_thread::sleep_for(std::chrono::seconds(5));
+
+	traderApi->Release();
+	dbWriter->Stop();
+	
+
+	Logger::GetInstance().Stop();
+	Logger::GetInstance().Join();
+	return 0;
+}
+
+

@@ -48,7 +48,7 @@ void ReadEnvironment(const char* environmentFile, std::map<std::string, Environm
 		for (auto i = 0u; i < frontsValue.size(); i++)
 		{
 			FrontInfo* frontInfo = new FrontInfo();
-			strcpy(frontInfo->TradeFront, frontsValue[i]["Tradefront"].asString().c_str());
+			strcpy(frontInfo->TradeFront, frontsValue[i]["TradeFront"].asString().c_str());
 			strcpy(frontInfo->MdFront, frontsValue[i]["MdFront"].asString().c_str());
 			environment->Fronts.push_back(frontInfo);
 		}

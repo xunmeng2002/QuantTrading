@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dbtables prefix="Init">
+	<table name="TradingDay"/>
+	<table name="Exchange"/>
+	<table name="Product"/>
+	<table name="HotInstrument"/>
+	<table name="Instrument"/>
+	<table name="Account"/>
+</dbtables>

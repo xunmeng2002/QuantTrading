@@ -1,0 +1,13 @@
+{
+	"LogLevel": 2,
+	"ServerConfigPath": "../../ServerConfig.json",
+	"DbType": "0",
+	"DbUser": "",
+	"DbPassword": "",
+	"DbHost": "./Init.db",
+	"SessionFile": "Sessions.json",
+	"EnvironmentFile": "CtpAccountInfo.json",
+	"EnvironmentName": "SimNow",
+	"EnvironmentName24": "SimNow24"
+}
+

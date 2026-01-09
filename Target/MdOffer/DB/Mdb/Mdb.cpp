@@ -3,7 +3,7 @@
 
 namespace mdb
 {
-	Mdb::Mdb()
+	Mdb::Mdb(): m_MdbSubscriber(nullptr)
 	{
 		t_Exchange = new ExchangeTable(this);
 		t_Instrument = new InstrumentTable(this);
@@ -36,6 +36,7 @@ namespace mdb
 	}
 	void Mdb::InitDB()
 	{
+		CreateTables();
 		t_Exchange->InitDB();
 		t_Instrument->InitDB();
 		t_DepthMarketData->InitDB();

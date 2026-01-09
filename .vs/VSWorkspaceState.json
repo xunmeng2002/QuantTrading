@@ -9,16 +9,16 @@
   },
   "ExpandedNodes": [
     "",
+    "\\Source",
+    "\\Source\\Ctp",
+    "\\Source\\Ctp\\6.7.9",
+    "\\Source\\Ctp\\6.7.9\\TraderApiMiddle",
     "\\Target",
-    "\\Target\\MdOffer",
-    "\\Target\\MdOffer\\DB",
-    "\\Target\\MdOffer\\DB\\DBOperate",
-    "\\Target\\MdOffer\\DB\\DuckDB",
-    "\\Target\\MdOffer\\DB\\InitMdb",
-    "\\Target\\MdOffer\\DB\\Mdb",
-    "\\Target\\MdOffer\\Src",
-    "\\Target\\SimExchange\\Src"
+    "\\Target\\Init",
+    "\\Target\\Init\\DB",
+    "\\Target\\Init\\Src",
+    "\\Target\\MdOffer\\Src"
   ],
-  "SelectedNode": "\\Target\\MdOffer\\DB\\DBOperate\\DBWriter.cpp",
+  "SelectedNode": "\\Configs\\CtpAccountInfo.json",
   "PreviewInSolutionExplorer": false
 }
