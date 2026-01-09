@@ -1,11 +1,13 @@
 {
-	"LogLevel":2,
-	"ServerConfigPath":"../ServerConfig.json",
-	"MdUser":"MdUser",
-	"MdPassword":"123456",
-	"SessionFile":"Sessions.json",
-	"EnvironmentFile":"CtpAccountInfo.json",
-	"EnvironmentName":"SimNow",
-	"EnvironmentName24":"SimNow24"
+	"LogLevel": 2,
+	"ServerConfigPath": "../../ServerConfig.json",
+	"DbType": "0",
+	"DbUser": "",
+	"DbPassword": "",
+	"DbHost": "./MdOffer.db",
+	"SessionFile": "Sessions.json",
+	"EnvironmentFile": "CtpAccountInfo.json",
+	"EnvironmentName": "SimNow",
+	"EnvironmentName24": "SimNow24"
 }
 

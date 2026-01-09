@@ -43,7 +43,7 @@ public:
 	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records, const DateType& tradingDay) override;
 	virtual void TruncateDepthMarketData() override;
 	
 	virtual void CreateBarMarketData() override;
@@ -52,7 +52,7 @@ public:
 	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) override;
 	virtual void DeleteBarMarketData(mdb::BarMarketData* record) override;
 	virtual void UpdateBarMarketData(mdb::BarMarketData* record) override;
-	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) override;
+	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records, const DateType& tradingDay) override;
 	virtual void TruncateBarMarketData() override;
 	
 	virtual void CreateMdSubscribe() override;

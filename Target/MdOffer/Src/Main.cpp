@@ -5,6 +5,11 @@
 #include "Config.h"
 #include "ServerConfig.h"
 #include "Environment.h"
+#include "Mdb.h"
+#include "DBWriter.h"
+#include "DuckDB.h"
+#include "SqliteDB.h"
+#include "MysqlDB.h"
 #include "MdFront.h"
 #include "MdKernel.h"
 #include "TradeSession.h"
@@ -17,6 +22,7 @@
 #endif // LINUX
 
 using namespace std;
+using namespace mdb;
 
 const char* ConfigName = "MdOffer.json";
 
@@ -38,7 +44,29 @@ int main(int argc, char* argv[])
 	TradeSessions::m_SessionJsonString = std::string((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
 	TradeSessions::ParseTradeSessions();
 
-	MdKernel* mdKernel = new MdKernel(config.MdUser.c_str(), config.MdPassword.c_str());
+	
+	DB* db;
+	auto dbType = DBTypeType(config.DbType[0]);
+	switch (dbType)
+	{
+	case DBTypeType::DuckDB:
+		db = new DuckDB(config.DbHost);
+		break;
+	case DBTypeType::SqliteDB:
+		db = new SqliteDB(config.DbHost);
+		break;
+	case DBTypeType::MysqlDB:
+		db = new MysqlDB(config.DbHost, config.DbUser, config.DbPassword);
+		break;
+	default:
+		WriteLog(LogLevel::Error, "Unsupported DBType:%c", config.DbType[0]);
+		return -1;
+	}
+	DBWriter* dbWriter = new DBWriter(db);
+	Mdb* mdb = new Mdb();
+	mdb->Subscribe(dbWriter);
+	MdKernel* mdKernel = new MdKernel(mdb);
+	dbWriter->Subscribe(mdKernel);
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str(), 100);
 
 	auto localTm = GetLocalTm();
@@ -76,14 +104,18 @@ int main(int argc, char* argv[])
 
 	mdApi->Init();
 	mdFront->Init();
+	dbWriter->Start();
 	mdKernel->Start();
 	mdFront->Start();
-	mdKernel->Join();
+
 	mdFront->Join();
+	mdKernel->Join();
+	dbWriter->Join();
 
 	mdApi->Release();
-	mdKernel->Stop();
 	mdFront->Stop();
+	mdKernel->Stop();
+	dbWriter->Stop();
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

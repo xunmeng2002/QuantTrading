@@ -5,15 +5,14 @@
 #include "TimeUtility.h"
 #include "MemCacheTemplateSingleton.h"
 #include "MdSnap.h"
+#include "MinuteBar.h"
 
+using namespace std;
+using namespace mdb;
 
-
-MdKernel::MdKernel(const char* mdUser, const char* password)
-	:ThreadBase("MdKernel"), m_MdFront(nullptr), m_MdSpi(nullptr)
+MdKernel::MdKernel(mdb::Mdb* mdb)
+	:ThreadBase("MdKernel"), m_Mdb(mdb), m_MdFront(nullptr), m_MdSpi(nullptr)
 {
-	Strcpy(m_MdUser, mdUser);
-	Strcpy(m_MdPassword, password);
-
 	m_MinuteBar = new MinuteBar();
 	m_MinuteBar->Subscribe(this);
 	m_ReqSubMarketData = new ReqSubMarketDataField();
@@ -62,6 +61,25 @@ void MdKernel::OnBarMarketData(BarMarketDataField* bar)
 	PushToAllSubscribed(m_ReqSubMarketData, m_BarMdPackage);
 }
 
+void MdKernel::OnDBConnected()
+{
+	WriteLog(LogLevel::Info, "MdKernel::OnDBConnected");
+	NotifyDBConnectPackage* package = ::Allocate<NotifyDBConnectPackage>();
+	package->Prepare(0, false, 0);
+	package->NotifyDBConnect = ::Allocate<NotifyDBConnectField>();
+	
+	OnMessage(package);
+}
+void MdKernel::OnDBDisConnected()
+{
+	WriteLog(LogLevel::Info, "MdKernel::OnDBDisConnected");
+	NotifyDBDisConnectPackage* package = ::Allocate<NotifyDBDisConnectPackage>();
+	package->Prepare(0, false, 0);
+	package->NotifyDBDisConnect = ::Allocate<NotifyDBDisConnectField>();
+
+	OnMessage(package);
+}
+
 void MdKernel::Run()
 {
 	CheckEvent();
@@ -84,6 +102,16 @@ int MdKernel::HandlePackage()
 		case NotifyDisConnectPackage::PackageID:
 		{
 			HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
+			break;
+		}
+		case NotifyDBConnectPackage::PackageID:
+		{
+			HandleNotifyDBConnect((NotifyDBConnectPackage*)package);
+			break;
+		}
+		case NotifyDBDisConnectPackage::PackageID:
+		{
+			HandleNotifyDBDisConnect((NotifyDBDisConnectPackage*)package);
 			break;
 		}
 		case ReqMdUserLoginPackage::PackageID:
@@ -120,16 +148,56 @@ int MdKernel::HandleNotifyDisConnect(NotifyDisConnectPackage* package)
 	m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionID);
 	return 0;
 }
+int MdKernel::HandleNotifyDBConnect(NotifyDBConnectPackage* package)
+{
+	m_Mdb->InitDB();
+	list<ReqSubMarketDataField*> reqSubMds;
+	auto instrumentItPair = m_Mdb->t_Instrument->m_PrimaryKey->SelectAll();
+	for (auto& it = instrumentItPair.first; it != instrumentItPair.second; ++it)
+	{
+		auto reqSubMd = Allocate<ReqSubMarketDataField>();
+		strcpy(reqSubMd->ExchangeID, (*it)->ExchangeID);
+		strcpy(reqSubMd->InstrumentID, (*it)->InstrumentID);
+		reqSubMds.push_back(reqSubMd);
+	}
+	m_MdSpi->SubscribeMds(reqSubMds);
+	return 0;
+}
+int MdKernel::HandleNotifyDBDisConnect(NotifyDBDisConnectPackage* package)
+{
+	m_Mdb->SetInitStatus(false);
+	return 0;
+}
 int MdKernel::HandleReqMdUserLogin(ReqMdUserLoginPackage* package)
 {
 	auto errorID = ErrorNone;
-	if (strcmp(package->ReqMdUserLogin->UserID, m_MdUser) != 0 || strcmp(package->ReqMdUserLogin->Password, m_MdPassword) != 0)
+	auto mdUser = m_Mdb->t_MdUser->m_PrimaryKey->Select(package->ReqMdUserLogin->UserID);
+	if (mdUser == nullptr)
+	{
+		errorID = ErrorUserNotExist;
+	}
+	else if (strcmp(package->ReqMdUserLogin->Password, mdUser->Password) != 0)
 	{
 		errorID = ErrorIncorrectPassword;
 	}
 	else
 	{
-		m_LoggedSessions.insert(package->SessionID);
+		auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(package->SessionID);
+		if (mdUserLoginSession != nullptr)
+		{
+			errorID = ErrorSessionAlreadyLogin;
+		}
+		else
+		{
+			mdUserLoginSession = MdUserLoginSession::Allocate();
+			memset(mdUserLoginSession, 0, sizeof(MdUserLoginSession));
+			strcpy(mdUserLoginSession->MdUserID, mdUser->MdUserID);
+			mdUserLoginSession->SessionID = package->SessionID;
+			strcpy(mdUserLoginSession->IPAddress, package->IPAddress);
+			m_Mdb->t_MdUserLoginSession->Insert(mdUserLoginSession);
+
+			m_LoggedSessions.insert(package->SessionID);
+		}
 	}
 
 	RspMdUserLoginPackage* rspPackage = RspMdUserLoginPackage::Allocate();

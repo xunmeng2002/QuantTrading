@@ -55,7 +55,7 @@ public:
 	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) override;
 	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) override;
-	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) override;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records, const DateType& tradingDay) override;
 	virtual void TruncateDepthMarketData() override;
 	static void ParseRecord(duckdb_result& result, std::list<mdb::DepthMarketData*>& records);
 	

@@ -2,6 +2,8 @@
 <apipackages>
 	<package name="NotifyConnect"/>
 	<package name="NotifyDisConnect"/>
+	<package name="NotifyDBConnect"/>
+	<package name="NotifyDBDisConnect"/>
 	<package name="ReqMdUserLogin"/>
 	<package name="RspMdUserLogin"/>
 	<package name="ReqMdUserLogout"/>

@@ -36,8 +36,10 @@ void Config::Load(const char* fileName)
 	
 	LogLevel = root["LogLevel"].asInt();
 	ServerConfigPath = root["ServerConfigPath"].asString();
-	MdUser = root["MdUser"].asString();
-	MdPassword = root["MdPassword"].asString();
+	DbType = root["DbType"].asString();
+	DbUser = root["DbUser"].asString();
+	DbPassword = root["DbPassword"].asString();
+	DbHost = root["DbHost"].asString();
 	SessionFile = root["SessionFile"].asString();
 	EnvironmentFile = root["EnvironmentFile"].asString();
 	EnvironmentName = root["EnvironmentName"].asString();
@@ -51,8 +53,10 @@ void Config::Print()
 {
 	printf("LogLevel:%d\n", LogLevel);
 	printf("ServerConfigPath:%s\n", ServerConfigPath.c_str());
-	printf("MdUser:%s\n", MdUser.c_str());
-	printf("MdPassword:%s\n", MdPassword.c_str());
+	printf("DbType:%s\n", DbType.c_str());
+	printf("DbUser:%s\n", DbUser.c_str());
+	printf("DbPassword:%s\n", DbPassword.c_str());
+	printf("DbHost:%s\n", DbHost.c_str());
 	printf("SessionFile:%s\n", SessionFile.c_str());
 	printf("EnvironmentFile:%s\n", EnvironmentFile.c_str());
 	printf("EnvironmentName:%s\n", EnvironmentName.c_str());

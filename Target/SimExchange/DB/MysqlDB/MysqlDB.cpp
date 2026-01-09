@@ -1060,13 +1060,14 @@ void MysqlDB::UpdateDepthMarketData(DepthMarketData* record)
 		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
 	}
 }
-void MysqlDB::SelectDepthMarketData(std::list<DepthMarketData*>& records)
+void MysqlDB::SelectDepthMarketData(std::list<DepthMarketData*>& records, const DateType& tradingDay)
 {
 	auto start = steady_clock::now();
 	if (m_DepthMarketDataSelectStatement == nullptr)
 	{
-		m_DepthMarketDataSelectStatement = m_DBConnection->prepareStatement("select * from t_DepthMarketData;");
+		m_DepthMarketDataSelectStatement = m_DBConnection->prepareStatement("select * from t_DepthMarketData where TradingDay >= ?;");
 	}
+	m_DepthMarketDataSelectStatement->setString(1, tradingDay);
 	auto result = m_DepthMarketDataSelectStatement->executeQuery();
 	while (result->next())
 	{

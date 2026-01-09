@@ -1069,13 +1069,14 @@ void SqliteDB::UpdateDepthMarketData(DepthMarketData* record)
 		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
 	}
 }
-void SqliteDB::SelectDepthMarketData(std::list<DepthMarketData*>& records)
+void SqliteDB::SelectDepthMarketData(std::list<DepthMarketData*>& records, const DateType& tradingDay)
 {
 	auto start = steady_clock::now();
 	if (m_DepthMarketDataSelectStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "select * from t_DepthMarketData;", -1, &m_DepthMarketDataSelectStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "select * from t_DepthMarketData where TradingDay >= ?;", -1, &m_DepthMarketDataSelectStatement, nullptr);
 	}
+	sqlite3_bind_text(m_DepthMarketDataSelectStatement, 1, tradingDay, sizeof(tradingDay), nullptr);
 
 	while (sqlite3_step(m_DepthMarketDataSelectStatement) == SQLITE_ROW)
 	{

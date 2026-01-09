@@ -7,7 +7,7 @@
 	
 	<error name="AccountNotExist" 					id="0x1000" desc="账户不存在"/>
 	<error name="PrimaryAccountNotExist" 			id="0x1001" desc="主账户不存在"/>
-	<error name="RiskUserNotExist" 					id="0x1002" desc="风控用户不存在"/>
+	<error name="UserNotExist" 						id="0x1002" desc="用户不存在"/>
 	<error name="CapitalNotExist" 					id="0x1003" desc="资金不存在"/>
 	<error name="PrimaryCapitalNotExist" 			id="0x1004" desc="主账户资金不存在"/>
 	<error name="TradeOfferNotExist" 				id="0x1005" desc="交易报盘不存在"/>
@@ -30,7 +30,6 @@
 	<error name="TradeGroupItemNotExist" 			id="0x1016" desc="交易组子项不存在"/>
 	<error name="RiskGroupNotExist" 				id="0x1017" desc="风控组不存在"/>
 	<error name="RiskGroupItemNotExist" 			id="0x1018" desc="风控组子项不存在"/>
-	<error name="AdminUserNotExist" 				id="0x1019" desc="管理用户不存在"/>
 	<error name="RiskNotExist" 						id="0x101A" desc="风控不存在"/>
 	<error name="AccountRiskNotExist" 				id="0x101B" desc="账户风控不存在"/>
 	<error name="OptionMarginParamNotExist" 		id="0x101C" desc="期权保证金参数不存在"/>

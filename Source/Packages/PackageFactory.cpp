@@ -14,6 +14,14 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	{
 		return NotifyDisConnectPackage::Allocate();
 	}
+	case NotifyDBConnectPackage::PackageID:
+	{
+		return NotifyDBConnectPackage::Allocate();
+	}
+	case NotifyDBDisConnectPackage::PackageID:
+	{
+		return NotifyDBDisConnectPackage::Allocate();
+	}
 	case ReqMdUserLoginPackage::PackageID:
 	{
 		return ReqMdUserLoginPackage::Allocate();

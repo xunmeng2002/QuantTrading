@@ -9,17 +9,16 @@
   },
   "ExpandedNodes": [
     "",
-    "\\Model",
-    "\\Model\\Configs",
-    "\\Model\\DB",
-    "\\Source",
-    "\\Source\\Bar",
     "\\Target",
     "\\Target\\MdOffer",
     "\\Target\\MdOffer\\DB",
+    "\\Target\\MdOffer\\DB\\DBOperate",
+    "\\Target\\MdOffer\\DB\\DuckDB",
+    "\\Target\\MdOffer\\DB\\InitMdb",
+    "\\Target\\MdOffer\\DB\\Mdb",
     "\\Target\\MdOffer\\Src",
-    "\\Target\\SimExchange"
+    "\\Target\\SimExchange\\Src"
   ],
-  "SelectedNode": "\\Model\\DB\\MdOfferTableNames.xml",
+  "SelectedNode": "\\Target\\MdOffer\\DB\\DBOperate\\DBWriter.cpp",
   "PreviewInSolutionExplorer": false
 }

@@ -2,8 +2,10 @@
 	<items>
 		<item name="LogLevel" type="int"></item>
 		<item name="ServerConfigPath" type="string"></item>
-		<item name="MdUser" type="string"></item>
-		<item name="MdPassword" type="string"></item>
+		<item name="DbType" type="string"></item>
+		<item name="DbUser" type="string"></item>
+		<item name="DbPassword" type="string"></item>
+		<item name="DbHost" type="string"></item>
 		<item name="SessionFile" type="string"></item>
 		<item name="EnvironmentFile" type="string"></item>
 		<item name="EnvironmentName" type="string"></item>

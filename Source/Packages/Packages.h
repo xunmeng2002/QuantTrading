@@ -33,6 +33,36 @@ public:
 	static constexpr UShortType PackageID = 0x0002;
 	NotifyDisConnectField* NotifyDisConnect = nullptr;
 };
+class NotifyDBConnectPackage : public Package
+{
+public:
+	static NotifyDBConnectPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x0003;
+	NotifyDBConnectField* NotifyDBConnect = nullptr;
+};
+class NotifyDBDisConnectPackage : public Package
+{
+public:
+	static NotifyDBDisConnectPackage* Allocate();
+	virtual void Free() override;
+	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual int ToStepStream(char* buff, int size) const override;
+	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
+	virtual int ToXtpStream(char* buff, int size) const override;
+	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
+	virtual const char* GetDebugString() const override;
+public:
+	static constexpr UShortType PackageID = 0x0004;
+	NotifyDBDisConnectField* NotifyDBDisConnect = nullptr;
+};
 class ReqMdUserLoginPackage : public Package
 {
 public:

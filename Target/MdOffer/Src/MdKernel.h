@@ -6,18 +6,19 @@
 #include "ThostFtdcMdSpiImpl.h"
 #include "FieldsCompare.h"
 #include "BarInterface.h"
-#include "MinuteBar.h"
+#include "Mdb.h"
 #include <map>
 #include <set>
 #include <list>
 #include <mutex>
 #include <condition_variable>
 
-
-class MdKernel : public ThreadBase, public ProtocolSubscriber, public BarSubscriber
+class mdb::Mdb;
+class MinuteBar;
+class MdKernel : public ThreadBase, public ProtocolSubscriber, public BarSubscriber, public DBSubscriber
 {
 public:
-	MdKernel(const char* mdUser, const char* password);
+	MdKernel(mdb::Mdb* mdb);
 	void SetMdFront(MdFront* mdFront);
 	void SetMdSpi(CThostFtdcMdSpiImpl* mdSpi);
 
@@ -28,11 +29,15 @@ public:
 
 	virtual void OnBarMarketData(BarMarketDataField* bar) override;
 
+	virtual void OnDBConnected() override;
+	virtual void OnDBDisConnected() override;
 protected:
 	virtual void Run() override;
 	void CheckEvent();
 	int HandlePackage();
 	int HandleNotifyDisConnect(NotifyDisConnectPackage* package);
+	int HandleNotifyDBConnect(NotifyDBConnectPackage* package);
+	int HandleNotifyDBDisConnect(NotifyDBDisConnectPackage* package);
 	int HandleReqMdUserLogin(ReqMdUserLoginPackage* package);
 	int HandleReqMdUserLogout(ReqMdUserLogoutPackage* package);
 	int HandleReqSubMarketData(ReqSubMarketDataPackage* package);
@@ -43,6 +48,7 @@ protected:
 	void PushToAllSubscribed(ReqSubMarketDataField* reqSubMarketData, Package* package);
 
 private:
+	mdb::Mdb* m_Mdb;
 	MdFront* m_MdFront;
 	CThostFtdcMdSpiImpl* m_MdSpi;
 	MinuteBar* m_MinuteBar;
@@ -57,8 +63,5 @@ private:
 
 	ReqSubMarketDataField* m_ReqSubMarketData;
 	RtnBarMarketDataPackage* m_BarMdPackage;
-
-	UserIDType m_MdUser;
-	PasswordType m_MdPassword;
 };
 

@@ -16,8 +16,10 @@ public:
 public:
 	int LogLevel;
 	string ServerConfigPath;
-	string MdUser;
-	string MdPassword;
+	string DbType;
+	string DbUser;
+	string DbPassword;
+	string DbHost;
 	string SessionFile;
 	string EnvironmentFile;
 	string EnvironmentName;

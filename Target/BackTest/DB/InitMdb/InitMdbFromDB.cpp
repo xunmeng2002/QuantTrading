@@ -7,9 +7,23 @@ namespace mdb
 {
 	void InitMdbFromDB::LoadTablesWithTradingDay(Mdb* mdb, DB* db, const DateType& tradingDay)
 	{
+		LoadDepthMarketDataTable(mdb, db, tradingDay);
+		LoadBarMarketDataTable(mdb, db, tradingDay);
 	}
 	void InitMdbFromDB::LoadTablesWithoutTradingDay(Mdb* mdb, DB* db)
 	{
+		LoadTradingDayTable(mdb, db);
+		LoadExchangeTable(mdb, db);
+		LoadProductTable(mdb, db);
+		LoadHotInstrumentTable(mdb, db);
+		LoadInstrumentTable(mdb, db);
+		LoadMdSubscribeTable(mdb, db);
+		LoadAccountTable(mdb, db);
+		LoadCapitalTable(mdb, db);
+		LoadPositionTable(mdb, db);
+		LoadPositionDetailTable(mdb, db);
+		LoadOrderTable(mdb, db);
+		LoadTradeTable(mdb, db);
 	}
 
 	void InitMdbFromDB::LoadTradingDayTable(Mdb* mdb, DB* db)
@@ -57,19 +71,19 @@ namespace mdb
 			mdb->t_Instrument->Insert(record);
 		}
 	}
-	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
+	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db, const DateType& tradingDay)
 	{
 		list<DepthMarketData*> records;
-		db->SelectDepthMarketData(records);
+		db->SelectDepthMarketData(records, tradingDay);
 		for (auto record : records)
 		{
 			mdb->t_DepthMarketData->Insert(record);
 		}
 	}
-	void InitMdbFromDB::LoadBarMarketDataTable(Mdb* mdb, DB* db)
+	void InitMdbFromDB::LoadBarMarketDataTable(Mdb* mdb, DB* db, const DateType& tradingDay)
 	{
 		list<BarMarketData*> records;
-		db->SelectBarMarketData(records);
+		db->SelectBarMarketData(records, tradingDay);
 		for (auto record : records)
 		{
 			mdb->t_BarMarketData->Insert(record);

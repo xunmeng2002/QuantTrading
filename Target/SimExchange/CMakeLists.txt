@@ -22,7 +22,7 @@ link_directories(${LibsPath}/CTP/${APIVersion}/win64)
 link_directories(${LibsPath}/duckdb/win64)
 link_directories(${LibsPath}/SQLite/3.36.0/win64)
 #link_directories(${LibsPath}/MysqlConnector/9.0.0)
-#link_directories(${LibsPath}/MysqlConnector/9.0.0/Debug)
+#link_directories(${LibsPath}/MysqlConnector/9.0.0/win64/Debug)
 add_executable(${PROJECT_NAME} ${all_file})
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")

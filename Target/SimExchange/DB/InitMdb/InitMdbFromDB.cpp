@@ -7,9 +7,18 @@ namespace mdb
 {
 	void InitMdbFromDB::LoadTablesWithTradingDay(Mdb* mdb, DB* db, const DateType& tradingDay)
 	{
+		LoadDepthMarketDataTable(mdb, db, tradingDay);
 	}
 	void InitMdbFromDB::LoadTablesWithoutTradingDay(Mdb* mdb, DB* db)
 	{
+		LoadTradingDayTable(mdb, db);
+		LoadExchangeTable(mdb, db);
+		LoadProductTable(mdb, db);
+		LoadSEBrokerTable(mdb, db);
+		LoadSEInstrumentTable(mdb, db);
+		LoadSEOrderTable(mdb, db);
+		LoadSETradeTable(mdb, db);
+		LoadSEBrokerLoginSessionTable(mdb, db);
 	}
 
 	void InitMdbFromDB::LoadTradingDayTable(Mdb* mdb, DB* db)
@@ -39,10 +48,10 @@ namespace mdb
 			mdb->t_Product->Insert(record);
 		}
 	}
-	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db)
+	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db, const DateType& tradingDay)
 	{
 		list<DepthMarketData*> records;
-		db->SelectDepthMarketData(records);
+		db->SelectDepthMarketData(records, tradingDay);
 		for (auto record : records)
 		{
 			mdb->t_DepthMarketData->Insert(record);

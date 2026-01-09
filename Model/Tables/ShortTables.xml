@@ -100,7 +100,7 @@
 		<indexes></indexes>
 	</table>
 
-	<table name="DepthMarketData" 				id="0x2001" desc="深度行情">
+	<table name="DepthMarketData" 				id="0x2001" desc="深度行情" withtradingday="true">
 		<items>
 			<item name="TradingDay"/>
 			<item name="ExchangeID"/>
@@ -172,7 +172,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="BarMarketData" 				desc="Bar行情">
+	<table name="BarMarketData" 				desc="Bar行情"  withtradingday="true">
 		<items>
 			<item name="TradingDay"/>
 			<item name="ExchangeID"/>

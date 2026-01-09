@@ -24,6 +24,18 @@ public:
 	IPAddressType IPAddress;		//IP地址
 	IntType Port;		//端口
 };
+class NotifyDBConnectField
+{
+public:
+	static constexpr UShortType FieldID = 0x0004;
+	DBNameType DBName;		//数据库名称
+};
+class NotifyDBDisConnectField
+{
+public:
+	static constexpr UShortType FieldID = 0x0005;
+	DBNameType DBName;		//数据库名称
+};
 class ReqMdUserLoginField
 {
 public:

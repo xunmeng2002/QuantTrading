@@ -2,8 +2,12 @@
 #include "ThostFtdcMdSpiMiddle.h"
 #include "Environment.h"
 #include "Fields.h"
+#include <atomic>
+#include <mutex>
+#include <list>
 #include <set>
 #include <map>
+#include <vector>
 #include <string>
 
 
@@ -20,13 +24,17 @@ public:
 
 	void SetAccountInfo(AccountInfo* accountInfo);
 	void SubscribeMd(ReqSubMarketDataField* reqSubMd);
+	void SubscribeMds(const std::list<ReqSubMarketDataField*>& reqSubMds);
 private:
 	void ReqUserLogin();
 
 private:
 	CThostFtdcMdApi* m_MdApi;
 	MdKernel* m_MdKernel;
+	std::atomic<bool> m_IsLogged;
 	int m_RequestID;
 	AccountInfo* m_AccountInfo;
-	std::map<std::string, ReqSubMarketDataField*> m_ReqSubMds;;
+	std::map<std::string, ReqSubMarketDataField*> m_ReqSubMds;
+	std::vector<char*> m_ReqSubInstruments;
+	std::mutex m_Mutex;
 };

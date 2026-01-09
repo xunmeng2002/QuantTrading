@@ -314,6 +314,286 @@ const char* NotifyDisConnectPackage::GetDebugString() const
 	return t_DataStringBuffer;
 }
  
+NotifyDBConnectPackage* NotifyDBConnectPackage::Allocate()
+{
+	return ::Allocate<NotifyDBConnectPackage>();
+}
+void NotifyDBConnectPackage::Free()
+{
+	Package::Free();
+	if (NotifyDBConnect != nullptr)
+	{
+		::Free<NotifyDBConnectField>(NotifyDBConnect);
+		NotifyDBConnect = nullptr;
+	}
+	MemCacheTemplateSingleton<NotifyDBConnectPackage>::GetInstance().Free(this);
+}
+void NotifyDBConnectPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int NotifyDBConnectPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (NotifyDBConnect != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, NotifyDBConnectField::FieldID);
+		if (strlen(NotifyDBConnect->DBName) >= sizeof(NotifyDBConnect->DBName))
+		{
+			NotifyDBConnect->DBName[sizeof(NotifyDBConnect->DBName) - 1] = 0;
+		}
+		WriteString(ppos, Items::DBName, NotifyDBConnect->DBName);
+		WriteHexString(ppos, Items::FieldEnd, NotifyDBConnectField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool NotifyDBConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case NotifyDBConnectField::FieldID:
+			{
+				NotifyDBConnect = ::Allocate<NotifyDBConnectField>();
+				memset(NotifyDBConnect, 0, sizeof(*NotifyDBConnect));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::DBName:
+						{
+							size_t len = value.length() >= sizeof(NotifyDBConnect->DBName) ? sizeof(NotifyDBConnect->DBName) - 1 : value.length();
+							memcpy(NotifyDBConnect->DBName, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for NotifyDBConnectField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyDBConnectPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For NotifyDBConnectPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int NotifyDBConnectPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	if (NotifyDBConnect != nullptr)
+	{
+		memcpy(buff + offset, &NotifyDBConnectField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, NotifyDBConnect, sizeof(NotifyDBConnectField));
+		offset += sizeof(NotifyDBConnectField);
+	}
+	return offset;
+}
+bool NotifyDBConnectPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	while(offset < endIndex)
+	{
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case NotifyDBConnectField::FieldID:
+		{
+			NotifyDBConnect = ::Allocate<NotifyDBConnectField>();
+			memcpy(NotifyDBConnect, buff + offset, sizeof(NotifyDBConnectField));
+			offset += sizeof(NotifyDBConnectField);	
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+	return offset == endIndex;
+}
+const char* NotifyDBConnectPackage::GetDebugString() const
+{
+	int offset = 0;
+	if (NotifyDBConnect != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "NotifyDBConnect:DBName:[%s]", NotifyDBConnect->DBName);
+	}
+	return t_DataStringBuffer;
+}
+ 
+NotifyDBDisConnectPackage* NotifyDBDisConnectPackage::Allocate()
+{
+	return ::Allocate<NotifyDBDisConnectPackage>();
+}
+void NotifyDBDisConnectPackage::Free()
+{
+	Package::Free();
+	if (NotifyDBDisConnect != nullptr)
+	{
+		::Free<NotifyDBDisConnectField>(NotifyDBDisConnect);
+		NotifyDBDisConnect = nullptr;
+	}
+	MemCacheTemplateSingleton<NotifyDBDisConnectPackage>::GetInstance().Free(this);
+}
+void NotifyDBDisConnectPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int NotifyDBDisConnectPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (NotifyDBDisConnect != nullptr)
+	{
+		WriteHexString(ppos, Items::FieldStart, NotifyDBDisConnectField::FieldID);
+		if (strlen(NotifyDBDisConnect->DBName) >= sizeof(NotifyDBDisConnect->DBName))
+		{
+			NotifyDBDisConnect->DBName[sizeof(NotifyDBDisConnect->DBName) - 1] = 0;
+		}
+		WriteString(ppos, Items::DBName, NotifyDBDisConnect->DBName);
+		WriteHexString(ppos, Items::FieldEnd, NotifyDBDisConnectField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool NotifyDBDisConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case NotifyDBDisConnectField::FieldID:
+			{
+				NotifyDBDisConnect = ::Allocate<NotifyDBDisConnectField>();
+				memset(NotifyDBDisConnect, 0, sizeof(*NotifyDBDisConnect));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::DBName:
+						{
+							size_t len = value.length() >= sizeof(NotifyDBDisConnect->DBName) ? sizeof(NotifyDBDisConnect->DBName) - 1 : value.length();
+							memcpy(NotifyDBDisConnect->DBName, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for NotifyDBDisConnectField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyDBDisConnectPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For NotifyDBDisConnectPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int NotifyDBDisConnectPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	if (NotifyDBDisConnect != nullptr)
+	{
+		memcpy(buff + offset, &NotifyDBDisConnectField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, NotifyDBDisConnect, sizeof(NotifyDBDisConnectField));
+		offset += sizeof(NotifyDBDisConnectField);
+	}
+	return offset;
+}
+bool NotifyDBDisConnectPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	while(offset < endIndex)
+	{
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case NotifyDBDisConnectField::FieldID:
+		{
+			NotifyDBDisConnect = ::Allocate<NotifyDBDisConnectField>();
+			memcpy(NotifyDBDisConnect, buff + offset, sizeof(NotifyDBDisConnectField));
+			offset += sizeof(NotifyDBDisConnectField);	
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+	return offset == endIndex;
+}
+const char* NotifyDBDisConnectPackage::GetDebugString() const
+{
+	int offset = 0;
+	if (NotifyDBDisConnect != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "NotifyDBDisConnect:DBName:[%s]", NotifyDBDisConnect->DBName);
+	}
+	return t_DataStringBuffer;
+}
+ 
 ReqMdUserLoginPackage* ReqMdUserLoginPackage::Allocate()
 {
 	return ::Allocate<ReqMdUserLoginPackage>();

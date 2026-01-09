@@ -6,6 +6,12 @@
 	<package name="NotifyDisConnect" 			id="0x0002" desc="断开连接通知">
 		<field name="NotifyDisConnect"/>
 	</package>
+	<package name="NotifyDBConnect" 			id="0x0003" desc="数据库连接成功通知">
+		<field name="NotifyDBConnect"/>
+	</package>
+	<package name="NotifyDBDisConnect" 			id="0x0004" desc="数据库断开连接通知">
+		<field name="NotifyDBDisConnect"/>
+	</package>
 
 	<package name="ReqMdUserLogin" 				id="0x1001" desc="行情用户登出请求">
 		<field name="ReqMdUserLogin"/>

@@ -19,14 +19,14 @@ add_package(TradeSession ${CMAKE_SOURCE_DIR}/Source/TradeSession)
 add_package(QuantUtility ${CMAKE_SOURCE_DIR}/Source/QuantUtility)
 add_package(Version ${CMAKE_SOURCE_DIR}/Source/Version)
 
-#include_package(MysqlConnector ${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0/include)
-include_package(duckdb ${CMAKE_SOURCE_DIR}/../Libs/duckdb/include)
+#include_package(MysqlConnector ${LibsPath}/MysqlConnector/9.0.0/include)
+include_package(duckdb ${LibsPath}/duckdb/include)
 
 add_definitions(-DLIB_BACKTEST_API_EXPORT)
 
-#link_directories(${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0)
-#link_directories(${CMAKE_SOURCE_DIR}/../Libs/MysqlConnector/9.0.0/Debug)
-link_directories(${CMAKE_SOURCE_DIR}/../Libs/duckdb/win64)
+#link_directories(${LibsPath}/MysqlConnector/9.0.0)
+#link_directories(${LibsPath}/MysqlConnector/9.0.0/win64/Debug)
+link_directories(${LibsPath}/duckdb/win64)
 
 add_library(${PROJECT_NAME} SHARED ${all_file})
 

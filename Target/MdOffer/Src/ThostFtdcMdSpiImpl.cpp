@@ -10,7 +10,7 @@ using namespace std;
 
 
 CThostFtdcMdSpiImpl::CThostFtdcMdSpiImpl(CThostFtdcMdApi* MdApi, MdKernel* mdKernel)
-	:m_MdApi(MdApi), m_MdKernel(mdKernel), m_RequestID(0), m_AccountInfo(nullptr)
+	:m_MdApi(MdApi), m_MdKernel(mdKernel), m_IsLogged(false), m_RequestID(0), m_AccountInfo(nullptr)
 {
 }
 void CThostFtdcMdSpiImpl::OnFrontConnected()
@@ -25,6 +25,12 @@ void CThostFtdcMdSpiImpl::OnFrontDisconnected(int nReason)
 void CThostFtdcMdSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
 	CThostFtdcMdSpiMiddle::OnRspUserLogin(pRspUserLogin, pRspInfo, nRequestID, bIsLast);
+	lock_guard<mutex> gurad(m_Mutex);
+	m_IsLogged = true;
+	if (!m_ReqSubInstruments.empty())
+	{
+		m_MdApi->SubscribeMarketData(m_ReqSubInstruments.data(), (int)m_ReqSubInstruments.size());
+	}
 }
 void CThostFtdcMdSpiImpl::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData)
 {
@@ -39,7 +45,7 @@ void CThostFtdcMdSpiImpl::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* p
 	{
 		Strcpy(package->DepthMarketData->ExchangeID, pDepthMarketData->ExchangeID);
 	}
-	else
+	else if (m_ReqSubMds[package->DepthMarketData->InstrumentID] != nullptr)
 	{
 		Strcpy(package->DepthMarketData->ExchangeID, m_ReqSubMds[package->DepthMarketData->InstrumentID]->ExchangeID);
 	}
@@ -93,11 +99,28 @@ void CThostFtdcMdSpiImpl::SetAccountInfo(AccountInfo* accountInfo)
 }
 void CThostFtdcMdSpiImpl::SubscribeMd(ReqSubMarketDataField* reqSubMd)
 {
+	WriteLog(LogLevel::Info, "SubscribeMd: ExchangeID:%s, InstrumentID:%s", reqSubMd->ExchangeID, reqSubMd->InstrumentID);
+	lock_guard<mutex> gurad(m_Mutex);
 	m_ReqSubMds[reqSubMd->InstrumentID] = reqSubMd;
-	vector<char*> instruments;
-	instruments.push_back(reqSubMd->InstrumentID);
-	int ret = m_MdApi->SubscribeMarketData(instruments.data(), (int)instruments.size());
-	WriteLog(LogLevel::Info, "SubscribeMd: ExchangeID:%s, InstrumentID:%s, ret:%d", reqSubMd->ExchangeID, reqSubMd->InstrumentID, ret);
+	m_ReqSubInstruments.push_back(reqSubMd->InstrumentID);
+	if (m_IsLogged)
+	{
+		m_MdApi->SubscribeMarketData(m_ReqSubInstruments.data(), (int)m_ReqSubInstruments.size());
+	}
+}
+void CThostFtdcMdSpiImpl::SubscribeMds(const std::list<ReqSubMarketDataField*>& reqSubMds)
+{
+	WriteLog(LogLevel::Info, "SubscribeMds: Size:%d", reqSubMds.size());
+	lock_guard<mutex> gurad(m_Mutex);
+	for (auto reqSubMd : reqSubMds)
+	{
+		m_ReqSubMds[reqSubMd->InstrumentID] = reqSubMd;
+		m_ReqSubInstruments.push_back(reqSubMd->InstrumentID);
+	}
+	if (m_IsLogged)
+	{
+		m_MdApi->SubscribeMarketData(m_ReqSubInstruments.data(), (int)m_ReqSubInstruments.size());
+	}
 }
 
 void CThostFtdcMdSpiImpl::ReqUserLogin()

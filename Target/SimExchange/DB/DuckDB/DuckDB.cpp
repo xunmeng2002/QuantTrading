@@ -1071,13 +1071,14 @@ void DuckDB::UpdateDepthMarketData(DepthMarketData* record)
 		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
 	}
 }
-void DuckDB::SelectDepthMarketData(std::list<DepthMarketData*>& records)
+void DuckDB::SelectDepthMarketData(std::list<DepthMarketData*>& records, const DateType& tradingDay)
 {
 	auto start = steady_clock::now();
 	if (m_DepthMarketDataSelectStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "select * from t_DepthMarketData;", &m_DepthMarketDataSelectStatement);
+		duckdb_prepare(m_Connection, "select * from t_DepthMarketData where TradingDay >= ?;", &m_DepthMarketDataSelectStatement);
 	}
+	duckdb_bind_varchar(m_DepthMarketDataSelectStatement, 1, tradingDay);
 
 	duckdb_result result;
 	auto rc = duckdb_execute_prepared(m_DepthMarketDataSelectStatement, &result);
