@@ -16,9 +16,7 @@
     "\\Target",
     "\\Target\\Init",
     "\\Target\\Init\\DB",
-    "\\Target\\Init\\Src",
-    "\\Target\\MdOffer\\Src"
+    "\\Target\\Init\\Src"
   ],
-  "SelectedNode": "\\Configs\\CtpAccountInfo.json",
   "PreviewInSolutionExplorer": false
 }

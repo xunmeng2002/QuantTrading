@@ -27,27 +27,15 @@ int main(int argc, char* argv[])
 	auto& serverConfig = ServerConfig::GetInstance();
 	serverConfig.Load(config.ServerConfigPath.c_str());
 
-	map<string, Environment*> environments;
-	ReadEnvironment(config.EnvironmentFile.c_str(), environments);
-
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
 	Logger::GetInstance().Start();
 
-	auto localTm = GetLocalTm();
-	string environmentName;
-	if (localTm->tm_hour >= 16 || localTm->tm_hour < 9)
-	{
-		environmentName = config.EnvironmentName24;
-	}
-	else
-	{
-		environmentName = config.EnvironmentName;
-	}
-	auto environment = environments[environmentName];
+	map<string, Environment*> environments;
+	ReadEnvironment(config.EnvironmentFile.c_str(), environments);
+	auto environment = GetEnvironment(environments, config.EnvironmentName, config.EnvironmentName24);
 	if (environment == nullptr)
 	{
-		WriteLog(LogLevel::Error, "environment is nullptr, EnvironmentName:%s", environmentName.c_str());
 		Logger::GetInstance().Stop();
 		Logger::GetInstance().Join();
 		return -1;

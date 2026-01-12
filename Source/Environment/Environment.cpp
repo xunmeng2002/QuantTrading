@@ -1,5 +1,7 @@
 #include "Environment.h"
 #include "json/json.h"
+#include "TimeUtility.h"
+#include "Logger.h"
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -72,3 +74,28 @@ void ReadEnvironment(const char* environmentFile, std::map<std::string, Environm
 		PrintEnvironment(it.second);
 	}
 }
+Environment* GetEnvironment(std::map<std::string, Environment*>& environments, const std::string& environmentName, const std::string& environmentName24)
+{
+	auto localTm = GetLocalTm();
+	Environment* environment = nullptr;
+	if (localTm->tm_hour >= 16 || localTm->tm_hour < 9)
+	{
+		environment = environments[environmentName24];
+		if (environment == nullptr)
+		{
+			WriteLog(LogLevel::Error, "environment is nullptr, EnvironmentName:%s", environmentName24.c_str());
+		}
+		return environment;
+	}
+	else
+	{
+		environment = environments[environmentName];
+		if (environment == nullptr)
+		{
+			WriteLog(LogLevel::Error, "environment is nullptr, EnvironmentName:%s", environmentName.c_str());
+		}
+		return environment;
+	}
+}
+
+

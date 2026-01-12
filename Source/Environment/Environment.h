@@ -29,5 +29,6 @@ struct Environment
 
 void PrintEnvironment(Environment* environment);
 void ReadEnvironment(const char* environmentFile, std::map<std::string, Environment*>& environments);
+Environment* GetEnvironment(std::map<std::string, Environment*>& environments, const std::string& environmentName, const std::string& environmentName24);
 
 

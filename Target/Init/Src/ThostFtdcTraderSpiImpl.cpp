@@ -10,6 +10,8 @@ using namespace mdb;
 CThostFtdcTraderSpiImpl::CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, mdb::Mdb* mdb)
 	:m_TraderApi(traderApi), m_Mdb(mdb), m_RequestID(0), m_AccountInfo(nullptr), m_QryFinished(false)
 {
+	m_Exchanges = new list<Exchange*>();
+	m_Products = new list< Product*>();
 	m_Instruments = new list<Instrument*>();
 }
 void CThostFtdcTraderSpiImpl::OnFrontConnected()
@@ -87,7 +89,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryProduct(CThostFtdcProductField* pProduct, 
 	product->MinMarketOrderVolume = pProduct->MinMarketOrderVolume;
 	product->MaxLimitOrderVolume = pProduct->MaxLimitOrderVolume;
 	product->MinLimitOrderVolume = pProduct->MinLimitOrderVolume;
-	memcpy(product->SessionName, 0, sizeof(product->SessionName));
+	memset(product->SessionName, 0, sizeof(product->SessionName));
 	m_Products->push_back(product);
 	if (bIsLast)
 	{
@@ -143,7 +145,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryInstrument(CThostFtdcInstrumentField* pIns
 	instrument->MinMarketOrderVolume = pInstrument->MinMarketOrderVolume;
 	instrument->MaxLimitOrderVolume = pInstrument->MaxLimitOrderVolume;
 	instrument->MinLimitOrderVolume = pInstrument->MinLimitOrderVolume;
-	memcpy(instrument->SessionName, 0, sizeof(instrument->SessionName));
+	memset(instrument->SessionName, 0, sizeof(instrument->SessionName));
 	m_Instruments->push_back(instrument);
 	if (bIsLast)
 	{
