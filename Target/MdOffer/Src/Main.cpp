@@ -7,6 +7,7 @@
 #include "Environment.h"
 #include "TimeUtility.h"
 #include "Mdb.h"
+#include "InitMdbFromDB.h"
 #include "DBWriter.h"
 #include "DuckDB.h"
 #include "SqliteDB.h"
@@ -52,25 +53,39 @@ int main(int argc, char* argv[])
 	TradeSessions::ParseTradeSessions();
 
 	
-	DB* db;
+	DB* mdDB = nullptr;
+	DB* initDB = nullptr;
 	auto dbType = DBTypeType(config.DbType[0]);
 	switch (dbType)
 	{
 	case DBTypeType::DuckDB:
-		db = new DuckDB(config.DbHost);
+		mdDB = new DuckDB(config.DbMdHost);
+		initDB = new DuckDB(config.DbInitHost);
 		break;
 	case DBTypeType::SqliteDB:
-		db = new SqliteDB(config.DbHost);
+		mdDB = new SqliteDB(config.DbMdHost);
+		initDB = new SqliteDB(config.DbInitHost);
 		break;
 	case DBTypeType::MysqlDB:
-		db = new MysqlDB(config.DbHost, config.DbUser, config.DbPassword);
+		mdDB = new MysqlDB(config.DbMdHost, config.DbUser, config.DbPassword);
+		initDB = new MysqlDB(config.DbInitHost, config.DbUser, config.DbPassword);
 		break;
 	default:
 		WriteLog(LogLevel::Error, "Unsupported DBType:%c", config.DbType[0]);
 		return -1;
 	}
-	DBWriter* dbWriter = new DBWriter(db);
+	DBWriter* dbWriter = new DBWriter(mdDB);
 	Mdb* mdb = new Mdb();
+	if (!initDB->Connect())
+	{
+		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
+		return -1;
+	}
+	InitMdbFromDB::LoadExchangeTable(mdb, initDB);
+	InitMdbFromDB::LoadInstrumentTable(mdb, initDB);
+	initDB->DisConnect();
+	delete initDB;
+
 	mdb->Subscribe(dbWriter);
 	MdKernel* mdKernel = new MdKernel(mdb);
 	dbWriter->Subscribe(mdKernel);

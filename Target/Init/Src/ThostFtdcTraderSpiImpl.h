@@ -26,10 +26,12 @@ public:
 
 public:
 	void SetAccountInfo(AccountInfo* accountInfo);
+	void SetNewPassword(const std::string& newPassword);
 
 private:
 	void ReqAuthenticate();
 	void ReqUserLogin();
+	void ReqUserPasswordUpdate();
 	void ReqQryExchange();
 	void ReqQryProduct();
 	void ReqQryInstrument();
@@ -46,6 +48,7 @@ private:
 	int m_RequestID;
 
 	AccountInfo* m_AccountInfo;
+	std::string m_NewPassword;
 
 	std::list<mdb::Exchange*>* m_Exchanges;
 	std::list<mdb::Product*>* m_Products;

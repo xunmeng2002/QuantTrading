@@ -31,7 +31,14 @@ void CThostFtdcTraderSpiImpl::OnRspAuthenticate(CThostFtdcRspAuthenticateField* 
 void CThostFtdcTraderSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
 	CThostFtdcTraderSpiMiddle::OnRspUserLogin(pRspUserLogin, pRspInfo, nRequestID, bIsLast);
-	ReqQryExchange();
+	if (pRspInfo != nullptr && pRspInfo->ErrorID == 141)	//PWD_OUT_OF_DATE
+	{
+		ReqUserPasswordUpdate();
+	}
+	else
+	{
+		ReqQryExchange();
+	}
 }
 void CThostFtdcTraderSpiImpl::OnRspQryExchange(CThostFtdcExchangeField* pExchange, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -187,6 +194,10 @@ void CThostFtdcTraderSpiImpl::SetAccountInfo(AccountInfo* accountInfo)
 {
 	m_AccountInfo = accountInfo;
 }
+void CThostFtdcTraderSpiImpl::SetNewPassword(const std::string& newPassword)
+{
+	m_NewPassword = newPassword;
+}
 
 void CThostFtdcTraderSpiImpl::ReqAuthenticate()
 {
@@ -213,6 +224,18 @@ void CThostFtdcTraderSpiImpl::ReqUserLogin()
 
 	int ret = m_TraderApi->ReqUserLogin(&userLogin, m_RequestID++);
 	WriteLog(LogLevel::Info, "ReqUserLogin: ret[%d]", ret);
+}
+void CThostFtdcTraderSpiImpl::ReqUserPasswordUpdate()
+{
+	CThostFtdcUserPasswordUpdateField userPasswordUpdate;
+	::memset(&userPasswordUpdate, 0, sizeof(userPasswordUpdate));
+	strcpy(userPasswordUpdate.BrokerID, m_AccountInfo->BrokerID);
+	strcpy(userPasswordUpdate.UserID, m_AccountInfo->InvestorID);
+	strcpy(userPasswordUpdate.OldPassword, m_AccountInfo->Password);
+	strcpy(userPasswordUpdate.NewPassword, m_NewPassword.c_str());
+
+	int ret = m_TraderApi->ReqUserPasswordUpdate(&userPasswordUpdate, m_RequestID++);
+	WriteLog(LogLevel::Info, "ReqUserPasswordUpdate: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqQryExchange()
 {

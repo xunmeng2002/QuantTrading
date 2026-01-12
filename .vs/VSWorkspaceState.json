@@ -2,21 +2,21 @@
   "OutputFoldersPerTargetSystem": {
     "Local Machine": [
       "out\\build\\x64-Debug",
-      "out\\install\\x64-Debug",
-      "out\\build\\WSL-GCC-Debug",
-      "out\\install\\WSL-GCC-Debug"
+      "out\\install\\x64-Debug"
     ]
   },
   "ExpandedNodes": [
     "",
-    "\\Source",
-    "\\Source\\Ctp",
-    "\\Source\\Ctp\\6.7.9",
-    "\\Source\\Ctp\\6.7.9\\TraderApiMiddle",
+    "\\Configs",
+    "\\Model",
     "\\Target",
     "\\Target\\Init",
-    "\\Target\\Init\\DB",
-    "\\Target\\Init\\Src"
+    "\\Target\\MdOffer",
+    "\\Target\\MdOffer\\DB",
+    "\\Target\\MdOffer\\DB\\DuckDB",
+    "\\Target\\MdOffer\\DB\\Mdb",
+    "\\Target\\MdOffer\\Src"
   ],
+  "SelectedNode": "\\CMakeLists.txt",
   "PreviewInSolutionExplorer": false
 }

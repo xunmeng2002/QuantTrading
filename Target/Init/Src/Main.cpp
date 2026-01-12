@@ -67,6 +67,7 @@ int main(int argc, char* argv[])
 	cout << "API Version:" << traderApi->GetApiVersion() << endl;
 	CThostFtdcTraderSpiImpl* traderSpi = new CThostFtdcTraderSpiImpl(traderApi, mdb);
 	traderSpi->SetAccountInfo(environment->Accounts[0]);
+	traderSpi->SetNewPassword("");
 	traderApi->RegisterSpi(traderSpi);
 	for (auto frontInfo : environment->Fronts)
 	{

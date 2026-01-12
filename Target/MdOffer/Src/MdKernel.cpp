@@ -54,6 +54,18 @@ void MdKernel::OnMessage(Package* package)
 }
 void MdKernel::OnBarMarketData(BarMarketDataField* bar)
 {
+	BarMarketData* barMarketData = ::Allocate<BarMarketData>();
+	memcpy(barMarketData, bar, sizeof(BarMarketData));
+	auto oldBarMarketData = m_Mdb->t_BarMarketData->m_PrimaryKey->Select(barMarketData->TradingDay, barMarketData->ExchangeID, barMarketData->InstrumentID, barMarketData->BarPreces, barMarketData->BarPeriod, barMarketData->BarTime);
+	if (oldBarMarketData == nullptr)
+	{
+		m_Mdb->t_BarMarketData->Insert(barMarketData);
+	}
+	else
+	{
+		m_Mdb->t_BarMarketData->Update(oldBarMarketData, barMarketData);
+	}
+
 	m_BarMdPackage->BarMarketData = bar;
 
 	Strcpy(m_ReqSubMarketData->ExchangeID, bar->ExchangeID);
@@ -293,6 +305,19 @@ int MdKernel::HandleReqSubMarketData(ReqSubMarketDataPackage* package)
 int MdKernel::HandleRtnDepthMarketData(RtnDepthMarketDataPackage* package)
 {
 	m_MinuteBar->OnDepthMarketData(package->DepthMarketData);
+
+	DepthMarketData* depthMarketData = ::Allocate<DepthMarketData>();
+	memcpy(depthMarketData, package->DepthMarketData, sizeof(DepthMarketData));
+	auto oldDepthMarketData = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(depthMarketData->TradingDay, depthMarketData->ExchangeID, depthMarketData->InstrumentID);
+	if (oldDepthMarketData == nullptr)
+	{
+		m_Mdb->t_DepthMarketData->Insert(depthMarketData);
+	}
+	else
+	{
+		m_Mdb->t_DepthMarketData->Update(oldDepthMarketData, depthMarketData);
+	}
+	
 	package = MdSnap::GetInstance().AddDepthMd(package);
 	Strcpy(m_ReqSubMarketData->ExchangeID, package->DepthMarketData->ExchangeID);
 	Strcpy(m_ReqSubMarketData->InstrumentID, package->DepthMarketData->InstrumentID);
