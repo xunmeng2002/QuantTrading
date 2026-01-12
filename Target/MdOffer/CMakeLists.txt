@@ -5,7 +5,7 @@ message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
 add_package(Config ./Config)
-add_package(DBOperate ./DB/DBOperate)
+add_package(DBWriter ./DB/DBWriter)
 add_package(InitMdb ./DB/InitMdb)
 add_package(Mdb ./DB/Mdb)
 add_package(DuckDB ./DB/DuckDB)

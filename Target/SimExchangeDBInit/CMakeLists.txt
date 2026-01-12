@@ -3,7 +3,7 @@ project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
-add_package(DBOperate ../SimExchange/DB/DBOperate)
+add_package(DBWriter ../SimExchange/DB/DBWriter)
 add_package(InitMdb ../SimExchange/DB/InitMdb)
 add_package(Mdb ../SimExchange/DB/Mdb)
 
