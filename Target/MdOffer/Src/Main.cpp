@@ -8,6 +8,7 @@
 #include "TimeUtility.h"
 #include "Mdb.h"
 #include "InitMdbFromDB.h"
+#include "DBCommon.h"
 #include "DBWriter.h"
 #include "DuckDB.h"
 #include "SqliteDB.h"
@@ -27,6 +28,14 @@ using namespace mdb;
 
 const char* ConfigName = "MdOffer.json";
 
+int Exit(int code = -1)
+{
+	Logger::GetInstance().Stop();
+	Logger::GetInstance().Join();
+	exit(code);
+	return code;
+}
+
 int main(int argc, char* argv[])
 {
 	auto& config = Config::GetInstance();
@@ -43,9 +52,7 @@ int main(int argc, char* argv[])
 	auto environment = GetEnvironment(environments, config.EnvironmentName, config.EnvironmentName24);
 	if (environment == nullptr)
 	{
-		Logger::GetInstance().Stop();
-		Logger::GetInstance().Join();
-		return -1;
+		return Exit();
 	}
 
 	std::ifstream inFile(config.SessionFile.c_str());
@@ -53,33 +60,18 @@ int main(int argc, char* argv[])
 	TradeSessions::ParseTradeSessions();
 
 	
-	DB* mdDB = nullptr;
-	DB* initDB = nullptr;
-	auto dbType = DBTypeType(config.DbType[0]);
-	switch (dbType)
+	DB* initDB = CreateDB(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
+	DB* mdDB = CreateDB(config.DbType, config.DbMdHost, config.DbUser, config.DbPassword);
+	if (initDB == nullptr || mdDB == nullptr)
 	{
-	case DBTypeType::DuckDB:
-		mdDB = new DuckDB(config.DbMdHost);
-		initDB = new DuckDB(config.DbInitHost);
-		break;
-	case DBTypeType::SqliteDB:
-		mdDB = new SqliteDB(config.DbMdHost);
-		initDB = new SqliteDB(config.DbInitHost);
-		break;
-	case DBTypeType::MysqlDB:
-		mdDB = new MysqlDB(config.DbMdHost, config.DbUser, config.DbPassword);
-		initDB = new MysqlDB(config.DbInitHost, config.DbUser, config.DbPassword);
-		break;
-	default:
-		WriteLog(LogLevel::Error, "Unsupported DBType:%c", config.DbType[0]);
-		return -1;
+		return Exit();
 	}
 	DBWriter* dbWriter = new DBWriter(mdDB);
 	Mdb* mdb = new Mdb();
 	if (!initDB->Connect())
 	{
 		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
-		return -1;
+		return Exit();
 	}
 	InitMdbFromDB::LoadExchangeTable(mdb, initDB);
 	InitMdbFromDB::LoadInstrumentTable(mdb, initDB);

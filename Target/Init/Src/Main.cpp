@@ -7,6 +7,7 @@
 #include "Environment.h"
 #include "TimeUtility.h"
 #include "Mdb.h"
+#include "DBCommon.h"
 #include "DBWriter.h"
 #include "DuckDB.h"
 #include "SqliteDB.h"
@@ -41,23 +42,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	DB* db;
-	auto dbType = DBTypeType(config.DbType[0]);
-	switch (dbType)
-	{
-	case DBTypeType::DuckDB:
-		db = new DuckDB(config.DbHost);
-		break;
-	case DBTypeType::SqliteDB:
-		db = new SqliteDB(config.DbHost);
-		break;
-	case DBTypeType::MysqlDB:
-		db = new MysqlDB(config.DbHost, config.DbUser, config.DbPassword);
-		break;
-	default:
-		WriteLog(LogLevel::Error, "Unsupported DBType:%c", config.DbType[0]);
-		return -1;
-	}
+	DB* db = CreateDB(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
 	DBWriter* dbWriter = new DBWriter(db);
 	Mdb* mdb = new Mdb();
 	mdb->Subscribe(dbWriter);

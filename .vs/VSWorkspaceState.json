@@ -7,16 +7,13 @@
   },
   "ExpandedNodes": [
     "",
-    "\\Configs",
     "\\Model",
     "\\Target",
     "\\Target\\Init",
+    "\\Target\\Init\\Src",
     "\\Target\\MdOffer",
-    "\\Target\\MdOffer\\DB",
-    "\\Target\\MdOffer\\DB\\DuckDB",
-    "\\Target\\MdOffer\\DB\\Mdb",
-    "\\Target\\MdOffer\\Src"
+    "\\Target\\MdOffer\\DB"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
+  "SelectedNode": "\\Target\\Init\\Src\\Main.cpp",
   "PreviewInSolutionExplorer": false
 }
