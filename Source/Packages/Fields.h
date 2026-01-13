@@ -202,7 +202,7 @@ public:
 class MarketDataEndField
 {
 public:
-	static constexpr UShortType FieldID = 0x100D;
+	static constexpr UShortType FieldID = 0x100E;
 	DateType TradingDay;		//交易日
 };
 class ReqAccountLoginField
