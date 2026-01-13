@@ -11,7 +11,7 @@ class MinuteBar
 public:
 	MinuteBar();
 	void Subscribe(BarSubscriber* barSubscriber);
-	void ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData);
+	void ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID);
 	void OnDepthMarketData(DepthMarketDataField* depthMarketData);
 
 private:

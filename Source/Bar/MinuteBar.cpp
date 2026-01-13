@@ -12,18 +12,18 @@ void MinuteBar::Subscribe(BarSubscriber* barSubscriber)
 {
 	m_BarSubscriber = barSubscriber;
 }
-void MinuteBar::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData)
+void MinuteBar::ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID)
 {
 	TradeSession* selectedTradeSession = nullptr;
-	auto productID = GetUnderlyingID(reqSubMarketData->InstrumentID);
-	selectedTradeSession = TradeSessions::GetTradeSession(reqSubMarketData->ExchangeID, productID.c_str());
+	auto productID = GetUnderlyingID(instrumentID);
+	selectedTradeSession = TradeSessions::GetTradeSession(exchangeID, productID.c_str());
 	if (selectedTradeSession == nullptr)
 	{
-		selectedTradeSession = TradeSessions::GetTradeSession(reqSubMarketData->ExchangeID, "*");
+		selectedTradeSession = TradeSessions::GetTradeSession(exchangeID, "*");
 	}
 	if (selectedTradeSession != nullptr)
 	{
-		m_InstrumentTradeSessions[reqSubMarketData->InstrumentID] = selectedTradeSession;
+		m_InstrumentTradeSessions[instrumentID] = selectedTradeSession;
 	}
 }
 void MinuteBar::OnDepthMarketData(DepthMarketDataField* depthMd)

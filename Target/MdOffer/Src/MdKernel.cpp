@@ -171,6 +171,7 @@ int MdKernel::HandleNotifyDBConnect(NotifyDBConnectPackage* package)
 		strcpy(reqSubMd->ExchangeID, (*it)->ExchangeID);
 		strcpy(reqSubMd->InstrumentID, (*it)->InstrumentID);
 		reqSubMds.push_back(reqSubMd);
+		m_MinuteBar->ReqSubMarketData(reqSubMd->ExchangeID, reqSubMd->InstrumentID);
 	}
 	m_MdSpi->SubscribeMds(reqSubMds);
 	return 0;
@@ -272,7 +273,7 @@ int MdKernel::HandleReqSubMarketData(ReqSubMarketDataPackage* package)
 		if (it == m_SubscribeInstruments.end())
 		{
 			m_SubscribeInstruments.insert(reqSubMarketData);
-			m_MinuteBar->ReqSubMarketData(reqSubMarketData);
+			m_MinuteBar->ReqSubMarketData(reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID);
 			m_MdSpi->SubscribeMd(reqSubMarketData);
 		}
 		auto& sessionSubscribeInstruments = m_SessionSubscribeInstruments[package->SessionID];
