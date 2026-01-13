@@ -16,158 +16,158 @@
 	<package name="ReqMdUserLogin" 				id="0x1001" desc="行情用户登出请求">
 		<field name="ReqMdUserLogin"/>
 	</package>
-	<package name="RspMdUserLogin" 				id="0x1002" desc="行情用户登出应答">
+	<package name="RspMdUserLogin" 				desc="行情用户登出应答">
 		<field name="RspMdUserLogin"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqMdUserLogout" 			id="0x1003" desc="行情用户登出请求">
+	<package name="ReqMdUserLogout" 			desc="行情用户登出请求">
 		<field name="ReqMdUserLogout"/>
 	</package>
-	<package name="RspMdUserLogout" 			id="0x1004" desc="行情用户登出应答">
+	<package name="RspMdUserLogout" 			desc="行情用户登出应答">
 		<field name="RspMdUserLogout"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqSubMarketData" 			id="0x1005" desc="订阅行情请求">
+	<package name="ReqSubMarketData" 			desc="订阅行情请求">
 		<field name="ReqSubMarketData"/>
 	</package>
-	<package name="RspSubMarketData" 			id="0x1006" desc="订阅行情应答">
+	<package name="RspSubMarketData" 			desc="订阅行情应答">
 		<field name="RspSubMarketData"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqUnSubMarketData" 			id="0x1007" desc="退订行情请求">
+	<package name="ReqUnSubMarketData" 			desc="退订行情请求">
 		<field name="ReqUnSubMarketData"/>
 	</package>
-	<package name="RspUnSubMarketData" 			id="0x1008" desc="退订行情应答">
+	<package name="RspUnSubMarketData" 			desc="退订行情应答">
 		<field name="RspUnSubMarketData"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqSubMarketDataFinished" 	id="0x1009" desc="行情完成请求">
+	<package name="ReqSubMarketDataFinished" 	desc="行情完成请求">
 		<field name="ReqSubMarketDataFinished"/>
 	</package>
-	<package name="RtnDepthMarketData" 			id="0x100A" desc="深度行情推送">
+	<package name="RtnDepthMarketData" 			desc="深度行情推送">
 		<field name="DepthMarketData"/>
 	</package>
-	<package name="RtnBarMarketData" 			id="0x100B" desc="Bar行情推送">
+	<package name="RtnBarMarketData" 			desc="Bar行情推送">
 		<field name="BarMarketData"/>
 	</package>
-	<package name="RtnSessionBegin" 			id="0x100C" desc="交易节开始推送">
+	<package name="RtnSessionBegin" 			desc="交易节开始推送">
 		<field name="SessionBegin"/>
 	</package>
-	<package name="RtnSessionEnd" 				id="0x100D" desc="交易节结束推送">
+	<package name="RtnSessionEnd" 				desc="交易节结束推送">
 		<field name="SessionEnd"/>
 	</package>
-	<package name="RtnMarketDataEnd" 			id="0x100E" desc="行情结束推送">
+	<package name="RtnMarketDataEnd" 			desc="行情结束推送">
 		<field name="MarketDataEnd"/>
 	</package>
 	
 	<package name="ReqAccountLogin" 			id="0x2001" desc="账户登录请求">
 		<field name="ReqAccountLogin"/>
 	</package>
-	<package name="RspAccountLogin" 			id="0x2002" desc="账户登录请求应答">
+	<package name="RspAccountLogin" 			desc="账户登录请求应答">
 		<field name="RspAccountLogin"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqAccountLogout" 			id="0x2003" desc="账户登出请求">
+	<package name="ReqAccountLogout" 			desc="账户登出请求">
 		<field name="ReqAccountLogout"/>
 	</package>
-	<package name="RspAccountLogout" 			id="0x2004" desc="账户登出请求应答">
+	<package name="RspAccountLogout" 			desc="账户登出请求应答">
 		<field name="RspAccountLogout"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryAccount" 				id="0x2005" desc="查询账户请求">
+	<package name="ReqQryAccount" 				desc="查询账户请求">
 		<field name="ReqQryAccount"/>
 	</package>
-	<package name="RspQryAccount" 				id="0x2006" desc="查询账户应答">
+	<package name="RspQryAccount" 				desc="查询账户应答">
 		<field name="Account"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryHolderAccount" 		id="0x2007" desc="查询股东账户请求">
+	<package name="ReqQryHolderAccount" 		desc="查询股东账户请求">
 		<field name="ReqQryHolderAccount"/>
 	</package>
-	<package name="RspQryHolderAccount" 		id="0x2008" desc="查询股东账户应答">
+	<package name="RspQryHolderAccount" 		desc="查询股东账户应答">
 		<field name="HolderAccount"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryCapital" 				id="0x2009" desc="查询资金请求">
+	<package name="ReqQryCapital" 				desc="查询资金请求">
 		<field name="ReqQryCapital"/>
 	</package>
-	<package name="RspQryCapital" 				id="0x200A" desc="查询资金应答">
+	<package name="RspQryCapital" 				desc="查询资金应答">
 		<field name="Capital"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryPosition" 				id="0x200B" desc="查询持仓请求">
+	<package name="ReqQryPosition" 				desc="查询持仓请求">
 		<field name="ReqQryPosition"/>
 	</package>
-	<package name="RspQryPosition" 				id="0x200C" desc="查询持仓应答">
+	<package name="RspQryPosition" 				desc="查询持仓应答">
 		<field name="Position"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryOrder" 				id="0x200D" desc="查询委托请求">
+	<package name="ReqQryOrder" 				desc="查询委托请求">
 		<field name="ReqQryOrder"/>
 	</package>
-	<package name="RspQryOrder" 				id="0x200E" desc="查询委托应答">
+	<package name="RspQryOrder" 				desc="查询委托应答">
 		<field name="Order"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryTrade" 				id="0x200F" desc="查询成交请求">
+	<package name="ReqQryTrade" 				desc="查询成交请求">
 		<field name="ReqQryTrade"/>
 	</package>
-	<package name="RspQryTrade" 				id="0x2010" desc="查询成交应答">
+	<package name="RspQryTrade" 				desc="查询成交应答">
 		<field name="Trade"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryInstrument" 			id="0x2011" desc="查询合约请求">
+	<package name="ReqQryInstrument" 			desc="查询合约请求">
 		<field name="ReqQryInstrument"/>
 	</package>
-	<package name="RspQryInstrument" 			id="0x2012" desc="查询合约应答">
+	<package name="RspQryInstrument" 			desc="查询合约应答">
 		<field name="Instrument"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryOptionInstrument" 		id="0x2013" desc="查询期权合约请求">
+	<package name="ReqQryOptionInstrument" 		desc="查询期权合约请求">
 		<field name="ReqQryOptionInstrument"/>
 	</package>
-	<package name="RspQryOptionInstrument" 		id="0x2014" desc="查询期权合约应答">
+	<package name="RspQryOptionInstrument" 		desc="查询期权合约应答">
 		<field name="OptionInstrument"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryCommissionRate" 		id="0x2015" desc="查询手续费率请求">
+	<package name="ReqQryCommissionRate" 		desc="查询手续费率请求">
 		<field name="ReqQryCommissionRate"/>
 	</package>
-	<package name="RspQryCommissionRate" 		id="0x2016" desc="查询手续费率应答">
+	<package name="RspQryCommissionRate" 		desc="查询手续费率应答">
 		<field name="CommissionRate"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQryMoneyTransfer" 		id="0x2017" desc="出入金查询请求">
+	<package name="ReqQryMoneyTransfer" 		desc="出入金查询请求">
 		<field name="ReqQryMoneyTransfer"/>
 	</package>
-	<package name="RspQryMoneyTransfer" 		id="0x2018" desc="出入金查询应答">
+	<package name="RspQryMoneyTransfer" 		desc="出入金查询应答">
 		<field name="MoneyTransfer"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqInsertOrder" 				id="0x2019" desc="委托请求">
+	<package name="ReqInsertOrder" 				desc="委托请求">
 		<field name="ReqInsertOrder"/>
 	</package>
-	<package name="RspInsertOrder" 				id="0x201A" desc="委托应答">
+	<package name="RspInsertOrder" 				desc="委托应答">
 		<field name="ReqInsertOrder"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqCancelOrder" 				id="0x201B" desc="撤单请求">
+	<package name="ReqCancelOrder" 				desc="撤单请求">
 		<field name="ReqCancelOrder"/>
 	</package>
-	<package name="RspCancelOrder" 				id="0x201C" desc="撤单应答">
+	<package name="RspCancelOrder" 				desc="撤单应答">
 		<field name="ReqCancelOrder"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="RtnOrder" 					id="0x201D" desc="委托推送">
+	<package name="RtnOrder" 					desc="委托推送">
 		<field name="Order"/>
 	</package>
-	<package name="RtnTrade" 					id="0x201E" desc="成交推送">
+	<package name="RtnTrade" 					desc="成交推送">
 		<field name="Trade"/>
 	</package>
-	<package name="RtnMoneyTransfer" 			id="0x201F" desc="出入金推送">
+	<package name="RtnMoneyTransfer" 			desc="出入金推送">
 		<field name="MoneyTransfer"/>
 	</package>
-	<package name="RtnAccountLogout" 			id="0x2020" desc="账户登出推送">
+	<package name="RtnAccountLogout" 			desc="账户登出推送">
 		<field name="AccountLogout"/>
 	</package>
 
@@ -175,49 +175,49 @@
 	<package name="ReqSEBrokerLogin" 			id="0x3001" desc="模拟交易经纪商登录请求">
 		<field name="ReqSEBrokerLogin"/>
 	</package>
-	<package name="RspSEBrokerLogin" 			id="0x3002" desc="模拟交易经纪商登录应答">
+	<package name="RspSEBrokerLogin" 			desc="模拟交易经纪商登录应答">
 		<field name="RspSEBrokerLogin"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqSEBrokerLogout" 			id="0x3003" desc="模拟交易经纪商登出请求">
+	<package name="ReqSEBrokerLogout" 			desc="模拟交易经纪商登出请求">
 		<field name="ReqSEBrokerLogout"/>
 	</package>
-	<package name="RspSEBrokerLogout" 			id="0x3004" desc="模拟交易经纪商登出应答">
+	<package name="RspSEBrokerLogout" 			desc="模拟交易经纪商登出应答">
 		<field name="RspSEBrokerLogout"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqSEInsertOrder" 			id="0x3005" desc="模拟交易委托请求">
+	<package name="ReqSEInsertOrder" 			desc="模拟交易委托请求">
 		<field name="ReqSEInsertOrder"/>
 	</package>
-	<package name="RspSEInsertOrder" 			id="0x3006" desc="模拟交易委托应答">
+	<package name="RspSEInsertOrder" 			desc="模拟交易委托应答">
 		<field name="ReqSEInsertOrder"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqSECancelOrder" 			id="0x3007" desc="模拟交易撤单请求">
+	<package name="ReqSECancelOrder" 			desc="模拟交易撤单请求">
 		<field name="ReqSECancelOrder"/>
 	</package>
-	<package name="RspSECancelOrder" 			id="0x3008" desc="模拟交易撤单应答">
+	<package name="RspSECancelOrder" 			desc="模拟交易撤单应答">
 		<field name="ReqSECancelOrder"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQrySEOrder" 				id="0x3009" desc="模拟交易查询委托请求">
+	<package name="ReqQrySEOrder" 				desc="模拟交易查询委托请求">
 		<field name="ReqQrySEOrder"/>
 	</package>
-	<package name="RspQrySEOrder" 				id="0x300A" desc="模拟交易查询委托应答">
+	<package name="RspQrySEOrder" 				desc="模拟交易查询委托应答">
 		<field name="SEOrder"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQrySETrade" 				id="0x300B" desc="模拟交易查询成交请求">
+	<package name="ReqQrySETrade" 				desc="模拟交易查询成交请求">
 		<field name="ReqQrySETrade"/>
 	</package>
-	<package name="RspQrySETrade" 				id="0x300C" desc="模拟交易查询成交应答">
+	<package name="RspQrySETrade" 				desc="模拟交易查询成交应答">
 		<field name="SETrade"/>
 		<field name="RspInfo"/>
 	</package>
-	<package name="ReqQrySEInstrument" 			id="0x300D" desc="模拟交易查询成交请求">
+	<package name="ReqQrySEInstrument" 			desc="模拟交易查询成交请求">
 		<field name="ReqQrySEInstrument"/>
 	</package>
-	<package name="RspQrySEInstrument" 			id="0x300E" desc="模拟交易查询成交应答">
+	<package name="RspQrySEInstrument" 			desc="模拟交易查询成交应答">
 		<field name="SEInstrument"/>
 		<field name="RspInfo"/>
 	</package>
@@ -225,7 +225,7 @@
 	<package name="RtnSEOrder" 					id="0x3101" desc="模拟交易委托推送">
 		<field name="SEOrder"/>
 	</package>
-	<package name="RtnSETrade" 					id="0x3102" desc="模拟交易成交推送">
+	<package name="RtnSETrade" 					desc="模拟交易成交推送">
 		<field name="SETrade"/>
 	</package>
 </packages>
