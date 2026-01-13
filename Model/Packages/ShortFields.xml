@@ -4,20 +4,20 @@
 		<item name="ErrorID"/>
 		<item name="ErrorMsg"/>
 	</field>
-	<field name="NotifyConnect" 				id="0x0002" desc="连接成功通知">
+	<field name="NotifyConnect" 				desc="连接成功通知">
 		<item name="SessionID"/>
 		<item name="IPAddress"/>
 		<item name="Port"/>
 	</field>
-	<field name="NotifyDisConnect" 				id="0x0003" desc="断开连接通知">
+	<field name="NotifyDisConnect" 				desc="断开连接通知">
 		<item name="SessionID"/>
 		<item name="IPAddress"/>
 		<item name="Port"/>
 	</field>
-	<field name="NotifyDBConnect" 				id="0x0004" desc="数据库连接成功通知">
+	<field name="NotifyDBConnect" 				desc="数据库连接成功通知">
 		<item name="DBName"/>
 	</field>
-	<field name="NotifyDBDisConnect" 			id="0x0005" desc="数据库断开连接通知">
+	<field name="NotifyDBDisConnect" 			desc="数据库断开连接通知">
 		<item name="DBName"/>
 	</field>
 	
@@ -25,38 +25,38 @@
 		<item name="UserID"/>
 		<item name="Password"/>
 	</field>
-	<field name="RspMdUserLogin" 				id="0x1002" desc="行情用户登录应答">
+	<field name="RspMdUserLogin" 				desc="行情用户登录应答">
 		<item name="UserID"/>
 		<item name="LoginDate"/>
 		<item name="LoginTime"/>
 		<item name="SessionID"/>
 	</field>
-	<field name="ReqMdUserLogout" 				id="0x1003" desc="行情用户登录请求">
+	<field name="ReqMdUserLogout" 				desc="行情用户登录请求">
 		<item name="UserID"/>
 	</field>
-	<field name="RspMdUserLogout" 				id="0x1004" desc="行情用户登录应答">
+	<field name="RspMdUserLogout" 				desc="行情用户登录应答">
 		<item name="UserID"/>
 	</field>
-	<field name="ReqSubMarketData" 				id="0x1005" desc="订阅行情请求">
+	<field name="ReqSubMarketData" 				desc="订阅行情请求">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="RspSubMarketData" 				id="0x1006" desc="订阅行情应答">
+	<field name="RspSubMarketData" 				desc="订阅行情应答">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="ReqUnSubMarketData" 			id="0x1007" desc="退订行情请求">
+	<field name="ReqUnSubMarketData" 			desc="退订行情请求">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="RspUnSubMarketData" 			id="0x1008" desc="退订行情应答">
+	<field name="RspUnSubMarketData" 			desc="退订行情应答">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="ReqSubMarketDataFinished" 		id="0x1009" desc="行情完成请求">
+	<field name="ReqSubMarketDataFinished" 		desc="行情完成请求">
 		<item name="SessionID"/>
 	</field>
-	<field name="DepthMarketData" 				id="0x100A" desc="深度行情">
+	<field name="DepthMarketData" 				desc="深度行情">
 		<item name="TradingDay"/>
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
@@ -119,7 +119,7 @@
 		<item name="BidVolume9"/>
 		<item name="BidVolume10"/>
 	</field>
-	<field name="BarMarketData" 				id="0x100B" desc="Bar行情">
+	<field name="BarMarketData" 				desc="Bar行情">
 		<item name="TradingDay"/>
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
@@ -139,13 +139,13 @@
 		<item name="Turnover"/>
 		<item name="OpenInterest"/>
 	</field>
-	<field name="SessionBegin" 					id="0x100C" desc="交易节开始">
+	<field name="SessionBegin" 					desc="交易节开始">
 		<item name="TradingDay"/>
 	</field>
-	<field name="SessionEnd" 					id="0x100D" desc="交易节结束">
+	<field name="SessionEnd" 					desc="交易节结束">
 		<item name="TradingDay"/>
 	</field>
-	<field name="MarketDataEnd" 				id="0x100D" desc="行情结束">
+	<field name="MarketDataEnd" 				desc="行情结束">
 		<item name="TradingDay"/>
 	</field>
 	
@@ -153,27 +153,27 @@
 		<item name="AccountID"/>
 		<item name="Password"/>
 	</field>
-	<field name="RspAccountLogin" 				id="0x2002" desc="账户登录应答">
+	<field name="RspAccountLogin" 				desc="账户登录应答">
 		<item name="AccountID"/>
 		<item name="LoginDate"/>
 		<item name="LoginTime"/>
 		<item name="SessionID"/>
 	</field>
-	<field name="ReqAccountLogout" 				id="0x2003" desc="账户登出请求">
+	<field name="ReqAccountLogout" 				desc="账户登出请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="RspAccountLogout" 				id="0x2004" desc="账户登出应答">
+	<field name="RspAccountLogout" 				desc="账户登出应答">
 		<item name="AccountID"/>
 	</field>
-	<field name="AccountLogout" 				id="0x2005" desc="账户登出">
+	<field name="AccountLogout" 				desc="账户登出">
 		<item name="AccountID"/>
 		<item name="ErrorID"/>
 		<item name="ErrorMsg"/>
 	</field>
-	<field name="ReqQryAccount" 				id="0x2006" desc="查询账户请求">
+	<field name="ReqQryAccount" 				desc="查询账户请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="Account" 						id="0x2007" desc="账户">
+	<field name="Account" 						desc="账户">
 		<item name="AccountID"/>
 		<item name="AccountType"/>
 		<item name="AccountStatus"/>
@@ -181,18 +181,18 @@
 		<item name="RiskGroupID"/>
 		<item name="CommissionGroupID"/>
 	</field>
-	<field name="ReqQryHolderAccount" 			id="0x2008" desc="查询股东账户请求">
+	<field name="ReqQryHolderAccount" 			desc="查询股东账户请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="HolderAccount" 				id="0x2009" desc="股东账户">
+	<field name="HolderAccount" 				desc="股东账户">
 		<item name="ExchangeID"/>
 		<item name="HolderAccountID"/>
 		<item name="PrimaryFlag"/>
 	</field>
-	<field name="ReqQryCapital" 				id="0x200A" desc="查询资金请求">
+	<field name="ReqQryCapital" 				desc="查询资金请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="Capital" 						id="0x200B" desc="资金">
+	<field name="Capital" 						desc="资金">
 		<item name="TradingDay"/>
 		<item name="AccountID"/>
 		<item name="AccountType"/>
@@ -214,10 +214,10 @@
 		<item name="Deposit"/>
 		<item name="Withdraw"/>
 	</field>
-	<field name="ReqQryPosition" 				id="0x200C" desc="查询持仓请求">
+	<field name="ReqQryPosition" 				desc="查询持仓请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="Position" 						id="0x200D" desc="持仓">
+	<field name="Position" 						desc="持仓">
 		<item name="TradingDay"/>
 		<item name="AccountID"/>
 		<item name="AccountType"/>
@@ -241,10 +241,10 @@
 		<item name="LastPrice"/>
 		<item name="PreSettlementPrice"/>
 	</field>
-	<field name="ReqQryOrder" 					id="0x200E" desc="查询委托请求">
+	<field name="ReqQryOrder" 					desc="查询委托请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="Order" 						id="0x200F" desc="委托">
+	<field name="Order" 						desc="委托">
 		<item name="TradingDay"/>
 		<item name="AccountID"/>
 		<item name="ExchangeID"/>
@@ -272,10 +272,10 @@
 		<item name="FrozenMargin"/>
 		<item name="FrozenCommission"/>
 	</field>
-	<field name="ReqQryTrade" 					id="0x2010" desc="查询成交请求">
+	<field name="ReqQryTrade" 					desc="查询成交请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="Trade" 						id="0x2011" desc="成交">
+	<field name="Trade" 						desc="成交">
 		<item name="TradingDay"/>
 		<item name="AccountID"/>
 		<item name="ExchangeID"/>
@@ -294,11 +294,11 @@
 		<item name="TradeDate"/>
 		<item name="TradeTime"/>
 	</field>
-	<field name="ReqQryInstrument" 				id="0x2012" desc="查询合约请求">
+	<field name="ReqQryInstrument" 				desc="查询合约请求">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="Instrument" 					id="0x2013" desc="合约">
+	<field name="Instrument" 					desc="合约">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 		<item name="ExchangeInstID"/>
@@ -306,11 +306,11 @@
 		<item name="VolumeMultiple"/>
 		<item name="ProductClass"/>
 	</field>
-	<field name="ReqQryOptionInstrument" 		id="0x2014" desc="查询期权合约请求">
+	<field name="ReqQryOptionInstrument" 		desc="查询期权合约请求">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 	</field>
-	<field name="OptionInstrument" 				id="0x2015" desc="期权合约">
+	<field name="OptionInstrument" 				desc="期权合约">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
 		<item name="ExchangeInstID"/>
@@ -325,12 +325,12 @@
 		<item name="MaxMarketOrderVolume"/>
 		<item name="ExpiringDate"/>
 	</field>
-	<field name="ReqQryCommissionRate" 			id="0x2016" desc="查询手续费率请求">
+	<field name="ReqQryCommissionRate" 			desc="查询手续费率请求">
 		<item name="AccountID"/>
 		<item name="ExchangeID"/>
 		<item name="ProductClass"/>
 	</field>
-	<field name="CommissionRate" 				id="0x2017" desc="手续费率">
+	<field name="CommissionRate" 				desc="手续费率">
 		<item name="AccountID"/>
 		<item name="ExchangeID"/>
 		<item name="ProductClass"/>
@@ -345,10 +345,10 @@
 		<item name="MinCommission"/>
 		<item name="MaxCommission"/>
 	</field>
-	<field name="ReqQryMoneyTransfer" 			id="0x2018" desc="出入金查询请求">
+	<field name="ReqQryMoneyTransfer" 			desc="出入金查询请求">
 		<item name="AccountID"/>
 	</field>
-	<field name="MoneyTransfer" 				id="0x2019" desc="出入金">
+	<field name="MoneyTransfer" 				desc="出入金">
 		<item name="TradingDay"/>
 		<item name="AccountID"/>
 		<item name="MoneyTransferID"/>
@@ -360,7 +360,7 @@
 		<item name="TransferDate"/>
 		<item name="TransferTime"/>
 	</field>
-	<field name="ReqInsertOrder" 				id="0x201A" desc="委托请求">
+	<field name="ReqInsertOrder" 				desc="委托请求">
 		<item name="AccountID"/>
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
@@ -371,7 +371,7 @@
 		<item name="Volume"/>
 		<item name="ClientOrderID"/>
 	</field>
-	<field name="ReqCancelOrder" 				id="0x201B" desc="撤单请求">
+	<field name="ReqCancelOrder" 				desc="撤单请求">
 		<item name="AccountID"/>
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>

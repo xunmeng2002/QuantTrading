@@ -191,7 +191,7 @@
 		</field>
 	</package>
 	<package name="RtnMarketDataEnd" id="0x100E" desc="行情结束推送">
-		<field name="MarketDataEnd" id="0x100D" desc="行情结束">
+		<field name="MarketDataEnd" id="0x100E" desc="行情结束">
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 		</field>
 	</package>
