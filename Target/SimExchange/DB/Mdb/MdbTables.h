@@ -115,6 +115,7 @@ namespace mdb
 		bool Insert(Instrument* record);
 		void BatchInsert(std::list<mdb::Instrument*>* records);
 		void Erase(Instrument* record);
+		int EraseByExchangeIDIndex(const ExchangeIDType& ExchangeID);
 		bool Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB = true);
 		void TruncateTables();
 		void TruncateTable();
@@ -130,6 +131,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		InstrumentPrimaryKey* m_PrimaryKey;
+		InstrumentIndexExchangeID* m_ExchangeIDIndex;
 	};
 
 	class DepthMarketDataTable
@@ -267,6 +269,7 @@ namespace mdb
 		bool Insert(Order* record);
 		void BatchInsert(std::list<mdb::Order*>* records);
 		void Erase(Order* record);
+		int EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		bool Update(Order* const oldRecord, Order* const newRecord, bool updateDB = true);
 		void TruncateTables();
 		void TruncateTable();
@@ -283,6 +286,7 @@ namespace mdb
 		std::shared_mutex m_SharedMutex;
 		OrderPrimaryKey* m_PrimaryKey;
 		OrderUniqueKeyClientOrderID* m_ClientOrderIDUniqueKey;
+		OrderIndexAccountID* m_AccountIDIndex;
 	};
 
 	class TradeTable
@@ -298,6 +302,7 @@ namespace mdb
 		bool Insert(Trade* record);
 		void BatchInsert(std::list<mdb::Trade*>* records);
 		void Erase(Trade* record);
+		int EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID);
 		bool Update(Trade* const oldRecord, Trade* const newRecord, bool updateDB = true);
 		void TruncateTables();
 		void TruncateTable();
@@ -313,6 +318,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		TradePrimaryKey* m_PrimaryKey;
+		TradeIndexAccountID* m_AccountIDIndex;
 	};
 
 	class AccountLoginSessionTable

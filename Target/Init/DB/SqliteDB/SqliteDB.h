@@ -61,6 +61,7 @@ public:
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void DeleteInstrumentByExchangeIDIndex(mdb::Instrument* record) override;
 	virtual void UpdateInstrument(mdb::Instrument* record) override;
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
@@ -96,6 +97,7 @@ private:
 	void SetStatementForInstrumentRecord(sqlite3_stmt* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentRecordUpdate(sqlite3_stmt* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void SetStatementForInstrumentIndexExchangeID(sqlite3_stmt* statement, mdb::Instrument* record);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Instrument*>& records);
 	void SetStatementForAccountRecord(sqlite3_stmt* statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(sqlite3_stmt* statement, mdb::Account* record);
@@ -131,6 +133,7 @@ private:
 	sqlite3_stmt* m_HotInstrumentTruncateStatement;
 	sqlite3_stmt* m_InstrumentInsertStatement;
 	sqlite3_stmt* m_InstrumentDeleteStatement;
+	sqlite3_stmt* m_InstrumentDeleteByExchangeIDIndexStatement;
 	sqlite3_stmt* m_InstrumentUpdateStatement;
 	sqlite3_stmt* m_InstrumentSelectStatement;
 	sqlite3_stmt* m_InstrumentTruncateStatement;

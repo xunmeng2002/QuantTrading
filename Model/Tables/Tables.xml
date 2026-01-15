@@ -98,7 +98,11 @@
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 		</primarykey>
 		<uniquekeys/>
-		<indexes/>
+		<indexes>
+			<index name="ExchangeID">
+				<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="DepthMarketData" id="0x2001" desc="深度行情" batch="" session="" withtradingday="true">
 		<items>
@@ -473,7 +477,12 @@
 				<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
 			</uniquekey>
 		</uniquekeys>
-		<indexes/>
+		<indexes>
+			<index name="AccountID">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="Trade" id="0x3007" desc="成交" batch="" session="" withtradingday="">
 		<items>
@@ -503,7 +512,12 @@
 			<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
 		</primarykey>
 		<uniquekeys/>
-		<indexes/>
+		<indexes>
+			<index name="AccountID">
+				<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
+				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+			</index>
+		</indexes>
 	</table>
 	<table name="AccountLoginSession" id="0x3008" desc="账户登录会话" batch="" session="true" withtradingday="">
 		<items>

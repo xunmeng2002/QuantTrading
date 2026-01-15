@@ -57,6 +57,7 @@ public:
 	virtual void InsertInstrument(mdb::Instrument* record) = 0;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) = 0;
 	virtual void DeleteInstrument(mdb::Instrument* record) = 0;
+	virtual void DeleteInstrumentByExchangeIDIndex(mdb::Instrument* record) = 0;
 	virtual void UpdateInstrument(mdb::Instrument* record) = 0;
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) = 0;
 	virtual void TruncateInstrument() = 0;
@@ -134,6 +135,7 @@ public:
 	virtual void InsertOrder(mdb::Order* record) = 0;
 	virtual void BatchInsertOrder(std::list<mdb::Order*>* records) = 0;
 	virtual void DeleteOrder(mdb::Order* record) = 0;
+	virtual void DeleteOrderByAccountIDIndex(mdb::Order* record) = 0;
 	virtual void UpdateOrder(mdb::Order* record) = 0;
 	virtual void SelectOrder(std::list<mdb::Order*>& records) = 0;
 	virtual void TruncateOrder() = 0;
@@ -143,6 +145,7 @@ public:
 	virtual void InsertTrade(mdb::Trade* record) = 0;
 	virtual void BatchInsertTrade(std::list<mdb::Trade*>* records) = 0;
 	virtual void DeleteTrade(mdb::Trade* record) = 0;
+	virtual void DeleteTradeByAccountIDIndex(mdb::Trade* record) = 0;
 	virtual void UpdateTrade(mdb::Trade* record) = 0;
 	virtual void SelectTrade(std::list<mdb::Trade*>& records) = 0;
 	virtual void TruncateTrade() = 0;

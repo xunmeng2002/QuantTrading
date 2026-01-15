@@ -65,6 +65,7 @@ public:
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void DeleteInstrumentByExchangeIDIndex(mdb::Instrument* record) override;
 	virtual void UpdateInstrument(mdb::Instrument* record) override;
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
@@ -150,6 +151,7 @@ public:
 	virtual void InsertOrder(mdb::Order* record) override;
 	virtual void BatchInsertOrder(std::list<mdb::Order*>* records) override;
 	virtual void DeleteOrder(mdb::Order* record) override;
+	virtual void DeleteOrderByAccountIDIndex(mdb::Order* record) override;
 	virtual void UpdateOrder(mdb::Order* record) override;
 	virtual void SelectOrder(std::list<mdb::Order*>& records) override;
 	virtual void TruncateOrder() override;
@@ -160,6 +162,7 @@ public:
 	virtual void InsertTrade(mdb::Trade* record) override;
 	virtual void BatchInsertTrade(std::list<mdb::Trade*>* records) override;
 	virtual void DeleteTrade(mdb::Trade* record) override;
+	virtual void DeleteTradeByAccountIDIndex(mdb::Trade* record) override;
 	virtual void UpdateTrade(mdb::Trade* record) override;
 	virtual void SelectTrade(std::list<mdb::Trade*>& records) override;
 	virtual void TruncateTrade() override;
@@ -188,6 +191,7 @@ private:
 	void SetStatementForInstrumentRecord(duckdb_prepared_statement statement, mdb::Instrument* record);
 	void SetStatementForInstrumentRecordUpdate(duckdb_prepared_statement statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement statement, mdb::Instrument* record);
+	void SetStatementForInstrumentIndexExchangeID(duckdb_prepared_statement statement, mdb::Instrument* record);
 	bool AppendForDepthMarketDataRecord(duckdb_appender appender, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecord(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecordUpdate(duckdb_prepared_statement statement, mdb::DepthMarketData* record);
@@ -225,10 +229,12 @@ private:
 	void SetStatementForOrderRecord(duckdb_prepared_statement statement, mdb::Order* record);
 	void SetStatementForOrderRecordUpdate(duckdb_prepared_statement statement, mdb::Order* record);
 	void SetStatementForOrderPrimaryKey(duckdb_prepared_statement statement, mdb::Order* record);
+	void SetStatementForOrderIndexAccountID(duckdb_prepared_statement statement, mdb::Order* record);
 	bool AppendForTradeRecord(duckdb_appender appender, mdb::Trade* record);
 	void SetStatementForTradeRecord(duckdb_prepared_statement statement, mdb::Trade* record);
 	void SetStatementForTradeRecordUpdate(duckdb_prepared_statement statement, mdb::Trade* record);
 	void SetStatementForTradePrimaryKey(duckdb_prepared_statement statement, mdb::Trade* record);
+	void SetStatementForTradeIndexAccountID(duckdb_prepared_statement statement, mdb::Trade* record);
 
 
 private:
@@ -255,6 +261,7 @@ private:
 	duckdb_prepared_statement m_HotInstrumentSelectStatement;
 	duckdb_prepared_statement m_HotInstrumentTruncateStatement;
 	duckdb_prepared_statement m_InstrumentDeleteStatement;
+	duckdb_prepared_statement m_InstrumentDeleteByExchangeIDIndexStatement;
 	duckdb_prepared_statement m_InstrumentUpdateStatement;
 	duckdb_prepared_statement m_InstrumentSelectStatement;
 	duckdb_prepared_statement m_InstrumentTruncateStatement;
@@ -292,10 +299,12 @@ private:
 	duckdb_prepared_statement m_PositionDetailSelectStatement;
 	duckdb_prepared_statement m_PositionDetailTruncateStatement;
 	duckdb_prepared_statement m_OrderDeleteStatement;
+	duckdb_prepared_statement m_OrderDeleteByAccountIDIndexStatement;
 	duckdb_prepared_statement m_OrderUpdateStatement;
 	duckdb_prepared_statement m_OrderSelectStatement;
 	duckdb_prepared_statement m_OrderTruncateStatement;
 	duckdb_prepared_statement m_TradeDeleteStatement;
+	duckdb_prepared_statement m_TradeDeleteByAccountIDIndexStatement;
 	duckdb_prepared_statement m_TradeUpdateStatement;
 	duckdb_prepared_statement m_TradeSelectStatement;
 	duckdb_prepared_statement m_TradeTruncateStatement;

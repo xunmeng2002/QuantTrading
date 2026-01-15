@@ -77,6 +77,7 @@ public:
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void DeleteInstrumentByExchangeIDIndex(mdb::Instrument* record) override;
 	virtual void UpdateInstrument(mdb::Instrument* record) override;
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
@@ -123,6 +124,7 @@ public:
 	virtual void InsertOrder(mdb::Order* record) override;
 	virtual void BatchInsertOrder(std::list<mdb::Order*>* records) override;
 	virtual void DeleteOrder(mdb::Order* record) override;
+	virtual void DeleteOrderByAccountIDIndex(mdb::Order* record) override;
 	virtual void UpdateOrder(mdb::Order* record) override;
 	virtual void SelectOrder(std::list<mdb::Order*>& records) override;
 	virtual void TruncateOrder() override;
@@ -132,6 +134,7 @@ public:
 	virtual void InsertTrade(mdb::Trade* record) override;
 	virtual void BatchInsertTrade(std::list<mdb::Trade*>* records) override;
 	virtual void DeleteTrade(mdb::Trade* record) override;
+	virtual void DeleteTradeByAccountIDIndex(mdb::Trade* record) override;
 	virtual void UpdateTrade(mdb::Trade* record) override;
 	virtual void SelectTrade(std::list<mdb::Trade*>& records) override;
 	virtual void TruncateTrade() override;
@@ -163,6 +166,7 @@ private:
 	void SetStatementForInstrumentRecord(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void SetStatementForInstrumentIndexExchangeID(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Instrument*>& records);
 	void SetStatementForDepthMarketDataRecord(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecordUpdate(sql::PreparedStatement* statement, mdb::DepthMarketData* record);
@@ -184,10 +188,12 @@ private:
 	void SetStatementForOrderRecord(sql::PreparedStatement* statement, mdb::Order* record);
 	void SetStatementForOrderRecordUpdate(sql::PreparedStatement* statement, mdb::Order* record);
 	void SetStatementForOrderPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID);
+	void SetStatementForOrderIndexAccountID(sql::PreparedStatement* statement, mdb::Order* record);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Order*>& records);
 	void SetStatementForTradeRecord(sql::PreparedStatement* statement, mdb::Trade* record);
 	void SetStatementForTradeRecordUpdate(sql::PreparedStatement* statement, mdb::Trade* record);
 	void SetStatementForTradePrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction);
+	void SetStatementForTradeIndexAccountID(sql::PreparedStatement* statement, mdb::Trade* record);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Trade*>& records);
 	void SetStatementForAccountLoginSessionRecord(sql::PreparedStatement* statement, mdb::AccountLoginSession* record);
 	void SetStatementForAccountLoginSessionRecordUpdate(sql::PreparedStatement* statement, mdb::AccountLoginSession* record);
@@ -231,6 +237,7 @@ private:
 	sql::PreparedStatement* m_InstrumentDropStatement;
 	sql::PreparedStatement* m_InstrumentInsertStatement;
 	sql::PreparedStatement* m_InstrumentDeleteStatement;
+	sql::PreparedStatement* m_InstrumentDeleteByExchangeIDIndexStatement;
 	sql::PreparedStatement* m_InstrumentUpdateStatement;
 	sql::PreparedStatement* m_InstrumentSelectStatement;
 	sql::PreparedStatement* m_InstrumentTruncateStatement;
@@ -267,6 +274,7 @@ private:
 	sql::PreparedStatement* m_OrderDropStatement;
 	sql::PreparedStatement* m_OrderInsertStatement;
 	sql::PreparedStatement* m_OrderDeleteStatement;
+	sql::PreparedStatement* m_OrderDeleteByAccountIDIndexStatement;
 	sql::PreparedStatement* m_OrderUpdateStatement;
 	sql::PreparedStatement* m_OrderSelectStatement;
 	sql::PreparedStatement* m_OrderTruncateStatement;
@@ -274,6 +282,7 @@ private:
 	sql::PreparedStatement* m_TradeDropStatement;
 	sql::PreparedStatement* m_TradeInsertStatement;
 	sql::PreparedStatement* m_TradeDeleteStatement;
+	sql::PreparedStatement* m_TradeDeleteByAccountIDIndexStatement;
 	sql::PreparedStatement* m_TradeUpdateStatement;
 	sql::PreparedStatement* m_TradeSelectStatement;
 	sql::PreparedStatement* m_TradeTruncateStatement;

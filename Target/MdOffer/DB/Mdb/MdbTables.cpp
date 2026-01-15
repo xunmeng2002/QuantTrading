@@ -191,11 +191,14 @@ namespace mdb
 	{
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new InstrumentPrimaryKey(this);
+		m_ExchangeIDIndex = new InstrumentIndexExchangeID(this);
 	}
 	InstrumentTable::~InstrumentTable()
 	{
 		delete m_PrimaryKey;
 		m_PrimaryKey = nullptr;
+		delete m_ExchangeIDIndex;
+		m_ExchangeIDIndex = nullptr;
 	}
 	void InstrumentTable::Subscribe(MdbSubscriber* mdbSubscriber)
 	{
@@ -245,6 +248,7 @@ namespace mdb
 
 		m_PrimaryKey->Insert(record);
 
+		m_ExchangeIDIndex->Insert(record);
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -262,6 +266,7 @@ namespace mdb
 				memcpy(newRecord, record, sizeof(Instrument));
 				m_PrimaryKey->Insert(newRecord);
 
+				m_ExchangeIDIndex->Insert(newRecord);
 			}
 		}
 		if (m_MdbSubscriber != nullptr && m_DBInited)
@@ -283,6 +288,30 @@ namespace mdb
 			record->Free();
 		}
 	}
+	int InstrumentTable::EraseByExchangeIDIndex(const ExchangeIDType& ExchangeID)
+	{
+		m_ExchangeIDIndex->FillCompareRecord(ExchangeID);
+		list<Instrument*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_ExchangeIDIndex->m_Index.equal_range(&t_CompareInstrument);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Free();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = Instrument::Allocate();
+			memcpy(record, &t_CompareInstrument, sizeof(Instrument));
+			m_MdbSubscriber->OnInstrumentEraseByExchangeIDIndex(record);
+		}
+		return (int)records.size();
+	}
 	bool InstrumentTable::Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB)
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -294,7 +323,17 @@ namespace mdb
 			return false;
 		}
 
+		bool ExchangeIDIndexUpdate = m_ExchangeIDIndex->NeedUpdate(oldRecord, newRecord);
+		InstrumentIndexExchangeID::iterator itExchangeID;
+		if (ExchangeIDIndexUpdate)
+		{
+			itExchangeID = m_ExchangeIDIndex->FindNode(oldRecord);
+		}
 		::memcpy((void*)oldRecord, newRecord, sizeof(Instrument));
+		if (ExchangeIDIndexUpdate)
+		{
+			m_ExchangeIDIndex->Update(itExchangeID);
+		}
 
 		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -314,6 +353,7 @@ namespace mdb
 			(*it)->Free();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_ExchangeIDIndex->m_Index.clear();
 	}
 	void InstrumentTable::TruncateTable()
 	{
@@ -323,6 +363,7 @@ namespace mdb
 			(*it)->Free();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_ExchangeIDIndex->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
 			m_MdbSubscriber->OnInstrumentTruncate();
@@ -358,6 +399,7 @@ namespace mdb
 	}
 	void InstrumentTable::EraseIndex(Instrument* record)
 	{
+		m_ExchangeIDIndex->Erase(record);
 	}
 
 	DepthMarketDataTable::DepthMarketDataTable(Mdb* mdb)

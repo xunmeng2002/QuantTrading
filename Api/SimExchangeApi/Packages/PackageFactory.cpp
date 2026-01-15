@@ -6,69 +6,69 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 {
 	switch (packageID)
 	{
-	case ReqSEBrokerLoginPackage::PackageID:
+	case ReqAccountLoginPackage::PackageID:
 	{
-		return ReqSEBrokerLoginPackage::Allocate();
+		return ReqAccountLoginPackage::Allocate();
 	}
-	case RspSEBrokerLoginPackage::PackageID:
+	case RspAccountLoginPackage::PackageID:
 	{
-		return RspSEBrokerLoginPackage::Allocate();
+		return RspAccountLoginPackage::Allocate();
 	}
-	case ReqSEBrokerLogoutPackage::PackageID:
+	case ReqAccountLogoutPackage::PackageID:
 	{
-		return ReqSEBrokerLogoutPackage::Allocate();
+		return ReqAccountLogoutPackage::Allocate();
 	}
-	case RspSEBrokerLogoutPackage::PackageID:
+	case RspAccountLogoutPackage::PackageID:
 	{
-		return RspSEBrokerLogoutPackage::Allocate();
+		return RspAccountLogoutPackage::Allocate();
 	}
-	case ReqSEInsertOrderPackage::PackageID:
+	case ReqQryOrderPackage::PackageID:
 	{
-		return ReqSEInsertOrderPackage::Allocate();
+		return ReqQryOrderPackage::Allocate();
 	}
-	case RspSEInsertOrderPackage::PackageID:
+	case RspQryOrderPackage::PackageID:
 	{
-		return RspSEInsertOrderPackage::Allocate();
+		return RspQryOrderPackage::Allocate();
 	}
-	case ReqSECancelOrderPackage::PackageID:
+	case ReqQryTradePackage::PackageID:
 	{
-		return ReqSECancelOrderPackage::Allocate();
+		return ReqQryTradePackage::Allocate();
 	}
-	case RspSECancelOrderPackage::PackageID:
+	case RspQryTradePackage::PackageID:
 	{
-		return RspSECancelOrderPackage::Allocate();
+		return RspQryTradePackage::Allocate();
 	}
-	case ReqQrySEOrderPackage::PackageID:
+	case ReqQryInstrumentPackage::PackageID:
 	{
-		return ReqQrySEOrderPackage::Allocate();
+		return ReqQryInstrumentPackage::Allocate();
 	}
-	case RspQrySEOrderPackage::PackageID:
+	case RspQryInstrumentPackage::PackageID:
 	{
-		return RspQrySEOrderPackage::Allocate();
+		return RspQryInstrumentPackage::Allocate();
 	}
-	case ReqQrySETradePackage::PackageID:
+	case ReqInsertOrderPackage::PackageID:
 	{
-		return ReqQrySETradePackage::Allocate();
+		return ReqInsertOrderPackage::Allocate();
 	}
-	case RspQrySETradePackage::PackageID:
+	case RspInsertOrderPackage::PackageID:
 	{
-		return RspQrySETradePackage::Allocate();
+		return RspInsertOrderPackage::Allocate();
 	}
-	case ReqQrySEInstrumentPackage::PackageID:
+	case ReqCancelOrderPackage::PackageID:
 	{
-		return ReqQrySEInstrumentPackage::Allocate();
+		return ReqCancelOrderPackage::Allocate();
 	}
-	case RspQrySEInstrumentPackage::PackageID:
+	case RspCancelOrderPackage::PackageID:
 	{
-		return RspQrySEInstrumentPackage::Allocate();
+		return RspCancelOrderPackage::Allocate();
 	}
-	case RtnSEOrderPackage::PackageID:
+	case RtnOrderPackage::PackageID:
 	{
-		return RtnSEOrderPackage::Allocate();
+		return RtnOrderPackage::Allocate();
 	}
-	case RtnSETradePackage::PackageID:
+	case RtnTradePackage::PackageID:
 	{
-		return RtnSETradePackage::Allocate();
+		return RtnTradePackage::Allocate();
 	}
 	default:
 		break;

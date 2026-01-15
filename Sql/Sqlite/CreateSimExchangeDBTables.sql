@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS t_Instrument(
   `SessionName` text, 
   PRIMARY KEY(ExchangeID, InstrumentID)
 );
+CREATE INDEX InstrumentExchangeID ON t_Instrument(ExchangeID);
 
 
 CREATE TABLE IF NOT EXISTS t_DepthMarketData(
@@ -341,6 +342,7 @@ CREATE TABLE IF NOT EXISTS t_Order(
   UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), 
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
 );
+CREATE INDEX OrderAccountID ON t_Order(TradingDay, AccountID);
 
 
 CREATE TABLE IF NOT EXISTS t_Trade(
@@ -364,6 +366,7 @@ CREATE TABLE IF NOT EXISTS t_Trade(
   `TradeTime` text, 
   PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
 );
+CREATE INDEX TradeAccountID ON t_Trade(TradingDay, AccountID);
 
 
 CREATE TABLE IF NOT EXISTS t_AccountLoginSession(

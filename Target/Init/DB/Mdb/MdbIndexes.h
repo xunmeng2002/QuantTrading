@@ -32,4 +32,29 @@ namespace mdb
 		multiset<HotInstrument*, HotInstrumentLessForTradingDayIndex> m_Index;
 	};
 	
+	class InstrumentTable;
+	class InstrumentIndexExchangeID
+	{
+		using iterator = std::multiset<Instrument*, InstrumentLessForExchangeIDIndex>::iterator;
+		friend class InstrumentTable;
+	public:
+		InstrumentIndexExchangeID(InstrumentTable* table);
+		iterator LowerBound(const ExchangeIDType& ExchangeID);
+		iterator UpperBound(const ExchangeIDType& ExchangeID);
+		std::pair<iterator, iterator> EqualRange(const ExchangeIDType& ExchangeID);
+	public:
+		static constexpr unsigned int IndexID = 0x0000;
+	protected:
+		void Insert(Instrument* const record);
+		void Erase(Instrument* const record);
+		void Update(iterator it);
+		bool NeedUpdate(const Instrument* const oldRecord, const Instrument* const newRecord);
+		iterator FindNode(Instrument* const record);
+		void FillCompareRecord(const ExchangeIDType& ExchangeID);
+
+	private:
+		InstrumentTable* m_Table;
+		multiset<Instrument*, InstrumentLessForExchangeIDIndex> m_Index;
+	};
+	
 }

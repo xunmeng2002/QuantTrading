@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `t_Instrument` (
   `MinLimitOrderVolume` bigint COMMENT '限价最小下单量',
   `SessionName` char(32) COMMENT '交易节名称',
 
+  INDEX ExchangeID(ExchangeID),
   PRIMARY KEY(ExchangeID, InstrumentID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='合约';
 
@@ -339,6 +340,7 @@ CREATE TABLE IF NOT EXISTS `t_Order` (
   `RebuildMark` bool COMMENT '重建标志',
   `IsForceClose` bool COMMENT '是否强平单',
 
+  INDEX AccountID(TradingDay, AccountID),
   UNIQUE ClientOrderID(TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID),
   PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='委托';
@@ -363,6 +365,7 @@ CREATE TABLE IF NOT EXISTS `t_Trade` (
   `TradeDate` char(9) COMMENT '成交日期',
   `TradeTime` char(9) COMMENT '成交时间',
 
+  INDEX AccountID(TradingDay, AccountID),
   PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='成交';
 

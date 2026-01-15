@@ -23,6 +23,7 @@ SqliteDB::SqliteDB(const std::string& dbName)
 
 	m_InstrumentInsertStatement = nullptr;
 	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_InstrumentUpdateStatement = nullptr;
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
@@ -119,6 +120,11 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_InstrumentDeleteStatement);
 		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_InstrumentDeleteByExchangeIDIndexStatement);
+		m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	}
 	if (m_InstrumentUpdateStatement != nullptr)
 	{
@@ -506,7 +512,7 @@ void SqliteDB::CreateInstrument()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` text, `InstrumentID` text, `ExchangeInstID` text, `InstrumentName` text, `ProductID` text, `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` double, `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` text, PRIMARY KEY(ExchangeID, InstrumentID));", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` text, `InstrumentID` text, `ExchangeInstID` text, `InstrumentName` text, `ProductID` text, `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` double, `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` text, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX InstrumentExchangeID ON t_Instrument(ExchangeID);", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", t_ErrorMsg);
@@ -520,7 +526,7 @@ void SqliteDB::DropInstrument()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_Instrument;", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "DROP INDEX InstrumentExchangeID;DROP TABLE IF EXISTS t_Instrument;", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", t_ErrorMsg);
@@ -612,6 +618,28 @@ void SqliteDB::DeleteInstrument(Instrument* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void SqliteDB::DeleteInstrumentByExchangeIDIndex(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_Instrument where ExchangeID = ?;", -1, &m_InstrumentDeleteByExchangeIDIndexStatement, nullptr);
+	}
+	SetStatementForInstrumentIndexExchangeID(m_InstrumentDeleteByExchangeIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_InstrumentDeleteByExchangeIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_InstrumentDeleteByExchangeIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex Spend:%lldms", duration);
 	}
 }
 void SqliteDB::UpdateInstrument(Instrument* record)
@@ -1615,6 +1643,10 @@ void SqliteDB::SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, cons
 {
 	sqlite3_bind_text(statement, 1, ExchangeID, sizeof(ExchangeID), nullptr);
 	sqlite3_bind_text(statement, 2, InstrumentID, sizeof(InstrumentID), nullptr);
+}
+void SqliteDB::SetStatementForInstrumentIndexExchangeID(sqlite3_stmt* statement, Instrument* record)
+{
+	sqlite3_bind_text(statement, 1, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
 }
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<Instrument*>& records)
 {

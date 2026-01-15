@@ -303,6 +303,16 @@ void DBWriter::OnInstrumentErase(mdb::Instrument* record)
 
 	AddDBOperate(dbOperate);
 }
+void DBWriter::OnInstrumentEraseByExchangeIDIndex(mdb::Instrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Instrument::TableID;
+	dbOperate->IndexID = InstrumentIndexExchangeID::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
 void DBWriter::OnInstrumentUpdate(mdb::Instrument* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -721,6 +731,16 @@ void DBWriter::OnOrderErase(mdb::Order* record)
 
 	AddDBOperate(dbOperate);
 }
+void DBWriter::OnOrderEraseByAccountIDIndex(mdb::Order* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Order::TableID;
+	dbOperate->IndexID = OrderIndexAccountID::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
 void DBWriter::OnOrderUpdate(mdb::Order* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -763,6 +783,16 @@ void DBWriter::OnTradeErase(mdb::Trade* record)
 	DBOperate* dbOperate = DBOperate::Allocate();
 	dbOperate->Operate = DBOperateType::Delete;
 	dbOperate->TableID = Trade::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnTradeEraseByAccountIDIndex(mdb::Trade* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Trade::TableID;
+	dbOperate->IndexID = TradeIndexAccountID::IndexID;
 	dbOperate->Record = record;
 
 	AddDBOperate(dbOperate);
@@ -1166,6 +1196,22 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 		((HotInstrument*)dbOperate->Record)->Free();
 		break;
 	}
+	case Instrument::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case InstrumentIndexExchangeID::IndexID:
+		{
+			m_DB->DeleteInstrumentByExchangeIDIndex((Instrument*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((Instrument*)dbOperate->Record)->Free();
+		break;
+	}
 	case Capital::TableID:
 	{
 		switch (dbOperate->IndexID)
@@ -1222,6 +1268,38 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 			break;
 		}
 		((PositionDetail*)dbOperate->Record)->Free();
+		break;
+	}
+	case Order::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case OrderIndexAccountID::IndexID:
+		{
+			m_DB->DeleteOrderByAccountIDIndex((Order*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((Order*)dbOperate->Record)->Free();
+		break;
+	}
+	case Trade::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case TradeIndexAccountID::IndexID:
+		{
+			m_DB->DeleteTradeByAccountIDIndex((Trade*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((Trade*)dbOperate->Record)->Free();
 		break;
 	}
 	default:

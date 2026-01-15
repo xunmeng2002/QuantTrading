@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <apipackages prefix="SimExchange">
-	<package name="ReqSEBrokerLogin"/>
-	<package name="RspSEBrokerLogin"/>
-	<package name="ReqSEBrokerLogout"/>
-	<package name="RspSEBrokerLogout"/>
+	<package name="ReqAccountLogin"/>
+	<package name="RspAccountLogin"/>
+	<package name="ReqAccountLogout"/>
+	<package name="RspAccountLogout"/>
 	
-	<package name="ReqSEInsertOrder"/>
-	<package name="RspSEInsertOrder"/>
-	<package name="ReqSECancelOrder"/>
-	<package name="RspSECancelOrder"/>
+	<package name="ReqInsertOrder"/>
+	<package name="RspInsertOrder"/>
+	<package name="ReqCancelOrder"/>
+	<package name="RspCancelOrder"/>
 	
-	<package name="ReqQrySEOrder"/>
-	<package name="RspQrySEOrder"/>
-	<package name="ReqQrySETrade"/>
-	<package name="RspQrySETrade"/>
-	<package name="ReqQrySEInstrument"/>
-	<package name="RspQrySEInstrument"/>
+	<package name="ReqQryOrder"/>
+	<package name="RspQryOrder"/>
+	<package name="ReqQryTrade"/>
+	<package name="RspQryTrade"/>
+	<package name="ReqQryInstrument"/>
+	<package name="RspQryInstrument"/>
 	
-	<package name="RtnSEOrder"/>
-	<package name="RtnSETrade"/>
+	<package name="RtnOrder"/>
+	<package name="RtnTrade"/>
 </apipackages>

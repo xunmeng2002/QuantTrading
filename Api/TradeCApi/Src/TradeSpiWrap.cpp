@@ -174,6 +174,8 @@ void TradeSpiWrap::OnRspQryInstrument(InstrumentField* instrument, RspInfoField*
 			TrunsferUtf8ToGbk(instrument->InstrumentID);
 			TrunsferUtf8ToGbk(instrument->ExchangeInstID);
 			TrunsferUtf8ToGbk(instrument->InstrumentName);
+			TrunsferUtf8ToGbk(instrument->ProductID);
+			TrunsferUtf8ToGbk(instrument->SessionName);
 		}
 		if (rspInfo != nullptr)
 		{

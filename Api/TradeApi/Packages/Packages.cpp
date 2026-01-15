@@ -3333,8 +3333,23 @@ int RspQryInstrumentPackage::ToStepStream(char* buff, int size) const
 			Instrument->InstrumentName[sizeof(Instrument->InstrumentName) - 1] = 0;
 		}
 		WriteString(ppos, Items::InstrumentName, Instrument->InstrumentName);
-		WriteString(ppos, Items::VolumeMultiple, Instrument->VolumeMultiple);
+		if (strlen(Instrument->ProductID) >= sizeof(Instrument->ProductID))
+		{
+			Instrument->ProductID[sizeof(Instrument->ProductID) - 1] = 0;
+		}
+		WriteString(ppos, Items::ProductID, Instrument->ProductID);
 		WriteString(ppos, Items::ProductClass, (int)Instrument->ProductClass);
+		WriteString(ppos, Items::VolumeMultiple, Instrument->VolumeMultiple);
+		WriteString(ppos, Items::PriceTick, Instrument->PriceTick);
+		WriteString(ppos, Items::MaxMarketOrderVolume, Instrument->MaxMarketOrderVolume);
+		WriteString(ppos, Items::MinMarketOrderVolume, Instrument->MinMarketOrderVolume);
+		WriteString(ppos, Items::MaxLimitOrderVolume, Instrument->MaxLimitOrderVolume);
+		WriteString(ppos, Items::MinLimitOrderVolume, Instrument->MinLimitOrderVolume);
+		if (strlen(Instrument->SessionName) >= sizeof(Instrument->SessionName))
+		{
+			Instrument->SessionName[sizeof(Instrument->SessionName) - 1] = 0;
+		}
+		WriteString(ppos, Items::SessionName, Instrument->SessionName);
 		WriteHexString(ppos, Items::FieldEnd, InstrumentField::FieldID);
 	}
 	if (RspInfo != nullptr)
@@ -3402,14 +3417,51 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 							memcpy(Instrument->InstrumentName, value.c_str(), len);
 							break;
 						}
-						case Items::VolumeMultiple:
+						case Items::ProductID:
 						{
-							Instrument->VolumeMultiple = atoi(value.c_str());
+							size_t len = value.length() >= sizeof(Instrument->ProductID) ? sizeof(Instrument->ProductID) - 1 : value.length();
+							memcpy(Instrument->ProductID, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
 						{
 							Instrument->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::VolumeMultiple:
+						{
+							Instrument->VolumeMultiple = atoi(value.c_str());
+							break;
+						}
+						case Items::PriceTick:
+						{
+							Instrument->PriceTick = atof(value.c_str());
+							break;
+						}
+						case Items::MaxMarketOrderVolume:
+						{
+							Instrument->MaxMarketOrderVolume = atoll(value.c_str());
+							break;
+						}
+						case Items::MinMarketOrderVolume:
+						{
+							Instrument->MinMarketOrderVolume = atoll(value.c_str());
+							break;
+						}
+						case Items::MaxLimitOrderVolume:
+						{
+							Instrument->MaxLimitOrderVolume = atoll(value.c_str());
+							break;
+						}
+						case Items::MinLimitOrderVolume:
+						{
+							Instrument->MinLimitOrderVolume = atoll(value.c_str());
+							break;
+						}
+						case Items::SessionName:
+						{
+							size_t len = value.length() >= sizeof(Instrument->SessionName) ? sizeof(Instrument->SessionName) - 1 : value.length();
+							memcpy(Instrument->SessionName, value.c_str(), len);
 							break;
 						}
 						default:
@@ -3534,7 +3586,7 @@ const char* RspQryInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (Instrument != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], ProductClass:[%d]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->VolumeMultiple, (int)Instrument->ProductClass);
+		offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->ProductID, (int)Instrument->ProductClass, Instrument->VolumeMultiple, Instrument->PriceTick, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->SessionName);
 	}
 	if (RspInfo != nullptr)
 	{

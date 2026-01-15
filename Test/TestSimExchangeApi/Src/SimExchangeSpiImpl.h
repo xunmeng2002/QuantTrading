@@ -12,12 +12,12 @@ public:
 	~SimExchangeSpiImpl();
 
 	virtual void OnConnected() override;
-	virtual void OnRspSEBrokerLogin(RspSEBrokerLoginField* rspSEBrokerLogin, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspSEBrokerLogout(RspSEBrokerLogoutField* rspSEBrokerLogout, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspQrySEInstrument(SEInstrumentField* sEInstrument, RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspAccountLogout(RspAccountLogoutField* rspAccountLogout, RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspInsertOrder(ReqInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspQryInstrument(InstrumentField* sEInstrument, RspInfoField* rspInfo, int requestID, bool isLast) override;
 
-	virtual void OnRtnSEOrder(SEOrderField* sEOrder) override;
+	virtual void OnRtnOrder(OrderField* order) override;
 
 	void ReqQryOrder();
 	void ReqInsertOrders();
@@ -25,7 +25,7 @@ private:
 	void ReqBrokerLogin();
 	void ReqQryInstrument();
 	void ReqInsertOrder(DirectionType direction, OffsetFlagType offsetFlag, OrderPriceTypeType orderPriceType, PriceType price, VolumeType volume);
-	void ReqCancelOrder(SEOrderField* order);
+	void ReqCancelOrder(OrderField* order);
 
 public:
 	bool m_InitStatus;
@@ -36,7 +36,7 @@ private:
 	int m_MaxClientOrderID;
 	BrokerIDType m_BrokerID = 9999;
 	AccountIDType m_AccountID;
-	SEInstrumentField* m_SEInstrument;
+	InstrumentField* m_Instrument;
 
 	int m_OrderCount;
 };

@@ -35,6 +35,7 @@ public:
 	virtual void OnInstrumentInsert(mdb::Instrument* record) override;
 	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) override;
 	virtual void OnInstrumentErase(mdb::Instrument* record) override;
+	virtual void OnInstrumentEraseByExchangeIDIndex(mdb::Instrument* record) override;
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) override;
 	virtual void OnInstrumentTruncate() override;
 	

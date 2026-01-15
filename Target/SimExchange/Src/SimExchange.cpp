@@ -19,31 +19,31 @@ SimExchange::SimExchange(const Config& config, TradeFront* tradeFront, MdFront* 
 		strcpy(m_TradingDay, tradingDay->CurrTradingDay);
 	}
 
-	m_RspBrokerLoginPackage = Allocate<RspSEBrokerLoginPackage>();
-	m_RspBrokerLoginPackage->RspInfo = Allocate<RspInfoField>();
-	m_RspBrokerLoginPackage->RspSEBrokerLogin = Allocate<RspSEBrokerLoginField>();
-	m_RspBrokerLogoutPackage = Allocate<RspSEBrokerLogoutPackage>();
-	m_RspBrokerLogoutPackage->RspInfo = Allocate<RspInfoField>();
-	m_RspBrokerLogoutPackage->RspSEBrokerLogout = Allocate<RspSEBrokerLogoutField>();
+	m_RspAccountLoginPackage = Allocate<RspAccountLoginPackage>();
+	m_RspAccountLoginPackage->RspInfo = Allocate<RspInfoField>();
+	m_RspAccountLoginPackage->RspAccountLogin = Allocate<RspAccountLoginField>();
+	m_RspAccountLogoutPackage = Allocate<RspAccountLogoutPackage>();
+	m_RspAccountLogoutPackage->RspInfo = Allocate<RspInfoField>();
+	m_RspAccountLogoutPackage->RspAccountLogout = Allocate<RspAccountLogoutField>();
 
-	m_RspInsertOrderPackage = Allocate<RspSEInsertOrderPackage>();
+	m_RspInsertOrderPackage = Allocate<RspInsertOrderPackage>();
 	m_RspInsertOrderPackage->RspInfo = Allocate<RspInfoField>();
-	m_RspInsertOrderPackage->ReqSEInsertOrder = Allocate<ReqSEInsertOrderField>();
-	m_RspCancelOrderPackage = Allocate<RspSECancelOrderPackage>();
+	m_RspInsertOrderPackage->ReqInsertOrder = Allocate<ReqInsertOrderField>();
+	m_RspCancelOrderPackage = Allocate<RspCancelOrderPackage>();
 	m_RspCancelOrderPackage->RspInfo = Allocate<RspInfoField>();
-	m_RspCancelOrderPackage->ReqSECancelOrder = Allocate<ReqSECancelOrderField>();
+	m_RspCancelOrderPackage->ReqCancelOrder = Allocate<ReqCancelOrderField>();
 
-	m_RspQryOrderPackage = Allocate<RspQrySEOrderPackage>();
+	m_RspQryOrderPackage = Allocate<RspQryOrderPackage>();
 	m_RspQryOrderPackage->RspInfo = Allocate<RspInfoField>();
-	m_RspQryTradePackage = Allocate<RspQrySETradePackage>();
+	m_RspQryTradePackage = Allocate<RspQryTradePackage>();
 	m_RspQryTradePackage->RspInfo = Allocate<RspInfoField>();
-	m_RspQryInstrumentPackage = Allocate<RspQrySEInstrumentPackage>();
+	m_RspQryInstrumentPackage = Allocate<RspQryInstrumentPackage>();
 	m_RspQryInstrumentPackage->RspInfo = Allocate<RspInfoField>();
 
-	m_RtnOrderPackage = Allocate<RtnSEOrderPackage>();
-	m_RtnOrderPackage->SEOrder = Allocate<SEOrderField>();
-	m_RtnTradePackage = Allocate<RtnSETradePackage>();
-	m_RtnTradePackage->SETrade = Allocate<SETradeField>();
+	m_RtnOrderPackage = Allocate<RtnOrderPackage>();
+	m_RtnOrderPackage->Order = Allocate<OrderField>();
+	m_RtnTradePackage = Allocate<RtnTradePackage>();
+	m_RtnTradePackage->Trade = Allocate<TradeField>();
 }
 SimExchange::~SimExchange()
 {
@@ -103,26 +103,26 @@ void SimExchange::HandlePackages()
 		case NotifyDisConnectPackage::PackageID:
 			HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
 			break;
-		case ReqSEBrokerLoginPackage::PackageID:
-			HandleBrokerLogin((ReqSEBrokerLoginPackage*)package);
+		case ReqAccountLoginPackage::PackageID:
+			HandleAccountLogin((ReqAccountLoginPackage*)package);
 			break;
-		case ReqSEBrokerLogoutPackage::PackageID:
-			HandleBrokerLogout((ReqSEBrokerLogoutPackage*)package);
+		case ReqAccountLogoutPackage::PackageID:
+			HandleAccountLogout((ReqAccountLogoutPackage*)package);
 			break;
-		case ReqSEInsertOrderPackage::PackageID:
-			HandleInsertOrder((ReqSEInsertOrderPackage*)package);
+		case ReqInsertOrderPackage::PackageID:
+			HandleInsertOrder((ReqInsertOrderPackage*)package);
 			break;
-		case ReqSECancelOrderPackage::PackageID:
-			HandleCancelOrder((ReqSECancelOrderPackage*)package);
+		case ReqCancelOrderPackage::PackageID:
+			HandleCancelOrder((ReqCancelOrderPackage*)package);
 			break;
-		case ReqQrySEOrderPackage::PackageID:
-			HandleQryOrder((ReqQrySEOrderPackage*)package);
+		case ReqQryOrderPackage::PackageID:
+			HandleQryOrder((ReqQryOrderPackage*)package);
 			break;
-		case ReqQrySETradePackage::PackageID:
-			HandleQryTrade((ReqQrySETradePackage*)package);
+		case ReqQryTradePackage::PackageID:
+			HandleQryTrade((ReqQryTradePackage*)package);
 			break;
-		case ReqQrySEInstrumentPackage::PackageID:
-			HandleQryInstrument((ReqQrySEInstrumentPackage*)package);
+		case ReqQryInstrumentPackage::PackageID:
+			HandleQryInstrument((ReqQryInstrumentPackage*)package);
 			break;
 		default:
 			WriteLog(LogLevel::Warning, "UnExpect Package, PackageID:%d", package->Head.PackageID);
@@ -135,73 +135,69 @@ void SimExchange::HandlePackages()
 void SimExchange::HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage)
 {
 	WriteLog(LogLevel::Info, "HandleNotifyDisConnect %s", notifyPackage->GetDebugString());
-	auto loginSession = m_Mdb->t_SEBrokerLoginSession->m_PrimaryKey->Select(notifyPackage->NotifyDisConnect->SessionID);
+	auto loginSession = m_Mdb->t_AccountLoginSession->m_PrimaryKey->Select(notifyPackage->NotifyDisConnect->SessionID);
 	if (loginSession != nullptr)
 	{
-		m_Mdb->t_SEBrokerLoginSession->Erase(loginSession);
+		m_Mdb->t_AccountLoginSession->Erase(loginSession);
 	}
 }
-void SimExchange::HandleBrokerLogin(ReqSEBrokerLoginPackage* reqPackage)
+void SimExchange::HandleAccountLogin(ReqAccountLoginPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleBrokerLogin %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
-	auto broker = m_Mdb->t_SEBroker->m_PrimaryKey->Select(reqPackage->ReqSEBrokerLogin->BrokerID);
-	if (broker == nullptr)
+	auto primaryAccount = m_Mdb->t_PrimaryAccount->m_PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountID);
+	if (primaryAccount == nullptr)
 	{
 		errorID = ErrorBrokerNotExist;
 	}
-	else if (strcmp(broker->Password, reqPackage->ReqSEBrokerLogin->Password) != 0)
+	else if (strcmp(primaryAccount->Password, reqPackage->ReqAccountLogin->Password) != 0)
 	{
 		errorID = ErrorIncorrectPassword;
 	}
 	else
 	{
-		auto brokerLoginSession = m_Mdb->t_SEBrokerLoginSession->m_PrimaryKey->Select(reqPackage->SessionID);
-		if (brokerLoginSession != nullptr)
+		auto accountLoginSession = m_Mdb->t_AccountLoginSession->m_PrimaryKey->Select(reqPackage->SessionID);
+		if (accountLoginSession != nullptr)
 		{
 			errorID = ErrorSessionAlreadyLogin;
 		}
 		else
 		{
-			brokerLoginSession = SEBrokerLoginSession::Allocate();
-			memset(brokerLoginSession, 0, sizeof(SEBrokerLoginSession));
-			brokerLoginSession->BrokerID = reqPackage->ReqSEBrokerLogin->BrokerID;
-			brokerLoginSession->SessionID = reqPackage->SessionID;
-			strcpy(brokerLoginSession->IPAddress, reqPackage->IPAddress);
-			m_Mdb->t_SEBrokerLoginSession->Insert(brokerLoginSession);
+			accountLoginSession = mdb::AccountLoginSession::Allocate();
+			memset(accountLoginSession, 0, sizeof(mdb::AccountLoginSession));
+			strcpy(accountLoginSession->AccountID, reqPackage->ReqAccountLogin->AccountID);
+			accountLoginSession->SessionID = reqPackage->SessionID;
+			strcpy(accountLoginSession->IPAddress, reqPackage->IPAddress);
+			m_Mdb->t_AccountLoginSession->Insert(accountLoginSession);
 		}
 	}
-	SendRspBrokerLogin(reqPackage, broker, errorID);
+	SendRspAccountLogin(reqPackage, primaryAccount, errorID);
 }
-void SimExchange::HandleBrokerLogout(ReqSEBrokerLogoutPackage* reqPackage)
+void SimExchange::HandleAccountLogout(ReqAccountLogoutPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleBrokerLogout %s", reqPackage->GetDebugString());
 	
-	m_RspBrokerLogoutPackage->Prepare(reqPackage->SessionID, false, reqPackage->Head.MsgSeqNum);
+	m_RspAccountLogoutPackage->Prepare(reqPackage->SessionID, false, reqPackage->Head.MsgSeqNum);
 
-	m_RspBrokerLogoutPackage->RspSEBrokerLogout->BrokerID = reqPackage->ReqSEBrokerLogout->BrokerID;
-	m_RspBrokerLogoutPackage->RspSEBrokerLogout->SessionID = reqPackage->SessionID;
-	auto loginSession = m_Mdb->t_SEBrokerLoginSession->m_PrimaryKey->Select(reqPackage->SessionID);
+	strcpy(m_RspAccountLogoutPackage->RspAccountLogout->AccountID, reqPackage->ReqAccountLogout->AccountID);
+	auto loginSession = m_Mdb->t_AccountLoginSession->m_PrimaryKey->Select(reqPackage->SessionID);
 	if (loginSession != nullptr)
 	{
-		strcpy(m_RspBrokerLogoutPackage->RspSEBrokerLogout->IPAddress, loginSession->IPAddress);
-		m_Mdb->t_SEBrokerLoginSession->Erase(loginSession);
+		m_Mdb->t_AccountLoginSession->Erase(loginSession);
 
-		m_RspBrokerLogoutPackage->RspInfo->ErrorID = ErrorNone;
-		strcpy(m_RspBrokerLogoutPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorNone));
+		m_RspAccountLogoutPackage->RspInfo->ErrorID = ErrorNone;
+		strcpy(m_RspAccountLogoutPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorNone));
 	}
 	else
 	{
-		memset(m_RspBrokerLogoutPackage->RspSEBrokerLogout->IPAddress, 0, sizeof(IPAddressType));
-
-		m_RspBrokerLogoutPackage->RspInfo->ErrorID = ErrorBrokerNotLogin;
-		strcpy(m_RspBrokerLogoutPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorBrokerNotLogin));
+		m_RspAccountLogoutPackage->RspInfo->ErrorID = ErrorAccountNotLogin;
+		strcpy(m_RspAccountLogoutPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorAccountNotLogin));
 	}
 
-	m_TradeFront->Send(m_RspBrokerLogoutPackage);
+	m_TradeFront->Send(m_RspAccountLogoutPackage);
 }
 
-void SimExchange::HandleInsertOrder(ReqSEInsertOrderPackage* reqPackage)
+void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleInsertOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
@@ -210,43 +206,50 @@ void SimExchange::HandleInsertOrder(ReqSEInsertOrderPackage* reqPackage)
 		SendRspInsertOrder(reqPackage, ErrorSessionNotLogin);
 		return;
 	}
-	auto instrument = m_Mdb->t_SEInstrument->m_PrimaryKey->Select(reqPackage->ReqSEInsertOrder->ExchangeID, reqPackage->ReqSEInsertOrder->InstrumentID);
+	auto instrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(reqPackage->ReqInsertOrder->ExchangeID, reqPackage->ReqInsertOrder->InstrumentID);
 	if (instrument == nullptr)
 	{
 		errorID = ErrorInstrumentNotExist;
 	}
 	else
 	{
-		errorID = CheckForInsertOrder(reqPackage->ReqSEInsertOrder, instrument);
+		errorID = CheckForInsertOrder(reqPackage->ReqInsertOrder, instrument);
 	}
 	SendRspInsertOrder(reqPackage, errorID);
 	if (errorID != ErrorNone)
 	{
 		return;
 	}
-	auto order = SEOrder::Allocate();
-	memset(order, 0, sizeof(SEOrder));
+	auto order = Order::Allocate();
+	memset(order, 0, sizeof(Order));
 	memcpy(order->TradingDay, m_TradingDay, sizeof(DateType));
-	order->BrokerID = reqPackage->ReqSEInsertOrder->BrokerID;
-	memcpy(order->AccountID, reqPackage->ReqSEInsertOrder->AccountID, sizeof(AccountIDType));
-	memcpy(order->ExchangeID, reqPackage->ReqSEInsertOrder->ExchangeID, sizeof(ExchangeIDType));
-	memcpy(order->InstrumentID, reqPackage->ReqSEInsertOrder->InstrumentID, sizeof(InstrumentIDType));
+	memcpy(order->AccountID, reqPackage->ReqInsertOrder->AccountID, sizeof(AccountIDType));
+	order->AccountType = AccountTypeType::Primary;
+	memcpy(order->ExchangeID, reqPackage->ReqInsertOrder->ExchangeID, sizeof(ExchangeIDType));
+	memcpy(order->InstrumentID, reqPackage->ReqInsertOrder->InstrumentID, sizeof(InstrumentIDType));
 	order->ProductClass = instrument->ProductClass;
 	order->OrderID = GetNextOrderID();
-	order->Direction = reqPackage->ReqSEInsertOrder->Direction;
-	order->OffsetFlag = reqPackage->ReqSEInsertOrder->OffsetFlag;
-	order->OrderPriceType = reqPackage->ReqSEInsertOrder->OrderPriceType;
-	order->Price = reqPackage->ReqSEInsertOrder->Price;
-	order->Volume = reqPackage->ReqSEInsertOrder->Volume;
-	order->VolumeTotal = reqPackage->ReqSEInsertOrder->Volume;
+	strcpy(order->OrderSysID, std::to_string(order->OrderID).c_str());
+	order->Direction = reqPackage->ReqInsertOrder->Direction;
+	order->OffsetFlag = reqPackage->ReqInsertOrder->OffsetFlag;
+	order->OrderPriceType = reqPackage->ReqInsertOrder->OrderPriceType;
+	order->Price = reqPackage->ReqInsertOrder->Price;
+	order->Volume = reqPackage->ReqInsertOrder->Volume;
+	order->VolumeTotal = reqPackage->ReqInsertOrder->Volume;
 	order->VolumeTraded = 0;
 	order->VolumeMultiple = instrument->VolumeMultiple;
 	order->OrderStatus = OrderStatusType::Inserted;
 	memcpy(order->OrderDate, m_TradingDay, sizeof(DateType));
 	strcpy(order->OrderTime, GetLocalTime().c_str());
 	order->SessionID = reqPackage->SessionID;
-	order->ClientOrderID = reqPackage->ReqSEInsertOrder->ClientOrderID;
-	m_Mdb->t_SEOrder->Insert(order);
+	order->ClientOrderID = reqPackage->ReqInsertOrder->ClientOrderID;
+	order->OrderID = 0;
+	order->TradeGroupID = 1;
+	order->RiskGroupID = 1;
+	order->CommissionGroupID = 1;
+	order->RebuildMark = false;
+	order->IsForceClose = false;
+	m_Mdb->t_Order->Insert(order);
 
 	CheckMatchForOrderQueue(order);
 	if (order->VolumeTotal > 0)
@@ -258,7 +261,7 @@ void SimExchange::HandleInsertOrder(ReqSEInsertOrderPackage* reqPackage)
 		SendRtnOrder(order);
 	}
 }
-void SimExchange::HandleCancelOrder(ReqSECancelOrderPackage* reqPackage)
+void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleCancelOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
@@ -267,8 +270,8 @@ void SimExchange::HandleCancelOrder(ReqSECancelOrderPackage* reqPackage)
 		SendRspCancelOrder(reqPackage, ErrorSessionNotLogin);
 		return;
 	}
-	auto order = m_Mdb->t_SEOrder->m_PrimaryKey->Select(m_TradingDay, reqPackage->ReqSECancelOrder->AccountID, 
-		reqPackage->ReqSECancelOrder->ExchangeID, reqPackage->ReqSECancelOrder->InstrumentID, reqPackage->ReqSECancelOrder->OrderID);
+	auto order = m_Mdb->t_Order->m_PrimaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, 
+		reqPackage->ReqCancelOrder->ExchangeID, reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->OrderID);
 	if (order == nullptr)
 	{
 		errorID = ErrorOrderNotExist;
@@ -287,7 +290,7 @@ void SimExchange::HandleCancelOrder(ReqSECancelOrderPackage* reqPackage)
 	order->OrderStatus = order->VolumeTraded > 0 ? OrderStatusType::PartTradedCanceled : OrderStatusType::Canceled;
 	SendRtnOrder(order);
 }
-void SimExchange::HandleQryOrder(ReqQrySEOrderPackage* reqPackage)
+void SimExchange::HandleQryOrder(ReqQryOrderPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleQryOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
@@ -296,24 +299,24 @@ void SimExchange::HandleQryOrder(ReqQrySEOrderPackage* reqPackage)
 		SendRspQryOrder(reqPackage, ErrorSessionNotLogin, true);
 		return;
 	}
-	auto orderRange = m_Mdb->t_SEOrder->m_AccountIDIndex->EqualRange(m_TradingDay, reqPackage->ReqQrySEOrder->AccountID);
+	auto orderRange = m_Mdb->t_Order->m_AccountIDIndex->EqualRange(m_TradingDay, reqPackage->ReqQryOrder->AccountID);
 	if (orderRange.first == orderRange.second)
 	{
 		SendRspQryOrder(reqPackage, ErrorNone, true);
 	}
 	else
 	{
-		m_RspQryOrderPackage->SEOrder = Allocate<SEOrderField>();
+		m_RspQryOrderPackage->Order = Allocate<OrderField>();
 		for (auto& it = orderRange.first; it != orderRange.second; )
 		{
 			auto record = *it;
 			SendRspQryOrder(reqPackage, ErrorNone, ++it == orderRange.second, record);
 		}
-		::Free(m_RspQryOrderPackage->SEOrder);
-		m_RspQryOrderPackage->SEOrder = nullptr;
+		::Free(m_RspQryOrderPackage->Order);
+		m_RspQryOrderPackage->Order = nullptr;
 	}
 }
-void SimExchange::HandleQryTrade(ReqQrySETradePackage* reqPackage)
+void SimExchange::HandleQryTrade(ReqQryTradePackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleQryTrade %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
@@ -322,24 +325,24 @@ void SimExchange::HandleQryTrade(ReqQrySETradePackage* reqPackage)
 		SendRspQryTrade(reqPackage, ErrorSessionNotLogin, true);
 		return;
 	}
-	auto tradeRange = m_Mdb->t_SETrade->m_AccountIDIndex->EqualRange(m_TradingDay, reqPackage->ReqQrySETrade->AccountID);
+	auto tradeRange = m_Mdb->t_Trade->m_AccountIDIndex->EqualRange(m_TradingDay, reqPackage->ReqQryTrade->AccountID);
 	if (tradeRange.first == tradeRange.second)
 	{
 		SendRspQryTrade(reqPackage, ErrorNone, true);
 	}
 	else
 	{
-		m_RspQryTradePackage->SETrade = Allocate<SETradeField>();
+		m_RspQryTradePackage->Trade = Allocate<TradeField>();
 		for (auto& it = tradeRange.first; it != tradeRange.second; )
 		{
 			auto record = *it;
 			SendRspQryTrade(reqPackage, ErrorNone, ++it == tradeRange.second, record);
 		}
-		::Free(m_RspQryTradePackage->SETrade);
-		m_RspQryTradePackage->SETrade = nullptr;
+		::Free(m_RspQryTradePackage->Trade);
+		m_RspQryTradePackage->Trade = nullptr;
 	}
 }
-void SimExchange::HandleQryInstrument(ReqQrySEInstrumentPackage* reqPackage)
+void SimExchange::HandleQryInstrument(ReqQryInstrumentPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleQryInstrument %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
@@ -348,15 +351,15 @@ void SimExchange::HandleQryInstrument(ReqQrySEInstrumentPackage* reqPackage)
 		SendRspQryInstrument(reqPackage, ErrorSessionNotLogin, true);
 		return;
 	}
-	m_RspQryInstrumentPackage->SEInstrument = Allocate<SEInstrumentField>();
-	if (strlen(reqPackage->ReqQrySEInstrument->ExchangeID) != 0 && strlen(reqPackage->ReqQrySEInstrument->InstrumentID) != 0)
+	m_RspQryInstrumentPackage->Instrument = Allocate<InstrumentField>();
+	if (strlen(reqPackage->ReqQryInstrument->ExchangeID) != 0 && strlen(reqPackage->ReqQryInstrument->InstrumentID) != 0)
 	{
-		auto instrument = m_Mdb->t_SEInstrument->m_PrimaryKey->Select(reqPackage->ReqQrySEInstrument->ExchangeID, reqPackage->ReqQrySEInstrument->InstrumentID);
+		auto instrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(reqPackage->ReqQryInstrument->ExchangeID, reqPackage->ReqQryInstrument->InstrumentID);
 		SendRspQryInstrument(reqPackage, ErrorNone, true, instrument);
 	}
-	else if (strlen(reqPackage->ReqQrySEInstrument->ExchangeID) != 0)
+	else if (strlen(reqPackage->ReqQryInstrument->ExchangeID) != 0)
 	{
-		auto range = m_Mdb->t_SEInstrument->m_ExchangeIDIndex->EqualRange(reqPackage->ReqQrySEInstrument->ExchangeID);
+		auto range = m_Mdb->t_Instrument->m_ExchangeIDIndex->EqualRange(reqPackage->ReqQryInstrument->ExchangeID);
 		for (auto& it = range.first; it != range.second; )
 		{
 			auto record = *it;
@@ -365,23 +368,23 @@ void SimExchange::HandleQryInstrument(ReqQrySEInstrumentPackage* reqPackage)
 	}
 	else
 	{
-		auto range = m_Mdb->t_SEInstrument->m_PrimaryKey->SelectAll();
+		auto range = m_Mdb->t_Instrument->m_PrimaryKey->SelectAll();
 		for (auto& it = range.first; it != range.second; )
 		{
 			auto record = *it;
 			SendRspQryInstrument(reqPackage, ErrorNone, ++it == range.second, record);
 		}
 	}
-	::Free(m_RspQryInstrumentPackage->SEInstrument);
-	m_RspQryInstrumentPackage->SEInstrument = nullptr;
+	::Free(m_RspQryInstrumentPackage->Instrument);
+	m_RspQryInstrumentPackage->Instrument = nullptr;
 }
 
 bool SimExchange::CheckSessionLogin(const SessionIDType& sessionID)
 {
-	auto brokerLoginSession = m_Mdb->t_SEBrokerLoginSession->m_PrimaryKey->Select(sessionID);
-	return brokerLoginSession != nullptr;
+	auto accountLoginSession = m_Mdb->t_AccountLoginSession->m_PrimaryKey->Select(sessionID);
+	return accountLoginSession != nullptr;
 }
-int SimExchange::CheckForInsertOrder(ReqSEInsertOrderField* reqInsertOrder, mdb::SEInstrument* instrument)
+int SimExchange::CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument)
 {
 	if (strlen(reqInsertOrder->AccountID) == 0)
 		return ErrorAccountNotExist;
@@ -391,8 +394,8 @@ int SimExchange::CheckForInsertOrder(ReqSEInsertOrderField* reqInsertOrder, mdb:
 		return ErrorInvalidOffsetFlag;
 	if (reqInsertOrder->OrderPriceType != OrderPriceTypeType::LimitPrice && reqInsertOrder->OrderPriceType != OrderPriceTypeType::AnyPrice)
 		return ErrorInvalidOrderPriceType;
-	if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::LimitPrice && (reqInsertOrder->Price > instrument->UpperLimitPrice || reqInsertOrder->Price < instrument->LowerLimitPrice))
-		return ErrorInvalidOrderPrice;
+	//if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::LimitPrice && (reqInsertOrder->Price > instrument->UpperLimitPrice || reqInsertOrder->Price < instrument->LowerLimitPrice))
+	//	return ErrorInvalidOrderPrice;
 	if (reqInsertOrder->Volume <= 0)
 		return ErrorInvalidOrderVolume;
 	if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::LimitPrice)
@@ -411,7 +414,7 @@ int SimExchange::CheckForInsertOrder(ReqSEInsertOrderField* reqInsertOrder, mdb:
 	}
 	return ErrorNone;
 }
-void SimExchange::CheckMatchForOrderQueue(mdb::SEOrder* order)
+void SimExchange::CheckMatchForOrderQueue(mdb::Order* order)
 {
 	if (order->Direction == DirectionType::Buy)
 	{
@@ -436,7 +439,7 @@ void SimExchange::CheckMatchForOrderQueue(mdb::SEOrder* order)
 		}
 	}
 }
-bool SimExchange::CheckMatchForTwoOrder(mdb::SEOrder* order, mdb::SEOrder* queueOrder)
+bool SimExchange::CheckMatchForTwoOrder(mdb::Order* order, mdb::Order* queueOrder)
 {
 	if (order->VolumeTotal <= 0)
 		return false;
@@ -461,22 +464,23 @@ bool SimExchange::CheckMatchForTwoOrder(mdb::SEOrder* order, mdb::SEOrder* queue
 	Match(order, matchPrice, matchVolume, tradeID, order->OrderTime);
 	return true;
 }
-void SimExchange::Match(mdb::SEOrder* order, const PriceType& price, VolumeType volume, const TradeIDType& tradeID, const TimeType& tradeTime)
+void SimExchange::Match(mdb::Order* order, const PriceType& price, VolumeType volume, const TradeIDType& tradeID, const TimeType& tradeTime)
 {
 	order->VolumeTraded += volume;
 	order->VolumeTotal -= volume;
 	order->OrderStatus = order->VolumeTotal > 0 ? OrderStatusType::PartTraded : OrderStatusType::AllTraded;
 	SendRtnOrder(order);
 
-	auto trade = SETrade::Allocate();
-	memset(trade, 0, sizeof(SETrade));
+	auto trade = Trade::Allocate();
+	memset(trade, 0, sizeof(Trade));
 	strcpy(trade->TradingDay, m_TradingDay);
-	trade->BrokerID = order->BrokerID;
 	strcpy(trade->AccountID, order->AccountID);
+	trade->AccountType = AccountTypeType::Primary;
 	strcpy(trade->ExchangeID, order->ExchangeID);
 	strcpy(trade->InstrumentID, order->InstrumentID);
 	trade->ProductClass = order->ProductClass;
 	trade->OrderID = order->OrderID;
+	strcpy(trade->OrderSysID, order->OrderSysID);
 	strcpy(trade->TradeID, tradeID);
 	trade->Direction = order->Direction;
 	trade->OffsetFlag = order->OffsetFlag;
@@ -487,179 +491,186 @@ void SimExchange::Match(mdb::SEOrder* order, const PriceType& price, VolumeType 
 	trade->Commission = 0;
 	strcpy(trade->TradeDate, order->OrderDate);
 	strcpy(trade->TradeTime, tradeTime);
-	m_Mdb->t_SETrade->Insert(trade);
+	m_Mdb->t_Trade->Insert(trade);
 
 	SendRtnTrade(trade);
 }
 
-void SimExchange::SendRspBrokerLogin(ReqSEBrokerLoginPackage* reqPackage, mdb::SEBroker* broker, int errorID)
+void SimExchange::SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, mdb::PrimaryAccount* primaryAccount, int errorID)
 {
-	m_RspBrokerLoginPackage->Prepare(reqPackage->SessionID, false, reqPackage->Head.MsgSeqNum);
-	m_RspBrokerLoginPackage->RspInfo->ErrorID = errorID;
-	strcpy(m_RspBrokerLoginPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
+	auto rspPackage = ::Allocate<RspAccountLoginPackage>();
+	m_RspAccountLoginPackage->Prepare(reqPackage->SessionID, false, reqPackage->Head.MsgSeqNum);
+	m_RspAccountLoginPackage->RspInfo->ErrorID = errorID;
+	strcpy(m_RspAccountLoginPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
 	
-	m_RspBrokerLoginPackage->RspSEBrokerLogin->BrokerID = reqPackage->ReqSEBrokerLogin->BrokerID;
-	strcpy(m_RspBrokerLoginPackage->RspSEBrokerLogin->BrokerName, broker->BrokerName);
-	m_RspBrokerLoginPackage->RspSEBrokerLogin->SessionID = reqPackage->SessionID;
-	strcpy(m_RspBrokerLoginPackage->RspSEBrokerLogin->IPAddress, reqPackage->IPAddress);
+	strcpy(m_RspAccountLoginPackage->RspAccountLogin->AccountID, reqPackage->ReqAccountLogin->AccountID);
+	m_RspAccountLoginPackage->RspAccountLogin->SessionID = reqPackage->SessionID;
+	GetLocalDateTime(m_RspAccountLoginPackage->RspAccountLogin->LoginDate, m_RspAccountLoginPackage->RspAccountLogin->LoginTime);
 
-	m_TradeFront->Send(m_RspBrokerLoginPackage);
+	m_TradeFront->Send(m_RspAccountLoginPackage);
 }
-void SimExchange::SendRspInsertOrder(ReqSEInsertOrderPackage* reqPackage, int errorID)
+void SimExchange::SendRspInsertOrder(ReqInsertOrderPackage* reqPackage, int errorID)
 {
 	m_RspInsertOrderPackage->Prepare(reqPackage->SessionID, false, reqPackage->Head.MsgSeqNum);
 	m_RspInsertOrderPackage->RspInfo->ErrorID = errorID;
 	strcpy(m_RspInsertOrderPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
-	memcpy(m_RspInsertOrderPackage->ReqSEInsertOrder, reqPackage->ReqSEInsertOrder, sizeof(ReqSEInsertOrderField));
+	memcpy(m_RspInsertOrderPackage->ReqInsertOrder, reqPackage->ReqInsertOrder, sizeof(ReqInsertOrderField));
 	m_TradeFront->Send(m_RspInsertOrderPackage);
 }
-void SimExchange::SendRspCancelOrder(ReqSECancelOrderPackage* reqPackage, int errorID)
+void SimExchange::SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorID)
 {
 	m_RspCancelOrderPackage->Prepare(reqPackage->SessionID, false, errorID);
 	m_RspCancelOrderPackage->RspInfo->ErrorID = errorID;
 	strcpy(m_RspCancelOrderPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
-	memcpy(m_RspCancelOrderPackage->ReqSECancelOrder, reqPackage->ReqSECancelOrder, sizeof(ReqSEInsertOrderField));
+	memcpy(m_RspCancelOrderPackage->ReqCancelOrder, reqPackage->ReqCancelOrder, sizeof(ReqCancelOrderField));
 	m_TradeFront->Send(m_RspCancelOrderPackage);
 }
-void SimExchange::SendRspQryOrder(ReqQrySEOrderPackage* reqPackage, int errorID, bool isLast, mdb::SEOrder* order)
+void SimExchange::SendRspQryOrder(ReqQryOrderPackage* reqPackage, int errorID, bool isLast, mdb::Order* order)
 {
 	m_RspQryOrderPackage->Prepare(reqPackage->SessionID, !isLast, reqPackage->Head.MsgSeqNum);
 	m_RspQryOrderPackage->RspInfo->ErrorID = errorID;
 	strcpy(m_RspQryOrderPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
 	if (order != nullptr)
 	{
-		strcpy(m_RspQryOrderPackage->SEOrder->TradingDay, order->TradingDay);
-		m_RspQryOrderPackage->SEOrder->BrokerID = order->BrokerID;
-		strcpy(m_RspQryOrderPackage->SEOrder->AccountID, order->AccountID);
-		strcpy(m_RspQryOrderPackage->SEOrder->ExchangeID, order->ExchangeID);
-		strcpy(m_RspQryOrderPackage->SEOrder->InstrumentID, order->InstrumentID);
-		m_RspQryOrderPackage->SEOrder->ProductClass = order->ProductClass;
-		m_RspQryOrderPackage->SEOrder->OrderID = order->OrderID;
-		m_RspQryOrderPackage->SEOrder->Direction = order->Direction;
-		m_RspQryOrderPackage->SEOrder->OffsetFlag = order->OffsetFlag;
-		m_RspQryOrderPackage->SEOrder->OrderPriceType = order->OrderPriceType;
-		m_RspQryOrderPackage->SEOrder->Price = order->Price;
-		m_RspQryOrderPackage->SEOrder->Volume = order->Volume;
-		m_RspQryOrderPackage->SEOrder->VolumeTotal = order->VolumeTotal;
-		m_RspQryOrderPackage->SEOrder->VolumeTraded = order->VolumeTraded;
-		m_RspQryOrderPackage->SEOrder->VolumeMultiple = order->VolumeMultiple;
-		m_RspQryOrderPackage->SEOrder->OrderStatus = order->OrderStatus;
+		strcpy(m_RspQryOrderPackage->Order->TradingDay, order->TradingDay);
+		strcpy(m_RspQryOrderPackage->Order->AccountID, order->AccountID);
+		strcpy(m_RspQryOrderPackage->Order->ExchangeID, order->ExchangeID);
+		strcpy(m_RspQryOrderPackage->Order->InstrumentID, order->InstrumentID);
+		m_RspQryOrderPackage->Order->ProductClass = order->ProductClass;
+		m_RspQryOrderPackage->Order->OrderID = order->OrderID;
+		strcpy(m_RspQryOrderPackage->Order->OrderSysID, order->OrderSysID);
+		m_RspQryOrderPackage->Order->Direction = order->Direction;
+		m_RspQryOrderPackage->Order->OffsetFlag = order->OffsetFlag;
+		m_RspQryOrderPackage->Order->OrderPriceType = order->OrderPriceType;
+		m_RspQryOrderPackage->Order->Price = order->Price;
+		m_RspQryOrderPackage->Order->Volume = order->Volume;
+		m_RspQryOrderPackage->Order->VolumeTotal = order->VolumeTotal;
+		m_RspQryOrderPackage->Order->VolumeTraded = order->VolumeTraded;
+		m_RspQryOrderPackage->Order->VolumeMultiple = order->VolumeMultiple;
+		m_RspQryOrderPackage->Order->OrderStatus = order->OrderStatus;
 		
-		strcpy(m_RspQryOrderPackage->SEOrder->OrderDate, order->OrderDate);
-		strcpy(m_RspQryOrderPackage->SEOrder->OrderTime, order->OrderTime);
-		strcpy(m_RspQryOrderPackage->SEOrder->CancelDate, order->CancelDate);
-		strcpy(m_RspQryOrderPackage->SEOrder->CancelTime, order->CancelTime);
-		m_RspQryOrderPackage->SEOrder->SessionID = order->SessionID;
-		m_RspQryOrderPackage->SEOrder->ClientOrderID = order->ClientOrderID;
+		strcpy(m_RspQryOrderPackage->Order->OrderDate, order->OrderDate);
+		strcpy(m_RspQryOrderPackage->Order->OrderTime, order->OrderTime);
+		strcpy(m_RspQryOrderPackage->Order->CancelDate, order->CancelDate);
+		strcpy(m_RspQryOrderPackage->Order->CancelTime, order->CancelTime);
+		m_RspQryOrderPackage->Order->SessionID = order->SessionID;
+		m_RspQryOrderPackage->Order->ClientOrderID = order->ClientOrderID;
+		m_RspQryOrderPackage->Order->RequestID = order->RequestID;
+		m_RspQryOrderPackage->Order->FrozenCash = order->FrozenCash;
+		m_RspQryOrderPackage->Order->FrozenMargin = order->FrozenMargin;
+		m_RspQryOrderPackage->Order->FrozenCommission = order->FrozenCommission;
 	}
 	m_TradeFront->Send(m_RspQryOrderPackage);
 }
-void SimExchange::SendRspQryTrade(ReqQrySETradePackage* reqPackage, int errorID, bool isLast, mdb::SETrade* trade)
+void SimExchange::SendRspQryTrade(ReqQryTradePackage* reqPackage, int errorID, bool isLast, mdb::Trade* trade)
 {
 	m_RspQryTradePackage->Prepare(reqPackage->SessionID, !isLast, reqPackage->Head.MsgSeqNum);
 	m_RspQryTradePackage->RspInfo->ErrorID = errorID;
 	strcpy(m_RspQryTradePackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
 	if (trade != nullptr)
 	{
-		strcpy(m_RspQryTradePackage->SETrade->TradingDay, trade->TradingDay);
-		m_RspQryTradePackage->SETrade->BrokerID = trade->BrokerID;
-		strcpy(m_RspQryTradePackage->SETrade->AccountID, trade->AccountID);
-		strcpy(m_RspQryTradePackage->SETrade->ExchangeID, trade->ExchangeID);
-		strcpy(m_RspQryTradePackage->SETrade->InstrumentID, trade->InstrumentID);
-		m_RspQryTradePackage->SETrade->ProductClass = trade->ProductClass;
-		m_RspQryTradePackage->SETrade->OrderID = trade->OrderID;
-		strcpy(m_RspQryTradePackage->SETrade->TradeID, trade->TradeID);
-		m_RspQryTradePackage->SETrade->Direction = trade->Direction;
-		m_RspQryTradePackage->SETrade->OffsetFlag = trade->OffsetFlag;
-		m_RspQryTradePackage->SETrade->Price = trade->Price;
-		m_RspQryTradePackage->SETrade->Volume = trade->Volume;
-		m_RspQryTradePackage->SETrade->VolumeMultiple = trade->VolumeMultiple;
-		m_RspQryTradePackage->SETrade->TradeAmount = trade->TradeAmount;
-		m_RspQryTradePackage->SETrade->Commission = trade->Commission;
-		strcpy(m_RspQryTradePackage->SETrade->TradeDate, trade->TradeDate);
-		strcpy(m_RspQryTradePackage->SETrade->TradeTime, trade->TradeTime);
+		strcpy(m_RspQryTradePackage->Trade->TradingDay, trade->TradingDay);
+		strcpy(m_RspQryTradePackage->Trade->AccountID, trade->AccountID);
+		strcpy(m_RspQryTradePackage->Trade->ExchangeID, trade->ExchangeID);
+		strcpy(m_RspQryTradePackage->Trade->InstrumentID, trade->InstrumentID);
+		m_RspQryTradePackage->Trade->ProductClass = trade->ProductClass;
+		m_RspQryTradePackage->Trade->OrderID = trade->OrderID;
+		strcpy(m_RspQryTradePackage->Trade->OrderSysID, trade->OrderSysID);
+		strcpy(m_RspQryTradePackage->Trade->TradeID, trade->TradeID);
+		m_RspQryTradePackage->Trade->Direction = trade->Direction;
+		m_RspQryTradePackage->Trade->OffsetFlag = trade->OffsetFlag;
+		m_RspQryTradePackage->Trade->Price = trade->Price;
+		m_RspQryTradePackage->Trade->Volume = trade->Volume;
+		m_RspQryTradePackage->Trade->VolumeMultiple = trade->VolumeMultiple;
+		m_RspQryTradePackage->Trade->TradeAmount = trade->TradeAmount;
+		m_RspQryTradePackage->Trade->Commission = trade->Commission;
+		strcpy(m_RspQryTradePackage->Trade->TradeDate, trade->TradeDate);
+		strcpy(m_RspQryTradePackage->Trade->TradeTime, trade->TradeTime);
 	}
 	m_TradeFront->Send(m_RspQryTradePackage);
 }
-void SimExchange::SendRspQryInstrument(ReqQrySEInstrumentPackage* reqPackage, int errorID, bool isLast, mdb::SEInstrument* instrument)
+void SimExchange::SendRspQryInstrument(ReqQryInstrumentPackage* reqPackage, int errorID, bool isLast, mdb::Instrument* instrument)
 {
 	m_RspQryInstrumentPackage->Prepare(reqPackage->SessionID, !isLast, reqPackage->Head.MsgSeqNum);
 	m_RspQryInstrumentPackage->RspInfo->ErrorID = errorID;
 	strcpy(m_RspQryInstrumentPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
 	if (instrument != nullptr)
 	{
-		strcpy(m_RspQryInstrumentPackage->SEInstrument->ExchangeID, instrument->ExchangeID);
-		strcpy(m_RspQryInstrumentPackage->SEInstrument->InstrumentID, instrument->InstrumentID);
-		strcpy(m_RspQryInstrumentPackage->SEInstrument->ExchangeInstID, instrument->ExchangeInstID);
-		strcpy(m_RspQryInstrumentPackage->SEInstrument->InstrumentName, instrument->InstrumentName);
-		strcpy(m_RspQryInstrumentPackage->SEInstrument->ProductID, instrument->ProductID);
-		m_RspQryInstrumentPackage->SEInstrument->ProductClass = instrument->ProductClass;
-		m_RspQryInstrumentPackage->SEInstrument->MaxMarketOrderVolume = instrument->MaxMarketOrderVolume;
-		m_RspQryInstrumentPackage->SEInstrument->MinMarketOrderVolume = instrument->MinMarketOrderVolume;
-		m_RspQryInstrumentPackage->SEInstrument->MaxLimitOrderVolume = instrument->MaxLimitOrderVolume;
-		m_RspQryInstrumentPackage->SEInstrument->MinLimitOrderVolume = instrument->MinLimitOrderVolume;
-		m_RspQryInstrumentPackage->SEInstrument->VolumeMultiple = instrument->VolumeMultiple;
-		m_RspQryInstrumentPackage->SEInstrument->PriceTick = instrument->PriceTick;
-		m_RspQryInstrumentPackage->SEInstrument->UpperLimitPrice = instrument->UpperLimitPrice;
-		m_RspQryInstrumentPackage->SEInstrument->LowerLimitPrice = instrument->LowerLimitPrice;
+		strcpy(m_RspQryInstrumentPackage->Instrument->ExchangeID, instrument->ExchangeID);
+		strcpy(m_RspQryInstrumentPackage->Instrument->InstrumentID, instrument->InstrumentID);
+		strcpy(m_RspQryInstrumentPackage->Instrument->ExchangeInstID, instrument->ExchangeInstID);
+		strcpy(m_RspQryInstrumentPackage->Instrument->InstrumentName, instrument->InstrumentName);
+		strcpy(m_RspQryInstrumentPackage->Instrument->ProductID, instrument->ProductID);
+		m_RspQryInstrumentPackage->Instrument->ProductClass = instrument->ProductClass;
+		m_RspQryInstrumentPackage->Instrument->VolumeMultiple = instrument->VolumeMultiple;
+		m_RspQryInstrumentPackage->Instrument->PriceTick = instrument->PriceTick;
+		m_RspQryInstrumentPackage->Instrument->MaxMarketOrderVolume = instrument->MaxMarketOrderVolume;
+		m_RspQryInstrumentPackage->Instrument->MinMarketOrderVolume = instrument->MinMarketOrderVolume;
+		m_RspQryInstrumentPackage->Instrument->MaxLimitOrderVolume = instrument->MaxLimitOrderVolume;
+		m_RspQryInstrumentPackage->Instrument->MinLimitOrderVolume = instrument->MinLimitOrderVolume;
+		strcpy(m_RspQryInstrumentPackage->Instrument->SessionName, instrument->SessionName);
 	}
 	m_TradeFront->Send(m_RspQryInstrumentPackage);
 }
 
-void SimExchange::SendRtnOrder(mdb::SEOrder* order)
+void SimExchange::SendRtnOrder(mdb::Order* order)
 {
-	strcpy(m_RtnOrderPackage->SEOrder->TradingDay, order->TradingDay);
-	m_RtnOrderPackage->SEOrder->BrokerID = order->BrokerID;
-	strcpy(m_RtnOrderPackage->SEOrder->AccountID, order->AccountID);
-	strcpy(m_RtnOrderPackage->SEOrder->ExchangeID, order->ExchangeID);
-	strcpy(m_RtnOrderPackage->SEOrder->InstrumentID, order->InstrumentID);
-	m_RtnOrderPackage->SEOrder->ProductClass = order->ProductClass;
-	m_RtnOrderPackage->SEOrder->OrderID = order->OrderID;
-	m_RtnOrderPackage->SEOrder->Direction = order->Direction;
-	m_RtnOrderPackage->SEOrder->OffsetFlag = order->OffsetFlag;
-	m_RtnOrderPackage->SEOrder->OrderPriceType = order->OrderPriceType;
-	m_RtnOrderPackage->SEOrder->Price = order->Price;
-	m_RtnOrderPackage->SEOrder->Volume = order->Volume;
-	m_RtnOrderPackage->SEOrder->VolumeTotal = order->VolumeTotal;
-	m_RtnOrderPackage->SEOrder->VolumeTraded = order->VolumeTraded;
-	m_RtnOrderPackage->SEOrder->VolumeMultiple = order->VolumeMultiple;
-	m_RtnOrderPackage->SEOrder->OrderStatus = order->OrderStatus;
-	strcpy(m_RtnOrderPackage->SEOrder->OrderDate, order->OrderDate);
-	strcpy(m_RtnOrderPackage->SEOrder->OrderTime, order->OrderTime);
-	strcpy(m_RtnOrderPackage->SEOrder->CancelDate, order->CancelDate);
-	strcpy(m_RtnOrderPackage->SEOrder->CancelTime, order->CancelTime);
-	m_RtnOrderPackage->SEOrder->SessionID = order->SessionID;
-	m_RtnOrderPackage->SEOrder->ClientOrderID = order->ClientOrderID;
+	strcpy(m_RtnOrderPackage->Order->TradingDay, order->TradingDay);
+	strcpy(m_RtnOrderPackage->Order->AccountID, order->AccountID);
+	strcpy(m_RtnOrderPackage->Order->ExchangeID, order->ExchangeID);
+	strcpy(m_RtnOrderPackage->Order->InstrumentID, order->InstrumentID);
+	m_RtnOrderPackage->Order->ProductClass = order->ProductClass;
+	m_RtnOrderPackage->Order->OrderID = order->OrderID;
+	strcpy(m_RtnOrderPackage->Order->OrderSysID, order->OrderSysID);
+	m_RtnOrderPackage->Order->Direction = order->Direction;
+	m_RtnOrderPackage->Order->OffsetFlag = order->OffsetFlag;
+	m_RtnOrderPackage->Order->OrderPriceType = order->OrderPriceType;
+	m_RtnOrderPackage->Order->Price = order->Price;
+	m_RtnOrderPackage->Order->Volume = order->Volume;
+	m_RtnOrderPackage->Order->VolumeTotal = order->VolumeTotal;
+	m_RtnOrderPackage->Order->VolumeTraded = order->VolumeTraded;
+	m_RtnOrderPackage->Order->VolumeMultiple = order->VolumeMultiple;
+	m_RtnOrderPackage->Order->OrderStatus = order->OrderStatus;
+	strcpy(m_RtnOrderPackage->Order->OrderDate, order->OrderDate);
+	strcpy(m_RtnOrderPackage->Order->OrderTime, order->OrderTime);
+	strcpy(m_RtnOrderPackage->Order->CancelDate, order->CancelDate);
+	strcpy(m_RtnOrderPackage->Order->CancelTime, order->CancelTime);
+	m_RtnOrderPackage->Order->SessionID = order->SessionID;
+	m_RtnOrderPackage->Order->ClientOrderID = order->ClientOrderID;
+	m_RtnOrderPackage->Order->RequestID = order->RequestID;
+	m_RtnOrderPackage->Order->FrozenCash = order->FrozenCash;
+	m_RtnOrderPackage->Order->FrozenMargin = order->FrozenMargin;
+	m_RtnOrderPackage->Order->FrozenCommission = order->FrozenCommission;
 
-	auto brokerLoginSessionRange = m_Mdb->t_SEBrokerLoginSession->m_BrokerIDIndex->EqualRange(order->BrokerID);
+	auto brokerLoginSessionRange = m_Mdb->t_AccountLoginSession->m_AccountIDIndex->EqualRange(order->AccountID);
 	for (auto& it = brokerLoginSessionRange.first; it != brokerLoginSessionRange.second; ++it)
 	{
 		m_RtnOrderPackage->Prepare((*it)->SessionID, false, 0);
 		m_TradeFront->Send(m_RtnOrderPackage);
 	}
 }
-void SimExchange::SendRtnTrade(mdb::SETrade* trade)
+void SimExchange::SendRtnTrade(mdb::Trade* trade)
 {
-	strcpy(m_RtnTradePackage->SETrade->TradingDay, trade->TradingDay);
-	m_RtnTradePackage->SETrade->BrokerID = trade->BrokerID;
-	strcpy(m_RtnTradePackage->SETrade->AccountID, trade->AccountID);
-	strcpy(m_RtnTradePackage->SETrade->ExchangeID, trade->ExchangeID);
-	strcpy(m_RtnTradePackage->SETrade->InstrumentID, trade->InstrumentID);
-	m_RtnTradePackage->SETrade->ProductClass = trade->ProductClass;
-	m_RtnTradePackage->SETrade->OrderID = trade->OrderID;
-	strcpy(m_RtnTradePackage->SETrade->TradeID, trade->TradeID);
-	m_RtnTradePackage->SETrade->Direction = trade->Direction;
-	m_RtnTradePackage->SETrade->OffsetFlag = trade->OffsetFlag;
-	m_RtnTradePackage->SETrade->Price = trade->Price;
-	m_RtnTradePackage->SETrade->Volume = trade->Volume;
-	m_RtnTradePackage->SETrade->VolumeMultiple = trade->VolumeMultiple;
-	m_RtnTradePackage->SETrade->TradeAmount = trade->TradeAmount;
-	m_RtnTradePackage->SETrade->Commission = trade->Commission;
-	strcpy(m_RtnTradePackage->SETrade->TradeDate, trade->TradeDate);
-	strcpy(m_RtnTradePackage->SETrade->TradeTime, trade->TradeTime);
+	strcpy(m_RtnTradePackage->Trade->TradingDay, trade->TradingDay);
+	strcpy(m_RtnTradePackage->Trade->AccountID, trade->AccountID);
+	strcpy(m_RtnTradePackage->Trade->ExchangeID, trade->ExchangeID);
+	strcpy(m_RtnTradePackage->Trade->InstrumentID, trade->InstrumentID);
+	m_RtnTradePackage->Trade->ProductClass = trade->ProductClass;
+	m_RtnTradePackage->Trade->OrderID = trade->OrderID;
+	strcpy(m_RtnTradePackage->Trade->OrderSysID, trade->OrderSysID);
+	strcpy(m_RtnTradePackage->Trade->TradeID, trade->TradeID);
+	m_RtnTradePackage->Trade->Direction = trade->Direction;
+	m_RtnTradePackage->Trade->OffsetFlag = trade->OffsetFlag;
+	m_RtnTradePackage->Trade->Price = trade->Price;
+	m_RtnTradePackage->Trade->Volume = trade->Volume;
+	m_RtnTradePackage->Trade->VolumeMultiple = trade->VolumeMultiple;
+	m_RtnTradePackage->Trade->TradeAmount = trade->TradeAmount;
+	m_RtnTradePackage->Trade->Commission = trade->Commission;
+	strcpy(m_RtnTradePackage->Trade->TradeDate, trade->TradeDate);
+	strcpy(m_RtnTradePackage->Trade->TradeTime, trade->TradeTime);
 
-	auto brokerLoginSessionRange = m_Mdb->t_SEBrokerLoginSession->m_BrokerIDIndex->EqualRange(trade->BrokerID);
-	for (auto& it = brokerLoginSessionRange.first; it != brokerLoginSessionRange.second; ++it)
+	auto accountLoginSessionRange = m_Mdb->t_AccountLoginSession->m_AccountIDIndex->EqualRange(trade->AccountID);
+	for (auto& it = accountLoginSessionRange.first; it != accountLoginSessionRange.second; ++it)
 	{
 		m_RtnTradePackage->Prepare((*it)->SessionID, false, 0);
 		m_TradeFront->Send(m_RtnTradePackage);
@@ -683,7 +694,7 @@ void SimExchange::GetNextTradeID(TradeIDType& tradeID)
 {
 	sprintf(tradeID, "%s%08d", m_TradingDay, ++m_MaxTradeID);
 }
-void SimExchange::AddOrderToQueue(mdb::SEOrder* order)
+void SimExchange::AddOrderToQueue(mdb::Order* order)
 {
 	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
 	{
@@ -708,7 +719,7 @@ void SimExchange::AddOrderToQueue(mdb::SEOrder* order)
 		}
 	}
 }
-void SimExchange::RemoveOrderFromQueue(mdb::SEOrder* order)
+void SimExchange::RemoveOrderFromQueue(mdb::Order* order)
 {
 	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
 	{

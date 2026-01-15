@@ -7,18 +7,16 @@ using namespace mdb;
 
 void InitTradingDay(Mdb* mdb);
 void InitExchange(Mdb* mdb);
-void InitSEBroker(Mdb* mdb);
 void InitProduct(Mdb* mdb);
-void InitSEInstrument(Mdb* mdb);
+void InitInstrument(Mdb* mdb);
 
 int main()
 {
 	Mdb* mdb = new Mdb();
 	InitTradingDay(mdb);
 	InitExchange(mdb);
-	InitSEBroker(mdb);
 	InitProduct(mdb);
-	InitSEInstrument(mdb);
+	InitInstrument(mdb);
 
 	mdb->Dump("./Csv");
 
@@ -57,14 +55,6 @@ void InitExchange(Mdb* mdb)
 	mdb->t_Exchange->Insert(exchange4);
 	mdb->t_Exchange->Insert(exchange5);
 }
-void InitSEBroker(Mdb* mdb)
-{
-	SEBroker* broker = new SEBroker();
-	broker->BrokerID = 9999;
-	strcpy(broker->BrokerName, (const char*)(u8"平安期货"));
-	strcpy(broker->Password, "123456");
-	mdb->t_SEBroker->Insert(broker);
-}
 void InitProduct(Mdb* mdb)
 {
 	Product* product = new Product();
@@ -81,24 +71,24 @@ void InitProduct(Mdb* mdb)
 	strcpy(product->SessionName, "");
 	mdb->t_Product->Insert(product);
 }
-void InitSEInstrument(Mdb* mdb)
+void InitInstrument(Mdb* mdb)
 {
-	SEInstrument* instrument = new SEInstrument();
+	Instrument* instrument = new Instrument();
 	strcpy(instrument->ExchangeID, "CFFEX");
 	strcpy(instrument->InstrumentID, "IF2512");
 	strcpy(instrument->ExchangeInstID, "IF2512");
 	strcpy(instrument->InstrumentName, "IF2512");
 	strcpy(instrument->ProductID, "IF");
 	instrument->ProductClass = ProductClassType::Future;
+	instrument->InstrumentClass = InstrumentClassType::Normal;
+	instrument->Rank = 0;
+	instrument->VolumeMultiple = 300;
+	instrument->PriceTick = 1;
 	instrument->MaxMarketOrderVolume = 10;
 	instrument->MinMarketOrderVolume = 0;
 	instrument->MaxLimitOrderVolume = 10;
 	instrument->MinLimitOrderVolume = 0;
-	instrument->VolumeMultiple = 300;
-	instrument->PriceTick = 1;
-	instrument->UpperLimitPrice = 3600;
-	instrument->LowerLimitPrice = 3000;
 	strcpy(instrument->SessionName, "");
-	mdb->t_SEInstrument->Insert(instrument);
+	mdb->t_Instrument->Insert(instrument);
 }
 

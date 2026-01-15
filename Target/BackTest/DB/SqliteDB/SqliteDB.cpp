@@ -42,6 +42,7 @@ SqliteDB::SqliteDB(const std::string& dbName)
 
 	m_InstrumentInsertStatement = nullptr;
 	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_InstrumentUpdateStatement = nullptr;
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
@@ -95,12 +96,14 @@ SqliteDB::SqliteDB(const std::string& dbName)
 
 	m_OrderInsertStatement = nullptr;
 	m_OrderDeleteStatement = nullptr;
+	m_OrderDeleteByAccountIDIndexStatement = nullptr;
 	m_OrderUpdateStatement = nullptr;
 	m_OrderSelectStatement = nullptr;
 	m_OrderTruncateStatement = nullptr;
 
 	m_TradeInsertStatement = nullptr;
 	m_TradeDeleteStatement = nullptr;
+	m_TradeDeleteByAccountIDIndexStatement = nullptr;
 	m_TradeUpdateStatement = nullptr;
 	m_TradeSelectStatement = nullptr;
 	m_TradeTruncateStatement = nullptr;
@@ -246,6 +249,11 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_InstrumentDeleteStatement);
 		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_InstrumentDeleteByExchangeIDIndexStatement);
+		m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	}
 	if (m_InstrumentUpdateStatement != nullptr)
 	{
@@ -472,6 +480,11 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_OrderDeleteStatement);
 		m_OrderDeleteStatement = nullptr;
 	}
+	if (m_OrderDeleteByAccountIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_OrderDeleteByAccountIDIndexStatement);
+		m_OrderDeleteByAccountIDIndexStatement = nullptr;
+	}
 	if (m_OrderUpdateStatement != nullptr)
 	{
 		sqlite3_finalize(m_OrderUpdateStatement);
@@ -496,6 +509,11 @@ void SqliteDB::DisConnect()
 	{
 		sqlite3_finalize(m_TradeDeleteStatement);
 		m_TradeDeleteStatement = nullptr;
+	}
+	if (m_TradeDeleteByAccountIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_TradeDeleteByAccountIDIndexStatement);
+		m_TradeDeleteByAccountIDIndexStatement = nullptr;
 	}
 	if (m_TradeUpdateStatement != nullptr)
 	{
@@ -1322,7 +1340,7 @@ void SqliteDB::CreateInstrument()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` text, `InstrumentID` text, `ExchangeInstID` text, `InstrumentName` text, `ProductID` text, `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` double, `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` text, PRIMARY KEY(ExchangeID, InstrumentID));", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` text, `InstrumentID` text, `ExchangeInstID` text, `InstrumentName` text, `ProductID` text, `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` double, `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` text, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX InstrumentExchangeID ON t_Instrument(ExchangeID);", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1336,7 +1354,7 @@ void SqliteDB::DropInstrument()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_Instrument;", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "DROP INDEX InstrumentExchangeID;DROP TABLE IF EXISTS t_Instrument;", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1428,6 +1446,28 @@ void SqliteDB::DeleteInstrument(Instrument* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void SqliteDB::DeleteInstrumentByExchangeIDIndex(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_Instrument where ExchangeID = ?;", -1, &m_InstrumentDeleteByExchangeIDIndexStatement, nullptr);
+	}
+	SetStatementForInstrumentIndexExchangeID(m_InstrumentDeleteByExchangeIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_InstrumentDeleteByExchangeIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_InstrumentDeleteByExchangeIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex Spend:%lldms", duration);
 	}
 }
 void SqliteDB::UpdateInstrument(Instrument* record)
@@ -2802,7 +2842,7 @@ void SqliteDB::CreateOrder()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Order(`TradingDay` text, `AccountID` text, `AccountType` int, `ExchangeID` text, `InstrumentID` text, `ProductClass` int, `OrderID` int, `OrderSysID` text, `Direction` int, `OffsetFlag` int, `OrderPriceType` int, `Price` double, `Volume` bigint, `VolumeTotal` bigint, `VolumeTraded` bigint, `VolumeMultiple` int, `OrderStatus` int, `OrderDate` text, `OrderTime` text, `CancelDate` text, `CancelTime` text, `SessionID` bigint, `ClientOrderID` int, `RequestID` int, `OfferID` int, `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, `FrozenCash` double, `FrozenMargin` double, `FrozenCommission` double, `RebuildMark` int, `IsForceClose` int, UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Order(`TradingDay` text, `AccountID` text, `AccountType` int, `ExchangeID` text, `InstrumentID` text, `ProductClass` int, `OrderID` int, `OrderSysID` text, `Direction` int, `OffsetFlag` int, `OrderPriceType` int, `Price` double, `Volume` bigint, `VolumeTotal` bigint, `VolumeTraded` bigint, `VolumeMultiple` int, `OrderStatus` int, `OrderDate` text, `OrderTime` text, `CancelDate` text, `CancelTime` text, `SessionID` bigint, `ClientOrderID` int, `RequestID` int, `OfferID` int, `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, `FrozenCash` double, `FrozenMargin` double, `FrozenCommission` double, `RebuildMark` int, `IsForceClose` int, UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));CREATE INDEX OrderAccountID ON t_Order(TradingDay, AccountID);", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateOrder failed, ErrorMsg:%s", t_ErrorMsg);
@@ -2816,7 +2856,7 @@ void SqliteDB::DropOrder()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_Order;", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "DROP INDEX OrderAccountID;DROP TABLE IF EXISTS t_Order;", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropOrder failed, ErrorMsg:%s", t_ErrorMsg);
@@ -2910,6 +2950,28 @@ void SqliteDB::DeleteOrder(Order* record)
 		WriteLog(LogLevel::Warning, "DeleteOrder Spend:%lldms", duration);
 	}
 }
+void SqliteDB::DeleteOrderByAccountIDIndex(Order* record)
+{
+	auto start = steady_clock::now();
+	if (m_OrderDeleteByAccountIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_Order where TradingDay = ? and AccountID = ?;", -1, &m_OrderDeleteByAccountIDIndexStatement, nullptr);
+	}
+	SetStatementForOrderIndexAccountID(m_OrderDeleteByAccountIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_OrderDeleteByAccountIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteOrderByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_OrderDeleteByAccountIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteOrderByAccountIDIndex Spend:%lldms", duration);
+	}
+}
 void SqliteDB::UpdateOrder(Order* record)
 {
 	auto start = steady_clock::now();
@@ -2973,7 +3035,7 @@ void SqliteDB::CreateTrade()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Trade(`TradingDay` text, `AccountID` text, `AccountType` int, `ExchangeID` text, `InstrumentID` text, `ProductClass` int, `OrderID` int, `OrderSysID` text, `TradeID` text, `Direction` int, `OffsetFlag` int, `Price` double, `Volume` bigint, `VolumeMultiple` int, `TradeAmount` double, `Commission` double, `TradeDate` text, `TradeTime` text, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Trade(`TradingDay` text, `AccountID` text, `AccountType` int, `ExchangeID` text, `InstrumentID` text, `ProductClass` int, `OrderID` int, `OrderSysID` text, `TradeID` text, `Direction` int, `OffsetFlag` int, `Price` double, `Volume` bigint, `VolumeMultiple` int, `TradeAmount` double, `Commission` double, `TradeDate` text, `TradeTime` text, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));CREATE INDEX TradeAccountID ON t_Trade(TradingDay, AccountID);", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateTrade failed, ErrorMsg:%s", t_ErrorMsg);
@@ -2987,7 +3049,7 @@ void SqliteDB::DropTrade()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_Trade;", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "DROP INDEX TradeAccountID;DROP TABLE IF EXISTS t_Trade;", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropTrade failed, ErrorMsg:%s", t_ErrorMsg);
@@ -3079,6 +3141,28 @@ void SqliteDB::DeleteTrade(Trade* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteTrade Spend:%lldms", duration);
+	}
+}
+void SqliteDB::DeleteTradeByAccountIDIndex(Trade* record)
+{
+	auto start = steady_clock::now();
+	if (m_TradeDeleteByAccountIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_Trade where TradingDay = ? and AccountID = ?;", -1, &m_TradeDeleteByAccountIDIndexStatement, nullptr);
+	}
+	SetStatementForTradeIndexAccountID(m_TradeDeleteByAccountIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_TradeDeleteByAccountIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeleteTradeByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_TradeDeleteByAccountIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteTradeByAccountIDIndex Spend:%lldms", duration);
 	}
 }
 void SqliteDB::UpdateTrade(Trade* record)
@@ -3337,6 +3421,10 @@ void SqliteDB::SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, cons
 {
 	sqlite3_bind_text(statement, 1, ExchangeID, sizeof(ExchangeID), nullptr);
 	sqlite3_bind_text(statement, 2, InstrumentID, sizeof(InstrumentID), nullptr);
+}
+void SqliteDB::SetStatementForInstrumentIndexExchangeID(sqlite3_stmt* statement, Instrument* record)
+{
+	sqlite3_bind_text(statement, 1, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
 }
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<Instrument*>& records)
 {
@@ -4080,6 +4168,11 @@ void SqliteDB::SetStatementForOrderPrimaryKey(sqlite3_stmt* statement, const Dat
 	sqlite3_bind_text(statement, 4, InstrumentID, sizeof(InstrumentID), nullptr);
 	sqlite3_bind_int(statement, 5, OrderID);
 }
+void SqliteDB::SetStatementForOrderIndexAccountID(sqlite3_stmt* statement, Order* record)
+{
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
+}
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<Order*>& records)
 {
 	Order* record = Order::Allocate();
@@ -4166,6 +4259,11 @@ void SqliteDB::SetStatementForTradePrimaryKey(sqlite3_stmt* statement, const Dat
 	sqlite3_bind_text(statement, 2, ExchangeID, sizeof(ExchangeID), nullptr);
 	sqlite3_bind_text(statement, 3, TradeID, sizeof(TradeID), nullptr);
 	sqlite3_bind_int(statement, 4, int(Direction));
+}
+void SqliteDB::SetStatementForTradeIndexAccountID(sqlite3_stmt* statement, Trade* record)
+{
+	sqlite3_bind_text(statement, 1, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 2, record->AccountID, sizeof(record->AccountID), nullptr);
 }
 void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<Trade*>& records)
 {

@@ -29,4 +29,17 @@ namespace mdb
 		return false;
 	}
 	
+	bool InstrumentEqualForExchangeIDIndex::operator()(const Instrument* const left, const Instrument* const right) const
+	{
+		return strcmp(left->ExchangeID, right->ExchangeID) == 0;
+	}
+	bool InstrumentLessForExchangeIDIndex::operator()(const Instrument* const left, const Instrument* const right) const
+	{
+		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+			return true;
+		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+			return false;
+		return false;
+	}
+	
 }

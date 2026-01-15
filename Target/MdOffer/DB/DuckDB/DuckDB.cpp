@@ -22,6 +22,7 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_ExchangeTruncateStatement = nullptr;
 
 	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_InstrumentUpdateStatement = nullptr;
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
@@ -109,6 +110,11 @@ void DuckDB::DisConnect()
 	{
 		duckdb_destroy_prepare(&m_InstrumentDeleteStatement);
 		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentDeleteByExchangeIDIndexStatement);
+		m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	}
 	if (m_InstrumentUpdateStatement != nullptr)
 	{
@@ -487,7 +493,7 @@ void DuckDB::CreateInstrument()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX InstrumentExchangeID ON t_Instrument(ExchangeID);", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -500,7 +506,7 @@ void DuckDB::DropInstrument()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Instrument;", &result);
+	auto rc = duckdb_query(m_Connection, "DROP INDEX InstrumentExchangeID;DROP TABLE IF EXISTS t_Instrument;", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -561,6 +567,29 @@ void DuckDB::DeleteInstrument(Instrument* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void DuckDB::DeleteInstrumentByExchangeIDIndex(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Instrument where ExchangeID = ?;", &m_InstrumentDeleteByExchangeIDIndexStatement);
+	}
+	SetStatementForInstrumentIndexExchangeID(m_InstrumentDeleteByExchangeIDIndexStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_InstrumentDeleteByExchangeIDIndexStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex Spend:%lldms", duration);
 	}
 }
 void DuckDB::UpdateInstrument(Instrument* record)
@@ -2092,6 +2121,10 @@ void DuckDB::SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement state
 {
 	duckdb_bind_varchar(statement, 1, record->ExchangeID);
 	duckdb_bind_varchar(statement, 2, record->InstrumentID);
+}
+void DuckDB::SetStatementForInstrumentIndexExchangeID(duckdb_prepared_statement statement, Instrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
 }
 bool DuckDB::AppendForDepthMarketDataRecord(duckdb_appender appender, DepthMarketData* record)
 {

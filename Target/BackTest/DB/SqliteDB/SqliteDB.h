@@ -61,6 +61,7 @@ public:
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void DeleteInstrumentByExchangeIDIndex(mdb::Instrument* record) override;
 	virtual void UpdateInstrument(mdb::Instrument* record) override;
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
@@ -138,6 +139,7 @@ public:
 	virtual void InsertOrder(mdb::Order* record) override;
 	virtual void BatchInsertOrder(std::list<mdb::Order*>* records) override;
 	virtual void DeleteOrder(mdb::Order* record) override;
+	virtual void DeleteOrderByAccountIDIndex(mdb::Order* record) override;
 	virtual void UpdateOrder(mdb::Order* record) override;
 	virtual void SelectOrder(std::list<mdb::Order*>& records) override;
 	virtual void TruncateOrder() override;
@@ -147,6 +149,7 @@ public:
 	virtual void InsertTrade(mdb::Trade* record) override;
 	virtual void BatchInsertTrade(std::list<mdb::Trade*>* records) override;
 	virtual void DeleteTrade(mdb::Trade* record) override;
+	virtual void DeleteTradeByAccountIDIndex(mdb::Trade* record) override;
 	virtual void UpdateTrade(mdb::Trade* record) override;
 	virtual void SelectTrade(std::list<mdb::Trade*>& records) override;
 	virtual void TruncateTrade() override;
@@ -173,6 +176,7 @@ private:
 	void SetStatementForInstrumentRecord(sqlite3_stmt* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentRecordUpdate(sqlite3_stmt* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void SetStatementForInstrumentIndexExchangeID(sqlite3_stmt* statement, mdb::Instrument* record);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Instrument*>& records);
 	void SetStatementForDepthMarketDataRecord(sqlite3_stmt* statement, mdb::DepthMarketData* record);
 	void SetStatementForDepthMarketDataRecordUpdate(sqlite3_stmt* statement, mdb::DepthMarketData* record);
@@ -210,10 +214,12 @@ private:
 	void SetStatementForOrderRecord(sqlite3_stmt* statement, mdb::Order* record);
 	void SetStatementForOrderRecordUpdate(sqlite3_stmt* statement, mdb::Order* record);
 	void SetStatementForOrderPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const OrderIDType& OrderID);
+	void SetStatementForOrderIndexAccountID(sqlite3_stmt* statement, mdb::Order* record);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Order*>& records);
 	void SetStatementForTradeRecord(sqlite3_stmt* statement, mdb::Trade* record);
 	void SetStatementForTradeRecordUpdate(sqlite3_stmt* statement, mdb::Trade* record);
 	void SetStatementForTradePrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const TradeIDType& TradeID, const DirectionType& Direction);
+	void SetStatementForTradeIndexAccountID(sqlite3_stmt* statement, mdb::Trade* record);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::Trade*>& records);
 
 
@@ -245,6 +251,7 @@ private:
 	sqlite3_stmt* m_HotInstrumentTruncateStatement;
 	sqlite3_stmt* m_InstrumentInsertStatement;
 	sqlite3_stmt* m_InstrumentDeleteStatement;
+	sqlite3_stmt* m_InstrumentDeleteByExchangeIDIndexStatement;
 	sqlite3_stmt* m_InstrumentUpdateStatement;
 	sqlite3_stmt* m_InstrumentSelectStatement;
 	sqlite3_stmt* m_InstrumentTruncateStatement;
@@ -290,11 +297,13 @@ private:
 	sqlite3_stmt* m_PositionDetailTruncateStatement;
 	sqlite3_stmt* m_OrderInsertStatement;
 	sqlite3_stmt* m_OrderDeleteStatement;
+	sqlite3_stmt* m_OrderDeleteByAccountIDIndexStatement;
 	sqlite3_stmt* m_OrderUpdateStatement;
 	sqlite3_stmt* m_OrderSelectStatement;
 	sqlite3_stmt* m_OrderTruncateStatement;
 	sqlite3_stmt* m_TradeInsertStatement;
 	sqlite3_stmt* m_TradeDeleteStatement;
+	sqlite3_stmt* m_TradeDeleteByAccountIDIndexStatement;
 	sqlite3_stmt* m_TradeUpdateStatement;
 	sqlite3_stmt* m_TradeSelectStatement;
 	sqlite3_stmt* m_TradeTruncateStatement;

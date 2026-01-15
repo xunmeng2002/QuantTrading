@@ -43,6 +43,7 @@ public:
 	virtual void OnInstrumentInsert(mdb::Instrument* record) {}
 	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) {}
 	virtual void OnInstrumentErase(mdb::Instrument* record) {}
+	virtual void OnInstrumentEraseByExchangeIDIndex(mdb::Instrument* record) {}
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) {}
 	virtual void OnInstrumentTruncate() {}
 	
@@ -96,12 +97,14 @@ public:
 	virtual void OnOrderInsert(mdb::Order* record) {}
 	virtual void OnOrderBatchInsert(std::list<mdb::Order*>* records) {}
 	virtual void OnOrderErase(mdb::Order* record) {}
+	virtual void OnOrderEraseByAccountIDIndex(mdb::Order* record) {}
 	virtual void OnOrderUpdate(mdb::Order* record) {}
 	virtual void OnOrderTruncate() {}
 	
 	virtual void OnTradeInsert(mdb::Trade* record) {}
 	virtual void OnTradeBatchInsert(std::list<mdb::Trade*>* records) {}
 	virtual void OnTradeErase(mdb::Trade* record) {}
+	virtual void OnTradeEraseByAccountIDIndex(mdb::Trade* record) {}
 	virtual void OnTradeUpdate(mdb::Trade* record) {}
 	virtual void OnTradeTruncate() {}
 	

@@ -303,8 +303,15 @@
 		<item name="InstrumentID"/>
 		<item name="ExchangeInstID"/>
 		<item name="InstrumentName"/>
-		<item name="VolumeMultiple"/>
+		<item name="ProductID"/>
 		<item name="ProductClass"/>
+		<item name="VolumeMultiple"/>
+		<item name="PriceTick"/>
+		<item name="MaxMarketOrderVolume"/>
+		<item name="MinMarketOrderVolume"/>
+		<item name="MaxLimitOrderVolume"/>
+		<item name="MinLimitOrderVolume"/>
+		<item name="SessionName"/>
 	</field>
 	<field name="ReqQryOptionInstrument" 		desc="查询期权合约请求">
 		<item name="ExchangeID"/>
@@ -382,114 +389,4 @@
 		<item name="ClientOrderID"/>
 	</field>
 
-	
-	<field name="ReqSEBrokerLogin" 				id="0x3001" desc="模拟交易经纪商登录请求">
-		<item name="BrokerID"/>
-		<item name="Password"/>
-	</field>
-	<field name="RspSEBrokerLogin" 				desc="模拟交易经纪商登录应答">
-		<item name="BrokerID"/>
-		<item name="BrokerName"/>
-		<item name="SessionID"/>
-		<item name="IPAddress"/>
-	</field>
-	<field name="ReqSEBrokerLogout" 			desc="模拟交易经纪商登出请求">
-		<item name="BrokerID"/>
-	</field>
-	<field name="RspSEBrokerLogout" 			desc="模拟交易经纪商登出应答">
-		<item name="BrokerID"/>
-		<item name="SessionID"/>
-		<item name="IPAddress"/>
-	</field>
-	<field name="ReqSEInsertOrder" 				desc="模拟交易委托请求">
-		<item name="BrokerID"/>
-		<item name="AccountID"/>
-		<item name="ExchangeID"/>
-		<item name="InstrumentID"/>
-		<item name="Direction"/>
-		<item name="OffsetFlag"/>
-		<item name="OrderPriceType"/>
-		<item name="Price"/>
-		<item name="Volume"/>
-		<item name="ClientOrderID"/>
-	</field>
-	<field name="ReqSECancelOrder" 				desc="模拟交易撤单请求">
-		<item name="BrokerID"/>
-		<item name="AccountID"/>
-		<item name="ExchangeID"/>
-		<item name="InstrumentID"/>
-		<item name="CancelOrderID"/>
-		<item name="OrderID"/>
-		<item name="ClientOrderID"/>
-		<item name="SessionID"/>
-	</field>
-	<field name="ReqQrySEOrder" 				desc="模拟交易查询委托请求">
-		<item name="AccountID"/>
-	</field>
-	<field name="SEOrder" 						desc="模拟交易委托">
-		<item name="TradingDay"/>
-		<item name="BrokerID"/>
-		<item name="AccountID"/>
-		<item name="ExchangeID"/>
-		<item name="InstrumentID"/>
-		<item name="ProductClass"/>
-		<item name="OrderID"/>
-		<item name="Direction"/>
-		<item name="OffsetFlag"/>
-		<item name="OrderPriceType"/>
-		<item name="Price"/>
-		<item name="Volume"/>
-		<item name="VolumeTotal"/>
-		<item name="VolumeTraded"/>
-		<item name="VolumeMultiple"/>
-		<item name="OrderStatus"/>
-		<item name="OrderDate"/>
-		<item name="OrderTime"/>
-		<item name="CancelDate"/>
-		<item name="CancelTime"/>
-		<item name="SessionID"/>
-		<item name="ClientOrderID"/>
-	</field>
-	<field name="ReqQrySETrade" 				desc="模拟交易查询成交请求">
-		<item name="AccountID"/>
-	</field>
-	<field name="SETrade" 						desc="模拟交易成交">
-		<item name="TradingDay"/>
-		<item name="BrokerID"/>
-		<item name="AccountID"/>
-		<item name="ExchangeID"/>
-		<item name="InstrumentID"/>
-		<item name="ProductClass"/>
-		<item name="OrderID"/>
-		<item name="TradeID"/>
-		<item name="Direction"/>
-		<item name="OffsetFlag"/>
-		<item name="Price"/>
-		<item name="Volume"/>
-		<item name="VolumeMultiple"/>
-		<item name="TradeAmount"/>
-		<item name="Commission"/>
-		<item name="TradeDate"/>
-		<item name="TradeTime"/>
-	</field>
-	<field name="ReqQrySEInstrument" 			desc="模拟交易查询合约请求">
-		<item name="ExchangeID"/>
-		<item name="InstrumentID"/>
-	</field>
-	<field name="SEInstrument" 					desc="模拟交易合约">
-		<item name="ExchangeID"/>
-		<item name="InstrumentID"/>
-		<item name="ExchangeInstID"/>
-		<item name="InstrumentName"/>
-		<item name="ProductID"/>
-		<item name="ProductClass"/>
-		<item name="MaxMarketOrderVolume"/>
-		<item name="MinMarketOrderVolume"/>
-		<item name="MaxLimitOrderVolume"/>
-		<item name="MinLimitOrderVolume"/>
-		<item name="VolumeMultiple"/>
-		<item name="PriceTick"/>
-		<item name="UpperLimitPrice"/>
-		<item name="LowerLimitPrice"/>
-	</field>
 </fields>

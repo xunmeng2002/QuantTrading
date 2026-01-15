@@ -38,6 +38,7 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_HotInstrumentTruncateStatement = nullptr;
 
 	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_InstrumentUpdateStatement = nullptr;
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
@@ -83,11 +84,13 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_PositionDetailTruncateStatement = nullptr;
 
 	m_OrderDeleteStatement = nullptr;
+	m_OrderDeleteByAccountIDIndexStatement = nullptr;
 	m_OrderUpdateStatement = nullptr;
 	m_OrderSelectStatement = nullptr;
 	m_OrderTruncateStatement = nullptr;
 
 	m_TradeDeleteStatement = nullptr;
+	m_TradeDeleteByAccountIDIndexStatement = nullptr;
 	m_TradeUpdateStatement = nullptr;
 	m_TradeSelectStatement = nullptr;
 	m_TradeTruncateStatement = nullptr;
@@ -214,6 +217,11 @@ void DuckDB::DisConnect()
 	{
 		duckdb_destroy_prepare(&m_InstrumentDeleteStatement);
 		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentDeleteByExchangeIDIndexStatement);
+		m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	}
 	if (m_InstrumentUpdateStatement != nullptr)
 	{
@@ -400,6 +408,11 @@ void DuckDB::DisConnect()
 		duckdb_destroy_prepare(&m_OrderDeleteStatement);
 		m_OrderDeleteStatement = nullptr;
 	}
+	if (m_OrderDeleteByAccountIDIndexStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_OrderDeleteByAccountIDIndexStatement);
+		m_OrderDeleteByAccountIDIndexStatement = nullptr;
+	}
 	if (m_OrderUpdateStatement != nullptr)
 	{
 		duckdb_destroy_prepare(&m_OrderUpdateStatement);
@@ -419,6 +432,11 @@ void DuckDB::DisConnect()
 	{
 		duckdb_destroy_prepare(&m_TradeDeleteStatement);
 		m_TradeDeleteStatement = nullptr;
+	}
+	if (m_TradeDeleteByAccountIDIndexStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_TradeDeleteByAccountIDIndexStatement);
+		m_TradeDeleteByAccountIDIndexStatement = nullptr;
 	}
 	if (m_TradeUpdateStatement != nullptr)
 	{
@@ -1381,7 +1399,7 @@ void DuckDB::CreateInstrument()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX InstrumentExchangeID ON t_Instrument(ExchangeID);", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -1394,7 +1412,7 @@ void DuckDB::DropInstrument()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Instrument;", &result);
+	auto rc = duckdb_query(m_Connection, "DROP INDEX InstrumentExchangeID;DROP TABLE IF EXISTS t_Instrument;", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -1455,6 +1473,29 @@ void DuckDB::DeleteInstrument(Instrument* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void DuckDB::DeleteInstrumentByExchangeIDIndex(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Instrument where ExchangeID = ?;", &m_InstrumentDeleteByExchangeIDIndexStatement);
+	}
+	SetStatementForInstrumentIndexExchangeID(m_InstrumentDeleteByExchangeIDIndexStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_InstrumentDeleteByExchangeIDIndexStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex Spend:%lldms", duration);
 	}
 }
 void DuckDB::UpdateInstrument(Instrument* record)
@@ -3641,7 +3682,7 @@ void DuckDB::CreateOrder()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Order (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, RequestID int, OfferID int, TradeGroupID int, RiskGroupID int, CommissionGroupID int, FrozenCash double, FrozenMargin double, FrozenCommission double, RebuildMark int, IsForceClose int, UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Order (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, RequestID int, OfferID int, TradeGroupID int, RiskGroupID int, CommissionGroupID int, FrozenCash double, FrozenMargin double, FrozenCommission double, RebuildMark int, IsForceClose int, UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));CREATE INDEX OrderAccountID ON t_Order(TradingDay, AccountID);", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -3654,7 +3695,7 @@ void DuckDB::DropOrder()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Order;", &result);
+	auto rc = duckdb_query(m_Connection, "DROP INDEX OrderAccountID;DROP TABLE IF EXISTS t_Order;", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -3715,6 +3756,29 @@ void DuckDB::DeleteOrder(Order* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteOrder Spend:%lldms", duration);
+	}
+}
+void DuckDB::DeleteOrderByAccountIDIndex(Order* record)
+{
+	auto start = steady_clock::now();
+	if (m_OrderDeleteByAccountIDIndexStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Order where TradingDay = ? and AccountID = ?;", &m_OrderDeleteByAccountIDIndexStatement);
+	}
+	SetStatementForOrderIndexAccountID(m_OrderDeleteByAccountIDIndexStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_OrderDeleteByAccountIDIndexStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteOrderByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteOrderByAccountIDIndex Spend:%lldms", duration);
 	}
 }
 void DuckDB::UpdateOrder(Order* record)
@@ -3966,7 +4030,7 @@ void DuckDB::CreateTrade()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Trade (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Trade (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));CREATE INDEX TradeAccountID ON t_Trade(TradingDay, AccountID);", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateTrade failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -3979,7 +4043,7 @@ void DuckDB::DropTrade()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Trade;", &result);
+	auto rc = duckdb_query(m_Connection, "DROP INDEX TradeAccountID;DROP TABLE IF EXISTS t_Trade;", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropTrade failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -4040,6 +4104,29 @@ void DuckDB::DeleteTrade(Trade* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteTrade Spend:%lldms", duration);
+	}
+}
+void DuckDB::DeleteTradeByAccountIDIndex(Trade* record)
+{
+	auto start = steady_clock::now();
+	if (m_TradeDeleteByAccountIDIndexStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Trade where TradingDay = ? and AccountID = ?;", &m_TradeDeleteByAccountIDIndexStatement);
+	}
+	SetStatementForTradeIndexAccountID(m_TradeDeleteByAccountIDIndexStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_TradeDeleteByAccountIDIndexStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteTradeByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteTradeByAccountIDIndex Spend:%lldms", duration);
 	}
 }
 void DuckDB::UpdateTrade(Trade* record)
@@ -4461,6 +4548,10 @@ void DuckDB::SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement state
 {
 	duckdb_bind_varchar(statement, 1, record->ExchangeID);
 	duckdb_bind_varchar(statement, 2, record->InstrumentID);
+}
+void DuckDB::SetStatementForInstrumentIndexExchangeID(duckdb_prepared_statement statement, Instrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
 }
 bool DuckDB::AppendForDepthMarketDataRecord(duckdb_appender appender, DepthMarketData* record)
 {
@@ -5254,6 +5345,11 @@ void DuckDB::SetStatementForOrderPrimaryKey(duckdb_prepared_statement statement,
 	duckdb_bind_varchar(statement, 4, record->InstrumentID);
 	duckdb_bind_int32(statement, 5, record->OrderID);
 }
+void DuckDB::SetStatementForOrderIndexAccountID(duckdb_prepared_statement statement, Order* record)
+{
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->AccountID);
+}
 bool DuckDB::AppendForTradeRecord(duckdb_appender appender, Trade* record)
 {
 	duckdb_append_varchar(appender, record->TradingDay);
@@ -5329,5 +5425,10 @@ void DuckDB::SetStatementForTradePrimaryKey(duckdb_prepared_statement statement,
 	duckdb_bind_varchar(statement, 2, record->ExchangeID);
 	duckdb_bind_varchar(statement, 3, record->TradeID);
 	duckdb_bind_int32(statement, 4, int(record->Direction));
+}
+void DuckDB::SetStatementForTradeIndexAccountID(duckdb_prepared_statement statement, Trade* record)
+{
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->AccountID);
 }
 

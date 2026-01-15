@@ -59,6 +59,7 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_InstrumentDropStatement = nullptr;
 	m_InstrumentInsertStatement = nullptr;
 	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_InstrumentUpdateStatement = nullptr;
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
@@ -289,6 +290,11 @@ void MysqlDB::DisConnect()
 	{
 		m_InstrumentDeleteStatement->close();
 		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		m_InstrumentDeleteByExchangeIDIndexStatement->close();
+		m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	}
 	if (m_InstrumentUpdateStatement != nullptr)
 	{
@@ -944,7 +950,7 @@ void MysqlDB::CreateInstrument()
 	auto start = steady_clock::now();
 	if (m_InstrumentCreateStatement == nullptr)
 	{
-		m_InstrumentCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` char(8), `InstrumentID` char(32), `ExchangeInstID` char(32), `InstrumentName` char(64), `ProductID` char(32), `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), PRIMARY KEY(ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_InstrumentCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` char(8), `InstrumentID` char(32), `ExchangeInstID` char(32), `InstrumentName` char(64), `ProductID` char(32), `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), INDEX InstrumentExchangeID(ExchangeID), PRIMARY KEY(ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
 	}
 	m_InstrumentCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
@@ -1028,6 +1034,21 @@ void MysqlDB::DeleteInstrument(Instrument* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::DeleteInstrumentByExchangeIDIndex(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		m_InstrumentDeleteByExchangeIDIndexStatement = m_DBConnection->prepareStatement("delete from t_Instrument where ExchangeID = ?;");
+	}
+	SetStatementForInstrumentIndexExchangeID(m_InstrumentDeleteByExchangeIDIndexStatement, record);
+	m_InstrumentDeleteByExchangeIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex Spend:%lldms", duration);
 	}
 }
 void MysqlDB::UpdateInstrument(Instrument* record)
@@ -1404,6 +1425,10 @@ void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statem
 {
 	statement->setString(1, ExchangeID);
 	statement->setString(2, InstrumentID);
+}
+void MysqlDB::SetStatementForInstrumentIndexExchangeID(sql::PreparedStatement* statement, Instrument* record)
+{
+	statement->setString(1, record->ExchangeID);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Instrument*>& records)
 {

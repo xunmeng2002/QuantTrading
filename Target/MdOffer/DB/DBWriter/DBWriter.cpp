@@ -155,6 +155,16 @@ void DBWriter::OnInstrumentErase(mdb::Instrument* record)
 
 	AddDBOperate(dbOperate);
 }
+void DBWriter::OnInstrumentEraseByExchangeIDIndex(mdb::Instrument* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Instrument::TableID;
+	dbOperate->IndexID = InstrumentIndexExchangeID::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
 void DBWriter::OnInstrumentUpdate(mdb::Instrument* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -673,6 +683,22 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 {
 	switch (dbOperate->TableID)
 	{
+	case Instrument::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case InstrumentIndexExchangeID::IndexID:
+		{
+			m_DB->DeleteInstrumentByExchangeIDIndex((Instrument*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((Instrument*)dbOperate->Record)->Free();
+		break;
+	}
 	case MdUserLoginSession::TableID:
 	{
 		switch (dbOperate->IndexID)

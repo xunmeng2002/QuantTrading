@@ -43,6 +43,7 @@ public:
 	virtual void OnInstrumentInsert(mdb::Instrument* record) {}
 	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) {}
 	virtual void OnInstrumentErase(mdb::Instrument* record) {}
+	virtual void OnInstrumentEraseByExchangeIDIndex(mdb::Instrument* record) {}
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) {}
 	virtual void OnInstrumentTruncate() {}
 	

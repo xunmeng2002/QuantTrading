@@ -44,101 +44,101 @@ void SimExchangeApiMiddle::RegisterSpi(SimExchangeSpi* pSpi)
 	m_SimExchangeApi->RegisterSpi(pSpi);
 }
 
-int SimExchangeApiMiddle::ReqSEBrokerLogin(ReqSEBrokerLoginField* reqSEBrokerLogin, int requestID)
+int SimExchangeApiMiddle::ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, int requestID)
 {
-	WriteLog(LogLevel::Info, "ReqSEBrokerLogin: RequestID:%d", requestID);
-	if (reqSEBrokerLogin != nullptr)
+	WriteLog(LogLevel::Info, "ReqAccountLogin: RequestID:%d", requestID);
+	if (reqAccountLogin != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSEBrokerLoginField:BrokerID:[%d], Password:[%s]",
-			reqSEBrokerLogin->BrokerID, reqSEBrokerLogin->Password);
+		WriteLog(LogLevel::Info, "ReqAccountLoginField:AccountID:[%s], Password:[%s]",
+			reqAccountLogin->AccountID, reqAccountLogin->Password);
 	}
 	else
 	{
-		WriteLog(LogLevel::Info, "reqSEBrokerLogin is nullptr");
+		WriteLog(LogLevel::Info, "reqAccountLogin is nullptr");
 	}
-	return m_SimExchangeApi->ReqSEBrokerLogin(reqSEBrokerLogin, requestID);
+	return m_SimExchangeApi->ReqAccountLogin(reqAccountLogin, requestID);
 }
-int SimExchangeApiMiddle::ReqSEBrokerLogout(ReqSEBrokerLogoutField* reqSEBrokerLogout, int requestID)
+int SimExchangeApiMiddle::ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout, int requestID)
 {
-	WriteLog(LogLevel::Info, "ReqSEBrokerLogout: RequestID:%d", requestID);
-	if (reqSEBrokerLogout != nullptr)
+	WriteLog(LogLevel::Info, "ReqAccountLogout: RequestID:%d", requestID);
+	if (reqAccountLogout != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSEBrokerLogoutField:BrokerID:[%d]",
-			reqSEBrokerLogout->BrokerID);
+		WriteLog(LogLevel::Info, "ReqAccountLogoutField:AccountID:[%s]",
+			reqAccountLogout->AccountID);
 	}
 	else
 	{
-		WriteLog(LogLevel::Info, "reqSEBrokerLogout is nullptr");
+		WriteLog(LogLevel::Info, "reqAccountLogout is nullptr");
 	}
-	return m_SimExchangeApi->ReqSEBrokerLogout(reqSEBrokerLogout, requestID);
+	return m_SimExchangeApi->ReqAccountLogout(reqAccountLogout, requestID);
 }
-int SimExchangeApiMiddle::ReqSEInsertOrder(ReqSEInsertOrderField* reqSEInsertOrder, int requestID)
+int SimExchangeApiMiddle::ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID)
 {
-	WriteLog(LogLevel::Info, "ReqSEInsertOrder: RequestID:%d", requestID);
-	if (reqSEInsertOrder != nullptr)
+	WriteLog(LogLevel::Info, "ReqQryOrder: RequestID:%d", requestID);
+	if (reqQryOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSEInsertOrderField:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]",
-			reqSEInsertOrder->BrokerID, reqSEInsertOrder->AccountID, reqSEInsertOrder->ExchangeID, reqSEInsertOrder->InstrumentID, (int)reqSEInsertOrder->Direction, (int)reqSEInsertOrder->OffsetFlag, (int)reqSEInsertOrder->OrderPriceType, reqSEInsertOrder->Price, reqSEInsertOrder->Volume, reqSEInsertOrder->ClientOrderID);
+		WriteLog(LogLevel::Info, "ReqQryOrderField:AccountID:[%s]",
+			reqQryOrder->AccountID);
 	}
 	else
 	{
-		WriteLog(LogLevel::Info, "reqSEInsertOrder is nullptr");
+		WriteLog(LogLevel::Info, "reqQryOrder is nullptr");
 	}
-	return m_SimExchangeApi->ReqSEInsertOrder(reqSEInsertOrder, requestID);
+	return m_SimExchangeApi->ReqQryOrder(reqQryOrder, requestID);
 }
-int SimExchangeApiMiddle::ReqSECancelOrder(ReqSECancelOrderField* reqSECancelOrder, int requestID)
+int SimExchangeApiMiddle::ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID)
 {
-	WriteLog(LogLevel::Info, "ReqSECancelOrder: RequestID:%d", requestID);
-	if (reqSECancelOrder != nullptr)
+	WriteLog(LogLevel::Info, "ReqQryTrade: RequestID:%d", requestID);
+	if (reqQryTrade != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSECancelOrderField:BrokerID:[%d], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], CancelOrderID:[%d], OrderID:[%d], ClientOrderID:[%d], SessionID:[%lld]",
-			reqSECancelOrder->BrokerID, reqSECancelOrder->AccountID, reqSECancelOrder->ExchangeID, reqSECancelOrder->InstrumentID, reqSECancelOrder->CancelOrderID, reqSECancelOrder->OrderID, reqSECancelOrder->ClientOrderID, reqSECancelOrder->SessionID);
+		WriteLog(LogLevel::Info, "ReqQryTradeField:AccountID:[%s]",
+			reqQryTrade->AccountID);
 	}
 	else
 	{
-		WriteLog(LogLevel::Info, "reqSECancelOrder is nullptr");
+		WriteLog(LogLevel::Info, "reqQryTrade is nullptr");
 	}
-	return m_SimExchangeApi->ReqSECancelOrder(reqSECancelOrder, requestID);
+	return m_SimExchangeApi->ReqQryTrade(reqQryTrade, requestID);
 }
-int SimExchangeApiMiddle::ReqQrySEOrder(ReqQrySEOrderField* reqQrySEOrder, int requestID)
+int SimExchangeApiMiddle::ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument, int requestID)
 {
-	WriteLog(LogLevel::Info, "ReqQrySEOrder: RequestID:%d", requestID);
-	if (reqQrySEOrder != nullptr)
+	WriteLog(LogLevel::Info, "ReqQryInstrument: RequestID:%d", requestID);
+	if (reqQryInstrument != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqQrySEOrderField:AccountID:[%s]",
-			reqQrySEOrder->AccountID);
+		WriteLog(LogLevel::Info, "ReqQryInstrumentField:ExchangeID:[%s], InstrumentID:[%s]",
+			reqQryInstrument->ExchangeID, reqQryInstrument->InstrumentID);
 	}
 	else
 	{
-		WriteLog(LogLevel::Info, "reqQrySEOrder is nullptr");
+		WriteLog(LogLevel::Info, "reqQryInstrument is nullptr");
 	}
-	return m_SimExchangeApi->ReqQrySEOrder(reqQrySEOrder, requestID);
+	return m_SimExchangeApi->ReqQryInstrument(reqQryInstrument, requestID);
 }
-int SimExchangeApiMiddle::ReqQrySETrade(ReqQrySETradeField* reqQrySETrade, int requestID)
+int SimExchangeApiMiddle::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID)
 {
-	WriteLog(LogLevel::Info, "ReqQrySETrade: RequestID:%d", requestID);
-	if (reqQrySETrade != nullptr)
+	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);
+	if (reqInsertOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqQrySETradeField:AccountID:[%s]",
-			reqQrySETrade->AccountID);
+		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]",
+			reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, (int)reqInsertOrder->Direction, (int)reqInsertOrder->OffsetFlag, (int)reqInsertOrder->OrderPriceType, reqInsertOrder->Price, reqInsertOrder->Volume, reqInsertOrder->ClientOrderID);
 	}
 	else
 	{
-		WriteLog(LogLevel::Info, "reqQrySETrade is nullptr");
+		WriteLog(LogLevel::Info, "reqInsertOrder is nullptr");
 	}
-	return m_SimExchangeApi->ReqQrySETrade(reqQrySETrade, requestID);
+	return m_SimExchangeApi->ReqInsertOrder(reqInsertOrder, requestID);
 }
-int SimExchangeApiMiddle::ReqQrySEInstrument(ReqQrySEInstrumentField* reqQrySEInstrument, int requestID)
+int SimExchangeApiMiddle::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
 {
-	WriteLog(LogLevel::Info, "ReqQrySEInstrument: RequestID:%d", requestID);
-	if (reqQrySEInstrument != nullptr)
+	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestID);
+	if (reqCancelOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqQrySEInstrumentField:ExchangeID:[%s], InstrumentID:[%s]",
-			reqQrySEInstrument->ExchangeID, reqQrySEInstrument->InstrumentID);
+		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]",
+			reqCancelOrder->AccountID, reqCancelOrder->ExchangeID, reqCancelOrder->InstrumentID, reqCancelOrder->ClientCancelOrderID, reqCancelOrder->OrderID, reqCancelOrder->OrderSysID, reqCancelOrder->SessionID, reqCancelOrder->ClientOrderID);
 	}
 	else
 	{
-		WriteLog(LogLevel::Info, "reqQrySEInstrument is nullptr");
+		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
-	return m_SimExchangeApi->ReqQrySEInstrument(reqQrySEInstrument, requestID);
+	return m_SimExchangeApi->ReqCancelOrder(reqCancelOrder, requestID);
 }

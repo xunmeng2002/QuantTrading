@@ -65,6 +65,7 @@ public:
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void DeleteInstrumentByExchangeIDIndex(mdb::Instrument* record) override;
 	virtual void UpdateInstrument(mdb::Instrument* record) override;
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
@@ -103,6 +104,7 @@ private:
 	void SetStatementForInstrumentRecord(duckdb_prepared_statement statement, mdb::Instrument* record);
 	void SetStatementForInstrumentRecordUpdate(duckdb_prepared_statement statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement statement, mdb::Instrument* record);
+	void SetStatementForInstrumentIndexExchangeID(duckdb_prepared_statement statement, mdb::Instrument* record);
 	bool AppendForAccountRecord(duckdb_appender appender, mdb::Account* record);
 	void SetStatementForAccountRecord(duckdb_prepared_statement statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(duckdb_prepared_statement statement, mdb::Account* record);
@@ -133,6 +135,7 @@ private:
 	duckdb_prepared_statement m_HotInstrumentSelectStatement;
 	duckdb_prepared_statement m_HotInstrumentTruncateStatement;
 	duckdb_prepared_statement m_InstrumentDeleteStatement;
+	duckdb_prepared_statement m_InstrumentDeleteByExchangeIDIndexStatement;
 	duckdb_prepared_statement m_InstrumentUpdateStatement;
 	duckdb_prepared_statement m_InstrumentSelectStatement;
 	duckdb_prepared_statement m_InstrumentTruncateStatement;

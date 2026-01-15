@@ -29,6 +29,7 @@ public:
 	virtual void InsertInstrument(mdb::Instrument* record) = 0;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) = 0;
 	virtual void DeleteInstrument(mdb::Instrument* record) = 0;
+	virtual void DeleteInstrumentByExchangeIDIndex(mdb::Instrument* record) = 0;
 	virtual void UpdateInstrument(mdb::Instrument* record) = 0;
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) = 0;
 	virtual void TruncateInstrument() = 0;

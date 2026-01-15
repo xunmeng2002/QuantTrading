@@ -87,6 +87,7 @@ public:
 	virtual void InsertInstrument(mdb::Instrument* record) override;
 	virtual void BatchInsertInstrument(std::list<mdb::Instrument*>* records) override;
 	virtual void DeleteInstrument(mdb::Instrument* record) override;
+	virtual void DeleteInstrumentByExchangeIDIndex(mdb::Instrument* record) override;
 	virtual void UpdateInstrument(mdb::Instrument* record) override;
 	virtual void SelectInstrument(std::list<mdb::Instrument*>& records) override;
 	virtual void TruncateInstrument() override;
@@ -122,6 +123,7 @@ private:
 	void SetStatementForInstrumentRecord(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentRecordUpdate(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID);
+	void SetStatementForInstrumentIndexExchangeID(sql::PreparedStatement* statement, mdb::Instrument* record);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::Instrument*>& records);
 	void SetStatementForAccountRecord(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, mdb::Account* record);
@@ -172,6 +174,7 @@ private:
 	sql::PreparedStatement* m_InstrumentDropStatement;
 	sql::PreparedStatement* m_InstrumentInsertStatement;
 	sql::PreparedStatement* m_InstrumentDeleteStatement;
+	sql::PreparedStatement* m_InstrumentDeleteByExchangeIDIndexStatement;
 	sql::PreparedStatement* m_InstrumentUpdateStatement;
 	sql::PreparedStatement* m_InstrumentSelectStatement;
 	sql::PreparedStatement* m_InstrumentTruncateStatement;

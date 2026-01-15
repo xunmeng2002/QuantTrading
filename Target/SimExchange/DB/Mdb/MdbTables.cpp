@@ -539,11 +539,14 @@ namespace mdb
 	{
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new InstrumentPrimaryKey(this);
+		m_ExchangeIDIndex = new InstrumentIndexExchangeID(this);
 	}
 	InstrumentTable::~InstrumentTable()
 	{
 		delete m_PrimaryKey;
 		m_PrimaryKey = nullptr;
+		delete m_ExchangeIDIndex;
+		m_ExchangeIDIndex = nullptr;
 	}
 	void InstrumentTable::Subscribe(MdbSubscriber* mdbSubscriber)
 	{
@@ -593,6 +596,7 @@ namespace mdb
 
 		m_PrimaryKey->Insert(record);
 
+		m_ExchangeIDIndex->Insert(record);
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -610,6 +614,7 @@ namespace mdb
 				memcpy(newRecord, record, sizeof(Instrument));
 				m_PrimaryKey->Insert(newRecord);
 
+				m_ExchangeIDIndex->Insert(newRecord);
 			}
 		}
 		if (m_MdbSubscriber != nullptr && m_DBInited)
@@ -631,6 +636,30 @@ namespace mdb
 			record->Free();
 		}
 	}
+	int InstrumentTable::EraseByExchangeIDIndex(const ExchangeIDType& ExchangeID)
+	{
+		m_ExchangeIDIndex->FillCompareRecord(ExchangeID);
+		list<Instrument*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_ExchangeIDIndex->m_Index.equal_range(&t_CompareInstrument);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Free();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = Instrument::Allocate();
+			memcpy(record, &t_CompareInstrument, sizeof(Instrument));
+			m_MdbSubscriber->OnInstrumentEraseByExchangeIDIndex(record);
+		}
+		return (int)records.size();
+	}
 	bool InstrumentTable::Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB)
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -642,7 +671,17 @@ namespace mdb
 			return false;
 		}
 
+		bool ExchangeIDIndexUpdate = m_ExchangeIDIndex->NeedUpdate(oldRecord, newRecord);
+		InstrumentIndexExchangeID::iterator itExchangeID;
+		if (ExchangeIDIndexUpdate)
+		{
+			itExchangeID = m_ExchangeIDIndex->FindNode(oldRecord);
+		}
 		::memcpy((void*)oldRecord, newRecord, sizeof(Instrument));
+		if (ExchangeIDIndexUpdate)
+		{
+			m_ExchangeIDIndex->Update(itExchangeID);
+		}
 
 		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -662,6 +701,7 @@ namespace mdb
 			(*it)->Free();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_ExchangeIDIndex->m_Index.clear();
 	}
 	void InstrumentTable::TruncateTable()
 	{
@@ -671,6 +711,7 @@ namespace mdb
 			(*it)->Free();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_ExchangeIDIndex->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
 			m_MdbSubscriber->OnInstrumentTruncate();
@@ -706,6 +747,7 @@ namespace mdb
 	}
 	void InstrumentTable::EraseIndex(Instrument* record)
 	{
+		m_ExchangeIDIndex->Erase(record);
 	}
 
 	DepthMarketDataTable::DepthMarketDataTable(Mdb* mdb)
@@ -1452,6 +1494,7 @@ namespace mdb
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new OrderPrimaryKey(this);
 		m_ClientOrderIDUniqueKey = new OrderUniqueKeyClientOrderID(this);
+		m_AccountIDIndex = new OrderIndexAccountID(this);
 	}
 	OrderTable::~OrderTable()
 	{
@@ -1459,6 +1502,8 @@ namespace mdb
 		m_PrimaryKey = nullptr;
 		delete m_ClientOrderIDUniqueKey;
 		m_ClientOrderIDUniqueKey = nullptr;
+		delete m_AccountIDIndex;
+		m_AccountIDIndex = nullptr;
 	}
 	void OrderTable::Subscribe(MdbSubscriber* mdbSubscriber)
 	{
@@ -1509,6 +1554,7 @@ namespace mdb
 		m_PrimaryKey->Insert(record);
 		m_ClientOrderIDUniqueKey->Insert(record);
 
+		m_AccountIDIndex->Insert(record);
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -1527,6 +1573,7 @@ namespace mdb
 				m_PrimaryKey->Insert(newRecord);
 				m_ClientOrderIDUniqueKey->Insert(newRecord);
 
+				m_AccountIDIndex->Insert(newRecord);
 			}
 		}
 		if (m_MdbSubscriber != nullptr && m_DBInited)
@@ -1548,6 +1595,30 @@ namespace mdb
 			record->Free();
 		}
 	}
+	int OrderTable::EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID)
+	{
+		m_AccountIDIndex->FillCompareRecord(TradingDay, AccountID);
+		list<Order*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_AccountIDIndex->m_Index.equal_range(&t_CompareOrder);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Free();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = Order::Allocate();
+			memcpy(record, &t_CompareOrder, sizeof(Order));
+			m_MdbSubscriber->OnOrderEraseByAccountIDIndex(record);
+		}
+		return (int)records.size();
+	}
 	bool OrderTable::Update(Order* const oldRecord, Order* const newRecord, bool updateDB)
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -1559,7 +1630,17 @@ namespace mdb
 			return false;
 		}
 
+		bool AccountIDIndexUpdate = m_AccountIDIndex->NeedUpdate(oldRecord, newRecord);
+		OrderIndexAccountID::iterator itAccountID;
+		if (AccountIDIndexUpdate)
+		{
+			itAccountID = m_AccountIDIndex->FindNode(oldRecord);
+		}
 		::memcpy((void*)oldRecord, newRecord, sizeof(Order));
+		if (AccountIDIndexUpdate)
+		{
+			m_AccountIDIndex->Update(itAccountID);
+		}
 
 		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -1580,6 +1661,7 @@ namespace mdb
 		}
 		m_PrimaryKey->m_Index.clear();
 		m_ClientOrderIDUniqueKey->m_Index.clear();
+		m_AccountIDIndex->m_Index.clear();
 	}
 	void OrderTable::TruncateTable()
 	{
@@ -1590,6 +1672,7 @@ namespace mdb
 		}
 		m_PrimaryKey->m_Index.clear();
 		m_ClientOrderIDUniqueKey->m_Index.clear();
+		m_AccountIDIndex->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
 			m_MdbSubscriber->OnOrderTruncate();
@@ -1626,6 +1709,7 @@ namespace mdb
 	}
 	void OrderTable::EraseIndex(Order* record)
 	{
+		m_AccountIDIndex->Erase(record);
 	}
 
 	TradeTable::TradeTable(Mdb* mdb)
@@ -1633,11 +1717,14 @@ namespace mdb
 	{
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new TradePrimaryKey(this);
+		m_AccountIDIndex = new TradeIndexAccountID(this);
 	}
 	TradeTable::~TradeTable()
 	{
 		delete m_PrimaryKey;
 		m_PrimaryKey = nullptr;
+		delete m_AccountIDIndex;
+		m_AccountIDIndex = nullptr;
 	}
 	void TradeTable::Subscribe(MdbSubscriber* mdbSubscriber)
 	{
@@ -1687,6 +1774,7 @@ namespace mdb
 
 		m_PrimaryKey->Insert(record);
 
+		m_AccountIDIndex->Insert(record);
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -1704,6 +1792,7 @@ namespace mdb
 				memcpy(newRecord, record, sizeof(Trade));
 				m_PrimaryKey->Insert(newRecord);
 
+				m_AccountIDIndex->Insert(newRecord);
 			}
 		}
 		if (m_MdbSubscriber != nullptr && m_DBInited)
@@ -1725,6 +1814,30 @@ namespace mdb
 			record->Free();
 		}
 	}
+	int TradeTable::EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID)
+	{
+		m_AccountIDIndex->FillCompareRecord(TradingDay, AccountID);
+		list<Trade*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_AccountIDIndex->m_Index.equal_range(&t_CompareTrade);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Free();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = Trade::Allocate();
+			memcpy(record, &t_CompareTrade, sizeof(Trade));
+			m_MdbSubscriber->OnTradeEraseByAccountIDIndex(record);
+		}
+		return (int)records.size();
+	}
 	bool TradeTable::Update(Trade* const oldRecord, Trade* const newRecord, bool updateDB)
 	{
 		std::lock_guard guard(m_SharedMutex);
@@ -1736,7 +1849,17 @@ namespace mdb
 			return false;
 		}
 
+		bool AccountIDIndexUpdate = m_AccountIDIndex->NeedUpdate(oldRecord, newRecord);
+		TradeIndexAccountID::iterator itAccountID;
+		if (AccountIDIndexUpdate)
+		{
+			itAccountID = m_AccountIDIndex->FindNode(oldRecord);
+		}
 		::memcpy((void*)oldRecord, newRecord, sizeof(Trade));
+		if (AccountIDIndexUpdate)
+		{
+			m_AccountIDIndex->Update(itAccountID);
+		}
 
 		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -1756,6 +1879,7 @@ namespace mdb
 			(*it)->Free();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_AccountIDIndex->m_Index.clear();
 	}
 	void TradeTable::TruncateTable()
 	{
@@ -1765,6 +1889,7 @@ namespace mdb
 			(*it)->Free();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_AccountIDIndex->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
 			m_MdbSubscriber->OnTradeTruncate();
@@ -1800,6 +1925,7 @@ namespace mdb
 	}
 	void TradeTable::EraseIndex(Trade* record)
 	{
+		m_AccountIDIndex->Erase(record);
 	}
 
 	AccountLoginSessionTable::AccountLoginSessionTable(Mdb* mdb)

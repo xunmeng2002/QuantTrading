@@ -55,6 +55,7 @@ namespace mdb
 		bool Insert(Instrument* record);
 		void BatchInsert(std::list<mdb::Instrument*>* records);
 		void Erase(Instrument* record);
+		int EraseByExchangeIDIndex(const ExchangeIDType& ExchangeID);
 		bool Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB = true);
 		void TruncateTables();
 		void TruncateTable();
@@ -70,6 +71,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		InstrumentPrimaryKey* m_PrimaryKey;
+		InstrumentIndexExchangeID* m_ExchangeIDIndex;
 	};
 
 	class DepthMarketDataTable

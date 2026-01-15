@@ -32,37 +32,37 @@ protected:
 
 private:
 	void HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage);
-	void HandleBrokerLogin(ReqSEBrokerLoginPackage* reqPackage);
-	void HandleBrokerLogout(ReqSEBrokerLogoutPackage* reqPackage);
+	void HandleAccountLogin(ReqAccountLoginPackage* reqPackage);
+	void HandleAccountLogout(ReqAccountLogoutPackage* reqPackage);
 	
-	void HandleInsertOrder(ReqSEInsertOrderPackage* reqPackage);
-	void HandleCancelOrder(ReqSECancelOrderPackage* reqPackage);
-	void HandleQryOrder(ReqQrySEOrderPackage* reqPackage);
-	void HandleQryTrade(ReqQrySETradePackage* reqPackage);
-	void HandleQryInstrument(ReqQrySEInstrumentPackage* reqPackage);
+	void HandleInsertOrder(ReqInsertOrderPackage* reqPackage);
+	void HandleCancelOrder(ReqCancelOrderPackage* reqPackage);
+	void HandleQryOrder(ReqQryOrderPackage* reqPackage);
+	void HandleQryTrade(ReqQryTradePackage* reqPackage);
+	void HandleQryInstrument(ReqQryInstrumentPackage* reqPackage);
 
 
 	bool CheckSessionLogin(const SessionIDType& sessionID);
-	int CheckForInsertOrder(ReqSEInsertOrderField* reqInsertOrder, mdb::SEInstrument* instrument);
-	void CheckMatchForOrderQueue(mdb::SEOrder* order);
-	bool CheckMatchForTwoOrder(mdb::SEOrder* order, mdb::SEOrder* queueOrder);
-	void Match(mdb::SEOrder* order, const PriceType& price, VolumeType volume, const TradeIDType& tradeID, const TimeType& tradeTime);
+	int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument);
+	void CheckMatchForOrderQueue(mdb::Order* order);
+	bool CheckMatchForTwoOrder(mdb::Order* order, mdb::Order* queueOrder);
+	void Match(mdb::Order* order, const PriceType& price, VolumeType volume, const TradeIDType& tradeID, const TimeType& tradeTime);
 
-	void SendRspBrokerLogin(ReqSEBrokerLoginPackage* reqPackage, mdb::SEBroker* broker, int errorID);
-	void SendRspInsertOrder(ReqSEInsertOrderPackage* reqPackage, int errorID);
-	void SendRspCancelOrder(ReqSECancelOrderPackage* reqPackage, int errorID);
-	void SendRspQryOrder(ReqQrySEOrderPackage* reqPackage, int errorID, bool isLast, mdb::SEOrder* order = nullptr);
-	void SendRspQryTrade(ReqQrySETradePackage* reqPackage, int errorID, bool isLast, mdb::SETrade* trade = nullptr);
-	void SendRspQryInstrument(ReqQrySEInstrumentPackage* reqPackage, int errorID, bool isLast, mdb::SEInstrument* instrument = nullptr);
+	void SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, mdb::PrimaryAccount* primaryAccount, int errorID);
+	void SendRspInsertOrder(ReqInsertOrderPackage* reqPackage, int errorID);
+	void SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorID);
+	void SendRspQryOrder(ReqQryOrderPackage* reqPackage, int errorID, bool isLast, mdb::Order* order = nullptr);
+	void SendRspQryTrade(ReqQryTradePackage* reqPackage, int errorID, bool isLast, mdb::Trade* trade = nullptr);
+	void SendRspQryInstrument(ReqQryInstrumentPackage* reqPackage, int errorID, bool isLast, mdb::Instrument* instrument = nullptr);
 	
-	void SendRtnOrder(mdb::SEOrder* order);
-	void SendRtnTrade(mdb::SETrade* trade);
+	void SendRtnOrder(mdb::Order* order);
+	void SendRtnTrade(mdb::Trade* trade);
 
 	Package* GetNextPackage();
 	OrderIDType GetNextOrderID();
 	void GetNextTradeID(TradeIDType& tradeID);
-	void AddOrderToQueue(mdb::SEOrder* order);
-	void RemoveOrderFromQueue(mdb::SEOrder* order);
+	void AddOrderToQueue(mdb::Order* order);
+	void RemoveOrderFromQueue(mdb::Order* order);
 
 protected:
 	MdFront* m_MdFront;
@@ -76,18 +76,18 @@ protected:
 	int m_MaxTradeID;
 
 	std::list<Package*> m_Packages;
-	RspSEBrokerLoginPackage* m_RspBrokerLoginPackage;
-	RspSEBrokerLogoutPackage* m_RspBrokerLogoutPackage;
-	RspSEInsertOrderPackage* m_RspInsertOrderPackage;
-	RspSECancelOrderPackage* m_RspCancelOrderPackage;
-	RspQrySEOrderPackage* m_RspQryOrderPackage;
-	RspQrySETradePackage* m_RspQryTradePackage;
-	RspQrySEInstrumentPackage* m_RspQryInstrumentPackage;
-	RtnSEOrderPackage* m_RtnOrderPackage;
-	RtnSETradePackage* m_RtnTradePackage;
+	RspAccountLoginPackage* m_RspAccountLoginPackage;
+	RspAccountLogoutPackage* m_RspAccountLogoutPackage;
+	RspInsertOrderPackage* m_RspInsertOrderPackage;
+	RspCancelOrderPackage* m_RspCancelOrderPackage;
+	RspQryOrderPackage* m_RspQryOrderPackage;
+	RspQryTradePackage* m_RspQryTradePackage;
+	RspQryInstrumentPackage* m_RspQryInstrumentPackage;
+	RtnOrderPackage* m_RtnOrderPackage;
+	RtnTradePackage* m_RtnTradePackage;
 
-	std::map<std::string, std::set<mdb::SEOrder*, OrderLessForPriceOpposite>> m_BuyOrders;
-	std::map<std::string, std::set<mdb::SEOrder*, OrderLessForPrice>> m_SellOrders;
-	std::map<std::string, std::set<mdb::SEOrder*, OrderLessForOrderID>> m_MarketBuyOrders;
-	std::map<std::string, std::set<mdb::SEOrder*, OrderLessForOrderID>> m_MarketSellOrders;
+	std::map<std::string, std::set<mdb::Order*, OrderLessForPriceOpposite>> m_BuyOrders;
+	std::map<std::string, std::set<mdb::Order*, OrderLessForPrice>> m_SellOrders;
+	std::map<std::string, std::set<mdb::Order*, OrderLessForOrderID>> m_MarketBuyOrders;
+	std::map<std::string, std::set<mdb::Order*, OrderLessForOrderID>> m_MarketSellOrders;
 };

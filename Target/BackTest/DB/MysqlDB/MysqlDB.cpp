@@ -59,6 +59,7 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_InstrumentDropStatement = nullptr;
 	m_InstrumentInsertStatement = nullptr;
 	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	m_InstrumentUpdateStatement = nullptr;
 	m_InstrumentSelectStatement = nullptr;
 	m_InstrumentTruncateStatement = nullptr;
@@ -128,6 +129,7 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_OrderDropStatement = nullptr;
 	m_OrderInsertStatement = nullptr;
 	m_OrderDeleteStatement = nullptr;
+	m_OrderDeleteByAccountIDIndexStatement = nullptr;
 	m_OrderUpdateStatement = nullptr;
 	m_OrderSelectStatement = nullptr;
 	m_OrderTruncateStatement = nullptr;
@@ -136,6 +138,7 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_TradeDropStatement = nullptr;
 	m_TradeInsertStatement = nullptr;
 	m_TradeDeleteStatement = nullptr;
+	m_TradeDeleteByAccountIDIndexStatement = nullptr;
 	m_TradeUpdateStatement = nullptr;
 	m_TradeSelectStatement = nullptr;
 	m_TradeTruncateStatement = nullptr;
@@ -358,6 +361,11 @@ void MysqlDB::DisConnect()
 	{
 		m_InstrumentDeleteStatement->close();
 		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	{
+		m_InstrumentDeleteByExchangeIDIndexStatement->close();
+		m_InstrumentDeleteByExchangeIDIndexStatement = nullptr;
 	}
 	if (m_InstrumentUpdateStatement != nullptr)
 	{
@@ -664,6 +672,11 @@ void MysqlDB::DisConnect()
 		m_OrderDeleteStatement->close();
 		m_OrderDeleteStatement = nullptr;
 	}
+	if (m_OrderDeleteByAccountIDIndexStatement != nullptr)
+	{
+		m_OrderDeleteByAccountIDIndexStatement->close();
+		m_OrderDeleteByAccountIDIndexStatement = nullptr;
+	}
 	if (m_OrderUpdateStatement != nullptr)
 	{
 		m_OrderUpdateStatement->close();
@@ -698,6 +711,11 @@ void MysqlDB::DisConnect()
 	{
 		m_TradeDeleteStatement->close();
 		m_TradeDeleteStatement = nullptr;
+	}
+	if (m_TradeDeleteByAccountIDIndexStatement != nullptr)
+	{
+		m_TradeDeleteByAccountIDIndexStatement->close();
+		m_TradeDeleteByAccountIDIndexStatement = nullptr;
 	}
 	if (m_TradeUpdateStatement != nullptr)
 	{
@@ -1358,7 +1376,7 @@ void MysqlDB::CreateInstrument()
 	auto start = steady_clock::now();
 	if (m_InstrumentCreateStatement == nullptr)
 	{
-		m_InstrumentCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` char(8), `InstrumentID` char(32), `ExchangeInstID` char(32), `InstrumentName` char(64), `ProductID` char(32), `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), PRIMARY KEY(ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_InstrumentCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` char(8), `InstrumentID` char(32), `ExchangeInstID` char(32), `InstrumentName` char(64), `ProductID` char(32), `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), INDEX InstrumentExchangeID(ExchangeID), PRIMARY KEY(ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
 	}
 	m_InstrumentCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
@@ -1442,6 +1460,21 @@ void MysqlDB::DeleteInstrument(Instrument* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void MysqlDB::DeleteInstrumentByExchangeIDIndex(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteByExchangeIDIndexStatement == nullptr)
+	{
+		m_InstrumentDeleteByExchangeIDIndexStatement = m_DBConnection->prepareStatement("delete from t_Instrument where ExchangeID = ?;");
+	}
+	SetStatementForInstrumentIndexExchangeID(m_InstrumentDeleteByExchangeIDIndexStatement, record);
+	m_InstrumentDeleteByExchangeIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrumentByExchangeIDIndex Spend:%lldms", duration);
 	}
 }
 void MysqlDB::UpdateInstrument(Instrument* record)
@@ -2507,7 +2540,7 @@ void MysqlDB::CreateOrder()
 	auto start = steady_clock::now();
 	if (m_OrderCreateStatement == nullptr)
 	{
-		m_OrderCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Order(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `Direction` int, `OffsetFlag` int, `OrderPriceType` int, `Price` decimal(24,8), `Volume` bigint, `VolumeTotal` bigint, `VolumeTraded` bigint, `VolumeMultiple` int, `OrderStatus` int, `OrderDate` char(9), `OrderTime` char(9), `CancelDate` char(9), `CancelTime` char(9), `SessionID` bigint, `ClientOrderID` int, `RequestID` int, `OfferID` int, `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `RebuildMark` bool, `IsForceClose` bool, UNIQUE ClientOrderID(TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_OrderCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Order(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `Direction` int, `OffsetFlag` int, `OrderPriceType` int, `Price` decimal(24,8), `Volume` bigint, `VolumeTotal` bigint, `VolumeTraded` bigint, `VolumeMultiple` int, `OrderStatus` int, `OrderDate` char(9), `OrderTime` char(9), `CancelDate` char(9), `CancelTime` char(9), `SessionID` bigint, `ClientOrderID` int, `RequestID` int, `OfferID` int, `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `RebuildMark` bool, `IsForceClose` bool, INDEX OrderAccountID(TradingDay, AccountID), UNIQUE ClientOrderID(TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
 	}
 	m_OrderCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
@@ -2593,6 +2626,21 @@ void MysqlDB::DeleteOrder(Order* record)
 		WriteLog(LogLevel::Warning, "DeleteOrder Spend:%lldms", duration);
 	}
 }
+void MysqlDB::DeleteOrderByAccountIDIndex(Order* record)
+{
+	auto start = steady_clock::now();
+	if (m_OrderDeleteByAccountIDIndexStatement == nullptr)
+	{
+		m_OrderDeleteByAccountIDIndexStatement = m_DBConnection->prepareStatement("delete from t_Order where TradingDay = ? and AccountID = ?;");
+	}
+	SetStatementForOrderIndexAccountID(m_OrderDeleteByAccountIDIndexStatement, record);
+	m_OrderDeleteByAccountIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteOrderByAccountIDIndex Spend:%lldms", duration);
+	}
+}
 void MysqlDB::UpdateOrder(Order* record)
 {
 	auto start = steady_clock::now();
@@ -2641,7 +2689,7 @@ void MysqlDB::CreateTrade()
 	auto start = steady_clock::now();
 	if (m_TradeCreateStatement == nullptr)
 	{
-		m_TradeCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Trade(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `TradeID` char(64), `Direction` int, `OffsetFlag` int, `Price` decimal(24,8), `Volume` bigint, `VolumeMultiple` int, `TradeAmount` decimal(24,8), `Commission` decimal(24,8), `TradeDate` char(9), `TradeTime` char(9), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_TradeCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Trade(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `TradeID` char(64), `Direction` int, `OffsetFlag` int, `Price` decimal(24,8), `Volume` bigint, `VolumeMultiple` int, `TradeAmount` decimal(24,8), `Commission` decimal(24,8), `TradeDate` char(9), `TradeTime` char(9), INDEX TradeAccountID(TradingDay, AccountID), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
 	}
 	m_TradeCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
@@ -2725,6 +2773,21 @@ void MysqlDB::DeleteTrade(Trade* record)
 	if (duration >= 100)
 	{
 		WriteLog(LogLevel::Warning, "DeleteTrade Spend:%lldms", duration);
+	}
+}
+void MysqlDB::DeleteTradeByAccountIDIndex(Trade* record)
+{
+	auto start = steady_clock::now();
+	if (m_TradeDeleteByAccountIDIndexStatement == nullptr)
+	{
+		m_TradeDeleteByAccountIDIndexStatement = m_DBConnection->prepareStatement("delete from t_Trade where TradingDay = ? and AccountID = ?;");
+	}
+	SetStatementForTradeIndexAccountID(m_TradeDeleteByAccountIDIndexStatement, record);
+	m_TradeDeleteByAccountIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteTradeByAccountIDIndex Spend:%lldms", duration);
 	}
 }
 void MysqlDB::UpdateTrade(Trade* record)
@@ -2967,6 +3030,10 @@ void MysqlDB::SetStatementForInstrumentPrimaryKey(sql::PreparedStatement* statem
 {
 	statement->setString(1, ExchangeID);
 	statement->setString(2, InstrumentID);
+}
+void MysqlDB::SetStatementForInstrumentIndexExchangeID(sql::PreparedStatement* statement, Instrument* record)
+{
+	statement->setString(1, record->ExchangeID);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Instrument*>& records)
 {
@@ -3710,6 +3777,11 @@ void MysqlDB::SetStatementForOrderPrimaryKey(sql::PreparedStatement* statement, 
 	statement->setString(4, InstrumentID);
 	statement->setInt(5, OrderID);
 }
+void MysqlDB::SetStatementForOrderIndexAccountID(sql::PreparedStatement* statement, Order* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->AccountID);
+}
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Order*>& records)
 {
 	Order* record = Order::Allocate();
@@ -3796,6 +3868,11 @@ void MysqlDB::SetStatementForTradePrimaryKey(sql::PreparedStatement* statement, 
 	statement->setString(2, ExchangeID);
 	statement->setString(3, TradeID);
 	statement->setInt(4, int(Direction));
+}
+void MysqlDB::SetStatementForTradeIndexAccountID(sql::PreparedStatement* statement, Trade* record)
+{
+	statement->setString(1, record->TradingDay);
+	statement->setString(2, record->AccountID);
 }
 void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<Trade*>& records)
 {

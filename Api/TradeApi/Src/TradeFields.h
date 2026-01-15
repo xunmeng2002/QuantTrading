@@ -211,8 +211,15 @@ public:
 	InstrumentIDType InstrumentID;		//合约代码
 	InstrumentIDType ExchangeInstID;		//交易所合约代码
 	InstrumentNameType InstrumentName;		//合约名称
-	VolumeMultipleType VolumeMultiple;		//合约乘数
+	ProductIDType ProductID;		//品种代码
 	ProductClassType ProductClass;		//品种类型
+	VolumeMultipleType VolumeMultiple;		//合约乘数
+	PriceType PriceTick;		//最小变动价位
+	VolumeType MaxMarketOrderVolume;		//市价最大下单量
+	VolumeType MinMarketOrderVolume;		//市价最小下单量
+	VolumeType MaxLimitOrderVolume;		//限价最大下单量
+	VolumeType MinLimitOrderVolume;		//限价最小下单量
+	SessionNameType SessionName;		//交易节名称
 };
 
 class ReqQryOptionInstrumentField

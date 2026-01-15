@@ -47,6 +47,7 @@ public:
 	virtual void OnInstrumentInsert(mdb::Instrument* record) override;
 	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) override;
 	virtual void OnInstrumentErase(mdb::Instrument* record) override;
+	virtual void OnInstrumentEraseByExchangeIDIndex(mdb::Instrument* record) override;
 	virtual void OnInstrumentUpdate(mdb::Instrument* record) override;
 	virtual void OnInstrumentTruncate() override;
 	
@@ -78,12 +79,14 @@ public:
 	virtual void OnOrderInsert(mdb::Order* record) override;
 	virtual void OnOrderBatchInsert(std::list<mdb::Order*>* records) override;
 	virtual void OnOrderErase(mdb::Order* record) override;
+	virtual void OnOrderEraseByAccountIDIndex(mdb::Order* record) override;
 	virtual void OnOrderUpdate(mdb::Order* record) override;
 	virtual void OnOrderTruncate() override;
 	
 	virtual void OnTradeInsert(mdb::Trade* record) override;
 	virtual void OnTradeBatchInsert(std::list<mdb::Trade*>* records) override;
 	virtual void OnTradeErase(mdb::Trade* record) override;
+	virtual void OnTradeEraseByAccountIDIndex(mdb::Trade* record) override;
 	virtual void OnTradeUpdate(mdb::Trade* record) override;
 	virtual void OnTradeTruncate() override;
 	

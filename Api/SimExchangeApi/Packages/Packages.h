@@ -3,10 +3,10 @@
 #include "Package.h"
 
 
-class ReqSEBrokerLoginPackage : public Package
+class ReqAccountLoginPackage : public Package
 {
 public:
-	static ReqSEBrokerLoginPackage* Allocate();
+	static ReqAccountLoginPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -15,13 +15,13 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3001;
-	ReqSEBrokerLoginField* ReqSEBrokerLogin = nullptr;
+	static constexpr UShortType PackageID = 0x2001;
+	ReqAccountLoginField* ReqAccountLogin = nullptr;
 };
-class RspSEBrokerLoginPackage : public Package
+class RspAccountLoginPackage : public Package
 {
 public:
-	static RspSEBrokerLoginPackage* Allocate();
+	static RspAccountLoginPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -30,14 +30,14 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3002;
-	RspSEBrokerLoginField* RspSEBrokerLogin = nullptr;
+	static constexpr UShortType PackageID = 0x2002;
+	RspAccountLoginField* RspAccountLogin = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
-class ReqSEBrokerLogoutPackage : public Package
+class ReqAccountLogoutPackage : public Package
 {
 public:
-	static ReqSEBrokerLogoutPackage* Allocate();
+	static ReqAccountLogoutPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -46,13 +46,13 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3003;
-	ReqSEBrokerLogoutField* ReqSEBrokerLogout = nullptr;
+	static constexpr UShortType PackageID = 0x2003;
+	ReqAccountLogoutField* ReqAccountLogout = nullptr;
 };
-class RspSEBrokerLogoutPackage : public Package
+class RspAccountLogoutPackage : public Package
 {
 public:
-	static RspSEBrokerLogoutPackage* Allocate();
+	static RspAccountLogoutPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -61,14 +61,14 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3004;
-	RspSEBrokerLogoutField* RspSEBrokerLogout = nullptr;
+	static constexpr UShortType PackageID = 0x2004;
+	RspAccountLogoutField* RspAccountLogout = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
-class ReqSEInsertOrderPackage : public Package
+class ReqQryOrderPackage : public Package
 {
 public:
-	static ReqSEInsertOrderPackage* Allocate();
+	static ReqQryOrderPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -77,13 +77,13 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3005;
-	ReqSEInsertOrderField* ReqSEInsertOrder = nullptr;
+	static constexpr UShortType PackageID = 0x200D;
+	ReqQryOrderField* ReqQryOrder = nullptr;
 };
-class RspSEInsertOrderPackage : public Package
+class RspQryOrderPackage : public Package
 {
 public:
-	static RspSEInsertOrderPackage* Allocate();
+	static RspQryOrderPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -92,14 +92,14 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3006;
-	ReqSEInsertOrderField* ReqSEInsertOrder = nullptr;
+	static constexpr UShortType PackageID = 0x200E;
+	OrderField* Order = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
-class ReqSECancelOrderPackage : public Package
+class ReqQryTradePackage : public Package
 {
 public:
-	static ReqSECancelOrderPackage* Allocate();
+	static ReqQryTradePackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -108,13 +108,13 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3007;
-	ReqSECancelOrderField* ReqSECancelOrder = nullptr;
+	static constexpr UShortType PackageID = 0x200F;
+	ReqQryTradeField* ReqQryTrade = nullptr;
 };
-class RspSECancelOrderPackage : public Package
+class RspQryTradePackage : public Package
 {
 public:
-	static RspSECancelOrderPackage* Allocate();
+	static RspQryTradePackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -123,14 +123,14 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3008;
-	ReqSECancelOrderField* ReqSECancelOrder = nullptr;
+	static constexpr UShortType PackageID = 0x2010;
+	TradeField* Trade = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
-class ReqQrySEOrderPackage : public Package
+class ReqQryInstrumentPackage : public Package
 {
 public:
-	static ReqQrySEOrderPackage* Allocate();
+	static ReqQryInstrumentPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -139,13 +139,13 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3009;
-	ReqQrySEOrderField* ReqQrySEOrder = nullptr;
+	static constexpr UShortType PackageID = 0x2011;
+	ReqQryInstrumentField* ReqQryInstrument = nullptr;
 };
-class RspQrySEOrderPackage : public Package
+class RspQryInstrumentPackage : public Package
 {
 public:
-	static RspQrySEOrderPackage* Allocate();
+	static RspQryInstrumentPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -154,14 +154,14 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x300A;
-	SEOrderField* SEOrder = nullptr;
+	static constexpr UShortType PackageID = 0x2012;
+	InstrumentField* Instrument = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
-class ReqQrySETradePackage : public Package
+class ReqInsertOrderPackage : public Package
 {
 public:
-	static ReqQrySETradePackage* Allocate();
+	static ReqInsertOrderPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -170,13 +170,13 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x300B;
-	ReqQrySETradeField* ReqQrySETrade = nullptr;
+	static constexpr UShortType PackageID = 0x2019;
+	ReqInsertOrderField* ReqInsertOrder = nullptr;
 };
-class RspQrySETradePackage : public Package
+class RspInsertOrderPackage : public Package
 {
 public:
-	static RspQrySETradePackage* Allocate();
+	static RspInsertOrderPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -185,14 +185,14 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x300C;
-	SETradeField* SETrade = nullptr;
+	static constexpr UShortType PackageID = 0x201A;
+	ReqInsertOrderField* ReqInsertOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
-class ReqQrySEInstrumentPackage : public Package
+class ReqCancelOrderPackage : public Package
 {
 public:
-	static ReqQrySEInstrumentPackage* Allocate();
+	static ReqCancelOrderPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -201,13 +201,13 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x300D;
-	ReqQrySEInstrumentField* ReqQrySEInstrument = nullptr;
+	static constexpr UShortType PackageID = 0x201B;
+	ReqCancelOrderField* ReqCancelOrder = nullptr;
 };
-class RspQrySEInstrumentPackage : public Package
+class RspCancelOrderPackage : public Package
 {
 public:
-	static RspQrySEInstrumentPackage* Allocate();
+	static RspCancelOrderPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -216,14 +216,14 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x300E;
-	SEInstrumentField* SEInstrument = nullptr;
+	static constexpr UShortType PackageID = 0x201C;
+	ReqCancelOrderField* ReqCancelOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
-class RtnSEOrderPackage : public Package
+class RtnOrderPackage : public Package
 {
 public:
-	static RtnSEOrderPackage* Allocate();
+	static RtnOrderPackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -232,13 +232,13 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3101;
-	SEOrderField* SEOrder = nullptr;
+	static constexpr UShortType PackageID = 0x201D;
+	OrderField* Order = nullptr;
 };
-class RtnSETradePackage : public Package
+class RtnTradePackage : public Package
 {
 public:
-	static RtnSETradePackage* Allocate();
+	static RtnTradePackage* Allocate();
 	virtual void Free() override;
 	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
@@ -247,6 +247,6 @@ public:
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UShortType PackageID = 0x3102;
-	SETradeField* SETrade = nullptr;
+	static constexpr UShortType PackageID = 0x201E;
+	TradeField* Trade = nullptr;
 };
