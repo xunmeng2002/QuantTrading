@@ -51,18 +51,6 @@ constexpr const char* TruncateMysqlDBOrderTableSqlString = "Truncate Table t_Ord
 constexpr const char* CreateMysqlDBTradeTableSqlString = "CREATE TABLE IF NOT EXISTS t_Trade(TradingDay char(9), AccountID char(32), AccountType int, ExchangeID char(8), InstrumentID char(32), ProductClass int, OrderID int, OrderSysID char(64), TradeID char(64), Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate char(9), TradeTime char(9), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 constexpr const char* TruncateMysqlDBTradeTableSqlString = "Truncate Table t_Trade;";
 
-constexpr const char* CreateMysqlDBSEBrokerTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEBroker(BrokerID int, BrokerName char(16), Password char(64), PRIMARY KEY(BrokerID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
-constexpr const char* TruncateMysqlDBSEBrokerTableSqlString = "Truncate Table t_SEBroker;";
-
-constexpr const char* CreateMysqlDBSEInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEInstrument(ExchangeID char(8), InstrumentID char(32), ExchangeInstID char(32), InstrumentName char(64), ProductID char(32), ProductClass int, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, VolumeMultiple int, PriceTick double, UpperLimitPrice double, LowerLimitPrice double, SessionName char(32), INDEX ExchangeID(ExchangeID), PRIMARY KEY(ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
-constexpr const char* TruncateMysqlDBSEInstrumentTableSqlString = "Truncate Table t_SEInstrument;";
-
-constexpr const char* CreateMysqlDBSEOrderTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEOrder(TradingDay char(9), BrokerID int, AccountID char(32), ExchangeID char(8), InstrumentID char(32), ProductClass int, OrderID int, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate char(9), OrderTime char(9), CancelDate char(9), CancelTime char(9), SessionID bigint, ClientOrderID int, INDEX AccountID(TradingDay, AccountID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
-constexpr const char* TruncateMysqlDBSEOrderTableSqlString = "Truncate Table t_SEOrder;";
-
-constexpr const char* CreateMysqlDBSETradeTableSqlString = "CREATE TABLE IF NOT EXISTS t_SETrade(TradingDay char(9), BrokerID int, AccountID char(32), ExchangeID char(8), InstrumentID char(32), ProductClass int, OrderID int, TradeID char(64), Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate char(9), TradeTime char(9), INDEX AccountID(TradingDay, AccountID), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
-constexpr const char* TruncateMysqlDBSETradeTableSqlString = "Truncate Table t_SETrade;";
-
-constexpr const char* CreateMysqlDBSEBrokerLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(BrokerID int, SessionID bigint, IPAddress char(16), INDEX BrokerID(BrokerID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
-constexpr const char* TruncateMysqlDBSEBrokerLoginSessionTableSqlString = "Truncate Table t_SEBrokerLoginSession;";
+constexpr const char* CreateMysqlDBAccountLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_AccountLoginSession(AccountID char(32), SessionID bigint, IPAddress char(16), INDEX AccountID(AccountID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+constexpr const char* TruncateMysqlDBAccountLoginSessionTableSqlString = "Truncate Table t_AccountLoginSession;";
 

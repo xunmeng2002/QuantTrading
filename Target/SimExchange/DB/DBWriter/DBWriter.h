@@ -44,45 +44,55 @@ public:
 	virtual void OnProductUpdate(mdb::Product* record) override;
 	virtual void OnProductTruncate() override;
 	
+	virtual void OnInstrumentInsert(mdb::Instrument* record) override;
+	virtual void OnInstrumentBatchInsert(std::list<mdb::Instrument*>* records) override;
+	virtual void OnInstrumentErase(mdb::Instrument* record) override;
+	virtual void OnInstrumentUpdate(mdb::Instrument* record) override;
+	virtual void OnInstrumentTruncate() override;
+	
 	virtual void OnDepthMarketDataInsert(mdb::DepthMarketData* record) override;
 	virtual void OnDepthMarketDataBatchInsert(std::list<mdb::DepthMarketData*>* records) override;
 	virtual void OnDepthMarketDataErase(mdb::DepthMarketData* record) override;
 	virtual void OnDepthMarketDataUpdate(mdb::DepthMarketData* record) override;
 	virtual void OnDepthMarketDataTruncate() override;
 	
-	virtual void OnSEBrokerInsert(mdb::SEBroker* record) override;
-	virtual void OnSEBrokerBatchInsert(std::list<mdb::SEBroker*>* records) override;
-	virtual void OnSEBrokerErase(mdb::SEBroker* record) override;
-	virtual void OnSEBrokerUpdate(mdb::SEBroker* record) override;
-	virtual void OnSEBrokerTruncate() override;
+	virtual void OnBarMarketDataInsert(mdb::BarMarketData* record) override;
+	virtual void OnBarMarketDataBatchInsert(std::list<mdb::BarMarketData*>* records) override;
+	virtual void OnBarMarketDataErase(mdb::BarMarketData* record) override;
+	virtual void OnBarMarketDataUpdate(mdb::BarMarketData* record) override;
+	virtual void OnBarMarketDataTruncate() override;
 	
-	virtual void OnSEInstrumentInsert(mdb::SEInstrument* record) override;
-	virtual void OnSEInstrumentBatchInsert(std::list<mdb::SEInstrument*>* records) override;
-	virtual void OnSEInstrumentErase(mdb::SEInstrument* record) override;
-	virtual void OnSEInstrumentEraseByExchangeIDIndex(mdb::SEInstrument* record) override;
-	virtual void OnSEInstrumentUpdate(mdb::SEInstrument* record) override;
-	virtual void OnSEInstrumentTruncate() override;
+	virtual void OnPrimaryAccountInsert(mdb::PrimaryAccount* record) override;
+	virtual void OnPrimaryAccountBatchInsert(std::list<mdb::PrimaryAccount*>* records) override;
+	virtual void OnPrimaryAccountErase(mdb::PrimaryAccount* record) override;
+	virtual void OnPrimaryAccountEraseByOfferIDIndex(mdb::PrimaryAccount* record) override;
+	virtual void OnPrimaryAccountUpdate(mdb::PrimaryAccount* record) override;
+	virtual void OnPrimaryAccountTruncate() override;
 	
-	virtual void OnSEOrderInsert(mdb::SEOrder* record) override;
-	virtual void OnSEOrderBatchInsert(std::list<mdb::SEOrder*>* records) override;
-	virtual void OnSEOrderErase(mdb::SEOrder* record) override;
-	virtual void OnSEOrderEraseByAccountIDIndex(mdb::SEOrder* record) override;
-	virtual void OnSEOrderUpdate(mdb::SEOrder* record) override;
-	virtual void OnSEOrderTruncate() override;
+	virtual void OnAccountInsert(mdb::Account* record) override;
+	virtual void OnAccountBatchInsert(std::list<mdb::Account*>* records) override;
+	virtual void OnAccountErase(mdb::Account* record) override;
+	virtual void OnAccountUpdate(mdb::Account* record) override;
+	virtual void OnAccountTruncate() override;
 	
-	virtual void OnSETradeInsert(mdb::SETrade* record) override;
-	virtual void OnSETradeBatchInsert(std::list<mdb::SETrade*>* records) override;
-	virtual void OnSETradeErase(mdb::SETrade* record) override;
-	virtual void OnSETradeEraseByAccountIDIndex(mdb::SETrade* record) override;
-	virtual void OnSETradeUpdate(mdb::SETrade* record) override;
-	virtual void OnSETradeTruncate() override;
+	virtual void OnOrderInsert(mdb::Order* record) override;
+	virtual void OnOrderBatchInsert(std::list<mdb::Order*>* records) override;
+	virtual void OnOrderErase(mdb::Order* record) override;
+	virtual void OnOrderUpdate(mdb::Order* record) override;
+	virtual void OnOrderTruncate() override;
 	
-	virtual void OnSEBrokerLoginSessionInsert(mdb::SEBrokerLoginSession* record) override;
-	virtual void OnSEBrokerLoginSessionBatchInsert(std::list<mdb::SEBrokerLoginSession*>* records) override;
-	virtual void OnSEBrokerLoginSessionErase(mdb::SEBrokerLoginSession* record) override;
-	virtual void OnSEBrokerLoginSessionEraseByBrokerIDIndex(mdb::SEBrokerLoginSession* record) override;
-	virtual void OnSEBrokerLoginSessionUpdate(mdb::SEBrokerLoginSession* record) override;
-	virtual void OnSEBrokerLoginSessionTruncate() override;
+	virtual void OnTradeInsert(mdb::Trade* record) override;
+	virtual void OnTradeBatchInsert(std::list<mdb::Trade*>* records) override;
+	virtual void OnTradeErase(mdb::Trade* record) override;
+	virtual void OnTradeUpdate(mdb::Trade* record) override;
+	virtual void OnTradeTruncate() override;
+	
+	virtual void OnAccountLoginSessionInsert(mdb::AccountLoginSession* record) override;
+	virtual void OnAccountLoginSessionBatchInsert(std::list<mdb::AccountLoginSession*>* records) override;
+	virtual void OnAccountLoginSessionErase(mdb::AccountLoginSession* record) override;
+	virtual void OnAccountLoginSessionEraseByAccountIDIndex(mdb::AccountLoginSession* record) override;
+	virtual void OnAccountLoginSessionUpdate(mdb::AccountLoginSession* record) override;
+	virtual void OnAccountLoginSessionTruncate() override;
 	
 
 protected:

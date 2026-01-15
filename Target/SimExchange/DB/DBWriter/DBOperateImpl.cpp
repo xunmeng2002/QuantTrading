@@ -40,34 +40,44 @@ void DBOperateImpl::FreeRecord()
 		((Product*)Record)->Free();
 		break;
 	}
+	case Instrument::TableID:
+	{
+		((Instrument*)Record)->Free();
+		break;
+	}
 	case DepthMarketData::TableID:
 	{
 		((DepthMarketData*)Record)->Free();
 		break;
 	}
-	case SEBroker::TableID:
+	case BarMarketData::TableID:
 	{
-		((SEBroker*)Record)->Free();
+		((BarMarketData*)Record)->Free();
 		break;
 	}
-	case SEInstrument::TableID:
+	case PrimaryAccount::TableID:
 	{
-		((SEInstrument*)Record)->Free();
+		((PrimaryAccount*)Record)->Free();
 		break;
 	}
-	case SEOrder::TableID:
+	case Account::TableID:
 	{
-		((SEOrder*)Record)->Free();
+		((Account*)Record)->Free();
 		break;
 	}
-	case SETrade::TableID:
+	case Order::TableID:
 	{
-		((SETrade*)Record)->Free();
+		((Order*)Record)->Free();
 		break;
 	}
-	case SEBrokerLoginSession::TableID:
+	case Trade::TableID:
 	{
-		((SEBrokerLoginSession*)Record)->Free();
+		((Trade*)Record)->Free();
+		break;
+	}
+	case AccountLoginSession::TableID:
+	{
+		((AccountLoginSession*)Record)->Free();
 		break;
 	}
 	default:
@@ -91,29 +101,37 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Product*)Record)->GetDebugString();
 	}
+	case Instrument::TableID:
+	{
+		return ((Instrument*)Record)->GetDebugString();
+	}
 	case DepthMarketData::TableID:
 	{
 		return ((DepthMarketData*)Record)->GetDebugString();
 	}
-	case SEBroker::TableID:
+	case BarMarketData::TableID:
 	{
-		return ((SEBroker*)Record)->GetDebugString();
+		return ((BarMarketData*)Record)->GetDebugString();
 	}
-	case SEInstrument::TableID:
+	case PrimaryAccount::TableID:
 	{
-		return ((SEInstrument*)Record)->GetDebugString();
+		return ((PrimaryAccount*)Record)->GetDebugString();
 	}
-	case SEOrder::TableID:
+	case Account::TableID:
 	{
-		return ((SEOrder*)Record)->GetDebugString();
+		return ((Account*)Record)->GetDebugString();
 	}
-	case SETrade::TableID:
+	case Order::TableID:
 	{
-		return ((SETrade*)Record)->GetDebugString();
+		return ((Order*)Record)->GetDebugString();
 	}
-	case SEBrokerLoginSession::TableID:
+	case Trade::TableID:
 	{
-		return ((SEBrokerLoginSession*)Record)->GetDebugString();
+		return ((Trade*)Record)->GetDebugString();
+	}
+	case AccountLoginSession::TableID:
+	{
+		return ((AccountLoginSession*)Record)->GetDebugString();
 	}
 	default:
 		break;

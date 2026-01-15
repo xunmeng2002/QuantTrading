@@ -366,92 +366,12 @@ CREATE TABLE IF NOT EXISTS t_Trade(
 );
 
 
-CREATE TABLE IF NOT EXISTS t_SEBroker(
-  `BrokerID` int, 
-  `BrokerName` text, 
-  `Password` text, 
-  PRIMARY KEY(BrokerID)
-);
-
-
-CREATE TABLE IF NOT EXISTS t_SEInstrument(
-  `ExchangeID` text, 
-  `InstrumentID` text, 
-  `ExchangeInstID` text, 
-  `InstrumentName` text, 
-  `ProductID` text, 
-  `ProductClass` int, 
-  `MaxMarketOrderVolume` bigint, 
-  `MinMarketOrderVolume` bigint, 
-  `MaxLimitOrderVolume` bigint, 
-  `MinLimitOrderVolume` bigint, 
-  `VolumeMultiple` int, 
-  `PriceTick` double, 
-  `UpperLimitPrice` double, 
-  `LowerLimitPrice` double, 
-  `SessionName` text, 
-  PRIMARY KEY(ExchangeID, InstrumentID)
-);
-CREATE INDEX SEInstrumentExchangeID ON t_SEInstrument(ExchangeID);
-
-
-CREATE TABLE IF NOT EXISTS t_SEOrder(
-  `TradingDay` text, 
-  `BrokerID` int, 
+CREATE TABLE IF NOT EXISTS t_AccountLoginSession(
   `AccountID` text, 
-  `ExchangeID` text, 
-  `InstrumentID` text, 
-  `ProductClass` int, 
-  `OrderID` int, 
-  `Direction` int, 
-  `OffsetFlag` int, 
-  `OrderPriceType` int, 
-  `Price` double, 
-  `Volume` bigint, 
-  `VolumeTotal` bigint, 
-  `VolumeTraded` bigint, 
-  `VolumeMultiple` int, 
-  `OrderStatus` int, 
-  `OrderDate` text, 
-  `OrderTime` text, 
-  `CancelDate` text, 
-  `CancelTime` text, 
-  `SessionID` bigint, 
-  `ClientOrderID` int, 
-  PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)
-);
-CREATE INDEX SEOrderAccountID ON t_SEOrder(TradingDay, AccountID);
-
-
-CREATE TABLE IF NOT EXISTS t_SETrade(
-  `TradingDay` text, 
-  `BrokerID` int, 
-  `AccountID` text, 
-  `ExchangeID` text, 
-  `InstrumentID` text, 
-  `ProductClass` int, 
-  `OrderID` int, 
-  `TradeID` text, 
-  `Direction` int, 
-  `OffsetFlag` int, 
-  `Price` double, 
-  `Volume` bigint, 
-  `VolumeMultiple` int, 
-  `TradeAmount` double, 
-  `Commission` double, 
-  `TradeDate` text, 
-  `TradeTime` text, 
-  PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)
-);
-CREATE INDEX SETradeAccountID ON t_SETrade(TradingDay, AccountID);
-
-
-CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(
-  `BrokerID` int, 
   `SessionID` bigint, 
   `IPAddress` text, 
   PRIMARY KEY(SessionID)
 );
-CREATE INDEX SEBrokerLoginSessionBrokerID ON t_SEBrokerLoginSession(BrokerID);
+CREATE INDEX AccountLoginSessionAccountID ON t_AccountLoginSession(AccountID);
 
 

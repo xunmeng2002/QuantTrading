@@ -51,18 +51,6 @@ constexpr const char* TruncateDuckDBOrderTableSqlString = "Delete From t_Order;"
 constexpr const char* CreateDuckDBTradeTableSqlString = "CREATE TABLE IF NOT EXISTS t_Trade(TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));";
 constexpr const char* TruncateDuckDBTradeTableSqlString = "Delete From t_Trade;";
 
-constexpr const char* CreateDuckDBSEBrokerTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEBroker(BrokerID int, BrokerName varchar, Password varchar, PRIMARY KEY(BrokerID));";
-constexpr const char* TruncateDuckDBSEBrokerTableSqlString = "Delete From t_SEBroker;";
-
-constexpr const char* CreateDuckDBSEInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEInstrument(ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, VolumeMultiple int, PriceTick double, UpperLimitPrice double, LowerLimitPrice double, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID)); CREATE INDEX IF NOT EXISTS ExchangeIDIndex ON t_SEInstrument(ExchangeID);";
-constexpr const char* TruncateDuckDBSEInstrumentTableSqlString = "Delete From t_SEInstrument;";
-
-constexpr const char* CreateDuckDBSEOrderTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEOrder(TradingDay varchar, BrokerID int, AccountID varchar, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)); CREATE INDEX IF NOT EXISTS AccountIDIndex ON t_SEOrder(TradingDay, AccountID);";
-constexpr const char* TruncateDuckDBSEOrderTableSqlString = "Delete From t_SEOrder;";
-
-constexpr const char* CreateDuckDBSETradeTableSqlString = "CREATE TABLE IF NOT EXISTS t_SETrade(TradingDay varchar, BrokerID int, AccountID varchar, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)); CREATE INDEX IF NOT EXISTS AccountIDIndex ON t_SETrade(TradingDay, AccountID);";
-constexpr const char* TruncateDuckDBSETradeTableSqlString = "Delete From t_SETrade;";
-
-constexpr const char* CreateDuckDBSEBrokerLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(BrokerID int, SessionID bigint, IPAddress varchar, PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS BrokerIDIndex ON t_SEBrokerLoginSession(BrokerID);";
-constexpr const char* TruncateDuckDBSEBrokerLoginSessionTableSqlString = "Delete From t_SEBrokerLoginSession;";
+constexpr const char* CreateDuckDBAccountLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_AccountLoginSession(AccountID varchar, SessionID bigint, IPAddress varchar, PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS AccountIDIndex ON t_AccountLoginSession(AccountID);";
+constexpr const char* TruncateDuckDBAccountLoginSessionTableSqlString = "Delete From t_AccountLoginSession;";
 

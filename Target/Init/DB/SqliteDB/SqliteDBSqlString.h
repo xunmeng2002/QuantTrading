@@ -51,18 +51,6 @@ constexpr const char* TruncateSqliteDBOrderTableSqlString = "Delete From t_Order
 constexpr const char* CreateSqliteDBTradeTableSqlString = "CREATE TABLE IF NOT EXISTS t_Trade(TradingDay char(9), AccountID char(32), AccountType int, ExchangeID char(8), InstrumentID char(32), ProductClass int, OrderID int, OrderSysID char(64), TradeID char(64), Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate char(9), TradeTime char(9), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));";
 constexpr const char* TruncateSqliteDBTradeTableSqlString = "Delete From t_Trade;";
 
-constexpr const char* CreateSqliteDBSEBrokerTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEBroker(BrokerID int, BrokerName char(16), Password char(64), PRIMARY KEY(BrokerID));";
-constexpr const char* TruncateSqliteDBSEBrokerTableSqlString = "Delete From t_SEBroker;";
-
-constexpr const char* CreateSqliteDBSEInstrumentTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEInstrument(ExchangeID char(8), InstrumentID char(32), ExchangeInstID char(32), InstrumentName char(64), ProductID char(32), ProductClass int, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, VolumeMultiple int, PriceTick double, UpperLimitPrice double, LowerLimitPrice double, SessionName char(32), PRIMARY KEY(ExchangeID, InstrumentID)); CREATE INDEX IF NOT EXISTS ExchangeIDIndex ON t_SEInstrument(ExchangeID);";
-constexpr const char* TruncateSqliteDBSEInstrumentTableSqlString = "Delete From t_SEInstrument;";
-
-constexpr const char* CreateSqliteDBSEOrderTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEOrder(TradingDay char(9), BrokerID int, AccountID char(32), ExchangeID char(8), InstrumentID char(32), ProductClass int, OrderID int, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate char(9), OrderTime char(9), CancelDate char(9), CancelTime char(9), SessionID bigint, ClientOrderID int, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)); CREATE INDEX IF NOT EXISTS AccountIDIndex ON t_SEOrder(TradingDay, AccountID);";
-constexpr const char* TruncateSqliteDBSEOrderTableSqlString = "Delete From t_SEOrder;";
-
-constexpr const char* CreateSqliteDBSETradeTableSqlString = "CREATE TABLE IF NOT EXISTS t_SETrade(TradingDay char(9), BrokerID int, AccountID char(32), ExchangeID char(8), InstrumentID char(32), ProductClass int, OrderID int, TradeID char(64), Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate char(9), TradeTime char(9), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)); CREATE INDEX IF NOT EXISTS AccountIDIndex ON t_SETrade(TradingDay, AccountID);";
-constexpr const char* TruncateSqliteDBSETradeTableSqlString = "Delete From t_SETrade;";
-
-constexpr const char* CreateSqliteDBSEBrokerLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession(BrokerID int, SessionID bigint, IPAddress char(16), PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS BrokerIDIndex ON t_SEBrokerLoginSession(BrokerID);";
-constexpr const char* TruncateSqliteDBSEBrokerLoginSessionTableSqlString = "Delete From t_SEBrokerLoginSession;";
+constexpr const char* CreateSqliteDBAccountLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_AccountLoginSession(AccountID char(32), SessionID bigint, IPAddress char(16), PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS AccountIDIndex ON t_AccountLoginSession(AccountID);";
+constexpr const char* TruncateSqliteDBAccountLoginSessionTableSqlString = "Delete From t_AccountLoginSession;";
 

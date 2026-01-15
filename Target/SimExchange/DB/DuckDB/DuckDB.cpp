@@ -31,39 +31,47 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_ProductSelectStatement = nullptr;
 	m_ProductTruncateStatement = nullptr;
 
+	m_InstrumentDeleteStatement = nullptr;
+	m_InstrumentUpdateStatement = nullptr;
+	m_InstrumentSelectStatement = nullptr;
+	m_InstrumentTruncateStatement = nullptr;
+
 	m_DepthMarketDataDeleteStatement = nullptr;
 	m_DepthMarketDataUpdateStatement = nullptr;
 	m_DepthMarketDataSelectStatement = nullptr;
 	m_DepthMarketDataTruncateStatement = nullptr;
 
-	m_SEBrokerDeleteStatement = nullptr;
-	m_SEBrokerUpdateStatement = nullptr;
-	m_SEBrokerSelectStatement = nullptr;
-	m_SEBrokerTruncateStatement = nullptr;
+	m_BarMarketDataDeleteStatement = nullptr;
+	m_BarMarketDataUpdateStatement = nullptr;
+	m_BarMarketDataSelectStatement = nullptr;
+	m_BarMarketDataTruncateStatement = nullptr;
 
-	m_SEInstrumentDeleteStatement = nullptr;
-	m_SEInstrumentDeleteByExchangeIDIndexStatement = nullptr;
-	m_SEInstrumentUpdateStatement = nullptr;
-	m_SEInstrumentSelectStatement = nullptr;
-	m_SEInstrumentTruncateStatement = nullptr;
+	m_PrimaryAccountDeleteStatement = nullptr;
+	m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	m_PrimaryAccountUpdateStatement = nullptr;
+	m_PrimaryAccountSelectStatement = nullptr;
+	m_PrimaryAccountTruncateStatement = nullptr;
 
-	m_SEOrderDeleteStatement = nullptr;
-	m_SEOrderDeleteByAccountIDIndexStatement = nullptr;
-	m_SEOrderUpdateStatement = nullptr;
-	m_SEOrderSelectStatement = nullptr;
-	m_SEOrderTruncateStatement = nullptr;
+	m_AccountDeleteStatement = nullptr;
+	m_AccountUpdateStatement = nullptr;
+	m_AccountSelectStatement = nullptr;
+	m_AccountTruncateStatement = nullptr;
 
-	m_SETradeDeleteStatement = nullptr;
-	m_SETradeDeleteByAccountIDIndexStatement = nullptr;
-	m_SETradeUpdateStatement = nullptr;
-	m_SETradeSelectStatement = nullptr;
-	m_SETradeTruncateStatement = nullptr;
+	m_OrderDeleteStatement = nullptr;
+	m_OrderUpdateStatement = nullptr;
+	m_OrderSelectStatement = nullptr;
+	m_OrderTruncateStatement = nullptr;
 
-	m_SEBrokerLoginSessionDeleteStatement = nullptr;
-	m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement = nullptr;
-	m_SEBrokerLoginSessionUpdateStatement = nullptr;
-	m_SEBrokerLoginSessionSelectStatement = nullptr;
-	m_SEBrokerLoginSessionTruncateStatement = nullptr;
+	m_TradeDeleteStatement = nullptr;
+	m_TradeUpdateStatement = nullptr;
+	m_TradeSelectStatement = nullptr;
+	m_TradeTruncateStatement = nullptr;
+
+	m_AccountLoginSessionDeleteStatement = nullptr;
+	m_AccountLoginSessionDeleteByAccountIDIndexStatement = nullptr;
+	m_AccountLoginSessionUpdateStatement = nullptr;
+	m_AccountLoginSessionSelectStatement = nullptr;
+	m_AccountLoginSessionTruncateStatement = nullptr;
 
 }
 DuckDB::~DuckDB()
@@ -158,6 +166,26 @@ void DuckDB::DisConnect()
 		duckdb_destroy_prepare(&m_ProductTruncateStatement);
 		m_ProductTruncateStatement = nullptr;
 	}
+	if (m_InstrumentDeleteStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentDeleteStatement);
+		m_InstrumentDeleteStatement = nullptr;
+	}
+	if (m_InstrumentUpdateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentUpdateStatement);
+		m_InstrumentUpdateStatement = nullptr;
+	}
+	if (m_InstrumentSelectStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentSelectStatement);
+		m_InstrumentSelectStatement = nullptr;
+	}
+	if (m_InstrumentTruncateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_InstrumentTruncateStatement);
+		m_InstrumentTruncateStatement = nullptr;
+	}
 	if (m_DepthMarketDataDeleteStatement != nullptr)
 	{
 		duckdb_destroy_prepare(&m_DepthMarketDataDeleteStatement);
@@ -178,125 +206,135 @@ void DuckDB::DisConnect()
 		duckdb_destroy_prepare(&m_DepthMarketDataTruncateStatement);
 		m_DepthMarketDataTruncateStatement = nullptr;
 	}
-	if (m_SEBrokerDeleteStatement != nullptr)
+	if (m_BarMarketDataDeleteStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerDeleteStatement);
-		m_SEBrokerDeleteStatement = nullptr;
+		duckdb_destroy_prepare(&m_BarMarketDataDeleteStatement);
+		m_BarMarketDataDeleteStatement = nullptr;
 	}
-	if (m_SEBrokerUpdateStatement != nullptr)
+	if (m_BarMarketDataUpdateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerUpdateStatement);
-		m_SEBrokerUpdateStatement = nullptr;
+		duckdb_destroy_prepare(&m_BarMarketDataUpdateStatement);
+		m_BarMarketDataUpdateStatement = nullptr;
 	}
-	if (m_SEBrokerSelectStatement != nullptr)
+	if (m_BarMarketDataSelectStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerSelectStatement);
-		m_SEBrokerSelectStatement = nullptr;
+		duckdb_destroy_prepare(&m_BarMarketDataSelectStatement);
+		m_BarMarketDataSelectStatement = nullptr;
 	}
-	if (m_SEBrokerTruncateStatement != nullptr)
+	if (m_BarMarketDataTruncateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerTruncateStatement);
-		m_SEBrokerTruncateStatement = nullptr;
+		duckdb_destroy_prepare(&m_BarMarketDataTruncateStatement);
+		m_BarMarketDataTruncateStatement = nullptr;
 	}
-	if (m_SEInstrumentDeleteStatement != nullptr)
+	if (m_PrimaryAccountDeleteStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEInstrumentDeleteStatement);
-		m_SEInstrumentDeleteStatement = nullptr;
+		duckdb_destroy_prepare(&m_PrimaryAccountDeleteStatement);
+		m_PrimaryAccountDeleteStatement = nullptr;
 	}
-	if (m_SEInstrumentDeleteByExchangeIDIndexStatement != nullptr)
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEInstrumentDeleteByExchangeIDIndexStatement);
-		m_SEInstrumentDeleteByExchangeIDIndexStatement = nullptr;
+		duckdb_destroy_prepare(&m_PrimaryAccountDeleteByOfferIDIndexStatement);
+		m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
 	}
-	if (m_SEInstrumentUpdateStatement != nullptr)
+	if (m_PrimaryAccountUpdateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEInstrumentUpdateStatement);
-		m_SEInstrumentUpdateStatement = nullptr;
+		duckdb_destroy_prepare(&m_PrimaryAccountUpdateStatement);
+		m_PrimaryAccountUpdateStatement = nullptr;
 	}
-	if (m_SEInstrumentSelectStatement != nullptr)
+	if (m_PrimaryAccountSelectStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEInstrumentSelectStatement);
-		m_SEInstrumentSelectStatement = nullptr;
+		duckdb_destroy_prepare(&m_PrimaryAccountSelectStatement);
+		m_PrimaryAccountSelectStatement = nullptr;
 	}
-	if (m_SEInstrumentTruncateStatement != nullptr)
+	if (m_PrimaryAccountTruncateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEInstrumentTruncateStatement);
-		m_SEInstrumentTruncateStatement = nullptr;
+		duckdb_destroy_prepare(&m_PrimaryAccountTruncateStatement);
+		m_PrimaryAccountTruncateStatement = nullptr;
 	}
-	if (m_SEOrderDeleteStatement != nullptr)
+	if (m_AccountDeleteStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEOrderDeleteStatement);
-		m_SEOrderDeleteStatement = nullptr;
+		duckdb_destroy_prepare(&m_AccountDeleteStatement);
+		m_AccountDeleteStatement = nullptr;
 	}
-	if (m_SEOrderDeleteByAccountIDIndexStatement != nullptr)
+	if (m_AccountUpdateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEOrderDeleteByAccountIDIndexStatement);
-		m_SEOrderDeleteByAccountIDIndexStatement = nullptr;
+		duckdb_destroy_prepare(&m_AccountUpdateStatement);
+		m_AccountUpdateStatement = nullptr;
 	}
-	if (m_SEOrderUpdateStatement != nullptr)
+	if (m_AccountSelectStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEOrderUpdateStatement);
-		m_SEOrderUpdateStatement = nullptr;
+		duckdb_destroy_prepare(&m_AccountSelectStatement);
+		m_AccountSelectStatement = nullptr;
 	}
-	if (m_SEOrderSelectStatement != nullptr)
+	if (m_AccountTruncateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEOrderSelectStatement);
-		m_SEOrderSelectStatement = nullptr;
+		duckdb_destroy_prepare(&m_AccountTruncateStatement);
+		m_AccountTruncateStatement = nullptr;
 	}
-	if (m_SEOrderTruncateStatement != nullptr)
+	if (m_OrderDeleteStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEOrderTruncateStatement);
-		m_SEOrderTruncateStatement = nullptr;
+		duckdb_destroy_prepare(&m_OrderDeleteStatement);
+		m_OrderDeleteStatement = nullptr;
 	}
-	if (m_SETradeDeleteStatement != nullptr)
+	if (m_OrderUpdateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SETradeDeleteStatement);
-		m_SETradeDeleteStatement = nullptr;
+		duckdb_destroy_prepare(&m_OrderUpdateStatement);
+		m_OrderUpdateStatement = nullptr;
 	}
-	if (m_SETradeDeleteByAccountIDIndexStatement != nullptr)
+	if (m_OrderSelectStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SETradeDeleteByAccountIDIndexStatement);
-		m_SETradeDeleteByAccountIDIndexStatement = nullptr;
+		duckdb_destroy_prepare(&m_OrderSelectStatement);
+		m_OrderSelectStatement = nullptr;
 	}
-	if (m_SETradeUpdateStatement != nullptr)
+	if (m_OrderTruncateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SETradeUpdateStatement);
-		m_SETradeUpdateStatement = nullptr;
+		duckdb_destroy_prepare(&m_OrderTruncateStatement);
+		m_OrderTruncateStatement = nullptr;
 	}
-	if (m_SETradeSelectStatement != nullptr)
+	if (m_TradeDeleteStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SETradeSelectStatement);
-		m_SETradeSelectStatement = nullptr;
+		duckdb_destroy_prepare(&m_TradeDeleteStatement);
+		m_TradeDeleteStatement = nullptr;
 	}
-	if (m_SETradeTruncateStatement != nullptr)
+	if (m_TradeUpdateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SETradeTruncateStatement);
-		m_SETradeTruncateStatement = nullptr;
+		duckdb_destroy_prepare(&m_TradeUpdateStatement);
+		m_TradeUpdateStatement = nullptr;
 	}
-	if (m_SEBrokerLoginSessionDeleteStatement != nullptr)
+	if (m_TradeSelectStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerLoginSessionDeleteStatement);
-		m_SEBrokerLoginSessionDeleteStatement = nullptr;
+		duckdb_destroy_prepare(&m_TradeSelectStatement);
+		m_TradeSelectStatement = nullptr;
 	}
-	if (m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement != nullptr)
+	if (m_TradeTruncateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement);
-		m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement = nullptr;
+		duckdb_destroy_prepare(&m_TradeTruncateStatement);
+		m_TradeTruncateStatement = nullptr;
 	}
-	if (m_SEBrokerLoginSessionUpdateStatement != nullptr)
+	if (m_AccountLoginSessionDeleteStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerLoginSessionUpdateStatement);
-		m_SEBrokerLoginSessionUpdateStatement = nullptr;
+		duckdb_destroy_prepare(&m_AccountLoginSessionDeleteStatement);
+		m_AccountLoginSessionDeleteStatement = nullptr;
 	}
-	if (m_SEBrokerLoginSessionSelectStatement != nullptr)
+	if (m_AccountLoginSessionDeleteByAccountIDIndexStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerLoginSessionSelectStatement);
-		m_SEBrokerLoginSessionSelectStatement = nullptr;
+		duckdb_destroy_prepare(&m_AccountLoginSessionDeleteByAccountIDIndexStatement);
+		m_AccountLoginSessionDeleteByAccountIDIndexStatement = nullptr;
 	}
-	if (m_SEBrokerLoginSessionTruncateStatement != nullptr)
+	if (m_AccountLoginSessionUpdateStatement != nullptr)
 	{
-		duckdb_destroy_prepare(&m_SEBrokerLoginSessionTruncateStatement);
-		m_SEBrokerLoginSessionTruncateStatement = nullptr;
+		duckdb_destroy_prepare(&m_AccountLoginSessionUpdateStatement);
+		m_AccountLoginSessionUpdateStatement = nullptr;
+	}
+	if (m_AccountLoginSessionSelectStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_AccountLoginSessionSelectStatement);
+		m_AccountLoginSessionSelectStatement = nullptr;
+	}
+	if (m_AccountLoginSessionTruncateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_AccountLoginSessionTruncateStatement);
+		m_AccountLoginSessionTruncateStatement = nullptr;
 	}
 }
 void DuckDB::InitDB()
@@ -307,42 +345,50 @@ void DuckDB::InitDB()
 	Exec("Insert Into t_Exchange select * from Init.t_Exchange;");
 	Exec("Delete From t_Product;");
 	Exec("Insert Into t_Product select * from Init.t_Product;");
+	Exec("Delete From t_Instrument;");
+	Exec("Insert Into t_Instrument select * from Init.t_Instrument;");
 	Exec("Delete From t_DepthMarketData;");
 	Exec("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
-	Exec("Delete From t_SEBroker;");
-	Exec("Insert Into t_SEBroker select * from Init.t_SEBroker;");
-	Exec("Delete From t_SEInstrument;");
-	Exec("Insert Into t_SEInstrument select * from Init.t_SEInstrument;");
-	Exec("Delete From t_SEOrder;");
-	Exec("Insert Into t_SEOrder select * from Init.t_SEOrder;");
-	Exec("Delete From t_SETrade;");
-	Exec("Insert Into t_SETrade select * from Init.t_SETrade;");
-	Exec("Delete From t_SEBrokerLoginSession;");
-	Exec("Insert Into t_SEBrokerLoginSession select * from Init.t_SEBrokerLoginSession;");
+	Exec("Delete From t_BarMarketData;");
+	Exec("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
+	Exec("Delete From t_PrimaryAccount;");
+	Exec("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
+	Exec("Delete From t_Account;");
+	Exec("Insert Into t_Account select * from Init.t_Account;");
+	Exec("Delete From t_Order;");
+	Exec("Insert Into t_Order select * from Init.t_Order;");
+	Exec("Delete From t_Trade;");
+	Exec("Insert Into t_Trade select * from Init.t_Trade;");
+	Exec("Delete From t_AccountLoginSession;");
+	Exec("Insert Into t_AccountLoginSession select * from Init.t_AccountLoginSession;");
 }
 void DuckDB::CreateTables()
 {
 	CreateTradingDay();
 	CreateExchange();
 	CreateProduct();
+	CreateInstrument();
 	CreateDepthMarketData();
-	CreateSEBroker();
-	CreateSEInstrument();
-	CreateSEOrder();
-	CreateSETrade();
-	CreateSEBrokerLoginSession();
+	CreateBarMarketData();
+	CreatePrimaryAccount();
+	CreateAccount();
+	CreateOrder();
+	CreateTrade();
+	CreateAccountLoginSession();
 }
 void DuckDB::DropTables()
 {
 	DropTradingDay();
 	DropExchange();
 	DropProduct();
+	DropInstrument();
 	DropDepthMarketData();
-	DropSEBroker();
-	DropSEInstrument();
-	DropSEOrder();
-	DropSETrade();
-	DropSEBrokerLoginSession();
+	DropBarMarketData();
+	DropPrimaryAccount();
+	DropAccount();
+	DropOrder();
+	DropTrade();
+	DropAccountLoginSession();
 }
 void DuckDB::TruncateTables()
 {
@@ -350,16 +396,17 @@ void DuckDB::TruncateTables()
 	TruncateExchange();
 	TruncateProduct();
 	TruncateDepthMarketData();
-	TruncateSEBroker();
-	TruncateSEInstrument();
-	TruncateSEOrder();
-	TruncateSETrade();
-	TruncateSEBrokerLoginSession();
+	TruncateBarMarketData();
+	TruncatePrimaryAccount();
+	TruncateAccount();
+	TruncateOrder();
+	TruncateTrade();
+	TruncateAccountLoginSession();
 }
 void DuckDB::TruncateSessionTables()
 {
 	auto start = steady_clock::now();
-	TruncateSEBrokerLoginSession();
+	TruncateAccountLoginSession();
 	WriteLog(LogLevel::Info, "TruncateSessionTables Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 bool DuckDB::Exec(const char* sql) const
@@ -968,6 +1015,250 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<Product*>& records)
 		}
 	}
 }
+void DuckDB::CreateInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms", duration);
+}
+void DuckDB::DropInstrument()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Instrument;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms", duration);
+}
+void DuckDB::InsertInstrument(Instrument* record)
+{
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Instrument", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Instrument Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	AppendForInstrumentRecord(appender, record);
+	duckdb_appender_destroy(&appender);
+}
+void DuckDB::BatchInsertInstrument(std::list<Instrument*>* records)
+{
+	auto start = steady_clock::now();
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Instrument", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Instrument Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	for (auto record : *records)
+	{
+		AppendForInstrumentRecord(appender, record);
+	}
+	duckdb_appender_destroy(&appender);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "BatchInsertInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void DuckDB::DeleteInstrument(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentDeleteStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Instrument where ExchangeID = ? and InstrumentID = ?;", &m_InstrumentDeleteStatement);
+	}
+	SetStatementForInstrumentPrimaryKey(m_InstrumentDeleteStatement, record);
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_InstrumentDeleteStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteInstrument Spend:%lldms", duration);
+	}
+}
+void DuckDB::UpdateInstrument(Instrument* record)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentUpdateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "update t_Instrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, InstrumentClass = ?, Rank = ?, VolumeMultiple = ?, PriceTick = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;", &m_InstrumentUpdateStatement);
+	}
+	SetStatementForInstrumentRecordUpdate(m_InstrumentUpdateStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_InstrumentUpdateStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "UpdateInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateInstrument Spend:%lldms", duration);
+	}
+}
+void DuckDB::SelectInstrument(std::list<Instrument*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentSelectStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "select * from t_Instrument;", &m_InstrumentSelectStatement);
+	}
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_InstrumentSelectStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "SelectInstrument ErrorMsg:%s", duckdb_result_error(&result));
+		duckdb_destroy_result(&result);
+		return;
+	}
+
+	ParseRecord(result, records);
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectInstrument Spend:%lldms", duration);
+	}
+}
+void DuckDB::TruncateInstrument()
+{
+	auto start = steady_clock::now();
+	if (m_InstrumentTruncateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Instrument;", &m_InstrumentTruncateStatement);
+	}
+
+	auto rc = duckdb_execute_prepared(m_InstrumentTruncateStatement, nullptr);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "TruncateInstrument failed");
+	}
+	
+	WriteLog(LogLevel::Info, "TruncateInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void DuckDB::ParseRecord(duckdb_result& result, std::list<Instrument*>& records)
+{
+	while (true)
+	{
+		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
+		if (dataChunk == nullptr)
+		{
+			break;
+		}
+		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
+		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
+		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
+		duckdb_vector column3 = duckdb_data_chunk_get_vector(dataChunk, 3);
+		duckdb_vector column4 = duckdb_data_chunk_get_vector(dataChunk, 4);
+		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
+		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
+		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
+		duckdb_vector column8 = duckdb_data_chunk_get_vector(dataChunk, 8);
+		duckdb_vector column9 = duckdb_data_chunk_get_vector(dataChunk, 9);
+		duckdb_vector column10 = duckdb_data_chunk_get_vector(dataChunk, 10);
+		duckdb_vector column11 = duckdb_data_chunk_get_vector(dataChunk, 11);
+		duckdb_vector column12 = duckdb_data_chunk_get_vector(dataChunk, 12);
+		duckdb_vector column13 = duckdb_data_chunk_get_vector(dataChunk, 13);
+		duckdb_vector column14 = duckdb_data_chunk_get_vector(dataChunk, 14);
+
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
+		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
+		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
+		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
+		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
+		int* dataColumn7 = (int*)duckdb_vector_get_data(column7);
+		int* dataColumn8 = (int*)duckdb_vector_get_data(column8);
+		double* dataColumn9 = (double*)duckdb_vector_get_data(column9);
+		int64_t* dataColumn10 = (int64_t*)duckdb_vector_get_data(column10);
+		int64_t* dataColumn11 = (int64_t*)duckdb_vector_get_data(column11);
+		int64_t* dataColumn12 = (int64_t*)duckdb_vector_get_data(column12);
+		int64_t* dataColumn13 = (int64_t*)duckdb_vector_get_data(column13);
+		duckdb_string_t* dataColumn14 = (duckdb_string_t*)duckdb_vector_get_data(column14);
+
+		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
+		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
+		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
+		uint64_t* validityColumn3 = duckdb_vector_get_validity(column3);
+		uint64_t* validityColumn4 = duckdb_vector_get_validity(column4);
+		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
+		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
+		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
+		uint64_t* validityColumn8 = duckdb_vector_get_validity(column8);
+		uint64_t* validityColumn9 = duckdb_vector_get_validity(column9);
+		uint64_t* validityColumn10 = duckdb_vector_get_validity(column10);
+		uint64_t* validityColumn11 = duckdb_vector_get_validity(column11);
+		uint64_t* validityColumn12 = duckdb_vector_get_validity(column12);
+		uint64_t* validityColumn13 = duckdb_vector_get_validity(column13);
+		uint64_t* validityColumn14 = duckdb_vector_get_validity(column14);
+
+		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
+		for (idx_t row = 0LL; row < rowCount; ++row)
+		{
+			Instrument* record = Instrument::Allocate();
+			memset(record, 0, sizeof(Instrument));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->ExchangeID, dataColumn0[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
+			{
+				CpyDuckdbString(record->InstrumentID, dataColumn1[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row))
+			{
+				CpyDuckdbString(record->ExchangeInstID, dataColumn2[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn3, row))
+			{
+				CpyDuckdbString(record->InstrumentName, dataColumn3[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn4, row))
+			{
+				CpyDuckdbString(record->ProductID, dataColumn4[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->ProductClass = ProductClassType(dataColumn5[row]);
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->InstrumentClass = InstrumentClassType(dataColumn6[row]);
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->Rank = dataColumn7[row];
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->VolumeMultiple = dataColumn8[row];
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->PriceTick = dataColumn9[row];
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->MaxMarketOrderVolume = dataColumn10[row];
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->MinMarketOrderVolume = dataColumn11[row];
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->MaxLimitOrderVolume = dataColumn12[row];
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->MinLimitOrderVolume = dataColumn13[row];
+			if (duckdb_validity_row_is_valid(validityColumn14, row))
+			{
+				CpyDuckdbString(record->SessionName, dataColumn14[row]);
+			}
+			records.push_back(record);
+		}
+	}
+}
 void DuckDB::CreateDepthMarketData()
 {
 	auto start = steady_clock::now();
@@ -1388,122 +1679,123 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<DepthMarketData*>& rec
 		}
 	}
 }
-void DuckDB::CreateSEBroker()
+void DuckDB::CreateBarMarketData()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SEBroker (BrokerID int, BrokerName varchar, Password varchar, PRIMARY KEY(BrokerID));", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_BarMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, BarPreces int, BarPeriod int, BarTime bigint, UpdateTs bigint, PreSettlementPrice double, PreClosePrice double, Open double, High double, Low double, Close double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));", &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "CreateSEBroker failed, ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "CreateBarMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateSEBroker Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms", duration);
 }
-void DuckDB::DropSEBroker()
+void DuckDB::DropBarMarketData()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_SEBroker;", &result);
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_BarMarketData;", &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DropSEBroker failed, ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DropBarMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropSEBroker Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms", duration);
 }
-void DuckDB::InsertSEBroker(SEBroker* record)
+void DuckDB::InsertBarMarketData(BarMarketData* record)
 {
 	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SEBroker", &appender) != DuckDBSuccess)
+	if (duckdb_appender_create(m_Connection, nullptr, "t_BarMarketData", &appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SEBroker Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_BarMarketData Failed. ErrorMsg:%s", duckdb_appender_error(appender));
 		duckdb_appender_destroy(&appender);
 		return;
 	}
-	AppendForSEBrokerRecord(appender, record);
+	AppendForBarMarketDataRecord(appender, record);
 	duckdb_appender_destroy(&appender);
 }
-void DuckDB::BatchInsertSEBroker(std::list<SEBroker*>* records)
+void DuckDB::BatchInsertBarMarketData(std::list<BarMarketData*>* records)
 {
 	auto start = steady_clock::now();
 	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SEBroker", &appender) != DuckDBSuccess)
+	if (duckdb_appender_create(m_Connection, nullptr, "t_BarMarketData", &appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SEBroker Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_BarMarketData Failed. ErrorMsg:%s", duckdb_appender_error(appender));
 		duckdb_appender_destroy(&appender);
 		return;
 	}
 	for (auto record : *records)
 	{
-		AppendForSEBrokerRecord(appender, record);
+		AppendForBarMarketDataRecord(appender, record);
 	}
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "BatchInsertSEBroker RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertBarMarketData RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
-void DuckDB::DeleteSEBroker(SEBroker* record)
+void DuckDB::DeleteBarMarketData(BarMarketData* record)
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerDeleteStatement == nullptr)
+	if (m_BarMarketDataDeleteStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SEBroker where BrokerID = ?;", &m_SEBrokerDeleteStatement);
+		duckdb_prepare(m_Connection, "delete from t_BarMarketData where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;", &m_BarMarketDataDeleteStatement);
 	}
-	SetStatementForSEBrokerPrimaryKey(m_SEBrokerDeleteStatement, record);
+	SetStatementForBarMarketDataPrimaryKey(m_BarMarketDataDeleteStatement, record);
 
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEBrokerDeleteStatement, &result);
+	auto rc = duckdb_execute_prepared(m_BarMarketDataDeleteStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEBroker failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DeleteBarMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEBroker Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "DeleteBarMarketData Spend:%lldms", duration);
 	}
 }
-void DuckDB::UpdateSEBroker(SEBroker* record)
+void DuckDB::UpdateBarMarketData(BarMarketData* record)
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerUpdateStatement == nullptr)
+	if (m_BarMarketDataUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_SEBroker set BrokerName = ?, Password = ? where BrokerID = ?;", &m_SEBrokerUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_BarMarketData set UpdateTs = ?, PreSettlementPrice = ?, PreClosePrice = ?, Open = ?, High = ?, Low = ?, Close = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;", &m_BarMarketDataUpdateStatement);
 	}
-	SetStatementForSEBrokerRecordUpdate(m_SEBrokerUpdateStatement, record);
+	SetStatementForBarMarketDataRecordUpdate(m_BarMarketDataUpdateStatement, record);
 	
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEBrokerUpdateStatement, &result);
+	auto rc = duckdb_execute_prepared(m_BarMarketDataUpdateStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "UpdateSEBroker failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "UpdateBarMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "UpdateSEBroker Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "UpdateBarMarketData Spend:%lldms", duration);
 	}
 }
-void DuckDB::SelectSEBroker(std::list<SEBroker*>& records)
+void DuckDB::SelectBarMarketData(std::list<BarMarketData*>& records, const DateType& tradingDay)
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerSelectStatement == nullptr)
+	if (m_BarMarketDataSelectStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "select * from t_SEBroker;", &m_SEBrokerSelectStatement);
+		duckdb_prepare(m_Connection, "select * from t_BarMarketData where TradingDay >= ?;", &m_BarMarketDataSelectStatement);
 	}
+	duckdb_bind_varchar(m_BarMarketDataSelectStatement, 1, tradingDay);
 
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEBrokerSelectStatement, &result);
+	auto rc = duckdb_execute_prepared(m_BarMarketDataSelectStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "SelectSEBroker ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "SelectBarMarketData ErrorMsg:%s", duckdb_result_error(&result));
 		duckdb_destroy_result(&result);
 		return;
 	}
@@ -1514,233 +1806,26 @@ void DuckDB::SelectSEBroker(std::list<SEBroker*>& records)
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "SelectSEBroker Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "SelectBarMarketData Spend:%lldms", duration);
 	}
 }
-void DuckDB::TruncateSEBroker()
+void DuckDB::TruncateBarMarketData()
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerTruncateStatement == nullptr)
+	if (m_BarMarketDataTruncateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SEBroker;", &m_SEBrokerTruncateStatement);
+		duckdb_prepare(m_Connection, "delete from t_BarMarketData;", &m_BarMarketDataTruncateStatement);
 	}
 
-	auto rc = duckdb_execute_prepared(m_SEBrokerTruncateStatement, nullptr);
+	auto rc = duckdb_execute_prepared(m_BarMarketDataTruncateStatement, nullptr);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "TruncateSEBroker failed");
+		WriteLog(LogLevel::Warning, "TruncateBarMarketData failed");
 	}
 	
-	WriteLog(LogLevel::Info, "TruncateSEBroker Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+	WriteLog(LogLevel::Info, "TruncateBarMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DuckDB::ParseRecord(duckdb_result& result, std::list<SEBroker*>& records)
-{
-	while (true)
-	{
-		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
-		if (dataChunk == nullptr)
-		{
-			break;
-		}
-		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
-		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
-		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
-
-		int* dataColumn0 = (int*)duckdb_vector_get_data(column0);
-		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
-		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
-
-		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
-		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
-		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
-
-		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
-		for (idx_t row = 0LL; row < rowCount; ++row)
-		{
-			SEBroker* record = SEBroker::Allocate();
-			memset(record, 0, sizeof(SEBroker));
-			if (duckdb_validity_row_is_valid(validityColumn0, row)) record->BrokerID = dataColumn0[row];
-			if (duckdb_validity_row_is_valid(validityColumn1, row))
-			{
-				CpyDuckdbString(record->BrokerName, dataColumn1[row]);
-			}
-			if (duckdb_validity_row_is_valid(validityColumn2, row))
-			{
-				CpyDuckdbString(record->Password, dataColumn2[row]);
-			}
-			records.push_back(record);
-		}
-	}
-}
-void DuckDB::CreateSEInstrument()
-{
-	auto start = steady_clock::now();
-	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SEInstrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, VolumeMultiple int, PriceTick double, UpperLimitPrice double, LowerLimitPrice double, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX SEInstrumentExchangeID ON t_SEInstrument(ExchangeID);", &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "CreateSEInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateSEInstrument Spend:%lldms", duration);
-}
-void DuckDB::DropSEInstrument()
-{
-	auto start = steady_clock::now();
-	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX SEInstrumentExchangeID;DROP TABLE IF EXISTS t_SEInstrument;", &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "DropSEInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropSEInstrument Spend:%lldms", duration);
-}
-void DuckDB::InsertSEInstrument(SEInstrument* record)
-{
-	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SEInstrument", &appender) != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SEInstrument Failed. ErrorMsg:%s", duckdb_appender_error(appender));
-		duckdb_appender_destroy(&appender);
-		return;
-	}
-	AppendForSEInstrumentRecord(appender, record);
-	duckdb_appender_destroy(&appender);
-}
-void DuckDB::BatchInsertSEInstrument(std::list<SEInstrument*>* records)
-{
-	auto start = steady_clock::now();
-	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SEInstrument", &appender) != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SEInstrument Failed. ErrorMsg:%s", duckdb_appender_error(appender));
-		duckdb_appender_destroy(&appender);
-		return;
-	}
-	for (auto record : *records)
-	{
-		AppendForSEInstrumentRecord(appender, record);
-	}
-	duckdb_appender_destroy(&appender);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "BatchInsertSEInstrument RecordSize:%lld, Spend:%lldms", records->size(), duration);
-}
-void DuckDB::DeleteSEInstrument(SEInstrument* record)
-{
-	auto start = steady_clock::now();
-	if (m_SEInstrumentDeleteStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "delete from t_SEInstrument where ExchangeID = ? and InstrumentID = ?;", &m_SEInstrumentDeleteStatement);
-	}
-	SetStatementForSEInstrumentPrimaryKey(m_SEInstrumentDeleteStatement, record);
-
-	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEInstrumentDeleteStatement, &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "DeleteSEInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "DeleteSEInstrument Spend:%lldms", duration);
-	}
-}
-void DuckDB::DeleteSEInstrumentByExchangeIDIndex(SEInstrument* record)
-{
-	auto start = steady_clock::now();
-	if (m_SEInstrumentDeleteByExchangeIDIndexStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "delete from t_SEInstrument where ExchangeID = ?;", &m_SEInstrumentDeleteByExchangeIDIndexStatement);
-	}
-	SetStatementForSEInstrumentIndexExchangeID(m_SEInstrumentDeleteByExchangeIDIndexStatement, record);
-	
-	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEInstrumentDeleteByExchangeIDIndexStatement, &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "DeleteSEInstrumentByExchangeIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "DeleteSEInstrumentByExchangeIDIndex Spend:%lldms", duration);
-	}
-}
-void DuckDB::UpdateSEInstrument(SEInstrument* record)
-{
-	auto start = steady_clock::now();
-	if (m_SEInstrumentUpdateStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "update t_SEInstrument set ExchangeInstID = ?, InstrumentName = ?, ProductID = ?, ProductClass = ?, MaxMarketOrderVolume = ?, MinMarketOrderVolume = ?, MaxLimitOrderVolume = ?, MinLimitOrderVolume = ?, VolumeMultiple = ?, PriceTick = ?, UpperLimitPrice = ?, LowerLimitPrice = ?, SessionName = ? where ExchangeID = ? and InstrumentID = ?;", &m_SEInstrumentUpdateStatement);
-	}
-	SetStatementForSEInstrumentRecordUpdate(m_SEInstrumentUpdateStatement, record);
-	
-	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEInstrumentUpdateStatement, &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "UpdateSEInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "UpdateSEInstrument Spend:%lldms", duration);
-	}
-}
-void DuckDB::SelectSEInstrument(std::list<SEInstrument*>& records)
-{
-	auto start = steady_clock::now();
-	if (m_SEInstrumentSelectStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "select * from t_SEInstrument;", &m_SEInstrumentSelectStatement);
-	}
-
-	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEInstrumentSelectStatement, &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "SelectSEInstrument ErrorMsg:%s", duckdb_result_error(&result));
-		duckdb_destroy_result(&result);
-		return;
-	}
-
-	ParseRecord(result, records);
-	duckdb_destroy_result(&result);
-	
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "SelectSEInstrument Spend:%lldms", duration);
-	}
-}
-void DuckDB::TruncateSEInstrument()
-{
-	auto start = steady_clock::now();
-	if (m_SEInstrumentTruncateStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "delete from t_SEInstrument;", &m_SEInstrumentTruncateStatement);
-	}
-
-	auto rc = duckdb_execute_prepared(m_SEInstrumentTruncateStatement, nullptr);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "TruncateSEInstrument failed");
-	}
-	
-	WriteLog(LogLevel::Info, "TruncateSEInstrument Spend:%lldms", GetDuration<chrono::milliseconds>(start));
-}
-void DuckDB::ParseRecord(duckdb_result& result, std::list<SEInstrument*>& records)
+void DuckDB::ParseRecord(duckdb_result& result, std::list<BarMarketData*>& records)
 {
 	while (true)
 	{
@@ -1764,22 +1849,28 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEInstrument*>& record
 		duckdb_vector column12 = duckdb_data_chunk_get_vector(dataChunk, 12);
 		duckdb_vector column13 = duckdb_data_chunk_get_vector(dataChunk, 13);
 		duckdb_vector column14 = duckdb_data_chunk_get_vector(dataChunk, 14);
+		duckdb_vector column15 = duckdb_data_chunk_get_vector(dataChunk, 15);
+		duckdb_vector column16 = duckdb_data_chunk_get_vector(dataChunk, 16);
+		duckdb_vector column17 = duckdb_data_chunk_get_vector(dataChunk, 17);
 
 		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
 		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
 		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
-		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
-		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
-		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
+		int* dataColumn3 = (int*)duckdb_vector_get_data(column3);
+		int* dataColumn4 = (int*)duckdb_vector_get_data(column4);
+		int64_t* dataColumn5 = (int64_t*)duckdb_vector_get_data(column5);
 		int64_t* dataColumn6 = (int64_t*)duckdb_vector_get_data(column6);
-		int64_t* dataColumn7 = (int64_t*)duckdb_vector_get_data(column7);
-		int64_t* dataColumn8 = (int64_t*)duckdb_vector_get_data(column8);
-		int64_t* dataColumn9 = (int64_t*)duckdb_vector_get_data(column9);
-		int* dataColumn10 = (int*)duckdb_vector_get_data(column10);
+		double* dataColumn7 = (double*)duckdb_vector_get_data(column7);
+		double* dataColumn8 = (double*)duckdb_vector_get_data(column8);
+		double* dataColumn9 = (double*)duckdb_vector_get_data(column9);
+		double* dataColumn10 = (double*)duckdb_vector_get_data(column10);
 		double* dataColumn11 = (double*)duckdb_vector_get_data(column11);
 		double* dataColumn12 = (double*)duckdb_vector_get_data(column12);
-		double* dataColumn13 = (double*)duckdb_vector_get_data(column13);
-		duckdb_string_t* dataColumn14 = (duckdb_string_t*)duckdb_vector_get_data(column14);
+		int64_t* dataColumn13 = (int64_t*)duckdb_vector_get_data(column13);
+		int64_t* dataColumn14 = (int64_t*)duckdb_vector_get_data(column14);
+		double* dataColumn15 = (double*)duckdb_vector_get_data(column15);
+		double* dataColumn16 = (double*)duckdb_vector_get_data(column16);
+		double* dataColumn17 = (double*)duckdb_vector_get_data(column17);
 
 		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
 		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
@@ -1796,188 +1887,185 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEInstrument*>& record
 		uint64_t* validityColumn12 = duckdb_vector_get_validity(column12);
 		uint64_t* validityColumn13 = duckdb_vector_get_validity(column13);
 		uint64_t* validityColumn14 = duckdb_vector_get_validity(column14);
+		uint64_t* validityColumn15 = duckdb_vector_get_validity(column15);
+		uint64_t* validityColumn16 = duckdb_vector_get_validity(column16);
+		uint64_t* validityColumn17 = duckdb_vector_get_validity(column17);
 
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
 		{
-			SEInstrument* record = SEInstrument::Allocate();
-			memset(record, 0, sizeof(SEInstrument));
+			BarMarketData* record = BarMarketData::Allocate();
+			memset(record, 0, sizeof(BarMarketData));
 			if (duckdb_validity_row_is_valid(validityColumn0, row))
 			{
-				CpyDuckdbString(record->ExchangeID, dataColumn0[row]);
+				CpyDuckdbString(record->TradingDay, dataColumn0[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn1, row))
 			{
-				CpyDuckdbString(record->InstrumentID, dataColumn1[row]);
+				CpyDuckdbString(record->ExchangeID, dataColumn1[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn2, row))
 			{
-				CpyDuckdbString(record->ExchangeInstID, dataColumn2[row]);
+				CpyDuckdbString(record->InstrumentID, dataColumn2[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn3, row))
-			{
-				CpyDuckdbString(record->InstrumentName, dataColumn3[row]);
-			}
-			if (duckdb_validity_row_is_valid(validityColumn4, row))
-			{
-				CpyDuckdbString(record->ProductID, dataColumn4[row]);
-			}
-			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->ProductClass = ProductClassType(dataColumn5[row]);
-			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->MaxMarketOrderVolume = dataColumn6[row];
-			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->MinMarketOrderVolume = dataColumn7[row];
-			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->MaxLimitOrderVolume = dataColumn8[row];
-			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->MinLimitOrderVolume = dataColumn9[row];
-			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->VolumeMultiple = dataColumn10[row];
-			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->PriceTick = dataColumn11[row];
-			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->UpperLimitPrice = dataColumn12[row];
-			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->LowerLimitPrice = dataColumn13[row];
-			if (duckdb_validity_row_is_valid(validityColumn14, row))
-			{
-				CpyDuckdbString(record->SessionName, dataColumn14[row]);
-			}
+			if (duckdb_validity_row_is_valid(validityColumn3, row)) record->BarPreces = BarPrecesType(dataColumn3[row]);
+			if (duckdb_validity_row_is_valid(validityColumn4, row)) record->BarPeriod = dataColumn4[row];
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->BarTime = dataColumn5[row];
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->UpdateTs = dataColumn6[row];
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->PreSettlementPrice = dataColumn7[row];
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->PreClosePrice = dataColumn8[row];
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->Open = dataColumn9[row];
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->High = dataColumn10[row];
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Low = dataColumn11[row];
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->Close = dataColumn12[row];
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->CurrVolume = dataColumn13[row];
+			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->Volume = dataColumn14[row];
+			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->CurrTurnover = dataColumn15[row];
+			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->Turnover = dataColumn16[row];
+			if (duckdb_validity_row_is_valid(validityColumn17, row)) record->OpenInterest = dataColumn17[row];
 			records.push_back(record);
 		}
 	}
 }
-void DuckDB::CreateSEOrder()
+void DuckDB::CreatePrimaryAccount()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SEOrder (TradingDay varchar, BrokerID int, AccountID varchar, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));CREATE INDEX SEOrderAccountID ON t_SEOrder(TradingDay, AccountID);", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount (PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, BrokerPassword varchar, OfferID int, IsAllowLogin int, IsSimulateAccount int, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "CreateSEOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "CreatePrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateSEOrder Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms", duration);
 }
-void DuckDB::DropSEOrder()
+void DuckDB::DropPrimaryAccount()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX SEOrderAccountID;DROP TABLE IF EXISTS t_SEOrder;", &result);
+	auto rc = duckdb_query(m_Connection, "DROP INDEX PrimaryAccountOfferID;DROP TABLE IF EXISTS t_PrimaryAccount;", &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DropSEOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DropPrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropSEOrder Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms", duration);
 }
-void DuckDB::InsertSEOrder(SEOrder* record)
+void DuckDB::InsertPrimaryAccount(PrimaryAccount* record)
 {
 	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SEOrder", &appender) != DuckDBSuccess)
+	if (duckdb_appender_create(m_Connection, nullptr, "t_PrimaryAccount", &appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SEOrder Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_PrimaryAccount Failed. ErrorMsg:%s", duckdb_appender_error(appender));
 		duckdb_appender_destroy(&appender);
 		return;
 	}
-	AppendForSEOrderRecord(appender, record);
+	AppendForPrimaryAccountRecord(appender, record);
 	duckdb_appender_destroy(&appender);
 }
-void DuckDB::BatchInsertSEOrder(std::list<SEOrder*>* records)
+void DuckDB::BatchInsertPrimaryAccount(std::list<PrimaryAccount*>* records)
 {
 	auto start = steady_clock::now();
 	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SEOrder", &appender) != DuckDBSuccess)
+	if (duckdb_appender_create(m_Connection, nullptr, "t_PrimaryAccount", &appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SEOrder Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_PrimaryAccount Failed. ErrorMsg:%s", duckdb_appender_error(appender));
 		duckdb_appender_destroy(&appender);
 		return;
 	}
 	for (auto record : *records)
 	{
-		AppendForSEOrderRecord(appender, record);
+		AppendForPrimaryAccountRecord(appender, record);
 	}
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "BatchInsertSEOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
-void DuckDB::DeleteSEOrder(SEOrder* record)
+void DuckDB::DeletePrimaryAccount(PrimaryAccount* record)
 {
 	auto start = steady_clock::now();
-	if (m_SEOrderDeleteStatement == nullptr)
+	if (m_PrimaryAccountDeleteStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SEOrder where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;", &m_SEOrderDeleteStatement);
+		duckdb_prepare(m_Connection, "delete from t_PrimaryAccount where PrimaryAccountID = ?;", &m_PrimaryAccountDeleteStatement);
 	}
-	SetStatementForSEOrderPrimaryKey(m_SEOrderDeleteStatement, record);
+	SetStatementForPrimaryAccountPrimaryKey(m_PrimaryAccountDeleteStatement, record);
 
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEOrderDeleteStatement, &result);
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountDeleteStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEOrder failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEOrder Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount Spend:%lldms", duration);
 	}
 }
-void DuckDB::DeleteSEOrderByAccountIDIndex(SEOrder* record)
+void DuckDB::DeletePrimaryAccountByOfferIDIndex(PrimaryAccount* record)
 {
 	auto start = steady_clock::now();
-	if (m_SEOrderDeleteByAccountIDIndexStatement == nullptr)
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SEOrder where TradingDay = ? and AccountID = ?;", &m_SEOrderDeleteByAccountIDIndexStatement);
+		duckdb_prepare(m_Connection, "delete from t_PrimaryAccount where OfferID = ?;", &m_PrimaryAccountDeleteByOfferIDIndexStatement);
 	}
-	SetStatementForSEOrderIndexAccountID(m_SEOrderDeleteByAccountIDIndexStatement, record);
+	SetStatementForPrimaryAccountIndexOfferID(m_PrimaryAccountDeleteByOfferIDIndexStatement, record);
 	
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEOrderDeleteByAccountIDIndexStatement, &result);
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountDeleteByOfferIDIndexStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEOrderByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEOrderByAccountIDIndex Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex Spend:%lldms", duration);
 	}
 }
-void DuckDB::UpdateSEOrder(SEOrder* record)
+void DuckDB::UpdatePrimaryAccount(PrimaryAccount* record)
 {
 	auto start = steady_clock::now();
-	if (m_SEOrderUpdateStatement == nullptr)
+	if (m_PrimaryAccountUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_SEOrder set BrokerID = ?, ProductClass = ?, Direction = ?, OffsetFlag = ?, OrderPriceType = ?, Price = ?, Volume = ?, VolumeTotal = ?, VolumeTraded = ?, VolumeMultiple = ?, OrderStatus = ?, OrderDate = ?, OrderTime = ?, CancelDate = ?, CancelTime = ?, SessionID = ?, ClientOrderID = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;", &m_SEOrderUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, BrokerPassword = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;", &m_PrimaryAccountUpdateStatement);
 	}
-	SetStatementForSEOrderRecordUpdate(m_SEOrderUpdateStatement, record);
+	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
 	
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEOrderUpdateStatement, &result);
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountUpdateStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "UpdateSEOrder failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "UpdateSEOrder Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount Spend:%lldms", duration);
 	}
 }
-void DuckDB::SelectSEOrder(std::list<SEOrder*>& records)
+void DuckDB::SelectPrimaryAccount(std::list<PrimaryAccount*>& records)
 {
 	auto start = steady_clock::now();
-	if (m_SEOrderSelectStatement == nullptr)
+	if (m_PrimaryAccountSelectStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "select * from t_SEOrder;", &m_SEOrderSelectStatement);
+		duckdb_prepare(m_Connection, "select * from t_PrimaryAccount;", &m_PrimaryAccountSelectStatement);
 	}
 
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEOrderSelectStatement, &result);
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountSelectStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "SelectSEOrder ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "SelectPrimaryAccount ErrorMsg:%s", duckdb_result_error(&result));
 		duckdb_destroy_result(&result);
 		return;
 	}
@@ -1988,26 +2076,444 @@ void DuckDB::SelectSEOrder(std::list<SEOrder*>& records)
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "SelectSEOrder Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "SelectPrimaryAccount Spend:%lldms", duration);
 	}
 }
-void DuckDB::TruncateSEOrder()
+void DuckDB::TruncatePrimaryAccount()
 {
 	auto start = steady_clock::now();
-	if (m_SEOrderTruncateStatement == nullptr)
+	if (m_PrimaryAccountTruncateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SEOrder;", &m_SEOrderTruncateStatement);
+		duckdb_prepare(m_Connection, "delete from t_PrimaryAccount;", &m_PrimaryAccountTruncateStatement);
 	}
 
-	auto rc = duckdb_execute_prepared(m_SEOrderTruncateStatement, nullptr);
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountTruncateStatement, nullptr);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "TruncateSEOrder failed");
+		WriteLog(LogLevel::Warning, "TruncatePrimaryAccount failed");
 	}
 	
-	WriteLog(LogLevel::Info, "TruncateSEOrder Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+	WriteLog(LogLevel::Info, "TruncatePrimaryAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DuckDB::ParseRecord(duckdb_result& result, std::list<SEOrder*>& records)
+void DuckDB::ParseRecord(duckdb_result& result, std::list<PrimaryAccount*>& records)
+{
+	while (true)
+	{
+		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
+		if (dataChunk == nullptr)
+		{
+			break;
+		}
+		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
+		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
+		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
+		duckdb_vector column3 = duckdb_data_chunk_get_vector(dataChunk, 3);
+		duckdb_vector column4 = duckdb_data_chunk_get_vector(dataChunk, 4);
+		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
+		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
+		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
+		duckdb_vector column8 = duckdb_data_chunk_get_vector(dataChunk, 8);
+
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		int* dataColumn2 = (int*)duckdb_vector_get_data(column2);
+		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
+		int* dataColumn4 = (int*)duckdb_vector_get_data(column4);
+		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
+		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
+		int* dataColumn7 = (int*)duckdb_vector_get_data(column7);
+		int* dataColumn8 = (int*)duckdb_vector_get_data(column8);
+
+		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
+		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
+		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
+		uint64_t* validityColumn3 = duckdb_vector_get_validity(column3);
+		uint64_t* validityColumn4 = duckdb_vector_get_validity(column4);
+		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
+		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
+		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
+		uint64_t* validityColumn8 = duckdb_vector_get_validity(column8);
+
+		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
+		for (idx_t row = 0LL; row < rowCount; ++row)
+		{
+			PrimaryAccount* record = PrimaryAccount::Allocate();
+			memset(record, 0, sizeof(PrimaryAccount));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->PrimaryAccountID, dataColumn0[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
+			{
+				CpyDuckdbString(record->PrimaryAccountName, dataColumn1[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row)) record->AccountClass = AccountClassType(dataColumn2[row]);
+			if (duckdb_validity_row_is_valid(validityColumn3, row))
+			{
+				CpyDuckdbString(record->BrokerPassword, dataColumn3[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn4, row)) record->OfferID = dataColumn4[row];
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->IsAllowLogin = dataColumn5[row];
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->IsSimulateAccount = dataColumn6[row];
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->LoginStatus = LoginStatusType(dataColumn7[row]);
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->InitStatus = InitStatusType(dataColumn8[row]);
+			records.push_back(record);
+		}
+	}
+}
+void DuckDB::CreateAccount()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Account (AccountID varchar, AccountName varchar, AccountType int, AccountStatus int, Password varchar, TradeGroupID int, RiskGroupID int, CommissionGroupID int, PRIMARY KEY(AccountID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateAccount Spend:%lldms", duration);
+}
+void DuckDB::DropAccount()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Account;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropAccount Spend:%lldms", duration);
+}
+void DuckDB::InsertAccount(Account* record)
+{
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Account", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Account Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	AppendForAccountRecord(appender, record);
+	duckdb_appender_destroy(&appender);
+}
+void DuckDB::BatchInsertAccount(std::list<Account*>* records)
+{
+	auto start = steady_clock::now();
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Account", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Account Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	for (auto record : *records)
+	{
+		AppendForAccountRecord(appender, record);
+	}
+	duckdb_appender_destroy(&appender);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "BatchInsertAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void DuckDB::DeleteAccount(Account* record)
+{
+	auto start = steady_clock::now();
+	if (m_AccountDeleteStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Account where AccountID = ?;", &m_AccountDeleteStatement);
+	}
+	SetStatementForAccountPrimaryKey(m_AccountDeleteStatement, record);
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_AccountDeleteStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteAccount Spend:%lldms", duration);
+	}
+}
+void DuckDB::UpdateAccount(Account* record)
+{
+	auto start = steady_clock::now();
+	if (m_AccountUpdateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "update t_Account set AccountName = ?, AccountType = ?, AccountStatus = ?, Password = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ? where AccountID = ?;", &m_AccountUpdateStatement);
+	}
+	SetStatementForAccountRecordUpdate(m_AccountUpdateStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_AccountUpdateStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "UpdateAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateAccount Spend:%lldms", duration);
+	}
+}
+void DuckDB::SelectAccount(std::list<Account*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_AccountSelectStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "select * from t_Account;", &m_AccountSelectStatement);
+	}
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_AccountSelectStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "SelectAccount ErrorMsg:%s", duckdb_result_error(&result));
+		duckdb_destroy_result(&result);
+		return;
+	}
+
+	ParseRecord(result, records);
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectAccount Spend:%lldms", duration);
+	}
+}
+void DuckDB::TruncateAccount()
+{
+	auto start = steady_clock::now();
+	if (m_AccountTruncateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Account;", &m_AccountTruncateStatement);
+	}
+
+	auto rc = duckdb_execute_prepared(m_AccountTruncateStatement, nullptr);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "TruncateAccount failed");
+	}
+	
+	WriteLog(LogLevel::Info, "TruncateAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void DuckDB::ParseRecord(duckdb_result& result, std::list<Account*>& records)
+{
+	while (true)
+	{
+		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
+		if (dataChunk == nullptr)
+		{
+			break;
+		}
+		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
+		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
+		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
+		duckdb_vector column3 = duckdb_data_chunk_get_vector(dataChunk, 3);
+		duckdb_vector column4 = duckdb_data_chunk_get_vector(dataChunk, 4);
+		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
+		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
+		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
+
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		int* dataColumn2 = (int*)duckdb_vector_get_data(column2);
+		int* dataColumn3 = (int*)duckdb_vector_get_data(column3);
+		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
+		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
+		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
+		int* dataColumn7 = (int*)duckdb_vector_get_data(column7);
+
+		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
+		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
+		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
+		uint64_t* validityColumn3 = duckdb_vector_get_validity(column3);
+		uint64_t* validityColumn4 = duckdb_vector_get_validity(column4);
+		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
+		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
+		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
+
+		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
+		for (idx_t row = 0LL; row < rowCount; ++row)
+		{
+			Account* record = Account::Allocate();
+			memset(record, 0, sizeof(Account));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->AccountID, dataColumn0[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
+			{
+				CpyDuckdbString(record->AccountName, dataColumn1[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row)) record->AccountType = AccountTypeType(dataColumn2[row]);
+			if (duckdb_validity_row_is_valid(validityColumn3, row)) record->AccountStatus = AccountStatusType(dataColumn3[row]);
+			if (duckdb_validity_row_is_valid(validityColumn4, row))
+			{
+				CpyDuckdbString(record->Password, dataColumn4[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->TradeGroupID = dataColumn5[row];
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->RiskGroupID = dataColumn6[row];
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->CommissionGroupID = dataColumn7[row];
+			records.push_back(record);
+		}
+	}
+}
+void DuckDB::CreateOrder()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Order (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, RequestID int, OfferID int, TradeGroupID int, RiskGroupID int, CommissionGroupID int, FrozenCash double, FrozenMargin double, FrozenCommission double, RebuildMark int, IsForceClose int, UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateOrder Spend:%lldms", duration);
+}
+void DuckDB::DropOrder()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Order;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropOrder Spend:%lldms", duration);
+}
+void DuckDB::InsertOrder(Order* record)
+{
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Order", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Order Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	AppendForOrderRecord(appender, record);
+	duckdb_appender_destroy(&appender);
+}
+void DuckDB::BatchInsertOrder(std::list<Order*>* records)
+{
+	auto start = steady_clock::now();
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Order", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Order Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	for (auto record : *records)
+	{
+		AppendForOrderRecord(appender, record);
+	}
+	duckdb_appender_destroy(&appender);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "BatchInsertOrder RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void DuckDB::DeleteOrder(Order* record)
+{
+	auto start = steady_clock::now();
+	if (m_OrderDeleteStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Order where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;", &m_OrderDeleteStatement);
+	}
+	SetStatementForOrderPrimaryKey(m_OrderDeleteStatement, record);
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_OrderDeleteStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteOrder failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteOrder Spend:%lldms", duration);
+	}
+}
+void DuckDB::UpdateOrder(Order* record)
+{
+	auto start = steady_clock::now();
+	if (m_OrderUpdateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "update t_Order set AccountType = ?, ProductClass = ?, OrderSysID = ?, Direction = ?, OffsetFlag = ?, OrderPriceType = ?, Price = ?, Volume = ?, VolumeTotal = ?, VolumeTraded = ?, VolumeMultiple = ?, OrderStatus = ?, OrderDate = ?, OrderTime = ?, CancelDate = ?, CancelTime = ?, SessionID = ?, ClientOrderID = ?, RequestID = ?, OfferID = ?, TradeGroupID = ?, RiskGroupID = ?, CommissionGroupID = ?, FrozenCash = ?, FrozenMargin = ?, FrozenCommission = ?, RebuildMark = ?, IsForceClose = ? where TradingDay = ? and AccountID = ? and ExchangeID = ? and InstrumentID = ? and OrderID = ?;", &m_OrderUpdateStatement);
+	}
+	SetStatementForOrderRecordUpdate(m_OrderUpdateStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_OrderUpdateStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "UpdateOrder failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateOrder Spend:%lldms", duration);
+	}
+}
+void DuckDB::SelectOrder(std::list<Order*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_OrderSelectStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "select * from t_Order;", &m_OrderSelectStatement);
+	}
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_OrderSelectStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "SelectOrder ErrorMsg:%s", duckdb_result_error(&result));
+		duckdb_destroy_result(&result);
+		return;
+	}
+
+	ParseRecord(result, records);
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectOrder Spend:%lldms", duration);
+	}
+}
+void DuckDB::TruncateOrder()
+{
+	auto start = steady_clock::now();
+	if (m_OrderTruncateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_Order;", &m_OrderTruncateStatement);
+	}
+
+	auto rc = duckdb_execute_prepared(m_OrderTruncateStatement, nullptr);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "TruncateOrder failed");
+	}
+	
+	WriteLog(LogLevel::Info, "TruncateOrder Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void DuckDB::ParseRecord(duckdb_result& result, std::list<Order*>& records)
 {
 	while (true)
 	{
@@ -2038,29 +2544,51 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEOrder*>& records)
 		duckdb_vector column19 = duckdb_data_chunk_get_vector(dataChunk, 19);
 		duckdb_vector column20 = duckdb_data_chunk_get_vector(dataChunk, 20);
 		duckdb_vector column21 = duckdb_data_chunk_get_vector(dataChunk, 21);
+		duckdb_vector column22 = duckdb_data_chunk_get_vector(dataChunk, 22);
+		duckdb_vector column23 = duckdb_data_chunk_get_vector(dataChunk, 23);
+		duckdb_vector column24 = duckdb_data_chunk_get_vector(dataChunk, 24);
+		duckdb_vector column25 = duckdb_data_chunk_get_vector(dataChunk, 25);
+		duckdb_vector column26 = duckdb_data_chunk_get_vector(dataChunk, 26);
+		duckdb_vector column27 = duckdb_data_chunk_get_vector(dataChunk, 27);
+		duckdb_vector column28 = duckdb_data_chunk_get_vector(dataChunk, 28);
+		duckdb_vector column29 = duckdb_data_chunk_get_vector(dataChunk, 29);
+		duckdb_vector column30 = duckdb_data_chunk_get_vector(dataChunk, 30);
+		duckdb_vector column31 = duckdb_data_chunk_get_vector(dataChunk, 31);
+		duckdb_vector column32 = duckdb_data_chunk_get_vector(dataChunk, 32);
 
 		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
-		int* dataColumn1 = (int*)duckdb_vector_get_data(column1);
-		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		int* dataColumn2 = (int*)duckdb_vector_get_data(column2);
 		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
 		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
 		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
 		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
-		int* dataColumn7 = (int*)duckdb_vector_get_data(column7);
+		duckdb_string_t* dataColumn7 = (duckdb_string_t*)duckdb_vector_get_data(column7);
 		int* dataColumn8 = (int*)duckdb_vector_get_data(column8);
 		int* dataColumn9 = (int*)duckdb_vector_get_data(column9);
-		double* dataColumn10 = (double*)duckdb_vector_get_data(column10);
-		int64_t* dataColumn11 = (int64_t*)duckdb_vector_get_data(column11);
+		int* dataColumn10 = (int*)duckdb_vector_get_data(column10);
+		double* dataColumn11 = (double*)duckdb_vector_get_data(column11);
 		int64_t* dataColumn12 = (int64_t*)duckdb_vector_get_data(column12);
 		int64_t* dataColumn13 = (int64_t*)duckdb_vector_get_data(column13);
-		int* dataColumn14 = (int*)duckdb_vector_get_data(column14);
+		int64_t* dataColumn14 = (int64_t*)duckdb_vector_get_data(column14);
 		int* dataColumn15 = (int*)duckdb_vector_get_data(column15);
-		duckdb_string_t* dataColumn16 = (duckdb_string_t*)duckdb_vector_get_data(column16);
+		int* dataColumn16 = (int*)duckdb_vector_get_data(column16);
 		duckdb_string_t* dataColumn17 = (duckdb_string_t*)duckdb_vector_get_data(column17);
 		duckdb_string_t* dataColumn18 = (duckdb_string_t*)duckdb_vector_get_data(column18);
 		duckdb_string_t* dataColumn19 = (duckdb_string_t*)duckdb_vector_get_data(column19);
-		int64_t* dataColumn20 = (int64_t*)duckdb_vector_get_data(column20);
-		int* dataColumn21 = (int*)duckdb_vector_get_data(column21);
+		duckdb_string_t* dataColumn20 = (duckdb_string_t*)duckdb_vector_get_data(column20);
+		int64_t* dataColumn21 = (int64_t*)duckdb_vector_get_data(column21);
+		int* dataColumn22 = (int*)duckdb_vector_get_data(column22);
+		int* dataColumn23 = (int*)duckdb_vector_get_data(column23);
+		int* dataColumn24 = (int*)duckdb_vector_get_data(column24);
+		int* dataColumn25 = (int*)duckdb_vector_get_data(column25);
+		int* dataColumn26 = (int*)duckdb_vector_get_data(column26);
+		int* dataColumn27 = (int*)duckdb_vector_get_data(column27);
+		double* dataColumn28 = (double*)duckdb_vector_get_data(column28);
+		double* dataColumn29 = (double*)duckdb_vector_get_data(column29);
+		double* dataColumn30 = (double*)duckdb_vector_get_data(column30);
+		int* dataColumn31 = (int*)duckdb_vector_get_data(column31);
+		int* dataColumn32 = (int*)duckdb_vector_get_data(column32);
 
 		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
 		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
@@ -2084,21 +2612,32 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEOrder*>& records)
 		uint64_t* validityColumn19 = duckdb_vector_get_validity(column19);
 		uint64_t* validityColumn20 = duckdb_vector_get_validity(column20);
 		uint64_t* validityColumn21 = duckdb_vector_get_validity(column21);
+		uint64_t* validityColumn22 = duckdb_vector_get_validity(column22);
+		uint64_t* validityColumn23 = duckdb_vector_get_validity(column23);
+		uint64_t* validityColumn24 = duckdb_vector_get_validity(column24);
+		uint64_t* validityColumn25 = duckdb_vector_get_validity(column25);
+		uint64_t* validityColumn26 = duckdb_vector_get_validity(column26);
+		uint64_t* validityColumn27 = duckdb_vector_get_validity(column27);
+		uint64_t* validityColumn28 = duckdb_vector_get_validity(column28);
+		uint64_t* validityColumn29 = duckdb_vector_get_validity(column29);
+		uint64_t* validityColumn30 = duckdb_vector_get_validity(column30);
+		uint64_t* validityColumn31 = duckdb_vector_get_validity(column31);
+		uint64_t* validityColumn32 = duckdb_vector_get_validity(column32);
 
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
 		{
-			SEOrder* record = SEOrder::Allocate();
-			memset(record, 0, sizeof(SEOrder));
+			Order* record = Order::Allocate();
+			memset(record, 0, sizeof(Order));
 			if (duckdb_validity_row_is_valid(validityColumn0, row))
 			{
 				CpyDuckdbString(record->TradingDay, dataColumn0[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn1, row)) record->BrokerID = dataColumn1[row];
-			if (duckdb_validity_row_is_valid(validityColumn2, row))
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
 			{
-				CpyDuckdbString(record->AccountID, dataColumn2[row]);
+				CpyDuckdbString(record->AccountID, dataColumn1[row]);
 			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row)) record->AccountType = AccountTypeType(dataColumn2[row]);
 			if (duckdb_validity_row_is_valid(validityColumn3, row))
 			{
 				CpyDuckdbString(record->ExchangeID, dataColumn3[row]);
@@ -2109,176 +2648,167 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEOrder*>& records)
 			}
 			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->ProductClass = ProductClassType(dataColumn5[row]);
 			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->OrderID = dataColumn6[row];
-			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->Direction = DirectionType(dataColumn7[row]);
-			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->OffsetFlag = OffsetFlagType(dataColumn8[row]);
-			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->OrderPriceType = OrderPriceTypeType(dataColumn9[row]);
-			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->Price = dataColumn10[row];
-			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Volume = dataColumn11[row];
-			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->VolumeTotal = dataColumn12[row];
-			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->VolumeTraded = dataColumn13[row];
-			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->VolumeMultiple = dataColumn14[row];
-			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->OrderStatus = OrderStatusType(dataColumn15[row]);
-			if (duckdb_validity_row_is_valid(validityColumn16, row))
+			if (duckdb_validity_row_is_valid(validityColumn7, row))
 			{
-				CpyDuckdbString(record->OrderDate, dataColumn16[row]);
+				CpyDuckdbString(record->OrderSysID, dataColumn7[row]);
 			}
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->Direction = DirectionType(dataColumn8[row]);
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->OffsetFlag = OffsetFlagType(dataColumn9[row]);
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->OrderPriceType = OrderPriceTypeType(dataColumn10[row]);
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Price = dataColumn11[row];
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->Volume = dataColumn12[row];
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->VolumeTotal = dataColumn13[row];
+			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->VolumeTraded = dataColumn14[row];
+			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->VolumeMultiple = dataColumn15[row];
+			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->OrderStatus = OrderStatusType(dataColumn16[row]);
 			if (duckdb_validity_row_is_valid(validityColumn17, row))
 			{
-				CpyDuckdbString(record->OrderTime, dataColumn17[row]);
+				CpyDuckdbString(record->OrderDate, dataColumn17[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn18, row))
 			{
-				CpyDuckdbString(record->CancelDate, dataColumn18[row]);
+				CpyDuckdbString(record->OrderTime, dataColumn18[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn19, row))
 			{
-				CpyDuckdbString(record->CancelTime, dataColumn19[row]);
+				CpyDuckdbString(record->CancelDate, dataColumn19[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn20, row)) record->SessionID = dataColumn20[row];
-			if (duckdb_validity_row_is_valid(validityColumn21, row)) record->ClientOrderID = dataColumn21[row];
+			if (duckdb_validity_row_is_valid(validityColumn20, row))
+			{
+				CpyDuckdbString(record->CancelTime, dataColumn20[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn21, row)) record->SessionID = dataColumn21[row];
+			if (duckdb_validity_row_is_valid(validityColumn22, row)) record->ClientOrderID = dataColumn22[row];
+			if (duckdb_validity_row_is_valid(validityColumn23, row)) record->RequestID = dataColumn23[row];
+			if (duckdb_validity_row_is_valid(validityColumn24, row)) record->OfferID = dataColumn24[row];
+			if (duckdb_validity_row_is_valid(validityColumn25, row)) record->TradeGroupID = dataColumn25[row];
+			if (duckdb_validity_row_is_valid(validityColumn26, row)) record->RiskGroupID = dataColumn26[row];
+			if (duckdb_validity_row_is_valid(validityColumn27, row)) record->CommissionGroupID = dataColumn27[row];
+			if (duckdb_validity_row_is_valid(validityColumn28, row)) record->FrozenCash = dataColumn28[row];
+			if (duckdb_validity_row_is_valid(validityColumn29, row)) record->FrozenMargin = dataColumn29[row];
+			if (duckdb_validity_row_is_valid(validityColumn30, row)) record->FrozenCommission = dataColumn30[row];
+			if (duckdb_validity_row_is_valid(validityColumn31, row)) record->RebuildMark = dataColumn31[row];
+			if (duckdb_validity_row_is_valid(validityColumn32, row)) record->IsForceClose = dataColumn32[row];
 			records.push_back(record);
 		}
 	}
 }
-void DuckDB::CreateSETrade()
+void DuckDB::CreateTrade()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SETrade (TradingDay varchar, BrokerID int, AccountID varchar, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));CREATE INDEX SETradeAccountID ON t_SETrade(TradingDay, AccountID);", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Trade (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));", &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "CreateSETrade failed, ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "CreateTrade failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateSETrade Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateTrade Spend:%lldms", duration);
 }
-void DuckDB::DropSETrade()
+void DuckDB::DropTrade()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX SETradeAccountID;DROP TABLE IF EXISTS t_SETrade;", &result);
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Trade;", &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DropSETrade failed, ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DropTrade failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropSETrade Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropTrade Spend:%lldms", duration);
 }
-void DuckDB::InsertSETrade(SETrade* record)
+void DuckDB::InsertTrade(Trade* record)
 {
 	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SETrade", &appender) != DuckDBSuccess)
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Trade", &appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SETrade Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Trade Failed. ErrorMsg:%s", duckdb_appender_error(appender));
 		duckdb_appender_destroy(&appender);
 		return;
 	}
-	AppendForSETradeRecord(appender, record);
+	AppendForTradeRecord(appender, record);
 	duckdb_appender_destroy(&appender);
 }
-void DuckDB::BatchInsertSETrade(std::list<SETrade*>* records)
+void DuckDB::BatchInsertTrade(std::list<Trade*>* records)
 {
 	auto start = steady_clock::now();
 	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SETrade", &appender) != DuckDBSuccess)
+	if (duckdb_appender_create(m_Connection, nullptr, "t_Trade", &appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SETrade Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_Trade Failed. ErrorMsg:%s", duckdb_appender_error(appender));
 		duckdb_appender_destroy(&appender);
 		return;
 	}
 	for (auto record : *records)
 	{
-		AppendForSETradeRecord(appender, record);
+		AppendForTradeRecord(appender, record);
 	}
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "BatchInsertSETrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertTrade RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
-void DuckDB::DeleteSETrade(SETrade* record)
+void DuckDB::DeleteTrade(Trade* record)
 {
 	auto start = steady_clock::now();
-	if (m_SETradeDeleteStatement == nullptr)
+	if (m_TradeDeleteStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SETrade where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;", &m_SETradeDeleteStatement);
+		duckdb_prepare(m_Connection, "delete from t_Trade where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;", &m_TradeDeleteStatement);
 	}
-	SetStatementForSETradePrimaryKey(m_SETradeDeleteStatement, record);
+	SetStatementForTradePrimaryKey(m_TradeDeleteStatement, record);
 
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SETradeDeleteStatement, &result);
+	auto rc = duckdb_execute_prepared(m_TradeDeleteStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSETrade failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DeleteTrade failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSETrade Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "DeleteTrade Spend:%lldms", duration);
 	}
 }
-void DuckDB::DeleteSETradeByAccountIDIndex(SETrade* record)
+void DuckDB::UpdateTrade(Trade* record)
 {
 	auto start = steady_clock::now();
-	if (m_SETradeDeleteByAccountIDIndexStatement == nullptr)
+	if (m_TradeUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SETrade where TradingDay = ? and AccountID = ?;", &m_SETradeDeleteByAccountIDIndexStatement);
+		duckdb_prepare(m_Connection, "update t_Trade set AccountID = ?, AccountType = ?, InstrumentID = ?, ProductClass = ?, OrderID = ?, OrderSysID = ?, OffsetFlag = ?, Price = ?, Volume = ?, VolumeMultiple = ?, TradeAmount = ?, Commission = ?, TradeDate = ?, TradeTime = ? where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;", &m_TradeUpdateStatement);
 	}
-	SetStatementForSETradeIndexAccountID(m_SETradeDeleteByAccountIDIndexStatement, record);
+	SetStatementForTradeRecordUpdate(m_TradeUpdateStatement, record);
 	
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SETradeDeleteByAccountIDIndexStatement, &result);
+	auto rc = duckdb_execute_prepared(m_TradeUpdateStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSETradeByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
-	}
-	duckdb_destroy_result(&result);
-
-	auto duration = GetDuration<chrono::milliseconds>(start);
-	if (duration >= 100)
-	{
-		WriteLog(LogLevel::Warning, "DeleteSETradeByAccountIDIndex Spend:%lldms", duration);
-	}
-}
-void DuckDB::UpdateSETrade(SETrade* record)
-{
-	auto start = steady_clock::now();
-	if (m_SETradeUpdateStatement == nullptr)
-	{
-		duckdb_prepare(m_Connection, "update t_SETrade set BrokerID = ?, AccountID = ?, InstrumentID = ?, ProductClass = ?, OrderID = ?, OffsetFlag = ?, Price = ?, Volume = ?, VolumeMultiple = ?, TradeAmount = ?, Commission = ?, TradeDate = ?, TradeTime = ? where TradingDay = ? and ExchangeID = ? and TradeID = ? and Direction = ?;", &m_SETradeUpdateStatement);
-	}
-	SetStatementForSETradeRecordUpdate(m_SETradeUpdateStatement, record);
-	
-	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SETradeUpdateStatement, &result);
-	if (rc != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "UpdateSETrade failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "UpdateTrade failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "UpdateSETrade Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "UpdateTrade Spend:%lldms", duration);
 	}
 }
-void DuckDB::SelectSETrade(std::list<SETrade*>& records)
+void DuckDB::SelectTrade(std::list<Trade*>& records)
 {
 	auto start = steady_clock::now();
-	if (m_SETradeSelectStatement == nullptr)
+	if (m_TradeSelectStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "select * from t_SETrade;", &m_SETradeSelectStatement);
+		duckdb_prepare(m_Connection, "select * from t_Trade;", &m_TradeSelectStatement);
 	}
 
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SETradeSelectStatement, &result);
+	auto rc = duckdb_execute_prepared(m_TradeSelectStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "SelectSETrade ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "SelectTrade ErrorMsg:%s", duckdb_result_error(&result));
 		duckdb_destroy_result(&result);
 		return;
 	}
@@ -2289,26 +2819,26 @@ void DuckDB::SelectSETrade(std::list<SETrade*>& records)
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "SelectSETrade Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "SelectTrade Spend:%lldms", duration);
 	}
 }
-void DuckDB::TruncateSETrade()
+void DuckDB::TruncateTrade()
 {
 	auto start = steady_clock::now();
-	if (m_SETradeTruncateStatement == nullptr)
+	if (m_TradeTruncateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SETrade;", &m_SETradeTruncateStatement);
+		duckdb_prepare(m_Connection, "delete from t_Trade;", &m_TradeTruncateStatement);
 	}
 
-	auto rc = duckdb_execute_prepared(m_SETradeTruncateStatement, nullptr);
+	auto rc = duckdb_execute_prepared(m_TradeTruncateStatement, nullptr);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "TruncateSETrade failed");
+		WriteLog(LogLevel::Warning, "TruncateTrade failed");
 	}
 	
-	WriteLog(LogLevel::Info, "TruncateSETrade Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+	WriteLog(LogLevel::Info, "TruncateTrade Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DuckDB::ParseRecord(duckdb_result& result, std::list<SETrade*>& records)
+void DuckDB::ParseRecord(duckdb_result& result, std::list<Trade*>& records)
 {
 	while (true)
 	{
@@ -2334,24 +2864,26 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SETrade*>& records)
 		duckdb_vector column14 = duckdb_data_chunk_get_vector(dataChunk, 14);
 		duckdb_vector column15 = duckdb_data_chunk_get_vector(dataChunk, 15);
 		duckdb_vector column16 = duckdb_data_chunk_get_vector(dataChunk, 16);
+		duckdb_vector column17 = duckdb_data_chunk_get_vector(dataChunk, 17);
 
 		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
-		int* dataColumn1 = (int*)duckdb_vector_get_data(column1);
-		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		int* dataColumn2 = (int*)duckdb_vector_get_data(column2);
 		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
 		duckdb_string_t* dataColumn4 = (duckdb_string_t*)duckdb_vector_get_data(column4);
 		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
 		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
 		duckdb_string_t* dataColumn7 = (duckdb_string_t*)duckdb_vector_get_data(column7);
-		int* dataColumn8 = (int*)duckdb_vector_get_data(column8);
+		duckdb_string_t* dataColumn8 = (duckdb_string_t*)duckdb_vector_get_data(column8);
 		int* dataColumn9 = (int*)duckdb_vector_get_data(column9);
-		double* dataColumn10 = (double*)duckdb_vector_get_data(column10);
-		int64_t* dataColumn11 = (int64_t*)duckdb_vector_get_data(column11);
-		int* dataColumn12 = (int*)duckdb_vector_get_data(column12);
-		double* dataColumn13 = (double*)duckdb_vector_get_data(column13);
+		int* dataColumn10 = (int*)duckdb_vector_get_data(column10);
+		double* dataColumn11 = (double*)duckdb_vector_get_data(column11);
+		int64_t* dataColumn12 = (int64_t*)duckdb_vector_get_data(column12);
+		int* dataColumn13 = (int*)duckdb_vector_get_data(column13);
 		double* dataColumn14 = (double*)duckdb_vector_get_data(column14);
-		duckdb_string_t* dataColumn15 = (duckdb_string_t*)duckdb_vector_get_data(column15);
+		double* dataColumn15 = (double*)duckdb_vector_get_data(column15);
 		duckdb_string_t* dataColumn16 = (duckdb_string_t*)duckdb_vector_get_data(column16);
+		duckdb_string_t* dataColumn17 = (duckdb_string_t*)duckdb_vector_get_data(column17);
 
 		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
 		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
@@ -2370,21 +2902,22 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SETrade*>& records)
 		uint64_t* validityColumn14 = duckdb_vector_get_validity(column14);
 		uint64_t* validityColumn15 = duckdb_vector_get_validity(column15);
 		uint64_t* validityColumn16 = duckdb_vector_get_validity(column16);
+		uint64_t* validityColumn17 = duckdb_vector_get_validity(column17);
 
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
 		{
-			SETrade* record = SETrade::Allocate();
-			memset(record, 0, sizeof(SETrade));
+			Trade* record = Trade::Allocate();
+			memset(record, 0, sizeof(Trade));
 			if (duckdb_validity_row_is_valid(validityColumn0, row))
 			{
 				CpyDuckdbString(record->TradingDay, dataColumn0[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn1, row)) record->BrokerID = dataColumn1[row];
-			if (duckdb_validity_row_is_valid(validityColumn2, row))
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
 			{
-				CpyDuckdbString(record->AccountID, dataColumn2[row]);
+				CpyDuckdbString(record->AccountID, dataColumn1[row]);
 			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row)) record->AccountType = AccountTypeType(dataColumn2[row]);
 			if (duckdb_validity_row_is_valid(validityColumn3, row))
 			{
 				CpyDuckdbString(record->ExchangeID, dataColumn3[row]);
@@ -2397,166 +2930,170 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SETrade*>& records)
 			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->OrderID = dataColumn6[row];
 			if (duckdb_validity_row_is_valid(validityColumn7, row))
 			{
-				CpyDuckdbString(record->TradeID, dataColumn7[row]);
+				CpyDuckdbString(record->OrderSysID, dataColumn7[row]);
 			}
-			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->Direction = DirectionType(dataColumn8[row]);
-			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->OffsetFlag = OffsetFlagType(dataColumn9[row]);
-			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->Price = dataColumn10[row];
-			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Volume = dataColumn11[row];
-			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->VolumeMultiple = dataColumn12[row];
-			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->TradeAmount = dataColumn13[row];
-			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->Commission = dataColumn14[row];
-			if (duckdb_validity_row_is_valid(validityColumn15, row))
+			if (duckdb_validity_row_is_valid(validityColumn8, row))
 			{
-				CpyDuckdbString(record->TradeDate, dataColumn15[row]);
+				CpyDuckdbString(record->TradeID, dataColumn8[row]);
 			}
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->Direction = DirectionType(dataColumn9[row]);
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->OffsetFlag = OffsetFlagType(dataColumn10[row]);
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Price = dataColumn11[row];
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->Volume = dataColumn12[row];
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->VolumeMultiple = dataColumn13[row];
+			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->TradeAmount = dataColumn14[row];
+			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->Commission = dataColumn15[row];
 			if (duckdb_validity_row_is_valid(validityColumn16, row))
 			{
-				CpyDuckdbString(record->TradeTime, dataColumn16[row]);
+				CpyDuckdbString(record->TradeDate, dataColumn16[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn17, row))
+			{
+				CpyDuckdbString(record->TradeTime, dataColumn17[row]);
 			}
 			records.push_back(record);
 		}
 	}
 }
-void DuckDB::CreateSEBrokerLoginSession()
+void DuckDB::CreateAccountLoginSession()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_SEBrokerLoginSession (BrokerID int, SessionID bigint, IPAddress varchar, PRIMARY KEY(SessionID));CREATE INDEX SEBrokerLoginSessionBrokerID ON t_SEBrokerLoginSession(BrokerID);", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_AccountLoginSession (AccountID varchar, SessionID bigint, IPAddress varchar, PRIMARY KEY(SessionID));CREATE INDEX AccountLoginSessionAccountID ON t_AccountLoginSession(AccountID);", &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "CreateSEBrokerLoginSession failed, ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "CreateAccountLoginSession failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateSEBrokerLoginSession Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateAccountLoginSession Spend:%lldms", duration);
 }
-void DuckDB::DropSEBrokerLoginSession()
+void DuckDB::DropAccountLoginSession()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX SEBrokerLoginSessionBrokerID;DROP TABLE IF EXISTS t_SEBrokerLoginSession;", &result);
+	auto rc = duckdb_query(m_Connection, "DROP INDEX AccountLoginSessionAccountID;DROP TABLE IF EXISTS t_AccountLoginSession;", &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DropSEBrokerLoginSession failed, ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DropAccountLoginSession failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropSEBrokerLoginSession Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropAccountLoginSession Spend:%lldms", duration);
 }
-void DuckDB::InsertSEBrokerLoginSession(SEBrokerLoginSession* record)
+void DuckDB::InsertAccountLoginSession(AccountLoginSession* record)
 {
 	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SEBrokerLoginSession", &appender) != DuckDBSuccess)
+	if (duckdb_appender_create(m_Connection, nullptr, "t_AccountLoginSession", &appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SEBrokerLoginSession Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_AccountLoginSession Failed. ErrorMsg:%s", duckdb_appender_error(appender));
 		duckdb_appender_destroy(&appender);
 		return;
 	}
-	AppendForSEBrokerLoginSessionRecord(appender, record);
+	AppendForAccountLoginSessionRecord(appender, record);
 	duckdb_appender_destroy(&appender);
 }
-void DuckDB::BatchInsertSEBrokerLoginSession(std::list<SEBrokerLoginSession*>* records)
+void DuckDB::BatchInsertAccountLoginSession(std::list<AccountLoginSession*>* records)
 {
 	auto start = steady_clock::now();
 	duckdb_appender appender;
-	if (duckdb_appender_create(m_Connection, nullptr, "t_SEBrokerLoginSession", &appender) != DuckDBSuccess)
+	if (duckdb_appender_create(m_Connection, nullptr, "t_AccountLoginSession", &appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_SEBrokerLoginSession Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_AccountLoginSession Failed. ErrorMsg:%s", duckdb_appender_error(appender));
 		duckdb_appender_destroy(&appender);
 		return;
 	}
 	for (auto record : *records)
 	{
-		AppendForSEBrokerLoginSessionRecord(appender, record);
+		AppendForAccountLoginSessionRecord(appender, record);
 	}
 	duckdb_appender_destroy(&appender);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "BatchInsertSEBrokerLoginSession RecordSize:%lld, Spend:%lldms", records->size(), duration);
+	WriteLog(LogLevel::Info, "BatchInsertAccountLoginSession RecordSize:%lld, Spend:%lldms", records->size(), duration);
 }
-void DuckDB::DeleteSEBrokerLoginSession(SEBrokerLoginSession* record)
+void DuckDB::DeleteAccountLoginSession(AccountLoginSession* record)
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerLoginSessionDeleteStatement == nullptr)
+	if (m_AccountLoginSessionDeleteStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SEBrokerLoginSession where SessionID = ?;", &m_SEBrokerLoginSessionDeleteStatement);
+		duckdb_prepare(m_Connection, "delete from t_AccountLoginSession where SessionID = ?;", &m_AccountLoginSessionDeleteStatement);
 	}
-	SetStatementForSEBrokerLoginSessionPrimaryKey(m_SEBrokerLoginSessionDeleteStatement, record);
+	SetStatementForAccountLoginSessionPrimaryKey(m_AccountLoginSessionDeleteStatement, record);
 
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEBrokerLoginSessionDeleteStatement, &result);
+	auto rc = duckdb_execute_prepared(m_AccountLoginSessionDeleteStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEBrokerLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DeleteAccountLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEBrokerLoginSession Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "DeleteAccountLoginSession Spend:%lldms", duration);
 	}
 }
-void DuckDB::DeleteSEBrokerLoginSessionByBrokerIDIndex(SEBrokerLoginSession* record)
+void DuckDB::DeleteAccountLoginSessionByAccountIDIndex(AccountLoginSession* record)
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement == nullptr)
+	if (m_AccountLoginSessionDeleteByAccountIDIndexStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SEBrokerLoginSession where BrokerID = ?;", &m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement);
+		duckdb_prepare(m_Connection, "delete from t_AccountLoginSession where AccountID = ?;", &m_AccountLoginSessionDeleteByAccountIDIndexStatement);
 	}
-	SetStatementForSEBrokerLoginSessionIndexBrokerID(m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement, record);
+	SetStatementForAccountLoginSessionIndexAccountID(m_AccountLoginSessionDeleteByAccountIDIndexStatement, record);
 	
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEBrokerLoginSessionDeleteByBrokerIDIndexStatement, &result);
+	auto rc = duckdb_execute_prepared(m_AccountLoginSessionDeleteByAccountIDIndexStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEBrokerLoginSessionByBrokerIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "DeleteAccountLoginSessionByAccountIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "DeleteSEBrokerLoginSessionByBrokerIDIndex Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "DeleteAccountLoginSessionByAccountIDIndex Spend:%lldms", duration);
 	}
 }
-void DuckDB::UpdateSEBrokerLoginSession(SEBrokerLoginSession* record)
+void DuckDB::UpdateAccountLoginSession(AccountLoginSession* record)
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerLoginSessionUpdateStatement == nullptr)
+	if (m_AccountLoginSessionUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_SEBrokerLoginSession set BrokerID = ?, IPAddress = ? where SessionID = ?;", &m_SEBrokerLoginSessionUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_AccountLoginSession set AccountID = ?, IPAddress = ? where SessionID = ?;", &m_AccountLoginSessionUpdateStatement);
 	}
-	SetStatementForSEBrokerLoginSessionRecordUpdate(m_SEBrokerLoginSessionUpdateStatement, record);
+	SetStatementForAccountLoginSessionRecordUpdate(m_AccountLoginSessionUpdateStatement, record);
 	
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEBrokerLoginSessionUpdateStatement, &result);
+	auto rc = duckdb_execute_prepared(m_AccountLoginSessionUpdateStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "UpdateSEBrokerLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "UpdateAccountLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "UpdateSEBrokerLoginSession Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "UpdateAccountLoginSession Spend:%lldms", duration);
 	}
 }
-void DuckDB::SelectSEBrokerLoginSession(std::list<SEBrokerLoginSession*>& records)
+void DuckDB::SelectAccountLoginSession(std::list<AccountLoginSession*>& records)
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerLoginSessionSelectStatement == nullptr)
+	if (m_AccountLoginSessionSelectStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "select * from t_SEBrokerLoginSession;", &m_SEBrokerLoginSessionSelectStatement);
+		duckdb_prepare(m_Connection, "select * from t_AccountLoginSession;", &m_AccountLoginSessionSelectStatement);
 	}
 
 	duckdb_result result;
-	auto rc = duckdb_execute_prepared(m_SEBrokerLoginSessionSelectStatement, &result);
+	auto rc = duckdb_execute_prepared(m_AccountLoginSessionSelectStatement, &result);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "SelectSEBrokerLoginSession ErrorMsg:%s", duckdb_result_error(&result));
+		WriteLog(LogLevel::Warning, "SelectAccountLoginSession ErrorMsg:%s", duckdb_result_error(&result));
 		duckdb_destroy_result(&result);
 		return;
 	}
@@ -2567,26 +3104,26 @@ void DuckDB::SelectSEBrokerLoginSession(std::list<SEBrokerLoginSession*>& record
 	auto duration = GetDuration<chrono::milliseconds>(start);
 	if (duration >= 100)
 	{
-		WriteLog(LogLevel::Warning, "SelectSEBrokerLoginSession Spend:%lldms", duration);
+		WriteLog(LogLevel::Warning, "SelectAccountLoginSession Spend:%lldms", duration);
 	}
 }
-void DuckDB::TruncateSEBrokerLoginSession()
+void DuckDB::TruncateAccountLoginSession()
 {
 	auto start = steady_clock::now();
-	if (m_SEBrokerLoginSessionTruncateStatement == nullptr)
+	if (m_AccountLoginSessionTruncateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "delete from t_SEBrokerLoginSession;", &m_SEBrokerLoginSessionTruncateStatement);
+		duckdb_prepare(m_Connection, "delete from t_AccountLoginSession;", &m_AccountLoginSessionTruncateStatement);
 	}
 
-	auto rc = duckdb_execute_prepared(m_SEBrokerLoginSessionTruncateStatement, nullptr);
+	auto rc = duckdb_execute_prepared(m_AccountLoginSessionTruncateStatement, nullptr);
 	if (rc != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "TruncateSEBrokerLoginSession failed");
+		WriteLog(LogLevel::Warning, "TruncateAccountLoginSession failed");
 	}
 	
-	WriteLog(LogLevel::Info, "TruncateSEBrokerLoginSession Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+	WriteLog(LogLevel::Info, "TruncateAccountLoginSession Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
-void DuckDB::ParseRecord(duckdb_result& result, std::list<SEBrokerLoginSession*>& records)
+void DuckDB::ParseRecord(duckdb_result& result, std::list<AccountLoginSession*>& records)
 {
 	while (true)
 	{
@@ -2599,7 +3136,7 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEBrokerLoginSession*>
 		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
 		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
 
-		int* dataColumn0 = (int*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
 		int64_t* dataColumn1 = (int64_t*)duckdb_vector_get_data(column1);
 		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
 
@@ -2610,9 +3147,12 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<SEBrokerLoginSession*>
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
 		{
-			SEBrokerLoginSession* record = SEBrokerLoginSession::Allocate();
-			memset(record, 0, sizeof(SEBrokerLoginSession));
-			if (duckdb_validity_row_is_valid(validityColumn0, row)) record->BrokerID = dataColumn0[row];
+			AccountLoginSession* record = AccountLoginSession::Allocate();
+			memset(record, 0, sizeof(AccountLoginSession));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->AccountID, dataColumn0[row]);
+			}
 			if (duckdb_validity_row_is_valid(validityColumn1, row)) record->SessionID = dataColumn1[row];
 			if (duckdb_validity_row_is_valid(validityColumn2, row))
 			{
@@ -2729,6 +3269,71 @@ void DuckDB::SetStatementForProductPrimaryKey(duckdb_prepared_statement statemen
 {
 	duckdb_bind_varchar(statement, 1, record->ExchangeID);
 	duckdb_bind_varchar(statement, 2, record->ProductID);
+}
+bool DuckDB::AppendForInstrumentRecord(duckdb_appender appender, Instrument* record)
+{
+	duckdb_append_varchar(appender, record->ExchangeID);
+	duckdb_append_varchar(appender, record->InstrumentID);
+	duckdb_append_varchar(appender, record->ExchangeInstID);
+	duckdb_append_varchar(appender, record->InstrumentName);
+	duckdb_append_varchar(appender, record->ProductID);
+	duckdb_append_int32(appender, int(record->ProductClass));
+	duckdb_append_int32(appender, int(record->InstrumentClass));
+	duckdb_append_int32(appender, record->Rank);
+	duckdb_append_int32(appender, record->VolumeMultiple);
+	duckdb_append_double(appender, record->PriceTick);
+	duckdb_append_int64(appender, record->MaxMarketOrderVolume);
+	duckdb_append_int64(appender, record->MinMarketOrderVolume);
+	duckdb_append_int64(appender, record->MaxLimitOrderVolume);
+	duckdb_append_int64(appender, record->MinLimitOrderVolume);
+	duckdb_append_varchar(appender, record->SessionName);
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForInstrumentRecord(duckdb_prepared_statement statement, Instrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
+	duckdb_bind_varchar(statement, 2, record->InstrumentID);
+	duckdb_bind_varchar(statement, 3, record->ExchangeInstID);
+	duckdb_bind_varchar(statement, 4, record->InstrumentName);
+	duckdb_bind_varchar(statement, 5, record->ProductID);
+	duckdb_bind_int32(statement, 6, int(record->ProductClass));
+	duckdb_bind_int32(statement, 7, int(record->InstrumentClass));
+	duckdb_bind_int32(statement, 8, record->Rank);
+	duckdb_bind_int32(statement, 9, record->VolumeMultiple);
+	duckdb_bind_double(statement, 10, record->PriceTick);
+	duckdb_bind_int64(statement, 11, record->MaxMarketOrderVolume);
+	duckdb_bind_int64(statement, 12, record->MinMarketOrderVolume);
+	duckdb_bind_int64(statement, 13, record->MaxLimitOrderVolume);
+	duckdb_bind_int64(statement, 14, record->MinLimitOrderVolume);
+	duckdb_bind_varchar(statement, 15, record->SessionName);
+}
+void DuckDB::SetStatementForInstrumentRecordUpdate(duckdb_prepared_statement statement, Instrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeInstID);
+	duckdb_bind_varchar(statement, 2, record->InstrumentName);
+	duckdb_bind_varchar(statement, 3, record->ProductID);
+	duckdb_bind_int32(statement, 4, int(record->ProductClass));
+	duckdb_bind_int32(statement, 5, int(record->InstrumentClass));
+	duckdb_bind_int32(statement, 6, record->Rank);
+	duckdb_bind_int32(statement, 7, record->VolumeMultiple);
+	duckdb_bind_double(statement, 8, record->PriceTick);
+	duckdb_bind_int64(statement, 9, record->MaxMarketOrderVolume);
+	duckdb_bind_int64(statement, 10, record->MinMarketOrderVolume);
+	duckdb_bind_int64(statement, 11, record->MaxLimitOrderVolume);
+	duckdb_bind_int64(statement, 12, record->MinLimitOrderVolume);
+	duckdb_bind_varchar(statement, 13, record->SessionName);
+	duckdb_bind_varchar(statement, 14, record->ExchangeID);
+	duckdb_bind_varchar(statement, 15, record->InstrumentID);
+}
+void DuckDB::SetStatementForInstrumentPrimaryKey(duckdb_prepared_statement statement, Instrument* record)
+{
+	duckdb_bind_varchar(statement, 1, record->ExchangeID);
+	duckdb_bind_varchar(statement, 2, record->InstrumentID);
 }
 bool DuckDB::AppendForDepthMarketDataRecord(duckdb_appender appender, DepthMarketData* record)
 {
@@ -2934,112 +3539,187 @@ void DuckDB::SetStatementForDepthMarketDataPrimaryKey(duckdb_prepared_statement 
 	duckdb_bind_varchar(statement, 2, record->ExchangeID);
 	duckdb_bind_varchar(statement, 3, record->InstrumentID);
 }
-bool DuckDB::AppendForSEBrokerRecord(duckdb_appender appender, SEBroker* record)
-{
-	duckdb_append_int32(appender, record->BrokerID);
-	duckdb_append_varchar(appender, record->BrokerName);
-	duckdb_append_varchar(appender, record->Password);
-	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "InsertSEBroker failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
-		return false;
-	}
-	return true;
-}
-void DuckDB::SetStatementForSEBrokerRecord(duckdb_prepared_statement statement, SEBroker* record)
-{
-	duckdb_bind_int32(statement, 1, record->BrokerID);
-	duckdb_bind_varchar(statement, 2, record->BrokerName);
-	duckdb_bind_varchar(statement, 3, record->Password);
-}
-void DuckDB::SetStatementForSEBrokerRecordUpdate(duckdb_prepared_statement statement, SEBroker* record)
-{
-	duckdb_bind_varchar(statement, 1, record->BrokerName);
-	duckdb_bind_varchar(statement, 2, record->Password);
-	duckdb_bind_int32(statement, 3, record->BrokerID);
-}
-void DuckDB::SetStatementForSEBrokerPrimaryKey(duckdb_prepared_statement statement, SEBroker* record)
-{
-	duckdb_bind_int32(statement, 1, record->BrokerID);
-}
-bool DuckDB::AppendForSEInstrumentRecord(duckdb_appender appender, SEInstrument* record)
-{
-	duckdb_append_varchar(appender, record->ExchangeID);
-	duckdb_append_varchar(appender, record->InstrumentID);
-	duckdb_append_varchar(appender, record->ExchangeInstID);
-	duckdb_append_varchar(appender, record->InstrumentName);
-	duckdb_append_varchar(appender, record->ProductID);
-	duckdb_append_int32(appender, int(record->ProductClass));
-	duckdb_append_int64(appender, record->MaxMarketOrderVolume);
-	duckdb_append_int64(appender, record->MinMarketOrderVolume);
-	duckdb_append_int64(appender, record->MaxLimitOrderVolume);
-	duckdb_append_int64(appender, record->MinLimitOrderVolume);
-	duckdb_append_int32(appender, record->VolumeMultiple);
-	duckdb_append_double(appender, record->PriceTick);
-	duckdb_append_double(appender, record->UpperLimitPrice);
-	duckdb_append_double(appender, record->LowerLimitPrice);
-	duckdb_append_varchar(appender, record->SessionName);
-	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
-	{
-		WriteLog(LogLevel::Warning, "InsertSEInstrument failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
-		return false;
-	}
-	return true;
-}
-void DuckDB::SetStatementForSEInstrumentRecord(duckdb_prepared_statement statement, SEInstrument* record)
-{
-	duckdb_bind_varchar(statement, 1, record->ExchangeID);
-	duckdb_bind_varchar(statement, 2, record->InstrumentID);
-	duckdb_bind_varchar(statement, 3, record->ExchangeInstID);
-	duckdb_bind_varchar(statement, 4, record->InstrumentName);
-	duckdb_bind_varchar(statement, 5, record->ProductID);
-	duckdb_bind_int32(statement, 6, int(record->ProductClass));
-	duckdb_bind_int64(statement, 7, record->MaxMarketOrderVolume);
-	duckdb_bind_int64(statement, 8, record->MinMarketOrderVolume);
-	duckdb_bind_int64(statement, 9, record->MaxLimitOrderVolume);
-	duckdb_bind_int64(statement, 10, record->MinLimitOrderVolume);
-	duckdb_bind_int32(statement, 11, record->VolumeMultiple);
-	duckdb_bind_double(statement, 12, record->PriceTick);
-	duckdb_bind_double(statement, 13, record->UpperLimitPrice);
-	duckdb_bind_double(statement, 14, record->LowerLimitPrice);
-	duckdb_bind_varchar(statement, 15, record->SessionName);
-}
-void DuckDB::SetStatementForSEInstrumentRecordUpdate(duckdb_prepared_statement statement, SEInstrument* record)
-{
-	duckdb_bind_varchar(statement, 1, record->ExchangeInstID);
-	duckdb_bind_varchar(statement, 2, record->InstrumentName);
-	duckdb_bind_varchar(statement, 3, record->ProductID);
-	duckdb_bind_int32(statement, 4, int(record->ProductClass));
-	duckdb_bind_int64(statement, 5, record->MaxMarketOrderVolume);
-	duckdb_bind_int64(statement, 6, record->MinMarketOrderVolume);
-	duckdb_bind_int64(statement, 7, record->MaxLimitOrderVolume);
-	duckdb_bind_int64(statement, 8, record->MinLimitOrderVolume);
-	duckdb_bind_int32(statement, 9, record->VolumeMultiple);
-	duckdb_bind_double(statement, 10, record->PriceTick);
-	duckdb_bind_double(statement, 11, record->UpperLimitPrice);
-	duckdb_bind_double(statement, 12, record->LowerLimitPrice);
-	duckdb_bind_varchar(statement, 13, record->SessionName);
-	duckdb_bind_varchar(statement, 14, record->ExchangeID);
-	duckdb_bind_varchar(statement, 15, record->InstrumentID);
-}
-void DuckDB::SetStatementForSEInstrumentPrimaryKey(duckdb_prepared_statement statement, SEInstrument* record)
-{
-	duckdb_bind_varchar(statement, 1, record->ExchangeID);
-	duckdb_bind_varchar(statement, 2, record->InstrumentID);
-}
-void DuckDB::SetStatementForSEInstrumentIndexExchangeID(duckdb_prepared_statement statement, SEInstrument* record)
-{
-	duckdb_bind_varchar(statement, 1, record->ExchangeID);
-}
-bool DuckDB::AppendForSEOrderRecord(duckdb_appender appender, SEOrder* record)
+bool DuckDB::AppendForBarMarketDataRecord(duckdb_appender appender, BarMarketData* record)
 {
 	duckdb_append_varchar(appender, record->TradingDay);
-	duckdb_append_int32(appender, record->BrokerID);
+	duckdb_append_varchar(appender, record->ExchangeID);
+	duckdb_append_varchar(appender, record->InstrumentID);
+	duckdb_append_int32(appender, int(record->BarPreces));
+	duckdb_append_int32(appender, record->BarPeriod);
+	duckdb_append_int64(appender, record->BarTime);
+	duckdb_append_int64(appender, record->UpdateTs);
+	duckdb_append_double(appender, record->PreSettlementPrice);
+	duckdb_append_double(appender, record->PreClosePrice);
+	duckdb_append_double(appender, record->Open);
+	duckdb_append_double(appender, record->High);
+	duckdb_append_double(appender, record->Low);
+	duckdb_append_double(appender, record->Close);
+	duckdb_append_int64(appender, record->CurrVolume);
+	duckdb_append_int64(appender, record->Volume);
+	duckdb_append_double(appender, record->CurrTurnover);
+	duckdb_append_double(appender, record->Turnover);
+	duckdb_append_double(appender, record->OpenInterest);
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertBarMarketData failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForBarMarketDataRecord(duckdb_prepared_statement statement, BarMarketData* record)
+{
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->ExchangeID);
+	duckdb_bind_varchar(statement, 3, record->InstrumentID);
+	duckdb_bind_int32(statement, 4, int(record->BarPreces));
+	duckdb_bind_int32(statement, 5, record->BarPeriod);
+	duckdb_bind_int64(statement, 6, record->BarTime);
+	duckdb_bind_int64(statement, 7, record->UpdateTs);
+	duckdb_bind_double(statement, 8, record->PreSettlementPrice);
+	duckdb_bind_double(statement, 9, record->PreClosePrice);
+	duckdb_bind_double(statement, 10, record->Open);
+	duckdb_bind_double(statement, 11, record->High);
+	duckdb_bind_double(statement, 12, record->Low);
+	duckdb_bind_double(statement, 13, record->Close);
+	duckdb_bind_int64(statement, 14, record->CurrVolume);
+	duckdb_bind_int64(statement, 15, record->Volume);
+	duckdb_bind_double(statement, 16, record->CurrTurnover);
+	duckdb_bind_double(statement, 17, record->Turnover);
+	duckdb_bind_double(statement, 18, record->OpenInterest);
+}
+void DuckDB::SetStatementForBarMarketDataRecordUpdate(duckdb_prepared_statement statement, BarMarketData* record)
+{
+	duckdb_bind_int64(statement, 1, record->UpdateTs);
+	duckdb_bind_double(statement, 2, record->PreSettlementPrice);
+	duckdb_bind_double(statement, 3, record->PreClosePrice);
+	duckdb_bind_double(statement, 4, record->Open);
+	duckdb_bind_double(statement, 5, record->High);
+	duckdb_bind_double(statement, 6, record->Low);
+	duckdb_bind_double(statement, 7, record->Close);
+	duckdb_bind_int64(statement, 8, record->CurrVolume);
+	duckdb_bind_int64(statement, 9, record->Volume);
+	duckdb_bind_double(statement, 10, record->CurrTurnover);
+	duckdb_bind_double(statement, 11, record->Turnover);
+	duckdb_bind_double(statement, 12, record->OpenInterest);
+	duckdb_bind_varchar(statement, 13, record->TradingDay);
+	duckdb_bind_varchar(statement, 14, record->ExchangeID);
+	duckdb_bind_varchar(statement, 15, record->InstrumentID);
+	duckdb_bind_int32(statement, 16, int(record->BarPreces));
+	duckdb_bind_int32(statement, 17, record->BarPeriod);
+	duckdb_bind_int64(statement, 18, record->BarTime);
+}
+void DuckDB::SetStatementForBarMarketDataPrimaryKey(duckdb_prepared_statement statement, BarMarketData* record)
+{
+	duckdb_bind_varchar(statement, 1, record->TradingDay);
+	duckdb_bind_varchar(statement, 2, record->ExchangeID);
+	duckdb_bind_varchar(statement, 3, record->InstrumentID);
+	duckdb_bind_int32(statement, 4, int(record->BarPreces));
+	duckdb_bind_int32(statement, 5, record->BarPeriod);
+	duckdb_bind_int64(statement, 6, record->BarTime);
+}
+bool DuckDB::AppendForPrimaryAccountRecord(duckdb_appender appender, PrimaryAccount* record)
+{
+	duckdb_append_varchar(appender, record->PrimaryAccountID);
+	duckdb_append_varchar(appender, record->PrimaryAccountName);
+	duckdb_append_int32(appender, int(record->AccountClass));
+	duckdb_append_varchar(appender, record->BrokerPassword);
+	duckdb_append_int32(appender, record->OfferID);
+	duckdb_append_int32(appender, record->IsAllowLogin);
+	duckdb_append_int32(appender, record->IsSimulateAccount);
+	duckdb_append_int32(appender, int(record->LoginStatus));
+	duckdb_append_int32(appender, int(record->InitStatus));
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertPrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForPrimaryAccountRecord(duckdb_prepared_statement statement, PrimaryAccount* record)
+{
+	duckdb_bind_varchar(statement, 1, record->PrimaryAccountID);
+	duckdb_bind_varchar(statement, 2, record->PrimaryAccountName);
+	duckdb_bind_int32(statement, 3, int(record->AccountClass));
+	duckdb_bind_varchar(statement, 4, record->BrokerPassword);
+	duckdb_bind_int32(statement, 5, record->OfferID);
+	duckdb_bind_int32(statement, 6, record->IsAllowLogin);
+	duckdb_bind_int32(statement, 7, record->IsSimulateAccount);
+	duckdb_bind_int32(statement, 8, int(record->LoginStatus));
+	duckdb_bind_int32(statement, 9, int(record->InitStatus));
+}
+void DuckDB::SetStatementForPrimaryAccountRecordUpdate(duckdb_prepared_statement statement, PrimaryAccount* record)
+{
+	duckdb_bind_varchar(statement, 1, record->PrimaryAccountName);
+	duckdb_bind_int32(statement, 2, int(record->AccountClass));
+	duckdb_bind_varchar(statement, 3, record->BrokerPassword);
+	duckdb_bind_int32(statement, 4, record->OfferID);
+	duckdb_bind_int32(statement, 5, record->IsAllowLogin);
+	duckdb_bind_int32(statement, 6, record->IsSimulateAccount);
+	duckdb_bind_int32(statement, 7, int(record->LoginStatus));
+	duckdb_bind_int32(statement, 8, int(record->InitStatus));
+	duckdb_bind_varchar(statement, 9, record->PrimaryAccountID);
+}
+void DuckDB::SetStatementForPrimaryAccountPrimaryKey(duckdb_prepared_statement statement, PrimaryAccount* record)
+{
+	duckdb_bind_varchar(statement, 1, record->PrimaryAccountID);
+}
+void DuckDB::SetStatementForPrimaryAccountIndexOfferID(duckdb_prepared_statement statement, PrimaryAccount* record)
+{
+	duckdb_bind_int32(statement, 1, record->OfferID);
+}
+bool DuckDB::AppendForAccountRecord(duckdb_appender appender, Account* record)
+{
 	duckdb_append_varchar(appender, record->AccountID);
+	duckdb_append_varchar(appender, record->AccountName);
+	duckdb_append_int32(appender, int(record->AccountType));
+	duckdb_append_int32(appender, int(record->AccountStatus));
+	duckdb_append_varchar(appender, record->Password);
+	duckdb_append_int32(appender, record->TradeGroupID);
+	duckdb_append_int32(appender, record->RiskGroupID);
+	duckdb_append_int32(appender, record->CommissionGroupID);
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForAccountRecord(duckdb_prepared_statement statement, Account* record)
+{
+	duckdb_bind_varchar(statement, 1, record->AccountID);
+	duckdb_bind_varchar(statement, 2, record->AccountName);
+	duckdb_bind_int32(statement, 3, int(record->AccountType));
+	duckdb_bind_int32(statement, 4, int(record->AccountStatus));
+	duckdb_bind_varchar(statement, 5, record->Password);
+	duckdb_bind_int32(statement, 6, record->TradeGroupID);
+	duckdb_bind_int32(statement, 7, record->RiskGroupID);
+	duckdb_bind_int32(statement, 8, record->CommissionGroupID);
+}
+void DuckDB::SetStatementForAccountRecordUpdate(duckdb_prepared_statement statement, Account* record)
+{
+	duckdb_bind_varchar(statement, 1, record->AccountName);
+	duckdb_bind_int32(statement, 2, int(record->AccountType));
+	duckdb_bind_int32(statement, 3, int(record->AccountStatus));
+	duckdb_bind_varchar(statement, 4, record->Password);
+	duckdb_bind_int32(statement, 5, record->TradeGroupID);
+	duckdb_bind_int32(statement, 6, record->RiskGroupID);
+	duckdb_bind_int32(statement, 7, record->CommissionGroupID);
+	duckdb_bind_varchar(statement, 8, record->AccountID);
+}
+void DuckDB::SetStatementForAccountPrimaryKey(duckdb_prepared_statement statement, Account* record)
+{
+	duckdb_bind_varchar(statement, 1, record->AccountID);
+}
+bool DuckDB::AppendForOrderRecord(duckdb_appender appender, Order* record)
+{
+	duckdb_append_varchar(appender, record->TradingDay);
+	duckdb_append_varchar(appender, record->AccountID);
+	duckdb_append_int32(appender, int(record->AccountType));
 	duckdb_append_varchar(appender, record->ExchangeID);
 	duckdb_append_varchar(appender, record->InstrumentID);
 	duckdb_append_int32(appender, int(record->ProductClass));
 	duckdb_append_int32(appender, record->OrderID);
+	duckdb_append_varchar(appender, record->OrderSysID);
 	duckdb_append_int32(appender, int(record->Direction));
 	duckdb_append_int32(appender, int(record->OffsetFlag));
 	duckdb_append_int32(appender, int(record->OrderPriceType));
@@ -3055,64 +3735,96 @@ bool DuckDB::AppendForSEOrderRecord(duckdb_appender appender, SEOrder* record)
 	duckdb_append_varchar(appender, record->CancelTime);
 	duckdb_append_int64(appender, record->SessionID);
 	duckdb_append_int32(appender, record->ClientOrderID);
+	duckdb_append_int32(appender, record->RequestID);
+	duckdb_append_int32(appender, record->OfferID);
+	duckdb_append_int32(appender, record->TradeGroupID);
+	duckdb_append_int32(appender, record->RiskGroupID);
+	duckdb_append_int32(appender, record->CommissionGroupID);
+	duckdb_append_double(appender, record->FrozenCash);
+	duckdb_append_double(appender, record->FrozenMargin);
+	duckdb_append_double(appender, record->FrozenCommission);
+	duckdb_append_int32(appender, record->RebuildMark);
+	duckdb_append_int32(appender, record->IsForceClose);
 	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "InsertSEOrder failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "InsertOrder failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
 		return false;
 	}
 	return true;
 }
-void DuckDB::SetStatementForSEOrderRecord(duckdb_prepared_statement statement, SEOrder* record)
+void DuckDB::SetStatementForOrderRecord(duckdb_prepared_statement statement, Order* record)
 {
 	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_int32(statement, 2, record->BrokerID);
-	duckdb_bind_varchar(statement, 3, record->AccountID);
+	duckdb_bind_varchar(statement, 2, record->AccountID);
+	duckdb_bind_int32(statement, 3, int(record->AccountType));
 	duckdb_bind_varchar(statement, 4, record->ExchangeID);
 	duckdb_bind_varchar(statement, 5, record->InstrumentID);
 	duckdb_bind_int32(statement, 6, int(record->ProductClass));
 	duckdb_bind_int32(statement, 7, record->OrderID);
-	duckdb_bind_int32(statement, 8, int(record->Direction));
-	duckdb_bind_int32(statement, 9, int(record->OffsetFlag));
-	duckdb_bind_int32(statement, 10, int(record->OrderPriceType));
-	duckdb_bind_double(statement, 11, record->Price);
-	duckdb_bind_int64(statement, 12, record->Volume);
-	duckdb_bind_int64(statement, 13, record->VolumeTotal);
-	duckdb_bind_int64(statement, 14, record->VolumeTraded);
-	duckdb_bind_int32(statement, 15, record->VolumeMultiple);
-	duckdb_bind_int32(statement, 16, int(record->OrderStatus));
-	duckdb_bind_varchar(statement, 17, record->OrderDate);
-	duckdb_bind_varchar(statement, 18, record->OrderTime);
-	duckdb_bind_varchar(statement, 19, record->CancelDate);
-	duckdb_bind_varchar(statement, 20, record->CancelTime);
-	duckdb_bind_int64(statement, 21, record->SessionID);
-	duckdb_bind_int32(statement, 22, record->ClientOrderID);
+	duckdb_bind_varchar(statement, 8, record->OrderSysID);
+	duckdb_bind_int32(statement, 9, int(record->Direction));
+	duckdb_bind_int32(statement, 10, int(record->OffsetFlag));
+	duckdb_bind_int32(statement, 11, int(record->OrderPriceType));
+	duckdb_bind_double(statement, 12, record->Price);
+	duckdb_bind_int64(statement, 13, record->Volume);
+	duckdb_bind_int64(statement, 14, record->VolumeTotal);
+	duckdb_bind_int64(statement, 15, record->VolumeTraded);
+	duckdb_bind_int32(statement, 16, record->VolumeMultiple);
+	duckdb_bind_int32(statement, 17, int(record->OrderStatus));
+	duckdb_bind_varchar(statement, 18, record->OrderDate);
+	duckdb_bind_varchar(statement, 19, record->OrderTime);
+	duckdb_bind_varchar(statement, 20, record->CancelDate);
+	duckdb_bind_varchar(statement, 21, record->CancelTime);
+	duckdb_bind_int64(statement, 22, record->SessionID);
+	duckdb_bind_int32(statement, 23, record->ClientOrderID);
+	duckdb_bind_int32(statement, 24, record->RequestID);
+	duckdb_bind_int32(statement, 25, record->OfferID);
+	duckdb_bind_int32(statement, 26, record->TradeGroupID);
+	duckdb_bind_int32(statement, 27, record->RiskGroupID);
+	duckdb_bind_int32(statement, 28, record->CommissionGroupID);
+	duckdb_bind_double(statement, 29, record->FrozenCash);
+	duckdb_bind_double(statement, 30, record->FrozenMargin);
+	duckdb_bind_double(statement, 31, record->FrozenCommission);
+	duckdb_bind_int32(statement, 32, record->RebuildMark);
+	duckdb_bind_int32(statement, 33, record->IsForceClose);
 }
-void DuckDB::SetStatementForSEOrderRecordUpdate(duckdb_prepared_statement statement, SEOrder* record)
+void DuckDB::SetStatementForOrderRecordUpdate(duckdb_prepared_statement statement, Order* record)
 {
-	duckdb_bind_int32(statement, 1, record->BrokerID);
+	duckdb_bind_int32(statement, 1, int(record->AccountType));
 	duckdb_bind_int32(statement, 2, int(record->ProductClass));
-	duckdb_bind_int32(statement, 3, int(record->Direction));
-	duckdb_bind_int32(statement, 4, int(record->OffsetFlag));
-	duckdb_bind_int32(statement, 5, int(record->OrderPriceType));
-	duckdb_bind_double(statement, 6, record->Price);
-	duckdb_bind_int64(statement, 7, record->Volume);
-	duckdb_bind_int64(statement, 8, record->VolumeTotal);
-	duckdb_bind_int64(statement, 9, record->VolumeTraded);
-	duckdb_bind_int32(statement, 10, record->VolumeMultiple);
-	duckdb_bind_int32(statement, 11, int(record->OrderStatus));
-	duckdb_bind_varchar(statement, 12, record->OrderDate);
-	duckdb_bind_varchar(statement, 13, record->OrderTime);
-	duckdb_bind_varchar(statement, 14, record->CancelDate);
-	duckdb_bind_varchar(statement, 15, record->CancelTime);
-	duckdb_bind_int64(statement, 16, record->SessionID);
-	duckdb_bind_int32(statement, 17, record->ClientOrderID);
-	duckdb_bind_varchar(statement, 18, record->TradingDay);
-	duckdb_bind_varchar(statement, 19, record->AccountID);
-	duckdb_bind_varchar(statement, 20, record->ExchangeID);
-	duckdb_bind_varchar(statement, 21, record->InstrumentID);
-	duckdb_bind_int32(statement, 22, record->OrderID);
+	duckdb_bind_varchar(statement, 3, record->OrderSysID);
+	duckdb_bind_int32(statement, 4, int(record->Direction));
+	duckdb_bind_int32(statement, 5, int(record->OffsetFlag));
+	duckdb_bind_int32(statement, 6, int(record->OrderPriceType));
+	duckdb_bind_double(statement, 7, record->Price);
+	duckdb_bind_int64(statement, 8, record->Volume);
+	duckdb_bind_int64(statement, 9, record->VolumeTotal);
+	duckdb_bind_int64(statement, 10, record->VolumeTraded);
+	duckdb_bind_int32(statement, 11, record->VolumeMultiple);
+	duckdb_bind_int32(statement, 12, int(record->OrderStatus));
+	duckdb_bind_varchar(statement, 13, record->OrderDate);
+	duckdb_bind_varchar(statement, 14, record->OrderTime);
+	duckdb_bind_varchar(statement, 15, record->CancelDate);
+	duckdb_bind_varchar(statement, 16, record->CancelTime);
+	duckdb_bind_int64(statement, 17, record->SessionID);
+	duckdb_bind_int32(statement, 18, record->ClientOrderID);
+	duckdb_bind_int32(statement, 19, record->RequestID);
+	duckdb_bind_int32(statement, 20, record->OfferID);
+	duckdb_bind_int32(statement, 21, record->TradeGroupID);
+	duckdb_bind_int32(statement, 22, record->RiskGroupID);
+	duckdb_bind_int32(statement, 23, record->CommissionGroupID);
+	duckdb_bind_double(statement, 24, record->FrozenCash);
+	duckdb_bind_double(statement, 25, record->FrozenMargin);
+	duckdb_bind_double(statement, 26, record->FrozenCommission);
+	duckdb_bind_int32(statement, 27, record->RebuildMark);
+	duckdb_bind_int32(statement, 28, record->IsForceClose);
+	duckdb_bind_varchar(statement, 29, record->TradingDay);
+	duckdb_bind_varchar(statement, 30, record->AccountID);
+	duckdb_bind_varchar(statement, 31, record->ExchangeID);
+	duckdb_bind_varchar(statement, 32, record->InstrumentID);
+	duckdb_bind_int32(statement, 33, record->OrderID);
 }
-void DuckDB::SetStatementForSEOrderPrimaryKey(duckdb_prepared_statement statement, SEOrder* record)
+void DuckDB::SetStatementForOrderPrimaryKey(duckdb_prepared_statement statement, Order* record)
 {
 	duckdb_bind_varchar(statement, 1, record->TradingDay);
 	duckdb_bind_varchar(statement, 2, record->AccountID);
@@ -3120,20 +3832,16 @@ void DuckDB::SetStatementForSEOrderPrimaryKey(duckdb_prepared_statement statemen
 	duckdb_bind_varchar(statement, 4, record->InstrumentID);
 	duckdb_bind_int32(statement, 5, record->OrderID);
 }
-void DuckDB::SetStatementForSEOrderIndexAccountID(duckdb_prepared_statement statement, SEOrder* record)
-{
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_varchar(statement, 2, record->AccountID);
-}
-bool DuckDB::AppendForSETradeRecord(duckdb_appender appender, SETrade* record)
+bool DuckDB::AppendForTradeRecord(duckdb_appender appender, Trade* record)
 {
 	duckdb_append_varchar(appender, record->TradingDay);
-	duckdb_append_int32(appender, record->BrokerID);
 	duckdb_append_varchar(appender, record->AccountID);
+	duckdb_append_int32(appender, int(record->AccountType));
 	duckdb_append_varchar(appender, record->ExchangeID);
 	duckdb_append_varchar(appender, record->InstrumentID);
 	duckdb_append_int32(appender, int(record->ProductClass));
 	duckdb_append_int32(appender, record->OrderID);
+	duckdb_append_varchar(appender, record->OrderSysID);
 	duckdb_append_varchar(appender, record->TradeID);
 	duckdb_append_int32(appender, int(record->Direction));
 	duckdb_append_int32(appender, int(record->OffsetFlag));
@@ -3146,93 +3854,90 @@ bool DuckDB::AppendForSETradeRecord(duckdb_appender appender, SETrade* record)
 	duckdb_append_varchar(appender, record->TradeTime);
 	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "InsertSETrade failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "InsertTrade failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
 		return false;
 	}
 	return true;
 }
-void DuckDB::SetStatementForSETradeRecord(duckdb_prepared_statement statement, SETrade* record)
+void DuckDB::SetStatementForTradeRecord(duckdb_prepared_statement statement, Trade* record)
 {
 	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_int32(statement, 2, record->BrokerID);
-	duckdb_bind_varchar(statement, 3, record->AccountID);
+	duckdb_bind_varchar(statement, 2, record->AccountID);
+	duckdb_bind_int32(statement, 3, int(record->AccountType));
 	duckdb_bind_varchar(statement, 4, record->ExchangeID);
 	duckdb_bind_varchar(statement, 5, record->InstrumentID);
 	duckdb_bind_int32(statement, 6, int(record->ProductClass));
 	duckdb_bind_int32(statement, 7, record->OrderID);
-	duckdb_bind_varchar(statement, 8, record->TradeID);
-	duckdb_bind_int32(statement, 9, int(record->Direction));
-	duckdb_bind_int32(statement, 10, int(record->OffsetFlag));
-	duckdb_bind_double(statement, 11, record->Price);
-	duckdb_bind_int64(statement, 12, record->Volume);
-	duckdb_bind_int32(statement, 13, record->VolumeMultiple);
-	duckdb_bind_double(statement, 14, record->TradeAmount);
-	duckdb_bind_double(statement, 15, record->Commission);
-	duckdb_bind_varchar(statement, 16, record->TradeDate);
-	duckdb_bind_varchar(statement, 17, record->TradeTime);
+	duckdb_bind_varchar(statement, 8, record->OrderSysID);
+	duckdb_bind_varchar(statement, 9, record->TradeID);
+	duckdb_bind_int32(statement, 10, int(record->Direction));
+	duckdb_bind_int32(statement, 11, int(record->OffsetFlag));
+	duckdb_bind_double(statement, 12, record->Price);
+	duckdb_bind_int64(statement, 13, record->Volume);
+	duckdb_bind_int32(statement, 14, record->VolumeMultiple);
+	duckdb_bind_double(statement, 15, record->TradeAmount);
+	duckdb_bind_double(statement, 16, record->Commission);
+	duckdb_bind_varchar(statement, 17, record->TradeDate);
+	duckdb_bind_varchar(statement, 18, record->TradeTime);
 }
-void DuckDB::SetStatementForSETradeRecordUpdate(duckdb_prepared_statement statement, SETrade* record)
+void DuckDB::SetStatementForTradeRecordUpdate(duckdb_prepared_statement statement, Trade* record)
 {
-	duckdb_bind_int32(statement, 1, record->BrokerID);
-	duckdb_bind_varchar(statement, 2, record->AccountID);
+	duckdb_bind_varchar(statement, 1, record->AccountID);
+	duckdb_bind_int32(statement, 2, int(record->AccountType));
 	duckdb_bind_varchar(statement, 3, record->InstrumentID);
 	duckdb_bind_int32(statement, 4, int(record->ProductClass));
 	duckdb_bind_int32(statement, 5, record->OrderID);
-	duckdb_bind_int32(statement, 6, int(record->OffsetFlag));
-	duckdb_bind_double(statement, 7, record->Price);
-	duckdb_bind_int64(statement, 8, record->Volume);
-	duckdb_bind_int32(statement, 9, record->VolumeMultiple);
-	duckdb_bind_double(statement, 10, record->TradeAmount);
-	duckdb_bind_double(statement, 11, record->Commission);
-	duckdb_bind_varchar(statement, 12, record->TradeDate);
-	duckdb_bind_varchar(statement, 13, record->TradeTime);
-	duckdb_bind_varchar(statement, 14, record->TradingDay);
-	duckdb_bind_varchar(statement, 15, record->ExchangeID);
-	duckdb_bind_varchar(statement, 16, record->TradeID);
-	duckdb_bind_int32(statement, 17, int(record->Direction));
+	duckdb_bind_varchar(statement, 6, record->OrderSysID);
+	duckdb_bind_int32(statement, 7, int(record->OffsetFlag));
+	duckdb_bind_double(statement, 8, record->Price);
+	duckdb_bind_int64(statement, 9, record->Volume);
+	duckdb_bind_int32(statement, 10, record->VolumeMultiple);
+	duckdb_bind_double(statement, 11, record->TradeAmount);
+	duckdb_bind_double(statement, 12, record->Commission);
+	duckdb_bind_varchar(statement, 13, record->TradeDate);
+	duckdb_bind_varchar(statement, 14, record->TradeTime);
+	duckdb_bind_varchar(statement, 15, record->TradingDay);
+	duckdb_bind_varchar(statement, 16, record->ExchangeID);
+	duckdb_bind_varchar(statement, 17, record->TradeID);
+	duckdb_bind_int32(statement, 18, int(record->Direction));
 }
-void DuckDB::SetStatementForSETradePrimaryKey(duckdb_prepared_statement statement, SETrade* record)
+void DuckDB::SetStatementForTradePrimaryKey(duckdb_prepared_statement statement, Trade* record)
 {
 	duckdb_bind_varchar(statement, 1, record->TradingDay);
 	duckdb_bind_varchar(statement, 2, record->ExchangeID);
 	duckdb_bind_varchar(statement, 3, record->TradeID);
 	duckdb_bind_int32(statement, 4, int(record->Direction));
 }
-void DuckDB::SetStatementForSETradeIndexAccountID(duckdb_prepared_statement statement, SETrade* record)
+bool DuckDB::AppendForAccountLoginSessionRecord(duckdb_appender appender, AccountLoginSession* record)
 {
-	duckdb_bind_varchar(statement, 1, record->TradingDay);
-	duckdb_bind_varchar(statement, 2, record->AccountID);
-}
-bool DuckDB::AppendForSEBrokerLoginSessionRecord(duckdb_appender appender, SEBrokerLoginSession* record)
-{
-	duckdb_append_int32(appender, record->BrokerID);
+	duckdb_append_varchar(appender, record->AccountID);
 	duckdb_append_int64(appender, record->SessionID);
 	duckdb_append_varchar(appender, record->IPAddress);
 	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
 	{
-		WriteLog(LogLevel::Warning, "InsertSEBrokerLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		WriteLog(LogLevel::Warning, "InsertAccountLoginSession failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
 		return false;
 	}
 	return true;
 }
-void DuckDB::SetStatementForSEBrokerLoginSessionRecord(duckdb_prepared_statement statement, SEBrokerLoginSession* record)
+void DuckDB::SetStatementForAccountLoginSessionRecord(duckdb_prepared_statement statement, AccountLoginSession* record)
 {
-	duckdb_bind_int32(statement, 1, record->BrokerID);
+	duckdb_bind_varchar(statement, 1, record->AccountID);
 	duckdb_bind_int64(statement, 2, record->SessionID);
 	duckdb_bind_varchar(statement, 3, record->IPAddress);
 }
-void DuckDB::SetStatementForSEBrokerLoginSessionRecordUpdate(duckdb_prepared_statement statement, SEBrokerLoginSession* record)
+void DuckDB::SetStatementForAccountLoginSessionRecordUpdate(duckdb_prepared_statement statement, AccountLoginSession* record)
 {
-	duckdb_bind_int32(statement, 1, record->BrokerID);
+	duckdb_bind_varchar(statement, 1, record->AccountID);
 	duckdb_bind_varchar(statement, 2, record->IPAddress);
 	duckdb_bind_int64(statement, 3, record->SessionID);
 }
-void DuckDB::SetStatementForSEBrokerLoginSessionPrimaryKey(duckdb_prepared_statement statement, SEBrokerLoginSession* record)
+void DuckDB::SetStatementForAccountLoginSessionPrimaryKey(duckdb_prepared_statement statement, AccountLoginSession* record)
 {
 	duckdb_bind_int64(statement, 1, record->SessionID);
 }
-void DuckDB::SetStatementForSEBrokerLoginSessionIndexBrokerID(duckdb_prepared_statement statement, SEBrokerLoginSession* record)
+void DuckDB::SetStatementForAccountLoginSessionIndexAccountID(duckdb_prepared_statement statement, AccountLoginSession* record)
 {
-	duckdb_bind_int32(statement, 1, record->BrokerID);
+	duckdb_bind_varchar(statement, 1, record->AccountID);
 }
 
