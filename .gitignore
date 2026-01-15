@@ -39,5 +39,3 @@ pumptemp.py
 *.duckdb.wal
 *.sqlitedb
 
-/.vs
-/.vs

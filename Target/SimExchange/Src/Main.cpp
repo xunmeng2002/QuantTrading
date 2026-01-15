@@ -1,6 +1,13 @@
 #include "Logger.h"
 #include "Config.h"
 #include "ServerConfig.h"
+#include "Mdb.h"
+#include "InitMdbFromDB.h"
+#include "DBCommon.h"
+#include "DBWriter.h"
+#include "DuckDB.h"
+#include "SqliteDB.h"
+#include "MysqlDB.h"
 #include "MdFront.h"
 #include "TradeFront.h"
 #include "SimExchange.h"
@@ -10,8 +17,17 @@
 #endif // LINUX
 
 using namespace std;
+using namespace mdb;
 
 const char* ConfigName = "SimExchange.json";
+
+int Exit(int code = -1)
+{
+	Logger::GetInstance().Stop();
+	Logger::GetInstance().Join();
+	exit(code);
+	return code;
+}
 
 int main(int argc, char* argv[])
 {
@@ -23,6 +39,26 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
 	Logger::GetInstance().Start();
+
+	DB* initDB = CreateDB(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
+	DB* db = CreateDB(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+	if (initDB == nullptr || db == nullptr)
+	{
+		return Exit();
+	}
+	DBWriter* dbWriter = new DBWriter(db);
+	Mdb* mdb = new Mdb();
+	if (!initDB->Connect())
+	{
+		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
+		return Exit();
+	}
+	InitMdbFromDB::LoadExchangeTable(mdb, initDB);
+	InitMdbFromDB::LoadInstrumentTable(mdb, initDB);
+	initDB->DisConnect();
+	delete initDB;
+
+	mdb->Subscribe(dbWriter);
 
 	TradeFront* tradeFront = new TradeFront(serverConfig.SETradeFrontAddress.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.SEMdOfferAddress.c_str());

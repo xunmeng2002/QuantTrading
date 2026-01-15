@@ -19,7 +19,7 @@ public:
 	string DbType;
 	string DbUser;
 	string DbPassword;
-	string DbMdHost;
+	string DbHost;
 	string DbInitHost;
 	string SessionFile;
 	string EnvironmentFile;

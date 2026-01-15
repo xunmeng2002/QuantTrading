@@ -61,12 +61,12 @@ int main(int argc, char* argv[])
 
 	
 	DB* initDB = CreateDB(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
-	DB* mdDB = CreateDB(config.DbType, config.DbMdHost, config.DbUser, config.DbPassword);
-	if (initDB == nullptr || mdDB == nullptr)
+	DB* db = CreateDB(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+	if (initDB == nullptr || db == nullptr)
 	{
 		return Exit();
 	}
-	DBWriter* dbWriter = new DBWriter(mdDB);
+	DBWriter* dbWriter = new DBWriter(db);
 	Mdb* mdb = new Mdb();
 	if (!initDB->Connect())
 	{

@@ -36,6 +36,11 @@ void Config::Load(const char* fileName)
 	
 	LogLevel = root["LogLevel"].asInt();
 	ServerConfigPath = root["ServerConfigPath"].asString();
+	DbType = root["DbType"].asString();
+	DbUser = root["DbUser"].asString();
+	DbPassword = root["DbPassword"].asString();
+	DbHost = root["DbHost"].asString();
+	DbInitHost = root["DbInitHost"].asString();
 	CsvPath = root["CsvPath"].asString();
 	Print();
 }
@@ -46,6 +51,11 @@ void Config::Print()
 {
 	printf("LogLevel:%d\n", LogLevel);
 	printf("ServerConfigPath:%s\n", ServerConfigPath.c_str());
+	printf("DbType:%s\n", DbType.c_str());
+	printf("DbUser:%s\n", DbUser.c_str());
+	printf("DbPassword:%s\n", DbPassword.c_str());
+	printf("DbHost:%s\n", DbHost.c_str());
+	printf("DbInitHost:%s\n", DbInitHost.c_str());
 	printf("CsvPath:%s\n", CsvPath.c_str());
 }
 

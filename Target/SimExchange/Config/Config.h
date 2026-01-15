@@ -16,6 +16,11 @@ public:
 public:
 	int LogLevel;
 	string ServerConfigPath;
+	string DbType;
+	string DbUser;
+	string DbPassword;
+	string DbHost;
+	string DbInitHost;
 	string CsvPath;
 	
 private:
