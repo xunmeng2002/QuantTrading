@@ -255,7 +255,7 @@
 			<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
 			<item name="PrimaryAccountName" id="0x2009" type="AccountName" desc="主账户名称"/>
 			<item name="AccountClass" id="0x9013" type="AccountClass" desc="账户类别"/>
-			<item name="BrokerPassword" id="0x2802" type="Password" desc="经纪公司密码"/>
+			<item name="Password" id="0x2801" type="Password" desc="密码"/>
 			<item name="OfferID" id="0x1011" type="OfferID" desc="报盘代码"/>
 			<item name="IsAllowLogin" id="0x8001" type="Bool" desc="是否允许登陆"/>
 			<item name="IsSimulateAccount" id="0x8005" type="Bool" desc="是否模拟账号"/>

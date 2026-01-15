@@ -257,7 +257,7 @@
 			<item name="PrimaryAccountID"/>
 			<item name="PrimaryAccountName"/>
 			<item name="AccountClass"/>
-			<item name="BrokerPassword"/>
+			<item name="Password"/>
 			<item name="OfferID"/>
 			<item name="IsAllowLogin"/>
 			<item name="IsSimulateAccount"/>

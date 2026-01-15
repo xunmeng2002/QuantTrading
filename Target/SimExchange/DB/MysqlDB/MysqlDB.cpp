@@ -1446,7 +1446,7 @@ void MysqlDB::CreatePrimaryAccount()
 	auto start = steady_clock::now();
 	if (m_PrimaryAccountCreateStatement == nullptr)
 	{
-		m_PrimaryAccountCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_PrimaryAccount(`PrimaryAccountID` char(32), `PrimaryAccountName` char(64), `AccountClass` int, `BrokerPassword` char(64), `OfferID` int, `IsAllowLogin` bool, `IsSimulateAccount` bool, `LoginStatus` int, `InitStatus` int, INDEX PrimaryAccountOfferID(OfferID), PRIMARY KEY(PrimaryAccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_PrimaryAccountCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_PrimaryAccount(`PrimaryAccountID` char(32), `PrimaryAccountName` char(64), `AccountClass` int, `Password` char(64), `OfferID` int, `IsAllowLogin` bool, `IsSimulateAccount` bool, `LoginStatus` int, `InitStatus` int, INDEX PrimaryAccountOfferID(OfferID), PRIMARY KEY(PrimaryAccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
 	}
 	m_PrimaryAccountCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
@@ -1552,7 +1552,7 @@ void MysqlDB::UpdatePrimaryAccount(PrimaryAccount* record)
 	auto start = steady_clock::now();
 	if (m_PrimaryAccountUpdateStatement == nullptr)
 	{
-		m_PrimaryAccountUpdateStatement = m_DBConnection->prepareStatement("update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, BrokerPassword = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;");
+		m_PrimaryAccountUpdateStatement = m_DBConnection->prepareStatement("update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, Password = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;");
 	}
 	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
 	m_PrimaryAccountUpdateStatement->executeUpdate();
@@ -2577,7 +2577,7 @@ void MysqlDB::SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statem
 	statement->setString(1, record->PrimaryAccountID);
 	statement->setString(2, record->PrimaryAccountName);
 	statement->setInt(3, int(record->AccountClass));
-	statement->setString(4, record->BrokerPassword);
+	statement->setString(4, record->Password);
 	statement->setInt(5, record->OfferID);
 	statement->setBoolean(6, record->IsAllowLogin);
 	statement->setBoolean(7, record->IsSimulateAccount);
@@ -2588,7 +2588,7 @@ void MysqlDB::SetStatementForPrimaryAccountRecordUpdate(sql::PreparedStatement* 
 {
 	statement->setString(1, record->PrimaryAccountName);
 	statement->setInt(2, int(record->AccountClass));
-	statement->setString(3, record->BrokerPassword);
+	statement->setString(3, record->Password);
 	statement->setInt(4, record->OfferID);
 	statement->setBoolean(5, record->IsAllowLogin);
 	statement->setBoolean(6, record->IsSimulateAccount);
@@ -2610,7 +2610,7 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<PrimaryAccount*>& re
 	Strcpy(record->PrimaryAccountID, result->getString(1).c_str());
 	Strcpy(record->PrimaryAccountName, result->getString(2).c_str());
 	record->AccountClass = AccountClassType(result->getInt(3));
-	Strcpy(record->BrokerPassword, result->getString(4).c_str());
+	Strcpy(record->Password, result->getString(4).c_str());
 	record->OfferID = result->getInt(5);
 	record->IsAllowLogin = result->getBoolean(6);
 	record->IsSimulateAccount = result->getBoolean(7);

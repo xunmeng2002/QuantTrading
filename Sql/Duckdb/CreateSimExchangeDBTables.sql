@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS t_PrimaryAccount(
   PrimaryAccountID varchar, 
   PrimaryAccountName varchar, 
   AccountClass int, 
-  BrokerPassword varchar, 
+  Password varchar, 
   OfferID int, 
   IsAllowLogin int, 
   IsSimulateAccount int, 

@@ -299,8 +299,8 @@ namespace mdb
 		AccountNameType PrimaryAccountName;
 		//账户类别
 		AccountClassType AccountClass;
-		//经纪公司密码
-		PasswordType BrokerPassword;
+		//密码
+		PasswordType Password;
 		//报盘代码
 		OfferIDType OfferID;
 		//是否允许登陆

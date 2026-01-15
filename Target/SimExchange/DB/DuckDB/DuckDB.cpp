@@ -1931,7 +1931,7 @@ void DuckDB::CreatePrimaryAccount()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount (PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, BrokerPassword varchar, OfferID int, IsAllowLogin int, IsSimulateAccount int, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", &result);
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount (PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, Password varchar, OfferID int, IsAllowLogin int, IsSimulateAccount int, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreatePrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
@@ -2035,7 +2035,7 @@ void DuckDB::UpdatePrimaryAccount(PrimaryAccount* record)
 	auto start = steady_clock::now();
 	if (m_PrimaryAccountUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, BrokerPassword = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;", &m_PrimaryAccountUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, Password = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;", &m_PrimaryAccountUpdateStatement);
 	}
 	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
 	
@@ -2150,7 +2150,7 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<PrimaryAccount*>& reco
 			if (duckdb_validity_row_is_valid(validityColumn2, row)) record->AccountClass = AccountClassType(dataColumn2[row]);
 			if (duckdb_validity_row_is_valid(validityColumn3, row))
 			{
-				CpyDuckdbString(record->BrokerPassword, dataColumn3[row]);
+				CpyDuckdbString(record->Password, dataColumn3[row]);
 			}
 			if (duckdb_validity_row_is_valid(validityColumn4, row)) record->OfferID = dataColumn4[row];
 			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->IsAllowLogin = dataColumn5[row];
@@ -3622,7 +3622,7 @@ bool DuckDB::AppendForPrimaryAccountRecord(duckdb_appender appender, PrimaryAcco
 	duckdb_append_varchar(appender, record->PrimaryAccountID);
 	duckdb_append_varchar(appender, record->PrimaryAccountName);
 	duckdb_append_int32(appender, int(record->AccountClass));
-	duckdb_append_varchar(appender, record->BrokerPassword);
+	duckdb_append_varchar(appender, record->Password);
 	duckdb_append_int32(appender, record->OfferID);
 	duckdb_append_int32(appender, record->IsAllowLogin);
 	duckdb_append_int32(appender, record->IsSimulateAccount);
@@ -3640,7 +3640,7 @@ void DuckDB::SetStatementForPrimaryAccountRecord(duckdb_prepared_statement state
 	duckdb_bind_varchar(statement, 1, record->PrimaryAccountID);
 	duckdb_bind_varchar(statement, 2, record->PrimaryAccountName);
 	duckdb_bind_int32(statement, 3, int(record->AccountClass));
-	duckdb_bind_varchar(statement, 4, record->BrokerPassword);
+	duckdb_bind_varchar(statement, 4, record->Password);
 	duckdb_bind_int32(statement, 5, record->OfferID);
 	duckdb_bind_int32(statement, 6, record->IsAllowLogin);
 	duckdb_bind_int32(statement, 7, record->IsSimulateAccount);
@@ -3651,7 +3651,7 @@ void DuckDB::SetStatementForPrimaryAccountRecordUpdate(duckdb_prepared_statement
 {
 	duckdb_bind_varchar(statement, 1, record->PrimaryAccountName);
 	duckdb_bind_int32(statement, 2, int(record->AccountClass));
-	duckdb_bind_varchar(statement, 3, record->BrokerPassword);
+	duckdb_bind_varchar(statement, 3, record->Password);
 	duckdb_bind_int32(statement, 4, record->OfferID);
 	duckdb_bind_int32(statement, 5, record->IsAllowLogin);
 	duckdb_bind_int32(statement, 6, record->IsSimulateAccount);

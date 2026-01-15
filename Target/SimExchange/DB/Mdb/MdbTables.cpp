@@ -1248,7 +1248,7 @@ namespace mdb
 			return;
 		}
 
-		fprintf(dumpFile, "PrimaryAccountID,PrimaryAccountName,AccountClass,BrokerPassword,OfferID,IsAllowLogin,IsSimulateAccount,LoginStatus,InitStatus\n");
+		fprintf(dumpFile, "PrimaryAccountID,PrimaryAccountName,AccountClass,Password,OfferID,IsAllowLogin,IsSimulateAccount,LoginStatus,InitStatus\n");
 		char buff[4096] = { 0 };
 		set<PrimaryAccount*, PrimaryAccountLessForPrimaryAccountPrimaryKey> records;
 		std::shared_lock guard(m_SharedMutex);

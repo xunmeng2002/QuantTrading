@@ -361,7 +361,7 @@ namespace mdb
 			Strcpy(record->PrimaryAccountID, csv_record.GetFieldAsString("PrimaryAccountID"));
 			Strcpy(record->PrimaryAccountName, csv_record.GetFieldAsString("PrimaryAccountName"));
 			record->AccountClass = (AccountClassType)csv_record.GetFieldAsInt("AccountClass");
-			Strcpy(record->BrokerPassword, csv_record.GetFieldAsString("BrokerPassword"));
+			Strcpy(record->Password, csv_record.GetFieldAsString("Password"));
 			record->OfferID = csv_record.GetFieldAsInt("OfferID");
 			record->IsAllowLogin = (bool)csv_record.GetFieldAsInt("IsAllowLogin");
 			record->IsSimulateAccount = (bool)csv_record.GetFieldAsInt("IsSimulateAccount");

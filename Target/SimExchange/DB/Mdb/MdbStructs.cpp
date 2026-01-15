@@ -174,18 +174,18 @@ namespace mdb
 	const char* PrimaryAccount::GetString() const
 	{
 		sprintf(t_MdbDataStringBuffer, "%s,%s,%d,%s,%d,%d,%d,%d,%d",
-			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
+			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, Password, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
 		return t_MdbDataStringBuffer;
 	}
 	int PrimaryAccount::GetSqlString(char* buff) const
 	{
 		return sprintf(buff, "\n('%s','%s','%d','%s','%d','%d','%d','%d','%d'),",
-			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
+			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, Password, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
 	}
 	const char* PrimaryAccount::GetDebugString() const
 	{
-		sprintf(t_MdbDataStringBuffer, "PrimaryAccount:PrimaryAccountID:[%s], PrimaryAccountName:[%s], AccountClass:[%d], BrokerPassword:[%s], OfferID:[%d], IsAllowLogin:[%d], IsSimulateAccount:[%d], LoginStatus:[%d], InitStatus:[%d]",
-			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, BrokerPassword, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
+		sprintf(t_MdbDataStringBuffer, "PrimaryAccount:PrimaryAccountID:[%s], PrimaryAccountName:[%s], AccountClass:[%d], Password:[%s], OfferID:[%d], IsAllowLogin:[%d], IsSimulateAccount:[%d], LoginStatus:[%d], InitStatus:[%d]",
+			PrimaryAccountID, PrimaryAccountName, (int)AccountClass, Password, OfferID, IsAllowLogin, IsSimulateAccount, (int)LoginStatus, (int)InitStatus);
 		return t_MdbDataStringBuffer;
 	}
 

@@ -1513,7 +1513,7 @@ void SqliteDB::CreatePrimaryAccount()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(`PrimaryAccountID` text, `PrimaryAccountName` text, `AccountClass` int, `BrokerPassword` text, `OfferID` int, `IsAllowLogin` int, `IsSimulateAccount` int, `LoginStatus` int, `InitStatus` int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", nullptr, nullptr, &t_ErrorMsg);
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(`PrimaryAccountID` text, `PrimaryAccountName` text, `AccountClass` int, `Password` text, `OfferID` int, `IsAllowLogin` int, `IsSimulateAccount` int, `LoginStatus` int, `InitStatus` int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreatePrimaryAccount failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1648,7 +1648,7 @@ void SqliteDB::UpdatePrimaryAccount(PrimaryAccount* record)
 	auto start = steady_clock::now();
 	if (m_PrimaryAccountUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, BrokerPassword = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;", -1, &m_PrimaryAccountUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, Password = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;", -1, &m_PrimaryAccountUpdateStatement, nullptr);
 	}
 	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
 	
@@ -2844,7 +2844,7 @@ void SqliteDB::SetStatementForPrimaryAccountRecord(sqlite3_stmt* statement, Prim
 	sqlite3_bind_text(statement, 1, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
 	sqlite3_bind_text(statement, 2, record->PrimaryAccountName, sizeof(record->PrimaryAccountName), nullptr);
 	sqlite3_bind_int(statement, 3, int(record->AccountClass));
-	sqlite3_bind_text(statement, 4, record->BrokerPassword, sizeof(record->BrokerPassword), nullptr);
+	sqlite3_bind_text(statement, 4, record->Password, sizeof(record->Password), nullptr);
 	sqlite3_bind_int(statement, 5, record->OfferID);
 	sqlite3_bind_int(statement, 6, record->IsAllowLogin);
 	sqlite3_bind_int(statement, 7, record->IsSimulateAccount);
@@ -2855,7 +2855,7 @@ void SqliteDB::SetStatementForPrimaryAccountRecordUpdate(sqlite3_stmt* statement
 {
 	sqlite3_bind_text(statement, 1, record->PrimaryAccountName, sizeof(record->PrimaryAccountName), nullptr);
 	sqlite3_bind_int(statement, 2, int(record->AccountClass));
-	sqlite3_bind_text(statement, 3, record->BrokerPassword, sizeof(record->BrokerPassword), nullptr);
+	sqlite3_bind_text(statement, 3, record->Password, sizeof(record->Password), nullptr);
 	sqlite3_bind_int(statement, 4, record->OfferID);
 	sqlite3_bind_int(statement, 5, record->IsAllowLogin);
 	sqlite3_bind_int(statement, 6, record->IsSimulateAccount);
@@ -2877,7 +2877,7 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<PrimaryAccount*>& 
 	Strcpy(record->PrimaryAccountID, (const char*)sqlite3_column_text(statement, 0));
 	Strcpy(record->PrimaryAccountName, (const char*)sqlite3_column_text(statement, 1));
 	record->AccountClass = AccountClassType(sqlite3_column_int(statement, 2));
-	Strcpy(record->BrokerPassword, (const char*)sqlite3_column_text(statement, 3));
+	Strcpy(record->Password, (const char*)sqlite3_column_text(statement, 3));
 	record->OfferID = sqlite3_column_int(statement, 4);
 	record->IsAllowLogin = sqlite3_column_int(statement, 5);
 	record->IsSimulateAccount = sqlite3_column_int(statement, 6);

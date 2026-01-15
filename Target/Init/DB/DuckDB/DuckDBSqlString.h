@@ -30,7 +30,7 @@ constexpr const char* TruncateDuckDBMdUserTableSqlString = "Delete From t_MdUser
 constexpr const char* CreateDuckDBMdUserLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(MdUserID varchar, SessionID bigint, IPAddress varchar, PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS MdUserIDIndex ON t_MdUserLoginSession(MdUserID);";
 constexpr const char* TruncateDuckDBMdUserLoginSessionTableSqlString = "Delete From t_MdUserLoginSession;";
 
-constexpr const char* CreateDuckDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, BrokerPassword varchar, OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID)); CREATE INDEX IF NOT EXISTS OfferIDIndex ON t_PrimaryAccount(OfferID);";
+constexpr const char* CreateDuckDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, Password varchar, OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID)); CREATE INDEX IF NOT EXISTS OfferIDIndex ON t_PrimaryAccount(OfferID);";
 constexpr const char* TruncateDuckDBPrimaryAccountTableSqlString = "Delete From t_PrimaryAccount;";
 
 constexpr const char* CreateDuckDBAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_Account(AccountID varchar, AccountName varchar, AccountType int, AccountStatus int, Password varchar, TradeGroupID int, RiskGroupID int, CommissionGroupID int, PRIMARY KEY(AccountID));";

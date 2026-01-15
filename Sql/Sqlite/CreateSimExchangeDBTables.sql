@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS t_PrimaryAccount(
   `PrimaryAccountID` text, 
   `PrimaryAccountName` text, 
   `AccountClass` int, 
-  `BrokerPassword` text, 
+  `Password` text, 
   `OfferID` int, 
   `IsAllowLogin` int, 
   `IsSimulateAccount` int, 

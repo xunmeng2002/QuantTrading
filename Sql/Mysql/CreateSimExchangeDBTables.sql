@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `t_PrimaryAccount` (
   `PrimaryAccountID` char(32) COMMENT '主账户代码',
   `PrimaryAccountName` char(64) COMMENT '主账户名称',
   `AccountClass` int COMMENT '账户类别',
-  `BrokerPassword` char(64) COMMENT '经纪公司密码',
+  `Password` char(64) COMMENT '密码',
   `OfferID` int COMMENT '报盘代码',
   `IsAllowLogin` bool COMMENT '是否允许登陆',
   `IsSimulateAccount` bool COMMENT '是否模拟账号',

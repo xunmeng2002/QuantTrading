@@ -30,7 +30,7 @@ constexpr const char* TruncateSqliteDBMdUserTableSqlString = "Delete From t_MdUs
 constexpr const char* CreateSqliteDBMdUserLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(MdUserID char(32), SessionID bigint, IPAddress char(16), PRIMARY KEY(SessionID)); CREATE INDEX IF NOT EXISTS MdUserIDIndex ON t_MdUserLoginSession(MdUserID);";
 constexpr const char* TruncateSqliteDBMdUserLoginSessionTableSqlString = "Delete From t_MdUserLoginSession;";
 
-constexpr const char* CreateSqliteDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(PrimaryAccountID char(32), PrimaryAccountName char(64), AccountClass int, BrokerPassword char(64), OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID)); CREATE INDEX IF NOT EXISTS OfferIDIndex ON t_PrimaryAccount(OfferID);";
+constexpr const char* CreateSqliteDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(PrimaryAccountID char(32), PrimaryAccountName char(64), AccountClass int, Password char(64), OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID)); CREATE INDEX IF NOT EXISTS OfferIDIndex ON t_PrimaryAccount(OfferID);";
 constexpr const char* TruncateSqliteDBPrimaryAccountTableSqlString = "Delete From t_PrimaryAccount;";
 
 constexpr const char* CreateSqliteDBAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_Account(AccountID char(32), AccountName char(64), AccountType int, AccountStatus int, Password char(64), TradeGroupID int, RiskGroupID int, CommissionGroupID int, PRIMARY KEY(AccountID));";
