@@ -17,9 +17,5 @@
 	<table name="PositionDetail"/>
 	<table name="Order"/>
 	<table name="Trade"/>
-	<table name="SEBroker"/>
-	<table name="SEInstrument"/>
-	<table name="SEOrder"/>
-	<table name="SETrade"/>
-	<table name="SEBrokerLoginSession"/>
+	<table name="AccountLoginSession"/>
 </dbtables>

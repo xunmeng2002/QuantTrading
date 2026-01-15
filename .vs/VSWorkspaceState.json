@@ -8,12 +8,15 @@
   "ExpandedNodes": [
     "",
     "\\Model",
+    "\\Model\\Configs",
     "\\Target",
-    "\\Target\\Init",
-    "\\Target\\Init\\Src",
+    "\\Target\\BackTest",
     "\\Target\\MdOffer",
-    "\\Target\\MdOffer\\DB"
+    "\\Target\\MdOffer\\Src",
+    "\\Target\\SimExchange",
+    "\\Target\\SimExchange\\Src",
+    "\\Test"
   ],
-  "SelectedNode": "\\Target\\Init\\Src\\Main.cpp",
+  "SelectedNode": "\\Model\\Configs\\SimExchange.xml",
   "PreviewInSolutionExplorer": false
 }

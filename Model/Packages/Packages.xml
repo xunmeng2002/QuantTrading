@@ -16,12 +16,12 @@
 	</package>
 	<package name="NotifyDBConnect" id="0x0003" desc="数据库连接成功通知">
 		<field name="NotifyDBConnect" id="0x0004" desc="数据库连接成功通知">
-			<item name="DBName" id="0x2010" type="DBName" desc="数据库名称"/>
+			<item name="DBName" id="0x2004" type="DBName" desc="数据库名称"/>
 		</field>
 	</package>
 	<package name="NotifyDBDisConnect" id="0x0004" desc="数据库断开连接通知">
 		<field name="NotifyDBDisConnect" id="0x0005" desc="数据库断开连接通知">
-			<item name="DBName" id="0x2010" type="DBName" desc="数据库名称"/>
+			<item name="DBName" id="0x2004" type="DBName" desc="数据库名称"/>
 		</field>
 	</package>
 	<package name="ReqMdUserLogin" id="0x1001" desc="行情用户登出请求">
@@ -410,7 +410,7 @@
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 			<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
-			<item name="InstrumentName" id="0x2004" type="InstrumentName" desc="合约名称"/>
+			<item name="InstrumentName" id="0x2006" type="InstrumentName" desc="合约名称"/>
 			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
 			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 		</field>
@@ -430,7 +430,7 @@
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 			<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
-			<item name="InstrumentName" id="0x2004" type="InstrumentName" desc="合约名称"/>
+			<item name="InstrumentName" id="0x2006" type="InstrumentName" desc="合约名称"/>
 			<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
 			<item name="OptionType" id="0x9015" type="OptionType" desc="期权类型"/>
 			<item name="UnderlyingInstrumentID" id="0x1021" type="InstrumentID" desc="标的合约代码"/>
@@ -636,7 +636,7 @@
 	<package name="RspSEBrokerLogin" id="0x3002" desc="模拟交易经纪商登录应答">
 		<field name="RspSEBrokerLogin" id="0x3002" desc="模拟交易经纪商登录应答">
 			<item name="BrokerID" id="0x1027" type="BrokerID" desc="经纪公司代码"/>
-			<item name="BrokerName" id="0x200E" type="BrokerName" desc="经纪公司名称"/>
+			<item name="BrokerName" id="0x2002" type="BrokerName" desc="经纪公司名称"/>
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
 		</field>
@@ -797,7 +797,7 @@
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 			<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
-			<item name="InstrumentName" id="0x2004" type="InstrumentName" desc="合约名称"/>
+			<item name="InstrumentName" id="0x2006" type="InstrumentName" desc="合约名称"/>
 			<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
 			<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 			<item name="MaxMarketOrderVolume" id="0x401F" type="Volume" desc="市价最大下单量"/>

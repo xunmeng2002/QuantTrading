@@ -507,126 +507,9 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	
-	<table name="SEBroker" 						id="0x3A01" desc="模拟交易经纪商">
+	<table name="AccountLoginSession" 			desc="账户登录会话" session="true">
 		<items>
-			<item name="BrokerID"/>
-			<item name="BrokerName"/>
-			<item name="Password"/>
-		</items>
-		<primarykey>
-			<item name="BrokerID"/>
-		</primarykey>
-		<uniquekeys></uniquekeys>
-		<indexes></indexes>
-	</table>	
-	<table name="SEInstrument" 					desc="模拟交易合约" batch="true">
-		<items>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="ExchangeInstID"/>
-			<item name="InstrumentName"/>
-			<item name="ProductID"/>
-			<item name="ProductClass"/>
-			<item name="MaxMarketOrderVolume"/>
-			<item name="MinMarketOrderVolume"/>
-			<item name="MaxLimitOrderVolume"/>
-			<item name="MinLimitOrderVolume"/>
-			<item name="VolumeMultiple"/>
-			<item name="PriceTick"/>
-			<item name="UpperLimitPrice"/>
-			<item name="LowerLimitPrice"/>
-			<item name="SessionName"/>
-		</items>
-		<primarykey>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-		</primarykey>
-		<uniquekeys></uniquekeys>
-		<indexes>
-			<index  name="ExchangeID">
-				<item name="ExchangeID"/>
-			</index>
-		</indexes>
-	</table>
-	<table name="SEOrder" 						desc="模拟交易委托">
-		<items>
-			<item name="TradingDay"/>
-			<item name="BrokerID"/>
 			<item name="AccountID"/>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="ProductClass"/>
-			<item name="OrderID"/>
-			<item name="Direction"/>
-			<item name="OffsetFlag"/>
-			<item name="OrderPriceType"/>
-			<item name="Price"/>
-			<item name="Volume"/>
-			<item name="VolumeTotal"/>
-			<item name="VolumeTraded"/>
-			<item name="VolumeMultiple"/>
-			<item name="OrderStatus"/>
-			<item name="OrderDate"/>
-			<item name="OrderTime"/>
-			<item name="CancelDate"/>
-			<item name="CancelTime"/>
-			<item name="SessionID"/>
-			<item name="ClientOrderID"/>
-		</items>
-		<primarykey>
-			<item name="TradingDay"/>
-			<item name="AccountID"/>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="OrderID"/>
-		</primarykey>
-		<uniquekeys>
-		</uniquekeys>
-		<indexes>
-			<index  name="AccountID">
-				<item name="TradingDay"/>
-				<item name="AccountID"/>
-			</index>
-		</indexes>
-	</table>
-	<table name="SETrade" 						desc="模拟交易成交">
-		<items>
-			<item name="TradingDay"/>
-			<item name="BrokerID"/>
-			<item name="AccountID"/>
-			<item name="ExchangeID"/>
-			<item name="InstrumentID"/>
-			<item name="ProductClass"/>
-			<item name="OrderID"/>
-			<item name="TradeID"/>
-			<item name="Direction"/>
-			<item name="OffsetFlag"/>
-			<item name="Price"/>
-			<item name="Volume"/>
-			<item name="VolumeMultiple"/>
-			<item name="TradeAmount"/>
-			<item name="Commission"/>
-			<item name="TradeDate"/>
-			<item name="TradeTime"/>
-		</items>
-		<primarykey>
-			<item name="TradingDay"/>
-			<item name="ExchangeID"/>
-			<item name="TradeID"/>
-			<item name="Direction"/>
-		</primarykey>
-		<uniquekeys></uniquekeys>
-		<indexes>
-			<index  name="AccountID">
-				<item name="TradingDay"/>
-				<item name="AccountID"/>
-			</index>
-		</indexes>
-	</table>
-	<table name="SEBrokerLoginSession" 			desc="模拟交易经纪商登录会话" session="true">
-		<items>
-			<item name="BrokerID"/>
 			<item name="SessionID"/>
 			<item name="IPAddress"/>
 		</items>
@@ -636,11 +519,9 @@
 		<uniquekeys>
 		</uniquekeys>
 		<indexes>
-			<index name="BrokerID">
-				<item name="BrokerID"/>
+			<index name="AccountID">
+				<item name="AccountID"/>
 			</index>
 		</indexes>
 	</table>
-	
-
 </tables>
