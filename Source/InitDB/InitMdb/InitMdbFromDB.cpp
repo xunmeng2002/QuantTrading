@@ -7,6 +7,8 @@ namespace mdb
 {
 	void InitMdbFromDB::LoadTablesWithTradingDay(Mdb* mdb, DB* db, const DateType& tradingDay)
 	{
+		LoadDepthMarketDataTable(mdb, db, tradingDay);
+		LoadBarMarketDataTable(mdb, db, tradingDay);
 	}
 	void InitMdbFromDB::LoadTablesWithoutTradingDay(Mdb* mdb, DB* db)
 	{
@@ -15,7 +17,13 @@ namespace mdb
 		LoadProductTable(mdb, db);
 		LoadHotInstrumentTable(mdb, db);
 		LoadInstrumentTable(mdb, db);
+		LoadPrimaryAccountTable(mdb, db);
 		LoadAccountTable(mdb, db);
+		LoadCapitalTable(mdb, db);
+		LoadPositionTable(mdb, db);
+		LoadPositionDetailTable(mdb, db);
+		LoadOrderTable(mdb, db);
+		LoadTradeTable(mdb, db);
 	}
 
 	void InitMdbFromDB::LoadTradingDayTable(Mdb* mdb, DB* db)
@@ -63,6 +71,33 @@ namespace mdb
 			mdb->t_Instrument->Insert(record);
 		}
 	}
+	void InitMdbFromDB::LoadDepthMarketDataTable(Mdb* mdb, DB* db, const DateType& tradingDay)
+	{
+		list<DepthMarketData*> records;
+		db->SelectDepthMarketData(records, tradingDay);
+		for (auto record : records)
+		{
+			mdb->t_DepthMarketData->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadBarMarketDataTable(Mdb* mdb, DB* db, const DateType& tradingDay)
+	{
+		list<BarMarketData*> records;
+		db->SelectBarMarketData(records, tradingDay);
+		for (auto record : records)
+		{
+			mdb->t_BarMarketData->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadPrimaryAccountTable(Mdb* mdb, DB* db)
+	{
+		list<PrimaryAccount*> records;
+		db->SelectPrimaryAccount(records);
+		for (auto record : records)
+		{
+			mdb->t_PrimaryAccount->Insert(record);
+		}
+	}
 	void InitMdbFromDB::LoadAccountTable(Mdb* mdb, DB* db)
 	{
 		list<Account*> records;
@@ -70,6 +105,51 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_Account->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadCapitalTable(Mdb* mdb, DB* db)
+	{
+		list<Capital*> records;
+		db->SelectCapital(records);
+		for (auto record : records)
+		{
+			mdb->t_Capital->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadPositionTable(Mdb* mdb, DB* db)
+	{
+		list<Position*> records;
+		db->SelectPosition(records);
+		for (auto record : records)
+		{
+			mdb->t_Position->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadPositionDetailTable(Mdb* mdb, DB* db)
+	{
+		list<PositionDetail*> records;
+		db->SelectPositionDetail(records);
+		for (auto record : records)
+		{
+			mdb->t_PositionDetail->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadOrderTable(Mdb* mdb, DB* db)
+	{
+		list<Order*> records;
+		db->SelectOrder(records);
+		for (auto record : records)
+		{
+			mdb->t_Order->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadTradeTable(Mdb* mdb, DB* db)
+	{
+		list<Trade*> records;
+		db->SelectTrade(records);
+		for (auto record : records)
+		{
+			mdb->t_Trade->Insert(record);
 		}
 	}
 }

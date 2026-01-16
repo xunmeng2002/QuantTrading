@@ -50,9 +50,49 @@ void DBOperateImpl::FreeRecord()
 		((Instrument*)Record)->Free();
 		break;
 	}
+	case DepthMarketData::TableID:
+	{
+		((DepthMarketData*)Record)->Free();
+		break;
+	}
+	case BarMarketData::TableID:
+	{
+		((BarMarketData*)Record)->Free();
+		break;
+	}
+	case PrimaryAccount::TableID:
+	{
+		((PrimaryAccount*)Record)->Free();
+		break;
+	}
 	case Account::TableID:
 	{
 		((Account*)Record)->Free();
+		break;
+	}
+	case Capital::TableID:
+	{
+		((Capital*)Record)->Free();
+		break;
+	}
+	case Position::TableID:
+	{
+		((Position*)Record)->Free();
+		break;
+	}
+	case PositionDetail::TableID:
+	{
+		((PositionDetail*)Record)->Free();
+		break;
+	}
+	case Order::TableID:
+	{
+		((Order*)Record)->Free();
+		break;
+	}
+	case Trade::TableID:
+	{
+		((Trade*)Record)->Free();
 		break;
 	}
 	default:
@@ -84,9 +124,41 @@ const char* DBOperateImpl::GetDebugString() const
 	{
 		return ((Instrument*)Record)->GetDebugString();
 	}
+	case DepthMarketData::TableID:
+	{
+		return ((DepthMarketData*)Record)->GetDebugString();
+	}
+	case BarMarketData::TableID:
+	{
+		return ((BarMarketData*)Record)->GetDebugString();
+	}
+	case PrimaryAccount::TableID:
+	{
+		return ((PrimaryAccount*)Record)->GetDebugString();
+	}
 	case Account::TableID:
 	{
 		return ((Account*)Record)->GetDebugString();
+	}
+	case Capital::TableID:
+	{
+		return ((Capital*)Record)->GetDebugString();
+	}
+	case Position::TableID:
+	{
+		return ((Position*)Record)->GetDebugString();
+	}
+	case PositionDetail::TableID:
+	{
+		return ((PositionDetail*)Record)->GetDebugString();
+	}
+	case Order::TableID:
+	{
+		return ((Order*)Record)->GetDebugString();
+	}
+	case Trade::TableID:
+	{
+		return ((Trade*)Record)->GetDebugString();
 	}
 	default:
 		break;

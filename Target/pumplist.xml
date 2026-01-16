@@ -1,4 +1,7 @@
 <pumplist>
+	<pump dest="./Target/InitAccount/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/InitAccount.xml"/>
+	<pump dest="./Target/InitAccount/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/InitAccount.xml"/>
+	
 	<pump dest="./Target/InitInstrument/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/InitInstrument.xml"/>
 	<pump dest="./Target/InitInstrument/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/InitInstrument.xml"/>
 
