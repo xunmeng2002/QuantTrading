@@ -38,54 +38,54 @@
 	<pump dest="./Target/MdOffer/DB/Mdb/MdbIndexes.h" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/MdOfferTableNames.xml"/>
 	<pump dest="./Target/MdOffer/DB/Mdb/MdbIndexes.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/MdOfferTableNames.xml ../Model/Types.xml"/>
 
-	<pump dest="./Target/Init/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/Init.xml"/>
-	<pump dest="./Target/Init/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/Init.xml"/>
-	<pump dest="./Target/Init/DB/DBWriter/DB.h" tpl="../Templates/Cpp/DB/DBWriter/DB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/DBWriter/DBOperateImpl.h" tpl="../Templates/Cpp/DB/DBWriter/DBOperateImpl.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/DBWriter/DBOperateImpl.cpp" tpl="../Templates/Cpp/DB/DBWriter/DBOperateImpl.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/DBWriter/DBWriter.h" tpl="../Templates/Cpp/DB/DBWriter/DBWriter.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/DBWriter/DBWriter.cpp" tpl="../Templates/Cpp/DB/DBWriter/DBWriter.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/MysqlDB/MysqlDB.h" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/MysqlDB/MysqlDB.cpp" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/MysqlDB/MysqlDBSqlString.h" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/SqliteDB/SqliteDB.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/SqliteDB/SqliteDB.cpp" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/SqliteDB/SqliteDBSqlString.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/DuckDB/DuckDBCommon.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDBCommon.h.tpl" model="./Model/Tables/Tables.xml"/>
-	<pump dest="./Target/Init/DB/DuckDB/DuckDBCommon.cpp" tpl="../Templates/Cpp/DB/DuckDB/DuckDBCommon.cpp.tpl" model="./Model/Tables/Tables.xml"/>
-	<pump dest="./Target/Init/DB/DuckDB/DuckDB.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/DuckDB/DuckDB.cpp" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/DuckDB/DuckDBSqlString.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/InitInstrument.xml"/>
+	<pump dest="./Target/InitInstrument/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/InitInstrument.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DBWriter/DB.h" tpl="../Templates/Cpp/DB/DBWriter/DB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DBWriter/DBOperateImpl.h" tpl="../Templates/Cpp/DB/DBWriter/DBOperateImpl.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DBWriter/DBOperateImpl.cpp" tpl="../Templates/Cpp/DB/DBWriter/DBOperateImpl.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DBWriter/DBWriter.h" tpl="../Templates/Cpp/DB/DBWriter/DBWriter.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DBWriter/DBWriter.cpp" tpl="../Templates/Cpp/DB/DBWriter/DBWriter.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/MysqlDB/MysqlDB.h" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/MysqlDB/MysqlDB.cpp" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/MysqlDB/MysqlDBSqlString.h" tpl="../Templates/Cpp/DB/MysqlDB/MysqlDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/SqliteDB/SqliteDB.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/SqliteDB/SqliteDB.cpp" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/SqliteDB/SqliteDBSqlString.h" tpl="../Templates/Cpp/DB/SqliteDB/SqliteDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DuckDB/DuckDBCommon.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDBCommon.h.tpl" model="./Model/Tables/Tables.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DuckDB/DuckDBCommon.cpp" tpl="../Templates/Cpp/DB/DuckDB/DuckDBCommon.cpp.tpl" model="./Model/Tables/Tables.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DuckDB/DuckDB.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DuckDB/DuckDB.cpp" tpl="../Templates/Cpp/DB/DuckDB/DuckDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/DuckDB/DuckDBSqlString.h" tpl="../Templates/Cpp/DB/DuckDB/DuckDBSqlString.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
 
-	<pump dest="./Target/Init/DB/InitMdb/InitMdbFromCsv.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/InitMdb/InitMdbFromCsv.cpp" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/InitMdb/InitMdbFromDB.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/InitMdb/InitMdbFromDB.cpp" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbSubscriber.h" tpl="../Templates/Cpp/DB/Mdb/MdbSubscriber.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbStructs.h" tpl="../Templates/Cpp/DB/Mdb/MdbStructs.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbStructs.cpp" tpl="../Templates/Cpp/DB/Mdb/MdbStructs.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbTables.h" tpl="../Templates/Cpp/DB/Mdb/MdbTables.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbTables.cpp" tpl="../Templates/Cpp/DB/Mdb/MdbTables.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/Mdb.h" tpl="../Templates/Cpp/DB/Mdb/Mdb.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/Mdb.cpp" tpl="../Templates/Cpp/DB/Mdb/Mdb.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbPrimaryKeyComp.h" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeyComp.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbPrimaryKeyComp.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeyComp.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbPrimaryKeys.h" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeys.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbPrimaryKeys.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeys.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbIndexComp.h" tpl="../Templates/Cpp/DB/Mdb/Index/IndexComp.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbIndexComp.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/IndexComp.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbIndexes.h" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
-	<pump dest="./Target/Init/DB/Mdb/MdbIndexes.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/InitMdb/InitMdbFromCsv.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/InitMdb/InitMdbFromCsv.cpp" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromCsv.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/InitMdb/InitMdbFromDB.h" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromDB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/InitMdb/InitMdbFromDB.cpp" tpl="../Templates/Cpp/DB/InitMdb/InitMdbFromDB.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbSubscriber.h" tpl="../Templates/Cpp/DB/Mdb/MdbSubscriber.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbStructs.h" tpl="../Templates/Cpp/DB/Mdb/MdbStructs.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbStructs.cpp" tpl="../Templates/Cpp/DB/Mdb/MdbStructs.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbTables.h" tpl="../Templates/Cpp/DB/Mdb/MdbTables.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbTables.cpp" tpl="../Templates/Cpp/DB/Mdb/MdbTables.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/Mdb.h" tpl="../Templates/Cpp/DB/Mdb/Mdb.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/Mdb.cpp" tpl="../Templates/Cpp/DB/Mdb/Mdb.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbPrimaryKeyComp.h" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeyComp.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbPrimaryKeyComp.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeyComp.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbPrimaryKeys.h" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeys.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbPrimaryKeys.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/PrimaryKeys.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbIndexComp.h" tpl="../Templates/Cpp/DB/Mdb/Index/IndexComp.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbIndexComp.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/IndexComp.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbIndexes.h" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml"/>
+	<pump dest="./Target/InitInstrument/DB/Mdb/MdbIndexes.cpp" tpl="../Templates/Cpp/DB/Mdb/Index/Indexes.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/InitTableNames.xml ../Model/Types.xml"/>
 	
 	<pump dest="./Target/BackTest/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/BackTest.xml"/>
 	<pump dest="./Target/BackTest/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/BackTest.xml"/>
-	<pump dest="../Libs/QuantTrading/include/BackTestFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApiPackageNames.xml"/>
-	<pump dest="../Libs/QuantTrading/include/BackTestApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApiPackageNames.xml"/>
-	<pump dest="./Target/BackTest/BackTestApi/BackTestFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApiPackageNames.xml"/>
-	<pump dest="./Target/BackTest/BackTestApi/BackTestApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApiPackageNames.xml"/>
-	<pump dest="./Target/BackTest/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApiPackageNames.xml"/>
-	<pump dest="./Target/BackTest/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApiPackageNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/BackTest/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Packages/PackageFactory.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Api/BackTestApiPackageNames.xml"/>
+	<pump dest="../Libs/QuantTrading/include/BackTestFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
+	<pump dest="../Libs/QuantTrading/include/BackTestApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
+	<pump dest="./Target/BackTest/BackTestApi/BackTestFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
+	<pump dest="./Target/BackTest/BackTestApi/BackTestApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
+	<pump dest="./Target/BackTest/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
+	<pump dest="./Target/BackTest/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml ../Model/Types.xml"/>
+	<pump dest="./Target/BackTest/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Packages/PackageFactory.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
 
 	<pump dest="./Target/BackTest/DB/DBWriter/DB.h" tpl="../Templates/Cpp/DB/DBWriter/DB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/BackTestTableNames.xml"/>
 	<pump dest="./Target/BackTest/DB/DBWriter/DBOperateImpl.h" tpl="../Templates/Cpp/DB/DBWriter/DBOperateImpl.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/BackTestTableNames.xml"/>

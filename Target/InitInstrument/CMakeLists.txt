@@ -1,4 +1,4 @@
-SET(PROJECT_NAME "Init")
+SET(PROJECT_NAME "InitInstrument")
 SET(APIVersion "6.7.9")
 project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
@@ -40,7 +40,7 @@ target_link_libraries(${PROJECT_NAME} mysqlcppconn)
 
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	configure_file("${CMAKE_SOURCE_DIR}/Configs/Init.json" "${CMAKE_CURRENT_BINARY_DIR}/Init.json" COPYONLY)
+	configure_file("${CMAKE_SOURCE_DIR}/Configs/InitInstrument.json" "${CMAKE_CURRENT_BINARY_DIR}/InitInstrument.json" COPYONLY)
 	configure_file("${CMAKE_SOURCE_DIR}/Configs/CtpAccountInfo.json" "${CMAKE_CURRENT_BINARY_DIR}/CtpAccountInfo.json" COPYONLY)
 	configure_file("${CMAKE_SOURCE_DIR}/Configs/Sessions.json" "${CMAKE_CURRENT_BINARY_DIR}/Sessions.json" COPYONLY)
 

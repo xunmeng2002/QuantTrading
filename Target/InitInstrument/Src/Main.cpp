@@ -19,7 +19,7 @@
 using namespace std;
 using namespace mdb;
 
-const char* ConfigName = "Init.json";
+const char* ConfigName = "InitInstrument.json";
 
 int main(int argc, char* argv[])
 {

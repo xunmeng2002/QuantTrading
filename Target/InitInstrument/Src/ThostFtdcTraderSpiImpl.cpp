@@ -26,19 +26,23 @@ void CThostFtdcTraderSpiImpl::OnFrontDisconnected(int nReason)
 void CThostFtdcTraderSpiImpl::OnRspAuthenticate(CThostFtdcRspAuthenticateField* pRspAuthenticateField, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
 	CThostFtdcTraderSpiMiddle::OnRspAuthenticate(pRspAuthenticateField, pRspInfo, nRequestID, bIsLast);
-	ReqUserLogin();
-}
-void CThostFtdcTraderSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
-{
-	CThostFtdcTraderSpiMiddle::OnRspUserLogin(pRspUserLogin, pRspInfo, nRequestID, bIsLast);
-	if (pRspInfo != nullptr && pRspInfo->ErrorID == 141)	//PWD_OUT_OF_DATE
+	if (m_NewPassword.length() > 0)
 	{
 		ReqUserPasswordUpdate();
 	}
 	else
 	{
-		ReqQryExchange();
+		ReqUserLogin();
 	}
+}
+void CThostFtdcTraderSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
+{
+	CThostFtdcTraderSpiMiddle::OnRspUserLogin(pRspUserLogin, pRspInfo, nRequestID, bIsLast);
+	//if (pRspInfo != nullptr && pRspInfo->ErrorID == 141)	//PWD_OUT_OF_DATE
+	//{
+	//	ReqUserPasswordUpdate();
+	//}
+	ReqQryExchange();
 }
 void CThostFtdcTraderSpiImpl::OnRspQryExchange(CThostFtdcExchangeField* pExchange, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {

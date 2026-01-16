@@ -6,7 +6,7 @@
 	"DbUser": "",
 	"DbPassword": "",
 	"DbMdHost": "./MdOffer.db",
-	"DbInitHost": "../Init/Init.db",
+	"DbInitHost": "../InitInstrument/Init.db",
 	"SessionFile": "Sessions.json",
 	"EnvironmentFile": "CtpAccountInfo.json",
 	"EnvironmentName": "SimNow",
