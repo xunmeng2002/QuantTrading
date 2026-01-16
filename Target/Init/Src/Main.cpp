@@ -3,7 +3,6 @@
 #include "ThostFtdcTraderSpiImpl.h"
 #include "Logger.h"
 #include "Config.h"
-#include "ServerConfig.h"
 #include "Environment.h"
 #include "TimeUtility.h"
 #include "Mdb.h"
@@ -12,6 +11,7 @@
 #include "DuckDB.h"
 #include "SqliteDB.h"
 #include "MysqlDB.h"
+#include "Init.h"
 #include <iostream>
 #include <map>
 #include <string.h>
@@ -19,14 +19,12 @@
 using namespace std;
 using namespace mdb;
 
-const char* ConfigName = "InitInstrument.json";
+const char* ConfigName = "Init.json";
 
 int main(int argc, char* argv[])
 {
 	auto& config = Config::GetInstance();
 	config.Load(ConfigName);
-	auto& serverConfig = ServerConfig::GetInstance();
-	serverConfig.Load(config.ServerConfigPath.c_str());
 
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
@@ -47,6 +45,8 @@ int main(int argc, char* argv[])
 	Mdb* mdb = new Mdb();
 	mdb->Subscribe(dbWriter);
 	dbWriter->Subscribe(mdb);
+
+	Init(mdb, environment->Accounts[0]);
 
 	CThostFtdcTraderApi* traderApi = CThostFtdcTraderApiMiddle::CreateFtdcTraderApi();
 	cout << "API Version:" << traderApi->GetApiVersion() << endl;
