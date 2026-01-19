@@ -16,7 +16,7 @@
 class SimExchange : public ThreadBase, public ProtocolSubscriber
 {
 public:
-	SimExchange(const Config& config, TradeFront* tradeFront, MdFront* mdFront);
+	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront);
 	~SimExchange();
 
 	void Init();

@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Start();
 
 	map<string, Environment*> environments;
-	ReadEnvironment(config.EnvironmentFile.c_str(), environments);
+	ReadEnvironment(environments, config.EnvironmentFile.c_str());
 	auto environment = GetEnvironment(environments, config.EnvironmentName, config.EnvironmentName24);
 	if (environment == nullptr)
 	{

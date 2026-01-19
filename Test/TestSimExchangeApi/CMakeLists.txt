@@ -1,13 +1,16 @@
 ﻿SET(PROJECT_NAME "TestSimExchangeApi")
+SET(APIVersion "6.7.9")
 project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
+add_package(Config ./Config)
 add_package(TestUtility ${CMAKE_SOURCE_DIR}/Test/Source/TestUtility)
 add_package(SimExchangeApiMiddle ${CMAKE_SOURCE_DIR}/Test/Source/SimExchangeApiMiddle)
 add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)
+add_package(Environment ${CMAKE_SOURCE_DIR}/Source/Environment)
 
-
+include_package(Ctp ${LibsPath}/CTP/${APIVersion}/include)
 include_package(SimExchangeApi ${CMAKE_SOURCE_DIR}/../Libs/QuantTrading/include)
 
 link_directories(${CMAKE_SOURCE_DIR}/../Libs/QuantTrading)
@@ -22,13 +25,8 @@ endif()
 
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+	configure_file("${CMAKE_SOURCE_DIR}/Configs/TestSimExchangeApi.json" "${CMAKE_CURRENT_BINARY_DIR}/TestSimExchangeApi.json" COPYONLY)
 
-	add_custom_command(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-            "$<TARGET_FILE:SimExchangeApi>" 
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:SimExchangeApi>"
-        COMMENT "Copying SimExchangeApi.dll DLL...")
+	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:SimExchangeApi>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:SimExchangeApi>" COMMENT "Copying SimExchangeApi.dll DLL...")
 endif()

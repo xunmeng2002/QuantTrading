@@ -1,5 +1,6 @@
 #pragma once
 #include "SimExchangeSpiMiddle.h"
+#include "Environment.h"
 #include <string>
 #include <chrono>
 #include <vector>
@@ -10,6 +11,7 @@ class SimExchangeSpiImpl : public SimExchangeSpiMiddle
 public:
 	SimExchangeSpiImpl(SimExchangeApi* api);
 	~SimExchangeSpiImpl();
+	void SetAccountInfo(AccountInfo* accountInfo);
 
 	virtual void OnConnected() override;
 	virtual void OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast) override;
@@ -22,7 +24,7 @@ public:
 	void ReqQryOrder();
 	void ReqInsertOrders();
 private:
-	void ReqBrokerLogin();
+	void ReqAccountLogin();
 	void ReqQryInstrument();
 	void ReqInsertOrder(DirectionType direction, OffsetFlagType offsetFlag, OrderPriceTypeType orderPriceType, PriceType price, VolumeType volume);
 	void ReqCancelOrder(OrderField* order);
@@ -32,11 +34,9 @@ public:
 	bool m_Finished;
 private:
 	SimExchangeApi* m_SimExchangeApi;
+	AccountInfo* m_AccountInfo;
+	InstrumentField* m_Instrument;
 	int m_MaxRequestID;
 	int m_MaxClientOrderID;
-	BrokerIDType m_BrokerID = 9999;
-	AccountIDType m_AccountID;
-	InstrumentField* m_Instrument;
-
 	int m_OrderCount;
 };

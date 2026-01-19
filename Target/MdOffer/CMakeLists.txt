@@ -45,7 +45,6 @@ target_link_libraries(${PROJECT_NAME} mysqlcppconn)
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	configure_file("${CMAKE_SOURCE_DIR}/Configs/MdOffer.json" "${CMAKE_CURRENT_BINARY_DIR}/MdOffer.json" COPYONLY)
-	configure_file("${CMAKE_SOURCE_DIR}/Configs/CtpAccountInfo.json" "${CMAKE_CURRENT_BINARY_DIR}/CtpAccountInfo.json" COPYONLY)
 	configure_file("${CMAKE_SOURCE_DIR}/Configs/Sessions.json" "${CMAKE_CURRENT_BINARY_DIR}/Sessions.json" COPYONLY)
 
 	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)

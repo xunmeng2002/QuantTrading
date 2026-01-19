@@ -22,13 +22,8 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+	configure_file("${CMAKE_SOURCE_DIR}/Configs/TestMdApi.json" "${CMAKE_CURRENT_BINARY_DIR}/TestMdApi.json" COPYONLY)
 
-	add_custom_command(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-            "$<TARGET_FILE:MdApi>" 
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:MdApi>"
-        COMMENT "Copying MdApi.dll DLL...")
+	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:MdApi>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:MdApi>" COMMENT "Copying MdApi.dll DLL...")
 endif()

@@ -1,15 +1,15 @@
 {
 	"LogLevel": 2,
 	"ServerConfigPath": "../../ServerConfig.json",
+	"EnvironmentFile": "CtpAccountInfo.json",
+	"EnvironmentName": "SimNow",
+	"EnvironmentName24": "SimNow24",
+	"SessionFile": "Sessions.json",
 	"DBTypeType": "DuckDB:0, SqliteDB:1, MysqlDB:2, MariaDB:3",
 	"DbType": "1",
 	"DbUser": "",
 	"DbPassword": "",
-	"DbMdHost": "./MdOffer.db",
-	"DbInitHost": "../InitInstrument/Init.db",
-	"SessionFile": "Sessions.json",
-	"EnvironmentFile": "CtpAccountInfo.json",
-	"EnvironmentName": "SimNow",
-	"EnvironmentName24": "SimNow24"
+	"DbHost": "./MdOffer.db",
+	"DbInitHost": "../Init/Init.db"
 }
 

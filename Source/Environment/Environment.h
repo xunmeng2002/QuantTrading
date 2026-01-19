@@ -1,34 +1,34 @@
 #pragma once
-#include "ThostFtdcUserApiStruct.h"
+#include "Types.h"
 #include <map>
 #include <vector>
 #include <string>
 
 struct FrontInfo
 {
-	TThostFtdcIPAddressType	TradeFront;
-	TThostFtdcIPAddressType	MdFront;
+	IPAddressType	TradeFront;
+	IPAddressType	MdFront;
 };
 struct AccountInfo
 {
-	TThostFtdcBrokerIDType	BrokerID;
-	TThostFtdcUserIDType	InvestorID;
-	TThostFtdcPasswordType	Password;
-	TThostFtdcMobilePhoneType	Phone;
-	TThostFtdcProductInfoType	UserProductInfo;
-	TThostFtdcAuthCodeType	AuthCode;
-	TThostFtdcAppIDType	AppID;
+	BrokerIDType	BrokerID;
+	UserIDType		InvestorID;
+	PasswordType	Password;
+	PhoneNumberType	Phone;
+	ProductInfoType	UserProductInfo;
+	AuthCodeType	AuthCode;
+	AppIDType		AppID;
 };
 
 struct Environment
 {
-	TThostFtdcServiceNameType Name;
+	NameType Name;
 	std::vector<FrontInfo*> Fronts;
 	std::vector<AccountInfo*> Accounts;
 };
 
 void PrintEnvironment(Environment* environment);
-void ReadEnvironment(const char* environmentFile, std::map<std::string, Environment*>& environments);
+void ReadEnvironment(std::map<std::string, Environment*>& environments, const char* environmentFile = "../../CtpAccountInfo.json");
 Environment* GetEnvironment(std::map<std::string, Environment*>& environments, const std::string& environmentName, const std::string& environmentName24);
 
 

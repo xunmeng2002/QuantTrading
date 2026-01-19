@@ -1,4 +1,7 @@
 <pumplist>
 	<pump dest="./Test/TestMdApi/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/TestMdApi.xml"/>
 	<pump dest="./Test/TestMdApi/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/TestMdApi.xml"/>
+
+	<pump dest="./Test/TestSimExchangeApi/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/TestSimExchangeApi.xml"/>
+	<pump dest="./Test/TestSimExchangeApi/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/TestSimExchangeApi.xml"/>
 </pumplist>

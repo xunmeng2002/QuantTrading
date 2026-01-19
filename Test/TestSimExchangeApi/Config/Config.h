@@ -19,10 +19,6 @@ public:
 	string EnvironmentFile;
 	string EnvironmentName;
 	string EnvironmentName24;
-	string DbType;
-	string DbUser;
-	string DbPassword;
-	string DbHost;
 	
 private:
 	static Config m_Instance;

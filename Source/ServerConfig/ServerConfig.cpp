@@ -37,8 +37,6 @@ void ServerConfig::Load(const char* fileName)
 	}
 	in_file.close();
 	
-	SEMdOfferAddress = root["SEMdOfferAddress"].asString();
-	SETradeFrontAddress = root["SETradeFrontAddress"].asString();
 	MdOfferAddress = root["MdOfferAddress"].asString();
 	TradeFrontAddress = root["TradeFrontAddress"].asString();
 	RiskFrontAddress = root["RiskFrontAddress"].asString();
@@ -56,7 +54,7 @@ void ServerConfig::Load(const char* fileName)
 
 void ServerConfig::Print()
 {
-	printf("SEMdOfferAddress:[%s], SETradeFrontAddress:[%s], MdOfferAddress:[%s], TradeFrontAddress:[%s], RiskFrontAddress:[%s], AdminFrontAddress:[%s], OfferFrontAddress:[%s], DBHostAdmin:[%s], DBHostHistory:[%s], DBHostInit:[%s], DBHostSync:[%s], DBUser:[%s], DBPasswd:[%s]\n",
-		SEMdOfferAddress.c_str(), SETradeFrontAddress.c_str(), MdOfferAddress.c_str(), TradeFrontAddress.c_str(), RiskFrontAddress.c_str(), AdminFrontAddress.c_str(), OfferFrontAddress.c_str(), DBHostAdmin.c_str(), DBHostHistory.c_str(), DBHostInit.c_str(), DBHostSync.c_str(), DBUser.c_str(), DBPasswd.c_str());
+	printf("MdOfferAddress:[%s], TradeFrontAddress:[%s], RiskFrontAddress:[%s], AdminFrontAddress:[%s], OfferFrontAddress:[%s], DBHostAdmin:[%s], DBHostHistory:[%s], DBHostInit:[%s], DBHostSync:[%s], DBUser:[%s], DBPasswd:[%s]\n",
+		MdOfferAddress.c_str(), TradeFrontAddress.c_str(), RiskFrontAddress.c_str(), AdminFrontAddress.c_str(), OfferFrontAddress.c_str(), DBHostAdmin.c_str(), DBHostHistory.c_str(), DBHostInit.c_str(), DBHostSync.c_str(), DBUser.c_str(), DBPasswd.c_str());
 }
 

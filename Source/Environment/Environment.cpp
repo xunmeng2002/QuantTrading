@@ -21,7 +21,7 @@ void PrintEnvironment(Environment* environment)
 			account->BrokerID, account->InvestorID, account->Password, account->Phone, account->UserProductInfo, account->AuthCode, account->AppID);
 	}
 }
-void ReadEnvironment(const char* environmentFile, std::map<std::string, Environment*>& environments)
+void ReadEnvironment(std::map<std::string, Environment*>& environments, const char* environmentFile)
 {
 	Json::Reader reader;
 	Json::FastWriter writer;
@@ -40,8 +40,6 @@ void ReadEnvironment(const char* environmentFile, std::map<std::string, Environm
 	{
 		std::cout << "Parse Config Success." << std::endl;
 	}
-	in_file.close();
-
 	for (auto i = 0u; i < root.size(); i++)
 	{
 		Environment* environment = new Environment();
@@ -69,6 +67,7 @@ void ReadEnvironment(const char* environmentFile, std::map<std::string, Environm
 		}
 		environments.insert(make_pair(environment->Name, environment));
 	}
+	in_file.close();
 	for (auto& it : environments)
 	{
 		PrintEnvironment(it.second);

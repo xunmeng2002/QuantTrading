@@ -16,15 +16,15 @@ public:
 public:
 	int LogLevel;
 	string ServerConfigPath;
+	string EnvironmentFile;
+	string EnvironmentName;
+	string EnvironmentName24;
+	string SessionFile;
 	string DbType;
 	string DbUser;
 	string DbPassword;
 	string DbHost;
 	string DbInitHost;
-	string SessionFile;
-	string EnvironmentFile;
-	string EnvironmentName;
-	string EnvironmentName24;
 	
 private:
 	static Config m_Instance;

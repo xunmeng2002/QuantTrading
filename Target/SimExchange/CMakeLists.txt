@@ -36,11 +36,13 @@ target_link_libraries(${PROJECT_NAME} mysqlcppconn)
 
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	configure_file("${CMAKE_SOURCE_DIR}/Configs/SimExchange.json" "${CMAKE_CURRENT_BINARY_DIR}/SimExchange.json" COPYONLY)
+
 	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
 	configure_file("${LibsPath}/duckdb/win64/duckdb.dll" "${CMAKE_CURRENT_BINARY_DIR}/duckdb.dll" COPYONLY)
 	configure_file("${LibsPath}/SQLite/3.36.0/win64/sqlite3.dll" "${CMAKE_CURRENT_BINARY_DIR}/sqlite3.dll" COPYONLY)
 	configure_file("${LibsPath}/MysqlConnector/9.0.0/win64/debug/libcrypto-3-x64.dll" "${CMAKE_CURRENT_BINARY_DIR}/libcrypto-3-x64.dll" COPYONLY)
 	configure_file("${LibsPath}/MysqlConnector/9.0.0/win64/debug/libssl-3-x64.dll" "${CMAKE_CURRENT_BINARY_DIR}/libssl-3-x64.dll" COPYONLY)
 	configure_file("${LibsPath}/MysqlConnector/9.0.0/win64/debug/mysqlcppconn-10-vs14.dll" "${CMAKE_CURRENT_BINARY_DIR}/mysqlcppconn-10-vs14.dll" COPYONLY)
-	   configure_file("${LibsPath}/MysqlConnector/9.0.0/win64/debug/mysqlcppconnx-2-vs14.dll" "${CMAKE_CURRENT_BINARY_DIR}/mysqlcppconnx-2-vs14.dll" COPYONLY)
+	configure_file("${LibsPath}/MysqlConnector/9.0.0/win64/debug/mysqlcppconnx-2-vs14.dll" "${CMAKE_CURRENT_BINARY_DIR}/mysqlcppconnx-2-vs14.dll" COPYONLY)
 endif()

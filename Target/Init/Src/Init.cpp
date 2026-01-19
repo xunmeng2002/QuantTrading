@@ -50,7 +50,10 @@ void InitProduct(Mdb* mdb)
 {
 
 }
-void InitInstrument(Mdb* mdb);
+void InitInstrument(Mdb* mdb)
+{
+
+}
 void InitPrimaryAccount(Mdb* mdb, AccountInfo* accountInfo)
 {
 	PrimaryAccount* record1 = new PrimaryAccount();

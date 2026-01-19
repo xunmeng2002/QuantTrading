@@ -7,12 +7,9 @@
 using namespace std;
 using namespace mdb;
 
-SimExchange::SimExchange(const Config& config, TradeFront* tradeFront, MdFront* mdFront)
-	:ThreadBase("SimExchange"), m_TradeFront(tradeFront), m_MdFront(mdFront), m_MaxOrderID(0), m_MaxTradeID(0)
+SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront)
+	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_TradingDay(""), m_MaxOrderID(0), m_MaxTradeID(0)
 {
-	m_Mdb = new mdb::Mdb();
-	InitMdbFromCsv::LoadTables(m_Mdb, config.CsvPath.c_str());
-	memset(m_TradingDay, 0, sizeof(DateType));
 	auto tradingDay = m_Mdb->t_TradingDay->m_PrimaryKey->Select(1);
 	if (tradingDay != nullptr)
 	{
@@ -143,7 +140,7 @@ void SimExchange::HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage)
 }
 void SimExchange::HandleAccountLogin(ReqAccountLoginPackage* reqPackage)
 {
-	WriteLog(LogLevel::Info, "HandleBrokerLogin %s", reqPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleAccountLogin %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	auto primaryAccount = m_Mdb->t_PrimaryAccount->m_PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountID);
 	if (primaryAccount == nullptr)
@@ -215,6 +212,16 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	{
 		errorID = CheckForInsertOrder(reqPackage->ReqInsertOrder, instrument);
 	}
+	auto primaryAccount = m_Mdb->t_PrimaryAccount->m_PrimaryKey->Select(reqPackage->ReqInsertOrder->AccountID);
+	if (primaryAccount == nullptr)
+	{
+		errorID = ErrorPrimaryAccountNotExist;
+	}
+	auto account = m_Mdb->t_Account->m_PrimaryKey->Select(reqPackage->ReqInsertOrder->AccountID);
+	if (account == nullptr)
+	{
+		errorID = ErrorAccountNotExist;
+	}
 	SendRspInsertOrder(reqPackage, errorID);
 	if (errorID != ErrorNone)
 	{
@@ -243,10 +250,11 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	strcpy(order->OrderTime, GetLocalTime().c_str());
 	order->SessionID = reqPackage->SessionID;
 	order->ClientOrderID = reqPackage->ReqInsertOrder->ClientOrderID;
-	order->OrderID = 0;
-	order->TradeGroupID = 1;
-	order->RiskGroupID = 1;
-	order->CommissionGroupID = 1;
+	order->RequestID = reqPackage->Head.MsgSeqNum;
+	order->OfferID = primaryAccount->OfferID;
+	order->TradeGroupID = account->TradeGroupID;
+	order->RiskGroupID = account->RiskGroupID;
+	order->CommissionGroupID = account->CommissionGroupID;
 	order->RebuildMark = false;
 	order->IsForceClose = false;
 	m_Mdb->t_Order->Insert(order);

@@ -53,25 +53,24 @@ int main(int argc, char* argv[])
 		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
 		return Exit();
 	}
-	InitMdbFromDB::LoadExchangeTable(mdb, initDB);
-	InitMdbFromDB::LoadInstrumentTable(mdb, initDB);
+	InitMdbFromDB::LoadTablesWithoutTradingDay(mdb, initDB);
 	initDB->DisConnect();
 	delete initDB;
 
 	mdb->Subscribe(dbWriter);
 
-	TradeFront* tradeFront = new TradeFront(serverConfig.SETradeFrontAddress.c_str());
-	MdFront* mdFront = new MdFront(serverConfig.SEMdOfferAddress.c_str());
-	auto simExchange = new SimExchange(config, tradeFront, mdFront);
+	TradeFront* tradeFront = new TradeFront(serverConfig.TradeFrontAddress.c_str());
+	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str());
+	auto simExchange = new SimExchange(mdb, tradeFront, mdFront);
 	tradeFront->Subscribe(simExchange);
 	//mdFront->Subscribe(*);
 
 	simExchange->Init();
 	tradeFront->Init();
-	mdFront->Init();
+	//mdFront->Init();
 	simExchange->Start();
 	tradeFront->Start();
-	mdFront->Start();
+	//mdFront->Start();
 
 	simExchange->Join();
 	tradeFront->Join();
