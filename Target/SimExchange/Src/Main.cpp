@@ -58,6 +58,7 @@ int main(int argc, char* argv[])
 	delete initDB;
 
 	mdb->Subscribe(dbWriter);
+	dbWriter->Subscribe(mdb);
 
 	TradeFront* tradeFront = new TradeFront(serverConfig.TradeFrontAddress.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str());
@@ -68,10 +69,12 @@ int main(int argc, char* argv[])
 	simExchange->Init();
 	tradeFront->Init();
 	//mdFront->Init();
+	dbWriter->Start();
 	simExchange->Start();
 	tradeFront->Start();
 	//mdFront->Start();
 
+	dbWriter->Join();
 	simExchange->Join();
 	tradeFront->Join();
 	mdFront->Join();
