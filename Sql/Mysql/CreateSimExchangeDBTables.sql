@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `t_MdUser` (
 CREATE TABLE IF NOT EXISTS `t_MdUserLoginSession` (
   `MdUserID` char(32) COMMENT '行情用户代码',
   `SessionID` bigint COMMENT '会话编号',
-  `IPAddress` char(16) COMMENT 'IP地址',
+  `IPAddress` char(32) COMMENT 'IP地址',
 
   INDEX MdUserID(MdUserID),
   PRIMARY KEY(SessionID)
@@ -372,7 +372,7 @@ CREATE TABLE IF NOT EXISTS `t_Trade` (
 CREATE TABLE IF NOT EXISTS `t_AccountLoginSession` (
   `AccountID` char(32) COMMENT '账户代码',
   `SessionID` bigint COMMENT '会话编号',
-  `IPAddress` char(16) COMMENT 'IP地址',
+  `IPAddress` char(32) COMMENT 'IP地址',
 
   INDEX AccountID(AccountID),
   PRIMARY KEY(SessionID)

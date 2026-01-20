@@ -25,6 +25,7 @@ include_package(duckdb ${LibsPath}/duckdb/include)
 
 add_definitions(-DLIB_BACKTEST_API_EXPORT)
 
+link_directories(${LibsPath}/PersonalLib/win64)
 link_directories(${LibsPath}/duckdb/win64)
 link_directories(${LibsPath}/SQLite/3.36.0/win64)
 #link_directories(${LibsPath}/MysqlConnector/9.0.0/win64)

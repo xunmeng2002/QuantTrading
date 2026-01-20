@@ -1269,7 +1269,7 @@ void MysqlDB::CreateMdUserLoginSession()
 	auto start = steady_clock::now();
 	if (m_MdUserLoginSessionCreateStatement == nullptr)
 	{
-		m_MdUserLoginSessionCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(`MdUserID` char(32), `SessionID` bigint, `IPAddress` char(16), INDEX MdUserLoginSessionMdUserID(MdUserID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_MdUserLoginSessionCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(`MdUserID` char(32), `SessionID` bigint, `IPAddress` char(32), INDEX MdUserLoginSessionMdUserID(MdUserID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
 	}
 	m_MdUserLoginSessionCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);

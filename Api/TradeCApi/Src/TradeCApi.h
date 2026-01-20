@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "TradeFields.h"
+#include "LoggerInterface.h"
 
 #ifdef WIN32
 #define TRADE_CAPI_CALL _stdcall
@@ -62,6 +63,7 @@ extern "C"
 
 	TRADE_CAPI_EXPORT void TRADE_CAPI_CALL CreateTradeApi();
 	TRADE_CAPI_EXPORT const char* TRADE_CAPI_CALL GetApiVersion();
+	TRADE_CAPI_EXPORT void SetExternLogger(WriteLogFunc externLogger);
 	TRADE_CAPI_EXPORT void TRADE_CAPI_CALL Init();
 	TRADE_CAPI_EXPORT void TRADE_CAPI_CALL Join();
 	TRADE_CAPI_EXPORT void TRADE_CAPI_CALL Release();

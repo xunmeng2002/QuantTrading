@@ -538,7 +538,7 @@ void MdReader::UpdateMdBars(mdb::MdSubscribe* mdSubscribe, std::list<mdb::BarMar
 void MdReader::GetInstrumentSqlString()
 {
 	static auto sqlTemplate = "Select ExchangeID, InstrumentID, ProductID "
-		"from read_parquet('%s/bar/Identity=CFFEX.*/Year=*/*.parquet', union_by_name=true) "
+		"from read_parquet('%s/Bar/Identity=CFFEX.*/Year=*/*.parquet', union_by_name=true) "
 		"where TradingDay >= '%s' and TradingDay <= '%s' and Preces = '1d' "
 		"Group by ExchangeID, InstrumentID, ProductID;";
 	sprintf(m_SqlBuff, sqlTemplate, m_MdDataPath.c_str(), m_StartTradingDay, m_EndTradingDay);

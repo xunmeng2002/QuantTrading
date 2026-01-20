@@ -2060,7 +2060,7 @@ void MysqlDB::CreateAccountLoginSession()
 	auto start = steady_clock::now();
 	if (m_AccountLoginSessionCreateStatement == nullptr)
 	{
-		m_AccountLoginSessionCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_AccountLoginSession(`AccountID` char(32), `SessionID` bigint, `IPAddress` char(16), INDEX AccountLoginSessionAccountID(AccountID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_AccountLoginSessionCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_AccountLoginSession(`AccountID` char(32), `SessionID` bigint, `IPAddress` char(32), INDEX AccountLoginSessionAccountID(AccountID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
 	}
 	m_AccountLoginSessionCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);

@@ -2,6 +2,7 @@
 #include "TradeApi.h"
 #include "TradeSpiWrap.h"
 #include "Encode.h"
+#include "Logger.h"
 #include <cstring>
 
 static TradeApi* s_TradeApi = nullptr;
@@ -17,6 +18,10 @@ void CreateTradeApi()
 	{
 		s_TradeSpiWrap = new TradeSpiWrap();
 	}
+}
+void SetExternLogger(WriteLogFunc externLogger)
+{
+	Logger::SetExternLogger(externLogger);
 }
 const char* GetApiVersion()
 {

@@ -11,6 +11,10 @@ TradeApi* TradeApi::CreateTradeApi()
 {
 	return new TradeApiImpl();
 }
+void TradeApi::SetExternLogger(WriteLogFunc externLogger)
+{
+	Logger::SetExternLogger(externLogger);
+}
 TradeApiImpl::TradeApiImpl()
 {
 }

@@ -2,6 +2,7 @@
 #include "MdApi.h"
 #include "MdSpiWrap.h"
 #include "Encode.h"
+#include "Logger.h"
 #include <cstring>
 
 static MdApi* s_MdApi = nullptr;
@@ -17,6 +18,10 @@ void CreateMdApi()
 	{
 		s_MdSpiWrap = new MdSpiWrap();
 	}
+}
+void SetExternLogger(WriteLogFunc externLogger)
+{
+	Logger::SetExternLogger(externLogger);
 }
 const char* GetApiVersion()
 {

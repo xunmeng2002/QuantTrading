@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "SimExchangeFields.h"
+#include "LoggerInterface.h"
 
 #ifdef WIN32
 #ifdef LIB_SIMEXCHANGE_API_EXPORT
@@ -33,6 +34,7 @@ class SIMEXCHANGE_API_EXPORT SimExchangeApi
 public:
 	static SimExchangeApi* CreateSimExchangeApi();
 	static const char* GetApiVersion();
+	static void SetExternLogger(WriteLogFunc externLogger);
 	virtual void Init() = 0;
 	virtual void Join() = 0;
 	virtual void Release() = 0;

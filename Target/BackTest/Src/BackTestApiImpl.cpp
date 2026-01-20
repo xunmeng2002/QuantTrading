@@ -12,6 +12,10 @@ BackTestApi* BackTestApi::CreateBackTestApi()
 {
 	return new BackTestApiImpl();
 }
+void BackTestApi::SetExternLogger(WriteLogFunc externLogger)
+{
+	Logger::SetExternLogger(externLogger);
+}
 const char* BackTestApi::GetApiVersion()
 {
 	return Version;
@@ -19,9 +23,6 @@ const char* BackTestApi::GetApiVersion()
 
 BackTestApiImpl::BackTestApiImpl()
 {
-	Logger::GetInstance().Init("BackTest");
-	Logger::GetInstance().SetLogLevel(LogLevel::Info, LogLevel::Info);
-	Logger::GetInstance().Start();
 	auto& config = Config::GetInstance();
 	config.Load(ConfigName);
 	m_SimExchange = new SimExchange(config);

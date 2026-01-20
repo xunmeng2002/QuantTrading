@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "BackTestFields.h"
+#include "LoggerInterface.h"
 
 #ifdef WIN32
 #ifdef LIB_BACKTEST_API_EXPORT
@@ -34,6 +35,7 @@ class BACKTEST_API_EXPORT BackTestApi
 public:
 	static BackTestApi* CreateBackTestApi();
 	static const char* GetApiVersion();
+	static void SetExternLogger(WriteLogFunc externLogger);
 	virtual void Init() = 0;
 	virtual void Join() = 0;
 	virtual void Release() = 0;

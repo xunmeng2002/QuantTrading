@@ -11,6 +11,10 @@ SimExchangeApi* SimExchangeApi::CreateSimExchangeApi()
 {
 	return new SimExchangeApiImpl();
 }
+void SimExchangeApi::SetExternLogger(WriteLogFunc externLogger)
+{
+	Logger::SetExternLogger(externLogger);
+}
 SimExchangeApiImpl::SimExchangeApiImpl()
 {
 }

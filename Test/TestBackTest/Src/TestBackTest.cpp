@@ -14,6 +14,7 @@ int main(int argc, char* argv[])
 
 
 	auto api = BackTestApiMiddle::CreateBackTestApiMiddle();
+	BackTestApi::SetExternLogger(Logger::GetWriteLogFunc());
 	BackTestSpiImpl* spi = new BackTestSpiImpl(api);
 	api->RegisterSpi(spi);
 	api->Init();

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "MdFields.h"
+#include "LoggerInterface.h"
 
 #ifdef WIN32
 #define MD_CAPI_CALL _stdcall
@@ -40,6 +41,7 @@ extern "C"
 
 	MD_CAPI_EXPORT void MD_CAPI_CALL CreateMdApi();
 	MD_CAPI_EXPORT const char* MD_CAPI_CALL GetApiVersion();
+	MD_CAPI_EXPORT void SetExternLogger(WriteLogFunc externLogger);
 	MD_CAPI_EXPORT void MD_CAPI_CALL Init();
 	MD_CAPI_EXPORT void MD_CAPI_CALL Join();
 	MD_CAPI_EXPORT void MD_CAPI_CALL Release();

@@ -10,6 +10,7 @@ add_package(Mdb ../BackTest/DB/Mdb)
 #include_package(MysqlConnector ${LibsPath}/MysqlConnector/9.0.0/include)
 #include_package(duckdb ${LibsPath}/duckdb/include)
 
+link_directories(${LibsPath}/PersonalLib/win64)
 #link_directories(${LibsPath}/MysqlConnector/9.0.0)
 #link_directories(${LibsPath}/MysqlConnector/9.0.0/win64/Debug)
 #if(CMAKE_BUILD_TYPE MATCHES "Debug")

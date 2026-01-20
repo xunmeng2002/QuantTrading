@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "TradeFields.h"
+#include "LoggerInterface.h"
 
 #ifdef WIN32
 #ifdef LIB_TRADE_API_EXPORT
@@ -41,6 +42,7 @@ class TRADE_API_EXPORT TradeApi
 public:
 	static TradeApi* CreateTradeApi();
 	static const char* GetApiVersion();
+	static void SetExternLogger(WriteLogFunc externLogger);
 	virtual void Init() = 0;
 	virtual void Join() = 0;
 	virtual void Release() = 0;

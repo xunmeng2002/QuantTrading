@@ -27,7 +27,7 @@ constexpr const char* TruncateMysqlDBMdSubscribeTableSqlString = "Truncate Table
 constexpr const char* CreateMysqlDBMdUserTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUser(MdUserID char(32), MdUserName char(64), Password char(64), PRIMARY KEY(MdUserID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 constexpr const char* TruncateMysqlDBMdUserTableSqlString = "Truncate Table t_MdUser;";
 
-constexpr const char* CreateMysqlDBMdUserLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(MdUserID char(32), SessionID bigint, IPAddress char(16), INDEX MdUserID(MdUserID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+constexpr const char* CreateMysqlDBMdUserLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(MdUserID char(32), SessionID bigint, IPAddress char(32), INDEX MdUserID(MdUserID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 constexpr const char* TruncateMysqlDBMdUserLoginSessionTableSqlString = "Truncate Table t_MdUserLoginSession;";
 
 constexpr const char* CreateMysqlDBPrimaryAccountTableSqlString = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(PrimaryAccountID char(32), PrimaryAccountName char(64), AccountClass int, Password char(64), OfferID int, IsAllowLogin bool, IsSimulateAccount bool, LoginStatus int, InitStatus int, INDEX OfferID(OfferID), PRIMARY KEY(PrimaryAccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
@@ -51,6 +51,6 @@ constexpr const char* TruncateMysqlDBOrderTableSqlString = "Truncate Table t_Ord
 constexpr const char* CreateMysqlDBTradeTableSqlString = "CREATE TABLE IF NOT EXISTS t_Trade(TradingDay char(9), AccountID char(32), AccountType int, ExchangeID char(8), InstrumentID char(32), ProductClass int, OrderID int, OrderSysID char(64), TradeID char(64), Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate char(9), TradeTime char(9), INDEX AccountID(TradingDay, AccountID), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 constexpr const char* TruncateMysqlDBTradeTableSqlString = "Truncate Table t_Trade;";
 
-constexpr const char* CreateMysqlDBAccountLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_AccountLoginSession(AccountID char(32), SessionID bigint, IPAddress char(16), INDEX AccountID(AccountID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+constexpr const char* CreateMysqlDBAccountLoginSessionTableSqlString = "CREATE TABLE IF NOT EXISTS t_AccountLoginSession(AccountID char(32), SessionID bigint, IPAddress char(32), INDEX AccountID(AccountID), PRIMARY KEY(SessionID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 constexpr const char* TruncateMysqlDBAccountLoginSessionTableSqlString = "Truncate Table t_AccountLoginSession;";
 

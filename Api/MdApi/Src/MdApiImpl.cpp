@@ -11,6 +11,10 @@ MdApi* MdApi::CreateMdApi()
 {
 	return new MdApiImpl();
 }
+void MdApi::SetExternLogger(WriteLogFunc externLogger)
+{
+	Logger::SetExternLogger(externLogger);
+}
 MdApiImpl::MdApiImpl()
 {
 }
