@@ -27,10 +27,9 @@ void SimExchangeApiBase::OnProtocolDisConnect(SessionIDType sessionID, const cha
 	m_SimExchangeSpi->OnDisConnected();
 }
 
-void SimExchangeApiBase::Init()
+bool SimExchangeApiBase::Init()
 {
-	m_Protocol->Init();
-	m_Protocol->Start();
+	return m_Protocol->Init() && m_Protocol->Start();
 }
 void SimExchangeApiBase::Join()
 {

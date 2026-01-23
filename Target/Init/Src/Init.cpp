@@ -5,11 +5,11 @@ using namespace std;
 using namespace mdb;
 
 
-void InitTradingDay(Mdb* mdb)
+void InitTradingDay(Mdb* mdb, const std::string& currTradingDay)
 {
 	TradingDay* tradingDay = new TradingDay;
 	tradingDay->PK = 1;
-	strcpy(tradingDay->CurrTradingDay, GetLocalDate().c_str());
+	strcpy(tradingDay->CurrTradingDay, currTradingDay.c_str());
 	GetPreTradingDay(tradingDay->CurrTradingDay, tradingDay->PreTradingDay);
 	mdb->t_TradingDay->Insert(tradingDay);
 }
@@ -83,11 +83,11 @@ Account* InitAccount(Mdb* mdb, AccountInfo* accountInfo)
 	mdb->t_Account->Insert(account);
 	return account;
 }
-void InitCapital(Mdb* mdb, Account* account)
+void InitCapital(Mdb* mdb, Account* account, const std::string& currTradingDay)
 {
 	Capital* capital = new Capital();
 	memset(capital, 0, sizeof(Capital));
-	strcpy(capital->TradingDay, GetLocalDate().c_str());
+	strcpy(capital->TradingDay, currTradingDay.c_str());
 	strcpy(capital->AccountID, account->AccountID);
 	capital->AccountType = account->AccountType;
 	capital->Balance = 0;
@@ -123,13 +123,13 @@ void InitTrade(Mdb* mdb, Account* account)
 }
 
 //目前Exchange，Product，Instrument由Simnow提供，这里不做Init
-void Init(mdb::Mdb* mdb, AccountInfo* accountInfo)
+void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay)
 {
-	InitTradingDay(mdb);
+	InitTradingDay(mdb, tradingDay);
 	InitHotInstrument(mdb);
 	InitPrimaryAccount(mdb, accountInfo);
 	auto account = InitAccount(mdb, accountInfo);
-	InitCapital(mdb, account);
+	InitCapital(mdb, account, tradingDay);
 	InitPosition(mdb, account);
 	InitPositionDetail(mdb, account);
 	InitOrder(mdb, account);

@@ -34,14 +34,17 @@ void Config::Load(const char* fileName)
 	}
 	inFile.close();
 	
-	LogLevel = root["LogLevel"].asInt();
 	MdDataPath = root["MdDataPath"].asString();
-	CsvPath = root["CsvPath"].asString();
 	DumpPath = root["DumpPath"].asString();
 	SessionFile = root["SessionFile"].asString();
 	MarketDataType = root["MarketDataType"].asString();
 	StartTradingDay = root["StartTradingDay"].asString();
 	EndTradingDay = root["EndTradingDay"].asString();
+	DbType = root["DbType"].asString();
+	DbUser = root["DbUser"].asString();
+	DbPassword = root["DbPassword"].asString();
+	DbHost = root["DbHost"].asString();
+	DbInitHost = root["DbInitHost"].asString();
 	Print();
 }
 
@@ -49,13 +52,16 @@ void Config::Load(const char* fileName)
 
 void Config::Print()
 {
-	printf("LogLevel:%d\n", LogLevel);
 	printf("MdDataPath:%s\n", MdDataPath.c_str());
-	printf("CsvPath:%s\n", CsvPath.c_str());
 	printf("DumpPath:%s\n", DumpPath.c_str());
 	printf("SessionFile:%s\n", SessionFile.c_str());
 	printf("MarketDataType:%s\n", MarketDataType.c_str());
 	printf("StartTradingDay:%s\n", StartTradingDay.c_str());
 	printf("EndTradingDay:%s\n", EndTradingDay.c_str());
+	printf("DbType:%s\n", DbType.c_str());
+	printf("DbUser:%s\n", DbUser.c_str());
+	printf("DbPassword:%s\n", DbPassword.c_str());
+	printf("DbHost:%s\n", DbHost.c_str());
+	printf("DbInitHost:%s\n", DbInitHost.c_str());
 }
 

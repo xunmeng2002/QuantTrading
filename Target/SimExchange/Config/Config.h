@@ -21,7 +21,6 @@ public:
 	string DbPassword;
 	string DbHost;
 	string DbInitHost;
-	string CsvPath;
 	
 private:
 	static Config m_Instance;

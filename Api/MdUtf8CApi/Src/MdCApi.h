@@ -42,7 +42,7 @@ extern "C"
 	MD_CAPI_EXPORT void MD_CAPI_CALL CreateMdApi();
 	MD_CAPI_EXPORT const char* MD_CAPI_CALL GetApiVersion();
 	MD_CAPI_EXPORT void SetExternLogger(WriteLogFunc externLogger);
-	MD_CAPI_EXPORT void MD_CAPI_CALL Init();
+	MD_CAPI_EXPORT bool MD_CAPI_CALL Init();
 	MD_CAPI_EXPORT void MD_CAPI_CALL Join();
 	MD_CAPI_EXPORT void MD_CAPI_CALL Release();
 	MD_CAPI_EXPORT void MD_CAPI_CALL RegisterFront(const char* address);

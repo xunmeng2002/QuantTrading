@@ -35,10 +35,9 @@ BackTestApiImpl::~BackTestApiImpl()
 		m_SimExchange = nullptr;
 	}
 }
-void BackTestApiImpl::Init()
+bool BackTestApiImpl::Init()
 {
-	m_SimExchange->Init();
-	m_SimExchange->Start();
+	return m_SimExchange->Init() && m_SimExchange->Start();
 }
 void BackTestApiImpl::Join()
 {

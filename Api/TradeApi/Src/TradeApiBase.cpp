@@ -27,10 +27,9 @@ void TradeApiBase::OnProtocolDisConnect(SessionIDType sessionID, const char* ip,
 	m_TradeSpi->OnDisConnected();
 }
 
-void TradeApiBase::Init()
+bool TradeApiBase::Init()
 {
-	m_Protocol->Init();
-	m_Protocol->Start();
+	return m_Protocol->Init() && m_Protocol->Start();
 }
 void TradeApiBase::Join()
 {

@@ -2,10 +2,12 @@
 #include "Logger.h"
 #include <string.h>
 
-BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi)
+BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi, const Config& config)
 	:m_BackTestApi(backTestApi), m_LastOrderTickMd(nullptr), m_LastOrderBarMd(nullptr), m_MaxRequestID(0), m_MaxClientOrderID(0)
 {
-	strcpy(m_AccountID, "18511899894");
+	strcpy(m_AccountID, config.AccountID.c_str());
+	strcpy(m_ExchangeID, config.ExchangeID.c_str());
+	strcpy(m_InstrumentID, config.InstrumentID.c_str());
 }
 
 void BackTestSpiImpl::OnConnected()
@@ -93,8 +95,8 @@ void BackTestSpiImpl::OnRtnTrade(TradeField* trade)
 void BackTestSpiImpl::ReqSubMarketData()
 {
 	ReqSubMarketDataField reqSubMd;
-	strcpy(reqSubMd.ExchangeID, "CFFEX");
-	strcpy(reqSubMd.InstrumentID, "IF2503");
+	strcpy(reqSubMd.ExchangeID, m_ExchangeID);
+	strcpy(reqSubMd.InstrumentID, m_InstrumentID);
 	m_BackTestApi->ReqSubMarketData(&reqSubMd, ++m_MaxRequestID);
 	ReqSubMarketDataFinishedField reqSubMdFinished;
 	m_BackTestApi->ReqSubMarketDataFinished(&reqSubMdFinished, ++m_MaxRequestID);

@@ -14,17 +14,10 @@ public:
 	void Print();
 	
 public:
-	string MdDataPath;
-	string DumpPath;
-	string SessionFile;
-	string MarketDataType;
-	string StartTradingDay;
-	string EndTradingDay;
-	string DbType;
-	string DbUser;
-	string DbPassword;
-	string DbHost;
-	string DbInitHost;
+	int LogLevel;
+	string AccountID;
+	string ExchangeID;
+	string InstrumentID;
 	
 private:
 	static Config m_Instance;

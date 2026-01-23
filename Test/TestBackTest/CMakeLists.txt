@@ -3,6 +3,7 @@ project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
+add_package(Config ./Config)
 add_package(TestUtility ${CMAKE_SOURCE_DIR}/Test/Source/TestUtility)
 add_package(BackTestApiMiddle ${CMAKE_SOURCE_DIR}/Test/Source/BackTestApiMiddle)
 
@@ -21,6 +22,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	configure_file("${CMAKE_SOURCE_DIR}/Configs/TestBackTest.json" "${CMAKE_CURRENT_BINARY_DIR}/TestBackTest.json" COPYONLY)
 	configure_file("${CMAKE_SOURCE_DIR}/Configs/BackTest.json" "${CMAKE_CURRENT_BINARY_DIR}/BackTest.json" COPYONLY)
 
 	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)

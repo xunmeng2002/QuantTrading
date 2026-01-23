@@ -2,6 +2,6 @@
 #include "Mdb.h"
 #include "Environment.h"
 
-void Init(mdb::Mdb* mdb, AccountInfo* accountInfo);
+void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay);
 
 

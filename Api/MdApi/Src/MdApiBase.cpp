@@ -27,10 +27,9 @@ void MdApiBase::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, in
 	m_MdSpi->OnDisConnected();
 }
 
-void MdApiBase::Init()
+bool MdApiBase::Init()
 {
-	m_Protocol->Init();
-	m_Protocol->Start();
+	return m_Protocol->Init() && m_Protocol->Start();
 }
 void MdApiBase::Join()
 {

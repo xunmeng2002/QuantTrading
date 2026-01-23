@@ -6,16 +6,24 @@
 #include "BackTestApi.h"
 #include "BackTestUtility.h"
 #include "MdReader.h"
+#include "DBWriter.h"
 #include "Config.h"
 #include <list>
 #include <map>
 
-class SimExchange : public ThreadBase
+class SimExchange : public ThreadBase, public DBSubscriber
 {
 public:
 	SimExchange(const Config& config);
 	~SimExchange();
-	void Init();
+	bool Init();
+
+	virtual bool Start() override;
+	virtual void Stop() override;
+	virtual void Join() override;
+
+	virtual void OnDBConnected() override;
+	virtual void OnDBDisConnected() override;
 
 	void RegisterSpi(BackTestSpi* pSpi);
 	int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID);
@@ -89,10 +97,14 @@ private:
 	std::list<Package*> m_Packages;
 	BackTestSpi* m_BackTestSpi;
 	mdb::Mdb* m_Mdb;
+	DB* m_DB;
+	DB* m_InitDB;
+	DBWriter* m_DBWriter;
 	bool m_HasSubMd;
 	DateType m_TradingDay;
 	DateType m_StartTradingDay;
 	DateType m_EndTradingDay;
+	bool m_IsMdEnd;
 	
 	int m_MaxOrderID;
 	int m_MaxTradeID;

@@ -19,6 +19,7 @@ public:
 	string EnvironmentFile;
 	string EnvironmentName;
 	string EnvironmentName24;
+	string TradingDay;
 	string DbType;
 	string DbUser;
 	string DbPassword;

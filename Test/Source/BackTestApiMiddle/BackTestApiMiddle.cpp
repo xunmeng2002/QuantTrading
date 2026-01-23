@@ -18,10 +18,10 @@ const char* BackTestApiMiddle::GetApiVersion()
 	WriteLog(LogLevel::Info, "GetApiVersion");
 	return BackTestApi::GetApiVersion();
 }
-void BackTestApiMiddle::Init()
+bool BackTestApiMiddle::Init()
 {
 	WriteLog(LogLevel::Info, "Init");
-	m_BackTestApi->Init();
+	return m_BackTestApi->Init();
 }
 void BackTestApiMiddle::Join()
 {

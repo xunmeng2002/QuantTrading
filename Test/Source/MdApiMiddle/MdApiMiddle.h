@@ -7,7 +7,7 @@ class MdApiMiddle : public MdApi
 public:
 	static MdApiMiddle* CreateMdApiMiddle();
 	static const char* GetApiVersion();
-	virtual void Init() override;
+	virtual bool Init() override;
 	virtual void Join() override;
 	virtual void Release() override;
 	virtual void RegisterFront(const char* address) override;

@@ -27,9 +27,9 @@ const char* GetApiVersion()
 {
 	return s_TradeApi->GetApiVersion();
 }
-void Init()
+bool Init()
 {
-	s_TradeApi->Init();
+	return s_TradeApi->Init();
 }
 void Join()
 {

@@ -35,12 +35,9 @@ void Config::Load(const char* fileName)
 	inFile.close();
 	
 	LogLevel = root["LogLevel"].asInt();
-	ServerConfigPath = root["ServerConfigPath"].asString();
-	DbType = root["DbType"].asString();
-	DbUser = root["DbUser"].asString();
-	DbPassword = root["DbPassword"].asString();
-	DbHost = root["DbHost"].asString();
-	DbInitHost = root["DbInitHost"].asString();
+	AccountID = root["AccountID"].asString();
+	ExchangeID = root["ExchangeID"].asString();
+	InstrumentID = root["InstrumentID"].asString();
 	Print();
 }
 
@@ -49,11 +46,8 @@ void Config::Load(const char* fileName)
 void Config::Print()
 {
 	printf("LogLevel:%d\n", LogLevel);
-	printf("ServerConfigPath:%s\n", ServerConfigPath.c_str());
-	printf("DbType:%s\n", DbType.c_str());
-	printf("DbUser:%s\n", DbUser.c_str());
-	printf("DbPassword:%s\n", DbPassword.c_str());
-	printf("DbHost:%s\n", DbHost.c_str());
-	printf("DbInitHost:%s\n", DbInitHost.c_str());
+	printf("AccountID:%s\n", AccountID.c_str());
+	printf("ExchangeID:%s\n", ExchangeID.c_str());
+	printf("InstrumentID:%s\n", InstrumentID.c_str());
 }
 

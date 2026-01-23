@@ -27,9 +27,9 @@ const char* GetApiVersion()
 {
 	return s_MdApi->GetApiVersion();
 }
-void Init()
+bool Init()
 {
-	s_MdApi->Init();
+	return s_MdApi->Init();
 }
 void Join()
 {

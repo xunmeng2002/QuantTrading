@@ -18,10 +18,10 @@ const char* SimExchangeApiMiddle::GetApiVersion()
 	WriteLog(LogLevel::Info, "GetApiVersion");
 	return SimExchangeApi::GetApiVersion();
 }
-void SimExchangeApiMiddle::Init()
+bool SimExchangeApiMiddle::Init()
 {
 	WriteLog(LogLevel::Info, "Init");
-	m_SimExchangeApi->Init();
+	return m_SimExchangeApi->Init();
 }
 void SimExchangeApiMiddle::Join()
 {

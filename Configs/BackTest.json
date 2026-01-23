@@ -1,11 +1,15 @@
 {
-	"LogLevel": 2,
 	"MdDataPath": "D:\\Md",
-	"CsvPath": "./Csv",
 	"DumpPath": "./Dump",
 	"SessionFile": "Sessions.json",
-	"MarketDataType": "1",
-	"StartTradingDay": "20250220",
-	"EndTradingDay": "20250320"
+	"MarketDataType": "0",
+	"StartTradingDay": "20241001",
+	"EndTradingDay": "20241231",
+	"DBTypeType": "DuckDB:0, SqliteDB:1, MysqlDB:2, MariaDB:3",
+	"DbType": "1",
+	"DbUser": "",
+	"DbPassword": "",
+	"DbHost": "./BackTest.db",
+	"DbInitHost": "../../Target/Init/Init.db"
 }
 

@@ -9,7 +9,7 @@ public:
 	BackTestApiImpl();
 	~BackTestApiImpl();
 
-	virtual void Init() override;
+	virtual bool Init() override;
 	virtual void Join() override;
 	virtual void Release() override;
 	virtual void RegisterFront(const char* address) override;

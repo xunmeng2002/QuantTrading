@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 	mdb->Subscribe(dbWriter);
 	dbWriter->Subscribe(mdb);
 
-	Init(mdb, environment->Accounts[0]);
+	Init(mdb, environment->Accounts[0], config.TradingDay);
 
 	CThostFtdcTraderApi* traderApi = CThostFtdcTraderApiMiddle::CreateFtdcTraderApi();
 	cout << "API Version:" << traderApi->GetApiVersion() << endl;

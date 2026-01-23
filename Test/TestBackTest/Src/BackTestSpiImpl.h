@@ -1,11 +1,11 @@
 #pragma once
 #include "BackTestSpiMiddle.h"
-
+#include "Config.h"
 
 class BackTestSpiImpl : public BackTestSpiMiddle
 {
 public:
-	BackTestSpiImpl(BackTestApi* backTestApi);
+	BackTestSpiImpl(BackTestApi* backTestApi, const Config& config);
 
 	virtual void OnConnected() override;
 	virtual void OnDisConnected() override;
@@ -30,6 +30,8 @@ private:
 	DepthMarketDataField* m_LastOrderTickMd;
 	BarMarketDataField* m_LastOrderBarMd;
 	AccountIDType m_AccountID;
+	ExchangeIDType m_ExchangeID;
+	InstrumentIDType m_InstrumentID;
 	int m_MaxRequestID;
 	int m_MaxClientOrderID;
 };

@@ -18,10 +18,10 @@ const char* MdApiMiddle::GetApiVersion()
 	WriteLog(LogLevel::Info, "GetApiVersion");
 	return MdApi::GetApiVersion();
 }
-void MdApiMiddle::Init()
+bool MdApiMiddle::Init()
 {
 	WriteLog(LogLevel::Info, "Init");
-	m_MdApi->Init();
+	return m_MdApi->Init();
 }
 void MdApiMiddle::Join()
 {

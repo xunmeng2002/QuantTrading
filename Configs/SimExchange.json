@@ -6,7 +6,6 @@
 	"DbUser": "",
 	"DbPassword": "",
 	"DbHost": "./SimExchange.db",
-	"DbInitHost": "../Init/Init.db",
-	"CsvPath": "./Csv"
+	"DbInitHost": "../Init/Init.db"
 }
 

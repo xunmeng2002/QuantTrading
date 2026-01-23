@@ -4,13 +4,15 @@
 #include "QuantUtility.h"
 #include "Logger.h"
 #include "InitMdbFromCsv.h"
+#include "InitMdbFromDB.h"
+#include "DBCommon.h"
 #include <assert.h>
 
 using namespace std;
 using namespace mdb;
 
 SimExchange::SimExchange(const Config& config)
-	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_MaxOrderID(0), m_MaxTradeID(0), m_DumpPath(config.DumpPath)
+	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false), m_MaxOrderID(0), m_MaxTradeID(0), m_DumpPath(config.DumpPath)
 {
 	strcpy(m_TradingDay, config.StartTradingDay.c_str());
 	strcpy(m_StartTradingDay, config.StartTradingDay.c_str());
@@ -19,8 +21,11 @@ SimExchange::SimExchange(const Config& config)
 	memset(&m_PushMdTick, 0, sizeof(DepthMarketDataField));
 	memset(&m_PushMdBar, 0, sizeof(BarMarketDataField));
 	m_MdReader = new MdReader(config);
+	m_InitDB = CreateDB(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
+	m_DB = CreateDB(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+	m_DBWriter = new DBWriter(m_DB);
+	m_DBWriter->Subscribe(this);
 	m_Mdb = new Mdb();
-	InitMdbFromCsv::LoadTables(m_Mdb, config.CsvPath.c_str());
 }
 SimExchange::~SimExchange()
 {
@@ -29,8 +34,21 @@ SimExchange::~SimExchange()
 	delete m_Mdb;
 	m_Mdb = nullptr;
 }
-void SimExchange::Init()
+bool SimExchange::Init()
 {
+	if (m_InitDB == nullptr || m_DB == nullptr)
+	{
+		WriteLog(LogLevel::Error, "Create DB Failed.");
+		return false;
+	}
+	if (!m_InitDB->Connect())
+	{
+		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
+		return false;
+	}
+	InitMdbFromDB::LoadTablesWithoutTradingDay(m_Mdb, m_InitDB);
+	m_Mdb->Subscribe(m_DBWriter);
+
 	m_MdReader->Init();
 	InitMdInstrument();
 	InitMainInstrument();
@@ -41,7 +59,34 @@ void SimExchange::Init()
 		strcpy(capital->TradingDay, m_TradingDay);
 	}
 	SendRtnSessionBegin(m_TradingDay);
+	return true;
 }
+bool SimExchange::Start()
+{
+	m_DBWriter->Start();
+	ThreadBase::Start();
+	return true;
+}
+void SimExchange::Stop()
+{
+	m_DBWriter->Stop();
+	ThreadBase::Stop();
+}
+void SimExchange::Join()
+{
+	m_DBWriter->Join();
+	ThreadBase::Join();
+}
+
+void SimExchange::OnDBConnected()
+{
+	
+}
+void SimExchange::OnDBDisConnected()
+{
+
+}
+
 void SimExchange::RegisterSpi(BackTestSpi* pSpi)
 {
 	m_BackTestSpi = pSpi;
@@ -162,11 +207,17 @@ void SimExchange::UpdateOrderQueue()
 }
 void SimExchange::OnMdEnd()
 {
+	if (m_IsMdEnd)
+	{
+		return;
+	}
+	m_IsMdEnd = true;
 	WriteLog(LogLevel::Info, "OnMdEnd");
 	Settlement();
 	m_Mdb->Dump(m_DumpPath.c_str());
 	WriteLog(LogLevel::Info, "Dump Completed\n");
-	m_ShouldRun = false;
+	
+	m_Mdb->InitDB();
 }
 
 void SimExchange::PushNextTick(mdb::DepthMarketData* mdTick)
@@ -632,16 +683,6 @@ void SimExchange::Settlement()
 			}
 		}
 	}
-	else
-	{
-		for (auto& it : m_LastMdBars)
-		{
-			if (it.second != nullptr)
-			{
-				m_Mdb->t_BarMarketData->Insert(it.second);
-			}
-		}
-	}
 	SettlementAccount();
 	SendRtnSessionEnd(m_TradingDay);
 }
@@ -855,21 +896,12 @@ void SimExchange::InitPositionDetail(const DateType& nextTradingDay)
 
 void SimExchange::UpdateLastMdTick(mdb::DepthMarketData* mdTick)
 {
-	auto lastTick = m_LastMdTicks[mdTick->InstrumentID];
-	if (lastTick != nullptr)
-	{
-		::Free(lastTick);
-	}
 	m_LastMdTicks[mdTick->InstrumentID] = mdTick;
 }
 void SimExchange::UpdateLastMdBar(mdb::BarMarketData* mdBar)
 {
-	auto lastBar = m_LastMdBars[mdBar->InstrumentID];
-	if (lastBar != nullptr)
-	{
-		::Free(lastBar);
-	}
 	m_LastMdBars[mdBar->InstrumentID] = mdBar;
+	m_Mdb->t_BarMarketData->Insert(mdBar);
 }
 
 mdb::Position* SimExchange::InitPosition(ReqInsertOrderField* reqInsertOrder, mdb::Account* account, mdb::Instrument* instrument, const PosiDirectionType& posiDirection, const PriceType& preSettlementPrice)
