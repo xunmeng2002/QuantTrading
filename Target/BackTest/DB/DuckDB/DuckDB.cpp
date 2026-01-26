@@ -58,6 +58,12 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_MdSubscribeSelectStatement = nullptr;
 	m_MdSubscribeTruncateStatement = nullptr;
 
+	m_PrimaryAccountDeleteStatement = nullptr;
+	m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	m_PrimaryAccountUpdateStatement = nullptr;
+	m_PrimaryAccountSelectStatement = nullptr;
+	m_PrimaryAccountTruncateStatement = nullptr;
+
 	m_AccountDeleteStatement = nullptr;
 	m_AccountUpdateStatement = nullptr;
 	m_AccountSelectStatement = nullptr;
@@ -298,6 +304,31 @@ void DuckDB::DisConnect()
 		duckdb_destroy_prepare(&m_MdSubscribeTruncateStatement);
 		m_MdSubscribeTruncateStatement = nullptr;
 	}
+	if (m_PrimaryAccountDeleteStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_PrimaryAccountDeleteStatement);
+		m_PrimaryAccountDeleteStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_PrimaryAccountDeleteByOfferIDIndexStatement);
+		m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	}
+	if (m_PrimaryAccountUpdateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_PrimaryAccountUpdateStatement);
+		m_PrimaryAccountUpdateStatement = nullptr;
+	}
+	if (m_PrimaryAccountSelectStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_PrimaryAccountSelectStatement);
+		m_PrimaryAccountSelectStatement = nullptr;
+	}
+	if (m_PrimaryAccountTruncateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_PrimaryAccountTruncateStatement);
+		m_PrimaryAccountTruncateStatement = nullptr;
+	}
 	if (m_AccountDeleteStatement != nullptr)
 	{
 		duckdb_destroy_prepare(&m_AccountDeleteStatement);
@@ -472,6 +503,8 @@ void DuckDB::InitDB()
 	Exec("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
 	Exec("Delete From t_MdSubscribe;");
 	Exec("Insert Into t_MdSubscribe select * from Init.t_MdSubscribe;");
+	Exec("Delete From t_PrimaryAccount;");
+	Exec("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
 	Exec("Delete From t_Account;");
 	Exec("Insert Into t_Account select * from Init.t_Account;");
 	Exec("Delete From t_Capital;");
@@ -495,6 +528,7 @@ void DuckDB::CreateTables()
 	CreateDepthMarketData();
 	CreateBarMarketData();
 	CreateMdSubscribe();
+	CreatePrimaryAccount();
 	CreateAccount();
 	CreateCapital();
 	CreatePosition();
@@ -512,6 +546,7 @@ void DuckDB::DropTables()
 	DropDepthMarketData();
 	DropBarMarketData();
 	DropMdSubscribe();
+	DropPrimaryAccount();
 	DropAccount();
 	DropCapital();
 	DropPosition();
@@ -528,6 +563,7 @@ void DuckDB::TruncateTables()
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
 	TruncateMdSubscribe();
+	TruncatePrimaryAccount();
 	TruncateAccount();
 	TruncateCapital();
 	TruncatePosition();
@@ -2538,6 +2574,240 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<MdSubscribe*>& records
 			{
 				CpyDuckdbString(record->EndTradingDay, dataColumn6[row]);
 			}
+			records.push_back(record);
+		}
+	}
+}
+void DuckDB::CreatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount (PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, Password varchar, OfferID int, IsAllowLogin int, IsSimulateAccount int, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreatePrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms", duration);
+}
+void DuckDB::DropPrimaryAccount()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP INDEX PrimaryAccountOfferID;DROP TABLE IF EXISTS t_PrimaryAccount;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropPrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms", duration);
+}
+void DuckDB::InsertPrimaryAccount(PrimaryAccount* record)
+{
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_PrimaryAccount", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_PrimaryAccount Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	AppendForPrimaryAccountRecord(appender, record);
+	duckdb_appender_destroy(&appender);
+}
+void DuckDB::BatchInsertPrimaryAccount(std::list<PrimaryAccount*>* records)
+{
+	auto start = steady_clock::now();
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_PrimaryAccount", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_PrimaryAccount Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	for (auto record : *records)
+	{
+		AppendForPrimaryAccountRecord(appender, record);
+	}
+	duckdb_appender_destroy(&appender);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void DuckDB::DeletePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_PrimaryAccount where PrimaryAccountID = ?;", &m_PrimaryAccountDeleteStatement);
+	}
+	SetStatementForPrimaryAccountPrimaryKey(m_PrimaryAccountDeleteStatement, record);
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountDeleteStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void DuckDB::DeletePrimaryAccountByOfferIDIndex(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_PrimaryAccount where OfferID = ?;", &m_PrimaryAccountDeleteByOfferIDIndexStatement);
+	}
+	SetStatementForPrimaryAccountIndexOfferID(m_PrimaryAccountDeleteByOfferIDIndexStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountDeleteByOfferIDIndexStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex Spend:%lldms", duration);
+	}
+}
+void DuckDB::UpdatePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountUpdateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, Password = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;", &m_PrimaryAccountUpdateStatement);
+	}
+	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountUpdateStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void DuckDB::SelectPrimaryAccount(std::list<PrimaryAccount*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountSelectStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "select * from t_PrimaryAccount;", &m_PrimaryAccountSelectStatement);
+	}
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountSelectStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "SelectPrimaryAccount ErrorMsg:%s", duckdb_result_error(&result));
+		duckdb_destroy_result(&result);
+		return;
+	}
+
+	ParseRecord(result, records);
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void DuckDB::TruncatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountTruncateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_PrimaryAccount;", &m_PrimaryAccountTruncateStatement);
+	}
+
+	auto rc = duckdb_execute_prepared(m_PrimaryAccountTruncateStatement, nullptr);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "TruncatePrimaryAccount failed");
+	}
+	
+	WriteLog(LogLevel::Info, "TruncatePrimaryAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void DuckDB::ParseRecord(duckdb_result& result, std::list<PrimaryAccount*>& records)
+{
+	while (true)
+	{
+		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
+		if (dataChunk == nullptr)
+		{
+			break;
+		}
+		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
+		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
+		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
+		duckdb_vector column3 = duckdb_data_chunk_get_vector(dataChunk, 3);
+		duckdb_vector column4 = duckdb_data_chunk_get_vector(dataChunk, 4);
+		duckdb_vector column5 = duckdb_data_chunk_get_vector(dataChunk, 5);
+		duckdb_vector column6 = duckdb_data_chunk_get_vector(dataChunk, 6);
+		duckdb_vector column7 = duckdb_data_chunk_get_vector(dataChunk, 7);
+		duckdb_vector column8 = duckdb_data_chunk_get_vector(dataChunk, 8);
+
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		int* dataColumn2 = (int*)duckdb_vector_get_data(column2);
+		duckdb_string_t* dataColumn3 = (duckdb_string_t*)duckdb_vector_get_data(column3);
+		int* dataColumn4 = (int*)duckdb_vector_get_data(column4);
+		int* dataColumn5 = (int*)duckdb_vector_get_data(column5);
+		int* dataColumn6 = (int*)duckdb_vector_get_data(column6);
+		int* dataColumn7 = (int*)duckdb_vector_get_data(column7);
+		int* dataColumn8 = (int*)duckdb_vector_get_data(column8);
+
+		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
+		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
+		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
+		uint64_t* validityColumn3 = duckdb_vector_get_validity(column3);
+		uint64_t* validityColumn4 = duckdb_vector_get_validity(column4);
+		uint64_t* validityColumn5 = duckdb_vector_get_validity(column5);
+		uint64_t* validityColumn6 = duckdb_vector_get_validity(column6);
+		uint64_t* validityColumn7 = duckdb_vector_get_validity(column7);
+		uint64_t* validityColumn8 = duckdb_vector_get_validity(column8);
+
+		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
+		for (idx_t row = 0LL; row < rowCount; ++row)
+		{
+			PrimaryAccount* record = PrimaryAccount::Allocate();
+			memset(record, 0, sizeof(PrimaryAccount));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->PrimaryAccountID, dataColumn0[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
+			{
+				CpyDuckdbString(record->PrimaryAccountName, dataColumn1[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row)) record->AccountClass = AccountClassType(dataColumn2[row]);
+			if (duckdb_validity_row_is_valid(validityColumn3, row))
+			{
+				CpyDuckdbString(record->Password, dataColumn3[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn4, row)) record->OfferID = dataColumn4[row];
+			if (duckdb_validity_row_is_valid(validityColumn5, row)) record->IsAllowLogin = dataColumn5[row];
+			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->IsSimulateAccount = dataColumn6[row];
+			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->LoginStatus = LoginStatusType(dataColumn7[row]);
+			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->InitStatus = InitStatusType(dataColumn8[row]);
 			records.push_back(record);
 		}
 	}
@@ -4876,6 +5146,56 @@ void DuckDB::SetStatementForMdSubscribePrimaryKey(duckdb_prepared_statement stat
 	duckdb_bind_varchar(statement, 1, record->ExchangeID);
 	duckdb_bind_varchar(statement, 2, record->InstrumentID);
 	duckdb_bind_varchar(statement, 3, record->StartTradingDay);
+}
+bool DuckDB::AppendForPrimaryAccountRecord(duckdb_appender appender, PrimaryAccount* record)
+{
+	duckdb_append_varchar(appender, record->PrimaryAccountID);
+	duckdb_append_varchar(appender, record->PrimaryAccountName);
+	duckdb_append_int32(appender, int(record->AccountClass));
+	duckdb_append_varchar(appender, record->Password);
+	duckdb_append_int32(appender, record->OfferID);
+	duckdb_append_int32(appender, record->IsAllowLogin);
+	duckdb_append_int32(appender, record->IsSimulateAccount);
+	duckdb_append_int32(appender, int(record->LoginStatus));
+	duckdb_append_int32(appender, int(record->InitStatus));
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertPrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForPrimaryAccountRecord(duckdb_prepared_statement statement, PrimaryAccount* record)
+{
+	duckdb_bind_varchar(statement, 1, record->PrimaryAccountID);
+	duckdb_bind_varchar(statement, 2, record->PrimaryAccountName);
+	duckdb_bind_int32(statement, 3, int(record->AccountClass));
+	duckdb_bind_varchar(statement, 4, record->Password);
+	duckdb_bind_int32(statement, 5, record->OfferID);
+	duckdb_bind_int32(statement, 6, record->IsAllowLogin);
+	duckdb_bind_int32(statement, 7, record->IsSimulateAccount);
+	duckdb_bind_int32(statement, 8, int(record->LoginStatus));
+	duckdb_bind_int32(statement, 9, int(record->InitStatus));
+}
+void DuckDB::SetStatementForPrimaryAccountRecordUpdate(duckdb_prepared_statement statement, PrimaryAccount* record)
+{
+	duckdb_bind_varchar(statement, 1, record->PrimaryAccountName);
+	duckdb_bind_int32(statement, 2, int(record->AccountClass));
+	duckdb_bind_varchar(statement, 3, record->Password);
+	duckdb_bind_int32(statement, 4, record->OfferID);
+	duckdb_bind_int32(statement, 5, record->IsAllowLogin);
+	duckdb_bind_int32(statement, 6, record->IsSimulateAccount);
+	duckdb_bind_int32(statement, 7, int(record->LoginStatus));
+	duckdb_bind_int32(statement, 8, int(record->InitStatus));
+	duckdb_bind_varchar(statement, 9, record->PrimaryAccountID);
+}
+void DuckDB::SetStatementForPrimaryAccountPrimaryKey(duckdb_prepared_statement statement, PrimaryAccount* record)
+{
+	duckdb_bind_varchar(statement, 1, record->PrimaryAccountID);
+}
+void DuckDB::SetStatementForPrimaryAccountIndexOfferID(duckdb_prepared_statement statement, PrimaryAccount* record)
+{
+	duckdb_bind_int32(statement, 1, record->OfferID);
 }
 bool DuckDB::AppendForAccountRecord(duckdb_appender appender, Account* record)
 {

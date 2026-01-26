@@ -18,6 +18,7 @@ namespace mdb
 		LoadHotInstrumentTable(mdb, db);
 		LoadInstrumentTable(mdb, db);
 		LoadMdSubscribeTable(mdb, db);
+		LoadPrimaryAccountTable(mdb, db);
 		LoadAccountTable(mdb, db);
 		LoadCapitalTable(mdb, db);
 		LoadPositionTable(mdb, db);
@@ -96,6 +97,15 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_MdSubscribe->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadPrimaryAccountTable(Mdb* mdb, DB* db)
+	{
+		list<PrimaryAccount*> records;
+		db->SelectPrimaryAccount(records);
+		for (auto record : records)
+		{
+			mdb->t_PrimaryAccount->Insert(record);
 		}
 	}
 	void InitMdbFromDB::LoadAccountTable(Mdb* mdb, DB* db)

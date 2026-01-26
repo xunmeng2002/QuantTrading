@@ -968,6 +968,7 @@ mdb::Order* SimExchange::InitOrder(ReqInsertOrderPackage* reqPackage, mdb::Accou
 	strcpy(order->OrderDate, m_TradingDay);
 	strncpy(order->OrderTime, to_string(insertTime).c_str(), sizeof(TimeType));
 	order->SessionID = reqPackage->SessionID;
+	order->OfferID = 0;
 	order->ClientOrderID = reqInsertOrder->ClientOrderID;
 	order->RequestID = reqPackage->Head.MsgSeqNum;
 	order->TradeGroupID = account->TradeGroupID;

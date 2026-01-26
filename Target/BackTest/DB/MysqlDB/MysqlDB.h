@@ -119,6 +119,16 @@ public:
 	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) override;
 	virtual void TruncateMdSubscribe() override;
 	
+	virtual void CreatePrimaryAccount() override;
+	virtual void DropPrimaryAccount() override;
+	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) override;
+	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) override;
+	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void SelectPrimaryAccount(std::list<mdb::PrimaryAccount*>& records) override;
+	virtual void TruncatePrimaryAccount() override;
+	
 	virtual void CreateAccount() override;
 	virtual void DropAccount() override;
 	virtual void InsertAccount(mdb::Account* record) override;
@@ -216,6 +226,11 @@ private:
 	void SetStatementForMdSubscribeRecordUpdate(sql::PreparedStatement* statement, mdb::MdSubscribe* record);
 	void SetStatementForMdSubscribePrimaryKey(sql::PreparedStatement* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const DateType& StartTradingDay);
 	void ParseRecord(sql::ResultSet* result, std::list<mdb::MdSubscribe*>& records);
+	void SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountRecordUpdate(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& PrimaryAccountID);
+	void SetStatementForPrimaryAccountIndexOfferID(sql::PreparedStatement* statement, mdb::PrimaryAccount* record);
+	void ParseRecord(sql::ResultSet* result, std::list<mdb::PrimaryAccount*>& records);
 	void SetStatementForAccountRecord(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(sql::PreparedStatement* statement, mdb::Account* record);
 	void SetStatementForAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& AccountID);
@@ -317,6 +332,14 @@ private:
 	sql::PreparedStatement* m_MdSubscribeUpdateStatement;
 	sql::PreparedStatement* m_MdSubscribeSelectStatement;
 	sql::PreparedStatement* m_MdSubscribeTruncateStatement;
+	sql::PreparedStatement* m_PrimaryAccountCreateStatement;
+	sql::PreparedStatement* m_PrimaryAccountDropStatement;
+	sql::PreparedStatement* m_PrimaryAccountInsertStatement;
+	sql::PreparedStatement* m_PrimaryAccountDeleteStatement;
+	sql::PreparedStatement* m_PrimaryAccountDeleteByOfferIDIndexStatement;
+	sql::PreparedStatement* m_PrimaryAccountUpdateStatement;
+	sql::PreparedStatement* m_PrimaryAccountSelectStatement;
+	sql::PreparedStatement* m_PrimaryAccountTruncateStatement;
 	sql::PreparedStatement* m_AccountCreateStatement;
 	sql::PreparedStatement* m_AccountDropStatement;
 	sql::PreparedStatement* m_AccountInsertStatement;

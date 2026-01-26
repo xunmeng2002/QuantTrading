@@ -89,6 +89,38 @@ public:
 	virtual void SelectAccount(std::list<mdb::Account*>& records) = 0;
 	virtual void TruncateAccount() = 0;
 
+	virtual void CreateCapital() = 0;
+	virtual void DropCapital() = 0;
+	virtual void InsertCapital(mdb::Capital* record) = 0;
+	virtual void BatchInsertCapital(std::list<mdb::Capital*>* records) = 0;
+	virtual void DeleteCapital(mdb::Capital* record) = 0;
+	virtual void DeleteCapitalByTradingDayIndex(mdb::Capital* record) = 0;
+	virtual void UpdateCapital(mdb::Capital* record) = 0;
+	virtual void SelectCapital(std::list<mdb::Capital*>& records) = 0;
+	virtual void TruncateCapital() = 0;
+
+	virtual void CreatePosition() = 0;
+	virtual void DropPosition() = 0;
+	virtual void InsertPosition(mdb::Position* record) = 0;
+	virtual void BatchInsertPosition(std::list<mdb::Position*>* records) = 0;
+	virtual void DeletePosition(mdb::Position* record) = 0;
+	virtual void DeletePositionByAccountIndex(mdb::Position* record) = 0;
+	virtual void DeletePositionByTradingDayIndex(mdb::Position* record) = 0;
+	virtual void UpdatePosition(mdb::Position* record) = 0;
+	virtual void SelectPosition(std::list<mdb::Position*>& records) = 0;
+	virtual void TruncatePosition() = 0;
+
+	virtual void CreatePositionDetail() = 0;
+	virtual void DropPositionDetail() = 0;
+	virtual void InsertPositionDetail(mdb::PositionDetail* record) = 0;
+	virtual void BatchInsertPositionDetail(std::list<mdb::PositionDetail*>* records) = 0;
+	virtual void DeletePositionDetail(mdb::PositionDetail* record) = 0;
+	virtual void DeletePositionDetailByTradeMatchIndex(mdb::PositionDetail* record) = 0;
+	virtual void DeletePositionDetailByTradingDayIndex(mdb::PositionDetail* record) = 0;
+	virtual void UpdatePositionDetail(mdb::PositionDetail* record) = 0;
+	virtual void SelectPositionDetail(std::list<mdb::PositionDetail*>& records) = 0;
+	virtual void TruncatePositionDetail() = 0;
+
 	virtual void CreateOrder() = 0;
 	virtual void DropOrder() = 0;
 	virtual void InsertOrder(mdb::Order* record) = 0;

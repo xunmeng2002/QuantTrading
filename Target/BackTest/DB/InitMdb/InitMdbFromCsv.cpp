@@ -23,6 +23,7 @@ namespace mdb
 		LoadDepthMarketDataTable(mdb, dir);
 		LoadBarMarketDataTable(mdb, dir);
 		LoadMdSubscribeTable(mdb, dir);
+		LoadPrimaryAccountTable(mdb, dir);
 		LoadAccountTable(mdb, dir);
 		LoadCapitalTable(mdb, dir);
 		LoadPositionTable(mdb, dir);
@@ -413,6 +414,47 @@ namespace mdb
 			Strcpy(record->StartTradingDay, csv_record.GetFieldAsString("StartTradingDay"));
 			Strcpy(record->EndTradingDay, csv_record.GetFieldAsString("EndTradingDay"));
 			mdb->t_MdSubscribe->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadPrimaryAccountTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_PrimaryAccount.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_PrimaryAccount.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_PrimaryAccount.csv failed");
+			}
+
+			auto record = new PrimaryAccount();
+			Strcpy(record->PrimaryAccountID, csv_record.GetFieldAsString("PrimaryAccountID"));
+			Strcpy(record->PrimaryAccountName, csv_record.GetFieldAsString("PrimaryAccountName"));
+			record->AccountClass = (AccountClassType)csv_record.GetFieldAsInt("AccountClass");
+			Strcpy(record->Password, csv_record.GetFieldAsString("Password"));
+			record->OfferID = csv_record.GetFieldAsInt("OfferID");
+			record->IsAllowLogin = (bool)csv_record.GetFieldAsInt("IsAllowLogin");
+			record->IsSimulateAccount = (bool)csv_record.GetFieldAsInt("IsSimulateAccount");
+			record->LoginStatus = (LoginStatusType)csv_record.GetFieldAsInt("LoginStatus");
+			record->InitStatus = (InitStatusType)csv_record.GetFieldAsInt("InitStatus");
+			mdb->t_PrimaryAccount->Insert(record);
 		}
 		file.close();
 	}

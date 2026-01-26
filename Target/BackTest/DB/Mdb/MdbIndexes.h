@@ -57,6 +57,31 @@ namespace mdb
 		multiset<Instrument*, InstrumentLessForExchangeIDIndex> m_Index;
 	};
 	
+	class PrimaryAccountTable;
+	class PrimaryAccountIndexOfferID
+	{
+		using iterator = std::multiset<PrimaryAccount*, PrimaryAccountLessForOfferIDIndex>::iterator;
+		friend class PrimaryAccountTable;
+	public:
+		PrimaryAccountIndexOfferID(PrimaryAccountTable* table);
+		iterator LowerBound(const OfferIDType& OfferID);
+		iterator UpperBound(const OfferIDType& OfferID);
+		std::pair<iterator, iterator> EqualRange(const OfferIDType& OfferID);
+	public:
+		static constexpr unsigned int IndexID = 0x0000;
+	protected:
+		void Insert(PrimaryAccount* const record);
+		void Erase(PrimaryAccount* const record);
+		void Update(iterator it);
+		bool NeedUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord);
+		iterator FindNode(PrimaryAccount* const record);
+		void FillCompareRecord(const OfferIDType& OfferID);
+
+	private:
+		PrimaryAccountTable* m_Table;
+		multiset<PrimaryAccount*, PrimaryAccountLessForOfferIDIndex> m_Index;
+	};
+	
 	class CapitalTable;
 	class CapitalIndexTradingDay
 	{

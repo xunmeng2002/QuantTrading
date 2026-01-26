@@ -165,6 +165,66 @@ namespace mdb
 		AccountTable* m_Table;
 		std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey> m_Index;
 	};
+	class CapitalTable;
+	class CapitalPrimaryKey
+	{
+		using iterator = std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey>::iterator;
+		friend class CapitalTable;
+	public:
+		CapitalPrimaryKey(CapitalTable* table, size_t buckets = 1000);
+		Capital* Select(const DateType& TradingDay, const AccountIDType& AccountID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(Capital* const record);
+		void Erase(Capital* const record);
+		bool CheckInsert(Capital* const record);
+		bool CheckUpdate(const Capital* const oldRecord, const Capital* const newRecord);
+
+	private:
+		CapitalTable* m_Table;
+		std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey> m_Index;
+	};
+	class PositionTable;
+	class PositionPrimaryKey
+	{
+		using iterator = std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey>::iterator;
+		friend class PositionTable;
+	public:
+		PositionPrimaryKey(PositionTable* table, size_t buckets = 1000);
+		Position* Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(Position* const record);
+		void Erase(Position* const record);
+		bool CheckInsert(Position* const record);
+		bool CheckUpdate(const Position* const oldRecord, const Position* const newRecord);
+
+	private:
+		PositionTable* m_Table;
+		std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey> m_Index;
+	};
+	class PositionDetailTable;
+	class PositionDetailPrimaryKey
+	{
+		using iterator = std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey>::iterator;
+		friend class PositionDetailTable;
+	public:
+		PositionDetailPrimaryKey(PositionDetailTable* table, size_t buckets = 1000);
+		PositionDetail* Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIDType& TradeID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(PositionDetail* const record);
+		void Erase(PositionDetail* const record);
+		bool CheckInsert(PositionDetail* const record);
+		bool CheckUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord);
+
+	private:
+		PositionDetailTable* m_Table;
+		std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey> m_Index;
+	};
 	class OrderTable;
 	class OrderPrimaryKey
 	{

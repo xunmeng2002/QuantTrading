@@ -89,6 +89,16 @@ public:
 	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) = 0;
 	virtual void TruncateMdSubscribe() = 0;
 
+	virtual void CreatePrimaryAccount() = 0;
+	virtual void DropPrimaryAccount() = 0;
+	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) = 0;
+	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) = 0;
+	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) = 0;
+	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) = 0;
+	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) = 0;
+	virtual void SelectPrimaryAccount(std::list<mdb::PrimaryAccount*>& records) = 0;
+	virtual void TruncatePrimaryAccount() = 0;
+
 	virtual void CreateAccount() = 0;
 	virtual void DropAccount() = 0;
 	virtual void InsertAccount(mdb::Account* record) = 0;

@@ -21,6 +21,15 @@ namespace mdb
 		bool operator()(const Instrument* const left, const Instrument* const right) const;
 	};
 	
+	struct PrimaryAccountEqualForOfferIDIndex
+	{
+		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
+	};
+	struct PrimaryAccountLessForOfferIDIndex
+	{
+		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
+	};
+	
 	struct CapitalEqualForTradingDayIndex
 	{
 		bool operator()(const Capital* const left, const Capital* const right) const;

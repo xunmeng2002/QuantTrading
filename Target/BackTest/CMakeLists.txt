@@ -17,6 +17,7 @@ add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)
 add_package(Bar ${CMAKE_SOURCE_DIR}/Source/Bar)
 add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 add_package(TradeSession ${CMAKE_SOURCE_DIR}/Source/TradeSession)
+add_package(OrderMatch ${CMAKE_SOURCE_DIR}/Source/OrderMatch)
 add_package(QuantUtility ${CMAKE_SOURCE_DIR}/Source/QuantUtility)
 add_package(Version ${CMAKE_SOURCE_DIR}/Source/Version)
 

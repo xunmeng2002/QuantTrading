@@ -65,6 +65,13 @@ SqliteDB::SqliteDB(const std::string& dbName)
 	m_MdSubscribeSelectStatement = nullptr;
 	m_MdSubscribeTruncateStatement = nullptr;
 
+	m_PrimaryAccountInsertStatement = nullptr;
+	m_PrimaryAccountDeleteStatement = nullptr;
+	m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	m_PrimaryAccountUpdateStatement = nullptr;
+	m_PrimaryAccountSelectStatement = nullptr;
+	m_PrimaryAccountTruncateStatement = nullptr;
+
 	m_AccountInsertStatement = nullptr;
 	m_AccountDeleteStatement = nullptr;
 	m_AccountUpdateStatement = nullptr;
@@ -345,6 +352,36 @@ void SqliteDB::DisConnect()
 		sqlite3_finalize(m_MdSubscribeTruncateStatement);
 		m_MdSubscribeTruncateStatement = nullptr;
 	}
+	if (m_PrimaryAccountInsertStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountInsertStatement);
+		m_PrimaryAccountInsertStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountDeleteStatement);
+		m_PrimaryAccountDeleteStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountDeleteByOfferIDIndexStatement);
+		m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	}
+	if (m_PrimaryAccountUpdateStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountUpdateStatement);
+		m_PrimaryAccountUpdateStatement = nullptr;
+	}
+	if (m_PrimaryAccountSelectStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountSelectStatement);
+		m_PrimaryAccountSelectStatement = nullptr;
+	}
+	if (m_PrimaryAccountTruncateStatement != nullptr)
+	{
+		sqlite3_finalize(m_PrimaryAccountTruncateStatement);
+		m_PrimaryAccountTruncateStatement = nullptr;
+	}
 	if (m_AccountInsertStatement != nullptr)
 	{
 		sqlite3_finalize(m_AccountInsertStatement);
@@ -549,6 +586,8 @@ void SqliteDB::InitDB()
 	Exec("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
 	Exec("Truncate Table t_MdSubscribe;");
 	Exec("Insert Into t_MdSubscribe select * from Init.t_MdSubscribe;");
+	Exec("Truncate Table t_PrimaryAccount;");
+	Exec("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
 	Exec("Truncate Table t_Account;");
 	Exec("Insert Into t_Account select * from Init.t_Account;");
 	Exec("Truncate Table t_Capital;");
@@ -572,6 +611,7 @@ void SqliteDB::CreateTables()
 	CreateDepthMarketData();
 	CreateBarMarketData();
 	CreateMdSubscribe();
+	CreatePrimaryAccount();
 	CreateAccount();
 	CreateCapital();
 	CreatePosition();
@@ -589,6 +629,7 @@ void SqliteDB::DropTables()
 	DropDepthMarketData();
 	DropBarMarketData();
 	DropMdSubscribe();
+	DropPrimaryAccount();
 	DropAccount();
 	DropCapital();
 	DropPosition();
@@ -605,6 +646,7 @@ void SqliteDB::TruncateTables()
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
 	TruncateMdSubscribe();
+	TruncatePrimaryAccount();
 	TruncateAccount();
 	TruncateCapital();
 	TruncatePosition();
@@ -2043,6 +2085,199 @@ void SqliteDB::TruncateMdSubscribe()
 	sqlite3_reset(m_MdSubscribeTruncateStatement);
 	
 	WriteLog(LogLevel::Info, "TruncateMdSubscribe Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void SqliteDB::CreatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	char* t_ErrorMsg;
+	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(`PrimaryAccountID` text, `PrimaryAccountName` text, `AccountClass` int, `Password` text, `OfferID` int, `IsAllowLogin` int, `IsSimulateAccount` int, `LoginStatus` int, `InitStatus` int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", nullptr, nullptr, &t_ErrorMsg);
+	if (rc != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "CreatePrimaryAccount failed, ErrorMsg:%s", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms", duration);
+}
+void SqliteDB::DropPrimaryAccount()
+{
+	auto start = steady_clock::now();
+	char* t_ErrorMsg;
+	auto rc = sqlite3_exec(m_DB, "DROP INDEX PrimaryAccountOfferID;DROP TABLE IF EXISTS t_PrimaryAccount;", nullptr, nullptr, &t_ErrorMsg);
+	if (rc != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "DropPrimaryAccount failed, ErrorMsg:%s", t_ErrorMsg);
+		sqlite3_free(t_ErrorMsg);
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms", duration);
+}
+void SqliteDB::InsertPrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountInsertStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "insert into t_PrimaryAccount Values(?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_PrimaryAccountInsertStatement, nullptr);
+	}
+	SetStatementForPrimaryAccountRecord(m_PrimaryAccountInsertStatement, record);
+	
+	auto rc = sqlite3_step(m_PrimaryAccountInsertStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "InsertPrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountInsertStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void SqliteDB::BatchInsertPrimaryAccount(std::list<PrimaryAccount*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	char* t_ErrorMsg;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > BuffSize - 1024)
+		{
+			m_SqlBuff[n - 1] = ';';
+			auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+			if (ret != SQLITE_OK)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+				sqlite3_free(t_ErrorMsg);
+				return;
+			}
+			
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+
+	auto ret = sqlite3_exec(m_DB, m_SqlBuff, nullptr, nullptr, &t_ErrorMsg);
+	if (ret != SQLITE_OK)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", t_ErrorMsg, m_SqlBuff);
+		sqlite3_free(t_ErrorMsg);
+		return;
+	}
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void SqliteDB::DeletePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_PrimaryAccount where PrimaryAccountID = ?;", -1, &m_PrimaryAccountDeleteStatement, nullptr);
+	}
+	SetStatementForPrimaryAccountPrimaryKey(m_PrimaryAccountDeleteStatement, record->PrimaryAccountID);
+
+	auto rc = sqlite3_step(m_PrimaryAccountDeleteStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountDeleteStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void SqliteDB::DeletePrimaryAccountByOfferIDIndex(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_PrimaryAccount where OfferID = ?;", -1, &m_PrimaryAccountDeleteByOfferIDIndexStatement, nullptr);
+	}
+	SetStatementForPrimaryAccountIndexOfferID(m_PrimaryAccountDeleteByOfferIDIndexStatement, record);
+	
+	auto rc = sqlite3_step(m_PrimaryAccountDeleteByOfferIDIndexStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountDeleteByOfferIDIndexStatement);
+
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex Spend:%lldms", duration);
+	}
+}
+void SqliteDB::UpdatePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountUpdateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, Password = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;", -1, &m_PrimaryAccountUpdateStatement, nullptr);
+	}
+	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
+	
+	auto rc = sqlite3_step(m_PrimaryAccountUpdateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount failed: %s, ErrorMsg:%s", record->GetDebugString(), sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountUpdateStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void SqliteDB::SelectPrimaryAccount(std::list<PrimaryAccount*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountSelectStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "select * from t_PrimaryAccount;", -1, &m_PrimaryAccountSelectStatement, nullptr);
+	}
+
+	while (sqlite3_step(m_PrimaryAccountSelectStatement) == SQLITE_ROW)
+	{
+		ParseRecord(m_PrimaryAccountSelectStatement, records);
+	}
+	sqlite3_reset(m_PrimaryAccountSelectStatement);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void SqliteDB::TruncatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountTruncateStatement == nullptr)
+	{
+		sqlite3_prepare_v2(m_DB, "delete from t_PrimaryAccount;", -1, &m_PrimaryAccountTruncateStatement, nullptr);
+	}
+
+	auto rc = sqlite3_step(m_PrimaryAccountTruncateStatement);
+	if (rc != SQLITE_DONE)
+	{
+		WriteLog(LogLevel::Warning, "TruncatePrimaryAccount failed, ErrorMsg:%s", sqlite3_errmsg(m_DB));
+	}
+	sqlite3_reset(m_PrimaryAccountTruncateStatement);
+	
+	WriteLog(LogLevel::Info, "TruncatePrimaryAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 void SqliteDB::CreateAccount()
 {
@@ -3756,6 +3991,52 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<MdSubscribe*>& rec
 	record->ProductClass = ProductClassType(sqlite3_column_int(statement, 4));
 	Strcpy(record->StartTradingDay, (const char*)sqlite3_column_text(statement, 5));
 	Strcpy(record->EndTradingDay, (const char*)sqlite3_column_text(statement, 6));
+	records.push_back(record);
+}
+void SqliteDB::SetStatementForPrimaryAccountRecord(sqlite3_stmt* statement, PrimaryAccount* record)
+{
+	sqlite3_bind_text(statement, 1, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
+	sqlite3_bind_text(statement, 2, record->PrimaryAccountName, sizeof(record->PrimaryAccountName), nullptr);
+	sqlite3_bind_int(statement, 3, int(record->AccountClass));
+	sqlite3_bind_text(statement, 4, record->Password, sizeof(record->Password), nullptr);
+	sqlite3_bind_int(statement, 5, record->OfferID);
+	sqlite3_bind_int(statement, 6, record->IsAllowLogin);
+	sqlite3_bind_int(statement, 7, record->IsSimulateAccount);
+	sqlite3_bind_int(statement, 8, int(record->LoginStatus));
+	sqlite3_bind_int(statement, 9, int(record->InitStatus));
+}
+void SqliteDB::SetStatementForPrimaryAccountRecordUpdate(sqlite3_stmt* statement, PrimaryAccount* record)
+{
+	sqlite3_bind_text(statement, 1, record->PrimaryAccountName, sizeof(record->PrimaryAccountName), nullptr);
+	sqlite3_bind_int(statement, 2, int(record->AccountClass));
+	sqlite3_bind_text(statement, 3, record->Password, sizeof(record->Password), nullptr);
+	sqlite3_bind_int(statement, 4, record->OfferID);
+	sqlite3_bind_int(statement, 5, record->IsAllowLogin);
+	sqlite3_bind_int(statement, 6, record->IsSimulateAccount);
+	sqlite3_bind_int(statement, 7, int(record->LoginStatus));
+	sqlite3_bind_int(statement, 8, int(record->InitStatus));
+	sqlite3_bind_text(statement, 9, record->PrimaryAccountID, sizeof(record->PrimaryAccountID), nullptr);
+}
+void SqliteDB::SetStatementForPrimaryAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& PrimaryAccountID)
+{
+	sqlite3_bind_text(statement, 1, PrimaryAccountID, sizeof(PrimaryAccountID), nullptr);
+}
+void SqliteDB::SetStatementForPrimaryAccountIndexOfferID(sqlite3_stmt* statement, PrimaryAccount* record)
+{
+	sqlite3_bind_int(statement, 1, record->OfferID);
+}
+void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<PrimaryAccount*>& records)
+{
+	PrimaryAccount* record = PrimaryAccount::Allocate();
+	Strcpy(record->PrimaryAccountID, (const char*)sqlite3_column_text(statement, 0));
+	Strcpy(record->PrimaryAccountName, (const char*)sqlite3_column_text(statement, 1));
+	record->AccountClass = AccountClassType(sqlite3_column_int(statement, 2));
+	Strcpy(record->Password, (const char*)sqlite3_column_text(statement, 3));
+	record->OfferID = sqlite3_column_int(statement, 4);
+	record->IsAllowLogin = sqlite3_column_int(statement, 5);
+	record->IsSimulateAccount = sqlite3_column_int(statement, 6);
+	record->LoginStatus = LoginStatusType(sqlite3_column_int(statement, 7));
+	record->InitStatus = InitStatusType(sqlite3_column_int(statement, 8));
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForAccountRecord(sqlite3_stmt* statement, Account* record)

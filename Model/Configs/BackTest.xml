@@ -1,5 +1,6 @@
 <config>
 	<items>
+		<item name="MatchMode" type="string"></item>
 		<item name="MdDataPath" type="string"></item>
 		<item name="DumpPath" type="string"></item>
 		<item name="SessionFile" type="string"></item>

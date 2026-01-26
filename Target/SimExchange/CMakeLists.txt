@@ -14,6 +14,8 @@ add_package(DBCommon ${CMAKE_SOURCE_DIR}/Source/DBCommon)
 add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)
 add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 add_package(Packages ${CMAKE_SOURCE_DIR}/Source/Packages)
+add_package(OrderMatch ${CMAKE_SOURCE_DIR}/Source/OrderMatch)
+add_package(QuantUtility ${CMAKE_SOURCE_DIR}/Source/QuantUtility)
 
 include_package(duckdb ${LibsPath}/duckdb/include)
 include_package(duckdb ${LibsPath}/SQLite/3.36.0/include)

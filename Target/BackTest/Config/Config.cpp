@@ -34,6 +34,7 @@ void Config::Load(const char* fileName)
 	}
 	inFile.close();
 	
+	MatchMode = root["MatchMode"].asString();
 	MdDataPath = root["MdDataPath"].asString();
 	DumpPath = root["DumpPath"].asString();
 	SessionFile = root["SessionFile"].asString();
@@ -52,6 +53,7 @@ void Config::Load(const char* fileName)
 
 void Config::Print()
 {
+	printf("MatchMode:%s\n", MatchMode.c_str());
 	printf("MdDataPath:%s\n", MdDataPath.c_str());
 	printf("DumpPath:%s\n", DumpPath.c_str());
 	printf("SessionFile:%s\n", SessionFile.c_str());

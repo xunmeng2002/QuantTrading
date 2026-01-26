@@ -470,6 +470,62 @@ void DBWriter::OnMdSubscribeTruncate()
 	AddDBOperate(dbOperate);
 }
 
+void DBWriter::OnPrimaryAccountInsert(mdb::PrimaryAccount* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = PrimaryAccount::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPrimaryAccountBatchInsert(std::list<mdb::PrimaryAccount*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = PrimaryAccount::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPrimaryAccountErase(mdb::PrimaryAccount* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = PrimaryAccount::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPrimaryAccountEraseByOfferIDIndex(mdb::PrimaryAccount* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = PrimaryAccount::TableID;
+	dbOperate->IndexID = PrimaryAccountIndexOfferID::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPrimaryAccountUpdate(mdb::PrimaryAccount* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = PrimaryAccount::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPrimaryAccountTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = PrimaryAccount::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
 void DBWriter::OnAccountInsert(mdb::Account* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -969,6 +1025,9 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 	case MdSubscribe::TableID:
 		m_DB->InsertMdSubscribe((MdSubscribe*)dbOperate->Record);
 		break;
+	case PrimaryAccount::TableID:
+		m_DB->InsertPrimaryAccount((PrimaryAccount*)dbOperate->Record);
+		break;
 	case Account::TableID:
 		m_DB->InsertAccount((Account*)dbOperate->Record);
 		break;
@@ -1055,6 +1114,14 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 	{
 		auto records = (std::list<MdSubscribe*>*)dbOperate->Record;
 		m_DB->BatchInsertMdSubscribe(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case PrimaryAccount::TableID:
+	{
+		auto records = (std::list<PrimaryAccount*>*)dbOperate->Record;
+		m_DB->BatchInsertPrimaryAccount(records);
 		records->clear();
 		delete records;
 		break;
@@ -1148,6 +1215,10 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 		m_DB->DeleteMdSubscribe((MdSubscribe*)dbOperate->Record);
 		((MdSubscribe*)dbOperate->Record)->Free();
 		break;
+	case PrimaryAccount::TableID:
+		m_DB->DeletePrimaryAccount((PrimaryAccount*)dbOperate->Record);
+		((PrimaryAccount*)dbOperate->Record)->Free();
+		break;
 	case Account::TableID:
 		m_DB->DeleteAccount((Account*)dbOperate->Record);
 		((Account*)dbOperate->Record)->Free();
@@ -1210,6 +1281,22 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 			break;
 		}
 		((Instrument*)dbOperate->Record)->Free();
+		break;
+	}
+	case PrimaryAccount::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case PrimaryAccountIndexOfferID::IndexID:
+		{
+			m_DB->DeletePrimaryAccountByOfferIDIndex((PrimaryAccount*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((PrimaryAccount*)dbOperate->Record)->Free();
 		break;
 	}
 	case Capital::TableID:
@@ -1343,6 +1430,10 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		m_DB->UpdateMdSubscribe((MdSubscribe*)dbOperate->Record);
 		((MdSubscribe*)dbOperate->Record)->Free();
 		break;
+	case PrimaryAccount::TableID:
+		m_DB->UpdatePrimaryAccount((PrimaryAccount*)dbOperate->Record);
+		((PrimaryAccount*)dbOperate->Record)->Free();
+		break;
 	case Account::TableID:
 		m_DB->UpdateAccount((Account*)dbOperate->Record);
 		((Account*)dbOperate->Record)->Free();
@@ -1399,6 +1490,9 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 		break;
 	case MdSubscribe::TableID:
 		m_DB->TruncateMdSubscribe();
+		break;
+	case PrimaryAccount::TableID:
+		m_DB->TruncatePrimaryAccount();
 		break;
 	case Account::TableID:
 		m_DB->TruncateAccount();

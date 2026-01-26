@@ -256,6 +256,38 @@ namespace mdb
 		MdSubscribePrimaryKey* m_PrimaryKey;
 	};
 
+	class PrimaryAccountTable
+	{
+	public:
+		PrimaryAccountTable(Mdb* mdb);
+		~PrimaryAccountTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(PrimaryAccount* record);
+		void BatchInsert(std::list<mdb::PrimaryAccount*>* records);
+		void Erase(PrimaryAccount* record);
+		int EraseByOfferIDIndex(const OfferIDType& OfferID);
+		bool Update(PrimaryAccount* const oldRecord, PrimaryAccount* const newRecord, bool updateDB = true);
+		void TruncateTables();
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(PrimaryAccount* record);
+		void EraseIndex(PrimaryAccount* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		PrimaryAccountPrimaryKey* m_PrimaryKey;
+		PrimaryAccountIndexOfferID* m_OfferIDIndex;
+	};
+
 	class AccountTable
 	{
 	public:

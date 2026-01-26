@@ -3,18 +3,22 @@
 #include "Error.h"
 #include "TimeUtility.h"
 #include "Logger.h"
+#include "OrderUtility.h"
 
 using namespace std;
 using namespace mdb;
 
-SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront)
-	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_TradingDay(""), m_MaxOrderID(0), m_MaxTradeID(0)
+SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, const std::string& matchMode)
+	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_TradingDay(""), m_CurrDate(""), m_CurrTime(""), m_MaxOrderID(0), m_MaxTradeID(0)
 {
 	auto tradingDay = m_Mdb->t_TradingDay->m_PrimaryKey->Select(1);
 	if (tradingDay != nullptr)
 	{
 		strcpy(m_TradingDay, tradingDay->CurrTradingDay);
 	}
+
+	m_OrderMatch = OrderMatch::CreateOrderMatch(MatchModeType(matchMode[0]), m_Mdb, m_TradingDay);
+	m_OrderMatch->Subscribe(this);
 
 	m_RspAccountLoginPackage = Allocate<RspAccountLoginPackage>();
 	m_RspAccountLoginPackage->RspInfo = Allocate<RspInfoField>();
@@ -73,6 +77,15 @@ void SimExchange::OnMessage(Package* package)
 		m_Packages.push_back(package);
 	}
 	m_ConditionVariable.notify_one();
+}
+
+void SimExchange::OnOrder(mdb::Order* order)
+{
+	SendRtnOrder(order);
+}
+void SimExchange::OnTrade(mdb::Trade* trade)
+{
+	SendRtnTrade(trade);
 }
 
 void SimExchange::Run()
@@ -227,47 +240,10 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	{
 		return;
 	}
-	auto order = Order::Allocate();
-	memset(order, 0, sizeof(Order));
-	memcpy(order->TradingDay, m_TradingDay, sizeof(DateType));
-	memcpy(order->AccountID, reqPackage->ReqInsertOrder->AccountID, sizeof(AccountIDType));
-	order->AccountType = AccountTypeType::Primary;
-	memcpy(order->ExchangeID, reqPackage->ReqInsertOrder->ExchangeID, sizeof(ExchangeIDType));
-	memcpy(order->InstrumentID, reqPackage->ReqInsertOrder->InstrumentID, sizeof(InstrumentIDType));
-	order->ProductClass = instrument->ProductClass;
-	order->OrderID = GetNextOrderID();
-	strcpy(order->OrderSysID, std::to_string(order->OrderID).c_str());
-	order->Direction = reqPackage->ReqInsertOrder->Direction;
-	order->OffsetFlag = reqPackage->ReqInsertOrder->OffsetFlag;
-	order->OrderPriceType = reqPackage->ReqInsertOrder->OrderPriceType;
-	order->Price = reqPackage->ReqInsertOrder->Price;
-	order->Volume = reqPackage->ReqInsertOrder->Volume;
-	order->VolumeTotal = reqPackage->ReqInsertOrder->Volume;
-	order->VolumeTraded = 0;
-	order->VolumeMultiple = instrument->VolumeMultiple;
-	order->OrderStatus = OrderStatusType::Inserted;
-	memcpy(order->OrderDate, m_TradingDay, sizeof(DateType));
-	strcpy(order->OrderTime, GetLocalTime().c_str());
-	order->SessionID = reqPackage->SessionID;
-	order->ClientOrderID = reqPackage->ReqInsertOrder->ClientOrderID;
-	order->RequestID = reqPackage->Head.MsgSeqNum;
-	order->OfferID = primaryAccount->OfferID;
-	order->TradeGroupID = account->TradeGroupID;
-	order->RiskGroupID = account->RiskGroupID;
-	order->CommissionGroupID = account->CommissionGroupID;
-	order->RebuildMark = false;
-	order->IsForceClose = false;
+	GetLocalDateTime(m_CurrDate, m_CurrTime);
+	auto order = InitOrder(reqPackage, account, primaryAccount, instrument, m_TradingDay, m_CurrDate, m_CurrTime);
 	m_Mdb->t_Order->Insert(order);
-
-	CheckMatchForOrderQueue(order);
-	if (order->VolumeTotal > 0)
-	{
-		AddOrderToQueue(order);
-	}
-	if (order->VolumeTraded == 0)
-	{
-		SendRtnOrder(order);
-	}
+	m_OrderMatch->InsertOrder(order);
 }
 void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 {
@@ -391,117 +367,6 @@ bool SimExchange::CheckSessionLogin(const SessionIDType& sessionID)
 {
 	auto accountLoginSession = m_Mdb->t_AccountLoginSession->m_PrimaryKey->Select(sessionID);
 	return accountLoginSession != nullptr;
-}
-int SimExchange::CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument)
-{
-	if (strlen(reqInsertOrder->AccountID) == 0)
-		return ErrorAccountNotExist;
-	if (reqInsertOrder->Direction != DirectionType::Buy && reqInsertOrder->Direction != DirectionType::Sell)
-		return ErrorInvalidDirection;
-	if (reqInsertOrder->OffsetFlag != OffsetFlagType::Open && reqInsertOrder->OffsetFlag != OffsetFlagType::Close && reqInsertOrder->OffsetFlag != OffsetFlagType::CloseToday)
-		return ErrorInvalidOffsetFlag;
-	if (reqInsertOrder->OrderPriceType != OrderPriceTypeType::LimitPrice && reqInsertOrder->OrderPriceType != OrderPriceTypeType::AnyPrice)
-		return ErrorInvalidOrderPriceType;
-	//if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::LimitPrice && (reqInsertOrder->Price > instrument->UpperLimitPrice || reqInsertOrder->Price < instrument->LowerLimitPrice))
-	//	return ErrorInvalidOrderPrice;
-	if (reqInsertOrder->Volume <= 0)
-		return ErrorInvalidOrderVolume;
-	if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::LimitPrice)
-	{
-		if (instrument->MaxLimitOrderVolume > 0 && reqInsertOrder->Volume > instrument->MaxLimitOrderVolume)
-			return ErrorInvalidOrderVolume;
-		if (instrument->MinLimitOrderVolume > 0 && reqInsertOrder->Volume < instrument->MinLimitOrderVolume)
-			return ErrorInvalidOrderVolume;
-	}
-	if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::AnyPrice)
-	{
-		if (instrument->MaxMarketOrderVolume > 0 && reqInsertOrder->Volume > instrument->MaxMarketOrderVolume)
-			return ErrorInvalidOrderVolume;
-		if (instrument->MinMarketOrderVolume > 0 && reqInsertOrder->Volume < instrument->MinMarketOrderVolume)
-			return ErrorInvalidOrderVolume;
-	}
-	return ErrorNone;
-}
-void SimExchange::CheckMatchForOrderQueue(mdb::Order* order)
-{
-	if (order->Direction == DirectionType::Buy)
-	{
-		auto& queueOrders = m_SellOrders[order->InstrumentID];
-		for (auto queueOrder : queueOrders)
-		{
-			if (!CheckMatchForTwoOrder(order, queueOrder))
-			{
-				break;
-			}
-		}
-	}
-	else
-	{
-		auto& queueOrders = m_BuyOrders[order->InstrumentID];
-		for (auto queueOrder : queueOrders)
-		{
-			if (!CheckMatchForTwoOrder(order, queueOrder))
-			{
-				break;
-			}
-		}
-	}
-}
-bool SimExchange::CheckMatchForTwoOrder(mdb::Order* order, mdb::Order* queueOrder)
-{
-	if (order->VolumeTotal <= 0)
-		return false;
-	if (queueOrder->VolumeTotal <= 0)
-		return true;
-	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
-	{
-		if (order->Direction == DirectionType::Buy && order->Price < queueOrder->Price)
-			return false;
-		if (order->Direction == DirectionType::Sell && order->Price > queueOrder->Price)
-			return false;
-	}
-
-	VolumeType matchVolume = 0;
-	PriceType matchPrice = 0.0;
-	matchVolume = min(order->VolumeTotal, queueOrder->VolumeTotal);
-	matchPrice = queueOrder->Price;
-
-	TradeIDType tradeID;
-	GetNextTradeID(tradeID);
-	Match(queueOrder, matchPrice, matchVolume, tradeID, order->OrderTime);
-	Match(order, matchPrice, matchVolume, tradeID, order->OrderTime);
-	return true;
-}
-void SimExchange::Match(mdb::Order* order, const PriceType& price, VolumeType volume, const TradeIDType& tradeID, const TimeType& tradeTime)
-{
-	order->VolumeTraded += volume;
-	order->VolumeTotal -= volume;
-	order->OrderStatus = order->VolumeTotal > 0 ? OrderStatusType::PartTraded : OrderStatusType::AllTraded;
-	SendRtnOrder(order);
-
-	auto trade = Trade::Allocate();
-	memset(trade, 0, sizeof(Trade));
-	strcpy(trade->TradingDay, m_TradingDay);
-	strcpy(trade->AccountID, order->AccountID);
-	trade->AccountType = AccountTypeType::Primary;
-	strcpy(trade->ExchangeID, order->ExchangeID);
-	strcpy(trade->InstrumentID, order->InstrumentID);
-	trade->ProductClass = order->ProductClass;
-	trade->OrderID = order->OrderID;
-	strcpy(trade->OrderSysID, order->OrderSysID);
-	strcpy(trade->TradeID, tradeID);
-	trade->Direction = order->Direction;
-	trade->OffsetFlag = order->OffsetFlag;
-	trade->Price = price;
-	trade->Volume = volume;
-	trade->VolumeMultiple = order->VolumeMultiple;
-	trade->TradeAmount = price * volume * order->VolumeMultiple;;
-	trade->Commission = 0;
-	strcpy(trade->TradeDate, order->OrderDate);
-	strcpy(trade->TradeTime, tradeTime);
-	m_Mdb->t_Trade->Insert(trade);
-
-	SendRtnTrade(trade);
 }
 
 void SimExchange::SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, mdb::PrimaryAccount* primaryAccount, int errorID)

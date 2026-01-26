@@ -313,6 +313,128 @@ namespace mdb
 	{
 		return AccountEqualForAccountPrimaryKey()(oldRecord, newRecord);
 	}
+	CapitalPrimaryKey::CapitalPrimaryKey(CapitalTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	Capital* CapitalPrimaryKey::Select(const DateType& TradingDay, const AccountIDType& AccountID)
+	{
+		Strcpy(t_CompareCapital.TradingDay, TradingDay);
+		Strcpy(t_CompareCapital.AccountID, AccountID);
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareCapital);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<CapitalPrimaryKey::iterator, CapitalPrimaryKey::iterator> CapitalPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool CapitalPrimaryKey::Insert(Capital* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void CapitalPrimaryKey::Erase(Capital* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool CapitalPrimaryKey::CheckInsert(Capital* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool CapitalPrimaryKey::CheckUpdate(const Capital* const oldRecord, const Capital* const newRecord)
+	{
+		return CapitalEqualForCapitalPrimaryKey()(oldRecord, newRecord);
+	}
+	PositionPrimaryKey::PositionPrimaryKey(PositionTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	Position* PositionPrimaryKey::Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
+	{
+		Strcpy(t_ComparePosition.TradingDay, TradingDay);
+		Strcpy(t_ComparePosition.AccountID, AccountID);
+		Strcpy(t_ComparePosition.ExchangeID, ExchangeID);
+		Strcpy(t_ComparePosition.InstrumentID, InstrumentID);
+		t_ComparePosition.PosiDirection = PosiDirection;
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_ComparePosition);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<PositionPrimaryKey::iterator, PositionPrimaryKey::iterator> PositionPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool PositionPrimaryKey::Insert(Position* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void PositionPrimaryKey::Erase(Position* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool PositionPrimaryKey::CheckInsert(Position* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool PositionPrimaryKey::CheckUpdate(const Position* const oldRecord, const Position* const newRecord)
+	{
+		return PositionEqualForPositionPrimaryKey()(oldRecord, newRecord);
+	}
+	PositionDetailPrimaryKey::PositionDetailPrimaryKey(PositionDetailTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	PositionDetail* PositionDetailPrimaryKey::Select(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIDType& TradeID)
+	{
+		Strcpy(t_ComparePositionDetail.TradingDay, TradingDay);
+		Strcpy(t_ComparePositionDetail.AccountID, AccountID);
+		Strcpy(t_ComparePositionDetail.ExchangeID, ExchangeID);
+		Strcpy(t_ComparePositionDetail.InstrumentID, InstrumentID);
+		t_ComparePositionDetail.PosiDirection = PosiDirection;
+		Strcpy(t_ComparePositionDetail.OpenDate, OpenDate);
+		Strcpy(t_ComparePositionDetail.TradeID, TradeID);
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_ComparePositionDetail);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<PositionDetailPrimaryKey::iterator, PositionDetailPrimaryKey::iterator> PositionDetailPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool PositionDetailPrimaryKey::Insert(PositionDetail* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void PositionDetailPrimaryKey::Erase(PositionDetail* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool PositionDetailPrimaryKey::CheckInsert(PositionDetail* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool PositionDetailPrimaryKey::CheckUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord)
+	{
+		return PositionDetailEqualForPositionDetailPrimaryKey()(oldRecord, newRecord);
+	}
 	OrderPrimaryKey::OrderPrimaryKey(OrderTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{

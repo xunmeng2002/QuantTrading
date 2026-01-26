@@ -192,6 +192,22 @@ namespace mdb
 	{
 		return std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<string>()(record->StartTradingDay);
 	}
+	bool PrimaryAccountEqualForPrimaryAccountPrimaryKey::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
+	{
+		return strcmp(left->PrimaryAccountID, right->PrimaryAccountID) == 0;
+	}
+	bool PrimaryAccountLessForPrimaryAccountPrimaryKey::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
+	{
+		if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) < 0)
+			return true;
+		else if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) > 0)
+			return false;
+		return false;
+	}
+	size_t PrimaryAccountHashForPrimaryAccountPrimaryKey::operator()(const PrimaryAccount* const record) const
+	{
+		return std::hash<string>()(record->PrimaryAccountID);
+	}
 	bool AccountEqualForAccountPrimaryKey::operator()(const Account* const left, const Account* const right) const
 	{
 		return strcmp(left->AccountID, right->AccountID) == 0;

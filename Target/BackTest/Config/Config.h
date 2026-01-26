@@ -14,6 +14,7 @@ public:
 	void Print();
 	
 public:
+	string MatchMode;
 	string MdDataPath;
 	string DumpPath;
 	string SessionFile;

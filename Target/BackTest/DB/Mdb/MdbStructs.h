@@ -349,6 +349,35 @@ namespace mdb
 		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 	};
+	class PrimaryAccount
+	{
+	public:
+		static constexpr unsigned int TableID = 0x3001;
+		//主账户代码
+		AccountIDType PrimaryAccountID;
+		//主账户名称
+		AccountNameType PrimaryAccountName;
+		//账户类别
+		AccountClassType AccountClass;
+		//密码
+		PasswordType Password;
+		//报盘代码
+		OfferIDType OfferID;
+		//是否允许登陆
+		BoolType IsAllowLogin;
+		//是否模拟账号
+		BoolType IsSimulateAccount;
+		//登录状态
+		LoginStatusType LoginStatus;
+		//初始化状态
+		InitStatusType InitStatus;
+		
+		static PrimaryAccount* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
 	class Account
 	{
 	public:
@@ -682,6 +711,7 @@ namespace mdb
 	extern thread_local DepthMarketData t_CompareDepthMarketData;
 	extern thread_local BarMarketData t_CompareBarMarketData;
 	extern thread_local MdSubscribe t_CompareMdSubscribe;
+	extern thread_local PrimaryAccount t_ComparePrimaryAccount;
 	extern thread_local Account t_CompareAccount;
 	extern thread_local Capital t_CompareCapital;
 	extern thread_local Position t_ComparePosition;

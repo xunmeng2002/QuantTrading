@@ -345,6 +345,179 @@ namespace mdb
 		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 	};
+	class Capital
+	{
+	public:
+		static constexpr unsigned int TableID = 0x3003;
+		//交易日
+		DateType TradingDay;
+		//账户代码
+		AccountIDType AccountID;
+		//账户类型
+		AccountTypeType AccountType;
+		//权益
+		MoneyType Balance;
+		//上日权益
+		MoneyType PreBalance;
+		//可用资金
+		MoneyType Available;
+		//市值
+		MoneyType MarketValue;
+		//现金收入
+		MoneyType CashIn;
+		//现金支出
+		MoneyType CashOut;
+		//保证金
+		MoneyType Margin;
+		//手续费
+		MoneyType Commission;
+		//冻结资金
+		MoneyType FrozenCash;
+		//冻结保证金
+		MoneyType FrozenMargin;
+		//冻结手续费
+		MoneyType FrozenCommission;
+		//逐日平仓盈亏
+		MoneyType CloseProfitByDate;
+		//逐笔平仓盈亏
+		MoneyType CloseProfitByTrade;
+		//逐日持仓盈亏
+		MoneyType PositionProfitByDate;
+		//逐笔持仓盈亏
+		MoneyType PositionProfitByTrade;
+		//入金
+		MoneyType Deposit;
+		//出金
+		MoneyType Withdraw;
+		
+		static Capital* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
+	class Position
+	{
+	public:
+		static constexpr unsigned int TableID = 0x3004;
+		//交易日
+		DateType TradingDay;
+		//账户代码
+		AccountIDType AccountID;
+		//账户类型
+		AccountTypeType AccountType;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//合约代码
+		InstrumentIDType InstrumentID;
+		//品种类型
+		ProductClassType ProductClass;
+		//持仓方向
+		PosiDirectionType PosiDirection;
+		//持仓数量
+		VolumeType TotalPosition;
+		//冻结持仓
+		VolumeType PositionFrozen;
+		//今日持仓
+		VolumeType TodayPosition;
+		//市值
+		MoneyType MarketValue;
+		//现金收入
+		MoneyType CashIn;
+		//现金支出
+		MoneyType CashOut;
+		//保证金
+		MoneyType Margin;
+		//手续费
+		MoneyType Commission;
+		//冻结资金
+		MoneyType FrozenCash;
+		//冻结保证金
+		MoneyType FrozenMargin;
+		//冻结手续费
+		MoneyType FrozenCommission;
+		//合约乘数
+		VolumeMultipleType VolumeMultiple;
+		//逐日平仓盈亏
+		MoneyType CloseProfitByDate;
+		//逐笔平仓盈亏
+		MoneyType CloseProfitByTrade;
+		//逐日持仓盈亏
+		MoneyType PositionProfitByDate;
+		//逐笔持仓盈亏
+		MoneyType PositionProfitByTrade;
+		//结算价
+		PriceType SettlementPrice;
+		//昨结算价
+		PriceType PreSettlementPrice;
+		
+		static Position* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
+	class PositionDetail
+	{
+	public:
+		static constexpr unsigned int TableID = 0x3005;
+		//交易日
+		DateType TradingDay;
+		//账户代码
+		AccountIDType AccountID;
+		//账户类型
+		AccountTypeType AccountType;
+		//交易所代码
+		ExchangeIDType ExchangeID;
+		//合约代码
+		InstrumentIDType InstrumentID;
+		//品种类型
+		ProductClassType ProductClass;
+		//持仓方向
+		PosiDirectionType PosiDirection;
+		//开仓日期
+		DateType OpenDate;
+		//成交编号
+		TradeIDType TradeID;
+		//委托数量
+		VolumeType Volume;
+		//开盘价
+		PriceType OpenPrice;
+		//市值
+		MoneyType MarketValue;
+		//现金收入
+		MoneyType CashIn;
+		//现金支出
+		MoneyType CashOut;
+		//保证金
+		MoneyType Margin;
+		//手续费
+		MoneyType Commission;
+		//合约乘数
+		VolumeMultipleType VolumeMultiple;
+		//逐日平仓盈亏
+		MoneyType CloseProfitByDate;
+		//逐笔平仓盈亏
+		MoneyType CloseProfitByTrade;
+		//逐日持仓盈亏
+		MoneyType PositionProfitByDate;
+		//逐笔持仓盈亏
+		MoneyType PositionProfitByTrade;
+		//结算价
+		PriceType SettlementPrice;
+		//昨结算价
+		PriceType PreSettlementPrice;
+		//平仓数量
+		VolumeType CloseVolume;
+		//平仓金额
+		MoneyType CloseAmount;
+		
+		static PositionDetail* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
 	class Order
 	{
 	public:
@@ -495,6 +668,9 @@ namespace mdb
 	extern thread_local BarMarketData t_CompareBarMarketData;
 	extern thread_local PrimaryAccount t_ComparePrimaryAccount;
 	extern thread_local Account t_CompareAccount;
+	extern thread_local Capital t_CompareCapital;
+	extern thread_local Position t_ComparePosition;
+	extern thread_local PositionDetail t_ComparePositionDetail;
 	extern thread_local Order t_CompareOrder;
 	extern thread_local Trade t_CompareTrade;
 	extern thread_local AccountLoginSession t_CompareAccountLoginSession;

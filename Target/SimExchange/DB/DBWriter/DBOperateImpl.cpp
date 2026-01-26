@@ -65,6 +65,21 @@ void DBOperateImpl::FreeRecord()
 		((Account*)Record)->Free();
 		break;
 	}
+	case Capital::TableID:
+	{
+		((Capital*)Record)->Free();
+		break;
+	}
+	case Position::TableID:
+	{
+		((Position*)Record)->Free();
+		break;
+	}
+	case PositionDetail::TableID:
+	{
+		((PositionDetail*)Record)->Free();
+		break;
+	}
 	case Order::TableID:
 	{
 		((Order*)Record)->Free();
@@ -120,6 +135,18 @@ const char* DBOperateImpl::GetDebugString() const
 	case Account::TableID:
 	{
 		return ((Account*)Record)->GetDebugString();
+	}
+	case Capital::TableID:
+	{
+		return ((Capital*)Record)->GetDebugString();
+	}
+	case Position::TableID:
+	{
+		return ((Position*)Record)->GetDebugString();
+	}
+	case PositionDetail::TableID:
+	{
+		return ((PositionDetail*)Record)->GetDebugString();
 	}
 	case Order::TableID:
 	{

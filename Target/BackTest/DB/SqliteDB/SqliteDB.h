@@ -93,6 +93,16 @@ public:
 	virtual void SelectMdSubscribe(std::list<mdb::MdSubscribe*>& records) override;
 	virtual void TruncateMdSubscribe() override;
 	
+	virtual void CreatePrimaryAccount() override;
+	virtual void DropPrimaryAccount() override;
+	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void BatchInsertPrimaryAccount(std::list<mdb::PrimaryAccount*>* records) override;
+	virtual void DeletePrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void DeletePrimaryAccountByOfferIDIndex(mdb::PrimaryAccount* record) override;
+	virtual void UpdatePrimaryAccount(mdb::PrimaryAccount* record) override;
+	virtual void SelectPrimaryAccount(std::list<mdb::PrimaryAccount*>& records) override;
+	virtual void TruncatePrimaryAccount() override;
+	
 	virtual void CreateAccount() override;
 	virtual void DropAccount() override;
 	virtual void InsertAccount(mdb::Account* record) override;
@@ -190,6 +200,11 @@ private:
 	void SetStatementForMdSubscribeRecordUpdate(sqlite3_stmt* statement, mdb::MdSubscribe* record);
 	void SetStatementForMdSubscribePrimaryKey(sqlite3_stmt* statement, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const DateType& StartTradingDay);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::MdSubscribe*>& records);
+	void SetStatementForPrimaryAccountRecord(sqlite3_stmt* statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountRecordUpdate(sqlite3_stmt* statement, mdb::PrimaryAccount* record);
+	void SetStatementForPrimaryAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& PrimaryAccountID);
+	void SetStatementForPrimaryAccountIndexOfferID(sqlite3_stmt* statement, mdb::PrimaryAccount* record);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::PrimaryAccount*>& records);
 	void SetStatementForAccountRecord(sqlite3_stmt* statement, mdb::Account* record);
 	void SetStatementForAccountRecordUpdate(sqlite3_stmt* statement, mdb::Account* record);
 	void SetStatementForAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& AccountID);
@@ -270,6 +285,12 @@ private:
 	sqlite3_stmt* m_MdSubscribeUpdateStatement;
 	sqlite3_stmt* m_MdSubscribeSelectStatement;
 	sqlite3_stmt* m_MdSubscribeTruncateStatement;
+	sqlite3_stmt* m_PrimaryAccountInsertStatement;
+	sqlite3_stmt* m_PrimaryAccountDeleteStatement;
+	sqlite3_stmt* m_PrimaryAccountDeleteByOfferIDIndexStatement;
+	sqlite3_stmt* m_PrimaryAccountUpdateStatement;
+	sqlite3_stmt* m_PrimaryAccountSelectStatement;
+	sqlite3_stmt* m_PrimaryAccountTruncateStatement;
 	sqlite3_stmt* m_AccountInsertStatement;
 	sqlite3_stmt* m_AccountDeleteStatement;
 	sqlite3_stmt* m_AccountUpdateStatement;

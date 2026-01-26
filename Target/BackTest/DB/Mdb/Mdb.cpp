@@ -13,6 +13,7 @@ namespace mdb
 		t_DepthMarketData = new DepthMarketDataTable(this);
 		t_BarMarketData = new BarMarketDataTable(this);
 		t_MdSubscribe = new MdSubscribeTable(this);
+		t_PrimaryAccount = new PrimaryAccountTable(this);
 		t_Account = new AccountTable(this);
 		t_Capital = new CapitalTable(this);
 		t_Position = new PositionTable(this);
@@ -31,6 +32,7 @@ namespace mdb
 		t_DepthMarketData->Subscribe(mdbSubscriber);
 		t_BarMarketData->Subscribe(mdbSubscriber);
 		t_MdSubscribe->Subscribe(mdbSubscriber);
+		t_PrimaryAccount->Subscribe(mdbSubscriber);
 		t_Account->Subscribe(mdbSubscriber);
 		t_Capital->Subscribe(mdbSubscriber);
 		t_Position->Subscribe(mdbSubscriber);
@@ -48,6 +50,7 @@ namespace mdb
 		t_DepthMarketData->UnSubscribe();
 		t_BarMarketData->UnSubscribe();
 		t_MdSubscribe->UnSubscribe();
+		t_PrimaryAccount->UnSubscribe();
 		t_Account->UnSubscribe();
 		t_Capital->UnSubscribe();
 		t_Position->UnSubscribe();
@@ -66,6 +69,7 @@ namespace mdb
 		t_DepthMarketData->InitDB();
 		t_BarMarketData->InitDB();
 		t_MdSubscribe->InitDB();
+		t_PrimaryAccount->InitDB();
 		t_Account->InitDB();
 		t_Capital->InitDB();
 		t_Position->InitDB();
@@ -83,6 +87,7 @@ namespace mdb
 		t_DepthMarketData->m_DBInited = initStatus;
 		t_BarMarketData->m_DBInited = initStatus;
 		t_MdSubscribe->m_DBInited = initStatus;
+		t_PrimaryAccount->m_DBInited = initStatus;
 		t_Account->m_DBInited = initStatus;
 		t_Capital->m_DBInited = initStatus;
 		t_Position->m_DBInited = initStatus;
@@ -100,6 +105,7 @@ namespace mdb
 		t_DepthMarketData->Dump(dir);
 		t_BarMarketData->Dump(dir);
 		t_MdSubscribe->Dump(dir);
+		t_PrimaryAccount->Dump(dir);
 		t_Account->Dump(dir);
 		t_Capital->Dump(dir);
 		t_Position->Dump(dir);
@@ -135,6 +141,7 @@ namespace mdb
 		t_DepthMarketData->TruncateTables();
 		t_BarMarketData->TruncateTables();
 		t_MdSubscribe->TruncateTables();
+		t_PrimaryAccount->TruncateTables();
 		t_Account->TruncateTables();
 		t_Capital->TruncateTables();
 		t_Position->TruncateTables();
@@ -157,6 +164,7 @@ namespace mdb
 		t_DepthMarketData->m_DBInited = false;
 		t_BarMarketData->m_DBInited = false;
 		t_MdSubscribe->m_DBInited = false;
+		t_PrimaryAccount->m_DBInited = false;
 		t_Account->m_DBInited = false;
 		t_Capital->m_DBInited = false;
 		t_Position->m_DBInited = false;

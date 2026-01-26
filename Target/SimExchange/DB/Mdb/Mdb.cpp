@@ -13,6 +13,9 @@ namespace mdb
 		t_BarMarketData = new BarMarketDataTable(this);
 		t_PrimaryAccount = new PrimaryAccountTable(this);
 		t_Account = new AccountTable(this);
+		t_Capital = new CapitalTable(this);
+		t_Position = new PositionTable(this);
+		t_PositionDetail = new PositionDetailTable(this);
 		t_Order = new OrderTable(this);
 		t_Trade = new TradeTable(this);
 		t_AccountLoginSession = new AccountLoginSessionTable(this);
@@ -28,6 +31,9 @@ namespace mdb
 		t_BarMarketData->Subscribe(mdbSubscriber);
 		t_PrimaryAccount->Subscribe(mdbSubscriber);
 		t_Account->Subscribe(mdbSubscriber);
+		t_Capital->Subscribe(mdbSubscriber);
+		t_Position->Subscribe(mdbSubscriber);
+		t_PositionDetail->Subscribe(mdbSubscriber);
 		t_Order->Subscribe(mdbSubscriber);
 		t_Trade->Subscribe(mdbSubscriber);
 		t_AccountLoginSession->Subscribe(mdbSubscriber);
@@ -42,6 +48,9 @@ namespace mdb
 		t_BarMarketData->UnSubscribe();
 		t_PrimaryAccount->UnSubscribe();
 		t_Account->UnSubscribe();
+		t_Capital->UnSubscribe();
+		t_Position->UnSubscribe();
+		t_PositionDetail->UnSubscribe();
 		t_Order->UnSubscribe();
 		t_Trade->UnSubscribe();
 		t_AccountLoginSession->UnSubscribe();
@@ -57,6 +66,9 @@ namespace mdb
 		t_BarMarketData->InitDB();
 		t_PrimaryAccount->InitDB();
 		t_Account->InitDB();
+		t_Capital->InitDB();
+		t_Position->InitDB();
+		t_PositionDetail->InitDB();
 		t_Order->InitDB();
 		t_Trade->InitDB();
 		t_AccountLoginSession->InitDB();
@@ -71,6 +83,9 @@ namespace mdb
 		t_BarMarketData->m_DBInited = initStatus;
 		t_PrimaryAccount->m_DBInited = initStatus;
 		t_Account->m_DBInited = initStatus;
+		t_Capital->m_DBInited = initStatus;
+		t_Position->m_DBInited = initStatus;
+		t_PositionDetail->m_DBInited = initStatus;
 		t_Order->m_DBInited = initStatus;
 		t_Trade->m_DBInited = initStatus;
 		t_AccountLoginSession->m_DBInited = initStatus;
@@ -85,6 +100,9 @@ namespace mdb
 		t_BarMarketData->Dump(dir);
 		t_PrimaryAccount->Dump(dir);
 		t_Account->Dump(dir);
+		t_Capital->Dump(dir);
+		t_Position->Dump(dir);
+		t_PositionDetail->Dump(dir);
 		t_Order->Dump(dir);
 		t_Trade->Dump(dir);
 		t_AccountLoginSession->Dump(dir);
@@ -117,6 +135,9 @@ namespace mdb
 		t_BarMarketData->TruncateTables();
 		t_PrimaryAccount->TruncateTables();
 		t_Account->TruncateTables();
+		t_Capital->TruncateTables();
+		t_Position->TruncateTables();
+		t_PositionDetail->TruncateTables();
 		t_Order->TruncateTables();
 		t_Trade->TruncateTables();
 		t_AccountLoginSession->TruncateTables();
@@ -136,6 +157,9 @@ namespace mdb
 		t_BarMarketData->m_DBInited = false;
 		t_PrimaryAccount->m_DBInited = false;
 		t_Account->m_DBInited = false;
+		t_Capital->m_DBInited = false;
+		t_Position->m_DBInited = false;
+		t_PositionDetail->m_DBInited = false;
 		t_Order->m_DBInited = false;
 		t_Trade->m_DBInited = false;
 		t_AccountLoginSession->m_DBInited = false;

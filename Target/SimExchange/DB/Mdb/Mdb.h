@@ -31,6 +31,9 @@ namespace mdb
 		BarMarketDataTable* t_BarMarketData;
 		PrimaryAccountTable* t_PrimaryAccount;
 		AccountTable* t_Account;
+		CapitalTable* t_Capital;
+		PositionTable* t_Position;
+		PositionDetailTable* t_PositionDetail;
 		OrderTable* t_Order;
 		TradeTable* t_Trade;
 		AccountLoginSessionTable* t_AccountLoginSession;

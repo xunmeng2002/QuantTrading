@@ -470,6 +470,194 @@ void DBWriter::OnAccountTruncate()
 	AddDBOperate(dbOperate);
 }
 
+void DBWriter::OnCapitalInsert(mdb::Capital* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = Capital::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnCapitalBatchInsert(std::list<mdb::Capital*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Capital::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnCapitalErase(mdb::Capital* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = Capital::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnCapitalEraseByTradingDayIndex(mdb::Capital* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Capital::TableID;
+	dbOperate->IndexID = CapitalIndexTradingDay::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnCapitalUpdate(mdb::Capital* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = Capital::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnCapitalTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = Capital::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
+void DBWriter::OnPositionInsert(mdb::Position* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionBatchInsert(std::list<mdb::Position*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionErase(mdb::Position* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionEraseByAccountIndex(mdb::Position* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->IndexID = PositionIndexAccount::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionEraseByTradingDayIndex(mdb::Position* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->IndexID = PositionIndexTradingDay::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionUpdate(mdb::Position* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = Position::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
+void DBWriter::OnPositionDetailInsert(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionDetailBatchInsert(std::list<mdb::PositionDetail*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionDetailErase(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionDetailEraseByTradeMatchIndex(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->IndexID = PositionDetailIndexTradeMatch::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionDetailEraseByTradingDayIndex(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::DeleteByIndex;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->IndexID = PositionDetailIndexTradingDay::IndexID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionDetailUpdate(mdb::PositionDetail* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnPositionDetailTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = PositionDetail::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
 void DBWriter::OnOrderInsert(mdb::Order* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -791,6 +979,15 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 	case Account::TableID:
 		m_DB->InsertAccount((Account*)dbOperate->Record);
 		break;
+	case Capital::TableID:
+		m_DB->InsertCapital((Capital*)dbOperate->Record);
+		break;
+	case Position::TableID:
+		m_DB->InsertPosition((Position*)dbOperate->Record);
+		break;
+	case PositionDetail::TableID:
+		m_DB->InsertPositionDetail((PositionDetail*)dbOperate->Record);
+		break;
 	case Order::TableID:
 		m_DB->InsertOrder((Order*)dbOperate->Record);
 		break;
@@ -872,6 +1069,30 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 		delete records;
 		break;
 	}
+	case Capital::TableID:
+	{
+		auto records = (std::list<Capital*>*)dbOperate->Record;
+		m_DB->BatchInsertCapital(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case Position::TableID:
+	{
+		auto records = (std::list<Position*>*)dbOperate->Record;
+		m_DB->BatchInsertPosition(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case PositionDetail::TableID:
+	{
+		auto records = (std::list<PositionDetail*>*)dbOperate->Record;
+		m_DB->BatchInsertPositionDetail(records);
+		records->clear();
+		delete records;
+		break;
+	}
 	case Order::TableID:
 	{
 		auto records = (std::list<Order*>*)dbOperate->Record;
@@ -937,6 +1158,18 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 		m_DB->DeleteAccount((Account*)dbOperate->Record);
 		((Account*)dbOperate->Record)->Free();
 		break;
+	case Capital::TableID:
+		m_DB->DeleteCapital((Capital*)dbOperate->Record);
+		((Capital*)dbOperate->Record)->Free();
+		break;
+	case Position::TableID:
+		m_DB->DeletePosition((Position*)dbOperate->Record);
+		((Position*)dbOperate->Record)->Free();
+		break;
+	case PositionDetail::TableID:
+		m_DB->DeletePositionDetail((PositionDetail*)dbOperate->Record);
+		((PositionDetail*)dbOperate->Record)->Free();
+		break;
 	case Order::TableID:
 		m_DB->DeleteOrder((Order*)dbOperate->Record);
 		((Order*)dbOperate->Record)->Free();
@@ -987,6 +1220,64 @@ void DBWriter::DeleteRecordByIndex(DBOperate* dbOperate)
 			break;
 		}
 		((PrimaryAccount*)dbOperate->Record)->Free();
+		break;
+	}
+	case Capital::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case CapitalIndexTradingDay::IndexID:
+		{
+			m_DB->DeleteCapitalByTradingDayIndex((Capital*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((Capital*)dbOperate->Record)->Free();
+		break;
+	}
+	case Position::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case PositionIndexAccount::IndexID:
+		{
+			m_DB->DeletePositionByAccountIndex((Position*)dbOperate->Record);
+			break;
+		}
+		case PositionIndexTradingDay::IndexID:
+		{
+			m_DB->DeletePositionByTradingDayIndex((Position*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((Position*)dbOperate->Record)->Free();
+		break;
+	}
+	case PositionDetail::TableID:
+	{
+		switch (dbOperate->IndexID)
+		{
+		case PositionDetailIndexTradeMatch::IndexID:
+		{
+			m_DB->DeletePositionDetailByTradeMatchIndex((PositionDetail*)dbOperate->Record);
+			break;
+		}
+		case PositionDetailIndexTradingDay::IndexID:
+		{
+			m_DB->DeletePositionDetailByTradingDayIndex((PositionDetail*)dbOperate->Record);
+			break;
+		}
+		default:
+			WriteLog(LogLevel::Error, "Incorrect IndexID for DeleteRecordByIndex. TableID:0x%X, IndexID:%d", dbOperate->TableID, dbOperate->IndexID);
+			break;
+		}
+		((PositionDetail*)dbOperate->Record)->Free();
 		break;
 	}
 	case Order::TableID:
@@ -1078,6 +1369,18 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		m_DB->UpdateAccount((Account*)dbOperate->Record);
 		((Account*)dbOperate->Record)->Free();
 		break;
+	case Capital::TableID:
+		m_DB->UpdateCapital((Capital*)dbOperate->Record);
+		((Capital*)dbOperate->Record)->Free();
+		break;
+	case Position::TableID:
+		m_DB->UpdatePosition((Position*)dbOperate->Record);
+		((Position*)dbOperate->Record)->Free();
+		break;
+	case PositionDetail::TableID:
+		m_DB->UpdatePositionDetail((PositionDetail*)dbOperate->Record);
+		((PositionDetail*)dbOperate->Record)->Free();
+		break;
 	case Order::TableID:
 		m_DB->UpdateOrder((Order*)dbOperate->Record);
 		((Order*)dbOperate->Record)->Free();
@@ -1122,6 +1425,15 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 		break;
 	case Account::TableID:
 		m_DB->TruncateAccount();
+		break;
+	case Capital::TableID:
+		m_DB->TruncateCapital();
+		break;
+	case Position::TableID:
+		m_DB->TruncatePosition();
+		break;
+	case PositionDetail::TableID:
+		m_DB->TruncatePositionDetail();
 		break;
 	case Order::TableID:
 		m_DB->TruncateOrder();

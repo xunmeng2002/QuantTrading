@@ -3,9 +3,9 @@
 #include "Packages.h"
 #include "Config.h"
 #include "ThreadBase.h"
-#include "SimExchangeUtility.h"
 #include "MdFront.h"
 #include "TradeFront.h"
+#include "OrderMatch.h"
 #include <list>
 #include <map>
 #include <string>
@@ -13,10 +13,10 @@
 #include <condition_variable>
 
 
-class SimExchange : public ThreadBase, public ProtocolSubscriber
+class SimExchange : public ThreadBase, public ProtocolSubscriber, public OrderMatchSubscriber
 {
 public:
-	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront);
+	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, const std::string& matchMode);
 	~SimExchange();
 
 	void Init();
@@ -25,6 +25,9 @@ public:
 	virtual void OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port) override;
 	virtual void OnMessage(Package* package) override;
 
+
+	virtual void OnOrder(mdb::Order* order) override;
+	virtual void OnTrade(mdb::Trade* trade) override;
 protected:
 	virtual void Run() override;
 	void CheckPackages();
@@ -43,11 +46,7 @@ private:
 
 
 	bool CheckSessionLogin(const SessionIDType& sessionID);
-	int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument);
-	void CheckMatchForOrderQueue(mdb::Order* order);
-	bool CheckMatchForTwoOrder(mdb::Order* order, mdb::Order* queueOrder);
-	void Match(mdb::Order* order, const PriceType& price, VolumeType volume, const TradeIDType& tradeID, const TimeType& tradeTime);
-
+	
 	void SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, mdb::PrimaryAccount* primaryAccount, int errorID);
 	void SendRspInsertOrder(ReqInsertOrderPackage* reqPackage, int errorID);
 	void SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorID);
@@ -68,10 +67,13 @@ protected:
 	MdFront* m_MdFront;
 	TradeFront* m_TradeFront;
 	mdb::Mdb* m_Mdb;
+	OrderMatch* m_OrderMatch;
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
 
 	DateType m_TradingDay;
+	DateType m_CurrDate;
+	TimeType m_CurrTime;
 	int m_MaxOrderID;
 	int m_MaxTradeID;
 

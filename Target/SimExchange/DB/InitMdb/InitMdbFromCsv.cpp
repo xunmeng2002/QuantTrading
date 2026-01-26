@@ -23,6 +23,9 @@ namespace mdb
 		LoadBarMarketDataTable(mdb, dir);
 		LoadPrimaryAccountTable(mdb, dir);
 		LoadAccountTable(mdb, dir);
+		LoadCapitalTable(mdb, dir);
+		LoadPositionTable(mdb, dir);
+		LoadPositionDetailTable(mdb, dir);
 		LoadOrderTable(mdb, dir);
 		LoadTradeTable(mdb, dir);
 		LoadAccountLoginSessionTable(mdb, dir);
@@ -408,6 +411,172 @@ namespace mdb
 			record->RiskGroupID = csv_record.GetFieldAsInt("RiskGroupID");
 			record->CommissionGroupID = csv_record.GetFieldAsInt("CommissionGroupID");
 			mdb->t_Account->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadCapitalTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_Capital.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_Capital.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_Capital.csv failed");
+			}
+
+			auto record = new Capital();
+			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
+			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
+			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
+			record->Balance = csv_record.GetFieldAsDouble("Balance");
+			record->PreBalance = csv_record.GetFieldAsDouble("PreBalance");
+			record->Available = csv_record.GetFieldAsDouble("Available");
+			record->MarketValue = csv_record.GetFieldAsDouble("MarketValue");
+			record->CashIn = csv_record.GetFieldAsDouble("CashIn");
+			record->CashOut = csv_record.GetFieldAsDouble("CashOut");
+			record->Margin = csv_record.GetFieldAsDouble("Margin");
+			record->Commission = csv_record.GetFieldAsDouble("Commission");
+			record->FrozenCash = csv_record.GetFieldAsDouble("FrozenCash");
+			record->FrozenMargin = csv_record.GetFieldAsDouble("FrozenMargin");
+			record->FrozenCommission = csv_record.GetFieldAsDouble("FrozenCommission");
+			record->CloseProfitByDate = csv_record.GetFieldAsDouble("CloseProfitByDate");
+			record->CloseProfitByTrade = csv_record.GetFieldAsDouble("CloseProfitByTrade");
+			record->PositionProfitByDate = csv_record.GetFieldAsDouble("PositionProfitByDate");
+			record->PositionProfitByTrade = csv_record.GetFieldAsDouble("PositionProfitByTrade");
+			record->Deposit = csv_record.GetFieldAsDouble("Deposit");
+			record->Withdraw = csv_record.GetFieldAsDouble("Withdraw");
+			mdb->t_Capital->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadPositionTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_Position.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_Position.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_Position.csv failed");
+			}
+
+			auto record = new Position();
+			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
+			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
+			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
+			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
+			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			record->PosiDirection = (PosiDirectionType)csv_record.GetFieldAsInt("PosiDirection");
+			record->TotalPosition = csv_record.GetFieldAsInt64("TotalPosition");
+			record->PositionFrozen = csv_record.GetFieldAsInt64("PositionFrozen");
+			record->TodayPosition = csv_record.GetFieldAsInt64("TodayPosition");
+			record->MarketValue = csv_record.GetFieldAsDouble("MarketValue");
+			record->CashIn = csv_record.GetFieldAsDouble("CashIn");
+			record->CashOut = csv_record.GetFieldAsDouble("CashOut");
+			record->Margin = csv_record.GetFieldAsDouble("Margin");
+			record->Commission = csv_record.GetFieldAsDouble("Commission");
+			record->FrozenCash = csv_record.GetFieldAsDouble("FrozenCash");
+			record->FrozenMargin = csv_record.GetFieldAsDouble("FrozenMargin");
+			record->FrozenCommission = csv_record.GetFieldAsDouble("FrozenCommission");
+			record->VolumeMultiple = csv_record.GetFieldAsInt("VolumeMultiple");
+			record->CloseProfitByDate = csv_record.GetFieldAsDouble("CloseProfitByDate");
+			record->CloseProfitByTrade = csv_record.GetFieldAsDouble("CloseProfitByTrade");
+			record->PositionProfitByDate = csv_record.GetFieldAsDouble("PositionProfitByDate");
+			record->PositionProfitByTrade = csv_record.GetFieldAsDouble("PositionProfitByTrade");
+			record->SettlementPrice = csv_record.GetFieldAsDouble("SettlementPrice");
+			record->PreSettlementPrice = csv_record.GetFieldAsDouble("PreSettlementPrice");
+			mdb->t_Position->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadPositionDetailTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_PositionDetail.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_PositionDetail.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_PositionDetail.csv failed");
+			}
+
+			auto record = new PositionDetail();
+			Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
+			Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
+			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
+			Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
+			Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
+			record->ProductClass = (ProductClassType)csv_record.GetFieldAsInt("ProductClass");
+			record->PosiDirection = (PosiDirectionType)csv_record.GetFieldAsInt("PosiDirection");
+			Strcpy(record->OpenDate, csv_record.GetFieldAsString("OpenDate"));
+			Strcpy(record->TradeID, csv_record.GetFieldAsString("TradeID"));
+			record->Volume = csv_record.GetFieldAsInt64("Volume");
+			record->OpenPrice = csv_record.GetFieldAsDouble("OpenPrice");
+			record->MarketValue = csv_record.GetFieldAsDouble("MarketValue");
+			record->CashIn = csv_record.GetFieldAsDouble("CashIn");
+			record->CashOut = csv_record.GetFieldAsDouble("CashOut");
+			record->Margin = csv_record.GetFieldAsDouble("Margin");
+			record->Commission = csv_record.GetFieldAsDouble("Commission");
+			record->VolumeMultiple = csv_record.GetFieldAsInt("VolumeMultiple");
+			record->CloseProfitByDate = csv_record.GetFieldAsDouble("CloseProfitByDate");
+			record->CloseProfitByTrade = csv_record.GetFieldAsDouble("CloseProfitByTrade");
+			record->PositionProfitByDate = csv_record.GetFieldAsDouble("PositionProfitByDate");
+			record->PositionProfitByTrade = csv_record.GetFieldAsDouble("PositionProfitByTrade");
+			record->SettlementPrice = csv_record.GetFieldAsDouble("SettlementPrice");
+			record->PreSettlementPrice = csv_record.GetFieldAsDouble("PreSettlementPrice");
+			record->CloseVolume = csv_record.GetFieldAsInt64("CloseVolume");
+			record->CloseAmount = csv_record.GetFieldAsDouble("CloseAmount");
+			mdb->t_PositionDetail->Insert(record);
 		}
 		file.close();
 	}

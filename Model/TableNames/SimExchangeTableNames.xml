@@ -6,6 +6,9 @@
 	<table name="Instrument"/>
 	<table name="PrimaryAccount"/>
 	<table name="Account"/>
+	<table name="Capital"/>
+	<table name="Position"/>
+	<table name="PositionDetail"/>
 	<table name="Order"/>
 	<table name="Trade"/>
 	<table name="AccountLoginSession"/>

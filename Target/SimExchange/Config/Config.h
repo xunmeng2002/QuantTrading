@@ -16,6 +16,7 @@ public:
 public:
 	int LogLevel;
 	string ServerConfigPath;
+	string MatchMode;
 	string DbType;
 	string DbUser;
 	string DbPassword;

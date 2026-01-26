@@ -31,6 +31,7 @@ namespace mdb
 		DepthMarketDataTable* t_DepthMarketData;
 		BarMarketDataTable* t_BarMarketData;
 		MdSubscribeTable* t_MdSubscribe;
+		PrimaryAccountTable* t_PrimaryAccount;
 		AccountTable* t_Account;
 		CapitalTable* t_Capital;
 		PositionTable* t_Position;

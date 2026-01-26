@@ -88,6 +88,15 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_MdSubscribeSelectStatement = nullptr;
 	m_MdSubscribeTruncateStatement = nullptr;
 
+	m_PrimaryAccountCreateStatement = nullptr;
+	m_PrimaryAccountDropStatement = nullptr;
+	m_PrimaryAccountInsertStatement = nullptr;
+	m_PrimaryAccountDeleteStatement = nullptr;
+	m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	m_PrimaryAccountUpdateStatement = nullptr;
+	m_PrimaryAccountSelectStatement = nullptr;
+	m_PrimaryAccountTruncateStatement = nullptr;
+
 	m_AccountCreateStatement = nullptr;
 	m_AccountDropStatement = nullptr;
 	m_AccountInsertStatement = nullptr;
@@ -487,6 +496,46 @@ void MysqlDB::DisConnect()
 		m_MdSubscribeTruncateStatement->close();
 		m_MdSubscribeTruncateStatement = nullptr;
 	}
+	if (m_PrimaryAccountCreateStatement != nullptr)
+	{
+		m_PrimaryAccountCreateStatement->close();
+		m_PrimaryAccountCreateStatement = nullptr;
+	}
+	if (m_PrimaryAccountDropStatement != nullptr)
+	{
+		m_PrimaryAccountDropStatement->close();
+		m_PrimaryAccountDropStatement = nullptr;
+	}
+	if (m_PrimaryAccountInsertStatement != nullptr)
+	{
+		m_PrimaryAccountInsertStatement->close();
+		m_PrimaryAccountInsertStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteStatement != nullptr)
+	{
+		m_PrimaryAccountDeleteStatement->close();
+		m_PrimaryAccountDeleteStatement = nullptr;
+	}
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement != nullptr)
+	{
+		m_PrimaryAccountDeleteByOfferIDIndexStatement->close();
+		m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
+	}
+	if (m_PrimaryAccountUpdateStatement != nullptr)
+	{
+		m_PrimaryAccountUpdateStatement->close();
+		m_PrimaryAccountUpdateStatement = nullptr;
+	}
+	if (m_PrimaryAccountSelectStatement != nullptr)
+	{
+		m_PrimaryAccountSelectStatement->close();
+		m_PrimaryAccountSelectStatement = nullptr;
+	}
+	if (m_PrimaryAccountTruncateStatement != nullptr)
+	{
+		m_PrimaryAccountTruncateStatement->close();
+		m_PrimaryAccountTruncateStatement = nullptr;
+	}
 	if (m_AccountCreateStatement != nullptr)
 	{
 		m_AccountCreateStatement->close();
@@ -751,6 +800,8 @@ void MysqlDB::InitDB()
 	m_Statement->executeUpdate("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
 	m_Statement->executeUpdate("Truncate Table t_MdSubscribe;");
 	m_Statement->executeUpdate("Insert Into t_MdSubscribe select * from Init.t_MdSubscribe;");
+	m_Statement->executeUpdate("Truncate Table t_PrimaryAccount;");
+	m_Statement->executeUpdate("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
 	m_Statement->executeUpdate("Truncate Table t_Account;");
 	m_Statement->executeUpdate("Insert Into t_Account select * from Init.t_Account;");
 	m_Statement->executeUpdate("Truncate Table t_Capital;");
@@ -774,6 +825,7 @@ void MysqlDB::CreateTables()
 	CreateDepthMarketData();
 	CreateBarMarketData();
 	CreateMdSubscribe();
+	CreatePrimaryAccount();
 	CreateAccount();
 	CreateCapital();
 	CreatePosition();
@@ -791,6 +843,7 @@ void MysqlDB::DropTables()
 	DropDepthMarketData();
 	DropBarMarketData();
 	DropMdSubscribe();
+	DropPrimaryAccount();
 	DropAccount();
 	DropCapital();
 	DropPosition();
@@ -807,6 +860,7 @@ void MysqlDB::TruncateTables()
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
 	TruncateMdSubscribe();
+	TruncatePrimaryAccount();
 	TruncateAccount();
 	TruncateCapital();
 	TruncatePosition();
@@ -1923,6 +1977,155 @@ void MysqlDB::TruncateMdSubscribe()
 	}
 	m_MdSubscribeTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateMdSubscribe Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::CreatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountCreateStatement == nullptr)
+	{
+		m_PrimaryAccountCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_PrimaryAccount(`PrimaryAccountID` char(32), `PrimaryAccountName` char(64), `AccountClass` int, `Password` char(64), `OfferID` int, `IsAllowLogin` bool, `IsSimulateAccount` bool, `LoginStatus` int, `InitStatus` int, INDEX PrimaryAccountOfferID(OfferID), PRIMARY KEY(PrimaryAccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+	}
+	m_PrimaryAccountCreateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms", duration);
+}
+void MysqlDB::DropPrimaryAccount()
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDropStatement == nullptr)
+	{
+		m_PrimaryAccountDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_PrimaryAccount;");
+	}
+	m_PrimaryAccountDropStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms", duration);
+}
+void MysqlDB::InsertPrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountInsertStatement == nullptr)
+	{
+		m_PrimaryAccountInsertStatement = m_DBConnection->prepareStatement("insert into t_PrimaryAccount Values(?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	}
+	SetStatementForPrimaryAccountRecord(m_PrimaryAccountInsertStatement, record);
+	
+	m_PrimaryAccountInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertPrimaryAccount(std::list<PrimaryAccount*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_PrimaryAccount Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertPrimaryAccount RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeletePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteStatement == nullptr)
+	{
+		m_PrimaryAccountDeleteStatement = m_DBConnection->prepareStatement("delete from t_PrimaryAccount where PrimaryAccountID = ?;");
+	}
+	SetStatementForPrimaryAccountPrimaryKey(m_PrimaryAccountDeleteStatement, record->PrimaryAccountID);
+	m_PrimaryAccountDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void MysqlDB::DeletePrimaryAccountByOfferIDIndex(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountDeleteByOfferIDIndexStatement == nullptr)
+	{
+		m_PrimaryAccountDeleteByOfferIDIndexStatement = m_DBConnection->prepareStatement("delete from t_PrimaryAccount where OfferID = ?;");
+	}
+	SetStatementForPrimaryAccountIndexOfferID(m_PrimaryAccountDeleteByOfferIDIndexStatement, record);
+	m_PrimaryAccountDeleteByOfferIDIndexStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeletePrimaryAccountByOfferIDIndex Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdatePrimaryAccount(PrimaryAccount* record)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountUpdateStatement == nullptr)
+	{
+		m_PrimaryAccountUpdateStatement = m_DBConnection->prepareStatement("update t_PrimaryAccount set PrimaryAccountName = ?, AccountClass = ?, Password = ?, OfferID = ?, IsAllowLogin = ?, IsSimulateAccount = ?, LoginStatus = ?, InitStatus = ? where PrimaryAccountID = ?;");
+	}
+	SetStatementForPrimaryAccountRecordUpdate(m_PrimaryAccountUpdateStatement, record);
+	m_PrimaryAccountUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdatePrimaryAccount Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectPrimaryAccount(std::list<PrimaryAccount*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountSelectStatement == nullptr)
+	{
+		m_PrimaryAccountSelectStatement = m_DBConnection->prepareStatement("select * from t_PrimaryAccount;");
+	}
+	auto result = m_PrimaryAccountSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectPrimaryAccount Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncatePrimaryAccount()
+{
+	auto start = steady_clock::now();
+	if (m_PrimaryAccountTruncateStatement == nullptr)
+	{
+		m_PrimaryAccountTruncateStatement = m_DBConnection->prepareStatement("truncate table t_PrimaryAccount;");
+	}
+	m_PrimaryAccountTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncatePrimaryAccount Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 void MysqlDB::CreateAccount()
 {
@@ -3365,6 +3568,52 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<MdSubscribe*>& recor
 	record->ProductClass = ProductClassType(result->getInt(5));
 	Strcpy(record->StartTradingDay, result->getString(6).c_str());
 	Strcpy(record->EndTradingDay, result->getString(7).c_str());
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statement, PrimaryAccount* record)
+{
+	statement->setString(1, record->PrimaryAccountID);
+	statement->setString(2, record->PrimaryAccountName);
+	statement->setInt(3, int(record->AccountClass));
+	statement->setString(4, record->Password);
+	statement->setInt(5, record->OfferID);
+	statement->setBoolean(6, record->IsAllowLogin);
+	statement->setBoolean(7, record->IsSimulateAccount);
+	statement->setInt(8, int(record->LoginStatus));
+	statement->setInt(9, int(record->InitStatus));
+}
+void MysqlDB::SetStatementForPrimaryAccountRecordUpdate(sql::PreparedStatement* statement, PrimaryAccount* record)
+{
+	statement->setString(1, record->PrimaryAccountName);
+	statement->setInt(2, int(record->AccountClass));
+	statement->setString(3, record->Password);
+	statement->setInt(4, record->OfferID);
+	statement->setBoolean(5, record->IsAllowLogin);
+	statement->setBoolean(6, record->IsSimulateAccount);
+	statement->setInt(7, int(record->LoginStatus));
+	statement->setInt(8, int(record->InitStatus));
+	statement->setString(9, record->PrimaryAccountID);
+}
+void MysqlDB::SetStatementForPrimaryAccountPrimaryKey(sql::PreparedStatement* statement, const AccountIDType& PrimaryAccountID)
+{
+	statement->setString(1, PrimaryAccountID);
+}
+void MysqlDB::SetStatementForPrimaryAccountIndexOfferID(sql::PreparedStatement* statement, PrimaryAccount* record)
+{
+	statement->setInt(1, record->OfferID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<PrimaryAccount*>& records)
+{
+	PrimaryAccount* record = PrimaryAccount::Allocate();
+	Strcpy(record->PrimaryAccountID, result->getString(1).c_str());
+	Strcpy(record->PrimaryAccountName, result->getString(2).c_str());
+	record->AccountClass = AccountClassType(result->getInt(3));
+	Strcpy(record->Password, result->getString(4).c_str());
+	record->OfferID = result->getInt(5);
+	record->IsAllowLogin = result->getBoolean(6);
+	record->IsSimulateAccount = result->getBoolean(7);
+	record->LoginStatus = LoginStatusType(result->getInt(8));
+	record->InitStatus = InitStatusType(result->getInt(9));
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForAccountRecord(sql::PreparedStatement* statement, Account* record)

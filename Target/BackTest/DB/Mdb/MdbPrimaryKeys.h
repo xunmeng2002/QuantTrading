@@ -165,6 +165,26 @@ namespace mdb
 		MdSubscribeTable* m_Table;
 		std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey> m_Index;
 	};
+	class PrimaryAccountTable;
+	class PrimaryAccountPrimaryKey
+	{
+		using iterator = std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey>::iterator;
+		friend class PrimaryAccountTable;
+	public:
+		PrimaryAccountPrimaryKey(PrimaryAccountTable* table, size_t buckets = 1000);
+		PrimaryAccount* Select(const AccountIDType& PrimaryAccountID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(PrimaryAccount* const record);
+		void Erase(PrimaryAccount* const record);
+		bool CheckInsert(PrimaryAccount* const record);
+		bool CheckUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord);
+
+	private:
+		PrimaryAccountTable* m_Table;
+		std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey> m_Index;
+	};
 	class AccountTable;
 	class AccountPrimaryKey
 	{

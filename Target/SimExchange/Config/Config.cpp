@@ -36,6 +36,7 @@ void Config::Load(const char* fileName)
 	
 	LogLevel = root["LogLevel"].asInt();
 	ServerConfigPath = root["ServerConfigPath"].asString();
+	MatchMode = root["MatchMode"].asString();
 	DbType = root["DbType"].asString();
 	DbUser = root["DbUser"].asString();
 	DbPassword = root["DbPassword"].asString();
@@ -50,6 +51,7 @@ void Config::Print()
 {
 	printf("LogLevel:%d\n", LogLevel);
 	printf("ServerConfigPath:%s\n", ServerConfigPath.c_str());
+	printf("MatchMode:%s\n", MatchMode.c_str());
 	printf("DbType:%s\n", DbType.c_str());
 	printf("DbUser:%s\n", DbUser.c_str());
 	printf("DbPassword:%s\n", DbPassword.c_str());

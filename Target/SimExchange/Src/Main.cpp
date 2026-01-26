@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
 	TradeFront* tradeFront = new TradeFront(serverConfig.TradeFrontAddress.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str());
-	auto simExchange = new SimExchange(mdb, tradeFront, mdFront);
+	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, config.MatchMode);
 	tradeFront->Subscribe(simExchange);
 	//mdFront->Subscribe(*);
 
