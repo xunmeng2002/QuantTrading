@@ -1,7 +1,9 @@
 #include "SimExchange.h"
 #include "MemCacheTemplateSingleton.h"
 #include "Error.h"
+#include "TimeUtility.h"
 #include "QuantUtility.h"
+#include "OrderUtility.h"
 #include "Logger.h"
 #include "InitMdbFromCsv.h"
 #include "InitMdbFromDB.h"
@@ -12,12 +14,14 @@ using namespace std;
 using namespace mdb;
 
 SimExchange::SimExchange(const Config& config)
-	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false), m_MaxOrderID(0), m_MaxTradeID(0), m_DumpPath(config.DumpPath)
+	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false), m_DumpPath(config.DumpPath),
+	m_CurrDate(""), m_CurrTime("")
 {
+	auto matchMode = MatchModeType(config.MatchMode[0]);
 	strcpy(m_TradingDay, config.StartTradingDay.c_str());
 	strcpy(m_StartTradingDay, config.StartTradingDay.c_str());
 	strcpy(m_EndTradingDay, config.EndTradingDay.c_str());
-	m_MarketDataType = MarketDataTypeType(config.MarketDataType[0]);
+	m_MarketDataType = matchMode == MatchModeType::Bar ? MarketDataTypeType::Bar : MarketDataTypeType::Tick;
 	memset(&m_PushMdTick, 0, sizeof(DepthMarketDataField));
 	memset(&m_PushMdBar, 0, sizeof(BarMarketDataField));
 	m_MdReader = new MdReader(config);
@@ -26,6 +30,8 @@ SimExchange::SimExchange(const Config& config)
 	m_DBWriter = new DBWriter(m_DB);
 	m_DBWriter->Subscribe(this);
 	m_Mdb = new Mdb();
+	m_OrderMatch = OrderMatch::CreateOrderMatch(matchMode, m_Mdb, m_TradingDay);
+	m_OrderMatch->Subscribe(this);
 }
 SimExchange::~SimExchange()
 {
@@ -87,6 +93,86 @@ void SimExchange::OnDBDisConnected()
 
 }
 
+void SimExchange::OnOrder(mdb::Order* order)
+{
+	SendRtnOrder(order);
+}
+void SimExchange::OnTrade(mdb::Trade* trade)
+{
+	SendRtnTrade(trade);
+
+	auto posiDirection = GetPosiDirection(trade->OffsetFlag, trade->Direction);
+	auto position = m_Mdb->t_Position->m_PrimaryKey->Select(trade->TradingDay, trade->AccountID, trade->ExchangeID, trade->InstrumentID, posiDirection);
+	if (position == nullptr)
+	{
+		position = ::CreatePosition(trade, posiDirection);
+		m_Mdb->t_Position->Insert(position);
+	}
+	else
+	{
+		if (trade->OffsetFlag == OffsetFlagType::Open)
+		{
+			position->TotalPosition += trade->Volume;
+		}
+		else
+		{
+			if (position->TotalPosition < trade->Volume)
+			{
+				WriteLog(LogLevel::Warning, "Position not Enough For Close Trade. Position:%s, Trade:%s", position->GetDebugString(), trade->GetDebugString());
+			}
+			position->TotalPosition -= trade->Volume;
+		}
+	}
+
+	auto tradeAmount = trade->Price * trade->Volume * trade->VolumeMultiple;
+	if (trade->OffsetFlag == OffsetFlagType::Open)
+	{
+		auto positionDetail = ::CreatePositionDetail(trade, posiDirection);
+		m_Mdb->t_PositionDetail->Insert(positionDetail);
+	}
+	else
+	{
+		std::set<mdb::PositionDetail*, PositionDetialLessForOpenDate> positionDetails;
+		auto itPair = m_Mdb->t_PositionDetail->m_TradeMatchIndex->EqualRange(position->TradingDay, position->AccountID, position->ExchangeID, 
+			position->InstrumentID, position->PosiDirection);
+		for (auto& it = itPair.first; it != itPair.second; ++it)
+		{
+			positionDetails.insert(*it);
+		}
+		auto flag = position->PosiDirection == PosiDirectionType::Long ? 1 : -1;
+		auto remainVolume = trade->Volume;
+		for (auto positionDetail : positionDetails)
+		{
+			auto currVolume = std::min(remainVolume, positionDetail->Volume - positionDetail->CloseVolume);
+			if (currVolume <= 0)
+			{
+				continue;
+			}
+			auto closeAmount = trade->Price * currVolume * position->VolumeMultiple;
+			positionDetail->CloseVolume += currVolume;
+			positionDetail->CloseAmount += closeAmount;
+			positionDetail->CloseProfitByTrade += flag * (trade->Price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
+			if (strcmp(positionDetail->OpenDate, positionDetail->TradingDay) == 0)
+			{
+				positionDetail->CloseProfitByDate += flag * (trade->Price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
+			}
+			else
+			{
+				positionDetail->CloseProfitByDate += flag * (trade->Price - positionDetail->PreSettlementPrice) * currVolume * positionDetail->VolumeMultiple;
+			}
+			if (position->ProductClass == ProductClassType::FutureOption || position->ProductClass == ProductClassType::StockOption 
+				|| position->ProductClass == ProductClassType::Stock || position->ProductClass == ProductClassType::ETF)
+			{
+				positionDetail->CashIn += trade->Direction == DirectionType::Sell ? closeAmount : 0.0;
+				positionDetail->CashOut += trade->Direction == DirectionType::Buy ? closeAmount : 0.0;
+			}
+			remainVolume -= currVolume;
+			if (remainVolume <= 0)
+				break;
+		}
+	}
+}
+
 void SimExchange::RegisterSpi(BackTestSpi* pSpi)
 {
 	m_BackTestSpi = pSpi;
@@ -140,7 +226,6 @@ void SimExchange::Run()
 		WriteLog(LogLevel::Info, "Waiting For SubMarketData.");
 		this_thread::sleep_for(chrono::milliseconds(m_TimeOut));
 	}
-	UpdateOrderQueue();
 }
 void SimExchange::HandlePackages()
 {
@@ -194,17 +279,6 @@ void SimExchange::PushNextMd()
 		}
 	}
 }
-void SimExchange::UpdateOrderQueue()
-{
-	for (auto& it : m_InstrumentsHasMatched)
-	{
-		if (it.second)
-		{
-			UpdateAllQueueOrder(it.first);
-			it.second = false;
-		}
-	}
-}
 void SimExchange::OnMdEnd()
 {
 	if (m_IsMdEnd)
@@ -231,32 +305,19 @@ void SimExchange::PushNextTick(mdb::DepthMarketData* mdTick)
 	{
 		ChangeTradingDay(mdTick->TradingDay);
 	}
-	UpdateLastMdTick(mdTick);
-
-	auto& marketBuyQueueOrders = m_MarketBuyOrders[mdTick->InstrumentID];
-	for (auto& marketBuyQueueOrder : marketBuyQueueOrders)
-	{
-		CheckMatchForMdTick(marketBuyQueueOrder, mdTick);
-	}
-	auto& marketSellQueueOrders = m_MarketSellOrders[mdTick->InstrumentID];
-	for (auto& marketSellQueueOrder : marketSellQueueOrders)
-	{
-		CheckMatchForMdTick(marketSellQueueOrder, mdTick);
-	}
-	UpdateMarketOrderAfterMd(mdTick->InstrumentID);
-
-	auto& buyQueueOrders = m_BuyOrders[mdTick->InstrumentID];
-	for (auto& buyQueueOrder : buyQueueOrders)
-	{
-		CheckMatchForMdTick(buyQueueOrder, mdTick);
-	}
-	auto& sellQueueOrders = m_SellOrders[mdTick->InstrumentID];
-	for (auto& sellQueueOrder : sellQueueOrders)
-	{
-		CheckMatchForMdTick(sellQueueOrder, mdTick);
-	}
-
+	GetDateTimeFromTimeStamp(mdTick->UpdateTs, m_CurrDate, m_CurrTime);
+	m_OrderMatch->OnTick(mdTick);
 	SendRtnDepthMarketData(mdTick);
+	//这里更新要在后面，因为Update后，mdTick会被析构
+	auto oldMdTick = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeID, mdTick->InstrumentID);
+	if (oldMdTick == nullptr)
+	{
+		m_Mdb->t_DepthMarketData->Insert(mdTick);
+	}
+	else
+	{
+		m_Mdb->t_DepthMarketData->Update(oldMdTick, mdTick);
+	}
 }
 void SimExchange::PushNextBar(mdb::BarMarketData* mdBar)
 {
@@ -269,32 +330,12 @@ void SimExchange::PushNextBar(mdb::BarMarketData* mdBar)
 	{
 		ChangeTradingDay(mdBar->TradingDay);
 	}
-	UpdateLastMdBar(mdBar);
-
-	auto& marketBuyQueueOrders = m_MarketBuyOrders[mdBar->InstrumentID];
-	for (auto& marketBuyQueueOrder : marketBuyQueueOrders)
-	{
-		CheckMatchForMdBar(marketBuyQueueOrder, mdBar);
-	}
-	auto& marketSellQueueOrders = m_MarketSellOrders[mdBar->InstrumentID];
-	for (auto& marketSellQueueOrder : marketSellQueueOrders)
-	{
-		CheckMatchForMdBar(marketSellQueueOrder, mdBar);
-	}
-	UpdateMarketOrderAfterMd(mdBar->InstrumentID);
-
-	auto& buyQueueOrders = m_BuyOrders[mdBar->InstrumentID];
-	for (auto& buyQueueOrder : buyQueueOrders)
-	{
-		CheckMatchForMdBar(buyQueueOrder, mdBar);
-	}
-	auto& sellQueueOrders = m_SellOrders[mdBar->InstrumentID];
-	for (auto& sellQueueOrder : sellQueueOrders)
-	{
-		CheckMatchForMdBar(sellQueueOrder, mdBar);
-	}
-
+	GetDateTimeFromTimeStamp(mdBar->UpdateTs, m_CurrDate, m_CurrTime);
+	m_OrderMatch->OnBar(mdBar);
 	SendRtnBarMarketData(mdBar);
+	//这里更新要在后面，因为Update后，mdTick会被析构
+	m_Mdb->t_BarMarketData->Insert(mdBar);
+	m_LastMdBars[mdBar->InstrumentID] = mdBar;
 }
 
 void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* reqPackage)
@@ -442,6 +483,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 }
 void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 {
+	WriteLog(LogLevel::Info, "HandleInsertOrder %s", reqPackage->GetDebugString());
 	auto reqInsertOrder = reqPackage->ReqInsertOrder;
 	int errorID = ErrorNone;
 	auto instrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID);
@@ -449,68 +491,41 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	{
 		errorID = ErrorInstrumentNotExist;
 	}
-	DepthMarketData* mdTick = nullptr;
-	BarMarketData* mdBar = nullptr;
-	Int64Type updatTs = 0LL;
-	PriceType preSettlementPrice = 0.0;
-	if (m_MarketDataType == MarketDataTypeType::Tick)
-	{
-		mdTick = m_LastMdTicks[reqInsertOrder->InstrumentID];
-		if (mdTick != nullptr)
-		{
-			updatTs = mdTick->UpdateTs;
-			preSettlementPrice = mdTick->PreSettlementPrice != std::numeric_limits<double>::infinity() ? mdTick->PreSettlementPrice : mdTick->PreClosePrice;
-		}
-	}
 	else
 	{
-		mdBar = m_LastMdBars[reqInsertOrder->InstrumentID];
-		if (mdBar != nullptr)
-		{
-			updatTs = mdBar->UpdateTs;
-			preSettlementPrice = mdBar->PreSettlementPrice != std::numeric_limits<double>::infinity() ? mdBar->PreSettlementPrice : mdBar->PreClosePrice;
-		}
+		errorID = CheckForInsertOrder(reqInsertOrder, instrument);
 	}
 	auto account = m_Mdb->t_Account->m_PrimaryKey->Select(reqInsertOrder->AccountID);
 	if (account == nullptr)
 	{
 		errorID = ErrorAccountNotExist;
 	}
-	mdb::Position* position = nullptr;
-	if (errorID == ErrorNone)
-	{
-		position = GetPosition(reqInsertOrder, account, instrument, preSettlementPrice);
-		errorID = CheckForInputOrder(reqInsertOrder, position);
-	}
 	SendRspOrderInsert(reqPackage, errorID);
 	if (errorID != ErrorNone)
 	{
 		return;
 	}
-	Order* order = InitOrder(reqPackage, account, position, (updatTs / 1000) % 1000000LL);
-	CheckMatchForOrderQueue(order);
-	if (order->VolumeTotal > 0)
-	{
-		AddOrderToQueue(order);
-	}
-	if (order->VolumeTraded == 0)
-	{
-		SendRtnOrder(order);
-	}
+	
+	auto order = CreateOrder(reqPackage, account, instrument, m_TradingDay, m_CurrDate, m_CurrTime);
+	m_Mdb->t_Order->Insert(order);
+	m_OrderMatch->InsertOrder(order);
 }
 void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 {
+	WriteLog(LogLevel::Info, "HandleCancelOrder %s", reqPackage->GetDebugString());
 	int errorID = ErrorNone;
-	auto order = m_Mdb->t_Order->m_PrimaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID, reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->OrderID);
+	auto order = m_Mdb->t_Order->m_PrimaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID, 
+		reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->OrderID);
 	if (order == nullptr)
 	{
-		order = m_Mdb->t_Order->m_ClientOrderIDUniqueKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID, reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->SessionID, reqPackage->ReqCancelOrder->ClientCancelOrderID);
+		order = m_Mdb->t_Order->m_ClientOrderIDUniqueKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID,
+			reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->SessionID, reqPackage->ReqCancelOrder->ClientCancelOrderID);
 		if (order == nullptr)
 		{
 			errorID = ErrorOrderNotExist;
 		}
 	}
-	if (errorID == ErrorNone)
+	if (order != nullptr)
 	{
 		errorID = CheckForCancelOrder(order);
 	}
@@ -519,22 +534,7 @@ void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 	{
 		return;
 	}
-	if (order->Direction == DirectionType::Buy)
-	{
-		m_BuyOrders[order->InstrumentID].erase(order);
-	}
-	else
-	{
-		m_SellOrders[order->InstrumentID].erase(order);
-	}
-	if (order->OffsetFlag != OffsetFlagType::Open)
-	{
-		auto position = GetPosition(order);
-		position->PositionFrozen -= order->VolumeTotal;
-	}
-	order->VolumeTotal = 0;
-	order->OrderStatus = order->VolumeTraded > 0 ? OrderStatusType::PartTradedCanceled : OrderStatusType::Canceled;
-	SendRtnOrder(order);
+	m_OrderMatch->CancelOrder(order);
 }
 
 void SimExchange::InitMdInstrument()
@@ -673,16 +673,6 @@ void SimExchange::ChangeTradingDay(const DateType& nextTradingDay)
 }
 void SimExchange::Settlement()
 {
-	if (m_MarketDataType == MarketDataTypeType::Tick)
-	{
-		for (auto& it : m_LastMdTicks)
-		{
-			if (it.second != nullptr)
-			{
-				m_Mdb->t_DepthMarketData->Insert(it.second);
-			}
-		}
-	}
 	SettlementAccount();
 	SendRtnSessionEnd(m_TradingDay);
 }
@@ -793,19 +783,6 @@ void SimExchange::Init(const DateType& nextTradingDay)
 {
 	InitAccount(nextTradingDay);
 	strcpy(m_TradingDay, nextTradingDay);
-	m_InstrumentsHasMatched.clear();
-	for (auto& buyOrders : m_BuyOrders)
-	{
-		buyOrders.second.clear();
-	}
-	m_BuyOrders.clear();
-	for (auto& sellOrders : m_SellOrders)
-	{
-		sellOrders.second.clear();
-	}
-	m_SellOrders.clear();
-	m_MaxOrderID = 0;
-	m_MaxTradeID = 0;
 	SendRtnSessionBegin(nextTradingDay);
 }
 void SimExchange::InitAccount(const DateType& nextTradingDay)
@@ -894,422 +871,22 @@ void SimExchange::InitPositionDetail(const DateType& nextTradingDay)
 	}
 }
 
-void SimExchange::UpdateLastMdTick(mdb::DepthMarketData* mdTick)
-{
-	m_LastMdTicks[mdTick->InstrumentID] = mdTick;
-}
-void SimExchange::UpdateLastMdBar(mdb::BarMarketData* mdBar)
-{
-	m_LastMdBars[mdBar->InstrumentID] = mdBar;
-	m_Mdb->t_BarMarketData->Insert(mdBar);
-}
 
-mdb::Position* SimExchange::InitPosition(ReqInsertOrderField* reqInsertOrder, mdb::Account* account, mdb::Instrument* instrument, const PosiDirectionType& posiDirection, const PriceType& preSettlementPrice)
-{
-	auto position = mdb::Position::Allocate();
-	memset(position, 0, sizeof(Position));
-	strcpy(position->TradingDay, m_TradingDay);
-	strcpy(position->AccountID, reqInsertOrder->AccountID);
-	position->AccountType = account->AccountType;
-	strcpy(position->ExchangeID, reqInsertOrder->ExchangeID);
-	strcpy(position->InstrumentID, reqInsertOrder->InstrumentID);
-	position->ProductClass = instrument->ProductClass;
-	position->PosiDirection = posiDirection;
-	position->VolumeMultiple = instrument->VolumeMultiple;
-	position->PreSettlementPrice = preSettlementPrice;
-	m_Mdb->t_Position->Insert(position);
-	return position;
-}
-mdb::Position* SimExchange::GetPosition(ReqInsertOrderField* reqInsertOrder, mdb::Account* account, mdb::Instrument* instrument, const PriceType& preSettlementPrice)
-{
-	auto posiDirection = GetPosiDirection(reqInsertOrder->OffsetFlag, reqInsertOrder->Direction);
-	auto position = m_Mdb->t_Position->m_PrimaryKey->Select(m_TradingDay, reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, posiDirection);
-	if (position == nullptr)
-	{
-		position = InitPosition(reqInsertOrder, account, instrument, posiDirection, preSettlementPrice);
-	}
-	return position;
-}
-mdb::Position* SimExchange::GetPosition(mdb::Order* order)
-{
-	auto posiDirection = GetPosiDirection(order->OffsetFlag, order->Direction);
-	return m_Mdb->t_Position->m_PrimaryKey->Select(order->TradingDay, order->AccountID, order->ExchangeID, order->InstrumentID, posiDirection);
-}
-int SimExchange::CheckForInputOrder(ReqInsertOrderField* reqInsertOrder, mdb::Position* position)
-{
-	if (reqInsertOrder->OffsetFlag == OffsetFlagType::Open)
-		return ErrorNone;
-	if (position->TotalPosition - position->PositionFrozen < reqInsertOrder->Volume)
-		return ErrorPositionInsufficient;
-	return ErrorNone;
-}
-mdb::Order* SimExchange::InitOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, mdb::Position* postion, const Int64Type& insertTime)
-{
-	auto reqInsertOrder = reqPackage->ReqInsertOrder;
-	Order* order = Order::Allocate();
-	memset(order, 0, sizeof(Order));
-	strcpy(order->TradingDay, m_TradingDay);
-	strcpy(order->AccountID, account->AccountID);
-	order->AccountType = account->AccountType;
-	strcpy(order->ExchangeID, postion->ExchangeID);
-	strcpy(order->InstrumentID, postion->InstrumentID);
-	order->ProductClass = postion->ProductClass;
-	order->OrderID = GetNextOrderID();
-	strcpy(order->OrderSysID, to_string(order->OrderID).c_str());
-	order->Direction = reqInsertOrder->Direction;
-	order->OffsetFlag = reqInsertOrder->OffsetFlag;
-	order->OrderPriceType = reqInsertOrder->OrderPriceType;
-	order->Price = reqInsertOrder->Price;
-	order->Volume = reqInsertOrder->Volume;
-	order->VolumeTotal = reqInsertOrder->Volume;
-	order->VolumeTraded = 0;
-	order->VolumeMultiple = postion->VolumeMultiple;
-	order->OrderStatus = OrderStatusType::Inserted;
-	strcpy(order->OrderDate, m_TradingDay);
-	strncpy(order->OrderTime, to_string(insertTime).c_str(), sizeof(TimeType));
-	order->SessionID = reqPackage->SessionID;
-	order->OfferID = 0;
-	order->ClientOrderID = reqInsertOrder->ClientOrderID;
-	order->RequestID = reqPackage->Head.MsgSeqNum;
-	order->TradeGroupID = account->TradeGroupID;
-	order->RiskGroupID = account->RiskGroupID;
-	order->CommissionGroupID = account->CommissionGroupID;
-	order->RebuildMark = false;
-	order->IsForceClose = false;
-	m_Mdb->t_Order->Insert(order);
-	return order;
-}
-void SimExchange::AddOrderToQueue(mdb::Order* order)
-{
-	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
-	{
-		if (order->Direction == DirectionType::Buy)
-		{
-			m_BuyOrders[order->InstrumentID].insert(order);
-		}
-		else
-		{
-			m_SellOrders[order->InstrumentID].insert(order);
-		}
-	}
-	else
-	{
-		if (order->Direction == DirectionType::Buy)
-		{
-			m_MarketBuyOrders[order->InstrumentID].insert(order);
-		}
-		else
-		{
-			m_MarketSellOrders[order->InstrumentID].insert(order);
-		}
-	}
-}
-void SimExchange::UpdateMarketOrderAfterMd(const InstrumentIDType& instrumentID)
-{
-	auto& buyOrderQueue = m_MarketBuyOrders[instrumentID];
-	for (auto order : buyOrderQueue)
-	{
-		if (order->VolumeTotal > 0)
-		{
-			order->VolumeTotal = 0;
-			if (order->VolumeTraded > 0)
-			{
-				order->OrderStatus = OrderStatusType::PartTradedCanceled;
-			}
-			else
-			{
-				order->OrderStatus = OrderStatusType::Canceled;
-			}
-			SendRtnOrder(order);
-		}
-	}
-	buyOrderQueue.clear();
 
-	auto& sellOrderQueue = m_MarketSellOrders[instrumentID];
-	for (auto order : sellOrderQueue)
-	{
-		if (order->VolumeTotal > 0)
-		{
-			order->VolumeTotal = 0;
-			if (order->VolumeTraded > 0)
-			{
-				order->OrderStatus = OrderStatusType::PartTradedCanceled;
-			}
-			else
-			{
-				order->OrderStatus = OrderStatusType::Canceled;
-			}
-			SendRtnOrder(order);
-		}
-	}
-	sellOrderQueue.clear();
-}
-int SimExchange::CheckForCancelOrder(mdb::Order* order)
-{
-	if (order->OrderStatus == OrderStatusType::Inserting || order->OrderStatus == OrderStatusType::Inserted || order->OrderStatus == OrderStatusType::PartTraded)
-	{
-		return ErrorNone;
-	}
-	return ErrorFinalOrderStatus;
-}
-
-void SimExchange::CheckMatchForMdTick(mdb::Order* order, mdb::DepthMarketData* mdTick)
-{
-	if (order->Direction == DirectionType::Buy)
-	{
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->AskPrice1, mdTick->AskVolume1);
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->AskPrice2, mdTick->AskVolume2);
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->AskPrice3, mdTick->AskVolume3);
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->AskPrice4, mdTick->AskVolume4);
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->AskPrice5, mdTick->AskVolume5);
-	}
-	else
-	{
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->BidPrice1, mdTick->BidVolume1);
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->BidPrice2, mdTick->BidVolume2);
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->BidPrice3, mdTick->BidVolume3);
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->BidPrice4, mdTick->BidVolume4);
-		CheckMatchForOnePrice(order, mdTick->UpdateTs, mdTick->LastPrice, mdTick->BidPrice5, mdTick->BidVolume5);
-	}
-}
-void SimExchange::CheckMatchForMdBar(mdb::Order* order, mdb::BarMarketData* mdBar)
-{
-	PriceType matchPrice;
-	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
-	{
-		if (order->Direction == DirectionType::Buy)
-		{
-			if (order->Price < mdBar->Low)
-				return;
-			matchPrice = order->Price > mdBar->High ? mdBar->High : order->Price;
-		}
-		else
-		{
-			if (order->Price > mdBar->High)
-				return;
-			matchPrice = order->Price < mdBar->Low ? mdBar->Low : order->Price;
-		}
-	}
-	else
-	{
-		matchPrice = (mdBar->High + mdBar->Low) / 2;
-	}
-	TradeIDType tradeID;
-	GetNextTradeID(tradeID);
-	TimeType tradeTime;
-	strcpy(tradeTime, to_string((mdBar->UpdateTs /1000) % 1000000).c_str());
-	Match(order, matchPrice, order->VolumeTotal, tradeID, tradeTime);
-}
-void SimExchange::CheckMatchForOnePrice(mdb::Order* order, const Int64Type& updateTs, PriceType lastPrice, PriceType oppoPrice, VolumeType& oppoVolume)
-{
-	if (order->VolumeTotal <= 0 || oppoVolume <= 0 || oppoVolume == std::numeric_limits<double>::infinity())
-		return;
-	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
-	{
-		if (order->Direction == DirectionType::Buy && order->Price < oppoPrice)
-			return;
-		if (order->Direction == DirectionType::Sell && order->Price > oppoPrice)
-			return;
-	}
-
-	VolumeType matchVolume = 0;
-	PriceType matchPrice = 0.0;
-	matchVolume = std::min(order->VolumeTotal, oppoVolume);
-	matchPrice = GetMatchPrice(order->OrderPriceType, order->Price, oppoPrice, lastPrice);
-
-	oppoVolume -= matchVolume;
-	TradeIDType tradeID;
-	GetNextTradeID(tradeID);
-	TimeType tradeTime;
-	strcpy(tradeTime, to_string((updateTs / 1000) % 1000000).c_str());
-	Match(order, matchPrice, matchVolume, tradeID, tradeTime);
-}
-void SimExchange::CheckMatchForOrderQueue(mdb::Order* order)
-{
-	if (order->Direction == DirectionType::Buy)
-	{
-		auto& queueOrders = m_SellOrders[order->InstrumentID];
-		for (auto queueOrder : queueOrders)
-		{
-			CheckMatchForTwoOrder(order, queueOrder);
-		}
-	}
-	else
-	{
-		auto& queueOrders = m_BuyOrders[order->InstrumentID];
-		for (auto queueOrder : queueOrders)
-		{
-			CheckMatchForTwoOrder(order, queueOrder);
-		}
-	}
-}
-bool SimExchange::CheckMatchForTwoOrder(mdb::Order* order, mdb::Order* queueOrder)
-{
-	if (order->VolumeTotal <= 0)
-		return false;
-	if (queueOrder->VolumeTotal <= 0)
-		return true;
-	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
-	{
-		if (order->Direction == DirectionType::Buy && order->Price < queueOrder->Price)
-			return false;
-		if (order->Direction == DirectionType::Sell && order->Price > queueOrder->Price)
-			return false;
-	}
-
-	VolumeType matchVolume = 0;
-	PriceType matchPrice = 0.0;
-	matchVolume = min(order->VolumeTotal, queueOrder->VolumeTotal);
-	matchPrice = queueOrder->Price;
-
-	TradeIDType tradeID;
-	GetNextTradeID(tradeID);
-	Match(queueOrder, matchPrice, matchVolume, tradeID, order->OrderTime);
-	Match(order, matchPrice, matchVolume, tradeID, order->OrderTime);
-	return true;
-}
-void SimExchange::Match(mdb::Order* order, const PriceType& price, VolumeType volume, const TradeIDType& tradeID, const TimeType& tradeTime)
-{
-	m_InstrumentsHasMatched[order->InstrumentID] = true;
-	auto posiDirection = GetPosiDirection(order->OffsetFlag, order->Direction);
-	auto position = m_Mdb->t_Position->m_PrimaryKey->Select(order->TradingDay, order->AccountID, order->ExchangeID, order->InstrumentID, posiDirection);
-	auto tradeAmount = price * volume * position->VolumeMultiple;
-	if (order->OffsetFlag == OffsetFlagType::Open)
-	{
-		auto positionDetail = PositionDetail::Allocate();
-		strcpy(positionDetail->TradingDay, position->TradingDay);
-		strcpy(positionDetail->AccountID, position->AccountID);
-		positionDetail->AccountType = position->AccountType;
-		strcpy(positionDetail->ExchangeID, position->ExchangeID);
-		strcpy(positionDetail->InstrumentID, position->InstrumentID);
-		positionDetail->ProductClass = position->ProductClass;
-		positionDetail->PosiDirection = position->PosiDirection;
-		strcpy(positionDetail->OpenDate, position->TradingDay);
-		strcpy(positionDetail->TradeID, tradeID);
-		positionDetail->Volume = volume;
-		positionDetail->OpenPrice = price;
-		if (position->ProductClass == ProductClassType::FutureOption || position->ProductClass == ProductClassType::StockOption)
-		{
-			positionDetail->MarketValue = order->Direction == DirectionType::Buy ? tradeAmount : -tradeAmount;
-			positionDetail->CashIn = order->Direction == DirectionType::Sell ? tradeAmount : 0.0;
-			positionDetail->CashOut = order->Direction == DirectionType::Buy ? tradeAmount : 0.0;
-		}
-		positionDetail->Margin = 0.0;
-		positionDetail->Commission = 0.0;
-		positionDetail->VolumeMultiple = position->VolumeMultiple;
-		positionDetail->CloseProfitByDate = 0.0;
-		positionDetail->CloseProfitByTrade = 0.0;
-		positionDetail->PositionProfitByDate = 0.0;
-		positionDetail->PositionProfitByTrade = 0.0;
-		positionDetail->SettlementPrice = 0.0;
-		positionDetail->PreSettlementPrice = position->PreSettlementPrice;
-		positionDetail->CloseVolume = 0;
-		positionDetail->CloseAmount = 0.0;
-		m_Mdb->t_PositionDetail->Insert(positionDetail);
-
-		position->TotalPosition += volume;
-		position->TodayPosition += volume;
-	}
-	else
-	{
-		std::set<mdb::PositionDetail*, PositionDetialLessForOpenDate> positionDetails;
-		auto itPair = m_Mdb->t_PositionDetail->m_TradeMatchIndex->EqualRange(position->TradingDay, position->AccountID, position->ExchangeID, position->InstrumentID, position->PosiDirection);
-		for (auto& it = itPair.first; it != itPair.second; ++it)
-		{
-			positionDetails.insert(*it);
-		}
-		auto flag = position->PosiDirection == PosiDirectionType::Long ? 1 : -1;
-		auto remainVolume = volume;
-		for (auto positionDetail : positionDetails)
-		{
-			auto currVolume = std::min(remainVolume, positionDetail->Volume - positionDetail->CloseVolume);
-			if (currVolume <= 0)
-			{
-				continue;
-			}
-			auto closeAmount = price * currVolume * position->VolumeMultiple;
-			positionDetail->CloseVolume += currVolume;
-			positionDetail->CloseAmount += closeAmount;
-			positionDetail->CloseProfitByTrade += flag * (price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
-			if (strcmp(positionDetail->OpenDate, positionDetail->TradingDay) == 0)
-			{
-				positionDetail->CloseProfitByDate += flag * (price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
-			}
-			else
-			{
-				positionDetail->CloseProfitByDate += flag * (price - positionDetail->PreSettlementPrice) * currVolume * positionDetail->VolumeMultiple;
-			}
-			if (position->ProductClass == ProductClassType::FutureOption || position->ProductClass == ProductClassType::StockOption || position->ProductClass == ProductClassType::Stock || position->ProductClass == ProductClassType::ETF)
-			{
-				positionDetail->CashIn += order->Direction == DirectionType::Sell ? closeAmount : 0.0;
-				positionDetail->CashOut += order->Direction == DirectionType::Buy ? closeAmount : 0.0;
-			}
-			remainVolume -= currVolume;
-			if (remainVolume <= 0)
-				break;
-		}
-
-		position->TotalPosition -= volume;
-		position->PositionFrozen -= volume;
-	}
-	order->VolumeTraded += volume;
-	order->VolumeTotal -= volume;
-	order->OrderStatus = order->VolumeTotal > 0 ? OrderStatusType::PartTraded : OrderStatusType::AllTraded;
-	SendRtnOrder(order);
-	auto trade = Trade::Allocate();
-	memset(trade, 0, sizeof(Trade));
-	strcpy(trade->TradingDay, m_TradingDay);
-	strcpy(trade->AccountID, order->AccountID);
-	trade->AccountType = order->AccountType;
-	strcpy(trade->ExchangeID, order->ExchangeID);
-	strcpy(trade->InstrumentID, order->InstrumentID);
-	trade->ProductClass = order->ProductClass;
-	trade->OrderID = order->OrderID;
-	strcpy(trade->OrderSysID, order->OrderSysID);
-	strcpy(trade->TradeID, tradeID);
-	trade->Direction = order->Direction;
-	trade->OffsetFlag = order->OffsetFlag;
-	trade->Price = price;
-	trade->Volume = volume;
-	trade->VolumeMultiple = order->VolumeMultiple;
-	trade->TradeAmount = tradeAmount;
-	trade->Commission = 1;
-	strcpy(trade->TradeDate, order->OrderDate);
-	strcpy(trade->TradeTime, tradeTime);
-	m_Mdb->t_Trade->Insert(trade);
-	SendRtnTrade(trade);
-}
-
-void SimExchange::UpdateAllQueueOrder(const std::string& instrumentID)
-{
-	auto& buyOrderQueue = m_BuyOrders[instrumentID];
-	std::erase_if(buyOrderQueue, [](mdb::Order* order) {return order->VolumeTotal == 0; });
-	auto& sellOrderQueue = m_SellOrders[instrumentID];
-	std::erase_if(sellOrderQueue, [](mdb::Order* order) {return order->VolumeTotal == 0; });
-}
-
-OrderIDType SimExchange::GetNextOrderID()
-{
-	return ++m_MaxOrderID;
-}
-void SimExchange::GetNextTradeID(TradeIDType& tradeID)
-{
-	sprintf(tradeID, "%s%08d", m_TradingDay, ++m_MaxTradeID);
-}
 PriceType SimExchange::GetSettlementPrice(mdb::PositionDetail* positionDetail)
 {
 	if (m_MarketDataType == MarketDataTypeType::Tick)
 	{
-		auto mdTick = m_LastMdTicks[positionDetail->InstrumentID];
+		auto mdTick = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(positionDetail->TradingDay, positionDetail->ExchangeID, positionDetail->InstrumentID);
 		if (mdTick == nullptr)
 		{
 			return positionDetail->PreSettlementPrice;
 		}
-		else if (mdTick->LastPrice != std::numeric_limits<double>::infinity())
+		else if (!isinf(mdTick->LastPrice) && !isnan(mdTick->LastPrice))
 		{
 			return mdTick->LastPrice;
 		}
-		else if (mdTick->PreSettlementPrice != std::numeric_limits<double>::infinity())
+		else if (!isinf(mdTick->PreSettlementPrice) && !isnan(mdTick->PreSettlementPrice))
 		{
 			return mdTick->PreSettlementPrice;
 		}

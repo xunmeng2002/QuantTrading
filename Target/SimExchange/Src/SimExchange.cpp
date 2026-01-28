@@ -9,7 +9,7 @@ using namespace std;
 using namespace mdb;
 
 SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, const std::string& matchMode)
-	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_TradingDay(""), m_CurrDate(""), m_CurrTime(""), m_MaxOrderID(0), m_MaxTradeID(0)
+	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_TradingDay(""), m_CurrDate(""), m_CurrTime("")
 {
 	auto tradingDay = m_Mdb->t_TradingDay->m_PrimaryKey->Select(1);
 	if (tradingDay != nullptr)
@@ -110,6 +110,12 @@ void SimExchange::HandlePackages()
 			break;
 		switch (package->Head.PackageID)
 		{
+		case RtnDepthMarketDataPackage::PackageID:
+			HandleDepthMarketData((RtnDepthMarketDataPackage*)package);
+			break;
+		case RtnBarMarketDataPackage::PackageID:
+			HandleBarMarketData((RtnBarMarketDataPackage*)package);
+			break;
 		case NotifyDisConnectPackage::PackageID:
 			HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
 			break;
@@ -140,6 +146,33 @@ void SimExchange::HandlePackages()
 		}
 		package->Free();
 	}
+}
+
+void SimExchange::HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage)
+{
+	WriteLog(LogLevel::Info, "HandleDepthMarketData %s", rtnPackage->GetDebugString());
+	static_assert(sizeof(DepthMarketData) == sizeof(DepthMarketDataField));
+	auto mdTick = mdb::DepthMarketData::Allocate();
+	memcpy(mdTick, rtnPackage->DepthMarketData, sizeof(DepthMarketData));
+	auto oldMdTick = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeID, mdTick->InstrumentID);
+	if (oldMdTick == nullptr)
+	{
+		m_Mdb->t_DepthMarketData->Insert(mdTick);
+	}
+	else
+	{
+		m_Mdb->t_DepthMarketData->Update(oldMdTick, mdTick);
+	}
+	m_OrderMatch->OnTick(mdTick);
+}
+void SimExchange::HandleBarMarketData(RtnBarMarketDataPackage* rtnPackage)
+{
+	WriteLog(LogLevel::Info, "HandleBarMarketData %s", rtnPackage->GetDebugString());
+	static_assert(sizeof(BarMarketData) == sizeof(BarMarketDataField));
+	auto mdBar = mdb::BarMarketData::Allocate();
+	memcpy(mdBar, rtnPackage->BarMarketData, sizeof(BarMarketData));
+	m_Mdb->t_BarMarketData->Insert(mdBar);
+	m_OrderMatch->OnBar(mdBar);
 }
 
 void SimExchange::HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage)
@@ -225,11 +258,6 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	{
 		errorID = CheckForInsertOrder(reqPackage->ReqInsertOrder, instrument);
 	}
-	auto primaryAccount = m_Mdb->t_PrimaryAccount->m_PrimaryKey->Select(reqPackage->ReqInsertOrder->AccountID);
-	if (primaryAccount == nullptr)
-	{
-		errorID = ErrorPrimaryAccountNotExist;
-	}
 	auto account = m_Mdb->t_Account->m_PrimaryKey->Select(reqPackage->ReqInsertOrder->AccountID);
 	if (account == nullptr)
 	{
@@ -241,7 +269,7 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 		return;
 	}
 	GetLocalDateTime(m_CurrDate, m_CurrTime);
-	auto order = InitOrder(reqPackage, account, primaryAccount, instrument, m_TradingDay, m_CurrDate, m_CurrTime);
+	auto order = CreateOrder(reqPackage, account, instrument, m_TradingDay, m_CurrDate, m_CurrTime);
 	m_Mdb->t_Order->Insert(order);
 	m_OrderMatch->InsertOrder(order);
 }
@@ -254,25 +282,27 @@ void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 		SendRspCancelOrder(reqPackage, ErrorSessionNotLogin);
 		return;
 	}
-	auto order = m_Mdb->t_Order->m_PrimaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, 
-		reqPackage->ReqCancelOrder->ExchangeID, reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->OrderID);
+	auto order = m_Mdb->t_Order->m_PrimaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID,
+		reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->OrderID);
 	if (order == nullptr)
 	{
-		errorID = ErrorOrderNotExist;
+		order = m_Mdb->t_Order->m_ClientOrderIDUniqueKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID,
+			reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->SessionID, reqPackage->ReqCancelOrder->ClientCancelOrderID);
+		if (order == nullptr)
+		{
+			errorID = ErrorOrderNotExist;
+		}
 	}
-	else if (order->OrderStatus != OrderStatusType::Inserting && order->OrderStatus != OrderStatusType::Inserted && order->OrderStatus != OrderStatusType::PartTraded)
+	if (order != nullptr)
 	{
-		errorID = ErrorFinalOrderStatus;
+		errorID = CheckForCancelOrder(order);
 	}
 	SendRspCancelOrder(reqPackage, errorID);
 	if (errorID != ErrorNone)
 	{
 		return;
 	}
-	RemoveOrderFromQueue(order);
-	order->VolumeTotal = 0;
-	order->OrderStatus = order->VolumeTraded > 0 ? OrderStatusType::PartTradedCanceled : OrderStatusType::Canceled;
-	SendRtnOrder(order);
+	m_OrderMatch->CancelOrder(order);
 }
 void SimExchange::HandleQryOrder(ReqQryOrderPackage* reqPackage)
 {
@@ -559,62 +589,5 @@ Package* SimExchange::GetNextPackage()
 	m_Packages.pop_front();
 	return package;
 }
-OrderIDType SimExchange::GetNextOrderID()
-{
-	return ++m_MaxOrderID;
-}
-void SimExchange::GetNextTradeID(TradeIDType& tradeID)
-{
-	sprintf(tradeID, "%s%08d", m_TradingDay, ++m_MaxTradeID);
-}
-void SimExchange::AddOrderToQueue(mdb::Order* order)
-{
-	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
-	{
-		if (order->Direction == DirectionType::Buy)
-		{
-			m_BuyOrders[order->InstrumentID].insert(order);
-		}
-		else
-		{
-			m_SellOrders[order->InstrumentID].insert(order);
-		}
-	}
-	else
-	{
-		if (order->Direction == DirectionType::Buy)
-		{
-			m_MarketBuyOrders[order->InstrumentID].insert(order);
-		}
-		else
-		{
-			m_MarketSellOrders[order->InstrumentID].insert(order);
-		}
-	}
-}
-void SimExchange::RemoveOrderFromQueue(mdb::Order* order)
-{
-	if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
-	{
-		if (order->Direction == DirectionType::Buy)
-		{
-			m_BuyOrders[order->InstrumentID].erase(order);
-		}
-		else
-		{
-			m_SellOrders[order->InstrumentID].erase(order);
-		}
-	}
-	else
-	{
-		if (order->Direction == DirectionType::Buy)
-		{
-			m_MarketBuyOrders[order->InstrumentID].erase(order);
-		}
-		else
-		{
-			m_MarketSellOrders[order->InstrumentID].erase(order);
-		}
-	}
-}
+
 

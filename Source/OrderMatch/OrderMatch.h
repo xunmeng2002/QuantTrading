@@ -28,7 +28,7 @@ public:
 	virtual void CancelOrder(mdb::Order* order);
 
 protected:
-	void Match(mdb::Order* order, const PriceType& price, const VolumeType& volume, const TradeIDType& tradeID);
+	void Match(mdb::Order* order, PriceType price, VolumeType volume, const TradeIDType& tradeID);
 	void AddOrderToQueue(mdb::Order* order);
 	void GetNextTradeID(TradeIDType& tradeID);
 	void UpdateDateTime();

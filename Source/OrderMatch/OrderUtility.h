@@ -18,8 +18,11 @@ struct OrderLessForOrderID
 };
 
 int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument);
-mdb::Order* InitOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, mdb::PrimaryAccount* primaryAccount, mdb::Instrument* instrument,
-	const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime);
+int CheckForCancelOrder(mdb::Order* order);
+mdb::Order* CreateOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, mdb::Instrument* instrument,
+	const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIDType& offerID = 0);
+mdb::Position* CreatePosition(mdb::Trade* trade, const PosiDirectionType& posiDirection);
+mdb::PositionDetail* CreatePositionDetail(mdb::Trade* trade, const PosiDirectionType& posiDirection);
 
 PriceType GetMatchPrice(OrderPriceTypeType orderPriceType, PriceType orderPrice, PriceType oppoPrice, PriceType lastPrice);
 

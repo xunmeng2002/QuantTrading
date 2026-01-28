@@ -62,8 +62,16 @@ int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* in
 	}
 	return ErrorNone;
 }
-mdb::Order* InitOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, mdb::PrimaryAccount* primaryAccount, mdb::Instrument* instrument,
-	const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime)
+int CheckForCancelOrder(mdb::Order* order)
+{
+	if (order->OrderStatus == OrderStatusType::Inserting || order->OrderStatus == OrderStatusType::Inserted || order->OrderStatus == OrderStatusType::PartTraded)
+	{
+		return ErrorNone;
+	}
+	return ErrorFinalOrderStatus;
+}
+mdb::Order* CreateOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, mdb::Instrument* instrument,
+	const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIDType& offerID)
 {
 	auto order = Order::Allocate();
 	memset(order, 0, sizeof(Order));
@@ -89,7 +97,7 @@ mdb::Order* InitOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, 
 	order->SessionID = reqPackage->SessionID;
 	order->ClientOrderID = reqPackage->ReqInsertOrder->ClientOrderID;
 	order->RequestID = reqPackage->Head.MsgSeqNum;
-	order->OfferID = primaryAccount->OfferID;
+	order->OfferID = offerID;
 	order->TradeGroupID = account->TradeGroupID;
 	order->RiskGroupID = account->RiskGroupID;
 	order->CommissionGroupID = account->CommissionGroupID;
@@ -98,6 +106,50 @@ mdb::Order* InitOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, 
 
 	return order;
 }
+mdb::Position* CreatePosition(mdb::Trade* trade, const PosiDirectionType& posiDirection)
+{
+	auto position = mdb::Position::Allocate();
+	memset(position, 0, sizeof(Position));
+	strcpy(position->TradingDay, trade->TradingDay);
+	strcpy(position->AccountID, trade->AccountID);
+	position->AccountType = trade->AccountType;
+	strcpy(position->ExchangeID, trade->ExchangeID);
+	strcpy(position->InstrumentID, trade->InstrumentID);
+	position->ProductClass = trade->ProductClass;
+	position->PosiDirection = posiDirection;
+	position->TotalPosition = trade->Volume;
+	position->PositionFrozen = 0;
+	position->TodayPosition = trade->Volume;
+	position->Commission = trade->Commission;
+	position->VolumeMultiple = trade->VolumeMultiple;
+	position->PreSettlementPrice = trade->Price;
+	position->SettlementPrice = trade->Price;
+	return position;
+}
+mdb::PositionDetail* CreatePositionDetail(mdb::Trade* trade, const PosiDirectionType& posiDirection)
+{
+	auto positionDetail = mdb::PositionDetail::Allocate();
+	memset(positionDetail, 0, sizeof(PositionDetail));
+	strcpy(positionDetail->TradingDay, trade->TradingDay);
+	strcpy(positionDetail->AccountID, trade->AccountID);
+	positionDetail->AccountType = trade->AccountType;
+	strcpy(positionDetail->ExchangeID, trade->ExchangeID);
+	strcpy(positionDetail->InstrumentID, trade->InstrumentID);
+	positionDetail->ProductClass = trade->ProductClass;
+	positionDetail->PosiDirection = posiDirection;
+	strcpy(positionDetail->OpenDate, trade->TradingDay);
+	strcpy(positionDetail->TradeID, trade->TradeID);
+	positionDetail->Volume = trade->Volume;
+	positionDetail->OpenPrice = trade->Price;
+	positionDetail->Commission = trade->Commission;
+	positionDetail->VolumeMultiple = trade->VolumeMultiple;
+	positionDetail->CloseVolume = 0;
+	positionDetail->CloseAmount = 0.0;
+	positionDetail->PreSettlementPrice = trade->Price;
+	positionDetail->SettlementPrice = trade->Price;
+	return positionDetail;
+}
+
 
 PriceType GetMatchPrice(OrderPriceTypeType orderPriceType, PriceType orderPrice, PriceType oppoPrice, PriceType lastPrice)
 {

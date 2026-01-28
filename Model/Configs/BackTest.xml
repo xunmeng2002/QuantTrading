@@ -4,7 +4,6 @@
 		<item name="MdDataPath" type="string"></item>
 		<item name="DumpPath" type="string"></item>
 		<item name="SessionFile" type="string"></item>
-		<item name="MarketDataType" type="string"></item>
 		<item name="StartTradingDay" type="string"></item>
 		<item name="EndTradingDay" type="string"></item>
 		<item name="DbType" type="string"></item>

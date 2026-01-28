@@ -4,7 +4,6 @@
 	"MdDataPath": "D:\\Md",
 	"DumpPath": "./Dump",
 	"SessionFile": "Sessions.json",
-	"MarketDataType": "0",
 	"StartTradingDay": "20241001",
 	"EndTradingDay": "20241231",
 	"DBTypeType": "DuckDB:0, SqliteDB:1, MysqlDB:2, MariaDB:3",

@@ -34,6 +34,9 @@ protected:
 	void HandlePackages();
 
 private:
+	void HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage);
+	void HandleBarMarketData(RtnBarMarketDataPackage* rtnPackage);
+
 	void HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage);
 	void HandleAccountLogin(ReqAccountLoginPackage* reqPackage);
 	void HandleAccountLogout(ReqAccountLogoutPackage* reqPackage);
@@ -58,10 +61,6 @@ private:
 	void SendRtnTrade(mdb::Trade* trade);
 
 	Package* GetNextPackage();
-	OrderIDType GetNextOrderID();
-	void GetNextTradeID(TradeIDType& tradeID);
-	void AddOrderToQueue(mdb::Order* order);
-	void RemoveOrderFromQueue(mdb::Order* order);
 
 protected:
 	MdFront* m_MdFront;
@@ -74,9 +73,6 @@ protected:
 	DateType m_TradingDay;
 	DateType m_CurrDate;
 	TimeType m_CurrTime;
-	int m_MaxOrderID;
-	int m_MaxTradeID;
-
 	std::list<Package*> m_Packages;
 	RspAccountLoginPackage* m_RspAccountLoginPackage;
 	RspAccountLogoutPackage* m_RspAccountLogoutPackage;
@@ -87,9 +83,4 @@ protected:
 	RspQryInstrumentPackage* m_RspQryInstrumentPackage;
 	RtnOrderPackage* m_RtnOrderPackage;
 	RtnTradePackage* m_RtnTradePackage;
-
-	std::map<std::string, std::set<mdb::Order*, OrderLessForPriceOpposite>> m_BuyOrders;
-	std::map<std::string, std::set<mdb::Order*, OrderLessForPrice>> m_SellOrders;
-	std::map<std::string, std::set<mdb::Order*, OrderLessForOrderID>> m_MarketBuyOrders;
-	std::map<std::string, std::set<mdb::Order*, OrderLessForOrderID>> m_MarketSellOrders;
 };

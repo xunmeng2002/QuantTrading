@@ -18,7 +18,6 @@ public:
 	string MdDataPath;
 	string DumpPath;
 	string SessionFile;
-	string MarketDataType;
 	string StartTradingDay;
 	string EndTradingDay;
 	string DbType;

@@ -53,7 +53,7 @@ void OrderMatch::CancelOrder(mdb::Order* order)
 	m_OrderMatchSubscriber->OnOrder(order);
 }
 
-void OrderMatch::Match(mdb::Order* order, const PriceType& price, const VolumeType& volume, const TradeIDType& tradeID)
+void OrderMatch::Match(mdb::Order* order, PriceType price, VolumeType volume, const TradeIDType& tradeID)
 {
 	if (volume <= 0)
 		return;
@@ -124,7 +124,6 @@ void OrderMatch::UpdateDateTime()
 }
 void OrderMatch::UpdateDateTime(const Int64Type& updateTs)
 {
-	strcpy(m_CurrDate, to_string(updateTs / 1000000000LL).c_str());
-	strcpy(m_CurrDate, to_string((updateTs / 1000LL) % 1000000LL).c_str());
+	GetDateTimeFromTimeStamp(updateTs, m_CurrDate, m_CurrTime);
 }
 

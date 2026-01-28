@@ -38,7 +38,6 @@ void Config::Load(const char* fileName)
 	MdDataPath = root["MdDataPath"].asString();
 	DumpPath = root["DumpPath"].asString();
 	SessionFile = root["SessionFile"].asString();
-	MarketDataType = root["MarketDataType"].asString();
 	StartTradingDay = root["StartTradingDay"].asString();
 	EndTradingDay = root["EndTradingDay"].asString();
 	DbType = root["DbType"].asString();
@@ -57,7 +56,6 @@ void Config::Print()
 	printf("MdDataPath:%s\n", MdDataPath.c_str());
 	printf("DumpPath:%s\n", DumpPath.c_str());
 	printf("SessionFile:%s\n", SessionFile.c_str());
-	printf("MarketDataType:%s\n", MarketDataType.c_str());
 	printf("StartTradingDay:%s\n", StartTradingDay.c_str());
 	printf("EndTradingDay:%s\n", EndTradingDay.c_str());
 	printf("DbType:%s\n", DbType.c_str());
