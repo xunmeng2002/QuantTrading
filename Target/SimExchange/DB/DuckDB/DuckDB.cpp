@@ -571,27 +571,29 @@ void DuckDB::CreateTradingDay()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_TradingDay (PK int, CurrTradingDay varchar, PreTradingDay varchar, PRIMARY KEY(PK));", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_TradingDay (PK int, CurrTradingDay varchar, PreTradingDay varchar, PRIMARY KEY(PK));";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateTradingDay failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateTradingDay Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateTradingDay Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropTradingDay()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_TradingDay;", &result);
+	const char* sql = "DROP TABLE IF EXISTS t_TradingDay;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropTradingDay failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropTradingDay Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropTradingDay Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertTradingDay(TradingDay* record)
 {
@@ -755,27 +757,29 @@ void DuckDB::CreateExchange()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Exchange (ExchangeID varchar, ExchangeName varchar, PRIMARY KEY(ExchangeID));", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Exchange (ExchangeID varchar, ExchangeName varchar, PRIMARY KEY(ExchangeID));";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateExchange failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropExchange()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Exchange;", &result);
+	const char* sql = "DROP TABLE IF EXISTS t_Exchange;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropExchange failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertExchange(Exchange* record)
 {
@@ -935,27 +939,29 @@ void DuckDB::CreateProduct()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Product (ExchangeID varchar, ProductID varchar, ProductName varchar, ProductClass int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, ProductID));", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Product (ExchangeID varchar, ProductID varchar, ProductName varchar, ProductClass int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, ProductID));";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateProduct failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateProduct Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateProduct Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropProduct()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Product;", &result);
+	const char* sql = "DROP TABLE IF EXISTS t_Product;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropProduct failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropProduct Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropProduct Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertProduct(Product* record)
 {
@@ -1157,27 +1163,29 @@ void DuckDB::CreateInstrument()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX InstrumentExchangeID ON t_Instrument(ExchangeID);", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Instrument (ExchangeID varchar, InstrumentID varchar, ExchangeInstID varchar, InstrumentName varchar, ProductID varchar, ProductClass int, InstrumentClass int, Rank int, VolumeMultiple int, PriceTick double, MaxMarketOrderVolume bigint, MinMarketOrderVolume bigint, MaxLimitOrderVolume bigint, MinLimitOrderVolume bigint, SessionName varchar, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX IF NOT EXISTS InstrumentExchangeID ON t_Instrument(ExchangeID);";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropInstrument()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX InstrumentExchangeID;DROP TABLE IF EXISTS t_Instrument;", &result);
+	const char* sql = "DROP INDEX InstrumentExchangeID;DROP TABLE IF EXISTS t_Instrument;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertInstrument(Instrument* record)
 {
@@ -1424,27 +1432,29 @@ void DuckDB::CreateDepthMarketData()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_DepthMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, UpdateTs bigint, LastPrice double, PreSettlementPrice double, PreClosePrice double, PreOpenInterest double, OpenPrice double, HighestPrice double, LowestPrice double, ClosePrice double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, SettlementPrice double, UpperLimitPrice double, LowerLimitPrice double, AveragePrice double, AskPrice1 double, AskPrice2 double, AskPrice3 double, AskPrice4 double, AskPrice5 double, AskPrice6 double, AskPrice7 double, AskPrice8 double, AskPrice9 double, AskPrice10 double, AskVolume1 bigint, AskVolume2 bigint, AskVolume3 bigint, AskVolume4 bigint, AskVolume5 bigint, AskVolume6 bigint, AskVolume7 bigint, AskVolume8 bigint, AskVolume9 bigint, AskVolume10 bigint, BidPrice1 double, BidPrice2 double, BidPrice3 double, BidPrice4 double, BidPrice5 double, BidPrice6 double, BidPrice7 double, BidPrice8 double, BidPrice9 double, BidPrice10 double, BidVolume1 bigint, BidVolume2 bigint, BidVolume3 bigint, BidVolume4 bigint, BidVolume5 bigint, BidVolume6 bigint, BidVolume7 bigint, BidVolume8 bigint, BidVolume9 bigint, BidVolume10 bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_DepthMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, UpdateTs bigint, LastPrice double, PreSettlementPrice double, PreClosePrice double, PreOpenInterest double, OpenPrice double, HighestPrice double, LowestPrice double, ClosePrice double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, SettlementPrice double, UpperLimitPrice double, LowerLimitPrice double, AveragePrice double, AskPrice1 double, AskPrice2 double, AskPrice3 double, AskPrice4 double, AskPrice5 double, AskPrice6 double, AskPrice7 double, AskPrice8 double, AskPrice9 double, AskPrice10 double, AskVolume1 bigint, AskVolume2 bigint, AskVolume3 bigint, AskVolume4 bigint, AskVolume5 bigint, AskVolume6 bigint, AskVolume7 bigint, AskVolume8 bigint, AskVolume9 bigint, AskVolume10 bigint, BidPrice1 double, BidPrice2 double, BidPrice3 double, BidPrice4 double, BidPrice5 double, BidPrice6 double, BidPrice7 double, BidPrice8 double, BidPrice9 double, BidPrice10 double, BidVolume1 bigint, BidVolume2 bigint, BidVolume3 bigint, BidVolume4 bigint, BidVolume5 bigint, BidVolume6 bigint, BidVolume7 bigint, BidVolume8 bigint, BidVolume9 bigint, BidVolume10 bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateDepthMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropDepthMarketData()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_DepthMarketData;", &result);
+	const char* sql = "DROP TABLE IF EXISTS t_DepthMarketData;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropDepthMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertDepthMarketData(DepthMarketData* record)
 {
@@ -1844,27 +1854,29 @@ void DuckDB::CreateBarMarketData()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_BarMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, BarPreces int, BarPeriod int, BarTime bigint, UpdateTs bigint, PreSettlementPrice double, PreClosePrice double, Open double, High double, Low double, Close double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, BarPreces int, BarPeriod int, BarTime bigint, UpdateTs bigint, PreSettlementPrice double, PreClosePrice double, Open double, High double, Low double, Close double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateBarMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropBarMarketData()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_BarMarketData;", &result);
+	const char* sql = "DROP TABLE IF EXISTS t_BarMarketData;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropBarMarketData failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertBarMarketData(BarMarketData* record)
 {
@@ -2092,27 +2104,29 @@ void DuckDB::CreatePrimaryAccount()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_PrimaryAccount (PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, Password varchar, OfferID int, IsAllowLogin int, IsSimulateAccount int, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount (PrimaryAccountID varchar, PrimaryAccountName varchar, AccountClass int, Password varchar, OfferID int, IsAllowLogin int, IsSimulateAccount int, LoginStatus int, InitStatus int, PRIMARY KEY(PrimaryAccountID));CREATE INDEX IF NOT EXISTS PrimaryAccountOfferID ON t_PrimaryAccount(OfferID);";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreatePrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropPrimaryAccount()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX PrimaryAccountOfferID;DROP TABLE IF EXISTS t_PrimaryAccount;", &result);
+	const char* sql = "DROP INDEX PrimaryAccountOfferID;DROP TABLE IF EXISTS t_PrimaryAccount;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropPrimaryAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertPrimaryAccount(PrimaryAccount* record)
 {
@@ -2326,27 +2340,29 @@ void DuckDB::CreateAccount()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Account (AccountID varchar, AccountName varchar, AccountType int, AccountStatus int, Password varchar, TradeGroupID int, RiskGroupID int, CommissionGroupID int, PRIMARY KEY(AccountID));", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Account (AccountID varchar, AccountName varchar, AccountType int, AccountStatus int, Password varchar, TradeGroupID int, RiskGroupID int, CommissionGroupID int, PRIMARY KEY(AccountID));";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateAccount Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateAccount Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropAccount()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_Account;", &result);
+	const char* sql = "DROP TABLE IF EXISTS t_Account;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropAccount failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropAccount Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropAccount Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertAccount(Account* record)
 {
@@ -2533,27 +2549,29 @@ void DuckDB::CreateCapital()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Capital (TradingDay varchar, AccountID varchar, AccountType int, Balance double, PreBalance double, Available double, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, FrozenCash double, FrozenMargin double, FrozenCommission double, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, Deposit double, Withdraw double, PRIMARY KEY(TradingDay, AccountID));CREATE INDEX CapitalTradingDay ON t_Capital(TradingDay);", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Capital (TradingDay varchar, AccountID varchar, AccountType int, Balance double, PreBalance double, Available double, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, FrozenCash double, FrozenMargin double, FrozenCommission double, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, Deposit double, Withdraw double, PRIMARY KEY(TradingDay, AccountID));CREATE INDEX IF NOT EXISTS CapitalTradingDay ON t_Capital(TradingDay);";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateCapital failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateCapital Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateCapital Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropCapital()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX CapitalTradingDay;DROP TABLE IF EXISTS t_Capital;", &result);
+	const char* sql = "DROP INDEX CapitalTradingDay;DROP TABLE IF EXISTS t_Capital;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropCapital failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropCapital Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropCapital Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertCapital(Capital* record)
 {
@@ -2808,27 +2826,29 @@ void DuckDB::CreatePosition()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Position (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, PosiDirection int, TotalPosition bigint, PositionFrozen bigint, TodayPosition bigint, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, FrozenCash double, FrozenMargin double, FrozenCommission double, VolumeMultiple int, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, SettlementPrice double, PreSettlementPrice double, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection));CREATE INDEX PositionAccount ON t_Position(TradingDay, AccountID);CREATE INDEX PositionTradingDay ON t_Position(TradingDay);", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Position (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, PosiDirection int, TotalPosition bigint, PositionFrozen bigint, TodayPosition bigint, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, FrozenCash double, FrozenMargin double, FrozenCommission double, VolumeMultiple int, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, SettlementPrice double, PreSettlementPrice double, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection));CREATE INDEX IF NOT EXISTS PositionAccount ON t_Position(TradingDay, AccountID);CREATE INDEX IF NOT EXISTS PositionTradingDay ON t_Position(TradingDay);";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreatePosition failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreatePosition Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreatePosition Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropPosition()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX PositionAccount;DROP INDEX PositionTradingDay;DROP TABLE IF EXISTS t_Position;", &result);
+	const char* sql = "DROP INDEX PositionAccount;DROP INDEX PositionTradingDay;DROP TABLE IF EXISTS t_Position;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropPosition failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropPosition Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropPosition Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertPosition(Position* record)
 {
@@ -3132,27 +3152,29 @@ void DuckDB::CreatePositionDetail()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_PositionDetail (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, PosiDirection int, OpenDate varchar, TradeID varchar, Volume bigint, OpenPrice double, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, VolumeMultiple int, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, SettlementPrice double, PreSettlementPrice double, CloseVolume bigint, CloseAmount double, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection, OpenDate, TradeID));CREATE INDEX PositionDetailTradeMatch ON t_PositionDetail(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection);CREATE INDEX PositionDetailTradingDay ON t_PositionDetail(TradingDay);", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_PositionDetail (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, PosiDirection int, OpenDate varchar, TradeID varchar, Volume bigint, OpenPrice double, MarketValue double, CashIn double, CashOut double, Margin double, Commission double, VolumeMultiple int, CloseProfitByDate double, CloseProfitByTrade double, PositionProfitByDate double, PositionProfitByTrade double, SettlementPrice double, PreSettlementPrice double, CloseVolume bigint, CloseAmount double, PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection, OpenDate, TradeID));CREATE INDEX IF NOT EXISTS PositionDetailTradeMatch ON t_PositionDetail(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection);CREATE INDEX IF NOT EXISTS PositionDetailTradingDay ON t_PositionDetail(TradingDay);";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreatePositionDetail failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreatePositionDetail Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreatePositionDetail Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropPositionDetail()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX PositionDetailTradeMatch;DROP INDEX PositionDetailTradingDay;DROP TABLE IF EXISTS t_PositionDetail;", &result);
+	const char* sql = "DROP INDEX PositionDetailTradeMatch;DROP INDEX PositionDetailTradingDay;DROP TABLE IF EXISTS t_PositionDetail;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropPositionDetail failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropPositionDetail Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropPositionDetail Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertPositionDetail(PositionDetail* record)
 {
@@ -3462,27 +3484,29 @@ void DuckDB::CreateOrder()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Order (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, RequestID int, OfferID int, TradeGroupID int, RiskGroupID int, CommissionGroupID int, FrozenCash double, FrozenMargin double, FrozenCommission double, RebuildMark int, IsForceClose int, UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));CREATE INDEX OrderAccountID ON t_Order(TradingDay, AccountID);", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Order (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, Direction int, OffsetFlag int, OrderPriceType int, Price double, Volume bigint, VolumeTotal bigint, VolumeTraded bigint, VolumeMultiple int, OrderStatus int, OrderDate varchar, OrderTime varchar, CancelDate varchar, CancelTime varchar, SessionID bigint, ClientOrderID int, RequestID int, OfferID int, TradeGroupID int, RiskGroupID int, CommissionGroupID int, FrozenCash double, FrozenMargin double, FrozenCommission double, RebuildMark int, IsForceClose int, UNIQUE (TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID));CREATE INDEX IF NOT EXISTS OrderAccountID ON t_Order(TradingDay, AccountID);";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateOrder Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateOrder Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropOrder()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX OrderAccountID;DROP TABLE IF EXISTS t_Order;", &result);
+	const char* sql = "DROP INDEX OrderAccountID;DROP TABLE IF EXISTS t_Order;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropOrder failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropOrder Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropOrder Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertOrder(Order* record)
 {
@@ -3810,27 +3834,29 @@ void DuckDB::CreateTrade()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_Trade (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));CREATE INDEX TradeAccountID ON t_Trade(TradingDay, AccountID);", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Trade (TradingDay varchar, AccountID varchar, AccountType int, ExchangeID varchar, InstrumentID varchar, ProductClass int, OrderID int, OrderSysID varchar, TradeID varchar, Direction int, OffsetFlag int, Price double, Volume bigint, VolumeMultiple int, TradeAmount double, Commission double, TradeDate varchar, TradeTime varchar, PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction));CREATE INDEX IF NOT EXISTS TradeAccountID ON t_Trade(TradingDay, AccountID);";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateTrade failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateTrade Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateTrade Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropTrade()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX TradeAccountID;DROP TABLE IF EXISTS t_Trade;", &result);
+	const char* sql = "DROP INDEX TradeAccountID;DROP TABLE IF EXISTS t_Trade;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropTrade failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropTrade Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropTrade Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertTrade(Trade* record)
 {
@@ -4095,27 +4121,29 @@ void DuckDB::CreateAccountLoginSession()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_AccountLoginSession (AccountID varchar, SessionID bigint, IPAddress varchar, PRIMARY KEY(SessionID));CREATE INDEX AccountLoginSessionAccountID ON t_AccountLoginSession(AccountID);", &result);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_AccountLoginSession (AccountID varchar, SessionID bigint, IPAddress varchar, PRIMARY KEY(SessionID));CREATE INDEX IF NOT EXISTS AccountLoginSessionAccountID ON t_AccountLoginSession(AccountID);";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "CreateAccountLoginSession failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateAccountLoginSession Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateAccountLoginSession Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::DropAccountLoginSession()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	auto rc = duckdb_query(m_Connection, "DROP INDEX AccountLoginSessionAccountID;DROP TABLE IF EXISTS t_AccountLoginSession;", &result);
+	const char* sql = "DROP INDEX AccountLoginSessionAccountID;DROP TABLE IF EXISTS t_AccountLoginSession;";
+	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
 		WriteLog(LogLevel::Warning, "DropAccountLoginSession failed, ErrorMsg:%s", duckdb_result_error(&result));
 	}
 	duckdb_destroy_result(&result);
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropAccountLoginSession Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropAccountLoginSession Spend:%lldms, sql:%s", duration, sql);
 }
 void DuckDB::InsertAccountLoginSession(AccountLoginSession* record)
 {

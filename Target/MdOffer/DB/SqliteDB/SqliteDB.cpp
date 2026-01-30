@@ -341,7 +341,8 @@ void SqliteDB::CreateExchange()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Exchange(`ExchangeID` text, `ExchangeName` text, PRIMARY KEY(ExchangeID));", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Exchange(`ExchangeID` text, `ExchangeName` text, PRIMARY KEY(ExchangeID));";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateExchange failed, ErrorMsg:%s", t_ErrorMsg);
@@ -349,13 +350,14 @@ void SqliteDB::CreateExchange()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::DropExchange()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_Exchange;", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "DROP TABLE IF EXISTS t_Exchange;";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropExchange failed, ErrorMsg:%s", t_ErrorMsg);
@@ -363,7 +365,7 @@ void SqliteDB::DropExchange()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::InsertExchange(Exchange* record)
 {
@@ -512,7 +514,8 @@ void SqliteDB::CreateInstrument()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` text, `InstrumentID` text, `ExchangeInstID` text, `InstrumentName` text, `ProductID` text, `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` double, `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` text, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX InstrumentExchangeID ON t_Instrument(ExchangeID);", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` text, `InstrumentID` text, `ExchangeInstID` text, `InstrumentName` text, `ProductID` text, `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` double, `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` text, PRIMARY KEY(ExchangeID, InstrumentID));CREATE INDEX IF NOT EXISTS InstrumentExchangeID ON t_Instrument(ExchangeID);";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateInstrument failed, ErrorMsg:%s", t_ErrorMsg);
@@ -520,13 +523,14 @@ void SqliteDB::CreateInstrument()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::DropInstrument()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP INDEX InstrumentExchangeID;DROP TABLE IF EXISTS t_Instrument;", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "DROP INDEX InstrumentExchangeID;DROP TABLE IF EXISTS t_Instrument;";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropInstrument failed, ErrorMsg:%s", t_ErrorMsg);
@@ -534,7 +538,7 @@ void SqliteDB::DropInstrument()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::InsertInstrument(Instrument* record)
 {
@@ -705,7 +709,8 @@ void SqliteDB::CreateDepthMarketData()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_DepthMarketData(`TradingDay` text, `ExchangeID` text, `InstrumentID` text, `UpdateTs` bigint, `LastPrice` double, `PreSettlementPrice` double, `PreClosePrice` double, `PreOpenInterest` double, `OpenPrice` double, `HighestPrice` double, `LowestPrice` double, `ClosePrice` double, `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` double, `Turnover` double, `OpenInterest` double, `SettlementPrice` double, `UpperLimitPrice` double, `LowerLimitPrice` double, `AveragePrice` double, `AskPrice1` double, `AskPrice2` double, `AskPrice3` double, `AskPrice4` double, `AskPrice5` double, `AskPrice6` double, `AskPrice7` double, `AskPrice8` double, `AskPrice9` double, `AskPrice10` double, `AskVolume1` bigint, `AskVolume2` bigint, `AskVolume3` bigint, `AskVolume4` bigint, `AskVolume5` bigint, `AskVolume6` bigint, `AskVolume7` bigint, `AskVolume8` bigint, `AskVolume9` bigint, `AskVolume10` bigint, `BidPrice1` double, `BidPrice2` double, `BidPrice3` double, `BidPrice4` double, `BidPrice5` double, `BidPrice6` double, `BidPrice7` double, `BidPrice8` double, `BidPrice9` double, `BidPrice10` double, `BidVolume1` bigint, `BidVolume2` bigint, `BidVolume3` bigint, `BidVolume4` bigint, `BidVolume5` bigint, `BidVolume6` bigint, `BidVolume7` bigint, `BidVolume8` bigint, `BidVolume9` bigint, `BidVolume10` bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_DepthMarketData(`TradingDay` text, `ExchangeID` text, `InstrumentID` text, `UpdateTs` bigint, `LastPrice` double, `PreSettlementPrice` double, `PreClosePrice` double, `PreOpenInterest` double, `OpenPrice` double, `HighestPrice` double, `LowestPrice` double, `ClosePrice` double, `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` double, `Turnover` double, `OpenInterest` double, `SettlementPrice` double, `UpperLimitPrice` double, `LowerLimitPrice` double, `AveragePrice` double, `AskPrice1` double, `AskPrice2` double, `AskPrice3` double, `AskPrice4` double, `AskPrice5` double, `AskPrice6` double, `AskPrice7` double, `AskPrice8` double, `AskPrice9` double, `AskPrice10` double, `AskVolume1` bigint, `AskVolume2` bigint, `AskVolume3` bigint, `AskVolume4` bigint, `AskVolume5` bigint, `AskVolume6` bigint, `AskVolume7` bigint, `AskVolume8` bigint, `AskVolume9` bigint, `AskVolume10` bigint, `BidPrice1` double, `BidPrice2` double, `BidPrice3` double, `BidPrice4` double, `BidPrice5` double, `BidPrice6` double, `BidPrice7` double, `BidPrice8` double, `BidPrice9` double, `BidPrice10` double, `BidVolume1` bigint, `BidVolume2` bigint, `BidVolume3` bigint, `BidVolume4` bigint, `BidVolume5` bigint, `BidVolume6` bigint, `BidVolume7` bigint, `BidVolume8` bigint, `BidVolume9` bigint, `BidVolume10` bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID));";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateDepthMarketData failed, ErrorMsg:%s", t_ErrorMsg);
@@ -713,13 +718,14 @@ void SqliteDB::CreateDepthMarketData()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::DropDepthMarketData()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_DepthMarketData;", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "DROP TABLE IF EXISTS t_DepthMarketData;";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropDepthMarketData failed, ErrorMsg:%s", t_ErrorMsg);
@@ -727,7 +733,7 @@ void SqliteDB::DropDepthMarketData()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::InsertDepthMarketData(DepthMarketData* record)
 {
@@ -877,7 +883,8 @@ void SqliteDB::CreateBarMarketData()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` text, `ExchangeID` text, `InstrumentID` text, `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` double, `PreClosePrice` double, `Open` double, `High` double, `Low` double, `Close` double, `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` double, `Turnover` double, `OpenInterest` double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` text, `ExchangeID` text, `InstrumentID` text, `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` double, `PreClosePrice` double, `Open` double, `High` double, `Low` double, `Close` double, `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` double, `Turnover` double, `OpenInterest` double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateBarMarketData failed, ErrorMsg:%s", t_ErrorMsg);
@@ -885,13 +892,14 @@ void SqliteDB::CreateBarMarketData()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::DropBarMarketData()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_BarMarketData;", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "DROP TABLE IF EXISTS t_BarMarketData;";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropBarMarketData failed, ErrorMsg:%s", t_ErrorMsg);
@@ -899,7 +907,7 @@ void SqliteDB::DropBarMarketData()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::InsertBarMarketData(BarMarketData* record)
 {
@@ -1049,7 +1057,8 @@ void SqliteDB::CreateMdSubscribe()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_MdSubscribe(`ExchangeID` text, `InstrumentID` text, `RealInstrumentID` text, `ProductID` text, `ProductClass` int, `StartTradingDay` text, `EndTradingDay` text, PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay));", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_MdSubscribe(`ExchangeID` text, `InstrumentID` text, `RealInstrumentID` text, `ProductID` text, `ProductClass` int, `StartTradingDay` text, `EndTradingDay` text, PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay));";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateMdSubscribe failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1057,13 +1066,14 @@ void SqliteDB::CreateMdSubscribe()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateMdSubscribe Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateMdSubscribe Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::DropMdSubscribe()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_MdSubscribe;", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "DROP TABLE IF EXISTS t_MdSubscribe;";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropMdSubscribe failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1071,7 +1081,7 @@ void SqliteDB::DropMdSubscribe()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropMdSubscribe Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropMdSubscribe Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::InsertMdSubscribe(MdSubscribe* record)
 {
@@ -1220,7 +1230,8 @@ void SqliteDB::CreateMdUser()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_MdUser(`MdUserID` text, `MdUserName` text, `Password` text, PRIMARY KEY(MdUserID));", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_MdUser(`MdUserID` text, `MdUserName` text, `Password` text, PRIMARY KEY(MdUserID));";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateMdUser failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1228,13 +1239,14 @@ void SqliteDB::CreateMdUser()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateMdUser Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateMdUser Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::DropMdUser()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP TABLE IF EXISTS t_MdUser;", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "DROP TABLE IF EXISTS t_MdUser;";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropMdUser failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1242,7 +1254,7 @@ void SqliteDB::DropMdUser()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropMdUser Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropMdUser Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::InsertMdUser(MdUser* record)
 {
@@ -1391,7 +1403,8 @@ void SqliteDB::CreateMdUserLoginSession()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(`MdUserID` text, `SessionID` bigint, `IPAddress` text, PRIMARY KEY(SessionID));CREATE INDEX MdUserLoginSessionMdUserID ON t_MdUserLoginSession(MdUserID);", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_MdUserLoginSession(`MdUserID` text, `SessionID` bigint, `IPAddress` text, PRIMARY KEY(SessionID));CREATE INDEX IF NOT EXISTS MdUserLoginSessionMdUserID ON t_MdUserLoginSession(MdUserID);";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "CreateMdUserLoginSession failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1399,13 +1412,14 @@ void SqliteDB::CreateMdUserLoginSession()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateMdUserLoginSession Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateMdUserLoginSession Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::DropMdUserLoginSession()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	auto rc = sqlite3_exec(m_DB, "DROP INDEX MdUserLoginSessionMdUserID;DROP TABLE IF EXISTS t_MdUserLoginSession;", nullptr, nullptr, &t_ErrorMsg);
+	const char* sql = "DROP INDEX MdUserLoginSessionMdUserID;DROP TABLE IF EXISTS t_MdUserLoginSession;";
+	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
 		WriteLog(LogLevel::Warning, "DropMdUserLoginSession failed, ErrorMsg:%s", t_ErrorMsg);
@@ -1413,7 +1427,7 @@ void SqliteDB::DropMdUserLoginSession()
 	}
 	
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropMdUserLoginSession Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropMdUserLoginSession Spend:%lldms, sql:%s", duration, sql);
 }
 void SqliteDB::InsertMdUserLoginSession(MdUserLoginSession* record)
 {

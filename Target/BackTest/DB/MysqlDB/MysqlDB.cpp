@@ -877,24 +877,26 @@ void MysqlDB::TruncateSessionTables()
 void MysqlDB::CreateTradingDay()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_TradingDay(`PK` int, `CurrTradingDay` char(9), `PreTradingDay` char(9), PRIMARY KEY(PK)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_TradingDayCreateStatement == nullptr)
 	{
-		m_TradingDayCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_TradingDay(`PK` int, `CurrTradingDay` char(9), `PreTradingDay` char(9), PRIMARY KEY(PK)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_TradingDayCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_TradingDayCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateTradingDay Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateTradingDay Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropTradingDay()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_TradingDay;";
 	if (m_TradingDayDropStatement == nullptr)
 	{
-		m_TradingDayDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_TradingDay;");
+		m_TradingDayDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_TradingDayDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropTradingDay Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropTradingDay Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertTradingDay(TradingDay* record)
 {
@@ -1011,24 +1013,26 @@ void MysqlDB::TruncateTradingDay()
 void MysqlDB::CreateExchange()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Exchange(`ExchangeID` char(8), `ExchangeName` char(64), PRIMARY KEY(ExchangeID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_ExchangeCreateStatement == nullptr)
 	{
-		m_ExchangeCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Exchange(`ExchangeID` char(8), `ExchangeName` char(64), PRIMARY KEY(ExchangeID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_ExchangeCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_ExchangeCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateExchange Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropExchange()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_Exchange;";
 	if (m_ExchangeDropStatement == nullptr)
 	{
-		m_ExchangeDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Exchange;");
+		m_ExchangeDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_ExchangeDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropExchange Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertExchange(Exchange* record)
 {
@@ -1145,24 +1149,26 @@ void MysqlDB::TruncateExchange()
 void MysqlDB::CreateProduct()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Product(`ExchangeID` char(8), `ProductID` char(32), `ProductName` char(32), `ProductClass` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), PRIMARY KEY(ExchangeID, ProductID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_ProductCreateStatement == nullptr)
 	{
-		m_ProductCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Product(`ExchangeID` char(8), `ProductID` char(32), `ProductName` char(32), `ProductClass` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), PRIMARY KEY(ExchangeID, ProductID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_ProductCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_ProductCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateProduct Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateProduct Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropProduct()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_Product;";
 	if (m_ProductDropStatement == nullptr)
 	{
-		m_ProductDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Product;");
+		m_ProductDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_ProductDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropProduct Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropProduct Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertProduct(Product* record)
 {
@@ -1279,24 +1285,26 @@ void MysqlDB::TruncateProduct()
 void MysqlDB::CreateHotInstrument()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_HotInstrument(`TradingDay` char(9), `ExchangeID` char(8), `ProductID` char(32), `InstrumentID` char(32), `ProductClass` int, `Volume` bigint, `MaxVolume` bigint, `Turnover` decimal(24,8), `MaxTurnover` decimal(24,8), `OpenInterest` decimal(24,8), `MaxOpenInterest` decimal(24,8), `Rank` int, INDEX HotInstrumentTradingDay(ExchangeID, ProductID, Rank, TradingDay), PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_HotInstrumentCreateStatement == nullptr)
 	{
-		m_HotInstrumentCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_HotInstrument(`TradingDay` char(9), `ExchangeID` char(8), `ProductID` char(32), `InstrumentID` char(32), `ProductClass` int, `Volume` bigint, `MaxVolume` bigint, `Turnover` decimal(24,8), `MaxTurnover` decimal(24,8), `OpenInterest` decimal(24,8), `MaxOpenInterest` decimal(24,8), `Rank` int, INDEX HotInstrumentTradingDay(ExchangeID, ProductID, Rank, TradingDay), PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_HotInstrumentCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_HotInstrumentCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateHotInstrument Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateHotInstrument Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropHotInstrument()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_HotInstrument;";
 	if (m_HotInstrumentDropStatement == nullptr)
 	{
-		m_HotInstrumentDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_HotInstrument;");
+		m_HotInstrumentDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_HotInstrumentDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropHotInstrument Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropHotInstrument Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertHotInstrument(HotInstrument* record)
 {
@@ -1428,24 +1436,26 @@ void MysqlDB::TruncateHotInstrument()
 void MysqlDB::CreateInstrument()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` char(8), `InstrumentID` char(32), `ExchangeInstID` char(32), `InstrumentName` char(64), `ProductID` char(32), `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), INDEX InstrumentExchangeID(ExchangeID), PRIMARY KEY(ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_InstrumentCreateStatement == nullptr)
 	{
-		m_InstrumentCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Instrument(`ExchangeID` char(8), `InstrumentID` char(32), `ExchangeInstID` char(32), `InstrumentName` char(64), `ProductID` char(32), `ProductClass` int, `InstrumentClass` int, `Rank` int, `VolumeMultiple` int, `PriceTick` decimal(24,8), `MaxMarketOrderVolume` bigint, `MinMarketOrderVolume` bigint, `MaxLimitOrderVolume` bigint, `MinLimitOrderVolume` bigint, `SessionName` char(32), INDEX InstrumentExchangeID(ExchangeID), PRIMARY KEY(ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_InstrumentCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_InstrumentCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateInstrument Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropInstrument()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_Instrument;";
 	if (m_InstrumentDropStatement == nullptr)
 	{
-		m_InstrumentDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Instrument;");
+		m_InstrumentDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_InstrumentDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropInstrument Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertInstrument(Instrument* record)
 {
@@ -1577,24 +1587,26 @@ void MysqlDB::TruncateInstrument()
 void MysqlDB::CreateDepthMarketData()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_DepthMarketData(`TradingDay` char(9), `ExchangeID` char(8), `InstrumentID` char(32), `UpdateTs` bigint, `LastPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `PreOpenInterest` decimal(24,8), `OpenPrice` decimal(24,8), `HighestPrice` decimal(24,8), `LowestPrice` decimal(24,8), `ClosePrice` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), `SettlementPrice` decimal(24,8), `UpperLimitPrice` decimal(24,8), `LowerLimitPrice` decimal(24,8), `AveragePrice` decimal(24,8), `AskPrice1` decimal(24,8), `AskPrice2` decimal(24,8), `AskPrice3` decimal(24,8), `AskPrice4` decimal(24,8), `AskPrice5` decimal(24,8), `AskPrice6` decimal(24,8), `AskPrice7` decimal(24,8), `AskPrice8` decimal(24,8), `AskPrice9` decimal(24,8), `AskPrice10` decimal(24,8), `AskVolume1` bigint, `AskVolume2` bigint, `AskVolume3` bigint, `AskVolume4` bigint, `AskVolume5` bigint, `AskVolume6` bigint, `AskVolume7` bigint, `AskVolume8` bigint, `AskVolume9` bigint, `AskVolume10` bigint, `BidPrice1` decimal(24,8), `BidPrice2` decimal(24,8), `BidPrice3` decimal(24,8), `BidPrice4` decimal(24,8), `BidPrice5` decimal(24,8), `BidPrice6` decimal(24,8), `BidPrice7` decimal(24,8), `BidPrice8` decimal(24,8), `BidPrice9` decimal(24,8), `BidPrice10` decimal(24,8), `BidVolume1` bigint, `BidVolume2` bigint, `BidVolume3` bigint, `BidVolume4` bigint, `BidVolume5` bigint, `BidVolume6` bigint, `BidVolume7` bigint, `BidVolume8` bigint, `BidVolume9` bigint, `BidVolume10` bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_DepthMarketDataCreateStatement == nullptr)
 	{
-		m_DepthMarketDataCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_DepthMarketData(`TradingDay` char(9), `ExchangeID` char(8), `InstrumentID` char(32), `UpdateTs` bigint, `LastPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `PreOpenInterest` decimal(24,8), `OpenPrice` decimal(24,8), `HighestPrice` decimal(24,8), `LowestPrice` decimal(24,8), `ClosePrice` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), `SettlementPrice` decimal(24,8), `UpperLimitPrice` decimal(24,8), `LowerLimitPrice` decimal(24,8), `AveragePrice` decimal(24,8), `AskPrice1` decimal(24,8), `AskPrice2` decimal(24,8), `AskPrice3` decimal(24,8), `AskPrice4` decimal(24,8), `AskPrice5` decimal(24,8), `AskPrice6` decimal(24,8), `AskPrice7` decimal(24,8), `AskPrice8` decimal(24,8), `AskPrice9` decimal(24,8), `AskPrice10` decimal(24,8), `AskVolume1` bigint, `AskVolume2` bigint, `AskVolume3` bigint, `AskVolume4` bigint, `AskVolume5` bigint, `AskVolume6` bigint, `AskVolume7` bigint, `AskVolume8` bigint, `AskVolume9` bigint, `AskVolume10` bigint, `BidPrice1` decimal(24,8), `BidPrice2` decimal(24,8), `BidPrice3` decimal(24,8), `BidPrice4` decimal(24,8), `BidPrice5` decimal(24,8), `BidPrice6` decimal(24,8), `BidPrice7` decimal(24,8), `BidPrice8` decimal(24,8), `BidPrice9` decimal(24,8), `BidPrice10` decimal(24,8), `BidVolume1` bigint, `BidVolume2` bigint, `BidVolume3` bigint, `BidVolume4` bigint, `BidVolume5` bigint, `BidVolume6` bigint, `BidVolume7` bigint, `BidVolume8` bigint, `BidVolume9` bigint, `BidVolume10` bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_DepthMarketDataCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_DepthMarketDataCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateDepthMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropDepthMarketData()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_DepthMarketData;";
 	if (m_DepthMarketDataDropStatement == nullptr)
 	{
-		m_DepthMarketDataDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_DepthMarketData;");
+		m_DepthMarketDataDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_DepthMarketDataDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropDepthMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertDepthMarketData(DepthMarketData* record)
 {
@@ -1712,24 +1724,26 @@ void MysqlDB::TruncateDepthMarketData()
 void MysqlDB::CreateBarMarketData()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` char(9), `ExchangeID` char(8), `InstrumentID` char(32), `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `Open` decimal(24,8), `High` decimal(24,8), `Low` decimal(24,8), `Close` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_BarMarketDataCreateStatement == nullptr)
 	{
-		m_BarMarketDataCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` char(9), `ExchangeID` char(8), `InstrumentID` char(32), `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `Open` decimal(24,8), `High` decimal(24,8), `Low` decimal(24,8), `Close` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_BarMarketDataCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_BarMarketDataCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateBarMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropBarMarketData()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_BarMarketData;";
 	if (m_BarMarketDataDropStatement == nullptr)
 	{
-		m_BarMarketDataDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_BarMarketData;");
+		m_BarMarketDataDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_BarMarketDataDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropBarMarketData Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertBarMarketData(BarMarketData* record)
 {
@@ -1847,24 +1861,26 @@ void MysqlDB::TruncateBarMarketData()
 void MysqlDB::CreateMdSubscribe()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_MdSubscribe(`ExchangeID` char(8), `InstrumentID` char(32), `RealInstrumentID` char(32), `ProductID` char(32), `ProductClass` int, `StartTradingDay` char(9), `EndTradingDay` char(9), PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_MdSubscribeCreateStatement == nullptr)
 	{
-		m_MdSubscribeCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_MdSubscribe(`ExchangeID` char(8), `InstrumentID` char(32), `RealInstrumentID` char(32), `ProductID` char(32), `ProductClass` int, `StartTradingDay` char(9), `EndTradingDay` char(9), PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_MdSubscribeCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_MdSubscribeCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateMdSubscribe Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateMdSubscribe Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropMdSubscribe()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_MdSubscribe;";
 	if (m_MdSubscribeDropStatement == nullptr)
 	{
-		m_MdSubscribeDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_MdSubscribe;");
+		m_MdSubscribeDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_MdSubscribeDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropMdSubscribe Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropMdSubscribe Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertMdSubscribe(MdSubscribe* record)
 {
@@ -1981,24 +1997,26 @@ void MysqlDB::TruncateMdSubscribe()
 void MysqlDB::CreatePrimaryAccount()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_PrimaryAccount(`PrimaryAccountID` char(32), `PrimaryAccountName` char(64), `AccountClass` int, `Password` char(64), `OfferID` int, `IsAllowLogin` bool, `IsSimulateAccount` bool, `LoginStatus` int, `InitStatus` int, INDEX PrimaryAccountOfferID(OfferID), PRIMARY KEY(PrimaryAccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_PrimaryAccountCreateStatement == nullptr)
 	{
-		m_PrimaryAccountCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_PrimaryAccount(`PrimaryAccountID` char(32), `PrimaryAccountName` char(64), `AccountClass` int, `Password` char(64), `OfferID` int, `IsAllowLogin` bool, `IsSimulateAccount` bool, `LoginStatus` int, `InitStatus` int, INDEX PrimaryAccountOfferID(OfferID), PRIMARY KEY(PrimaryAccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_PrimaryAccountCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_PrimaryAccountCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreatePrimaryAccount Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropPrimaryAccount()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_PrimaryAccount;";
 	if (m_PrimaryAccountDropStatement == nullptr)
 	{
-		m_PrimaryAccountDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_PrimaryAccount;");
+		m_PrimaryAccountDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_PrimaryAccountDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropPrimaryAccount Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertPrimaryAccount(PrimaryAccount* record)
 {
@@ -2130,24 +2148,26 @@ void MysqlDB::TruncatePrimaryAccount()
 void MysqlDB::CreateAccount()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Account(`AccountID` char(32), `AccountName` char(64), `AccountType` int, `AccountStatus` int, `Password` char(64), `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, PRIMARY KEY(AccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_AccountCreateStatement == nullptr)
 	{
-		m_AccountCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Account(`AccountID` char(32), `AccountName` char(64), `AccountType` int, `AccountStatus` int, `Password` char(64), `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, PRIMARY KEY(AccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_AccountCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_AccountCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateAccount Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateAccount Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropAccount()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_Account;";
 	if (m_AccountDropStatement == nullptr)
 	{
-		m_AccountDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Account;");
+		m_AccountDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_AccountDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropAccount Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropAccount Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertAccount(Account* record)
 {
@@ -2264,24 +2284,26 @@ void MysqlDB::TruncateAccount()
 void MysqlDB::CreateCapital()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Capital(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `Balance` decimal(24,8), `PreBalance` decimal(24,8), `Available` decimal(24,8), `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `Deposit` decimal(24,8), `Withdraw` decimal(24,8), INDEX CapitalTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_CapitalCreateStatement == nullptr)
 	{
-		m_CapitalCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Capital(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `Balance` decimal(24,8), `PreBalance` decimal(24,8), `Available` decimal(24,8), `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `Deposit` decimal(24,8), `Withdraw` decimal(24,8), INDEX CapitalTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_CapitalCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_CapitalCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateCapital Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateCapital Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropCapital()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_Capital;";
 	if (m_CapitalDropStatement == nullptr)
 	{
-		m_CapitalDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Capital;");
+		m_CapitalDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_CapitalDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropCapital Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropCapital Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertCapital(Capital* record)
 {
@@ -2413,24 +2435,26 @@ void MysqlDB::TruncateCapital()
 void MysqlDB::CreatePosition()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Position(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `PosiDirection` int, `TotalPosition` bigint, `PositionFrozen` bigint, `TodayPosition` bigint, `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `VolumeMultiple` int, `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `SettlementPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), INDEX PositionAccount(TradingDay, AccountID), INDEX PositionTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_PositionCreateStatement == nullptr)
 	{
-		m_PositionCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Position(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `PosiDirection` int, `TotalPosition` bigint, `PositionFrozen` bigint, `TodayPosition` bigint, `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `VolumeMultiple` int, `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `SettlementPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), INDEX PositionAccount(TradingDay, AccountID), INDEX PositionTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_PositionCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_PositionCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreatePosition Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreatePosition Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropPosition()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_Position;";
 	if (m_PositionDropStatement == nullptr)
 	{
-		m_PositionDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Position;");
+		m_PositionDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_PositionDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropPosition Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropPosition Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertPosition(Position* record)
 {
@@ -2577,24 +2601,26 @@ void MysqlDB::TruncatePosition()
 void MysqlDB::CreatePositionDetail()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_PositionDetail(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `PosiDirection` int, `OpenDate` char(9), `TradeID` char(64), `Volume` bigint, `OpenPrice` decimal(24,8), `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `VolumeMultiple` int, `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `SettlementPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `CloseVolume` bigint, `CloseAmount` decimal(24,8), INDEX PositionDetailTradeMatch(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection), INDEX PositionDetailTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection, OpenDate, TradeID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_PositionDetailCreateStatement == nullptr)
 	{
-		m_PositionDetailCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_PositionDetail(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `PosiDirection` int, `OpenDate` char(9), `TradeID` char(64), `Volume` bigint, `OpenPrice` decimal(24,8), `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `VolumeMultiple` int, `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `SettlementPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `CloseVolume` bigint, `CloseAmount` decimal(24,8), INDEX PositionDetailTradeMatch(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection), INDEX PositionDetailTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection, OpenDate, TradeID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_PositionDetailCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_PositionDetailCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreatePositionDetail Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreatePositionDetail Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropPositionDetail()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_PositionDetail;";
 	if (m_PositionDetailDropStatement == nullptr)
 	{
-		m_PositionDetailDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_PositionDetail;");
+		m_PositionDetailDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_PositionDetailDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropPositionDetail Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropPositionDetail Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertPositionDetail(PositionDetail* record)
 {
@@ -2741,24 +2767,26 @@ void MysqlDB::TruncatePositionDetail()
 void MysqlDB::CreateOrder()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Order(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `Direction` int, `OffsetFlag` int, `OrderPriceType` int, `Price` decimal(24,8), `Volume` bigint, `VolumeTotal` bigint, `VolumeTraded` bigint, `VolumeMultiple` int, `OrderStatus` int, `OrderDate` char(9), `OrderTime` char(9), `CancelDate` char(9), `CancelTime` char(9), `SessionID` bigint, `ClientOrderID` int, `RequestID` int, `OfferID` int, `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `RebuildMark` bool, `IsForceClose` bool, INDEX OrderAccountID(TradingDay, AccountID), UNIQUE ClientOrderID(TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_OrderCreateStatement == nullptr)
 	{
-		m_OrderCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Order(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `Direction` int, `OffsetFlag` int, `OrderPriceType` int, `Price` decimal(24,8), `Volume` bigint, `VolumeTotal` bigint, `VolumeTraded` bigint, `VolumeMultiple` int, `OrderStatus` int, `OrderDate` char(9), `OrderTime` char(9), `CancelDate` char(9), `CancelTime` char(9), `SessionID` bigint, `ClientOrderID` int, `RequestID` int, `OfferID` int, `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `RebuildMark` bool, `IsForceClose` bool, INDEX OrderAccountID(TradingDay, AccountID), UNIQUE ClientOrderID(TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_OrderCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_OrderCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateOrder Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateOrder Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropOrder()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_Order;";
 	if (m_OrderDropStatement == nullptr)
 	{
-		m_OrderDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Order;");
+		m_OrderDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_OrderDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropOrder Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropOrder Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertOrder(Order* record)
 {
@@ -2890,24 +2918,26 @@ void MysqlDB::TruncateOrder()
 void MysqlDB::CreateTrade()
 {
 	auto start = steady_clock::now();
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Trade(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `TradeID` char(64), `Direction` int, `OffsetFlag` int, `Price` decimal(24,8), `Volume` bigint, `VolumeMultiple` int, `TradeAmount` decimal(24,8), `Commission` decimal(24,8), `TradeDate` char(9), `TradeTime` char(9), INDEX TradeAccountID(TradingDay, AccountID), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_TradeCreateStatement == nullptr)
 	{
-		m_TradeCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_Trade(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `TradeID` char(64), `Direction` int, `OffsetFlag` int, `Price` decimal(24,8), `Volume` bigint, `VolumeMultiple` int, `TradeAmount` decimal(24,8), `Commission` decimal(24,8), `TradeDate` char(9), `TradeTime` char(9), INDEX TradeAccountID(TradingDay, AccountID), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+		m_TradeCreateStatement = m_DBConnection->prepareStatement(sql);
 	}
 	m_TradeCreateStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "CreateTrade Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "CreateTrade Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::DropTrade()
 {
 	auto start = steady_clock::now();
+	const char* sql = "DROP TABLE IF EXISTS t_Trade;";
 	if (m_TradeDropStatement == nullptr)
 	{
-		m_TradeDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_Trade;");
+		m_TradeDropStatement = m_DBConnection->prepareStatement("sql");
 	}
 	m_TradeDropStatement->executeUpdate();
 	auto duration = GetDuration<chrono::milliseconds>(start);
-	WriteLog(LogLevel::Info, "DropTrade Spend:%lldms", duration);
+	WriteLog(LogLevel::Info, "DropTrade Spend:%lldms, sql:%s", duration, sql);
 }
 void MysqlDB::InsertTrade(Trade* record)
 {
