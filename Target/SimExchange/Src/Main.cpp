@@ -11,6 +11,8 @@
 #include "MdFront.h"
 #include "TradeFront.h"
 #include "SimExchange.h"
+#include "InnerMdApi.h"
+#include "InnerMdSpiImpl.h"
 #include <string.h>
 #ifdef LINUX
 #include <signal.h>
@@ -60,15 +62,23 @@ int main(int argc, char* argv[])
 	mdb->Subscribe(dbWriter);
 	dbWriter->Subscribe(mdb);
 
+
+	InnerMdApi* innerMdApi = new InnerMdApi();
+	InnerMdSpiImpl* innerMdSpi = new InnerMdSpiImpl(innerMdApi, config.MdUser, config.MdPassword);
+	innerMdApi->RegisterSpi(innerMdSpi);
+	innerMdApi->RegisterFront(serverConfig.MdOfferAddress.c_str());
 	TradeFront* tradeFront = new TradeFront(serverConfig.TradeFrontAddress.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str());
-	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, config.MatchMode);
+	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, innerMdSpi, config.MatchMode);
 	tradeFront->Subscribe(simExchange);
 	//mdFront->Subscribe(*);
+	innerMdSpi->SetSimExchange(simExchange);
+
 
 	simExchange->Init();
 	tradeFront->Init();
 	//mdFront->Init();
+	innerMdApi->Init();
 	dbWriter->Start();
 	simExchange->Start();
 	tradeFront->Start();
@@ -78,6 +88,7 @@ int main(int argc, char* argv[])
 	simExchange->Join();
 	tradeFront->Join();
 	mdFront->Join();
+	innerMdApi->Join(); 
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

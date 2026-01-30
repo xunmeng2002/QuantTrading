@@ -168,6 +168,22 @@ namespace mdb
 	{
 		return std::hash<string>()(record->TradingDay) + std::hash<string>()(record->ExchangeID) + std::hash<string>()(record->InstrumentID) + std::hash<char>()((char)record->BarPreces) + std::hash<int>()(record->BarPeriod) + std::hash<long long>()(record->BarTime);
 	}
+	bool MdUserEqualForMdUserPrimaryKey::operator()(const MdUser* const left, const MdUser* const right) const
+	{
+		return strcmp(left->MdUserID, right->MdUserID) == 0;
+	}
+	bool MdUserLessForMdUserPrimaryKey::operator()(const MdUser* const left, const MdUser* const right) const
+	{
+		if (strcmp(left->MdUserID, right->MdUserID) < 0)
+			return true;
+		else if (strcmp(left->MdUserID, right->MdUserID) > 0)
+			return false;
+		return false;
+	}
+	size_t MdUserHashForMdUserPrimaryKey::operator()(const MdUser* const record) const
+	{
+		return std::hash<string>()(record->MdUserID);
+	}
 	bool PrimaryAccountEqualForPrimaryAccountPrimaryKey::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
 	{
 		return strcmp(left->PrimaryAccountID, right->PrimaryAccountID) == 0;

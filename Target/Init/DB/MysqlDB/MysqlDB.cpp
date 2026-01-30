@@ -80,6 +80,14 @@ MysqlDB::MysqlDB(const std::string& host, const std::string& user, const std::st
 	m_BarMarketDataSelectStatement = nullptr;
 	m_BarMarketDataTruncateStatement = nullptr;
 
+	m_MdUserCreateStatement = nullptr;
+	m_MdUserDropStatement = nullptr;
+	m_MdUserInsertStatement = nullptr;
+	m_MdUserDeleteStatement = nullptr;
+	m_MdUserUpdateStatement = nullptr;
+	m_MdUserSelectStatement = nullptr;
+	m_MdUserTruncateStatement = nullptr;
+
 	m_PrimaryAccountCreateStatement = nullptr;
 	m_PrimaryAccountDropStatement = nullptr;
 	m_PrimaryAccountInsertStatement = nullptr;
@@ -453,6 +461,41 @@ void MysqlDB::DisConnect()
 		m_BarMarketDataTruncateStatement->close();
 		m_BarMarketDataTruncateStatement = nullptr;
 	}
+	if (m_MdUserCreateStatement != nullptr)
+	{
+		m_MdUserCreateStatement->close();
+		m_MdUserCreateStatement = nullptr;
+	}
+	if (m_MdUserDropStatement != nullptr)
+	{
+		m_MdUserDropStatement->close();
+		m_MdUserDropStatement = nullptr;
+	}
+	if (m_MdUserInsertStatement != nullptr)
+	{
+		m_MdUserInsertStatement->close();
+		m_MdUserInsertStatement = nullptr;
+	}
+	if (m_MdUserDeleteStatement != nullptr)
+	{
+		m_MdUserDeleteStatement->close();
+		m_MdUserDeleteStatement = nullptr;
+	}
+	if (m_MdUserUpdateStatement != nullptr)
+	{
+		m_MdUserUpdateStatement->close();
+		m_MdUserUpdateStatement = nullptr;
+	}
+	if (m_MdUserSelectStatement != nullptr)
+	{
+		m_MdUserSelectStatement->close();
+		m_MdUserSelectStatement = nullptr;
+	}
+	if (m_MdUserTruncateStatement != nullptr)
+	{
+		m_MdUserTruncateStatement->close();
+		m_MdUserTruncateStatement = nullptr;
+	}
 	if (m_PrimaryAccountCreateStatement != nullptr)
 	{
 		m_PrimaryAccountCreateStatement->close();
@@ -755,6 +798,8 @@ void MysqlDB::InitDB()
 	m_Statement->executeUpdate("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 	m_Statement->executeUpdate("Truncate Table t_BarMarketData;");
 	m_Statement->executeUpdate("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
+	m_Statement->executeUpdate("Truncate Table t_MdUser;");
+	m_Statement->executeUpdate("Insert Into t_MdUser select * from Init.t_MdUser;");
 	m_Statement->executeUpdate("Truncate Table t_PrimaryAccount;");
 	m_Statement->executeUpdate("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
 	m_Statement->executeUpdate("Truncate Table t_Account;");
@@ -779,6 +824,7 @@ void MysqlDB::CreateTables()
 	CreateInstrument();
 	CreateDepthMarketData();
 	CreateBarMarketData();
+	CreateMdUser();
 	CreatePrimaryAccount();
 	CreateAccount();
 	CreateCapital();
@@ -796,6 +842,7 @@ void MysqlDB::DropTables()
 	DropInstrument();
 	DropDepthMarketData();
 	DropBarMarketData();
+	DropMdUser();
 	DropPrimaryAccount();
 	DropAccount();
 	DropCapital();
@@ -812,6 +859,7 @@ void MysqlDB::TruncateTables()
 	TruncateHotInstrument();
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
+	TruncateMdUser();
 	TruncatePrimaryAccount();
 	TruncateAccount();
 	TruncateCapital();
@@ -1795,6 +1843,140 @@ void MysqlDB::TruncateBarMarketData()
 	}
 	m_BarMarketDataTruncateStatement->executeQuery();
 	WriteLog(LogLevel::Info, "TruncateBarMarketData Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void MysqlDB::CreateMdUser()
+{
+	auto start = steady_clock::now();
+	if (m_MdUserCreateStatement == nullptr)
+	{
+		m_MdUserCreateStatement = m_DBConnection->prepareStatement("CREATE TABLE IF NOT EXISTS t_MdUser(`MdUserID` char(32), `MdUserName` char(64), `Password` char(64), PRIMARY KEY(MdUserID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';");
+	}
+	m_MdUserCreateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateMdUser Spend:%lldms", duration);
+}
+void MysqlDB::DropMdUser()
+{
+	auto start = steady_clock::now();
+	if (m_MdUserDropStatement == nullptr)
+	{
+		m_MdUserDropStatement = m_DBConnection->prepareStatement("DROP TABLE IF EXISTS t_MdUser;");
+	}
+	m_MdUserDropStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropMdUser Spend:%lldms", duration);
+}
+void MysqlDB::InsertMdUser(MdUser* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserInsertStatement == nullptr)
+	{
+		m_MdUserInsertStatement = m_DBConnection->prepareStatement("insert into t_MdUser Values(?, ?, ?);");
+	}
+	SetStatementForMdUserRecord(m_MdUserInsertStatement, record);
+	
+	m_MdUserInsertStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "InsertMdUser Spend:%lldms", duration);
+	}
+}
+void MysqlDB::BatchInsertMdUser(std::list<MdUser*>* records)
+{
+	auto start = steady_clock::now();
+	memset(m_SqlBuff, 0, BuffSize);
+	strcpy(m_SqlBuff, "Insert into t_MdUser Values");
+	int n = (int)strlen(m_SqlBuff);
+	int i = 0;
+	for (auto it = records->begin(); it != records->end(); ++it, ++i)
+	{
+		if (n > 60000)
+		{
+			m_SqlBuff[n - 1] = ';';
+			try
+			{
+				m_Statement->executeUpdate(m_SqlBuff);
+			}
+			catch(exception e)
+			{
+				WriteLog(LogLevel::Warning, "BatchInsertMdUser Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+			}
+			memset(m_SqlBuff, 0, BuffSize);
+			strcpy(m_SqlBuff, "Insert into t_MdUser Values");
+			n = (int)strlen(m_SqlBuff);
+		}
+		n += (*it)->GetSqlString(m_SqlBuff + n);
+	}
+	m_SqlBuff[n - 1] = ';';
+	try
+	{
+		m_Statement->executeUpdate(m_SqlBuff);
+	}
+	catch(exception e)
+	{
+		WriteLog(LogLevel::Warning, "BatchInsertMdUser Failed. Error: %s, Sql:[%s]", e.what(), m_SqlBuff);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Warning, "BatchInsertMdUser RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void MysqlDB::DeleteMdUser(MdUser* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserDeleteStatement == nullptr)
+	{
+		m_MdUserDeleteStatement = m_DBConnection->prepareStatement("delete from t_MdUser where MdUserID = ?;");
+	}
+	SetStatementForMdUserPrimaryKey(m_MdUserDeleteStatement, record->MdUserID);
+	m_MdUserDeleteStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUser Spend:%lldms", duration);
+	}
+}
+void MysqlDB::UpdateMdUser(MdUser* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserUpdateStatement == nullptr)
+	{
+		m_MdUserUpdateStatement = m_DBConnection->prepareStatement("update t_MdUser set MdUserName = ?, Password = ? where MdUserID = ?;");
+	}
+	SetStatementForMdUserRecordUpdate(m_MdUserUpdateStatement, record);
+	m_MdUserUpdateStatement->executeUpdate();
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdUser Spend:%lldms", duration);
+	}
+}
+void MysqlDB::SelectMdUser(std::list<MdUser*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserSelectStatement == nullptr)
+	{
+		m_MdUserSelectStatement = m_DBConnection->prepareStatement("select * from t_MdUser;");
+	}
+	auto result = m_MdUserSelectStatement->executeQuery();
+	while (result->next())
+	{
+		ParseRecord(result, records);
+	}
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectMdUser Spend:%lldms", duration);
+	}
+}
+void MysqlDB::TruncateMdUser()
+{
+	auto start = steady_clock::now();
+	if (m_MdUserTruncateStatement == nullptr)
+	{
+		m_MdUserTruncateStatement = m_DBConnection->prepareStatement("truncate table t_MdUser;");
+	}
+	m_MdUserTruncateStatement->executeQuery();
+	WriteLog(LogLevel::Info, "TruncateMdUser Spend:%lldms", GetDuration<chrono::milliseconds>(start));
 }
 void MysqlDB::CreatePrimaryAccount()
 {
@@ -3348,6 +3530,30 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<BarMarketData*>& rec
 	record->CurrTurnover = result->getDouble(16);
 	record->Turnover = result->getDouble(17);
 	record->OpenInterest = result->getDouble(18);
+	records.push_back(record);
+}
+void MysqlDB::SetStatementForMdUserRecord(sql::PreparedStatement* statement, MdUser* record)
+{
+	statement->setString(1, record->MdUserID);
+	statement->setString(2, record->MdUserName);
+	statement->setString(3, record->Password);
+}
+void MysqlDB::SetStatementForMdUserRecordUpdate(sql::PreparedStatement* statement, MdUser* record)
+{
+	statement->setString(1, record->MdUserName);
+	statement->setString(2, record->Password);
+	statement->setString(3, record->MdUserID);
+}
+void MysqlDB::SetStatementForMdUserPrimaryKey(sql::PreparedStatement* statement, const UserIDType& MdUserID)
+{
+	statement->setString(1, MdUserID);
+}
+void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<MdUser*>& records)
+{
+	MdUser* record = MdUser::Allocate();
+	Strcpy(record->MdUserID, result->getString(1).c_str());
+	Strcpy(record->MdUserName, result->getString(2).c_str());
+	Strcpy(record->Password, result->getString(3).c_str());
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForPrimaryAccountRecord(sql::PreparedStatement* statement, PrimaryAccount* record)

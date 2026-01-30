@@ -30,6 +30,7 @@ namespace mdb
 		InstrumentTable* t_Instrument;
 		DepthMarketDataTable* t_DepthMarketData;
 		BarMarketDataTable* t_BarMarketData;
+		MdUserTable* t_MdUser;
 		PrimaryAccountTable* t_PrimaryAccount;
 		AccountTable* t_Account;
 		CapitalTable* t_Capital;

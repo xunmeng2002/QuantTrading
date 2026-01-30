@@ -424,6 +424,52 @@ void DBWriter::OnBarMarketDataTruncate()
 	AddDBOperate(dbOperate);
 }
 
+void DBWriter::OnMdUserInsert(mdb::MdUser* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Insert;
+	dbOperate->TableID = MdUser::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnMdUserBatchInsert(std::list<mdb::MdUser*>* records)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::BatchInsert;
+	dbOperate->TableID = MdUser::TableID;
+	dbOperate->Record = records;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnMdUserErase(mdb::MdUser* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Delete;
+	dbOperate->TableID = MdUser::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnMdUserUpdate(mdb::MdUser* record)
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Update;
+	dbOperate->TableID = MdUser::TableID;
+	dbOperate->Record = record;
+
+	AddDBOperate(dbOperate);
+}
+void DBWriter::OnMdUserTruncate()
+{
+	DBOperate* dbOperate = DBOperate::Allocate();
+	dbOperate->Operate = DBOperateType::Truncate;
+	dbOperate->TableID = MdUser::TableID;
+	dbOperate->Record = nullptr;
+
+	AddDBOperate(dbOperate);
+}
+
 void DBWriter::OnPrimaryAccountInsert(mdb::PrimaryAccount* record)
 {
 	DBOperate* dbOperate = DBOperate::Allocate();
@@ -976,6 +1022,9 @@ void DBWriter::InsertRecord(DBOperate* dbOperate)
 	case BarMarketData::TableID:
 		m_DB->InsertBarMarketData((BarMarketData*)dbOperate->Record);
 		break;
+	case MdUser::TableID:
+		m_DB->InsertMdUser((MdUser*)dbOperate->Record);
+		break;
 	case PrimaryAccount::TableID:
 		m_DB->InsertPrimaryAccount((PrimaryAccount*)dbOperate->Record);
 		break;
@@ -1057,6 +1106,14 @@ void DBWriter::BatchInsertRecords(DBOperate* dbOperate)
 	{
 		auto records = (std::list<BarMarketData*>*)dbOperate->Record;
 		m_DB->BatchInsertBarMarketData(records);
+		records->clear();
+		delete records;
+		break;
+	}
+	case MdUser::TableID:
+	{
+		auto records = (std::list<MdUser*>*)dbOperate->Record;
+		m_DB->BatchInsertMdUser(records);
 		records->clear();
 		delete records;
 		break;
@@ -1153,6 +1210,10 @@ void DBWriter::DeleteRecord(DBOperate* dbOperate)
 	case BarMarketData::TableID:
 		m_DB->DeleteBarMarketData((BarMarketData*)dbOperate->Record);
 		((BarMarketData*)dbOperate->Record)->Free();
+		break;
+	case MdUser::TableID:
+		m_DB->DeleteMdUser((MdUser*)dbOperate->Record);
+		((MdUser*)dbOperate->Record)->Free();
 		break;
 	case PrimaryAccount::TableID:
 		m_DB->DeletePrimaryAccount((PrimaryAccount*)dbOperate->Record);
@@ -1365,6 +1426,10 @@ void DBWriter::UpdateRecord(DBOperate* dbOperate)
 		m_DB->UpdateBarMarketData((BarMarketData*)dbOperate->Record);
 		((BarMarketData*)dbOperate->Record)->Free();
 		break;
+	case MdUser::TableID:
+		m_DB->UpdateMdUser((MdUser*)dbOperate->Record);
+		((MdUser*)dbOperate->Record)->Free();
+		break;
 	case PrimaryAccount::TableID:
 		m_DB->UpdatePrimaryAccount((PrimaryAccount*)dbOperate->Record);
 		((PrimaryAccount*)dbOperate->Record)->Free();
@@ -1422,6 +1487,9 @@ void DBWriter::TruncateTable(DBOperate* dbOperate)
 		break;
 	case BarMarketData::TableID:
 		m_DB->TruncateBarMarketData();
+		break;
+	case MdUser::TableID:
+		m_DB->TruncateMdUser();
 		break;
 	case PrimaryAccount::TableID:
 		m_DB->TruncatePrimaryAccount();

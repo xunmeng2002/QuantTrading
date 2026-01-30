@@ -12,7 +12,7 @@
 	<table name="Order"/>
 	<table name="Trade"/>
 	<table name="AccountLoginSession"/>
-	
+
 	<table name="DepthMarketData"/>
 	<table name="BarMarketData"/>
 </dbtables>

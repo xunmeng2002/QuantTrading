@@ -80,6 +80,15 @@ public:
 	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records, const DateType& tradingDay) = 0;
 	virtual void TruncateBarMarketData() = 0;
 
+	virtual void CreateMdUser() = 0;
+	virtual void DropMdUser() = 0;
+	virtual void InsertMdUser(mdb::MdUser* record) = 0;
+	virtual void BatchInsertMdUser(std::list<mdb::MdUser*>* records) = 0;
+	virtual void DeleteMdUser(mdb::MdUser* record) = 0;
+	virtual void UpdateMdUser(mdb::MdUser* record) = 0;
+	virtual void SelectMdUser(std::list<mdb::MdUser*>& records) = 0;
+	virtual void TruncateMdUser() = 0;
+
 	virtual void CreatePrimaryAccount() = 0;
 	virtual void DropPrimaryAccount() = 0;
 	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) = 0;

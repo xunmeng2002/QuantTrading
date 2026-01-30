@@ -42,6 +42,8 @@ void Config::Load(const char* fileName)
 	DbPassword = root["DbPassword"].asString();
 	DbHost = root["DbHost"].asString();
 	DbInitHost = root["DbInitHost"].asString();
+	MdUser = root["MdUser"].asString();
+	MdPassword = root["MdPassword"].asString();
 	Print();
 }
 
@@ -57,5 +59,7 @@ void Config::Print()
 	printf("DbPassword:%s\n", DbPassword.c_str());
 	printf("DbHost:%s\n", DbHost.c_str());
 	printf("DbInitHost:%s\n", DbInitHost.c_str());
+	printf("MdUser:%s\n", MdUser.c_str());
+	printf("MdPassword:%s\n", MdPassword.c_str());
 }
 

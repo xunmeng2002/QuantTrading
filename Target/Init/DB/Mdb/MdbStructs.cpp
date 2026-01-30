@@ -189,6 +189,32 @@ namespace mdb
 		return t_MdbDataStringBuffer;
 	}
 
+	MdUser* MdUser::Allocate()
+	{
+		return ::Allocate<MdUser>();
+	}
+	void MdUser::Free()
+	{
+		::Free<MdUser>(this);
+	}
+	const char* MdUser::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%s,%s",
+			MdUserID, MdUserName, Password);
+		return t_MdbDataStringBuffer;
+	}
+	int MdUser::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%s','%s'),",
+			MdUserID, MdUserName, Password);
+	}
+	const char* MdUser::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "MdUser:MdUserID:[%s], MdUserName:[%s], Password:[%s]",
+			MdUserID, MdUserName, Password);
+		return t_MdbDataStringBuffer;
+	}
+
 	PrimaryAccount* PrimaryAccount::Allocate()
 	{
 		return ::Allocate<PrimaryAccount>();
@@ -379,6 +405,7 @@ namespace mdb
 	thread_local Instrument t_CompareInstrument;
 	thread_local DepthMarketData t_CompareDepthMarketData;
 	thread_local BarMarketData t_CompareBarMarketData;
+	thread_local MdUser t_CompareMdUser;
 	thread_local PrimaryAccount t_ComparePrimaryAccount;
 	thread_local Account t_CompareAccount;
 	thread_local Capital t_CompareCapital;

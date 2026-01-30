@@ -6,6 +6,8 @@
 #include "MdFront.h"
 #include "TradeFront.h"
 #include "OrderMatch.h"
+#include "FieldsCompare.h"
+#include "InnerMdSpiImpl.h"
 #include <list>
 #include <map>
 #include <string>
@@ -16,7 +18,7 @@
 class SimExchange : public ThreadBase, public ProtocolSubscriber, public OrderMatchSubscriber
 {
 public:
-	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, const std::string& matchMode);
+	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, InnerMdSpiImpl* innerMdSpi, const std::string& matchMode);
 	~SimExchange();
 
 	void Init();
@@ -34,6 +36,8 @@ protected:
 	void HandlePackages();
 
 private:
+	void HandleRspMdUserLogin(RspMdUserLoginPackage* package);
+	void HandleRspMdUserLogout(RspMdUserLogoutPackage* package);
 	void HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage);
 	void HandleBarMarketData(RtnBarMarketDataPackage* rtnPackage);
 
@@ -61,10 +65,12 @@ private:
 	void SendRtnTrade(mdb::Trade* trade);
 
 	Package* GetNextPackage();
+	void ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID);
 
 protected:
 	MdFront* m_MdFront;
 	TradeFront* m_TradeFront;
+	InnerMdSpiImpl* m_MdSpi;
 	mdb::Mdb* m_Mdb;
 	OrderMatch* m_OrderMatch;
 	std::mutex m_Mutex;
@@ -73,6 +79,10 @@ protected:
 	DateType m_TradingDay;
 	DateType m_CurrDate;
 	TimeType m_CurrTime;
+
+	std::set<ReqSubMarketDataField*> m_ReqSubMarketDatas;
+	bool m_IsMdLogged;
+
 	std::list<Package*> m_Packages;
 	RspAccountLoginPackage* m_RspAccountLoginPackage;
 	RspAccountLogoutPackage* m_RspAccountLogoutPackage;

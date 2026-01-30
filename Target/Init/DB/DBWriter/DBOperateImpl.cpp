@@ -60,6 +60,11 @@ void DBOperateImpl::FreeRecord()
 		((BarMarketData*)Record)->Free();
 		break;
 	}
+	case MdUser::TableID:
+	{
+		((MdUser*)Record)->Free();
+		break;
+	}
 	case PrimaryAccount::TableID:
 	{
 		((PrimaryAccount*)Record)->Free();
@@ -131,6 +136,10 @@ const char* DBOperateImpl::GetDebugString() const
 	case BarMarketData::TableID:
 	{
 		return ((BarMarketData*)Record)->GetDebugString();
+	}
+	case MdUser::TableID:
+	{
+		return ((MdUser*)Record)->GetDebugString();
 	}
 	case PrimaryAccount::TableID:
 	{

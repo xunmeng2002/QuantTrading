@@ -279,6 +279,43 @@ namespace mdb
 	{
 		return BarMarketDataEqualForBarMarketDataPrimaryKey()(oldRecord, newRecord);
 	}
+	MdUserPrimaryKey::MdUserPrimaryKey(MdUserTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	MdUser* MdUserPrimaryKey::Select(const UserIDType& MdUserID)
+	{
+		Strcpy(t_CompareMdUser.MdUserID, MdUserID);
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_CompareMdUser);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<MdUserPrimaryKey::iterator, MdUserPrimaryKey::iterator> MdUserPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool MdUserPrimaryKey::Insert(MdUser* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void MdUserPrimaryKey::Erase(MdUser* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool MdUserPrimaryKey::CheckInsert(MdUser* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool MdUserPrimaryKey::CheckUpdate(const MdUser* const oldRecord, const MdUser* const newRecord)
+	{
+		return MdUserEqualForMdUserPrimaryKey()(oldRecord, newRecord);
+	}
 	PrimaryAccountPrimaryKey::PrimaryAccountPrimaryKey(PrimaryAccountTable* table, size_t buckets)
 		:m_Table(table), m_Index(buckets)
 	{

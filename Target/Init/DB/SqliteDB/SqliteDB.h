@@ -84,6 +84,15 @@ public:
 	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records, const DateType& tradingDay) override;
 	virtual void TruncateBarMarketData() override;
 	
+	virtual void CreateMdUser() override;
+	virtual void DropMdUser() override;
+	virtual void InsertMdUser(mdb::MdUser* record) override;
+	virtual void BatchInsertMdUser(std::list<mdb::MdUser*>* records) override;
+	virtual void DeleteMdUser(mdb::MdUser* record) override;
+	virtual void UpdateMdUser(mdb::MdUser* record) override;
+	virtual void SelectMdUser(std::list<mdb::MdUser*>& records) override;
+	virtual void TruncateMdUser() override;
+	
 	virtual void CreatePrimaryAccount() override;
 	virtual void DropPrimaryAccount() override;
 	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
@@ -187,6 +196,10 @@ private:
 	void SetStatementForBarMarketDataRecordUpdate(sqlite3_stmt* statement, mdb::BarMarketData* record);
 	void SetStatementForBarMarketDataPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime);
 	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::BarMarketData*>& records);
+	void SetStatementForMdUserRecord(sqlite3_stmt* statement, mdb::MdUser* record);
+	void SetStatementForMdUserRecordUpdate(sqlite3_stmt* statement, mdb::MdUser* record);
+	void SetStatementForMdUserPrimaryKey(sqlite3_stmt* statement, const UserIDType& MdUserID);
+	void ParseRecord(sqlite3_stmt* statement, std::list<mdb::MdUser*>& records);
 	void SetStatementForPrimaryAccountRecord(sqlite3_stmt* statement, mdb::PrimaryAccount* record);
 	void SetStatementForPrimaryAccountRecordUpdate(sqlite3_stmt* statement, mdb::PrimaryAccount* record);
 	void SetStatementForPrimaryAccountPrimaryKey(sqlite3_stmt* statement, const AccountIDType& PrimaryAccountID);
@@ -267,6 +280,11 @@ private:
 	sqlite3_stmt* m_BarMarketDataUpdateStatement;
 	sqlite3_stmt* m_BarMarketDataSelectStatement;
 	sqlite3_stmt* m_BarMarketDataTruncateStatement;
+	sqlite3_stmt* m_MdUserInsertStatement;
+	sqlite3_stmt* m_MdUserDeleteStatement;
+	sqlite3_stmt* m_MdUserUpdateStatement;
+	sqlite3_stmt* m_MdUserSelectStatement;
+	sqlite3_stmt* m_MdUserTruncateStatement;
 	sqlite3_stmt* m_PrimaryAccountInsertStatement;
 	sqlite3_stmt* m_PrimaryAccountDeleteStatement;
 	sqlite3_stmt* m_PrimaryAccountDeleteByOfferIDIndexStatement;

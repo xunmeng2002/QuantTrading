@@ -59,6 +59,12 @@ public:
 	virtual void OnBarMarketDataUpdate(mdb::BarMarketData* record) {}
 	virtual void OnBarMarketDataTruncate() {}
 	
+	virtual void OnMdUserInsert(mdb::MdUser* record) {}
+	virtual void OnMdUserBatchInsert(std::list<mdb::MdUser*>* records) {}
+	virtual void OnMdUserErase(mdb::MdUser* record) {}
+	virtual void OnMdUserUpdate(mdb::MdUser* record) {}
+	virtual void OnMdUserTruncate() {}
+	
 	virtual void OnPrimaryAccountInsert(mdb::PrimaryAccount* record) {}
 	virtual void OnPrimaryAccountBatchInsert(std::list<mdb::PrimaryAccount*>* records) {}
 	virtual void OnPrimaryAccountErase(mdb::PrimaryAccount* record) {}

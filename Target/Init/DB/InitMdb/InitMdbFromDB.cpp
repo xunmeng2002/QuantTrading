@@ -17,6 +17,7 @@ namespace mdb
 		LoadProductTable(mdb, db);
 		LoadHotInstrumentTable(mdb, db);
 		LoadInstrumentTable(mdb, db);
+		LoadMdUserTable(mdb, db);
 		LoadPrimaryAccountTable(mdb, db);
 		LoadAccountTable(mdb, db);
 		LoadCapitalTable(mdb, db);
@@ -87,6 +88,15 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_BarMarketData->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadMdUserTable(Mdb* mdb, DB* db)
+	{
+		list<MdUser*> records;
+		db->SelectMdUser(records);
+		for (auto record : records)
+		{
+			mdb->t_MdUser->Insert(record);
 		}
 	}
 	void InitMdbFromDB::LoadPrimaryAccountTable(Mdb* mdb, DB* db)

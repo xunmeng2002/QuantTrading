@@ -73,6 +73,7 @@ int main(int argc, char* argv[])
 		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
 		return Exit();
 	}
+	InitMdbFromDB::LoadMdUserTable(mdb, initDB);
 	InitMdbFromDB::LoadExchangeTable(mdb, initDB);
 	InitMdbFromDB::LoadInstrumentTable(mdb, initDB);
 	initDB->DisConnect();

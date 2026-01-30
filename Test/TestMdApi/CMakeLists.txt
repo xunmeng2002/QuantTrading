@@ -9,9 +9,9 @@ add_package(MdApiMiddle ${CMAKE_SOURCE_DIR}/Test/Source/MdApiMiddle)
 add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)
 
 
-include_package(MdApi ${CMAKE_SOURCE_DIR}/../Libs/QuantTrading/include)
+include_package(MdApi ${LibsPath}/QuantTrading/include)
 
-link_directories(${CMAKE_SOURCE_DIR}/../Libs/QuantTrading)
+link_directories(${LibsPath}/QuantTrading)
 
 add_executable(${PROJECT_NAME} ${all_file})
 

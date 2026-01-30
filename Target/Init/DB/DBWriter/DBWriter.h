@@ -70,6 +70,12 @@ public:
 	virtual void OnBarMarketDataUpdate(mdb::BarMarketData* record) override;
 	virtual void OnBarMarketDataTruncate() override;
 	
+	virtual void OnMdUserInsert(mdb::MdUser* record) override;
+	virtual void OnMdUserBatchInsert(std::list<mdb::MdUser*>* records) override;
+	virtual void OnMdUserErase(mdb::MdUser* record) override;
+	virtual void OnMdUserUpdate(mdb::MdUser* record) override;
+	virtual void OnMdUserTruncate() override;
+	
 	virtual void OnPrimaryAccountInsert(mdb::PrimaryAccount* record) override;
 	virtual void OnPrimaryAccountBatchInsert(std::list<mdb::PrimaryAccount*>* records) override;
 	virtual void OnPrimaryAccountErase(mdb::PrimaryAccount* record) override;

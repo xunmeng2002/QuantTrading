@@ -13,10 +13,13 @@ add_package(MysqlDB ./DB/MysqlDB)
 add_package(DBCommon ${CMAKE_SOURCE_DIR}/Source/DBCommon)
 add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)
 add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
+add_package(FieldsCompare ${CMAKE_SOURCE_DIR}/Source/FieldsCompare)
 add_package(Packages ${CMAKE_SOURCE_DIR}/Source/Packages)
 add_package(OrderMatch ${CMAKE_SOURCE_DIR}/Source/OrderMatch)
 add_package(QuantUtility ${CMAKE_SOURCE_DIR}/Source/QuantUtility)
 
+include_package(MdApi ${LibsPath}/PersonalLib/include)
+include_package(MdApi ${LibsPath}/QuantTrading/include)
 include_package(duckdb ${LibsPath}/duckdb/include)
 include_package(duckdb ${LibsPath}/SQLite/3.36.0/include)
 include_package(MysqlConnector ${LibsPath}/MysqlConnector/9.0.0/include)
@@ -36,6 +39,7 @@ target_link_libraries(${PROJECT_NAME} PersonalLib)
 target_link_libraries(${PROJECT_NAME} duckdb)
 target_link_libraries(${PROJECT_NAME} sqlite3)
 target_link_libraries(${PROJECT_NAME} mysqlcppconn)
+
 
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")

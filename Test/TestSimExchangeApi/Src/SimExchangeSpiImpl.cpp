@@ -101,6 +101,7 @@ void SimExchangeSpiImpl::ReqQryInstrument()
 void SimExchangeSpiImpl::ReqInsertOrder(DirectionType direction, OffsetFlagType offsetFlag, OrderPriceTypeType orderPriceType, PriceType price, VolumeType volume)
 {
 	ReqInsertOrderField insertOrder;
+	memset(&insertOrder, 0, sizeof(ReqInsertOrderField));
 	strcpy(insertOrder.AccountID, m_AccountInfo->InvestorID);
 	strcpy(insertOrder.ExchangeID, m_Instrument->ExchangeID);
 	strcpy(insertOrder.InstrumentID, m_Instrument->InstrumentID);
@@ -116,6 +117,7 @@ void SimExchangeSpiImpl::ReqInsertOrder(DirectionType direction, OffsetFlagType 
 void SimExchangeSpiImpl::ReqCancelOrder(OrderField* order)
 {
 	ReqCancelOrderField cancelOrder;
+	memset(&cancelOrder, 0, sizeof(ReqCancelOrderField));
 	strcpy(cancelOrder.AccountID, order->AccountID);
 	strcpy(cancelOrder.ExchangeID, order->ExchangeID);
 	strcpy(cancelOrder.InstrumentID, order->InstrumentID);

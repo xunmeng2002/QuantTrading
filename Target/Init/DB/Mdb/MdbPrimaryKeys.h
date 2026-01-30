@@ -145,6 +145,26 @@ namespace mdb
 		BarMarketDataTable* m_Table;
 		std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey> m_Index;
 	};
+	class MdUserTable;
+	class MdUserPrimaryKey
+	{
+		using iterator = std::unordered_set<MdUser*, MdUserHashForMdUserPrimaryKey, MdUserEqualForMdUserPrimaryKey>::iterator;
+		friend class MdUserTable;
+	public:
+		MdUserPrimaryKey(MdUserTable* table, size_t buckets = 1000);
+		MdUser* Select(const UserIDType& MdUserID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(MdUser* const record);
+		void Erase(MdUser* const record);
+		bool CheckInsert(MdUser* const record);
+		bool CheckUpdate(const MdUser* const oldRecord, const MdUser* const newRecord);
+
+	private:
+		MdUserTable* m_Table;
+		std::unordered_set<MdUser*, MdUserHashForMdUserPrimaryKey, MdUserEqualForMdUserPrimaryKey> m_Index;
+	};
 	class PrimaryAccountTable;
 	class PrimaryAccountPrimaryKey
 	{

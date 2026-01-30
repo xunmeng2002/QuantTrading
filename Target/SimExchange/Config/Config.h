@@ -22,6 +22,8 @@ public:
 	string DbPassword;
 	string DbHost;
 	string DbInitHost;
+	string MdUser;
+	string MdPassword;
 	
 private:
 	static Config m_Instance;

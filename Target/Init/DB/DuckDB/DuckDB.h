@@ -91,6 +91,16 @@ public:
 	virtual void TruncateBarMarketData() override;
 	static void ParseRecord(duckdb_result& result, std::list<mdb::BarMarketData*>& records);
 	
+	virtual void CreateMdUser() override;
+	virtual void DropMdUser() override;
+	virtual void InsertMdUser(mdb::MdUser* record) override;
+	virtual void BatchInsertMdUser(std::list<mdb::MdUser*>* records) override;
+	virtual void DeleteMdUser(mdb::MdUser* record) override;
+	virtual void UpdateMdUser(mdb::MdUser* record) override;
+	virtual void SelectMdUser(std::list<mdb::MdUser*>& records) override;
+	virtual void TruncateMdUser() override;
+	static void ParseRecord(duckdb_result& result, std::list<mdb::MdUser*>& records);
+	
 	virtual void CreatePrimaryAccount() override;
 	virtual void DropPrimaryAccount() override;
 	virtual void InsertPrimaryAccount(mdb::PrimaryAccount* record) override;
@@ -201,6 +211,10 @@ private:
 	void SetStatementForBarMarketDataRecord(duckdb_prepared_statement statement, mdb::BarMarketData* record);
 	void SetStatementForBarMarketDataRecordUpdate(duckdb_prepared_statement statement, mdb::BarMarketData* record);
 	void SetStatementForBarMarketDataPrimaryKey(duckdb_prepared_statement statement, mdb::BarMarketData* record);
+	bool AppendForMdUserRecord(duckdb_appender appender, mdb::MdUser* record);
+	void SetStatementForMdUserRecord(duckdb_prepared_statement statement, mdb::MdUser* record);
+	void SetStatementForMdUserRecordUpdate(duckdb_prepared_statement statement, mdb::MdUser* record);
+	void SetStatementForMdUserPrimaryKey(duckdb_prepared_statement statement, mdb::MdUser* record);
 	bool AppendForPrimaryAccountRecord(duckdb_appender appender, mdb::PrimaryAccount* record);
 	void SetStatementForPrimaryAccountRecord(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
 	void SetStatementForPrimaryAccountRecordUpdate(duckdb_prepared_statement statement, mdb::PrimaryAccount* record);
@@ -275,6 +289,10 @@ private:
 	duckdb_prepared_statement m_BarMarketDataUpdateStatement;
 	duckdb_prepared_statement m_BarMarketDataSelectStatement;
 	duckdb_prepared_statement m_BarMarketDataTruncateStatement;
+	duckdb_prepared_statement m_MdUserDeleteStatement;
+	duckdb_prepared_statement m_MdUserUpdateStatement;
+	duckdb_prepared_statement m_MdUserSelectStatement;
+	duckdb_prepared_statement m_MdUserTruncateStatement;
 	duckdb_prepared_statement m_PrimaryAccountDeleteStatement;
 	duckdb_prepared_statement m_PrimaryAccountDeleteByOfferIDIndexStatement;
 	duckdb_prepared_statement m_PrimaryAccountUpdateStatement;

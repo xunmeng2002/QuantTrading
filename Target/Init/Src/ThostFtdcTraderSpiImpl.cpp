@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include "MdbStructs.h"
 #include "Utility.h"
+#include "Encode.h"
 #include <string.h>
 
 using namespace std;
@@ -49,7 +50,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryExchange(CThostFtdcExchangeField* pExchang
 	CThostFtdcTraderSpiMiddle::OnRspQryExchange(pExchange, pRspInfo, nRequestID, bIsLast);
 	Exchange* exchange = Exchange::Allocate();
 	Strcpy(exchange->ExchangeID, pExchange->ExchangeID);
-	Strcpy(exchange->ExchangeName, pExchange->ExchangeName);
+	Strcpy(exchange->ExchangeName, GbkToUtf8(pExchange->ExchangeName).c_str());
 	m_Exchanges->push_back(exchange);
 	if (bIsLast)
 	{
@@ -63,7 +64,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryProduct(CThostFtdcProductField* pProduct, 
 	Product* product = Product::Allocate();
 	Strcpy(product->ExchangeID, pProduct->ExchangeID);
 	Strcpy(product->ProductID, pProduct->ProductID);
-	Strcpy(product->ProductName, pProduct->ProductName);
+	Strcpy(product->ProductName, GbkToUtf8(pProduct->ProductName).c_str());
 	switch (pProduct->ProductClass)
 	{
 	case THOST_FTDC_PC_Futures:
@@ -115,7 +116,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryInstrument(CThostFtdcInstrumentField* pIns
 	Strcpy(instrument->ExchangeID, pInstrument->ExchangeID);
 	Strcpy(instrument->InstrumentID, pInstrument->InstrumentID);
 	Strcpy(instrument->ExchangeInstID, pInstrument->ExchangeInstID);
-	Strcpy(instrument->InstrumentName, pInstrument->InstrumentName);
+	Strcpy(instrument->InstrumentName, GbkToUtf8(pInstrument->InstrumentName).c_str());
 	Strcpy(instrument->ProductID, pInstrument->ProductID);
 	switch (pInstrument->ProductClass)
 	{

@@ -226,6 +226,36 @@ namespace mdb
 		BarMarketDataPrimaryKey* m_PrimaryKey;
 	};
 
+	class MdUserTable
+	{
+	public:
+		MdUserTable(Mdb* mdb);
+		~MdUserTable();
+		void Subscribe(MdbSubscriber* mdbSubscriber);
+		void UnSubscribe();
+		void LockShared();
+		void UnlockShared();
+		void InitDB();
+		bool Insert(MdUser* record);
+		void BatchInsert(std::list<mdb::MdUser*>* records);
+		void Erase(MdUser* record);
+		bool Update(MdUser* const oldRecord, MdUser* const newRecord, bool updateDB = true);
+		void TruncateTables();
+		void TruncateTable();
+		void Dump(const char* dir);
+
+	private:
+		void EraseUniqueKey(MdUser* record);
+		void EraseIndex(MdUser* record);
+
+	public:
+		std::atomic<bool> m_DBInited;
+		Mdb* m_Mdb;
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		MdUserPrimaryKey* m_PrimaryKey;
+	};
+
 	class PrimaryAccountTable
 	{
 	public:

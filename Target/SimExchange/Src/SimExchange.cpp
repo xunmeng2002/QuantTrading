@@ -1,6 +1,7 @@
 #include "SimExchange.h"
 #include "InitMdbFromCsv.h"
 #include "Error.h"
+#include "Utility.h"
 #include "TimeUtility.h"
 #include "Logger.h"
 #include "OrderUtility.h"
@@ -8,8 +9,8 @@
 using namespace std;
 using namespace mdb;
 
-SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, const std::string& matchMode)
-	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_TradingDay(""), m_CurrDate(""), m_CurrTime("")
+SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, InnerMdSpiImpl* innerMdSpi, const std::string& matchMode)
+	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_MdSpi(innerMdSpi), m_TradingDay(""), m_CurrDate(""), m_CurrTime(""), m_IsMdLogged(false)
 {
 	auto tradingDay = m_Mdb->t_TradingDay->m_PrimaryKey->Select(1);
 	if (tradingDay != nullptr)
@@ -52,7 +53,12 @@ SimExchange::~SimExchange()
 }
 void SimExchange::Init()
 {
-
+	auto positionItPair = m_Mdb->t_Position->m_PrimaryKey->SelectAll();
+	for (auto& it = positionItPair.first; it != positionItPair.second; ++it)
+	{
+		auto position = *it;
+		ReqSubMarketData(position->ExchangeID, position->InstrumentID);
+	}
 }
 
 void SimExchange::OnProtocolConnect(SessionIDType sessionID, const char* ip, int port)
@@ -110,6 +116,12 @@ void SimExchange::HandlePackages()
 			break;
 		switch (package->Head.PackageID)
 		{
+		case RspMdUserLoginPackage::PackageID:
+			HandleRspMdUserLogin((RspMdUserLoginPackage*)package);
+			break;
+		case RspMdUserLogoutPackage::PackageID:
+			HandleRspMdUserLogout((RspMdUserLogoutPackage*)package);
+			break;
 		case RtnDepthMarketDataPackage::PackageID:
 			HandleDepthMarketData((RtnDepthMarketDataPackage*)package);
 			break;
@@ -148,6 +160,18 @@ void SimExchange::HandlePackages()
 	}
 }
 
+void SimExchange::HandleRspMdUserLogin(RspMdUserLoginPackage* package)
+{
+	m_IsMdLogged = true;
+	for (auto reqSubMd : m_ReqSubMarketDatas)
+	{
+		m_MdSpi->ReqSubMarketData(reqSubMd);
+	}
+}
+void SimExchange::HandleRspMdUserLogout(RspMdUserLogoutPackage* package)
+{
+	m_IsMdLogged = false;
+}
 void SimExchange::HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage)
 {
 	WriteLog(LogLevel::Info, "HandleDepthMarketData %s", rtnPackage->GetDebugString());
@@ -257,6 +281,7 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	else
 	{
 		errorID = CheckForInsertOrder(reqPackage->ReqInsertOrder, instrument);
+		ReqSubMarketData(instrument->ExchangeID, instrument->InstrumentID);
 	}
 	auto account = m_Mdb->t_Account->m_PrimaryKey->Select(reqPackage->ReqInsertOrder->AccountID);
 	if (account == nullptr)
@@ -588,6 +613,24 @@ Package* SimExchange::GetNextPackage()
 	auto package = m_Packages.front();
 	m_Packages.pop_front();
 	return package;
+}
+void SimExchange::ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID)
+{
+	ReqSubMarketDataField* reqSubMd = ::Allocate<ReqSubMarketDataField>();
+	Strcpy(reqSubMd->ExchangeID, exchangeID);
+	Strcpy(reqSubMd->InstrumentID, instrumentID);
+	if (m_ReqSubMarketDatas.find(reqSubMd) == m_ReqSubMarketDatas.end())
+	{
+		m_ReqSubMarketDatas.insert(reqSubMd);
+		if (m_IsMdLogged)
+		{
+			m_MdSpi->ReqSubMarketData(reqSubMd);
+		}
+	}
+	else
+	{
+		::Free(reqSubMd);
+	}
 }
 
 

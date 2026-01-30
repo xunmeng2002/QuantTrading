@@ -12,6 +12,7 @@ namespace mdb
 		t_Instrument = new InstrumentTable(this);
 		t_DepthMarketData = new DepthMarketDataTable(this);
 		t_BarMarketData = new BarMarketDataTable(this);
+		t_MdUser = new MdUserTable(this);
 		t_PrimaryAccount = new PrimaryAccountTable(this);
 		t_Account = new AccountTable(this);
 		t_Capital = new CapitalTable(this);
@@ -30,6 +31,7 @@ namespace mdb
 		t_Instrument->Subscribe(mdbSubscriber);
 		t_DepthMarketData->Subscribe(mdbSubscriber);
 		t_BarMarketData->Subscribe(mdbSubscriber);
+		t_MdUser->Subscribe(mdbSubscriber);
 		t_PrimaryAccount->Subscribe(mdbSubscriber);
 		t_Account->Subscribe(mdbSubscriber);
 		t_Capital->Subscribe(mdbSubscriber);
@@ -47,6 +49,7 @@ namespace mdb
 		t_Instrument->UnSubscribe();
 		t_DepthMarketData->UnSubscribe();
 		t_BarMarketData->UnSubscribe();
+		t_MdUser->UnSubscribe();
 		t_PrimaryAccount->UnSubscribe();
 		t_Account->UnSubscribe();
 		t_Capital->UnSubscribe();
@@ -65,6 +68,7 @@ namespace mdb
 		t_Instrument->InitDB();
 		t_DepthMarketData->InitDB();
 		t_BarMarketData->InitDB();
+		t_MdUser->InitDB();
 		t_PrimaryAccount->InitDB();
 		t_Account->InitDB();
 		t_Capital->InitDB();
@@ -82,6 +86,7 @@ namespace mdb
 		t_Instrument->m_DBInited = initStatus;
 		t_DepthMarketData->m_DBInited = initStatus;
 		t_BarMarketData->m_DBInited = initStatus;
+		t_MdUser->m_DBInited = initStatus;
 		t_PrimaryAccount->m_DBInited = initStatus;
 		t_Account->m_DBInited = initStatus;
 		t_Capital->m_DBInited = initStatus;
@@ -99,6 +104,7 @@ namespace mdb
 		t_Instrument->Dump(dir);
 		t_DepthMarketData->Dump(dir);
 		t_BarMarketData->Dump(dir);
+		t_MdUser->Dump(dir);
 		t_PrimaryAccount->Dump(dir);
 		t_Account->Dump(dir);
 		t_Capital->Dump(dir);
@@ -134,6 +140,7 @@ namespace mdb
 		t_Instrument->TruncateTables();
 		t_DepthMarketData->TruncateTables();
 		t_BarMarketData->TruncateTables();
+		t_MdUser->TruncateTables();
 		t_PrimaryAccount->TruncateTables();
 		t_Account->TruncateTables();
 		t_Capital->TruncateTables();
@@ -156,6 +163,7 @@ namespace mdb
 		t_Instrument->m_DBInited = false;
 		t_DepthMarketData->m_DBInited = false;
 		t_BarMarketData->m_DBInited = false;
+		t_MdUser->m_DBInited = false;
 		t_PrimaryAccount->m_DBInited = false;
 		t_Account->m_DBInited = false;
 		t_Capital->m_DBInited = false;

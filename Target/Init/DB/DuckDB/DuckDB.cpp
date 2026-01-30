@@ -53,6 +53,11 @@ DuckDB::DuckDB(const std::string& dbName)
 	m_BarMarketDataSelectStatement = nullptr;
 	m_BarMarketDataTruncateStatement = nullptr;
 
+	m_MdUserDeleteStatement = nullptr;
+	m_MdUserUpdateStatement = nullptr;
+	m_MdUserSelectStatement = nullptr;
+	m_MdUserTruncateStatement = nullptr;
+
 	m_PrimaryAccountDeleteStatement = nullptr;
 	m_PrimaryAccountDeleteByOfferIDIndexStatement = nullptr;
 	m_PrimaryAccountUpdateStatement = nullptr;
@@ -279,6 +284,26 @@ void DuckDB::DisConnect()
 		duckdb_destroy_prepare(&m_BarMarketDataTruncateStatement);
 		m_BarMarketDataTruncateStatement = nullptr;
 	}
+	if (m_MdUserDeleteStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_MdUserDeleteStatement);
+		m_MdUserDeleteStatement = nullptr;
+	}
+	if (m_MdUserUpdateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_MdUserUpdateStatement);
+		m_MdUserUpdateStatement = nullptr;
+	}
+	if (m_MdUserSelectStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_MdUserSelectStatement);
+		m_MdUserSelectStatement = nullptr;
+	}
+	if (m_MdUserTruncateStatement != nullptr)
+	{
+		duckdb_destroy_prepare(&m_MdUserTruncateStatement);
+		m_MdUserTruncateStatement = nullptr;
+	}
 	if (m_PrimaryAccountDeleteStatement != nullptr)
 	{
 		duckdb_destroy_prepare(&m_PrimaryAccountDeleteStatement);
@@ -476,6 +501,8 @@ void DuckDB::InitDB()
 	Exec("Insert Into t_DepthMarketData select * from Init.t_DepthMarketData;");
 	Exec("Delete From t_BarMarketData;");
 	Exec("Insert Into t_BarMarketData select * from Init.t_BarMarketData;");
+	Exec("Delete From t_MdUser;");
+	Exec("Insert Into t_MdUser select * from Init.t_MdUser;");
 	Exec("Delete From t_PrimaryAccount;");
 	Exec("Insert Into t_PrimaryAccount select * from Init.t_PrimaryAccount;");
 	Exec("Delete From t_Account;");
@@ -500,6 +527,7 @@ void DuckDB::CreateTables()
 	CreateInstrument();
 	CreateDepthMarketData();
 	CreateBarMarketData();
+	CreateMdUser();
 	CreatePrimaryAccount();
 	CreateAccount();
 	CreateCapital();
@@ -517,6 +545,7 @@ void DuckDB::DropTables()
 	DropInstrument();
 	DropDepthMarketData();
 	DropBarMarketData();
+	DropMdUser();
 	DropPrimaryAccount();
 	DropAccount();
 	DropCapital();
@@ -533,6 +562,7 @@ void DuckDB::TruncateTables()
 	TruncateHotInstrument();
 	TruncateDepthMarketData();
 	TruncateBarMarketData();
+	TruncateMdUser();
 	TruncatePrimaryAccount();
 	TruncateAccount();
 	TruncateCapital();
@@ -2332,6 +2362,193 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<BarMarketData*>& recor
 			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->CurrTurnover = dataColumn15[row];
 			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->Turnover = dataColumn16[row];
 			if (duckdb_validity_row_is_valid(validityColumn17, row)) record->OpenInterest = dataColumn17[row];
+			records.push_back(record);
+		}
+	}
+}
+void DuckDB::CreateMdUser()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "CREATE TABLE IF NOT EXISTS t_MdUser (MdUserID varchar, MdUserName varchar, Password varchar, PRIMARY KEY(MdUserID));", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "CreateMdUser failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "CreateMdUser Spend:%lldms", duration);
+}
+void DuckDB::DropMdUser()
+{
+	auto start = steady_clock::now();
+	duckdb_result result;
+	auto rc = duckdb_query(m_Connection, "DROP TABLE IF EXISTS t_MdUser;", &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DropMdUser failed, ErrorMsg:%s", duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "DropMdUser Spend:%lldms", duration);
+}
+void DuckDB::InsertMdUser(MdUser* record)
+{
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_MdUser", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_MdUser Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	AppendForMdUserRecord(appender, record);
+	duckdb_appender_destroy(&appender);
+}
+void DuckDB::BatchInsertMdUser(std::list<MdUser*>* records)
+{
+	auto start = steady_clock::now();
+	duckdb_appender appender;
+	if (duckdb_appender_create(m_Connection, nullptr, "t_MdUser", &appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "duckdb_appender_create For Table:t_MdUser Failed. ErrorMsg:%s", duckdb_appender_error(appender));
+		duckdb_appender_destroy(&appender);
+		return;
+	}
+	for (auto record : *records)
+	{
+		AppendForMdUserRecord(appender, record);
+	}
+	duckdb_appender_destroy(&appender);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	WriteLog(LogLevel::Info, "BatchInsertMdUser RecordSize:%lld, Spend:%lldms", records->size(), duration);
+}
+void DuckDB::DeleteMdUser(MdUser* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserDeleteStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_MdUser where MdUserID = ?;", &m_MdUserDeleteStatement);
+	}
+	SetStatementForMdUserPrimaryKey(m_MdUserDeleteStatement, record);
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_MdUserDeleteStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUser failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "DeleteMdUser Spend:%lldms", duration);
+	}
+}
+void DuckDB::UpdateMdUser(MdUser* record)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserUpdateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "update t_MdUser set MdUserName = ?, Password = ? where MdUserID = ?;", &m_MdUserUpdateStatement);
+	}
+	SetStatementForMdUserRecordUpdate(m_MdUserUpdateStatement, record);
+	
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_MdUserUpdateStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdUser failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_result_error(&result));
+	}
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "UpdateMdUser Spend:%lldms", duration);
+	}
+}
+void DuckDB::SelectMdUser(std::list<MdUser*>& records)
+{
+	auto start = steady_clock::now();
+	if (m_MdUserSelectStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "select * from t_MdUser;", &m_MdUserSelectStatement);
+	}
+
+	duckdb_result result;
+	auto rc = duckdb_execute_prepared(m_MdUserSelectStatement, &result);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "SelectMdUser ErrorMsg:%s", duckdb_result_error(&result));
+		duckdb_destroy_result(&result);
+		return;
+	}
+
+	ParseRecord(result, records);
+	duckdb_destroy_result(&result);
+	
+	auto duration = GetDuration<chrono::milliseconds>(start);
+	if (duration >= 100)
+	{
+		WriteLog(LogLevel::Warning, "SelectMdUser Spend:%lldms", duration);
+	}
+}
+void DuckDB::TruncateMdUser()
+{
+	auto start = steady_clock::now();
+	if (m_MdUserTruncateStatement == nullptr)
+	{
+		duckdb_prepare(m_Connection, "delete from t_MdUser;", &m_MdUserTruncateStatement);
+	}
+
+	auto rc = duckdb_execute_prepared(m_MdUserTruncateStatement, nullptr);
+	if (rc != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "TruncateMdUser failed");
+	}
+	
+	WriteLog(LogLevel::Info, "TruncateMdUser Spend:%lldms", GetDuration<chrono::milliseconds>(start));
+}
+void DuckDB::ParseRecord(duckdb_result& result, std::list<MdUser*>& records)
+{
+	while (true)
+	{
+		duckdb_data_chunk dataChunk = duckdb_fetch_chunk(result);
+		if (dataChunk == nullptr)
+		{
+			break;
+		}
+		duckdb_vector column0 = duckdb_data_chunk_get_vector(dataChunk, 0);
+		duckdb_vector column1 = duckdb_data_chunk_get_vector(dataChunk, 1);
+		duckdb_vector column2 = duckdb_data_chunk_get_vector(dataChunk, 2);
+
+		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
+		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
+		duckdb_string_t* dataColumn2 = (duckdb_string_t*)duckdb_vector_get_data(column2);
+
+		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
+		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
+		uint64_t* validityColumn2 = duckdb_vector_get_validity(column2);
+
+		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
+		for (idx_t row = 0LL; row < rowCount; ++row)
+		{
+			MdUser* record = MdUser::Allocate();
+			memset(record, 0, sizeof(MdUser));
+			if (duckdb_validity_row_is_valid(validityColumn0, row))
+			{
+				CpyDuckdbString(record->MdUserID, dataColumn0[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn1, row))
+			{
+				CpyDuckdbString(record->MdUserName, dataColumn1[row]);
+			}
+			if (duckdb_validity_row_is_valid(validityColumn2, row))
+			{
+				CpyDuckdbString(record->Password, dataColumn2[row]);
+			}
 			records.push_back(record);
 		}
 	}
@@ -4862,6 +5079,34 @@ void DuckDB::SetStatementForBarMarketDataPrimaryKey(duckdb_prepared_statement st
 	duckdb_bind_int32(statement, 4, int(record->BarPreces));
 	duckdb_bind_int32(statement, 5, record->BarPeriod);
 	duckdb_bind_int64(statement, 6, record->BarTime);
+}
+bool DuckDB::AppendForMdUserRecord(duckdb_appender appender, MdUser* record)
+{
+	duckdb_append_varchar(appender, record->MdUserID);
+	duckdb_append_varchar(appender, record->MdUserName);
+	duckdb_append_varchar(appender, record->Password);
+	if (duckdb_appender_end_row(appender) != DuckDBSuccess)
+	{
+		WriteLog(LogLevel::Warning, "InsertMdUser failed: %s, ErrorMsg:%s", record->GetDebugString(), duckdb_appender_error(appender));
+		return false;
+	}
+	return true;
+}
+void DuckDB::SetStatementForMdUserRecord(duckdb_prepared_statement statement, MdUser* record)
+{
+	duckdb_bind_varchar(statement, 1, record->MdUserID);
+	duckdb_bind_varchar(statement, 2, record->MdUserName);
+	duckdb_bind_varchar(statement, 3, record->Password);
+}
+void DuckDB::SetStatementForMdUserRecordUpdate(duckdb_prepared_statement statement, MdUser* record)
+{
+	duckdb_bind_varchar(statement, 1, record->MdUserName);
+	duckdb_bind_varchar(statement, 2, record->Password);
+	duckdb_bind_varchar(statement, 3, record->MdUserID);
+}
+void DuckDB::SetStatementForMdUserPrimaryKey(duckdb_prepared_statement statement, MdUser* record)
+{
+	duckdb_bind_varchar(statement, 1, record->MdUserID);
 }
 bool DuckDB::AppendForPrimaryAccountRecord(duckdb_appender appender, PrimaryAccount* record)
 {

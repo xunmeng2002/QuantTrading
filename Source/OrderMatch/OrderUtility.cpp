@@ -1,4 +1,5 @@
 #include "OrderUtility.h"
+#include "Utility.h"
 #include "TimeUtility.h"
 #include "Error.h"
 #include <string>
@@ -75,11 +76,11 @@ mdb::Order* CreateOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account
 {
 	auto order = Order::Allocate();
 	memset(order, 0, sizeof(Order));
-	memcpy(order->TradingDay, tradingDay, sizeof(DateType));
-	memcpy(order->AccountID, reqPackage->ReqInsertOrder->AccountID, sizeof(AccountIDType));
+	Strcpy(order->TradingDay, tradingDay);
+	Strcpy(order->AccountID, reqPackage->ReqInsertOrder->AccountID);
 	order->AccountType = account->AccountType;
-	memcpy(order->ExchangeID, reqPackage->ReqInsertOrder->ExchangeID, sizeof(ExchangeIDType));
-	memcpy(order->InstrumentID, reqPackage->ReqInsertOrder->InstrumentID, sizeof(InstrumentIDType));
+	Strcpy(order->ExchangeID, reqPackage->ReqInsertOrder->ExchangeID);
+	Strcpy(order->InstrumentID, reqPackage->ReqInsertOrder->InstrumentID);
 	order->ProductClass = instrument->ProductClass;
 	order->OrderID = GetNextOrderID();
 	strcpy(order->OrderSysID, std::to_string(order->OrderID).c_str());
@@ -92,8 +93,8 @@ mdb::Order* CreateOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account
 	order->VolumeTraded = 0;
 	order->VolumeMultiple = instrument->VolumeMultiple;
 	order->OrderStatus = OrderStatusType::Inserted;
-	memcpy(order->OrderDate, orderDate, sizeof(DateType));
-	memcpy(order->OrderTime, orderTime, sizeof(DateType));
+	Strcpy(order->OrderDate, orderDate);
+	Strcpy(order->OrderTime, orderTime);
 	order->SessionID = reqPackage->SessionID;
 	order->ClientOrderID = reqPackage->ReqInsertOrder->ClientOrderID;
 	order->RequestID = reqPackage->Head.MsgSeqNum;

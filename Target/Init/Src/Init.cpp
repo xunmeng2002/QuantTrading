@@ -122,6 +122,15 @@ void InitTrade(Mdb* mdb, Account* account)
 {
 }
 
+void InitMdUser(Mdb* mdb)
+{
+	MdUser* mdUser = new MdUser();
+	strcpy(mdUser->MdUserID, "MdUser");
+	strcpy(mdUser->MdUserName, (const char*)(u8"默认行情用户"));
+	strcpy(mdUser->Password, "123456");
+	mdb->t_MdUser->Insert(mdUser);
+}
+
 //目前Exchange，Product，Instrument由Simnow提供，这里不做Init
 void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay)
 {
@@ -134,4 +143,6 @@ void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay
 	InitPositionDetail(mdb, account);
 	InitOrder(mdb, account);
 	InitTrade(mdb, account);
+
+	InitMdUser(mdb);
 }

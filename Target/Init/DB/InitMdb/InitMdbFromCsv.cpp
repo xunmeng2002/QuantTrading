@@ -22,6 +22,7 @@ namespace mdb
 		LoadInstrumentTable(mdb, dir);
 		LoadDepthMarketDataTable(mdb, dir);
 		LoadBarMarketDataTable(mdb, dir);
+		LoadMdUserTable(mdb, dir);
 		LoadPrimaryAccountTable(mdb, dir);
 		LoadAccountTable(mdb, dir);
 		LoadCapitalTable(mdb, dir);
@@ -374,6 +375,41 @@ namespace mdb
 			record->Turnover = csv_record.GetFieldAsDouble("Turnover");
 			record->OpenInterest = csv_record.GetFieldAsDouble("OpenInterest");
 			mdb->t_BarMarketData->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadMdUserTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		sprintf(fullPath, "%s/t_MdUser.csv", dir);
+		fstream file(fullPath, fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CSVRecord csv_record;
+		if (!csv_record.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_MdUser.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csv_record.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_MdUser.csv failed");
+			}
+
+			auto record = new MdUser();
+			Strcpy(record->MdUserID, csv_record.GetFieldAsString("MdUserID"));
+			Strcpy(record->MdUserName, csv_record.GetFieldAsString("MdUserName"));
+			Strcpy(record->Password, csv_record.GetFieldAsString("Password"));
+			mdb->t_MdUser->Insert(record);
 		}
 		file.close();
 	}

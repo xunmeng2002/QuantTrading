@@ -88,6 +88,18 @@ namespace mdb
 	{
 		size_t operator()(const BarMarketData* const record) const;
 	};
+	struct MdUserEqualForMdUserPrimaryKey
+	{
+		bool operator()(const MdUser* const left, const MdUser* const right) const;
+	};
+	struct MdUserLessForMdUserPrimaryKey
+	{
+		bool operator()(const MdUser* const left, const MdUser* const right) const;
+	};
+	struct MdUserHashForMdUserPrimaryKey
+	{
+		size_t operator()(const MdUser* const record) const;
+	};
 	struct PrimaryAccountEqualForPrimaryAccountPrimaryKey
 	{
 		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;

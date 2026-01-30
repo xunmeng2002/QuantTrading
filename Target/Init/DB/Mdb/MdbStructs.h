@@ -324,6 +324,23 @@ namespace mdb
 		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 	};
+	class MdUser
+	{
+	public:
+		static constexpr unsigned int TableID = 0x2004;
+		//行情用户代码
+		UserIDType MdUserID;
+		//行情用户名称
+		UserNameType MdUserName;
+		//密码
+		PasswordType Password;
+		
+		static MdUser* Allocate();
+		void Free();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+	};
 	class PrimaryAccount
 	{
 	public:
@@ -685,6 +702,7 @@ namespace mdb
 	extern thread_local Instrument t_CompareInstrument;
 	extern thread_local DepthMarketData t_CompareDepthMarketData;
 	extern thread_local BarMarketData t_CompareBarMarketData;
+	extern thread_local MdUser t_CompareMdUser;
 	extern thread_local PrimaryAccount t_ComparePrimaryAccount;
 	extern thread_local Account t_CompareAccount;
 	extern thread_local Capital t_CompareCapital;
