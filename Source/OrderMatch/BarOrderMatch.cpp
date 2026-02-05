@@ -88,6 +88,7 @@ bool BarOrderMatch::CheckMatchForOrder(mdb::BarMarketData* mdBar, mdb::Order* or
 	}
 	GetNextTradeID(m_TradeID);
 	Match(order, matchPrice, order->VolumeTotal, m_TradeID);
+	return true;
 }
 
 

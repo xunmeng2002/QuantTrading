@@ -1291,7 +1291,7 @@ namespace mdb
 			return;
 		}
 
-		fprintf(dumpFile, "TradingDay,ExchangeID,InstrumentID,BarPreces,BarPeriod,BarTime,UpdateTs,PreSettlementPrice,PreClosePrice,Open,High,Low,Close,CurrVolume,Volume,CurrTurnover,Turnover,OpenInterest\n");
+		fprintf(dumpFile, "TradingDay,ExchangeID,InstrumentID,BarPreces,BarPeriod,BarTime,UpdateTs,PreSettlementPrice,PreClosePrice,HighestPrice,LowestPrice,Open,High,Low,Close,CurrVolume,Volume,CurrTurnover,Turnover,OpenInterest\n");
 		char buff[4096] = { 0 };
 		set<BarMarketData*, BarMarketDataLessForBarMarketDataPrimaryKey> records;
 		std::shared_lock guard(m_SharedMutex);

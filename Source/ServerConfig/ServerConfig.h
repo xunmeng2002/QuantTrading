@@ -8,10 +8,12 @@ class ServerConfig
 	ServerConfig();
 public:
 	static ServerConfig& GetInstance();
-	void Load(const char* fileName = "../../ServerConfig.json");
+	void Load(const char* fileName);
 	void Print();
 	
 public:
+	string SEMdOfferAddress;
+	string SETradeFrontAddress;
 	string MdOfferAddress;
 	string TradeFrontAddress;
 	string RiskFrontAddress;

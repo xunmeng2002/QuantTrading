@@ -3,9 +3,9 @@ project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
 
 add_package(Src ./Src)
-add_package(Packages ./Packages)
 add_package(ApiBase ../ApiBase)
 add_package(Config ../Config)
+add_package(Packages ${CMAKE_SOURCE_DIR}/Source/Packages)
 add_package(Version ${CMAKE_SOURCE_DIR}/Source/Version)
 add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 

@@ -118,6 +118,8 @@ BarMarketDataField* MinuteBar::InitLostBarFromPreBar(BarMarketDataField* preBar,
 	bar->BarPeriod = 1;
 	bar->BarTime = barMinuteTime * 100000LL;
 	bar->UpdateTs = bar->BarTime;
+	bar->PreSettlementPrice = preBar->PreSettlementPrice;
+	bar->PreClosePrice = preBar->PreClosePrice;
 	bar->HighestPrice = preBar->HighestPrice;
 	bar->LowestPrice = preBar->LowestPrice;
 	bar->Open = preBar->Close;
@@ -151,6 +153,8 @@ BarMarketDataField* MinuteBar::InitLostBarFromDepthMd(DepthMarketDataField* dept
 	bar->BarPeriod = 1;
 	bar->BarTime = barMinuteTime * 100000LL;
 	bar->UpdateTs = updateTsMinuteTime * 100000LL;
+	bar->PreSettlementPrice = depthMd->PreSettlementPrice;
+	bar->PreClosePrice = depthMd->PreClosePrice;
 	bar->HighestPrice = price;
 	bar->LowestPrice = price;
 	bar->Open = price;
@@ -224,6 +228,8 @@ BarMarketDataField* MinuteBar::InitMinuteBarFromDepthMarketData(DepthMarketDataF
 	bar->BarPeriod = 1;
 	bar->BarTime = barMinuteTime * 100000LL;
 	bar->UpdateTs = updateTsMinuteTime * 100000LL;
+	bar->PreSettlementPrice = depthMd->PreSettlementPrice;
+	bar->PreClosePrice = depthMd->PreClosePrice;
 	bar->HighestPrice = depthMd->HighestPrice;
 	bar->LowestPrice = depthMd->LowestPrice;
 	bar->Open = depthMd->LastPrice;

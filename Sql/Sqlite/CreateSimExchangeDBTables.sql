@@ -145,6 +145,8 @@ CREATE TABLE IF NOT EXISTS t_BarMarketData(
   `UpdateTs` bigint, 
   `PreSettlementPrice` double, 
   `PreClosePrice` double, 
+  `HighestPrice` double, 
+  `LowestPrice` double, 
   `Open` double, 
   `High` double, 
   `Low` double, 

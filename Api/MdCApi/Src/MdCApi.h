@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "MdFields.h"
+#include "Fields.h"
 #include "LoggerInterface.h"
 
 #ifdef WIN32

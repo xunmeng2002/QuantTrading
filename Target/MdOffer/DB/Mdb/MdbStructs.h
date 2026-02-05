@@ -214,6 +214,10 @@ namespace mdb
 		PriceType PreSettlementPrice;
 		//昨收盘价
 		PriceType PreClosePrice;
+		//最高价
+		PriceType HighestPrice;
+		//最低价
+		PriceType LowestPrice;
 		//开盘价
 		PriceType Open;
 		//最高价

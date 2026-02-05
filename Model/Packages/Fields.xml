@@ -126,6 +126,8 @@
 		<item name="BarPeriod" id="0x1003" type="Int" desc="Bar周期"/>
 		<item name="BarTime" id="0x4201" type="Int64" desc="Bar时间"/>
 		<item name="UpdateTs" id="0x4202" type="Int64" desc="更新时间戳"/>
+		<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
+		<item name="PreClosePrice" id="0x6021" type="Price" desc="昨收盘价"/>
 		<item name="HighestPrice" id="0x6018" type="Price" desc="最高价"/>
 		<item name="LowestPrice" id="0x6019" type="Price" desc="最低价"/>
 		<item name="Open" id="0x602A" type="Price" desc="开盘价"/>

@@ -365,6 +365,8 @@ namespace mdb
 			record->UpdateTs = csv_record.GetFieldAsInt64("UpdateTs");
 			record->PreSettlementPrice = csv_record.GetFieldAsDouble("PreSettlementPrice");
 			record->PreClosePrice = csv_record.GetFieldAsDouble("PreClosePrice");
+			record->HighestPrice = csv_record.GetFieldAsDouble("HighestPrice");
+			record->LowestPrice = csv_record.GetFieldAsDouble("LowestPrice");
 			record->Open = csv_record.GetFieldAsDouble("Open");
 			record->High = csv_record.GetFieldAsDouble("High");
 			record->Low = csv_record.GetFieldAsDouble("Low");

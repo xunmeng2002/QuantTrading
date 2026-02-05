@@ -8,7 +8,7 @@ class NotifyConnectPackage : public Package
 public:
 	static NotifyConnectPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -23,7 +23,7 @@ class NotifyDisConnectPackage : public Package
 public:
 	static NotifyDisConnectPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -38,7 +38,7 @@ class NotifyDBConnectPackage : public Package
 public:
 	static NotifyDBConnectPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -53,7 +53,7 @@ class NotifyDBDisConnectPackage : public Package
 public:
 	static NotifyDBDisConnectPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -68,7 +68,7 @@ class ReqMdUserLoginPackage : public Package
 public:
 	static ReqMdUserLoginPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -83,7 +83,7 @@ class RspMdUserLoginPackage : public Package
 public:
 	static RspMdUserLoginPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -99,7 +99,7 @@ class ReqMdUserLogoutPackage : public Package
 public:
 	static ReqMdUserLogoutPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -114,7 +114,7 @@ class RspMdUserLogoutPackage : public Package
 public:
 	static RspMdUserLogoutPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -130,7 +130,7 @@ class ReqSubMarketDataPackage : public Package
 public:
 	static ReqSubMarketDataPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -145,7 +145,7 @@ class RspSubMarketDataPackage : public Package
 public:
 	static RspSubMarketDataPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -161,7 +161,7 @@ class ReqUnSubMarketDataPackage : public Package
 public:
 	static ReqUnSubMarketDataPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -176,7 +176,7 @@ class RspUnSubMarketDataPackage : public Package
 public:
 	static RspUnSubMarketDataPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -192,7 +192,7 @@ class ReqSubMarketDataFinishedPackage : public Package
 public:
 	static ReqSubMarketDataFinishedPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -207,7 +207,7 @@ class RtnDepthMarketDataPackage : public Package
 public:
 	static RtnDepthMarketDataPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -222,7 +222,7 @@ class RtnBarMarketDataPackage : public Package
 public:
 	static RtnBarMarketDataPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -237,7 +237,7 @@ class RtnSessionBeginPackage : public Package
 public:
 	static RtnSessionBeginPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -252,7 +252,7 @@ class RtnSessionEndPackage : public Package
 public:
 	static RtnSessionEndPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -267,7 +267,7 @@ class RtnMarketDataEndPackage : public Package
 public:
 	static RtnMarketDataEndPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -282,7 +282,7 @@ class ReqAccountLoginPackage : public Package
 public:
 	static ReqAccountLoginPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -297,7 +297,7 @@ class RspAccountLoginPackage : public Package
 public:
 	static RspAccountLoginPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -313,7 +313,7 @@ class ReqAccountLogoutPackage : public Package
 public:
 	static ReqAccountLogoutPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -328,7 +328,7 @@ class RspAccountLogoutPackage : public Package
 public:
 	static RspAccountLogoutPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -344,7 +344,7 @@ class ReqQryAccountPackage : public Package
 public:
 	static ReqQryAccountPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -359,7 +359,7 @@ class RspQryAccountPackage : public Package
 public:
 	static RspQryAccountPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -375,7 +375,7 @@ class ReqQryHolderAccountPackage : public Package
 public:
 	static ReqQryHolderAccountPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -390,7 +390,7 @@ class RspQryHolderAccountPackage : public Package
 public:
 	static RspQryHolderAccountPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -406,7 +406,7 @@ class ReqQryCapitalPackage : public Package
 public:
 	static ReqQryCapitalPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -421,7 +421,7 @@ class RspQryCapitalPackage : public Package
 public:
 	static RspQryCapitalPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -437,7 +437,7 @@ class ReqQryPositionPackage : public Package
 public:
 	static ReqQryPositionPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -452,7 +452,7 @@ class RspQryPositionPackage : public Package
 public:
 	static RspQryPositionPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -468,7 +468,7 @@ class ReqQryOrderPackage : public Package
 public:
 	static ReqQryOrderPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -483,7 +483,7 @@ class RspQryOrderPackage : public Package
 public:
 	static RspQryOrderPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -499,7 +499,7 @@ class ReqQryTradePackage : public Package
 public:
 	static ReqQryTradePackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -514,7 +514,7 @@ class RspQryTradePackage : public Package
 public:
 	static RspQryTradePackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -530,7 +530,7 @@ class ReqQryInstrumentPackage : public Package
 public:
 	static ReqQryInstrumentPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -545,7 +545,7 @@ class RspQryInstrumentPackage : public Package
 public:
 	static RspQryInstrumentPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -561,7 +561,7 @@ class ReqQryOptionInstrumentPackage : public Package
 public:
 	static ReqQryOptionInstrumentPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -576,7 +576,7 @@ class RspQryOptionInstrumentPackage : public Package
 public:
 	static RspQryOptionInstrumentPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -592,7 +592,7 @@ class ReqQryCommissionRatePackage : public Package
 public:
 	static ReqQryCommissionRatePackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -607,7 +607,7 @@ class RspQryCommissionRatePackage : public Package
 public:
 	static RspQryCommissionRatePackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -623,7 +623,7 @@ class ReqQryMoneyTransferPackage : public Package
 public:
 	static ReqQryMoneyTransferPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -638,7 +638,7 @@ class RspQryMoneyTransferPackage : public Package
 public:
 	static RspQryMoneyTransferPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -654,7 +654,7 @@ class ReqInsertOrderPackage : public Package
 public:
 	static ReqInsertOrderPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -669,7 +669,7 @@ class RspInsertOrderPackage : public Package
 public:
 	static RspInsertOrderPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -685,7 +685,7 @@ class ReqCancelOrderPackage : public Package
 public:
 	static ReqCancelOrderPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -700,7 +700,7 @@ class RspCancelOrderPackage : public Package
 public:
 	static RspCancelOrderPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -716,7 +716,7 @@ class RtnOrderPackage : public Package
 public:
 	static RtnOrderPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -731,7 +731,7 @@ class RtnTradePackage : public Package
 public:
 	static RtnTradePackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -746,7 +746,7 @@ class RtnMoneyTransferPackage : public Package
 public:
 	static RtnMoneyTransferPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
@@ -761,7 +761,7 @@ class RtnAccountLogoutPackage : public Package
 public:
 	static RtnAccountLogoutPackage* Allocate();
 	virtual void Free() override;
-	virtual void Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;

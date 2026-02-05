@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Types.h"
 
-
+#pragma pack(push, 1)
 class ReqSubMarketDataField
 {
 public:
@@ -111,6 +111,8 @@ public:
 	IntType BarPeriod;		//Bar周期
 	Int64Type BarTime;		//Bar时间
 	Int64Type UpdateTs;		//更新时间戳
+	PriceType PreSettlementPrice;		//昨结算价
+	PriceType PreClosePrice;		//昨收盘价
 	PriceType HighestPrice;		//最高价
 	PriceType LowestPrice;		//最低价
 	PriceType Open;		//开盘价
@@ -229,3 +231,4 @@ public:
 	TimeType TradeTime;		//成交时间
 };
 
+#pragma pack(pop)

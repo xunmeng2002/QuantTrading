@@ -877,7 +877,7 @@ void MysqlDB::TruncateSessionTables()
 void MysqlDB::CreateTradingDay()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_TradingDay(`PK` int, `CurrTradingDay` char(9), `PreTradingDay` char(9), PRIMARY KEY(PK)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_TradingDay(`PK` int, `CurrTradingDay` char(16), `PreTradingDay` char(16), PRIMARY KEY(PK)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_TradingDayCreateStatement == nullptr)
 	{
 		m_TradingDayCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -1285,7 +1285,7 @@ void MysqlDB::TruncateProduct()
 void MysqlDB::CreateHotInstrument()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_HotInstrument(`TradingDay` char(9), `ExchangeID` char(8), `ProductID` char(32), `InstrumentID` char(32), `ProductClass` int, `Volume` bigint, `MaxVolume` bigint, `Turnover` decimal(24,8), `MaxTurnover` decimal(24,8), `OpenInterest` decimal(24,8), `MaxOpenInterest` decimal(24,8), `Rank` int, INDEX HotInstrumentTradingDay(ExchangeID, ProductID, Rank, TradingDay), PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_HotInstrument(`TradingDay` char(16), `ExchangeID` char(8), `ProductID` char(32), `InstrumentID` char(32), `ProductClass` int, `Volume` bigint, `MaxVolume` bigint, `Turnover` decimal(24,8), `MaxTurnover` decimal(24,8), `OpenInterest` decimal(24,8), `MaxOpenInterest` decimal(24,8), `Rank` int, INDEX HotInstrumentTradingDay(ExchangeID, ProductID, Rank, TradingDay), PRIMARY KEY(TradingDay, ExchangeID, ProductID, Rank)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_HotInstrumentCreateStatement == nullptr)
 	{
 		m_HotInstrumentCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -1587,7 +1587,7 @@ void MysqlDB::TruncateInstrument()
 void MysqlDB::CreateDepthMarketData()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_DepthMarketData(`TradingDay` char(9), `ExchangeID` char(8), `InstrumentID` char(32), `UpdateTs` bigint, `LastPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `PreOpenInterest` decimal(24,8), `OpenPrice` decimal(24,8), `HighestPrice` decimal(24,8), `LowestPrice` decimal(24,8), `ClosePrice` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), `SettlementPrice` decimal(24,8), `UpperLimitPrice` decimal(24,8), `LowerLimitPrice` decimal(24,8), `AveragePrice` decimal(24,8), `AskPrice1` decimal(24,8), `AskPrice2` decimal(24,8), `AskPrice3` decimal(24,8), `AskPrice4` decimal(24,8), `AskPrice5` decimal(24,8), `AskPrice6` decimal(24,8), `AskPrice7` decimal(24,8), `AskPrice8` decimal(24,8), `AskPrice9` decimal(24,8), `AskPrice10` decimal(24,8), `AskVolume1` bigint, `AskVolume2` bigint, `AskVolume3` bigint, `AskVolume4` bigint, `AskVolume5` bigint, `AskVolume6` bigint, `AskVolume7` bigint, `AskVolume8` bigint, `AskVolume9` bigint, `AskVolume10` bigint, `BidPrice1` decimal(24,8), `BidPrice2` decimal(24,8), `BidPrice3` decimal(24,8), `BidPrice4` decimal(24,8), `BidPrice5` decimal(24,8), `BidPrice6` decimal(24,8), `BidPrice7` decimal(24,8), `BidPrice8` decimal(24,8), `BidPrice9` decimal(24,8), `BidPrice10` decimal(24,8), `BidVolume1` bigint, `BidVolume2` bigint, `BidVolume3` bigint, `BidVolume4` bigint, `BidVolume5` bigint, `BidVolume6` bigint, `BidVolume7` bigint, `BidVolume8` bigint, `BidVolume9` bigint, `BidVolume10` bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_DepthMarketData(`TradingDay` char(16), `ExchangeID` char(8), `InstrumentID` char(32), `UpdateTs` bigint, `LastPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `PreOpenInterest` decimal(24,8), `OpenPrice` decimal(24,8), `HighestPrice` decimal(24,8), `LowestPrice` decimal(24,8), `ClosePrice` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), `SettlementPrice` decimal(24,8), `UpperLimitPrice` decimal(24,8), `LowerLimitPrice` decimal(24,8), `AveragePrice` decimal(24,8), `AskPrice1` decimal(24,8), `AskPrice2` decimal(24,8), `AskPrice3` decimal(24,8), `AskPrice4` decimal(24,8), `AskPrice5` decimal(24,8), `AskPrice6` decimal(24,8), `AskPrice7` decimal(24,8), `AskPrice8` decimal(24,8), `AskPrice9` decimal(24,8), `AskPrice10` decimal(24,8), `AskVolume1` bigint, `AskVolume2` bigint, `AskVolume3` bigint, `AskVolume4` bigint, `AskVolume5` bigint, `AskVolume6` bigint, `AskVolume7` bigint, `AskVolume8` bigint, `AskVolume9` bigint, `AskVolume10` bigint, `BidPrice1` decimal(24,8), `BidPrice2` decimal(24,8), `BidPrice3` decimal(24,8), `BidPrice4` decimal(24,8), `BidPrice5` decimal(24,8), `BidPrice6` decimal(24,8), `BidPrice7` decimal(24,8), `BidPrice8` decimal(24,8), `BidPrice9` decimal(24,8), `BidPrice10` decimal(24,8), `BidVolume1` bigint, `BidVolume2` bigint, `BidVolume3` bigint, `BidVolume4` bigint, `BidVolume5` bigint, `BidVolume6` bigint, `BidVolume7` bigint, `BidVolume8` bigint, `BidVolume9` bigint, `BidVolume10` bigint, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_DepthMarketDataCreateStatement == nullptr)
 	{
 		m_DepthMarketDataCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -1724,7 +1724,7 @@ void MysqlDB::TruncateDepthMarketData()
 void MysqlDB::CreateBarMarketData()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` char(9), `ExchangeID` char(8), `InstrumentID` char(32), `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `Open` decimal(24,8), `High` decimal(24,8), `Low` decimal(24,8), `Close` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` char(16), `ExchangeID` char(8), `InstrumentID` char(32), `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` decimal(24,8), `PreClosePrice` decimal(24,8), `HighestPrice` decimal(24,8), `LowestPrice` decimal(24,8), `Open` decimal(24,8), `High` decimal(24,8), `Low` decimal(24,8), `Close` decimal(24,8), `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` decimal(24,8), `Turnover` decimal(24,8), `OpenInterest` decimal(24,8), PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_BarMarketDataCreateStatement == nullptr)
 	{
 		m_BarMarketDataCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -1750,7 +1750,7 @@ void MysqlDB::InsertBarMarketData(BarMarketData* record)
 	auto start = steady_clock::now();
 	if (m_BarMarketDataInsertStatement == nullptr)
 	{
-		m_BarMarketDataInsertStatement = m_DBConnection->prepareStatement("insert into t_BarMarketData Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		m_BarMarketDataInsertStatement = m_DBConnection->prepareStatement("insert into t_BarMarketData Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 	}
 	SetStatementForBarMarketDataRecord(m_BarMarketDataInsertStatement, record);
 	
@@ -1819,7 +1819,7 @@ void MysqlDB::UpdateBarMarketData(BarMarketData* record)
 	auto start = steady_clock::now();
 	if (m_BarMarketDataUpdateStatement == nullptr)
 	{
-		m_BarMarketDataUpdateStatement = m_DBConnection->prepareStatement("update t_BarMarketData set UpdateTs = ?, PreSettlementPrice = ?, PreClosePrice = ?, Open = ?, High = ?, Low = ?, Close = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;");
+		m_BarMarketDataUpdateStatement = m_DBConnection->prepareStatement("update t_BarMarketData set UpdateTs = ?, PreSettlementPrice = ?, PreClosePrice = ?, HighestPrice = ?, LowestPrice = ?, Open = ?, High = ?, Low = ?, Close = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;");
 	}
 	SetStatementForBarMarketDataRecordUpdate(m_BarMarketDataUpdateStatement, record);
 	m_BarMarketDataUpdateStatement->executeUpdate();
@@ -1861,7 +1861,7 @@ void MysqlDB::TruncateBarMarketData()
 void MysqlDB::CreateMdSubscribe()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_MdSubscribe(`ExchangeID` char(8), `InstrumentID` char(32), `RealInstrumentID` char(32), `ProductID` char(32), `ProductClass` int, `StartTradingDay` char(9), `EndTradingDay` char(9), PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_MdSubscribe(`ExchangeID` char(8), `InstrumentID` char(32), `RealInstrumentID` char(32), `ProductID` char(32), `ProductClass` int, `StartTradingDay` char(16), `EndTradingDay` char(16), PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_MdSubscribeCreateStatement == nullptr)
 	{
 		m_MdSubscribeCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -2284,7 +2284,7 @@ void MysqlDB::TruncateAccount()
 void MysqlDB::CreateCapital()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_Capital(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `Balance` decimal(24,8), `PreBalance` decimal(24,8), `Available` decimal(24,8), `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `Deposit` decimal(24,8), `Withdraw` decimal(24,8), INDEX CapitalTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Capital(`TradingDay` char(16), `AccountID` char(32), `AccountType` int, `Balance` decimal(24,8), `PreBalance` decimal(24,8), `Available` decimal(24,8), `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `Deposit` decimal(24,8), `Withdraw` decimal(24,8), INDEX CapitalTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_CapitalCreateStatement == nullptr)
 	{
 		m_CapitalCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -2435,7 +2435,7 @@ void MysqlDB::TruncateCapital()
 void MysqlDB::CreatePosition()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_Position(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `PosiDirection` int, `TotalPosition` bigint, `PositionFrozen` bigint, `TodayPosition` bigint, `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `VolumeMultiple` int, `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `SettlementPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), INDEX PositionAccount(TradingDay, AccountID), INDEX PositionTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Position(`TradingDay` char(16), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `PosiDirection` int, `TotalPosition` bigint, `PositionFrozen` bigint, `TodayPosition` bigint, `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `VolumeMultiple` int, `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `SettlementPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), INDEX PositionAccount(TradingDay, AccountID), INDEX PositionTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_PositionCreateStatement == nullptr)
 	{
 		m_PositionCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -2601,7 +2601,7 @@ void MysqlDB::TruncatePosition()
 void MysqlDB::CreatePositionDetail()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_PositionDetail(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `PosiDirection` int, `OpenDate` char(9), `TradeID` char(64), `Volume` bigint, `OpenPrice` decimal(24,8), `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `VolumeMultiple` int, `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `SettlementPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `CloseVolume` bigint, `CloseAmount` decimal(24,8), INDEX PositionDetailTradeMatch(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection), INDEX PositionDetailTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection, OpenDate, TradeID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_PositionDetail(`TradingDay` char(16), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `PosiDirection` int, `OpenDate` char(16), `TradeID` char(64), `Volume` bigint, `OpenPrice` decimal(24,8), `MarketValue` decimal(24,8), `CashIn` decimal(24,8), `CashOut` decimal(24,8), `Margin` decimal(24,8), `Commission` decimal(24,8), `VolumeMultiple` int, `CloseProfitByDate` decimal(24,8), `CloseProfitByTrade` decimal(24,8), `PositionProfitByDate` decimal(24,8), `PositionProfitByTrade` decimal(24,8), `SettlementPrice` decimal(24,8), `PreSettlementPrice` decimal(24,8), `CloseVolume` bigint, `CloseAmount` decimal(24,8), INDEX PositionDetailTradeMatch(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection), INDEX PositionDetailTradingDay(TradingDay), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection, OpenDate, TradeID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_PositionDetailCreateStatement == nullptr)
 	{
 		m_PositionDetailCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -2767,7 +2767,7 @@ void MysqlDB::TruncatePositionDetail()
 void MysqlDB::CreateOrder()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_Order(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `Direction` int, `OffsetFlag` int, `OrderPriceType` int, `Price` decimal(24,8), `Volume` bigint, `VolumeTotal` bigint, `VolumeTraded` bigint, `VolumeMultiple` int, `OrderStatus` int, `OrderDate` char(9), `OrderTime` char(9), `CancelDate` char(9), `CancelTime` char(9), `SessionID` bigint, `ClientOrderID` int, `RequestID` int, `OfferID` int, `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `RebuildMark` bool, `IsForceClose` bool, INDEX OrderAccountID(TradingDay, AccountID), UNIQUE ClientOrderID(TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Order(`TradingDay` char(16), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `Direction` int, `OffsetFlag` int, `OrderPriceType` int, `Price` decimal(24,8), `Volume` bigint, `VolumeTotal` bigint, `VolumeTraded` bigint, `VolumeMultiple` int, `OrderStatus` int, `OrderDate` char(16), `OrderTime` char(16), `CancelDate` char(16), `CancelTime` char(16), `SessionID` bigint, `ClientOrderID` int, `RequestID` int, `OfferID` int, `TradeGroupID` int, `RiskGroupID` int, `CommissionGroupID` int, `FrozenCash` decimal(24,8), `FrozenMargin` decimal(24,8), `FrozenCommission` decimal(24,8), `RebuildMark` bool, `IsForceClose` bool, INDEX OrderAccountID(TradingDay, AccountID), UNIQUE ClientOrderID(TradingDay, AccountID, ExchangeID, InstrumentID, SessionID, ClientOrderID), PRIMARY KEY(TradingDay, AccountID, ExchangeID, InstrumentID, OrderID)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_OrderCreateStatement == nullptr)
 	{
 		m_OrderCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -2918,7 +2918,7 @@ void MysqlDB::TruncateOrder()
 void MysqlDB::CreateTrade()
 {
 	auto start = steady_clock::now();
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_Trade(`TradingDay` char(9), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `TradeID` char(64), `Direction` int, `OffsetFlag` int, `Price` decimal(24,8), `Volume` bigint, `VolumeMultiple` int, `TradeAmount` decimal(24,8), `Commission` decimal(24,8), `TradeDate` char(9), `TradeTime` char(9), INDEX TradeAccountID(TradingDay, AccountID), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_Trade(`TradingDay` char(16), `AccountID` char(32), `AccountType` int, `ExchangeID` char(8), `InstrumentID` char(32), `ProductClass` int, `OrderID` int, `OrderSysID` char(64), `TradeID` char(64), `Direction` int, `OffsetFlag` int, `Price` decimal(24,8), `Volume` bigint, `VolumeMultiple` int, `TradeAmount` decimal(24,8), `Commission` decimal(24,8), `TradeDate` char(16), `TradeTime` char(16), INDEX TradeAccountID(TradingDay, AccountID), PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin';";
 	if (m_TradeCreateStatement == nullptr)
 	{
 		m_TradeCreateStatement = m_DBConnection->prepareStatement(sql);
@@ -3499,36 +3499,40 @@ void MysqlDB::SetStatementForBarMarketDataRecord(sql::PreparedStatement* stateme
 	statement->setInt64(7, record->UpdateTs);
 	statement->setDouble(8, record->PreSettlementPrice);
 	statement->setDouble(9, record->PreClosePrice);
-	statement->setDouble(10, record->Open);
-	statement->setDouble(11, record->High);
-	statement->setDouble(12, record->Low);
-	statement->setDouble(13, record->Close);
-	statement->setInt64(14, record->CurrVolume);
-	statement->setInt64(15, record->Volume);
-	statement->setDouble(16, record->CurrTurnover);
-	statement->setDouble(17, record->Turnover);
-	statement->setDouble(18, record->OpenInterest);
+	statement->setDouble(10, record->HighestPrice);
+	statement->setDouble(11, record->LowestPrice);
+	statement->setDouble(12, record->Open);
+	statement->setDouble(13, record->High);
+	statement->setDouble(14, record->Low);
+	statement->setDouble(15, record->Close);
+	statement->setInt64(16, record->CurrVolume);
+	statement->setInt64(17, record->Volume);
+	statement->setDouble(18, record->CurrTurnover);
+	statement->setDouble(19, record->Turnover);
+	statement->setDouble(20, record->OpenInterest);
 }
 void MysqlDB::SetStatementForBarMarketDataRecordUpdate(sql::PreparedStatement* statement, BarMarketData* record)
 {
 	statement->setInt64(1, record->UpdateTs);
 	statement->setDouble(2, record->PreSettlementPrice);
 	statement->setDouble(3, record->PreClosePrice);
-	statement->setDouble(4, record->Open);
-	statement->setDouble(5, record->High);
-	statement->setDouble(6, record->Low);
-	statement->setDouble(7, record->Close);
-	statement->setInt64(8, record->CurrVolume);
-	statement->setInt64(9, record->Volume);
-	statement->setDouble(10, record->CurrTurnover);
-	statement->setDouble(11, record->Turnover);
-	statement->setDouble(12, record->OpenInterest);
-	statement->setString(13, record->TradingDay);
-	statement->setString(14, record->ExchangeID);
-	statement->setString(15, record->InstrumentID);
-	statement->setInt(16, int(record->BarPreces));
-	statement->setInt(17, record->BarPeriod);
-	statement->setInt64(18, record->BarTime);
+	statement->setDouble(4, record->HighestPrice);
+	statement->setDouble(5, record->LowestPrice);
+	statement->setDouble(6, record->Open);
+	statement->setDouble(7, record->High);
+	statement->setDouble(8, record->Low);
+	statement->setDouble(9, record->Close);
+	statement->setInt64(10, record->CurrVolume);
+	statement->setInt64(11, record->Volume);
+	statement->setDouble(12, record->CurrTurnover);
+	statement->setDouble(13, record->Turnover);
+	statement->setDouble(14, record->OpenInterest);
+	statement->setString(15, record->TradingDay);
+	statement->setString(16, record->ExchangeID);
+	statement->setString(17, record->InstrumentID);
+	statement->setInt(18, int(record->BarPreces));
+	statement->setInt(19, record->BarPeriod);
+	statement->setInt64(20, record->BarTime);
 }
 void MysqlDB::SetStatementForBarMarketDataPrimaryKey(sql::PreparedStatement* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime)
 {
@@ -3551,15 +3555,17 @@ void MysqlDB::ParseRecord(sql::ResultSet* result, std::list<BarMarketData*>& rec
 	record->UpdateTs = result->getInt64(7);
 	record->PreSettlementPrice = result->getDouble(8);
 	record->PreClosePrice = result->getDouble(9);
-	record->Open = result->getDouble(10);
-	record->High = result->getDouble(11);
-	record->Low = result->getDouble(12);
-	record->Close = result->getDouble(13);
-	record->CurrVolume = result->getInt64(14);
-	record->Volume = result->getInt64(15);
-	record->CurrTurnover = result->getDouble(16);
-	record->Turnover = result->getDouble(17);
-	record->OpenInterest = result->getDouble(18);
+	record->HighestPrice = result->getDouble(10);
+	record->LowestPrice = result->getDouble(11);
+	record->Open = result->getDouble(12);
+	record->High = result->getDouble(13);
+	record->Low = result->getDouble(14);
+	record->Close = result->getDouble(15);
+	record->CurrVolume = result->getInt64(16);
+	record->Volume = result->getInt64(17);
+	record->CurrTurnover = result->getDouble(18);
+	record->Turnover = result->getDouble(19);
+	record->OpenInterest = result->getDouble(20);
 	records.push_back(record);
 }
 void MysqlDB::SetStatementForMdSubscribeRecord(sql::PreparedStatement* statement, MdSubscribe* record)

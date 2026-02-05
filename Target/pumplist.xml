@@ -80,13 +80,9 @@
 	
 	<pump dest="./Target/BackTest/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/BackTest.xml"/>
 	<pump dest="./Target/BackTest/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/BackTest.xml"/>
-	<pump dest="../Libs/QuantTrading/include/BackTestFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
 	<pump dest="../Libs/QuantTrading/include/BackTestApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
 	<pump dest="./Target/BackTest/BackTestApi/BackTestFields.h" tpl="../Templates/Cpp/Api/ApiFields.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
 	<pump dest="./Target/BackTest/BackTestApi/BackTestApi.h" tpl="../Templates/Cpp/Api/Api.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
-	<pump dest="./Target/BackTest/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
-	<pump dest="./Target/BackTest/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml ../Model/Types.xml"/>
-	<pump dest="./Target/BackTest/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Packages/PackageFactory.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
 
 	<pump dest="./Target/BackTest/DB/DBWriter/DB.h" tpl="../Templates/Cpp/DB/DBWriter/DB.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/BackTestTableNames.xml"/>
 	<pump dest="./Target/BackTest/DB/DBWriter/DBOperateImpl.h" tpl="../Templates/Cpp/DB/DBWriter/DBOperateImpl.h.tpl" model="./Model/Tables/Tables.xml ./Model/TableNames/BackTestTableNames.xml"/>

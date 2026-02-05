@@ -442,6 +442,8 @@ void MdReader::ParseMdBarRecord(duckdb_result& result, std::list<mdb::BarMarketD
 		duckdb_vector column15 = duckdb_data_chunk_get_vector(dataChunk, 15);
 		duckdb_vector column16 = duckdb_data_chunk_get_vector(dataChunk, 16);
 		duckdb_vector column17 = duckdb_data_chunk_get_vector(dataChunk, 17);
+		duckdb_vector column18 = duckdb_data_chunk_get_vector(dataChunk, 18);
+		duckdb_vector column19 = duckdb_data_chunk_get_vector(dataChunk, 19);
 
 		int64_t* dataColumn0 = (int64_t*)duckdb_vector_get_data(column0);
 		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
@@ -456,11 +458,13 @@ void MdReader::ParseMdBarRecord(duckdb_result& result, std::list<mdb::BarMarketD
 		duckdb_hugeint* dataColumn10 = (duckdb_hugeint*)duckdb_vector_get_data(column10);
 		duckdb_hugeint* dataColumn11 = (duckdb_hugeint*)duckdb_vector_get_data(column11);
 		duckdb_hugeint* dataColumn12 = (duckdb_hugeint*)duckdb_vector_get_data(column12);
-		double* dataColumn13 = (double*)duckdb_vector_get_data(column13);
-		double* dataColumn14 = (double*)duckdb_vector_get_data(column14);
-		duckdb_hugeint* dataColumn15 = (duckdb_hugeint*)duckdb_vector_get_data(column15);
-		duckdb_hugeint* dataColumn16 = (duckdb_hugeint*)duckdb_vector_get_data(column16);
-		double* dataColumn17 = (double*)duckdb_vector_get_data(column17);
+		duckdb_hugeint* dataColumn13 = (duckdb_hugeint*)duckdb_vector_get_data(column13);
+		duckdb_hugeint* dataColumn14 = (duckdb_hugeint*)duckdb_vector_get_data(column14);
+		double* dataColumn15 = (double*)duckdb_vector_get_data(column15);
+		double* dataColumn16 = (double*)duckdb_vector_get_data(column16);
+		duckdb_hugeint* dataColumn17 = (duckdb_hugeint*)duckdb_vector_get_data(column17);
+		duckdb_hugeint* dataColumn18 = (duckdb_hugeint*)duckdb_vector_get_data(column18);
+		double* dataColumn19 = (double*)duckdb_vector_get_data(column19);
 
 		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
 		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
@@ -480,6 +484,8 @@ void MdReader::ParseMdBarRecord(duckdb_result& result, std::list<mdb::BarMarketD
 		uint64_t* validityColumn15 = duckdb_vector_get_validity(column15);
 		uint64_t* validityColumn16 = duckdb_vector_get_validity(column16);
 		uint64_t* validityColumn17 = duckdb_vector_get_validity(column17);
+		uint64_t* validityColumn18 = duckdb_vector_get_validity(column18);
+		uint64_t* validityColumn19 = duckdb_vector_get_validity(column19);
 
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
@@ -504,15 +510,17 @@ void MdReader::ParseMdBarRecord(duckdb_result& result, std::list<mdb::BarMarketD
 			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->UpdateTs = dataColumn6[row];
 			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->PreSettlementPrice = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn7[row] }); else record->PreSettlementPrice = std::numeric_limits<double>::infinity();
 			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->PreClosePrice = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn7[row] }); else record->PreClosePrice = std::numeric_limits<double>::infinity();
-			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->Open = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn9[row] }); else record->Open = std::numeric_limits<double>::infinity();
-			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->High = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn10[row] }); else record->High = std::numeric_limits<double>::infinity();
-			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Low = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn11[row] }); else record->Low = std::numeric_limits<double>::infinity();
-			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->Close = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn12[row] }); else record->Close = std::numeric_limits<double>::infinity();
-			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->CurrVolume = (VolumeType)dataColumn13[row];
-			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->Volume = (VolumeType)dataColumn14[row];
-			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->CurrTurnover = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn15[row] }); else record->CurrTurnover = std::numeric_limits<double>::infinity();
-			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->Turnover = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn16[row] }); else record->Turnover = std::numeric_limits<double>::infinity();
-			if (duckdb_validity_row_is_valid(validityColumn17, row)) record->OpenInterest = dataColumn17[row];
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->HighestPrice = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn9[row] }); else record->HighestPrice = std::numeric_limits<double>::infinity();
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->LowestPrice = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn10[row] }); else record->LowestPrice = std::numeric_limits<double>::infinity();
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Open = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn11[row] }); else record->Open = std::numeric_limits<double>::infinity();
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->High = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn12[row] }); else record->High = std::numeric_limits<double>::infinity();
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->Low = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn13[row] }); else record->Low = std::numeric_limits<double>::infinity();
+			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->Close = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn14[row] }); else record->Close = std::numeric_limits<double>::infinity();
+			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->CurrVolume = (VolumeType)dataColumn15[row];
+			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->Volume = (VolumeType)dataColumn16[row];
+			if (duckdb_validity_row_is_valid(validityColumn17, row)) record->CurrTurnover = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn17[row] }); else record->CurrTurnover = std::numeric_limits<double>::infinity();
+			if (duckdb_validity_row_is_valid(validityColumn18, row)) record->Turnover = duckdb_decimal_to_double(duckdb_decimal{ 24, 8, dataColumn18[row] }); else record->Turnover = std::numeric_limits<double>::infinity();
+			if (duckdb_validity_row_is_valid(validityColumn19, row)) record->OpenInterest = dataColumn19[row];
 			records.push_back(record);
 		}
 	}
@@ -559,7 +567,7 @@ void MdReader::GetTickSqlString(mdb::MdSubscribe* mdSubscribe)
 void MdReader::GetBarSqlString(mdb::MdSubscribe* mdSubscribe)
 {
 	static auto sqlTemplate = "Select TradingDay, ExchangeID, InstrumentID, %d, 1, UpdateTs, UpdateTs, "
-		"PreSettlementPrice, PreClosePrice, Open, High, Low, Close, LastTraded, Volume, LastTurnover, Turnover, OpenInterest "
+		"PreSettlementPrice, PreClosePrice, HighestPrice, LowestPrice, Open, High, Low, Close, LastTraded, Volume, LastTurnover, Turnover, OpenInterest "
 		"from read_parquet('%s/Bar/Identity=%s.*/Year=*/*.parquet', union_by_name=true) "
 		"where TradingDay >= '%s' and TradingDay <= '%s' and InstrumentID = '%s';";
 	sprintf(m_SqlBuff, sqlTemplate, BarPrecesType::Minute,

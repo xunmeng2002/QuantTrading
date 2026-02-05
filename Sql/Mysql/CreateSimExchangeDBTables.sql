@@ -1,8 +1,8 @@
 ﻿
 CREATE TABLE IF NOT EXISTS `t_TradingDay` (
   `PK` int COMMENT '主键',
-  `CurrTradingDay` char(9) COMMENT '当前交易日',
-  `PreTradingDay` char(9) COMMENT '昨交易日',
+  `CurrTradingDay` char(16) COMMENT '当前交易日',
+  `PreTradingDay` char(16) COMMENT '昨交易日',
 
   PRIMARY KEY(PK)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='交易日';
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `t_Product` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='品种表';
 
 CREATE TABLE IF NOT EXISTS `t_HotInstrument` (
-  `TradingDay` char(9) COMMENT '交易日',
+  `TradingDay` char(16) COMMENT '交易日',
   `ExchangeID` char(8) COMMENT '交易所代码',
   `ProductID` char(32) COMMENT '品种代码',
   `InstrumentID` char(32) COMMENT '合约代码',
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `t_Instrument` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='合约';
 
 CREATE TABLE IF NOT EXISTS `t_DepthMarketData` (
-  `TradingDay` char(9) COMMENT '交易日',
+  `TradingDay` char(16) COMMENT '交易日',
   `ExchangeID` char(8) COMMENT '交易所代码',
   `InstrumentID` char(32) COMMENT '合约代码',
   `UpdateTs` bigint COMMENT '更新时间戳',
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `t_DepthMarketData` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='深度行情';
 
 CREATE TABLE IF NOT EXISTS `t_BarMarketData` (
-  `TradingDay` char(9) COMMENT '交易日',
+  `TradingDay` char(16) COMMENT '交易日',
   `ExchangeID` char(8) COMMENT '交易所代码',
   `InstrumentID` char(32) COMMENT '合约代码',
   `BarPreces` int COMMENT 'Bar精度',
@@ -145,6 +145,8 @@ CREATE TABLE IF NOT EXISTS `t_BarMarketData` (
   `UpdateTs` bigint COMMENT '更新时间戳',
   `PreSettlementPrice` decimal(24,8) COMMENT '昨结算价',
   `PreClosePrice` decimal(24,8) COMMENT '昨收盘价',
+  `HighestPrice` decimal(24,8) COMMENT '最高价',
+  `LowestPrice` decimal(24,8) COMMENT '最低价',
   `Open` decimal(24,8) COMMENT '开盘价',
   `High` decimal(24,8) COMMENT '最高价',
   `Low` decimal(24,8) COMMENT '最低价',
@@ -164,8 +166,8 @@ CREATE TABLE IF NOT EXISTS `t_MdSubscribe` (
   `RealInstrumentID` char(32) COMMENT '真实合约代码',
   `ProductID` char(32) COMMENT '品种代码',
   `ProductClass` int COMMENT '品种类型',
-  `StartTradingDay` char(9) COMMENT '开始交易日',
-  `EndTradingDay` char(9) COMMENT '结束交易日',
+  `StartTradingDay` char(16) COMMENT '开始交易日',
+  `EndTradingDay` char(16) COMMENT '结束交易日',
 
   PRIMARY KEY(ExchangeID, InstrumentID, StartTradingDay)
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='行情订阅';
@@ -216,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `t_Account` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='账户';
 
 CREATE TABLE IF NOT EXISTS `t_Capital` (
-  `TradingDay` char(9) COMMENT '交易日',
+  `TradingDay` char(16) COMMENT '交易日',
   `AccountID` char(32) COMMENT '账户代码',
   `AccountType` int COMMENT '账户类型',
   `Balance` decimal(24,8) COMMENT '权益',
@@ -242,7 +244,7 @@ CREATE TABLE IF NOT EXISTS `t_Capital` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='资金';
 
 CREATE TABLE IF NOT EXISTS `t_Position` (
-  `TradingDay` char(9) COMMENT '交易日',
+  `TradingDay` char(16) COMMENT '交易日',
   `AccountID` char(32) COMMENT '账户代码',
   `AccountType` int COMMENT '账户类型',
   `ExchangeID` char(8) COMMENT '交易所代码',
@@ -274,14 +276,14 @@ CREATE TABLE IF NOT EXISTS `t_Position` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='持仓';
 
 CREATE TABLE IF NOT EXISTS `t_PositionDetail` (
-  `TradingDay` char(9) COMMENT '交易日',
+  `TradingDay` char(16) COMMENT '交易日',
   `AccountID` char(32) COMMENT '账户代码',
   `AccountType` int COMMENT '账户类型',
   `ExchangeID` char(8) COMMENT '交易所代码',
   `InstrumentID` char(32) COMMENT '合约代码',
   `ProductClass` int COMMENT '品种类型',
   `PosiDirection` int COMMENT '持仓方向',
-  `OpenDate` char(9) COMMENT '开仓日期',
+  `OpenDate` char(16) COMMENT '开仓日期',
   `TradeID` char(64) COMMENT '成交编号',
   `Volume` bigint COMMENT '委托数量',
   `OpenPrice` decimal(24,8) COMMENT '开盘价',
@@ -306,7 +308,7 @@ CREATE TABLE IF NOT EXISTS `t_PositionDetail` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='持仓明细';
 
 CREATE TABLE IF NOT EXISTS `t_Order` (
-  `TradingDay` char(9) COMMENT '交易日',
+  `TradingDay` char(16) COMMENT '交易日',
   `AccountID` char(32) COMMENT '账户代码',
   `AccountType` int COMMENT '账户类型',
   `ExchangeID` char(8) COMMENT '交易所代码',
@@ -323,10 +325,10 @@ CREATE TABLE IF NOT EXISTS `t_Order` (
   `VolumeTraded` bigint COMMENT '成交数量',
   `VolumeMultiple` int COMMENT '合约乘数',
   `OrderStatus` int COMMENT '委托状态',
-  `OrderDate` char(9) COMMENT '委托日期',
-  `OrderTime` char(9) COMMENT '委托时间',
-  `CancelDate` char(9) COMMENT '撤单日期',
-  `CancelTime` char(9) COMMENT '撤单时间',
+  `OrderDate` char(16) COMMENT '委托日期',
+  `OrderTime` char(16) COMMENT '委托时间',
+  `CancelDate` char(16) COMMENT '撤单日期',
+  `CancelTime` char(16) COMMENT '撤单时间',
   `SessionID` bigint COMMENT '会话编号',
   `ClientOrderID` int COMMENT '客户端委托编号',
   `RequestID` int COMMENT '客户端请求编号',
@@ -346,7 +348,7 @@ CREATE TABLE IF NOT EXISTS `t_Order` (
 ) ENGINE=MyISAM DEFAULT COLLATE='utf8mb4_bin' COMMENT='委托';
 
 CREATE TABLE IF NOT EXISTS `t_Trade` (
-  `TradingDay` char(9) COMMENT '交易日',
+  `TradingDay` char(16) COMMENT '交易日',
   `AccountID` char(32) COMMENT '账户代码',
   `AccountType` int COMMENT '账户类型',
   `ExchangeID` char(8) COMMENT '交易所代码',
@@ -362,8 +364,8 @@ CREATE TABLE IF NOT EXISTS `t_Trade` (
   `VolumeMultiple` int COMMENT '合约乘数',
   `TradeAmount` decimal(24,8) COMMENT '成交金额',
   `Commission` decimal(24,8) COMMENT '手续费',
-  `TradeDate` char(9) COMMENT '成交日期',
-  `TradeTime` char(9) COMMENT '成交时间',
+  `TradeDate` char(16) COMMENT '成交日期',
+  `TradeTime` char(16) COMMENT '成交时间',
 
   INDEX AccountID(TradingDay, AccountID),
   PRIMARY KEY(TradingDay, ExchangeID, TradeID, Direction)

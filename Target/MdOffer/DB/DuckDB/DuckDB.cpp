@@ -1186,7 +1186,7 @@ void DuckDB::CreateBarMarketData()
 {
 	auto start = steady_clock::now();
 	duckdb_result result;
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, BarPreces int, BarPeriod int, BarTime bigint, UpdateTs bigint, PreSettlementPrice double, PreClosePrice double, Open double, High double, Low double, Close double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData (TradingDay varchar, ExchangeID varchar, InstrumentID varchar, BarPreces int, BarPeriod int, BarTime bigint, UpdateTs bigint, PreSettlementPrice double, PreClosePrice double, HighestPrice double, LowestPrice double, Open double, High double, Low double, Close double, CurrVolume bigint, Volume bigint, CurrTurnover double, Turnover double, OpenInterest double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));";
 	auto rc = duckdb_query(m_Connection, sql, &result);
 	if (rc != DuckDBSuccess)
 	{
@@ -1269,7 +1269,7 @@ void DuckDB::UpdateBarMarketData(BarMarketData* record)
 	auto start = steady_clock::now();
 	if (m_BarMarketDataUpdateStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "update t_BarMarketData set UpdateTs = ?, PreSettlementPrice = ?, PreClosePrice = ?, Open = ?, High = ?, Low = ?, Close = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;", &m_BarMarketDataUpdateStatement);
+		duckdb_prepare(m_Connection, "update t_BarMarketData set UpdateTs = ?, PreSettlementPrice = ?, PreClosePrice = ?, HighestPrice = ?, LowestPrice = ?, Open = ?, High = ?, Low = ?, Close = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;", &m_BarMarketDataUpdateStatement);
 	}
 	SetStatementForBarMarketDataRecordUpdate(m_BarMarketDataUpdateStatement, record);
 	
@@ -1357,6 +1357,8 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<BarMarketData*>& recor
 		duckdb_vector column15 = duckdb_data_chunk_get_vector(dataChunk, 15);
 		duckdb_vector column16 = duckdb_data_chunk_get_vector(dataChunk, 16);
 		duckdb_vector column17 = duckdb_data_chunk_get_vector(dataChunk, 17);
+		duckdb_vector column18 = duckdb_data_chunk_get_vector(dataChunk, 18);
+		duckdb_vector column19 = duckdb_data_chunk_get_vector(dataChunk, 19);
 
 		duckdb_string_t* dataColumn0 = (duckdb_string_t*)duckdb_vector_get_data(column0);
 		duckdb_string_t* dataColumn1 = (duckdb_string_t*)duckdb_vector_get_data(column1);
@@ -1371,11 +1373,13 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<BarMarketData*>& recor
 		double* dataColumn10 = (double*)duckdb_vector_get_data(column10);
 		double* dataColumn11 = (double*)duckdb_vector_get_data(column11);
 		double* dataColumn12 = (double*)duckdb_vector_get_data(column12);
-		int64_t* dataColumn13 = (int64_t*)duckdb_vector_get_data(column13);
-		int64_t* dataColumn14 = (int64_t*)duckdb_vector_get_data(column14);
-		double* dataColumn15 = (double*)duckdb_vector_get_data(column15);
-		double* dataColumn16 = (double*)duckdb_vector_get_data(column16);
+		double* dataColumn13 = (double*)duckdb_vector_get_data(column13);
+		double* dataColumn14 = (double*)duckdb_vector_get_data(column14);
+		int64_t* dataColumn15 = (int64_t*)duckdb_vector_get_data(column15);
+		int64_t* dataColumn16 = (int64_t*)duckdb_vector_get_data(column16);
 		double* dataColumn17 = (double*)duckdb_vector_get_data(column17);
+		double* dataColumn18 = (double*)duckdb_vector_get_data(column18);
+		double* dataColumn19 = (double*)duckdb_vector_get_data(column19);
 
 		uint64_t* validityColumn0 = duckdb_vector_get_validity(column0);
 		uint64_t* validityColumn1 = duckdb_vector_get_validity(column1);
@@ -1395,6 +1399,8 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<BarMarketData*>& recor
 		uint64_t* validityColumn15 = duckdb_vector_get_validity(column15);
 		uint64_t* validityColumn16 = duckdb_vector_get_validity(column16);
 		uint64_t* validityColumn17 = duckdb_vector_get_validity(column17);
+		uint64_t* validityColumn18 = duckdb_vector_get_validity(column18);
+		uint64_t* validityColumn19 = duckdb_vector_get_validity(column19);
 
 		idx_t rowCount = duckdb_data_chunk_get_size(dataChunk);
 		for (idx_t row = 0LL; row < rowCount; ++row)
@@ -1419,15 +1425,17 @@ void DuckDB::ParseRecord(duckdb_result& result, std::list<BarMarketData*>& recor
 			if (duckdb_validity_row_is_valid(validityColumn6, row)) record->UpdateTs = dataColumn6[row];
 			if (duckdb_validity_row_is_valid(validityColumn7, row)) record->PreSettlementPrice = dataColumn7[row];
 			if (duckdb_validity_row_is_valid(validityColumn8, row)) record->PreClosePrice = dataColumn8[row];
-			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->Open = dataColumn9[row];
-			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->High = dataColumn10[row];
-			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Low = dataColumn11[row];
-			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->Close = dataColumn12[row];
-			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->CurrVolume = dataColumn13[row];
-			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->Volume = dataColumn14[row];
-			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->CurrTurnover = dataColumn15[row];
-			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->Turnover = dataColumn16[row];
-			if (duckdb_validity_row_is_valid(validityColumn17, row)) record->OpenInterest = dataColumn17[row];
+			if (duckdb_validity_row_is_valid(validityColumn9, row)) record->HighestPrice = dataColumn9[row];
+			if (duckdb_validity_row_is_valid(validityColumn10, row)) record->LowestPrice = dataColumn10[row];
+			if (duckdb_validity_row_is_valid(validityColumn11, row)) record->Open = dataColumn11[row];
+			if (duckdb_validity_row_is_valid(validityColumn12, row)) record->High = dataColumn12[row];
+			if (duckdb_validity_row_is_valid(validityColumn13, row)) record->Low = dataColumn13[row];
+			if (duckdb_validity_row_is_valid(validityColumn14, row)) record->Close = dataColumn14[row];
+			if (duckdb_validity_row_is_valid(validityColumn15, row)) record->CurrVolume = dataColumn15[row];
+			if (duckdb_validity_row_is_valid(validityColumn16, row)) record->Volume = dataColumn16[row];
+			if (duckdb_validity_row_is_valid(validityColumn17, row)) record->CurrTurnover = dataColumn17[row];
+			if (duckdb_validity_row_is_valid(validityColumn18, row)) record->Turnover = dataColumn18[row];
+			if (duckdb_validity_row_is_valid(validityColumn19, row)) record->OpenInterest = dataColumn19[row];
 			records.push_back(record);
 		}
 	}
@@ -2355,6 +2363,8 @@ bool DuckDB::AppendForBarMarketDataRecord(duckdb_appender appender, BarMarketDat
 	duckdb_append_int64(appender, record->UpdateTs);
 	duckdb_append_double(appender, record->PreSettlementPrice);
 	duckdb_append_double(appender, record->PreClosePrice);
+	duckdb_append_double(appender, record->HighestPrice);
+	duckdb_append_double(appender, record->LowestPrice);
 	duckdb_append_double(appender, record->Open);
 	duckdb_append_double(appender, record->High);
 	duckdb_append_double(appender, record->Low);
@@ -2382,36 +2392,40 @@ void DuckDB::SetStatementForBarMarketDataRecord(duckdb_prepared_statement statem
 	duckdb_bind_int64(statement, 7, record->UpdateTs);
 	duckdb_bind_double(statement, 8, record->PreSettlementPrice);
 	duckdb_bind_double(statement, 9, record->PreClosePrice);
-	duckdb_bind_double(statement, 10, record->Open);
-	duckdb_bind_double(statement, 11, record->High);
-	duckdb_bind_double(statement, 12, record->Low);
-	duckdb_bind_double(statement, 13, record->Close);
-	duckdb_bind_int64(statement, 14, record->CurrVolume);
-	duckdb_bind_int64(statement, 15, record->Volume);
-	duckdb_bind_double(statement, 16, record->CurrTurnover);
-	duckdb_bind_double(statement, 17, record->Turnover);
-	duckdb_bind_double(statement, 18, record->OpenInterest);
+	duckdb_bind_double(statement, 10, record->HighestPrice);
+	duckdb_bind_double(statement, 11, record->LowestPrice);
+	duckdb_bind_double(statement, 12, record->Open);
+	duckdb_bind_double(statement, 13, record->High);
+	duckdb_bind_double(statement, 14, record->Low);
+	duckdb_bind_double(statement, 15, record->Close);
+	duckdb_bind_int64(statement, 16, record->CurrVolume);
+	duckdb_bind_int64(statement, 17, record->Volume);
+	duckdb_bind_double(statement, 18, record->CurrTurnover);
+	duckdb_bind_double(statement, 19, record->Turnover);
+	duckdb_bind_double(statement, 20, record->OpenInterest);
 }
 void DuckDB::SetStatementForBarMarketDataRecordUpdate(duckdb_prepared_statement statement, BarMarketData* record)
 {
 	duckdb_bind_int64(statement, 1, record->UpdateTs);
 	duckdb_bind_double(statement, 2, record->PreSettlementPrice);
 	duckdb_bind_double(statement, 3, record->PreClosePrice);
-	duckdb_bind_double(statement, 4, record->Open);
-	duckdb_bind_double(statement, 5, record->High);
-	duckdb_bind_double(statement, 6, record->Low);
-	duckdb_bind_double(statement, 7, record->Close);
-	duckdb_bind_int64(statement, 8, record->CurrVolume);
-	duckdb_bind_int64(statement, 9, record->Volume);
-	duckdb_bind_double(statement, 10, record->CurrTurnover);
-	duckdb_bind_double(statement, 11, record->Turnover);
-	duckdb_bind_double(statement, 12, record->OpenInterest);
-	duckdb_bind_varchar(statement, 13, record->TradingDay);
-	duckdb_bind_varchar(statement, 14, record->ExchangeID);
-	duckdb_bind_varchar(statement, 15, record->InstrumentID);
-	duckdb_bind_int32(statement, 16, int(record->BarPreces));
-	duckdb_bind_int32(statement, 17, record->BarPeriod);
-	duckdb_bind_int64(statement, 18, record->BarTime);
+	duckdb_bind_double(statement, 4, record->HighestPrice);
+	duckdb_bind_double(statement, 5, record->LowestPrice);
+	duckdb_bind_double(statement, 6, record->Open);
+	duckdb_bind_double(statement, 7, record->High);
+	duckdb_bind_double(statement, 8, record->Low);
+	duckdb_bind_double(statement, 9, record->Close);
+	duckdb_bind_int64(statement, 10, record->CurrVolume);
+	duckdb_bind_int64(statement, 11, record->Volume);
+	duckdb_bind_double(statement, 12, record->CurrTurnover);
+	duckdb_bind_double(statement, 13, record->Turnover);
+	duckdb_bind_double(statement, 14, record->OpenInterest);
+	duckdb_bind_varchar(statement, 15, record->TradingDay);
+	duckdb_bind_varchar(statement, 16, record->ExchangeID);
+	duckdb_bind_varchar(statement, 17, record->InstrumentID);
+	duckdb_bind_int32(statement, 18, int(record->BarPreces));
+	duckdb_bind_int32(statement, 19, record->BarPeriod);
+	duckdb_bind_int64(statement, 20, record->BarTime);
 }
 void DuckDB::SetStatementForBarMarketDataPrimaryKey(duckdb_prepared_statement statement, BarMarketData* record)
 {

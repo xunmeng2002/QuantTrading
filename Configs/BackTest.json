@@ -1,6 +1,6 @@
 {
 	"MatchModeType": "OrderBook:0, LastPrice:1, OppositePrice:2, Bar:3",
-	"MatchMode": "1",
+	"MatchMode": "3",
 	"MdDataPath": "D:\\Md",
 	"DumpPath": "./Dump",
 	"SessionFile": "Sessions.json",

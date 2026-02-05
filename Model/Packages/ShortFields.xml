@@ -127,6 +127,8 @@
 		<item name="BarPeriod"/>
 		<item name="BarTime"/>
 		<item name="UpdateTs"/>
+		<item name="PreSettlementPrice"/>
+		<item name="PreClosePrice"/>
 		<item name="HighestPrice"/>
 		<item name="LowestPrice"/>
 		<item name="Open"/>

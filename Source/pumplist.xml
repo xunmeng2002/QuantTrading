@@ -16,7 +16,8 @@
 	<pump dest="./Source/Ctp/6.7.9/MdApiMiddle/ThostFtdcMdApiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/ApiMiddle.cpp.tpl" model="../Libs/CTP/6.7.9/CtpMdApi.xml"/>
 	<pump dest="./Source/Ctp/6.7.9/MdApiMiddle/ThostFtdcMdSpiMiddle.h" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.h.tpl" model="../Libs/CTP/6.7.9/CtpMdApi.xml"/>
 	<pump dest="./Source/Ctp/6.7.9/MdApiMiddle/ThostFtdcMdSpiMiddle.cpp" tpl="../Templates/Cpp/Libs/CTP/SpiMiddle.cpp.tpl" model="../Libs/CTP/6.7.9/CtpMdApi.xml"/>
-	
+
+	<pump dest="../Libs/QuantTrading/include/Fields.h" tpl="../Templates/Cpp/Packages/Fields.h.tpl" model="./Model/Packages/Fields.xml"/>
 	<pump dest="./Source/Packages/Fields.h" tpl="../Templates/Cpp/Packages/Fields.h.tpl" model="./Model/Packages/Fields.xml"/>
 	<pump dest="./Source/Packages/Packages.h" tpl="../Templates/Cpp/Packages/Packages.h.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/PackageNames.xml"/>
 	<pump dest="./Source/Packages/Packages.cpp" tpl="../Templates/Cpp/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/PackageNames.xml ../Model/Types.xml"/>

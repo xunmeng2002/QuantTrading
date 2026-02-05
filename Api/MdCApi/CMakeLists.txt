@@ -6,7 +6,7 @@ add_package(Src ./Src)
 add_package(ApiBase ../ApiBase)
 add_package(Config ../Config)
 add_package(MdApi ../MdApi/Src)
-add_package(Packages ../MdApi/Packages)
+add_package(Packages ${CMAKE_SOURCE_DIR}/Source/Packages)
 add_package(Version ${CMAKE_SOURCE_DIR}/Source/Version)
 add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 

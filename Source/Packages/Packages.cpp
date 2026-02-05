@@ -24,7 +24,7 @@ void NotifyConnectPackage::Free()
 	}
 	MemCacheTemplateSingleton<NotifyConnectPackage>::GetInstance().Free(this);
 }
-void NotifyConnectPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void NotifyConnectPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -176,7 +176,7 @@ void NotifyDisConnectPackage::Free()
 	}
 	MemCacheTemplateSingleton<NotifyDisConnectPackage>::GetInstance().Free(this);
 }
-void NotifyDisConnectPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void NotifyDisConnectPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -328,7 +328,7 @@ void NotifyDBConnectPackage::Free()
 	}
 	MemCacheTemplateSingleton<NotifyDBConnectPackage>::GetInstance().Free(this);
 }
-void NotifyDBConnectPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void NotifyDBConnectPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -468,7 +468,7 @@ void NotifyDBDisConnectPackage::Free()
 	}
 	MemCacheTemplateSingleton<NotifyDBDisConnectPackage>::GetInstance().Free(this);
 }
-void NotifyDBDisConnectPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void NotifyDBDisConnectPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -608,7 +608,7 @@ void ReqMdUserLoginPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqMdUserLoginPackage>::GetInstance().Free(this);
 }
-void ReqMdUserLoginPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqMdUserLoginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -764,7 +764,7 @@ void RspMdUserLoginPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspMdUserLoginPackage>::GetInstance().Free(this);
 }
-void RspMdUserLoginPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspMdUserLoginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -1002,7 +1002,7 @@ void ReqMdUserLogoutPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqMdUserLogoutPackage>::GetInstance().Free(this);
 }
-void ReqMdUserLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqMdUserLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -1147,7 +1147,7 @@ void RspMdUserLogoutPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspMdUserLogoutPackage>::GetInstance().Free(this);
 }
-void RspMdUserLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspMdUserLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -1357,7 +1357,7 @@ void ReqSubMarketDataPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqSubMarketDataPackage>::GetInstance().Free(this);
 }
-void ReqSubMarketDataPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -1513,7 +1513,7 @@ void RspSubMarketDataPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspSubMarketDataPackage>::GetInstance().Free(this);
 }
-void RspSubMarketDataPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -1734,7 +1734,7 @@ void ReqUnSubMarketDataPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqUnSubMarketDataPackage>::GetInstance().Free(this);
 }
-void ReqUnSubMarketDataPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqUnSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -1890,7 +1890,7 @@ void RspUnSubMarketDataPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspUnSubMarketDataPackage>::GetInstance().Free(this);
 }
-void RspUnSubMarketDataPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspUnSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -2111,7 +2111,7 @@ void ReqSubMarketDataFinishedPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqSubMarketDataFinishedPackage>::GetInstance().Free(this);
 }
-void ReqSubMarketDataFinishedPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqSubMarketDataFinishedPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -2246,7 +2246,7 @@ void RtnDepthMarketDataPackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnDepthMarketDataPackage>::GetInstance().Free(this);
 }
-void RtnDepthMarketDataPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnDepthMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -2756,7 +2756,7 @@ void RtnBarMarketDataPackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnBarMarketDataPackage>::GetInstance().Free(this);
 }
-void RtnBarMarketDataPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnBarMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -2786,6 +2786,8 @@ int RtnBarMarketDataPackage::ToStepStream(char* buff, int size) const
 		WriteString(ppos, Items::BarPeriod, BarMarketData->BarPeriod);
 		WriteString(ppos, Items::BarTime, BarMarketData->BarTime);
 		WriteString(ppos, Items::UpdateTs, BarMarketData->UpdateTs);
+		WriteString(ppos, Items::PreSettlementPrice, BarMarketData->PreSettlementPrice);
+		WriteString(ppos, Items::PreClosePrice, BarMarketData->PreClosePrice);
 		WriteString(ppos, Items::HighestPrice, BarMarketData->HighestPrice);
 		WriteString(ppos, Items::LowestPrice, BarMarketData->LowestPrice);
 		WriteString(ppos, Items::Open, BarMarketData->Open);
@@ -2865,6 +2867,16 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						case Items::UpdateTs:
 						{
 							BarMarketData->UpdateTs = atoll(value.c_str());
+							break;
+						}
+						case Items::PreSettlementPrice:
+						{
+							BarMarketData->PreSettlementPrice = atof(value.c_str());
+							break;
+						}
+						case Items::PreClosePrice:
+						{
+							BarMarketData->PreClosePrice = atof(value.c_str());
 							break;
 						}
 						case Items::HighestPrice:
@@ -2989,7 +3001,7 @@ const char* RtnBarMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (BarMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+		offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->PreSettlementPrice, BarMarketData->PreClosePrice, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
 	}
 	return t_DataStringBuffer;
 }
@@ -3008,7 +3020,7 @@ void RtnSessionBeginPackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnSessionBeginPackage>::GetInstance().Free(this);
 }
-void RtnSessionBeginPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnSessionBeginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -3148,7 +3160,7 @@ void RtnSessionEndPackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnSessionEndPackage>::GetInstance().Free(this);
 }
-void RtnSessionEndPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnSessionEndPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -3288,7 +3300,7 @@ void RtnMarketDataEndPackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnMarketDataEndPackage>::GetInstance().Free(this);
 }
-void RtnMarketDataEndPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnMarketDataEndPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -3428,7 +3440,7 @@ void ReqAccountLoginPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqAccountLoginPackage>::GetInstance().Free(this);
 }
-void ReqAccountLoginPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqAccountLoginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -3584,7 +3596,7 @@ void RspAccountLoginPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspAccountLoginPackage>::GetInstance().Free(this);
 }
-void RspAccountLoginPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspAccountLoginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -3822,7 +3834,7 @@ void ReqAccountLogoutPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqAccountLogoutPackage>::GetInstance().Free(this);
 }
-void ReqAccountLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -3967,7 +3979,7 @@ void RspAccountLogoutPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspAccountLogoutPackage>::GetInstance().Free(this);
 }
-void RspAccountLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -4177,7 +4189,7 @@ void ReqQryAccountPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryAccountPackage>::GetInstance().Free(this);
 }
-void ReqQryAccountPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -4322,7 +4334,7 @@ void RspQryAccountPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryAccountPackage>::GetInstance().Free(this);
 }
-void RspQryAccountPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -4562,7 +4574,7 @@ void ReqQryHolderAccountPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryHolderAccountPackage>::GetInstance().Free(this);
 }
-void ReqQryHolderAccountPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryHolderAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -4707,7 +4719,7 @@ void RspQryHolderAccountPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryHolderAccountPackage>::GetInstance().Free(this);
 }
-void RspQryHolderAccountPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryHolderAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -4934,7 +4946,7 @@ void ReqQryCapitalPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryCapitalPackage>::GetInstance().Free(this);
 }
-void ReqQryCapitalPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryCapitalPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -5079,7 +5091,7 @@ void RspQryCapitalPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryCapitalPackage>::GetInstance().Free(this);
 }
-void RspQryCapitalPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryCapitalPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -5408,7 +5420,7 @@ void ReqQryPositionPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryPositionPackage>::GetInstance().Free(this);
 }
-void ReqQryPositionPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryPositionPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -5553,7 +5565,7 @@ void RspQryPositionPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryPositionPackage>::GetInstance().Free(this);
 }
-void RspQryPositionPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryPositionPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -5904,7 +5916,7 @@ void ReqQryOrderPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryOrderPackage>::GetInstance().Free(this);
 }
-void ReqQryOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -6049,7 +6061,7 @@ void RspQryOrderPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryOrderPackage>::GetInstance().Free(this);
 }
-void RspQryOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -6449,7 +6461,7 @@ void ReqQryTradePackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryTradePackage>::GetInstance().Free(this);
 }
-void ReqQryTradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryTradePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -6594,7 +6606,7 @@ void RspQryTradePackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryTradePackage>::GetInstance().Free(this);
 }
-void RspQryTradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryTradePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -6935,7 +6947,7 @@ void ReqQryInstrumentPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryInstrumentPackage>::GetInstance().Free(this);
 }
-void ReqQryInstrumentPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -7091,7 +7103,7 @@ void RspQryInstrumentPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryInstrumentPackage>::GetInstance().Free(this);
 }
-void RspQryInstrumentPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -7398,7 +7410,7 @@ void ReqQryOptionInstrumentPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryOptionInstrumentPackage>::GetInstance().Free(this);
 }
-void ReqQryOptionInstrumentPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryOptionInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -7554,7 +7566,7 @@ void RspQryOptionInstrumentPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryOptionInstrumentPackage>::GetInstance().Free(this);
 }
-void RspQryOptionInstrumentPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryOptionInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -7861,7 +7873,7 @@ void ReqQryCommissionRatePackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryCommissionRatePackage>::GetInstance().Free(this);
 }
-void ReqQryCommissionRatePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryCommissionRatePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -8023,7 +8035,7 @@ void RspQryCommissionRatePackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryCommissionRatePackage>::GetInstance().Free(this);
 }
-void RspQryCommissionRatePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryCommissionRatePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -8310,7 +8322,7 @@ void ReqQryMoneyTransferPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqQryMoneyTransferPackage>::GetInstance().Free(this);
 }
-void ReqQryMoneyTransferPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqQryMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -8455,7 +8467,7 @@ void RspQryMoneyTransferPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspQryMoneyTransferPackage>::GetInstance().Free(this);
 }
-void RspQryMoneyTransferPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspQryMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -8744,7 +8756,7 @@ void ReqInsertOrderPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqInsertOrderPackage>::GetInstance().Free(this);
 }
-void ReqInsertOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqInsertOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -8947,7 +8959,7 @@ void RspInsertOrderPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspInsertOrderPackage>::GetInstance().Free(this);
 }
-void RspInsertOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspInsertOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -9215,7 +9227,7 @@ void ReqCancelOrderPackage::Free()
 	}
 	MemCacheTemplateSingleton<ReqCancelOrderPackage>::GetInstance().Free(this);
 }
-void ReqCancelOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void ReqCancelOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -9417,7 +9429,7 @@ void RspCancelOrderPackage::Free()
 	}
 	MemCacheTemplateSingleton<RspCancelOrderPackage>::GetInstance().Free(this);
 }
-void RspCancelOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RspCancelOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -9684,7 +9696,7 @@ void RtnOrderPackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnOrderPackage>::GetInstance().Free(this);
 }
-void RtnOrderPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -10014,7 +10026,7 @@ void RtnTradePackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnTradePackage>::GetInstance().Free(this);
 }
-void RtnTradePackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnTradePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -10285,7 +10297,7 @@ void RtnMoneyTransferPackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnMoneyTransferPackage>::GetInstance().Free(this);
 }
-void RtnMoneyTransferPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;
@@ -10504,7 +10516,7 @@ void RtnAccountLogoutPackage::Free()
 	}
 	MemCacheTemplateSingleton<RtnAccountLogoutPackage>::GetInstance().Free(this);
 }
-void RtnAccountLogoutPackage::Prepare(SessionIDType sessionID, bool messageChain, int msgSeqNum)
+void RtnAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
 {
 	Package::Prepare(sessionID, messageChain, msgSeqNum);
 	Head.PackageID = PackageID;

@@ -3,6 +3,7 @@
 #include "Error.h"
 #include "Utility.h"
 #include "TimeUtility.h"
+#include "QuantUtility.h"
 #include "Logger.h"
 #include "OrderUtility.h"
 
@@ -175,9 +176,8 @@ void SimExchange::HandleRspMdUserLogout(RspMdUserLogoutPackage* package)
 void SimExchange::HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage)
 {
 	WriteLog(LogLevel::Info, "HandleDepthMarketData %s", rtnPackage->GetDebugString());
-	static_assert(sizeof(DepthMarketData) == sizeof(DepthMarketDataField));
 	auto mdTick = mdb::DepthMarketData::Allocate();
-	memcpy(mdTick, rtnPackage->DepthMarketData, sizeof(DepthMarketData));
+	PackageToMdb(rtnPackage->DepthMarketData, mdTick);
 	auto oldMdTick = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeID, mdTick->InstrumentID);
 	if (oldMdTick == nullptr)
 	{
@@ -192,9 +192,8 @@ void SimExchange::HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage)
 void SimExchange::HandleBarMarketData(RtnBarMarketDataPackage* rtnPackage)
 {
 	WriteLog(LogLevel::Info, "HandleBarMarketData %s", rtnPackage->GetDebugString());
-	static_assert(sizeof(BarMarketData) == sizeof(BarMarketDataField));
 	auto mdBar = mdb::BarMarketData::Allocate();
-	memcpy(mdBar, rtnPackage->BarMarketData, sizeof(BarMarketData));
+	PackageToMdb(rtnPackage->BarMarketData, mdBar);
 	m_Mdb->t_BarMarketData->Insert(mdBar);
 	m_OrderMatch->OnBar(mdBar);
 }

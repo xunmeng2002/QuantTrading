@@ -16,6 +16,8 @@ void UpdateBarFromDepthMarketData(DepthMarketDataField* depthMd, BarMarketDataFi
 {
 	strcpy(bar->TradingDay, depthMd->TradingDay);
 	bar->UpdateTs = depthMd->UpdateTs;
+	bar->PreSettlementPrice = depthMd->PreSettlementPrice;
+	bar->PreClosePrice = depthMd->PreClosePrice;
 	bar->HighestPrice = depthMd->HighestPrice;
 	bar->LowestPrice = depthMd->LowestPrice;
 	if (depthMd->CurrVolume == 0)

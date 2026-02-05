@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "SimExchangeFields.h"
+#include "Fields.h"
 #include "LoggerInterface.h"
 
 #ifdef WIN32

@@ -984,14 +984,12 @@ void SimExchange::SendRtnTrade(mdb::Trade* trade)
 }
 void SimExchange::SendRtnDepthMarketData(mdb::DepthMarketData* mdTick)
 {
-	assert((sizeof(DepthMarketDataField) == sizeof(mdb::DepthMarketData)));
-	memcpy(&m_PushMdTick, mdTick, sizeof(DepthMarketDataField));
+	MdbToPackage(mdTick, &m_PushMdTick);
 	m_BackTestSpi->OnRtnDepthMarketData(&m_PushMdTick);
 }
 void SimExchange::SendRtnBarMarketData(mdb::BarMarketData* mdBar)
 {
-	assert((sizeof(BarMarketDataField) == sizeof(mdb::BarMarketData)));
-	memcpy(&m_PushMdBar, mdBar, sizeof(BarMarketDataField));
+	MdbToPackage(mdBar, &m_PushMdBar);
 	m_BackTestSpi->OnRtnBarMarketData(&m_PushMdBar);
 }
 void SimExchange::SendRtnSessionBegin(const DateType& tradingDay)

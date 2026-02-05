@@ -103,7 +103,6 @@ void BackTestSpiImpl::ReqSubMarketData()
 }
 void BackTestSpiImpl::ReqInsertOrder(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID, const double& price, DirectionType direction)
 {
-	WriteLog(LogLevel::Info, "ReqInsertOrder: DirectionType:%c, LastOrderPrice:%f, Price:%f", (char)direction, m_LastOrderTickMd->LastPrice, price);
 	ReqInsertOrderField reqInsertOrder;
 	memset(&reqInsertOrder, 0, sizeof(ReqInsertOrderField));
 	strcpy(reqInsertOrder.AccountID, m_AccountID);

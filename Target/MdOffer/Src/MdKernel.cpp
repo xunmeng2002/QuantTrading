@@ -3,6 +3,7 @@
 #include "Error.h"
 #include "Utility.h"
 #include "TimeUtility.h"
+#include "QuantUtility.h"
 #include "MemCacheTemplateSingleton.h"
 #include "MdSnap.h"
 #include "MinuteBar.h"
@@ -55,7 +56,7 @@ void MdKernel::OnMessage(Package* package)
 void MdKernel::OnBarMarketData(BarMarketDataField* bar)
 {
 	BarMarketData* barMarketData = ::Allocate<BarMarketData>();
-	memcpy(barMarketData, bar, sizeof(BarMarketData));
+	PackageToMdb(bar, barMarketData);
 	auto oldBarMarketData = m_Mdb->t_BarMarketData->m_PrimaryKey->Select(barMarketData->TradingDay, barMarketData->ExchangeID, barMarketData->InstrumentID, barMarketData->BarPreces, barMarketData->BarPeriod, barMarketData->BarTime);
 	if (oldBarMarketData == nullptr)
 	{
@@ -164,6 +165,8 @@ int MdKernel::HandleNotifyDBConnect(NotifyDBConnectPackage* package)
 {
 	m_Mdb->InitDB();
 	list<ReqSubMarketDataField*> reqSubMds;
+	ExchangeIDType exchangeID = "SHFE";
+	//auto instrumentItPair = m_Mdb->t_Instrument->m_ExchangeIDIndex->EqualRange(exchangeID);
 	auto instrumentItPair = m_Mdb->t_Instrument->m_PrimaryKey->SelectAll();
 	for (auto& it = instrumentItPair.first; it != instrumentItPair.second; ++it)
 	{
@@ -308,7 +311,7 @@ int MdKernel::HandleRtnDepthMarketData(RtnDepthMarketDataPackage* package)
 	m_MinuteBar->OnDepthMarketData(package->DepthMarketData);
 
 	DepthMarketData* depthMarketData = ::Allocate<DepthMarketData>();
-	memcpy(depthMarketData, package->DepthMarketData, sizeof(DepthMarketData));
+	PackageToMdb(package->DepthMarketData, depthMarketData);
 	auto oldDepthMarketData = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(depthMarketData->TradingDay, depthMarketData->ExchangeID, depthMarketData->InstrumentID);
 	if (oldDepthMarketData == nullptr)
 	{

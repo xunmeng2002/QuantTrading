@@ -1759,7 +1759,7 @@ void SqliteDB::CreateBarMarketData()
 {
 	auto start = steady_clock::now();
 	char* t_ErrorMsg;
-	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` text, `ExchangeID` text, `InstrumentID` text, `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` double, `PreClosePrice` double, `Open` double, `High` double, `Low` double, `Close` double, `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` double, `Turnover` double, `OpenInterest` double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));";
+	const char* sql = "CREATE TABLE IF NOT EXISTS t_BarMarketData(`TradingDay` text, `ExchangeID` text, `InstrumentID` text, `BarPreces` int, `BarPeriod` int, `BarTime` bigint, `UpdateTs` bigint, `PreSettlementPrice` double, `PreClosePrice` double, `HighestPrice` double, `LowestPrice` double, `Open` double, `High` double, `Low` double, `Close` double, `CurrVolume` bigint, `Volume` bigint, `CurrTurnover` double, `Turnover` double, `OpenInterest` double, PRIMARY KEY(TradingDay, ExchangeID, InstrumentID, BarPreces, BarPeriod, BarTime));";
 	auto rc = sqlite3_exec(m_DB, sql, nullptr, nullptr, &t_ErrorMsg);
 	if (rc != SQLITE_OK)
 	{
@@ -1790,7 +1790,7 @@ void SqliteDB::InsertBarMarketData(BarMarketData* record)
 	auto start = steady_clock::now();
 	if (m_BarMarketDataInsertStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "insert into t_BarMarketData Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_BarMarketDataInsertStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "insert into t_BarMarketData Values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1, &m_BarMarketDataInsertStatement, nullptr);
 	}
 	SetStatementForBarMarketDataRecord(m_BarMarketDataInsertStatement, record);
 	
@@ -1874,7 +1874,7 @@ void SqliteDB::UpdateBarMarketData(BarMarketData* record)
 	auto start = steady_clock::now();
 	if (m_BarMarketDataUpdateStatement == nullptr)
 	{
-		sqlite3_prepare_v2(m_DB, "update t_BarMarketData set UpdateTs = ?, PreSettlementPrice = ?, PreClosePrice = ?, Open = ?, High = ?, Low = ?, Close = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;", -1, &m_BarMarketDataUpdateStatement, nullptr);
+		sqlite3_prepare_v2(m_DB, "update t_BarMarketData set UpdateTs = ?, PreSettlementPrice = ?, PreClosePrice = ?, HighestPrice = ?, LowestPrice = ?, Open = ?, High = ?, Low = ?, Close = ?, CurrVolume = ?, Volume = ?, CurrTurnover = ?, Turnover = ?, OpenInterest = ? where TradingDay = ? and ExchangeID = ? and InstrumentID = ? and BarPreces = ? and BarPeriod = ? and BarTime = ?;", -1, &m_BarMarketDataUpdateStatement, nullptr);
 	}
 	SetStatementForBarMarketDataRecordUpdate(m_BarMarketDataUpdateStatement, record);
 	
@@ -3922,36 +3922,40 @@ void SqliteDB::SetStatementForBarMarketDataRecord(sqlite3_stmt* statement, BarMa
 	sqlite3_bind_int64(statement, 7, record->UpdateTs);
 	sqlite3_bind_double(statement, 8, record->PreSettlementPrice);
 	sqlite3_bind_double(statement, 9, record->PreClosePrice);
-	sqlite3_bind_double(statement, 10, record->Open);
-	sqlite3_bind_double(statement, 11, record->High);
-	sqlite3_bind_double(statement, 12, record->Low);
-	sqlite3_bind_double(statement, 13, record->Close);
-	sqlite3_bind_int64(statement, 14, record->CurrVolume);
-	sqlite3_bind_int64(statement, 15, record->Volume);
-	sqlite3_bind_double(statement, 16, record->CurrTurnover);
-	sqlite3_bind_double(statement, 17, record->Turnover);
-	sqlite3_bind_double(statement, 18, record->OpenInterest);
+	sqlite3_bind_double(statement, 10, record->HighestPrice);
+	sqlite3_bind_double(statement, 11, record->LowestPrice);
+	sqlite3_bind_double(statement, 12, record->Open);
+	sqlite3_bind_double(statement, 13, record->High);
+	sqlite3_bind_double(statement, 14, record->Low);
+	sqlite3_bind_double(statement, 15, record->Close);
+	sqlite3_bind_int64(statement, 16, record->CurrVolume);
+	sqlite3_bind_int64(statement, 17, record->Volume);
+	sqlite3_bind_double(statement, 18, record->CurrTurnover);
+	sqlite3_bind_double(statement, 19, record->Turnover);
+	sqlite3_bind_double(statement, 20, record->OpenInterest);
 }
 void SqliteDB::SetStatementForBarMarketDataRecordUpdate(sqlite3_stmt* statement, BarMarketData* record)
 {
 	sqlite3_bind_int64(statement, 1, record->UpdateTs);
 	sqlite3_bind_double(statement, 2, record->PreSettlementPrice);
 	sqlite3_bind_double(statement, 3, record->PreClosePrice);
-	sqlite3_bind_double(statement, 4, record->Open);
-	sqlite3_bind_double(statement, 5, record->High);
-	sqlite3_bind_double(statement, 6, record->Low);
-	sqlite3_bind_double(statement, 7, record->Close);
-	sqlite3_bind_int64(statement, 8, record->CurrVolume);
-	sqlite3_bind_int64(statement, 9, record->Volume);
-	sqlite3_bind_double(statement, 10, record->CurrTurnover);
-	sqlite3_bind_double(statement, 11, record->Turnover);
-	sqlite3_bind_double(statement, 12, record->OpenInterest);
-	sqlite3_bind_text(statement, 13, record->TradingDay, sizeof(record->TradingDay), nullptr);
-	sqlite3_bind_text(statement, 14, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
-	sqlite3_bind_text(statement, 15, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
-	sqlite3_bind_int(statement, 16, int(record->BarPreces));
-	sqlite3_bind_int(statement, 17, record->BarPeriod);
-	sqlite3_bind_int64(statement, 18, record->BarTime);
+	sqlite3_bind_double(statement, 4, record->HighestPrice);
+	sqlite3_bind_double(statement, 5, record->LowestPrice);
+	sqlite3_bind_double(statement, 6, record->Open);
+	sqlite3_bind_double(statement, 7, record->High);
+	sqlite3_bind_double(statement, 8, record->Low);
+	sqlite3_bind_double(statement, 9, record->Close);
+	sqlite3_bind_int64(statement, 10, record->CurrVolume);
+	sqlite3_bind_int64(statement, 11, record->Volume);
+	sqlite3_bind_double(statement, 12, record->CurrTurnover);
+	sqlite3_bind_double(statement, 13, record->Turnover);
+	sqlite3_bind_double(statement, 14, record->OpenInterest);
+	sqlite3_bind_text(statement, 15, record->TradingDay, sizeof(record->TradingDay), nullptr);
+	sqlite3_bind_text(statement, 16, record->ExchangeID, sizeof(record->ExchangeID), nullptr);
+	sqlite3_bind_text(statement, 17, record->InstrumentID, sizeof(record->InstrumentID), nullptr);
+	sqlite3_bind_int(statement, 18, int(record->BarPreces));
+	sqlite3_bind_int(statement, 19, record->BarPeriod);
+	sqlite3_bind_int64(statement, 20, record->BarTime);
 }
 void SqliteDB::SetStatementForBarMarketDataPrimaryKey(sqlite3_stmt* statement, const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime)
 {
@@ -3974,15 +3978,17 @@ void SqliteDB::ParseRecord(sqlite3_stmt* statement, std::list<BarMarketData*>& r
 	record->UpdateTs = sqlite3_column_int64(statement, 6);
 	record->PreSettlementPrice = sqlite3_column_double(statement, 7);
 	record->PreClosePrice = sqlite3_column_double(statement, 8);
-	record->Open = sqlite3_column_double(statement, 9);
-	record->High = sqlite3_column_double(statement, 10);
-	record->Low = sqlite3_column_double(statement, 11);
-	record->Close = sqlite3_column_double(statement, 12);
-	record->CurrVolume = sqlite3_column_int64(statement, 13);
-	record->Volume = sqlite3_column_int64(statement, 14);
-	record->CurrTurnover = sqlite3_column_double(statement, 15);
-	record->Turnover = sqlite3_column_double(statement, 16);
-	record->OpenInterest = sqlite3_column_double(statement, 17);
+	record->HighestPrice = sqlite3_column_double(statement, 9);
+	record->LowestPrice = sqlite3_column_double(statement, 10);
+	record->Open = sqlite3_column_double(statement, 11);
+	record->High = sqlite3_column_double(statement, 12);
+	record->Low = sqlite3_column_double(statement, 13);
+	record->Close = sqlite3_column_double(statement, 14);
+	record->CurrVolume = sqlite3_column_int64(statement, 15);
+	record->Volume = sqlite3_column_int64(statement, 16);
+	record->CurrTurnover = sqlite3_column_double(statement, 17);
+	record->Turnover = sqlite3_column_double(statement, 18);
+	record->OpenInterest = sqlite3_column_double(statement, 19);
 	records.push_back(record);
 }
 void SqliteDB::SetStatementForMdUserRecord(sqlite3_stmt* statement, MdUser* record)
