@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Types/Types.h"
 
-#pragma pack(push, 1)
 class RspInfoField
 {
 public:
@@ -528,4 +527,3 @@ public:
 	SessionIDType SessionID;		//会话编号
 	ClientOrderIDType ClientOrderID;		//客户端委托编号
 };
-#pragma pack(pop)

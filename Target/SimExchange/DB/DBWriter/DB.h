@@ -58,7 +58,7 @@ public:
 	virtual void BatchInsertDepthMarketData(std::list<mdb::DepthMarketData*>* records) = 0;
 	virtual void DeleteDepthMarketData(mdb::DepthMarketData* record) = 0;
 	virtual void UpdateDepthMarketData(mdb::DepthMarketData* record) = 0;
-	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records, const DateType& tradingDay) = 0;
+	virtual void SelectDepthMarketData(std::list<mdb::DepthMarketData*>& records) = 0;
 	virtual void TruncateDepthMarketData() = 0;
 
 	virtual void CreateBarMarketData() = 0;
@@ -67,7 +67,7 @@ public:
 	virtual void BatchInsertBarMarketData(std::list<mdb::BarMarketData*>* records) = 0;
 	virtual void DeleteBarMarketData(mdb::BarMarketData* record) = 0;
 	virtual void UpdateBarMarketData(mdb::BarMarketData* record) = 0;
-	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records, const DateType& tradingDay) = 0;
+	virtual void SelectBarMarketData(std::list<mdb::BarMarketData*>& records) = 0;
 	virtual void TruncateBarMarketData() = 0;
 
 	virtual void CreatePrimaryAccount() = 0;

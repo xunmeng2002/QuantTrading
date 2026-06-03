@@ -15,8 +15,8 @@ namespace mdb
 		static void LoadProductTable(Mdb* mdb, DB* db);
 		static void LoadHotInstrumentTable(Mdb* mdb, DB* db);
 		static void LoadInstrumentTable(Mdb* mdb, DB* db);
-		static void LoadDepthMarketDataTable(Mdb* mdb, DB* db, const DateType& tradingDay);
-		static void LoadBarMarketDataTable(Mdb* mdb, DB* db, const DateType& tradingDay);
+		static void LoadDepthMarketDataTable(Mdb* mdb, DB* db);
+		static void LoadBarMarketDataTable(Mdb* mdb, DB* db);
 		static void LoadMdSubscribeTable(Mdb* mdb, DB* db);
 		static void LoadPrimaryAccountTable(Mdb* mdb, DB* db);
 		static void LoadAccountTable(Mdb* mdb, DB* db);

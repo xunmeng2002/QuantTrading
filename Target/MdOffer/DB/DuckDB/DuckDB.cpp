@@ -865,14 +865,13 @@ void DuckDB::UpdateDepthMarketData(DepthMarketData* record)
 		WriteLog(LogLevel::Warning, "UpdateDepthMarketData Spend:%lldms", duration);
 	}
 }
-void DuckDB::SelectDepthMarketData(std::list<DepthMarketData*>& records, const DateType& tradingDay)
+void DuckDB::SelectDepthMarketData(std::list<DepthMarketData*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_DepthMarketDataSelectStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "select * from t_DepthMarketData where TradingDay >= ?;", &m_DepthMarketDataSelectStatement);
+		duckdb_prepare(m_Connection, "select * from t_DepthMarketData;", &m_DepthMarketDataSelectStatement);
 	}
-	duckdb_bind_varchar(m_DepthMarketDataSelectStatement, 1, tradingDay);
 
 	duckdb_result result;
 	auto rc = duckdb_execute_prepared(m_DepthMarketDataSelectStatement, &result);
@@ -1287,14 +1286,13 @@ void DuckDB::UpdateBarMarketData(BarMarketData* record)
 		WriteLog(LogLevel::Warning, "UpdateBarMarketData Spend:%lldms", duration);
 	}
 }
-void DuckDB::SelectBarMarketData(std::list<BarMarketData*>& records, const DateType& tradingDay)
+void DuckDB::SelectBarMarketData(std::list<BarMarketData*>& records)
 {
 	auto start = steady_clock::now();
 	if (m_BarMarketDataSelectStatement == nullptr)
 	{
-		duckdb_prepare(m_Connection, "select * from t_BarMarketData where TradingDay >= ?;", &m_BarMarketDataSelectStatement);
+		duckdb_prepare(m_Connection, "select * from t_BarMarketData;", &m_BarMarketDataSelectStatement);
 	}
-	duckdb_bind_varchar(m_BarMarketDataSelectStatement, 1, tradingDay);
 
 	duckdb_result result;
 	auto rc = duckdb_execute_prepared(m_BarMarketDataSelectStatement, &result);
