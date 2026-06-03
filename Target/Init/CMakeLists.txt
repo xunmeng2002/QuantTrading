@@ -17,10 +17,10 @@ add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 add_package(CtpGenCode ${CMAKE_SOURCE_DIR}/Source/Ctp/${APIVersion}/StructLogFunc)
 add_package(CtpGenCode ${CMAKE_SOURCE_DIR}/Source/Ctp/${APIVersion}/TraderApiMiddle)
 
-include_package(Ctp ${LibsPath}/CTP/${APIVersion}/include)
-include_package(duckdb ${LibsPath}/duckdb/include)
-include_package(duckdb ${LibsPath}/SQLite/3.36.0/include)
-include_package(MysqlConnector ${LibsPath}/MysqlConnector/9.0.0/include)
+
+include_directories(${LibsPath}/duckdb/include)
+include_directories(${LibsPath}/SQLite/3.36.0/include)
+include_directories(${LibsPath}/MysqlConnector/9.0.0/include)
 
 link_directories(${LibsPath}/PersonalLib/win64)
 link_directories(${LibsPath}/CTP/${APIVersion}/win64)

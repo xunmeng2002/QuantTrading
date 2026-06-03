@@ -10,10 +10,7 @@ add_package(SimExchangeApiMiddle ${CMAKE_SOURCE_DIR}/Test/Source/SimExchangeApiM
 add_package(ServerConfig ${CMAKE_SOURCE_DIR}/Source/ServerConfig)
 add_package(Environment ${CMAKE_SOURCE_DIR}/Source/Environment)
 
-include_package(Ctp ${LibsPath}/CTP/${APIVersion}/include)
-include_package(SimExchangeApi ${CMAKE_SOURCE_DIR}/../Libs/QuantTrading/include)
-
-link_directories(${CMAKE_SOURCE_DIR}/../Libs/QuantTrading)
+include_directories(${LibsPath}/CTP/${APIVersion}/include)
 
 add_executable(${PROJECT_NAME} ${all_file})
 

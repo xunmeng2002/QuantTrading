@@ -1,4 +1,5 @@
-#coding:UTF-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import xml.dom.minidom
 import sys
 
@@ -16,7 +17,6 @@ class Table:
         self.Desc = ""
         self.Batch = ""
         self.Session = ""
-        self.WithTradingDay = "false"
         self.Items = []
         self.PrimaryKey = []
         self.Uniquekeys = {}
@@ -50,7 +50,6 @@ def GetTables(tableFile, items, tables):
         table.Desc = tableNode.getAttribute("desc")
         table.Batch = tableNode.getAttribute("batch")
         table.Session = tableNode.getAttribute("session")
-        table.WithTradingDay = tableNode.getAttribute("withtradingday")
         for itemsNode in tableNode.getElementsByTagName("items"):
             for itemNode in itemsNode.getElementsByTagName("item"):
                 itemName = itemNode.getAttribute("name")
@@ -90,7 +89,6 @@ def AddTableNode(dom, parentNode, table):
     tableNode.setAttribute("desc", table.Desc)
     tableNode.setAttribute("batch", table.Batch)
     tableNode.setAttribute("session", table.Session)
-    tableNode.setAttribute("withtradingday", table.WithTradingDay)
     itemsNode = dom.createElement('items')
     for item in table.Items:
         AddItemNode(dom, itemsNode, item)

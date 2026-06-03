@@ -8,7 +8,7 @@ add_package(TestUtility ${CMAKE_SOURCE_DIR}/Test/Source/TestUtility)
 add_package(BackTestApiMiddle ${CMAKE_SOURCE_DIR}/Test/Source/BackTestApiMiddle)
 
 
-include_package(BackTest ${LibsPath}/QuantTrading/include)
+include_directories(${LibsPath}/QuantTrading/include)
 
 link_directories(${LibsPath}/PersonalLib/win64)
 link_directories(${LibsPath}/QuantTrading)

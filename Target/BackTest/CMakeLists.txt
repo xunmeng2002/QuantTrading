@@ -21,8 +21,8 @@ add_package(OrderMatch ${CMAKE_SOURCE_DIR}/Source/OrderMatch)
 add_package(QuantUtility ${CMAKE_SOURCE_DIR}/Source/QuantUtility)
 add_package(Version ${CMAKE_SOURCE_DIR}/Source/Version)
 
-include_package(MysqlConnector ${LibsPath}/MysqlConnector/9.0.0/include)
-include_package(duckdb ${LibsPath}/duckdb/include)
+include_directories(${LibsPath}/MysqlConnector/9.0.0/include)
+include_directories(${LibsPath}/duckdb/include)
 
 add_definitions(-DLIB_BACKTEST_API_EXPORT)
 

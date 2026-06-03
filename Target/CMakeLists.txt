@@ -1,5 +1,3 @@
-include_package(PersonalLib ${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/include)
-link_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/win64)
 
 add_subdirectory(Init)
 add_subdirectory(MdOffer)

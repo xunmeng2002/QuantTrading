@@ -11,7 +11,7 @@ add_package(Version ${CMAKE_SOURCE_DIR}/Source/Version)
 add_package(Error ${CMAKE_SOURCE_DIR}/Source/Error)
 
 
-include_package(OpensslLib ${CMAKE_SOURCE_DIR}/../Libs/openssl/3.0.5/include)
+include_directories(${CMAKE_SOURCE_DIR}/../Libs/openssl/3.0.5/include)
 
 add_definitions(-DLIB_MD_CAPI_EXPORT)
 add_definitions(-DLIB_MD_API_EXPORT)

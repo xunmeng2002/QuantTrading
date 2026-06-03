@@ -1,7 +1,7 @@
 #pragma once
-#include "Protocol.h"
-#include "ProtocolSubscriber.h"
-#include "TcpBase.h"
+#include "Protocol/Protocol.h"
+#include "Protocol/ProtocolSubscriber.h"
+#include "Tcp/TcpBase/TcpBase.h"
 #include <string>
 
 
