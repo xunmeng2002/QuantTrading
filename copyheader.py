@@ -40,7 +40,7 @@ def CopyDlls(src_folder, dest_folder):
             shutil.copy2(src_file, dest_file)
 
 if __name__ == "__main__":
-    target_base = "../Libs/PersonalLib"
+    target_base = "../Libs/Spark"
     
     # 1. 拷贝 include 目录
     CopyFolder("include", os.path.join(target_base, "include"))

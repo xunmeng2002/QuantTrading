@@ -24,7 +24,7 @@ add_library(${PROJECT_NAME} SHARED ${all_file})
 
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	target_link_libraries(${PROJECT_NAME} PersonalLib.lib libcrypto_static.lib libssl_static.lib WS2_32.LIB)
+	target_link_libraries(${PROJECT_NAME} Spark.lib libcrypto_static.lib libssl_static.lib WS2_32.LIB)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	target_link_libraries(${PROJECT_NAME} PersonalLib crypto ssl pthread dl)
+	target_link_libraries(${PROJECT_NAME} Spark crypto ssl pthread dl)
 endif()

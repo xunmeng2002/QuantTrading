@@ -1,5 +1,5 @@
 <copylist>
-	<file name="LoggerInterface.h" dest="../Libs/QuantTrading/include/" src="../Libs/PersonalLib/include/"/>
+	<file name="LoggerInterface.h" dest="../Libs/QuantTrading/include/" src="../Libs/Spark/include/"/>
 	
 	<file name="MdApi.dll" dest="../Libs/QuantTrading/" src="./out/build/x64-Debug/Api/MdApi/"/>
 	<file name="MdApi.lib" dest="../Libs/QuantTrading/" src="./out/build/x64-Debug/Api/MdApi/"/>

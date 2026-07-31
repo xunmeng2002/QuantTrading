@@ -21,11 +21,7 @@ add_package(Mdb ../BackTest/DB/Mdb)
 add_executable(${PROJECT_NAME} ${all_file})
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	target_link_libraries(${PROJECT_NAME} PersonalLib.lib)
+	target_link_libraries(${PROJECT_NAME} Spark.lib)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	target_link_libraries(${PROJECT_NAME} PersonalLib pthread)
-endif()
-
-IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
+	target_link_libraries(${PROJECT_NAME} Spark pthread)
 endif()

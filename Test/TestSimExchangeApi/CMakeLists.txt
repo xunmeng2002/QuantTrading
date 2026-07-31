@@ -1,4 +1,4 @@
-﻿SET(PROJECT_NAME "TestSimExchangeApi")
+SET(PROJECT_NAME "TestSimExchangeApi")
 SET(APIVersion "6.7.9")
 project(${PROJECT_NAME})
 message("PROJECT_NAME:" ${PROJECT_NAME})
@@ -15,15 +15,12 @@ include_directories(${LibsPath}/CTP/${APIVersion}/include)
 add_executable(${PROJECT_NAME} ${all_file})
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	target_link_libraries(${PROJECT_NAME} PersonalLib.lib SimExchangeApi.lib)
+	target_link_libraries(${PROJECT_NAME} Spark.lib SimExchangeApi.lib)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	target_link_libraries(${PROJECT_NAME} PersonalLib SimExchangeApi)
+	target_link_libraries(${PROJECT_NAME} Spark SimExchangeApi)
 endif()
 
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	configure_file("${CMAKE_SOURCE_DIR}/Configs/TestSimExchangeApi.json" "${CMAKE_CURRENT_BINARY_DIR}/TestSimExchangeApi.json" COPYONLY)
-
-	configure_file("${LibsPath}/PersonalLib/win64/PersonalLib.dll" "${CMAKE_CURRENT_BINARY_DIR}/PersonalLib.dll" COPYONLY)
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:SimExchangeApi>" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:SimExchangeApi>" COMMENT "Copying SimExchangeApi.dll DLL...")
 endif()

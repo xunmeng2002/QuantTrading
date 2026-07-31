@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 SET(PROJECT_NAME "QuantTrading")
 project(${PROJECT_NAME})
 
@@ -58,8 +58,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
-include_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/include)
-link_directories(${CMAKE_SOURCE_DIR}/../Libs/PersonalLib/win64)
+include_directories(${CMAKE_SOURCE_DIR}/../Libs/Spark/include)
+link_directories(${CMAKE_SOURCE_DIR}/../Libs/Spark/win64)
 
 string(TIMESTAMP BUILD_TIMESTAMP "%Y%m%d-%H%M%S")
 message("Build timestamp is ${BUILD_TIMESTAMP}")
