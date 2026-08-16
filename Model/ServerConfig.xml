@@ -1,0 +1,19 @@
+<config>
+	<items>
+		<item name="SEMdOfferAddress" type="string"></item>
+		<item name="SETradeFrontAddress" type="string"></item>
+		
+		<item name="MdOfferAddress" type="string"></item>
+		<item name="TradeFrontAddress" type="string"></item>
+		<item name="RiskFrontAddress" type="string"></item>
+		<item name="AdminFrontAddress" type="string"></item>
+		<item name="OfferFrontAddress" type="string"></item>
+
+		<item name="DBHostAdmin" type="string"></item>
+		<item name="DBHostHistory" type="string"></item>
+		<item name="DBHostInit" type="string"></item>
+		<item name="DBHostSync" type="string"></item>
+		<item name="DBUser" type="string"></item>
+		<item name="DBPasswd" type="string"></item>
+	</items>
+</config>

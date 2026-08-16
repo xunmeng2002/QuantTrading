@@ -1,0 +1,543 @@
+<tables>
+	<table name="TradingDay" 					id="0x0001" desc="交易日">
+		<items>
+			<item name="PK"/>
+			<item name="CurrTradingDay"/>
+			<item name="PreTradingDay"/>
+		</items>
+		<primarykey>
+			<item name="PK"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="Exchange" 						desc="交易所">
+		<items>
+			<item name="ExchangeID"/>
+			<item name="ExchangeName"/>
+		</items>
+		<primarykey>
+			<item name="ExchangeID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="Product" 						desc="品种表">
+		<items>
+			<item name="ExchangeID"/>
+			<item name="ProductID"/>
+			<item name="ProductName"/>
+			<item name="ProductClass"/>
+			<item name="VolumeMultiple"/>
+			<item name="PriceTick"/>
+			<item name="MaxMarketOrderVolume"/>
+			<item name="MinMarketOrderVolume"/>
+			<item name="MaxLimitOrderVolume"/>
+			<item name="MinLimitOrderVolume"/>
+			<item name="SessionName"/>
+		</items>
+		<primarykey>
+			<item name="ExchangeID"/>
+			<item name="ProductID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="HotInstrument" 				desc="主力合约表">
+		<items>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="ProductID"/>
+			<item name="InstrumentID"/>
+			<item name="ProductClass"/>
+			<item name="Volume"/>
+			<item name="MaxVolume"/>
+			<item name="Turnover"/>
+			<item name="MaxTurnover"/>
+			<item name="OpenInterest"/>
+			<item name="MaxOpenInterest"/>
+			<item name="Rank"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="ProductID"/>
+			<item name="Rank"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes>
+			<index name="TradingDay">
+				<item name="ExchangeID"/>
+				<item name="ProductID"/>
+				<item name="Rank"/>
+				<item name="TradingDay"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="Instrument" 					desc="合约" batch="true">
+		<items>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="ExchangeInstID"/>
+			<item name="InstrumentName"/>
+			<item name="ProductID"/>
+			<item name="ProductClass"/>
+			<item name="InstrumentClass"/>
+			<item name="Rank"/>
+			<item name="VolumeMultiple"/>
+			<item name="PriceTick"/>
+			<item name="MaxMarketOrderVolume"/>
+			<item name="MinMarketOrderVolume"/>
+			<item name="MaxLimitOrderVolume"/>
+			<item name="MinLimitOrderVolume"/>
+			<item name="SessionName"/>
+		</items>
+		<primarykey>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes>
+			<index name="ExchangeID">
+				<item name="ExchangeID"/>
+			</index>
+		</indexes>
+	</table>
+
+	<table name="DepthMarketData" 				id="0x2001" desc="深度行情">
+		<items>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="UpdateTs"/>
+			<item name="LastPrice"/>
+			<item name="PreSettlementPrice"/>
+			<item name="PreClosePrice"/>
+			<item name="PreOpenInterest"/>
+			<item name="OpenPrice"/>
+			<item name="HighestPrice"/>
+			<item name="LowestPrice"/>
+			<item name="ClosePrice"/>
+			<item name="CurrVolume"/>
+			<item name="Volume"/>
+			<item name="CurrTurnover"/>
+			<item name="Turnover"/>
+			<item name="OpenInterest"/>
+			<item name="SettlementPrice"/>
+			<item name="UpperLimitPrice"/>
+			<item name="LowerLimitPrice"/>
+			<item name="AveragePrice"/>
+			<item name="AskPrice1"/>
+			<item name="AskPrice2"/>
+			<item name="AskPrice3"/>
+			<item name="AskPrice4"/>
+			<item name="AskPrice5"/>
+			<item name="AskPrice6"/>
+			<item name="AskPrice7"/>
+			<item name="AskPrice8"/>
+			<item name="AskPrice9"/>
+			<item name="AskPrice10"/>
+			<item name="AskVolume1"/>
+			<item name="AskVolume2"/>
+			<item name="AskVolume3"/>
+			<item name="AskVolume4"/>
+			<item name="AskVolume5"/>
+			<item name="AskVolume6"/>
+			<item name="AskVolume7"/>
+			<item name="AskVolume8"/>
+			<item name="AskVolume9"/>
+			<item name="AskVolume10"/>
+			<item name="BidPrice1"/>
+			<item name="BidPrice2"/>
+			<item name="BidPrice3"/>
+			<item name="BidPrice4"/>
+			<item name="BidPrice5"/>
+			<item name="BidPrice6"/>
+			<item name="BidPrice7"/>
+			<item name="BidPrice8"/>
+			<item name="BidPrice9"/>
+			<item name="BidPrice10"/>
+			<item name="BidVolume1"/>
+			<item name="BidVolume2"/>
+			<item name="BidVolume3"/>
+			<item name="BidVolume4"/>
+			<item name="BidVolume5"/>
+			<item name="BidVolume6"/>
+			<item name="BidVolume7"/>
+			<item name="BidVolume8"/>
+			<item name="BidVolume9"/>
+			<item name="BidVolume10"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="BarMarketData" 				desc="Bar行情">
+		<items>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="BarPreces"/>
+			<item name="BarPeriod"/>
+			<item name="BarTime"/>
+			<item name="UpdateTs"/>
+			<item name="PreSettlementPrice"/>
+			<item name="PreClosePrice"/>
+			<item name="HighestPrice"/>
+			<item name="LowestPrice"/>
+			<item name="Open"/>
+			<item name="High"/>
+			<item name="Low"/>
+			<item name="Close"/>
+			<item name="CurrVolume"/>
+			<item name="Volume"/>
+			<item name="CurrTurnover"/>
+			<item name="Turnover"/>
+			<item name="OpenInterest"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="BarPreces"/>
+			<item name="BarPeriod"/>
+			<item name="BarTime"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="MdSubscribe" 					desc="行情订阅">
+		<items>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="RealInstrumentID"/>
+			<item name="ProductID"/>
+			<item name="ProductClass"/>
+			<item name="StartTradingDay"/>
+			<item name="EndTradingDay"/>
+		</items>
+		<primarykey>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="StartTradingDay"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="MdUser" 						desc="账户">
+		<items>
+			<item name="MdUserID"/>
+			<item name="MdUserName"/>
+			<item name="Password"/>
+		</items>
+		<primarykey>
+			<item name="MdUserID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="MdUserLoginSession" 			desc="行情用户登录会话" session="true">
+		<items>
+			<item name="MdUserID"/>
+			<item name="SessionID"/>
+			<item name="IPAddress"/>
+		</items>
+		<primarykey>
+			<item name="SessionID"/>
+		</primarykey>
+		<uniquekeys>
+		</uniquekeys>
+		<indexes>
+			<index name="MdUserID">
+				<item name="MdUserID"/>
+			</index>
+		</indexes>
+	</table>
+	
+	<table name="PrimaryAccount" 				id="0x3001" desc="主账户">
+		<items>
+			<item name="PrimaryAccountID"/>
+			<item name="PrimaryAccountName"/>
+			<item name="AccountClass"/>
+			<item name="Password"/>
+			<item name="OfferID"/>
+			<item name="IsAllowLogin"/>
+			<item name="IsSimulateAccount"/>
+			<item name="LoginStatus"/>
+			<item name="InitStatus"/>
+		</items>
+		<primarykey>
+			<item name="PrimaryAccountID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes>
+			<index name="OfferID">
+				<item name="OfferID"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="Account" 						desc="账户">
+		<items>
+			<item name="AccountID"/>
+			<item name="AccountName"/>
+			<item name="AccountType"/>
+			<item name="AccountStatus"/>
+			<item name="Password"/>
+			<item name="TradeGroupID"/>
+			<item name="RiskGroupID"/>
+			<item name="CommissionGroupID"/>
+		</items>
+		<primarykey>
+			<item name="AccountID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes></indexes>
+	</table>
+	<table name="Capital" 						desc="资金">
+		<items>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+			<item name="AccountType"/>
+			<item name="Balance"/>
+			<item name="PreBalance"/>
+			<item name="Available"/>
+			<item name="MarketValue"/>
+			<item name="CashIn"/>
+			<item name="CashOut"/>
+			<item name="Margin"/>
+			<item name="Commission"/>
+			<item name="FrozenCash"/>
+			<item name="FrozenMargin"/>
+			<item name="FrozenCommission"/>
+			<item name="CloseProfitByDate"/>
+			<item name="CloseProfitByTrade"/>
+			<item name="PositionProfitByDate"/>
+			<item name="PositionProfitByTrade"/>
+			<item name="Deposit"/>
+			<item name="Withdraw"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes>
+			<index name="TradingDay">
+				<item name="TradingDay"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="Position" 						desc="持仓">
+		<items>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+			<item name="AccountType"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="ProductClass"/>
+			<item name="PosiDirection"/>
+			<item name="TotalPosition"/>
+			<item name="PositionFrozen"/>
+			<item name="TodayPosition"/>
+			<item name="MarketValue"/>
+			<item name="CashIn"/>
+			<item name="CashOut"/>
+			<item name="Margin"/>
+			<item name="Commission"/>
+			<item name="FrozenCash"/>
+			<item name="FrozenMargin"/>
+			<item name="FrozenCommission"/>
+			<item name="VolumeMultiple"/>
+			<item name="CloseProfitByDate"/>
+			<item name="CloseProfitByTrade"/>
+			<item name="PositionProfitByDate"/>
+			<item name="PositionProfitByTrade"/>
+			<item name="SettlementPrice"/>
+			<item name="PreSettlementPrice"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="PosiDirection"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes>
+			<index name="Account">
+				<item name="TradingDay"/>
+				<item name="AccountID"/>
+			</index>
+			<index name="TradingDay">
+				<item name="TradingDay"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="PositionDetail" 				desc="持仓明细">
+		<items>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+			<item name="AccountType"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="ProductClass"/>
+			<item name="PosiDirection"/>
+			<item name="OpenDate"/>
+			<item name="TradeID"/>
+			<item name="Volume"/>
+			<item name="OpenPrice"/>
+			<item name="MarketValue"/>
+			<item name="CashIn"/>
+			<item name="CashOut"/>
+			<item name="Margin"/>
+			<item name="Commission"/>
+			<item name="VolumeMultiple"/>
+			<item name="CloseProfitByDate"/>
+			<item name="CloseProfitByTrade"/>
+			<item name="PositionProfitByDate"/>
+			<item name="PositionProfitByTrade"/>
+			<item name="SettlementPrice"/>
+			<item name="PreSettlementPrice"/>
+			<item name="CloseVolume"/>
+			<item name="CloseAmount"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="PosiDirection"/>
+			<item name="OpenDate"/>
+			<item name="TradeID"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes>
+			<index name="TradeMatch">
+				<item name="TradingDay"/>
+				<item name="AccountID"/>
+				<item name="ExchangeID"/>
+				<item name="InstrumentID"/>
+				<item name="PosiDirection"/>
+			</index>
+			<index name="TradingDay">
+				<item name="TradingDay"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="Order" 						desc="委托">
+		<items>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+			<item name="AccountType"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="ProductClass"/>
+			<item name="OrderID"/>
+			<item name="OrderSysID"/>
+			<item name="Direction"/>
+			<item name="OffsetFlag"/>
+			<item name="OrderPriceType"/>
+			<item name="Price"/>
+			<item name="Volume"/>
+			<item name="VolumeTotal"/>
+			<item name="VolumeTraded"/>
+			<item name="VolumeMultiple"/>
+			<item name="OrderStatus"/>
+			<item name="OrderDate"/>
+			<item name="OrderTime"/>
+			<item name="CancelDate"/>
+			<item name="CancelTime"/>
+			<item name="SessionID"/>
+			<item name="ClientOrderID"/>
+			<item name="RequestID"/>
+			<item name="OfferID"/>
+			<item name="TradeGroupID"/>
+			<item name="RiskGroupID"/>
+			<item name="CommissionGroupID"/>
+			<item name="FrozenCash"/>
+			<item name="FrozenMargin"/>
+			<item name="FrozenCommission"/>
+			<item name="RebuildMark"/>
+			<item name="IsForceClose"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="OrderID"/>
+		</primarykey>
+		<uniquekeys>
+			<uniquekey name="ClientOrderID">
+				<item name="TradingDay"/>
+				<item name="AccountID"/>
+				<item name="ExchangeID"/>
+				<item name="InstrumentID"/>
+				<item name="SessionID"/>
+				<item name="ClientOrderID"/>
+			</uniquekey>
+		</uniquekeys>
+		<indexes>
+			<index name="AccountID">
+				<item name="TradingDay"/>
+				<item name="AccountID"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="Trade" 						desc="成交">
+		<items>
+			<item name="TradingDay"/>
+			<item name="AccountID"/>
+			<item name="AccountType"/>
+			<item name="ExchangeID"/>
+			<item name="InstrumentID"/>
+			<item name="ProductClass"/>
+			<item name="OrderID"/>
+			<item name="OrderSysID"/>
+			<item name="TradeID"/>
+			<item name="Direction"/>
+			<item name="OffsetFlag"/>
+			<item name="Price"/>
+			<item name="Volume"/>
+			<item name="VolumeMultiple"/>
+			<item name="TradeAmount"/>
+			<item name="Commission"/>
+			<item name="TradeDate"/>
+			<item name="TradeTime"/>
+		</items>
+		<primarykey>
+			<item name="TradingDay"/>
+			<item name="ExchangeID"/>
+			<item name="TradeID"/>
+			<item name="Direction"/>
+		</primarykey>
+		<uniquekeys></uniquekeys>
+		<indexes>
+			<index name="AccountID">
+				<item name="TradingDay"/>
+				<item name="AccountID"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="AccountLoginSession" 			desc="账户登录会话" session="true">
+		<items>
+			<item name="AccountID"/>
+			<item name="SessionID"/>
+			<item name="IPAddress"/>
+		</items>
+		<primarykey>
+			<item name="SessionID"/>
+		</primarykey>
+		<uniquekeys>
+		</uniquekeys>
+		<indexes>
+			<index name="AccountID">
+				<item name="AccountID"/>
+			</index>
+		</indexes>
+	</table>
+</tables>

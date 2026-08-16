@@ -1,0 +1,13 @@
+<config>
+	<items>
+		<item name="LogLevel" type="int"></item>
+		<item name="ServerConfigPath" type="string"></item>
+		<item name="TradingDay" type="string"></item>
+		<item name="DbType" type="string"></item>
+		<item name="DbUser" type="string"></item>
+		<item name="DbPassword" type="string"></item>
+		<item name="DbHost" type="string"></item>
+        <item name="AccountID" type="string"></item>
+        <item name="Password" type="string"></item>
+	</items>
+</config>

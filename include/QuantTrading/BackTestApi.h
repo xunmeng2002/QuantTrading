@@ -1,0 +1,39 @@
+#pragma once
+#include "Fields.h"
+#include <QuantTrading/BackTest/BackTestExport.h>
+
+
+class BackTestSpi
+{
+public:
+	virtual void OnConnected() {}
+	virtual void OnDisConnected() {}
+	virtual void OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRtnDepthMarketData(DepthMarketDataField* depthMarketData) {}
+	virtual void OnRtnBarMarketData(BarMarketDataField* barMarketData) {}
+	virtual void OnRtnSessionBegin(SessionBeginField* sessionBegin) {}
+	virtual void OnRtnSessionEnd(SessionEndField* sessionEnd) {}
+	virtual void OnRtnMarketDataEnd(MarketDataEndField* marketDataEnd) {}
+	virtual void OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRtnOrder(OrderField* order) {}
+	virtual void OnRtnTrade(TradeField* trade) {}
+};
+
+class BACKTEST_EXPORTS BackTestApi
+{
+public:
+	static BackTestApi* CreateBackTestApi();
+	static const char* GetApiVersion();
+	virtual bool Init() = 0;
+	virtual void Join() = 0;
+	virtual void Release() = 0;
+	virtual void RegisterFront(const char* address) = 0;
+	virtual void RegisterSpi(BackTestSpi* pSpi) = 0;
+	
+	virtual int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID) = 0;
+	virtual int ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID) = 0;
+	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
+	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
+};
+

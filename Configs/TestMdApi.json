@@ -1,0 +1,20 @@
+{
+	"LogLevel":2,
+	"ServerConfigPath":"./ServerConfig.json",
+	"MdUser":"MdUser",
+	"MdPassword":"123456",
+	"SubscribeInstruments":[{
+		"ExchangeID":"CFFEX",
+		"InstrumentID":"IF2603"
+	},{
+		"ExchangeID":"SHFE",
+		"InstrumentID":"rb2603"
+	},{
+		"ExchangeID":"DCE",
+		"InstrumentID":"jd2603"
+	},{
+		"ExchangeID":"CZCE",
+		"InstrumentID":"AP605"
+	}]
+}
+

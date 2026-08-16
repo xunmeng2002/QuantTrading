@@ -1,0 +1,13 @@
+{
+	"MdOfferAddress": "tcp://127.0.0.1:10000",
+	"TradeFrontAddress": "tcp://127.0.0.1:10001",
+	"RiskFrontAddress": "tcp://127.0.0.1:10002",
+	"AdminFrontAddress": "tcp://127.0.0.1:10003",
+	"OfferFrontAddress": "tcp://127.0.0.1:10004",
+	"DBHostAdmin": "tcp://192.168.9.108:3306/Admin",
+	"DBHostHistory": "tcp://192.168.9.108:3306/History",
+	"DBHostInit": "tcp://192.168.9.108:3306/Init",
+	"DBHostSync": "tcp://192.168.9.108:3306/Sync",
+	"DBUser": "sams",
+	"DBPasswd": "sams"
+}

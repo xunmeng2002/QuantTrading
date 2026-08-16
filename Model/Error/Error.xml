@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<errors>
+	<error name="None" 								id="0x0000" desc="正确"/>
+	<error name="Network" 							desc="网络错误"/>
+	<error name="IncorrectPassword" 				desc="密码错误"/>
+	
+	
+	<error name="AccountNotExist" 					id="0x1000" desc="账户不存在"/>
+	<error name="PrimaryAccountNotExist" 			desc="主账户不存在"/>
+	<error name="UserNotExist" 						desc="用户不存在"/>
+	<error name="CapitalNotExist" 					desc="资金不存在"/>
+	<error name="PrimaryCapitalNotExist" 			desc="主账户资金不存在"/>
+	<error name="TradeOfferNotExist" 				desc="交易报盘不存在"/>
+	<error name="ExchangeNotExist" 					desc="交易所不存在"/>
+	<error name="ProductNotExist" 					desc="品种不存在"/>
+	<error name="InstrumentNotExist" 				desc="合约不存在"/>
+	<error name="OptionInstrumentNotExist" 			desc="期权合约不存在"/>
+	<error name="UnderlyingInstrumentNotExist" 		desc="标的合约不存在"/>
+	<error name="BaseCommissionNotExist" 			desc="基础费率不存在"/>
+	<error name="CommissionGroupNotExist"	 		desc="手续费组不存在"/>
+	<error name="MarginGroupNotExist" 				desc="保证金组不存在"/>
+	<error name="CurrencyRateNotExist" 				desc="币种汇率不存在"/>
+	<error name="MarketDataNotExist" 				desc="行情数据不存在"/>
+	<error name="UnderlyingMarketDataNotExist" 		desc="标的行情数据不存在"/>
+	<error name="LastPriceNotExist" 				desc="最新价不存在"/>
+	<error name="MaxSequenceNoNotExist" 			desc="最大委托序号不存在"/>
+	<error name="OrderNotExist" 					desc="委托不存在"/>
+	<error name="PositionNotExist"	 				desc="持仓不存在"/>
+	<error name="TradeGroupNotExist" 				desc="交易组不存在"/>
+	<error name="TradeGroupItemNotExist" 			desc="交易组子项不存在"/>
+	<error name="RiskGroupNotExist" 				desc="风控组不存在"/>
+	<error name="RiskGroupItemNotExist" 			desc="风控组子项不存在"/>
+	<error name="RiskNotExist" 						desc="风控不存在"/>
+	<error name="AccountRiskNotExist" 				desc="账户风控不存在"/>
+	<error name="OptionMarginParamNotExist" 		desc="期权保证金参数不存在"/>
+	<error name="PrimaryOrderNotExist" 				desc="主账号委托不存在"/>
+	<error name="SubOrderNotExist" 					desc="子账号委托不存在"/>
+	<error name="SubAccountNotExist" 				desc="子账号不存在"/>
+	<error name="BrokerNotExist" 					desc="经纪商不存在"/>
+		
+	
+	<error name="PrimaryAccountAlreadyExist" 		id="0x2000" desc="主账号已存在"/>
+	<error name="AccountAlreadyExist" 				desc="账户已存在"/>
+	<error name="CapitalAlreadyExist" 				desc="资金账号已存在"/>
+	<error name="BaseCommissionAlreadyExist" 		desc="基础费率已存在"/>
+	<error name="CommissionGroupAlreadyExist" 		desc="手续费组已存在"/>
+	<error name="AdminUserAlreadyExist" 			desc="管理用户已存在"/>
+	<error name="RiskUserAlreadyExist" 				desc="风控用户已存在"/>
+	<error name="TradeOfferAlreadyExist" 			desc="交易报盘已存在"/>
+	<error name="RiskAlreadyExist" 					desc="风控已存在"/>
+	<error name="RiskRuleAlreadyExist" 				desc="风控规则已存在"/>
+	<error name="RiskRuleItemAlreadyExist" 			desc="风控规则子项已存在"/>
+	<error name="RiskTradeScopeAlreadyExist"		desc="风控交易范围"/>
+	<error name="AccountRiskAlreadyExist" 			desc="账户风控已存在"/>
+	<error name="TradeGroupAlreadyExist" 			desc="交易组已存在"/>
+	<error name="TradeGroupItemAlreadyExist" 		desc="交易组子项已存在"/>
+	<error name="RiskGroupAlreadyExist" 			desc="风控组已存在"/>
+	<error name="RiskGroupItemAlreadyExist" 		desc="风控组子项已存在"/>
+	<error name="OptionMarginParamAlreadyExist" 	desc="保证金参数已存在"/>
+	<error name="OrderAlreadyExist" 				desc="委托已存在"/>
+	<error name="TradeAlreadyExist" 				desc="成交已存在"/>
+	<error name="AccountAlreadyLogin" 				desc="账户已登录"/>
+	<error name="SessionAlreadyLogin" 				desc="本连接已登录"/>
+	
+	
+	
+	
+	<error name="AccountNotLogin" 					id="0x3000" desc="账户未登录"/>
+	<error name="PrimaryAccountNotLogin" 			desc="主账户未登录"/>
+	<error name="UserNotLogin" 						desc="用户未登录"/>
+	<error name="BrokerNotLogin" 					desc="经纪公司未登录"/>
+	<error name="TradeOfferNotLogin" 				desc="交易报盘未登录"/>
+	<error name="TradeOfferAlreadyLogin" 			desc="交易报盘已登录"/>
+	<error name="SessionNotLogin" 					desc="本连接未登录"/>
+	
+	
+	
+	<error name="DuplicateOfferID" 					id="0x4000" desc="重复的报盘代码"/>
+	<error name="DuplicateClientOrderID" 			desc="重复的客户端委托编号"/>
+	
+	
+	<error name="InvalidOrderPrice" 				id="0x5000" desc="不合法的委托价格"/>
+	<error name="InvalidOrderVolume" 				desc="不合法的委托数量"/>
+	<error name="InvalidAccountClass" 				desc="不合法的账户类别"/>
+	<error name="InvalidSecurityType" 				desc="不合法的证券类别"/>
+	<error name="InvalidLastPrice" 					desc="不合法的最新价"/>
+	<error name="InvalidSettlementPrice" 			desc="不合法的结算价"/>
+	<error name="InvalidPreSettlementPrice" 		desc="不合法的昨结算价"/>
+	<error name="InvalidClosePrice" 				desc="不合法的收盘价"/>
+	<error name="InvalidPreClosePrice" 				desc="不合法的昨收盘价"/>
+	<error name="InvalidOffsetFlag" 				desc="不合法的开平标志"/>
+	<error name="InvalidDirection" 					desc="不合法的买卖方向"/>
+	<error name="InvalidOrderPriceType" 			desc="不合法的委托价格类别"/>
+	
+	
+	<error name="CapitalInsufficient" 				id="0x6000" desc="资金不足"/>
+	<error name="PositionInsufficient" 				desc="持仓不足"/>
+	
+	
+	<error name="ReqPackageParseFailed" 			id="0x7000" desc="请求报文解析失败"/>
+	<error name="InsertOrderFailed" 				desc="添加委托记录失败"/>
+	<error name="AccountRiskCheckFailed" 			desc="账户风控检查失败"/>
+	<error name="PriamaryAccountRiskCheckFailed" 	desc="主账户风控检查失败"/>
+	<error name="AccountGroupRiskCheckFailed" 		desc="账户组风控检查失败"/>
+	
+	
+	<error name="NoAuthorityToQueryAccount"			id="0x8000" desc="没有权限查询该账户"/>
+	<error name="NoAuthorityToOperateAccount"		desc="没有权限操作该账户"/>
+	<error name="NoAuthorityToTradeThisMarket"		desc="没有该市场交易权限"/>
+	<error name="NoTradingTime" 					desc="非交易时间"/>
+	
+	
+	<error name="AccountDeleted" 					id="0x9000" desc="账号已删除"/>
+	<error name="UserDeleted" 						desc="用户已删除"/>
+	<error name="TradeOfferDeleted" 				desc="交易报盘已删除"/>
+	
+	
+	<error name="PasswordChanged" 					id="0xA000" desc="密码已修改"/>
+	<error name="AccountForbidden" 					desc="账号已禁用"/>
+	
+	<error name="FinalOrderStatus" 					id="0xB000" desc="委托已是最终状态"/>
+	<error name="CurrOrderStatusNeedNotAudit" 		desc="当前委托状态不需要审核"/>
+	<error name="CurrOrderStatusNeedNotRiskCheck" 	desc="当前委托状态不需要风控检查"/>
+	
+	<error name="TradingDayNotMatch" 				id="0xC000" desc="交易日不匹配"/>
+	<error name="MarketDataUnInitialized" 			desc="行情未初始化"/>
+	<error name="PrimaryAccountUnInitialized" 		desc="主账号未初始化"/>
+	
+	<error name="OfferApiNotExist" 					id="0xD000" desc="报盘API不存在"/>
+	<error name="OfferSendFailed" 					desc="报盘发送失败"/>
+	<error name="AuditReject" 						desc="审核拒绝"/>
+</errors>

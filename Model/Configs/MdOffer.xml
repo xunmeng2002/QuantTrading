@@ -1,0 +1,15 @@
+<config>
+	<items>
+		<item name="LogLevel" type="int"></item>
+		<item name="ServerConfigPath" type="string"></item>
+		<item name="EnvironmentFile" type="string"></item>
+		<item name="EnvironmentName" type="string"></item>
+		<item name="EnvironmentName24" type="string"></item>
+		<item name="SessionFile" type="string"></item>
+		<item name="DbType" type="string"></item>
+		<item name="DbUser" type="string"></item>
+		<item name="DbPassword" type="string"></item>
+		<item name="DbHost" type="string"></item>
+		<item name="DbInitHost" type="string"></item>
+	</items>
+</config>

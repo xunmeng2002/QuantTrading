@@ -1,0 +1,9 @@
+<config>
+	<items>
+		<item name="LogLevel" type="int"></item>
+		<item name="ServerConfigPath" type="string"></item>
+		<item name="EnvironmentFile" type="string"></item>
+		<item name="EnvironmentName" type="string"></item>
+		<item name="EnvironmentName24" type="string"></item>
+	</items>
+</config>

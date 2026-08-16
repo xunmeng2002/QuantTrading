@@ -1,0 +1,4 @@
+#pragma once
+
+// 由 CMakeLists.txt 中 project(... VERSION ...) 自动生成，勿手动修改。
+#define QUANTTRADING_VERSION "@QuantTrading_VERSION@"

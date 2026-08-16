@@ -1,0 +1,15 @@
+{
+	"LogLevel": 2,
+	"ServerConfigPath": "./ServerConfig.json",
+	"EnvironmentFile": "./CtpAccountInfo.json",
+	"EnvironmentName": "SimNow",
+	"EnvironmentName24": "SimNow24",
+	"TradingDay": "20260815",
+	"DBTypeType": "DuckDB:0, SqliteDB:1, MysqlDB:2, MariaDB:3",
+	"DbType": "1",
+	"DbUser": "",
+	"DbPassword": "",
+	"DbHost": "./SimExchangeInit.db",
+	"SessionFile": "Sessions.json"
+}
+

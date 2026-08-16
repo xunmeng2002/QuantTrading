@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dbtables name="">
+	<table name="TradingDay"/>
+	<table name="Exchange"/>
+	<table name="Product"/>
+	<table name="HotInstrument"/>
+	<table name="Instrument"/>
+	<table name="DepthMarketData"/>
+	<table name="BarMarketData"/>
+	<table name="MdSubscribe"/>
+	<table name="MdUser"/>
+	<table name="MdUserLoginSession"/>
+	<table name="PrimaryAccount"/>
+	<table name="Account"/>
+	<table name="Capital"/>
+	<table name="Position"/>
+	<table name="PositionDetail"/>
+	<table name="Order"/>
+	<table name="Trade"/>
+	<table name="AccountLoginSession"/>
+</dbtables>

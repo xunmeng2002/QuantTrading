@@ -1,0 +1,8 @@
+<config>
+	<items>
+		<item name="LogLevel" type="int"></item>
+		<item name="AccountID" type="string"></item>
+		<item name="ExchangeID" type="string"></item>
+		<item name="InstrumentID" type="string"></item>
+	</items>
+</config>

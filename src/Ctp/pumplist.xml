@@ -1,0 +1,12 @@
+<pumplist>
+    <pump dest="./src/Ctp/StructLogFunc/StructLogFunc.h" tpl="../Templates/Cpp/LibTest/CtpWrapper/StructLogFunc.h.tpl" model="../Libs/Ctp/CtpModel.xml"/>
+    <pump dest="./src/Ctp/StructLogFunc/StructLogFunc.cpp" tpl="../Templates/Cpp/LibTest/CtpWrapper/StructLogFunc.cpp.tpl" model="../Libs/Ctp/CtpModel.xml"/>
+    <pump dest="./src/Ctp/TraderApiMiddle/ThostFtdcTraderApiMiddle.h" tpl="../Templates/Cpp/LibTest/CtpWrapper/ApiMiddle.h.tpl" model="../Libs/Ctp/CtpTraderApi.xml"/>
+    <pump dest="./src/Ctp/TraderApiMiddle/ThostFtdcTraderApiMiddle.cpp" tpl="../Templates/Cpp/LibTest/CtpWrapper/ApiMiddle.cpp.tpl" model="../Libs/Ctp/CtpTraderApi.xml"/>
+    <pump dest="./src/Ctp/TraderApiMiddle/ThostFtdcTraderSpiMiddle.h" tpl="../Templates/Cpp/LibTest/CtpWrapper/SpiMiddle.h.tpl" model="../Libs/Ctp/CtpTraderApi.xml"/>
+    <pump dest="./src/Ctp/TraderApiMiddle/ThostFtdcTraderSpiMiddle.cpp" tpl="../Templates/Cpp/LibTest/CtpWrapper/SpiMiddle.cpp.tpl" model="../Libs/Ctp/CtpTraderApi.xml"/>
+    <pump dest="./src/Ctp/MdApiMiddle/ThostFtdcMdApiMiddle.h" tpl="../Templates/Cpp/LibTest/CtpWrapper/ApiMiddle.h.tpl" model="../Libs/Ctp/CtpMdApi.xml"/>
+    <pump dest="./src/Ctp/MdApiMiddle/ThostFtdcMdApiMiddle.cpp" tpl="../Templates/Cpp/LibTest/CtpWrapper/ApiMiddle.cpp.tpl" model="../Libs/Ctp/CtpMdApi.xml"/>
+    <pump dest="./src/Ctp/MdApiMiddle/ThostFtdcMdSpiMiddle.h" tpl="../Templates/Cpp/LibTest/CtpWrapper/SpiMiddle.h.tpl" model="../Libs/Ctp/CtpMdApi.xml"/>
+    <pump dest="./src/Ctp/MdApiMiddle/ThostFtdcMdSpiMiddle.cpp" tpl="../Templates/Cpp/LibTest/CtpWrapper/SpiMiddle.cpp.tpl" model="../Libs/Ctp/CtpMdApi.xml"/>
+</pumplist>

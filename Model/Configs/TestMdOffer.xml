@@ -1,0 +1,12 @@
+<config>
+	<items>
+		<item name="LogLevel" type="int"></item>
+		<item name="ServerConfigPath" type="string"></item>
+		<item name="MdUser" type="string"></item>
+		<item name="MdPassword" type="string"></item>
+		<item name="SubscribeInstruments" type="list" modeltype="SubscribeInstrument">
+			<item name="ExchangeID" type="string"></item>
+			<item name="InstrumentID" type="string"></item>
+		</item>
+	</items>
+</config>

@@ -1,0 +1,15 @@
+<config>
+	<items>
+		<item name="LogLevel" type="int"></item>
+		<item name="ServerConfigPath" type="string"></item>
+		<item name="MatchMode" type="int"></item>
+		<item name="DbType" type="string"></item>
+		<item name="DbUser" type="string"></item>
+		<item name="DbPassword" type="string"></item>
+		<item name="DbHost" type="string"></item>
+		<item name="DbInitHost" type="string"></item>
+
+		<item name="MdUser" type="string"></item>
+		<item name="MdPassword" type="string"></item>
+	</items>
+</config>
