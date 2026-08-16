@@ -1,8 +1,0 @@
-{
-	"LogLevel": 2,
-	"ServerConfigPath": "../../ServerConfig.json",
-	"EnvironmentFile": "../../CtpAccountInfo.json",
-	"EnvironmentName": "SimNow",
-	"EnvironmentName24": "SimNow24"
-}
-
