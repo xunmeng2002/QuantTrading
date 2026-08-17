@@ -3,6 +3,7 @@
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Logger/Logger.h>
 #include <limits>
+#include <cstring>
 
 MinuteBar::MinuteBar()
 	:m_BarSubscriber(nullptr)

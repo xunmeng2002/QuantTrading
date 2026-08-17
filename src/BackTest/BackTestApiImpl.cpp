@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const char* ConfigName = "BackTest.json";
+static const char* ConfigName = "BackTest.json";
 
 BackTestApi* BackTestApi::CreateBackTestApi()
 {

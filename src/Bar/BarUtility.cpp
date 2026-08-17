@@ -1,4 +1,6 @@
 #include "BarUtility.h"
+#include <cstring>
+
 
 std::string GetUnderlyingID(const std::string& instrumentID)
 {

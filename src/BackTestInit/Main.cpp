@@ -60,5 +60,8 @@ int main(int argc, char* argv[])
     dbWriter->Stop();
     dbWriter->Join();
 
+    Logger::GetInstance().Stop();
+    Logger::GetInstance().Join();
+
 	return 0;
 }

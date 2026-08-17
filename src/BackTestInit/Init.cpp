@@ -1,5 +1,6 @@
 #include "Init.h"
 #include <Spark/Core/Utility/TimeUtility.h>
+#include <cstring>
 
 using namespace std;
 using namespace mdb;

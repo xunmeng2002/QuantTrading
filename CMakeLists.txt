@@ -146,12 +146,10 @@ copy_dll_file(SimExchange)
 copy_config_file(SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchange.json)
 
 
-add_shared_module(BackTest  ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
-target_link_libraries(BackTest PUBLIC QuantTradingInterface)
+add_shared_module(BackTest  ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
 target_link_libraries(BackTest PRIVATE QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic
     Spark::Core Spark::Serialization
     DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
-copy_config_file(BackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
 
 add_application(SimExchangeInit  ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchangeInit ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchangeInit)
 target_link_libraries(SimExchangeInit PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic CtpTraderApiMiddleStatic
@@ -217,6 +215,7 @@ target_link_libraries(SimExchangeApiMiddleStatic PUBLIC SimExchangeApi Spark::Co
 add_application(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/test/TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/test/TestBackTest)
 target_link_libraries(TestBackTest PRIVATE QuantTradingCommonStatic PackagesStatic BackTestApiMiddleStatic Spark::Core Spark::Serialization)
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestBackTest.json)
+copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
 
 add_application(TestMdOffer ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdOffer ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdOffer)
 target_link_libraries(TestMdOffer PRIVATE QuantTradingCommonStatic PackagesStatic Spark::Core Spark::Serialization)
