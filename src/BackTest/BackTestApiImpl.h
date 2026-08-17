@@ -2,6 +2,8 @@
 #include "MdbStructs.h"
 #include "QuantTrading/BackTestApi.h"
 
+namespace quanttrading::backtest
+{
 class SimExchange;
 class BackTestApiImpl : public BackTestApi
 {
@@ -23,5 +25,6 @@ public:
 private:
 	SimExchange* m_SimExchange;
 };
+}
 
 

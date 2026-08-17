@@ -5,6 +5,8 @@
 
 using std::string;
 
+namespace quanttrading::backtest
+{
 class Config
 {
 	Config();
@@ -29,3 +31,4 @@ public:
 private:
 	static Config m_Instance;
 };
+}

@@ -38,6 +38,8 @@ static DB* CreateDataDb(const std::string dbType, const std::string dbHost, cons
 }
 
 
+namespace quanttrading::backtest
+{
 SimExchange::SimExchange(const Config& config)
 	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false), m_DumpPath(config.DumpPath),
 	m_Registry(BackTestTableList),
@@ -1041,4 +1043,5 @@ void SimExchange::SendRtnSessionEnd(const DateType& tradingDay)
 	SessionEndField sessionEnd;
 	strcpy(sessionEnd.TradingDay, tradingDay);
 	m_BackTestSpi->OnRtnSessionEnd(&sessionEnd);
+}
 }

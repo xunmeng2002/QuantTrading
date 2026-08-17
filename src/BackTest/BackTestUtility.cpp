@@ -2,8 +2,8 @@
 #include <limits>
 #include <string.h>
 
-
-
+namespace quanttrading::backtest
+{
 bool PositionDetialLessForOpenDate::operator()(const mdb::PositionDetail* const left, const mdb::PositionDetail* const right) const
 {
 	if (strcmp(left->OpenDate, right->OpenDate) < 0)
@@ -11,5 +11,6 @@ bool PositionDetialLessForOpenDate::operator()(const mdb::PositionDetail* const 
 	else if (strcmp(left->OpenDate, right->OpenDate) > 0)
 		return false;
 	return strcmp(left->TradeID, right->TradeID) < 0;
+}
 }
 

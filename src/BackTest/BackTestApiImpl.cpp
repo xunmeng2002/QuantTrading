@@ -10,13 +10,15 @@ static const char* ConfigName = "BackTest.json";
 
 BackTestApi* BackTestApi::CreateBackTestApi()
 {
-	return new BackTestApiImpl();
+	return new quanttrading::backtest::BackTestApiImpl();
 }
 const char* BackTestApi::GetApiVersion()
 {
 	return QUANTTRADING_VERSION;
 }
 
+namespace quanttrading::backtest
+{
 BackTestApiImpl::BackTestApiImpl()
 {
 	auto& config = Config::GetInstance();
@@ -69,5 +71,6 @@ int BackTestApiImpl::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int req
 int BackTestApiImpl::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	return m_SimExchange->ReqCancelOrder(reqCancelOrder, requestID);
+}
 }
 

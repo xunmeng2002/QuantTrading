@@ -59,6 +59,8 @@ namespace
     }
 }
 
+namespace quanttrading::backtest
+{
 MdReader::MdReader(const Config& config)
     : m_MdDataPath(config.MdDataPath)
 {
@@ -207,4 +209,5 @@ std::string MdReader::GetBarSqlString(mdb::MdSubscribe* mdSubscribe) const
         "where TradingDay >= '%s' and TradingDay <= '%s' and InstrumentID = '%s';";
     return FormatSql(sqlTemplate, static_cast<int>(BarPrecesType::Minute),
         m_MdDataPath.c_str(), mdSubscribe->ExchangeID, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, mdSubscribe->RealInstrumentID);
+}
 }

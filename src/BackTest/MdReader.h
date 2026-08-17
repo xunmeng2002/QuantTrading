@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+namespace quanttrading::backtest
+{
 class MdReader
 {
 public:
@@ -35,3 +37,4 @@ private:
 	DateType m_EndTradingDay;
 	std::unique_ptr<DuckdbWrapper> m_DuckdbWrapper;
 };
+}

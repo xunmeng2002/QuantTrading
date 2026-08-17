@@ -15,6 +15,8 @@
 #include <list>
 #include <map>
 
+namespace quanttrading::backtest
+{
 class SimExchange : public ThreadBase, public DBSubscriber, public OrderMatchSubscriber
 {
 public:
@@ -107,3 +109,4 @@ private:
 	DepthMarketDataField m_PushMdTick;
 	BarMarketDataField m_PushMdBar;
 };
+}
