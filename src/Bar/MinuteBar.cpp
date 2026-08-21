@@ -5,6 +5,8 @@
 #include <limits>
 #include <cstring>
 
+using namespace spark::core;
+
 MinuteBar::MinuteBar()
 	:m_BarSubscriber(nullptr)
 {

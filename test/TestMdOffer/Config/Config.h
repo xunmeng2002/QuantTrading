@@ -4,6 +4,7 @@
 #include <list>
 
 using std::string;
+using namespace spark::core;
 
 class Config
 {

@@ -8,6 +8,7 @@
 #include <atomic>
 #include <vector>
 
+using dbadapters::MdbSubscriber;
 
 namespace mdb
 {

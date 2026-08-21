@@ -6,6 +6,7 @@
 
 using namespace std;
 using namespace mdb;
+using namespace spark::core;
 
 bool OrderLessForPrice::operator()(const mdb::Order* const left, const mdb::Order* const right) const
 {

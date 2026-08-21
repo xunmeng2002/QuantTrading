@@ -1,6 +1,8 @@
-﻿#include "Packages.h"
-#include <Spark/Network/Protocol/PackageFactory.h>
+﻿#include "PackageFactory.h"
+#include "Packages.h"
 
+
+using namespace spark::network;
 
 Package* PackageFactory::CreatePackage(UShortType packageID)
 {

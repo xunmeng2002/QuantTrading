@@ -1,11 +1,14 @@
 #include "InnerMdApi.h"
-#include "Packages.h"
 #include "Error.h"
+#include "Packages.h"
+#include "PackageFactory.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Network/Protocol/Items.h>
 #include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
 #include <cstring>
 
+using namespace spark;
+using namespace spark::core;
 
 InnerMdApi::InnerMdApi(const char* name)
 	:m_ProtocolType(ProtocolTypeType::Xtp), m_MdSpi(nullptr), m_SessionID(0)

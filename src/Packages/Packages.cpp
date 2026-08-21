@@ -5,10 +5,11 @@
 #include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
 #include <cstring>
 
+using namespace spark;
+using namespace spark::core;
+using namespace spark::network;
+
 thread_local char t_DataStringBuffer[10240];
-
-
-
  
 NotifyConnectPackage::NotifyConnectPackage()
 	:NotifyConnect(nullptr)
@@ -10958,3 +10959,4 @@ const char* RtnAccountLogoutPackage::GetDebugString() const
 	}
 	return t_DataStringBuffer;
 }
+

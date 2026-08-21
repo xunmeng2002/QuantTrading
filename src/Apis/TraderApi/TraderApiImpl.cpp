@@ -3,6 +3,7 @@
 #include "Packages.h"
 #include <Spark/Network/Protocol/Items.h>
 
+using namespace spark;
 
 TraderApi* TraderApi::CreateTraderApi()
 {

@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 using namespace std;
+using namespace spark::core;
 
 void PrintEnvironment(Environment* environment)
 {

@@ -4,6 +4,7 @@
 
 using namespace std;
 using namespace mdb;
+using namespace spark::core;
 
 
 void InitTradingDay(Mdb* mdb, const std::string& currTradingDay)

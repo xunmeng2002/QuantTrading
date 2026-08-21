@@ -4,7 +4,7 @@
 #include <Spark/Network/IO/IOThread.h>
 #include <string>
 
-
+using namespace spark::network;
 class ApiBase : public ProtocolSubscriber
 {
 public:

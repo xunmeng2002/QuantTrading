@@ -15,7 +15,7 @@
 #include <condition_variable>
 
 
-class SimExchange : public ThreadBase, public ProtocolSubscriber, public OrderMatchSubscriber
+class SimExchange : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public OrderMatchSubscriber
 {
 public:
 	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, InnerMdSpiImpl* innerMdSpi, MatchModeType matchMode);

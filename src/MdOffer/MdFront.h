@@ -2,6 +2,8 @@
 #include <Spark/Network/IO/IOFactory.h>
 #include <Spark/Network/Protocol/Protocol.h>
 
+using namespace spark::network;
+
 class MdFront : public Protocol
 {
 public:

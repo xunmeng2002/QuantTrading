@@ -2,6 +2,7 @@
 #include "QuantTrading/Fields.h"
 #include <Spark/Network/Protocol/Package.h>
 
+using spark::network::Package;
 
 class NotifyConnectPackage : public Package
 {

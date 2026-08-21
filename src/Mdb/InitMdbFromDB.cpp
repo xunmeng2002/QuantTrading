@@ -3,6 +3,7 @@
 #include <vector>
 
 using namespace std;
+using namespace dbadapters;
 
 namespace mdb
 {

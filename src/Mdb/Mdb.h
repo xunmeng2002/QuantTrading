@@ -9,7 +9,7 @@
 
 namespace mdb
 {
-	class Mdb : public DBSubscriber
+	class Mdb : public dbadapters::DBSubscriber
 	{
 	public:
 		explicit Mdb(const TableList& tableList);

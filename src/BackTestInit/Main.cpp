@@ -18,6 +18,8 @@
 
 using namespace std;
 using namespace mdb;
+using namespace spark::core;
+using namespace dbadapters;
 
 const char* ConfigName = "BackTestInit.json";
 

@@ -1,5 +1,5 @@
 #include "ApiBase.h"
-#include <Spark/Network/Protocol/PackageFactory.h>
+#include "PackageFactory.h"
 #include <Spark/Network/IO/IOFactory.h>
 
 

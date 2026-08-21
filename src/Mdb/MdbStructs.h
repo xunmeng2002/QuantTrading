@@ -2,6 +2,8 @@
 #include <DBAdapters/DBInterface/Schema.h>
 #include <Spark/Types.h>
 
+using dbadapters::TableSchema;
+
 namespace mdb
 {
 	class TradingDay

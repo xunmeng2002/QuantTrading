@@ -9,6 +9,8 @@
 using namespace mdb;
 using namespace std;
 using namespace std::chrono;
+using namespace spark::core;
+using namespace dbadapters;
 
 namespace
 {

@@ -4,6 +4,7 @@
 #include <string.h>
 
 using std::unordered_set;
+using namespace spark::core;
 
 
 namespace mdb

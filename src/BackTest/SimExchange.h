@@ -15,6 +15,9 @@
 #include <list>
 #include <map>
 
+using namespace spark::core;
+using namespace dbadapters;
+
 namespace quanttrading::backtest
 {
 class SimExchange : public ThreadBase, public DBSubscriber, public OrderMatchSubscriber

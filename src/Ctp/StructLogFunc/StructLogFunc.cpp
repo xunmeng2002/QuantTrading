@@ -2,6 +2,8 @@
 #include <Spark/Core/Logger/Logger.h>
 #include <limits>
 
+using namespace spark::core;
+
 double GetDoubleValue(double& value)
 {
 	if (value == std::numeric_limits<double>::max())

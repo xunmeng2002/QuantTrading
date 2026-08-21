@@ -6,6 +6,9 @@
 #include <Spark/Core/Utility/DoubleUtility.h>
 
 using namespace std;
+using namespace spark;
+using namespace spark::core;
+
 
 InnerMdSpiImpl::InnerMdSpiImpl(InnerMdApi* mdApi, const std::string& mdUser, const std::string& mdPassword)
 	:m_MdApi(mdApi), m_SimExchange(nullptr), m_MdUser(mdUser), m_MdPassword(mdPassword), m_RequestID(0)

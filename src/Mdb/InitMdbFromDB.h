@@ -3,6 +3,7 @@
 #include "TableList.h"
 #include <DBAdapters/DBInterface/DB.h>
 
+using dbadapters::DB;
 namespace mdb
 {
 	class InitMdbFromDB

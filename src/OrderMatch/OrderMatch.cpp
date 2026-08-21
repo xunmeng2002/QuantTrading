@@ -9,6 +9,7 @@
 
 using namespace std;
 using namespace mdb;
+using namespace spark::core;
 
 OrderMatch* OrderMatch::CreateOrderMatch(const MatchModeType& matchMode, const DateType& tradingDay, int maxTradeID)
 {

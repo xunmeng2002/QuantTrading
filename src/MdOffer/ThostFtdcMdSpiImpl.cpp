@@ -7,6 +7,8 @@
 #include <vector>
 
 using namespace std;
+using namespace spark;
+using namespace spark::core;
 
 
 CThostFtdcMdSpiImpl::CThostFtdcMdSpiImpl(CThostFtdcMdApi* MdApi, MdKernel* mdKernel)

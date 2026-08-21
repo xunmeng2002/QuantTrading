@@ -1,4 +1,4 @@
-﻿#pragma warning(disable: 4311)
+#pragma warning(disable: 4311)
 #include "Config.h"
 #include <Spark/Serialization/json/json.h>
 #include <iostream>

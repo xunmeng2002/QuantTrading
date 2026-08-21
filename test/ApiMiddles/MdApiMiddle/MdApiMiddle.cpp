@@ -1,6 +1,8 @@
 ﻿#include "MdApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
+using namespace spark::core;
+
 
 
 MdApiMiddle* MdApiMiddle::CreateMdApiMiddle()

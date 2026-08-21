@@ -2,6 +2,7 @@
 #include "StructLogFunc.h"
 #include <Spark/Core/Logger/Logger.h>
 
+using namespace spark::core;
 
 
 CThostFtdcMdApi *CThostFtdcMdApiMiddle::CreateFtdcMdApi(const char *pszFlowPath)

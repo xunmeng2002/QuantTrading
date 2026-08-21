@@ -2,6 +2,7 @@
 #include <Spark/Core/Utility/DoubleUtility.h>
 
 using namespace std;
+using namespace spark::core;
 
 OrderBookOrderMatch::OrderBookOrderMatch(const DateType& tradingDay, int maxTradeID)
 	:OrderMatch(tradingDay, maxTradeID)

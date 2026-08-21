@@ -1,9 +1,10 @@
-﻿#pragma once
+#pragma once
 #include <Spark/Core/ConfigStructs/ConfigStructs.h>
 #include <string>
 #include <list>
 
 using std::string;
+using namespace spark::core;
 
 namespace quanttrading::backtest
 {

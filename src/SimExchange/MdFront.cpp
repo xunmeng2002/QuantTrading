@@ -1,5 +1,6 @@
 #include "MdFront.h"
 #include "SimExchange.h"
+#include "PackageFactory.h"
 #include <Spark/Core/Logger/Logger.h>
 
 MdFront::MdFront(const char* address, int milliSecond)

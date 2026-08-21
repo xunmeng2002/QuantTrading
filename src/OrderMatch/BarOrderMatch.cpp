@@ -4,6 +4,7 @@
 
 using namespace std;
 using namespace mdb;
+using namespace spark::core;
 
 
 BarOrderMatch::BarOrderMatch(const DateType& tradingDay, int maxTradeID)

@@ -2,6 +2,7 @@
 #include <Spark/Network/Protocol/Protocol.h>
 #include <Spark/Network/Protocol/ProtocolSubscriber.h>
 
+using namespace spark::network;
 
 class MdFront : public Protocol, public ProtocolSubscriber
 {

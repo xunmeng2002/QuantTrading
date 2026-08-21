@@ -5,6 +5,8 @@
 #include <assert.h>
 
 using namespace std;
+using namespace spark::core;
+using namespace spark::serialization;
 
 
 namespace mdb

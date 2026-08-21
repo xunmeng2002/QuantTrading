@@ -15,7 +15,7 @@
 #include <condition_variable>
 
 class MinuteBar;
-class MdKernel : public ThreadBase, public ProtocolSubscriber, public BarSubscriber, public DBSubscriber
+class MdKernel : public spark::core::ThreadBase, public ProtocolSubscriber, public BarSubscriber, public dbadapters::DBSubscriber
 {
 public:
 	MdKernel(mdb::Mdb* mdb);

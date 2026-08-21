@@ -4,6 +4,7 @@
 #include <string.h>
 
 
+using namespace spark::core;
 namespace mdb
 {
 	HotInstrumentIndexTradingDay::HotInstrumentIndexTradingDay(HotInstrumentTable* table)

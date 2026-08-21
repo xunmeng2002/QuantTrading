@@ -3,6 +3,7 @@
 
 using namespace std;
 using namespace mdb;
+using namespace spark::core;
 
 LastPriceOrderMatch::LastPriceOrderMatch(const DateType& tradingDay, int maxTradeID)
 	:OrderMatch(tradingDay, maxTradeID)

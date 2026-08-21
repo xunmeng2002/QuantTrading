@@ -1,6 +1,8 @@
 ﻿#include "SimExchangeApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
+using namespace spark::core;
+
 
 
 SimExchangeApiMiddle* SimExchangeApiMiddle::CreateSimExchangeApiMiddle()

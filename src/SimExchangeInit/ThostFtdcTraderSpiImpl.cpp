@@ -7,6 +7,8 @@
 
 using namespace std;
 using namespace mdb;
+using namespace spark::core;
+using namespace spark::serialization;
 
 CThostFtdcTraderSpiImpl::CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, mdb::Mdb* mdb)
 	:m_TraderApi(traderApi), m_Mdb(mdb), m_RequestID(0), m_AccountInfo(nullptr), m_QryFinished(false)

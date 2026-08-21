@@ -4,6 +4,8 @@
 #include <Spark/Network/Protocol/Items.h>
 #include <Spark/Serialization/Encode/Encode.h>
 
+using namespace spark;
+using namespace spark::serialization;
 
 MdApi* MdApi::CreateMdApi()
 {

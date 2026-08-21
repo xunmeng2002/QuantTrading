@@ -168,7 +168,7 @@ copy_config_file(BackTestInit ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTestInit.j
 
 
 add_static_md_module(ApiBase ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/ApiBase ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/ApiBase)
-target_link_libraries(ApiBaseStatic PUBLIC Spark::Network)
+target_link_libraries(ApiBaseStatic PUBLIC Spark::Network PackagesStatic)
 
 add_shared_module(MdApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdApi)
 target_link_libraries(MdApi PUBLIC QuantTradingInterface)

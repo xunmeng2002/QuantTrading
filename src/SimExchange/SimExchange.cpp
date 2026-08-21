@@ -11,6 +11,8 @@
 
 using namespace std;
 using namespace mdb;
+using namespace spark;
+using namespace spark::core;
 
 SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, InnerMdSpiImpl* innerMdSpi, MatchModeType matchMode)
 	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_MdSpi(innerMdSpi), m_TradingDay(""), m_CurrDate(""), m_CurrTime(""), m_IsMdLogged(false)

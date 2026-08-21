@@ -1,5 +1,5 @@
 #include "MdFront.h"
-
+#include "PackageFactory.h"
 
 MdFront::MdFront(IOModelType ioModel, const char* address, int milliSecond)
 	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new PackageFactory()), m_Address(address)

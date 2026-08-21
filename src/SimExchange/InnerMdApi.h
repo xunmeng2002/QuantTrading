@@ -1,9 +1,8 @@
 #pragma once
-#include <Spark/Core/Thread/ThreadBase.h>
 #include <Spark/Network/Protocol/Protocol.h>
 #include <QuantTrading/Fields.h>
 
-
+using namespace spark::network;
 class MdSpi
 {
 public:

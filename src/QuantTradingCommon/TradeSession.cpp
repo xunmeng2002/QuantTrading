@@ -3,7 +3,7 @@
 #include <Spark/Serialization/json/json.h>
 
 using namespace std;
-
+using namespace spark::core;
 
 
 bool TradeSession::Check(const char* exchangeID, const char* productID)

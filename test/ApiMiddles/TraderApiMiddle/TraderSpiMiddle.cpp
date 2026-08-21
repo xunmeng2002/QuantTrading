@@ -1,6 +1,8 @@
 ﻿#include "TraderSpiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
+using namespace spark::core;
+
 double GetDoubleValue(const double& value)
 {
     if (value == std::numeric_limits<double>::max())

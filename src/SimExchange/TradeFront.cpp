@@ -1,4 +1,5 @@
 #include "TradeFront.h"
+#include "PackageFactory.h"
 #include <Spark/Core/Logger/Logger.h>
 
 TradeFront::TradeFront(const char* address, int milliSecond)

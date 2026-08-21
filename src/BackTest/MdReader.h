@@ -35,6 +35,6 @@ private:
 	std::string m_MdDataPath;
 	DateType m_StartTradingDay;
 	DateType m_EndTradingDay;
-	std::unique_ptr<DuckdbWrapper> m_DuckdbWrapper;
+	std::unique_ptr<dbadapters::DuckdbWrapper> m_DuckdbWrapper;
 };
 }

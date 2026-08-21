@@ -1,6 +1,8 @@
 ﻿#include "BackTestApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
+using namespace spark::core;
+
 
 
 BackTestApiMiddle* BackTestApiMiddle::CreateBackTestApiMiddle()

@@ -7,6 +7,7 @@
 
 using std::string;
 using std::set;
+using namespace spark::core;
 
 namespace mdb
 {
