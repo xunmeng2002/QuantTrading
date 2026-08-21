@@ -1,4 +1,4 @@
-<config>
+<config project="quanttrading" module="backtest">
 	<items>
 		<item name="MatchMode" type="int"></item>
 		<item name="MdDataPath" type="string"></item>
