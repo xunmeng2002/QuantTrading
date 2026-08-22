@@ -3,6 +3,8 @@
 #include <Spark/Core/Utility/Utility.h>
 
 
+namespace quanttrading::testsimexchangeapi
+{
 SimExchangeSpiImpl::SimExchangeSpiImpl(SimExchangeApi* api)
 	:m_SimExchangeApi(api), m_AccountInfo(nullptr), m_Instrument{}, m_HasInstrument(false), m_MaxRequestID(0), m_MaxClientOrderID(0), m_OrderCount(0),
 	m_InitStatus(false), m_Finished(false)
@@ -137,5 +139,6 @@ void SimExchangeSpiImpl::ReqCancelOrder(OrderField* order)
 	cancelOrder.ClientOrderID = order->ClientOrderID;
 
 	m_SimExchangeApi->ReqCancelOrder(&cancelOrder, ++m_MaxRequestID);
+}
 }
 

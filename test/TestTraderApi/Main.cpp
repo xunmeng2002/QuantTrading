@@ -7,6 +7,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace quanttrading::testtraderapi;
 
 const char* ConfigName = "TestTraderApi.json";
 

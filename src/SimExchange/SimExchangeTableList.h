@@ -2,10 +2,10 @@
 #include "TableList.h"
 #include "MdbStructs.h"
 
-
-namespace mdb
+using namespace mdb;
+namespace quanttrading::simexchange
 {
-	inline const unsigned int kSimExchangeTableIDs[] =
+	inline const unsigned int ksimexchangeTableIDs[] =
 	{
 		TradingDay::TableID,
 		Exchange::TableID,
@@ -22,5 +22,5 @@ namespace mdb
 		DepthMarketData::TableID,
 		BarMarketData::TableID,
 	};
-	inline const TableList SimExchangeTableList = { "SimExchange", kSimExchangeTableIDs, (int)(sizeof(kSimExchangeTableIDs) / sizeof(kSimExchangeTableIDs[0])) };
+	inline const TableList simexchangeTableList = { "simexchange", ksimexchangeTableIDs, (int)(sizeof(ksimexchangeTableIDs) / sizeof(ksimexchangeTableIDs[0])) };
 }

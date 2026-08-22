@@ -10,6 +10,8 @@ using namespace spark;
 using namespace spark::core;
 
 
+namespace quanttrading::simexchange
+{
 InnerMdSpiImpl::InnerMdSpiImpl(InnerMdApi* mdApi, const std::string& mdUser, const std::string& mdPassword)
 	:m_MdApi(mdApi), m_SimExchange(nullptr), m_MdUser(mdUser), m_MdPassword(mdPassword), m_RequestID(0)
 {
@@ -193,4 +195,5 @@ void InnerMdSpiImpl::ReqMdUserLogin()
 void InnerMdSpiImpl::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData)
 {
 	m_MdApi->ReqSubMarketData(reqSubMarketData, ++m_RequestID);
+}
 }

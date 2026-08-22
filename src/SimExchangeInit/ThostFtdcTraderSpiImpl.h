@@ -7,6 +7,8 @@
 #include <atomic>
 #include <vector>
 
+namespace quanttrading::simexchangeinit
+{
 class CThostFtdcTraderSpiImpl : public CThostFtdcTraderSpiMiddle
 {
 public:
@@ -54,3 +56,4 @@ private:
 	std::vector<mdb::Product*>* m_Products;
 	std::vector<mdb::Instrument*>* m_Instruments;
 };
+}

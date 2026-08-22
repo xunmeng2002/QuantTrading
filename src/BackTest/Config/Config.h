@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <Spark/Core/ConfigStructs/ConfigStructs.h>
 #include <string>
 #include <list>

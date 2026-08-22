@@ -14,7 +14,8 @@
 #include <mutex>
 #include <condition_variable>
 
-
+namespace quanttrading::simexchange
+{
 class SimExchange : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public OrderMatchSubscriber
 {
 public:
@@ -95,3 +96,4 @@ protected:
 	RtnOrderPackage* m_RtnOrderPackage;
 	RtnTradePackage* m_RtnTradePackage;
 };
+}

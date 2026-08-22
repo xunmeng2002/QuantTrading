@@ -8,6 +8,8 @@
 using namespace std;
 
 
+namespace quanttrading::testmdapi
+{
 Config Config::m_Instance;
 Config::Config()
 {
@@ -67,3 +69,4 @@ void Config::Print()
 	printf("]\n");
 }
 
+}

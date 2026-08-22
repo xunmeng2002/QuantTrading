@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+namespace quanttrading::testmdapi
+{
 class MdSpiImpl : public MdSpiMiddle
 {
 public:
@@ -25,3 +27,4 @@ private:
 	int m_RequestID;
 	ReqSubMarketDataField* m_ReqSubMarketData;
 };
+}

@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 namespace quanttrading::backtest
 {
 Config Config::m_Instance;
@@ -65,5 +66,5 @@ void Config::Print()
 	printf("DbHost:%s\n", DbHost.c_str());
 	printf("DbInitHost:%s\n", DbInitHost.c_str());
 }
-}
 
+}

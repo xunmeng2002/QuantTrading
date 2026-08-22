@@ -8,6 +8,8 @@
 using namespace std;
 
 
+namespace quanttrading::testbacktest
+{
 Config Config::m_Instance;
 Config::Config()
 {
@@ -51,3 +53,4 @@ void Config::Print()
 	printf("InstrumentID:%s\n", InstrumentID.c_str());
 }
 
+}

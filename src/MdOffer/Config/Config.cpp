@@ -8,6 +8,8 @@
 using namespace std;
 
 
+namespace quanttrading::mdoffer
+{
 Config Config::m_Instance;
 Config::Config()
 {
@@ -65,3 +67,4 @@ void Config::Print()
 	printf("DbInitHost:%s\n", DbInitHost.c_str());
 }
 
+}

@@ -7,6 +7,8 @@ using namespace mdb;
 using namespace spark::core;
 
 
+namespace quanttrading::backtestinit
+{
 void InitTradingDay(Mdb* mdb, const std::string& currTradingDay)
 {
     TradingDay* tradingDay = new TradingDay;
@@ -92,4 +94,4 @@ void Init(mdb::Mdb* mdb, const std::string& tradingDay, const std::string& accou
     auto account = InitAccount(mdb, accountID, password);
     InitCapital(mdb, account, tradingDay);
 }
-
+}

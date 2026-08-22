@@ -4,6 +4,8 @@
 
 using namespace spark::network;
 
+namespace quanttrading::simexchange
+{
 class MdFront : public Protocol, public ProtocolSubscriber
 {
 public:
@@ -17,6 +19,6 @@ public:
 private:
 	IOThread* m_IOThread;
 };
-
+}
 
 

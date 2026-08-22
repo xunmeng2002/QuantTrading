@@ -44,7 +44,7 @@ namespace quanttrading::backtest
 {
 SimExchange::SimExchange(const Config& config)
 	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false), m_DumpPath(config.DumpPath),
-	m_Registry(BackTestTableList),
+	m_Registry(backtestTableList),
 	m_CurrDate(""), m_CurrTime("")
 {
 	auto matchMode = (MatchModeType)config.MatchMode;
@@ -59,7 +59,7 @@ SimExchange::SimExchange(const Config& config)
 	m_DB = CreateDataDb(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
     m_DBWriter = new AsyncDBWriter(m_DB, &m_Registry);
 	m_DBWriter->Subscribe(this);
-	m_Mdb = new Mdb(BackTestTableList);
+	m_Mdb = new Mdb(backtestTableList);
 	m_OrderMatch = OrderMatch::CreateOrderMatch(matchMode, m_TradingDay);
 	m_OrderMatch->Subscribe(this);
 }
@@ -82,7 +82,7 @@ bool SimExchange::Init()
 		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
 		return false;
 	}
-	InitMdbFromDB::LoadTables(m_Mdb, m_InitDB, BackTestTableList);
+	InitMdbFromDB::LoadTables(m_Mdb, m_InitDB, backtestTableList);
 	m_Mdb->Subscribe(m_DBWriter);
 
 	m_MdReader->Init();

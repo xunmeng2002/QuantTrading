@@ -24,6 +24,7 @@ using namespace std;
 using namespace mdb;
 using namespace spark::core;
 using namespace dbadapters;
+using namespace quanttrading::simexchange;
 
 const char* ConfigName = "SimExchange.json";
 
@@ -69,15 +70,15 @@ int main(int argc, char* argv[])
 	{
 		return Exit();
 	}
-	Mdb* mdb = new Mdb(SimExchangeTableList);
-	mdb::MdbTableRegistry schemaRegistry(SimExchangeTableList);
+	Mdb* mdb = new Mdb(simexchangeTableList);
+	mdb::MdbTableRegistry schemaRegistry(simexchangeTableList);
 	AsyncDBWriter* dbWriter = new AsyncDBWriter(db, &schemaRegistry);
 	if (!initDB->Connect())
 	{
 		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
 		return Exit();
 	}
-	InitMdbFromDB::LoadTables(mdb, initDB, SimExchangeTableList);
+	InitMdbFromDB::LoadTables(mdb, initDB, simexchangeTableList);
 	initDB->DisConnect();
 	delete initDB;
 

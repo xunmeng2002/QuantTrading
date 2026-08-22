@@ -1,4 +1,4 @@
-<config>
+<config project="QuantTrading" module="TestBackTest">
 	<items>
 		<item name="LogLevel" type="int"></item>
 		<item name="AccountID" type="string"></item>

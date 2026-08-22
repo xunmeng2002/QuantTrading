@@ -10,6 +10,9 @@ using namespace mdb;
 using namespace spark::core;
 using namespace spark::serialization;
 
+
+namespace quanttrading::simexchangeinit
+{
 CThostFtdcTraderSpiImpl::CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, mdb::Mdb* mdb)
 	:m_TraderApi(traderApi), m_Mdb(mdb), m_RequestID(0), m_AccountInfo(nullptr), m_QryFinished(false)
 {
@@ -291,4 +294,5 @@ void CThostFtdcTraderSpiImpl::ReqQryTrade()
 	::memset(&qryTrade, 0, sizeof(qryTrade));
 	int ret = m_TraderApi->ReqQryTrade(&qryTrade, m_RequestID++);
 	WriteLog(LogLevel::Info, "ReqQryTrade: ret[%d]", ret);
+}
 }

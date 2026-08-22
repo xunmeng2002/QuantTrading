@@ -4,6 +4,8 @@
 #include <atomic>
 #include <mutex>
 
+namespace quanttrading::simexchange
+{
 class SimExchange;
 class InnerMdSpiImpl : public MdSpi
 {
@@ -31,3 +33,4 @@ private:
 	std::string m_MdUser;
 	std::string m_MdPassword;
 };
+}

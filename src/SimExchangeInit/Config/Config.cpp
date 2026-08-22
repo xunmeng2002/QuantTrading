@@ -8,6 +8,8 @@
 using namespace std;
 
 
+namespace quanttrading::simexchangeinit
+{
 Config Config::m_Instance;
 Config::Config()
 {
@@ -63,3 +65,4 @@ void Config::Print()
 	printf("DbHost:%s\n", DbHost.c_str());
 }
 
+}

@@ -3,6 +3,8 @@
 #include <Spark/Core/Utility/Utility.h>
 
 
+namespace quanttrading::testmdapi
+{
 MdSpiImpl::MdSpiImpl(MdApi* mdApi)
 	:m_MdApi(mdApi), m_RequestID(0)
 {
@@ -47,4 +49,5 @@ void MdSpiImpl::ReqSubscribeMd()
         Utility::Strcpy(m_ReqSubMarketData->InstrumentID, instrument->InstrumentID.c_str());
 		m_MdApi->ReqSubMarketData(m_ReqSubMarketData, ++m_RequestID);
 	}
+}
 }

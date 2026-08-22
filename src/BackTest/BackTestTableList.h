@@ -2,10 +2,10 @@
 #include "TableList.h"
 #include "MdbStructs.h"
 
-
-namespace mdb
+using namespace mdb;
+namespace quanttrading::backtest
 {
-	inline const unsigned int kBackTestTableIDs[] =
+	inline const unsigned int kbacktestTableIDs[] =
 	{
 		TradingDay::TableID,
 		Exchange::TableID,
@@ -23,5 +23,5 @@ namespace mdb
 		BarMarketData::TableID,
 		MdSubscribe::TableID,
 	};
-	inline const TableList BackTestTableList = { "BackTest", kBackTestTableIDs, (int)(sizeof(kBackTestTableIDs) / sizeof(kBackTestTableIDs[0])) };
+	inline const TableList backtestTableList = { "backtest", kbacktestTableIDs, (int)(sizeof(kbacktestTableIDs) / sizeof(kbacktestTableIDs[0])) };
 }

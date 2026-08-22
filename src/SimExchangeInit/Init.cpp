@@ -6,7 +6,8 @@ using namespace std;
 using namespace mdb;
 using namespace spark::core;
 
-
+namespace quanttrading::simexchangeinit
+{
 void InitTradingDay(Mdb* mdb, const std::string& currTradingDay)
 {
 	TradingDay* tradingDay = new TradingDay;
@@ -135,4 +136,5 @@ void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay
 	InitPositionDetail(mdb, account);
 	InitOrder(mdb, account);
 	InitTrade(mdb, account);
+}
 }

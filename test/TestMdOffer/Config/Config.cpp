@@ -1,4 +1,4 @@
-#pragma warning(disable: 4311)
+﻿#pragma warning(disable: 4311)
 #include "Config.h"
 #include <Spark/Serialization/json/json.h>
 #include <iostream>
@@ -8,6 +8,8 @@
 using namespace std;
 
 
+namespace quanttrading::testmdoffer
+{
 Config Config::m_Instance;
 Config::Config()
 {
@@ -67,3 +69,4 @@ void Config::Print()
 	printf("]\n");
 }
 
+}

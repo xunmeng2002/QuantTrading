@@ -3,6 +3,8 @@
 #include "PackageFactory.h"
 #include <Spark/Core/Logger/Logger.h>
 
+namespace quanttrading::simexchange
+{
 MdFront::MdFront(const char* address, int milliSecond)
 	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IOModelType::Select,  milliSecond, new PackageFactory())
 {
@@ -22,6 +24,6 @@ void MdFront::OnMessage(Package* package)
 {
 
 }
-
+}
 
 

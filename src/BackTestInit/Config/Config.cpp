@@ -8,6 +8,8 @@
 using namespace std;
 
 
+namespace quanttrading::backtestinit
+{
 Config Config::m_Instance;
 Config::Config()
 {
@@ -61,3 +63,4 @@ void Config::Print()
 	printf("Password:%s\n", Password.c_str());
 }
 
+}

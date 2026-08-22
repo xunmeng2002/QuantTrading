@@ -3,6 +3,8 @@
 #include <Spark/Core/Utility/Utility.h>
 
 
+namespace quanttrading::testtraderapi
+{
 TraderSpiImpl::TraderSpiImpl(TraderApi* api)
 	:m_TraderApi(api), m_AccountInfo(nullptr), m_Instrument{}, m_HasInstrument(false), m_MaxRequestID(0), m_MaxClientOrderID(0), m_OrderCount(0),
 	m_InitStatus(false), m_Finished(false)
@@ -138,4 +140,4 @@ void TraderSpiImpl::ReqCancelOrder(OrderField* order)
 
 	m_TraderApi->ReqCancelOrder(&cancelOrder, ++m_MaxRequestID);
 }
-
+}

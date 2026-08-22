@@ -6,6 +6,9 @@
 #include <vector>
 #include <map>
 
+
+namespace quanttrading::testsimexchangeapi
+{
 class SimExchangeSpiImpl : public SimExchangeSpiMiddle
 {
 public:
@@ -41,3 +44,4 @@ private:
 	int m_MaxClientOrderID;
 	int m_OrderCount;
 };
+}

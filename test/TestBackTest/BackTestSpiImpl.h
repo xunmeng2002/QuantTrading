@@ -2,6 +2,8 @@
 #include "BackTestSpiMiddle.h"
 #include "Config/Config.h"
 
+namespace quanttrading::testbacktest
+{
 class BackTestSpiImpl : public BackTestSpiMiddle
 {
 public:
@@ -35,3 +37,4 @@ private:
 	int m_MaxRequestID;
 	int m_MaxClientOrderID;
 };
+}

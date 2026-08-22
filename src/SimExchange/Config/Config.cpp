@@ -8,6 +8,8 @@
 using namespace std;
 
 
+namespace quanttrading::simexchange
+{
 Config Config::m_Instance;
 Config::Config()
 {
@@ -63,3 +65,4 @@ void Config::Print()
 	printf("MdPassword:%s\n", MdPassword.c_str());
 }
 
+}

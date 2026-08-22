@@ -1,4 +1,4 @@
-<config>
+<config project="QuantTrading" module="MdOffer">
 	<items>
 		<item name="LogLevel" type="int"></item>
 		<item name="ServerConfigPath" type="string"></item>

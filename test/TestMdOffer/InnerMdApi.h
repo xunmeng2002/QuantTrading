@@ -4,6 +4,8 @@
 #include <QuantTrading/Fields.h>
 
 using namespace spark::network;
+namespace quanttrading::testmdoffer
+{
 class MdSpi
 {
 public:
@@ -44,4 +46,4 @@ protected:
 	MdSpi* m_MdSpi;
 	SessionIDType m_SessionID;
 };
-
+}

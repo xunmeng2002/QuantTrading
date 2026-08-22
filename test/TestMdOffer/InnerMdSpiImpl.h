@@ -6,6 +6,8 @@
 #include <atomic>
 #include <mutex>
 
+namespace quanttrading::testmdoffer
+{
 class InnerMdSpiImpl : public MdSpi
 {
 public:
@@ -33,3 +35,4 @@ private:
     std::list<SubscribeInstrument*> m_SubscribeInstruments;
     ReqSubMarketDataField m_ReqSubMarketData;
 };
+}

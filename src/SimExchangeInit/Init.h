@@ -2,6 +2,8 @@
 #include "Mdb.h"
 #include "Environment.h"
 
-void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay);
-
+namespace quanttrading::simexchangeinit
+{
+    void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay);
+}
 

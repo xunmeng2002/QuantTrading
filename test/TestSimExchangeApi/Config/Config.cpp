@@ -8,6 +8,8 @@
 using namespace std;
 
 
+namespace quanttrading::testsimexchangeapi
+{
 Config Config::m_Instance;
 Config::Config()
 {
@@ -53,3 +55,4 @@ void Config::Print()
 	printf("EnvironmentName24:%s\n", EnvironmentName24.c_str());
 }
 
+}

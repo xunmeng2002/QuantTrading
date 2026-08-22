@@ -2,12 +2,14 @@
 #include "PackageFactory.h"
 #include <Spark/Core/Logger/Logger.h>
 
-TradeFront::TradeFront(const char* address, int milliSecond)
-	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IOModelType::Select, milliSecond, new PackageFactory())
+namespace quanttrading::simexchange
 {
-	RegisterFront(address);
-	m_IOThread = new IOThread("TradeFront");
-	SetIOThread(m_IOThread);
+    TradeFront::TradeFront(const char* address, int milliSecond)
+        :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IOModelType::Select, milliSecond, new PackageFactory())
+    {
+        RegisterFront(address);
+        m_IOThread = new IOThread("TradeFront");
+        SetIOThread(m_IOThread);
+    }
 }
-
 

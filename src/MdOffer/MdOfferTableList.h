@@ -2,10 +2,10 @@
 #include "TableList.h"
 #include "MdbStructs.h"
 
-
-namespace mdb
+using namespace mdb;
+namespace quanttrading::mdoffer
 {
-	inline const unsigned int kMdOfferTableIDs[] =
+	inline const unsigned int kmdofferTableIDs[] =
 	{
 		Exchange::TableID,
 		Instrument::TableID,
@@ -15,5 +15,5 @@ namespace mdb
 		MdUser::TableID,
 		MdUserLoginSession::TableID,
 	};
-	inline const TableList MdOfferTableList = { "MdOffer", kMdOfferTableIDs, (int)(sizeof(kMdOfferTableIDs) / sizeof(kMdOfferTableIDs[0])) };
+	inline const TableList mdofferTableList = { "mdoffer", kmdofferTableIDs, (int)(sizeof(kmdofferTableIDs) / sizeof(kmdofferTableIDs[0])) };
 }

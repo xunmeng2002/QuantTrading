@@ -10,6 +10,9 @@
 using namespace spark;
 using namespace spark::core;
 
+
+namespace quanttrading::simexchange
+{
 InnerMdApi::InnerMdApi(const char* name)
 	:m_ProtocolType(ProtocolTypeType::Xtp), m_MdSpi(nullptr), m_SessionID(0)
 {
@@ -138,6 +141,6 @@ int InnerMdApi::ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, 
 	reqPackage->Deallocate();
 	return result;
 }
-
+}
 
 

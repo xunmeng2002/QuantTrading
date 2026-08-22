@@ -20,6 +20,8 @@ using namespace std;
 using namespace mdb;
 using namespace spark::core;
 using namespace dbadapters;
+using namespace quanttrading::backtest;
+using namespace quanttrading::backtestinit;
 
 const char* ConfigName = "BackTestInit.json";
 
@@ -49,9 +51,9 @@ int main(int argc, char* argv[])
     Logger::GetInstance().Start();
 
     DB* db = CreateDB(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
-    mdb::MdbTableRegistry registry(BackTestTableList);
+    mdb::MdbTableRegistry registry(backtestTableList);
     AsyncDBWriter* dbWriter = new AsyncDBWriter(db, &registry);
-    Mdb* mdb = new Mdb(BackTestTableList);
+    Mdb* mdb = new Mdb(backtestTableList);
     mdb->Subscribe(dbWriter);
     dbWriter->Subscribe(mdb);
     dbWriter->Start();

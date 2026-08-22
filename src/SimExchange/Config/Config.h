@@ -6,6 +6,8 @@
 using std::string;
 using namespace spark::core;
 
+namespace quanttrading::simexchange
+{
 class Config
 {
 	Config();
@@ -29,3 +31,4 @@ public:
 private:
 	static Config m_Instance;
 };
+}

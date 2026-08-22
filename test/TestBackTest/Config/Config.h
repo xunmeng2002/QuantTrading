@@ -6,6 +6,8 @@
 using std::string;
 using namespace spark::core;
 
+namespace quanttrading::testbacktest
+{
 class Config
 {
 	Config();
@@ -23,3 +25,4 @@ public:
 private:
 	static Config m_Instance;
 };
+}

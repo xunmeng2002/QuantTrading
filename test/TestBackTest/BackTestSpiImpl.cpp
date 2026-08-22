@@ -2,6 +2,8 @@
 #include <Spark/Core/Logger/Logger.h>
 #include <string.h>
 
+namespace quanttrading::testbacktest
+{
 BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi, const Config& config)
 	:m_BackTestApi(backTestApi), m_LastOrderTickMd(nullptr), m_LastOrderBarMd(nullptr), m_MaxRequestID(0), m_MaxClientOrderID(0)
 {
@@ -115,4 +117,5 @@ void BackTestSpiImpl::ReqInsertOrder(const ExchangeIDType& exchangeID, const Ins
 	reqInsertOrder.Volume = 1;
 	reqInsertOrder.ClientOrderID = ++m_MaxClientOrderID;
 	m_BackTestApi->ReqInsertOrder(&reqInsertOrder, ++m_MaxRequestID);
+}
 }

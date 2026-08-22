@@ -4,6 +4,8 @@
 #include "ServerConfig.h"
 #include <Spark/Core/Logger/Logger.h>
 
+using namespace quanttrading::testmdoffer;
+
 const char* ConfigName = "TestMdOffer.json";
 
 int main(int argc, char* argv[])
