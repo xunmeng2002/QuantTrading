@@ -17,7 +17,7 @@
 
 using namespace quanttrading::packages;
 using quanttrading::bar::MinuteBar;
-class MdKernel : public spark::core::ThreadBase, public ProtocolSubscriber, public quanttrading::bar::BarSubscriber, public dbadapters::DBSubscriber
+class MdKernel : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public quanttrading::bar::BarSubscriber, public dbadapters::DBSubscriber
 {
 public:
 	MdKernel(mdb::Mdb* mdb);

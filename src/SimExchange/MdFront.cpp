@@ -3,6 +3,8 @@
 #include "PackageFactory.h"
 #include <Spark/Core/Logger/Logger.h>
 
+using namespace spark::network;
+
 namespace quanttrading::simexchange
 {
 MdFront::MdFront(const char* address, int milliSecond)

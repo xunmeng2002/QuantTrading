@@ -1,6 +1,8 @@
 #include "MdFront.h"
 #include "PackageFactory.h"
 
+using namespace spark::network;
+
 MdFront::MdFront(IOModelType ioModel, const char* address, int milliSecond)
 	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new quanttrading::packages::PackageFactory()), m_Address(address)
 {
