@@ -1,22 +1,23 @@
 #pragma once
 #include "OrderMatch.h"
 
-
-class BarOrderMatch : public OrderMatch
+namespace quanttrading::ordermatch
 {
-public:
-	BarOrderMatch(const DateType& tradingDay, int maxTradeID = 0);
-	virtual ~BarOrderMatch();
+    class BarOrderMatch : public OrderMatch
+    {
+    public:
+        BarOrderMatch(const DateType& tradingDay, int maxTradeID = 0);
+        virtual ~BarOrderMatch();
 
-	virtual void OnTick(mdb::DepthMarketData* mdTick) override;
-	virtual void OnBar(mdb::BarMarketData* mdBar) override;
-	virtual void InsertOrder(mdb::Order* order) override;
+        virtual void OnTick(mdb::DepthMarketData* mdTick) override;
+        virtual void OnBar(mdb::BarMarketData* mdBar) override;
+        virtual void InsertOrder(mdb::Order* order) override;
 
-protected:
-	void CheckMatch(mdb::BarMarketData* mdBar);
-	bool CheckMatchForOrder(mdb::BarMarketData* mdBar, mdb::Order* order);
-};
-
+    protected:
+        void CheckMatch(mdb::BarMarketData* mdBar);
+        bool CheckMatchForOrder(mdb::BarMarketData* mdBar, mdb::Order* order);
+    };
+}
 
 
 

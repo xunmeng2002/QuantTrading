@@ -18,7 +18,7 @@ using namespace quanttrading::packages;
 
 namespace quanttrading::simexchange
 {
-class SimExchange : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public OrderMatchSubscriber
+class SimExchange : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber
 {
 public:
 	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, InnerMdSpiImpl* innerMdSpi, MatchModeType matchMode);
@@ -76,7 +76,7 @@ protected:
 	TradeFront* m_TradeFront;
 	InnerMdSpiImpl* m_MdSpi;
 	mdb::Mdb* m_Mdb;
-	OrderMatch* m_OrderMatch;
+    quanttrading::ordermatch::OrderMatch* m_OrderMatch;
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
 

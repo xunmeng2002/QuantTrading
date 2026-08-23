@@ -21,6 +21,8 @@ using namespace std;
 using namespace mdb;
 using namespace spark;
 using namespace spark::core;
+using namespace quanttrading::quanttradingcommon;
+using namespace quanttrading::ordermatch;
 
 static DB* CreateDataDb(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
 {

@@ -1,9 +1,11 @@
 #pragma once
 #include <QuantTrading/Fields.h>
 
-class BarSubscriber
+namespace quanttrading::bar
 {
-public:
-	virtual void OnBarMarketData(BarMarketDataField* bar) = 0;
-};
-
+    class BarSubscriber
+    {
+    public:
+        virtual void OnBarMarketData(BarMarketDataField* bar) = 0;
+    };
+}

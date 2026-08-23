@@ -13,6 +13,7 @@ using namespace std;
 using namespace mdb;
 using namespace spark;
 using namespace spark::core;
+using namespace quanttrading::ordermatch;
 
 
 namespace quanttrading::simexchange

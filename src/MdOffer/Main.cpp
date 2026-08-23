@@ -33,6 +33,8 @@ using namespace mdb;
 using namespace spark::core;
 using namespace dbadapters;
 using namespace quanttrading::mdoffer;
+using namespace quanttrading::bar;
+using namespace quanttrading::quanttradingcommon;
 
 const char* ConfigName = "MdOffer.json";
 

@@ -21,7 +21,7 @@ using namespace quanttrading::packages;
 
 namespace quanttrading::backtest
 {
-class SimExchange : public ThreadBase, public DBSubscriber, public OrderMatchSubscriber
+class SimExchange : public ThreadBase, public DBSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber
 {
 public:
 	SimExchange(const Config& config);
@@ -89,7 +89,7 @@ private:
 	std::list<ReqSubMarketDataField*> m_ReqSubMds;
 	std::list<Package*> m_Packages;
 	BackTestSpi* m_BackTestSpi;
-	OrderMatch* m_OrderMatch;
+    quanttrading::ordermatch::OrderMatch* m_OrderMatch;
 	mdb::Mdb* m_Mdb;
 	DB* m_DB;
 	DB* m_InitDB;

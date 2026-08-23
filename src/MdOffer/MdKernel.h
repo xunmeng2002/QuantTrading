@@ -7,6 +7,7 @@
 #include "ThostFtdcMdSpiImpl.h"
 #include "FieldsCompare.h"
 #include "BarInterface.h"
+#include "MinuteBar.h"
 #include "Mdb.h"
 #include <map>
 #include <set>
@@ -15,8 +16,8 @@
 #include <condition_variable>
 
 using namespace quanttrading::packages;
-class MinuteBar;
-class MdKernel : public spark::core::ThreadBase, public ProtocolSubscriber, public BarSubscriber, public dbadapters::DBSubscriber
+using quanttrading::bar::MinuteBar;
+class MdKernel : public spark::core::ThreadBase, public ProtocolSubscriber, public quanttrading::bar::BarSubscriber, public dbadapters::DBSubscriber
 {
 public:
 	MdKernel(mdb::Mdb* mdb);
