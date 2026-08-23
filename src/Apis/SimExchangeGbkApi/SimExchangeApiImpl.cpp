@@ -7,6 +7,8 @@
 using namespace spark;
 using namespace spark::serialization;
 
+namespace quanttrading
+{
 SimExchangeApi* SimExchangeApi::CreateSimExchangeApi()
 {
 	return new SimExchangeApiImpl();
@@ -291,4 +293,4 @@ int SimExchangeApiImpl::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int 
 	reqPackage->Deallocate();
 	return result;
 }
-
+}

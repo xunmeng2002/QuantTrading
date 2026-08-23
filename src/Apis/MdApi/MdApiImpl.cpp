@@ -5,6 +5,8 @@
 
 using namespace spark;
 
+namespace quanttrading
+{
 MdApi* MdApi::CreateMdApi()
 {
 	return new MdApiImpl();
@@ -98,4 +100,4 @@ int MdApiImpl::ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, i
 	reqPackage->Deallocate();
 	return result;
 }
-
+}

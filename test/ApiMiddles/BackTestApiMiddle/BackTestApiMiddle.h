@@ -2,6 +2,8 @@
 #include <QuantTrading/BackTestApi.h>
 
 
+namespace quanttrading
+{
 class BackTestApiMiddle : public BackTestApi
 {
 public:
@@ -21,3 +23,4 @@ public:
 private:
 	BackTestApi* m_BackTestApi;
 };
+}

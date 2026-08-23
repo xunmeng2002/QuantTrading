@@ -4,7 +4,8 @@
 using namespace spark::core;
 
 
-
+namespace quanttrading
+{
 TraderApiMiddle* TraderApiMiddle::CreateTraderApiMiddle()
 {
 	WriteLog(LogLevel::Info, "CreateTraderApi");
@@ -227,4 +228,5 @@ int TraderApiMiddle::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int req
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
 	return m_TraderApi->ReqCancelOrder(reqCancelOrder, requestID);
+}
 }

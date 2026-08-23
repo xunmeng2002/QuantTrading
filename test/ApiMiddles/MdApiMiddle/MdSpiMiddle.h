@@ -2,6 +2,8 @@
 #include <QuantTrading/MdApi.h>
 
 
+namespace quanttrading
+{
 class MdSpiMiddle : public MdSpi
 {
 public:
@@ -15,3 +17,4 @@ public:
 	virtual void OnRtnDepthMarketData(DepthMarketDataField* depthMarketData) override;
 	virtual void OnRtnBarMarketData(BarMarketDataField* barMarketData) override;
 };
+}

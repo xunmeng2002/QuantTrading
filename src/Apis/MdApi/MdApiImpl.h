@@ -2,7 +2,8 @@
 #include "MdApiBase.h"
 
 
-
+namespace quanttrading
+{
 class MdApiImpl : public MdApiBase
 {
 public:
@@ -14,4 +15,4 @@ public:
 	virtual int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID) override;
 	virtual int ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID) override;
 };
-
+}

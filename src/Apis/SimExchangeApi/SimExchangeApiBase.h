@@ -4,6 +4,8 @@
 #include <Spark/Network/Protocol/Protocol.h>
 
 
+namespace quanttrading
+{
 class SimExchangeApiBase : public ApiBase, public SimExchangeApi
 {
 public:
@@ -26,6 +28,6 @@ protected:
 	SimExchangeSpi* m_SimExchangeSpi;
 	SessionIDType m_SessionID;
 };
-
+}
 
 

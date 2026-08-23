@@ -3,6 +3,8 @@
 #include <QuantTrading/BackTest/BackTestExport.h>
 
 
+namespace quanttrading
+{
 class BackTestSpi
 {
 public:
@@ -36,4 +38,5 @@ public:
 	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
 	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
 };
+}
 

@@ -4,6 +4,8 @@
 #include <Spark/Network/Protocol/Protocol.h>
 
 
+namespace quanttrading
+{
 class TraderApiBase : public ApiBase, public TraderApi
 {
 public:
@@ -26,6 +28,6 @@ protected:
 	TraderSpi* m_TraderSpi;
 	SessionIDType m_SessionID;
 };
-
+}
 
 

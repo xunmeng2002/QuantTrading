@@ -1,6 +1,8 @@
 ﻿#include "MdSpiWrap.h"
 
 
+namespace quanttrading
+{
 void MdSpiWrap::RegisterSpi(MdCSpi* spi)
 {
 	m_MdCSpi = spi;
@@ -61,4 +63,5 @@ void MdSpiWrap::OnRtnBarMarketData(BarMarketDataField* barMarketData)
 	{
 		m_MdCSpi->OnRtnBarMarketData(barMarketData);
 	}
+}
 }

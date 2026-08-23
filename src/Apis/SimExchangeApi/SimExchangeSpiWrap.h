@@ -3,6 +3,8 @@
 #include <QuantTrading/SimExchangeApi.h>
 
 
+namespace quanttrading
+{
 class SimExchangeSpiWrap : public SimExchangeSpi
 {
 public:
@@ -23,3 +25,4 @@ public:
 private:
 	SimExchangeCSpi* m_SimExchangeCSpi = nullptr;
 };
+}

@@ -2,7 +2,8 @@
 #include "TraderApiBase.h"
 
 
-
+namespace quanttrading
+{
 class TraderApiImpl : public TraderApiBase
 {
 public:
@@ -23,4 +24,4 @@ public:
 	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) override;
 	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) override;
 };
-
+}

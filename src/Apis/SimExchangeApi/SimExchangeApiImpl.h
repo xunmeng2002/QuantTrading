@@ -2,7 +2,8 @@
 #include "SimExchangeApiBase.h"
 
 
-
+namespace quanttrading
+{
 class SimExchangeApiImpl : public SimExchangeApiBase
 {
 public:
@@ -17,4 +18,4 @@ public:
 	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) override;
 	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) override;
 };
-
+}

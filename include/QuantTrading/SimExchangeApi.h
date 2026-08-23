@@ -2,7 +2,8 @@
 #include "Fields.h"
 #include <QuantTrading/SimExchangeApi/SimExchangeApiExport.h>
 
-
+namespace quanttrading
+{
 class SimExchangeSpi
 {
 public:
@@ -38,4 +39,4 @@ public:
 	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
 	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
 };
-
+}

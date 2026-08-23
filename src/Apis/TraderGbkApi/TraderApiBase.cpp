@@ -1,6 +1,8 @@
 ﻿#include "TraderApiBase.h"
 #include "QuantTrading/Version.h"
 
+namespace quanttrading
+{
 const char* TraderApi::GetApiVersion()
 {
 	return QUANTTRADING_VERSION;
@@ -46,4 +48,5 @@ void TraderApiBase::RegisterFront(const char* address)
 void TraderApiBase::RegisterSpi(TraderSpi* spi)
 {
 	m_TraderSpi = spi;
+}
 }

@@ -2,6 +2,8 @@
 #include <QuantTrading/SimExchangeApi.h>
 
 
+namespace quanttrading
+{
 class SimExchangeApiMiddle : public SimExchangeApi
 {
 public:
@@ -24,3 +26,4 @@ public:
 private:
 	SimExchangeApi* m_SimExchangeApi;
 };
+}

@@ -3,6 +3,8 @@
 
 using namespace spark::core;
 
+namespace quanttrading
+{
 double GetDoubleValue(const double& value)
 {
     if (value == std::numeric_limits<double>::max())
@@ -201,4 +203,5 @@ void SimExchangeSpiMiddle::OnRtnTrade(TradeField* trade)
 	{
 		WriteLog(LogLevel::Info, "trade is nullptr");
 	}
+}
 }

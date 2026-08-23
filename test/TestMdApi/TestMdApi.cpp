@@ -6,6 +6,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace quanttrading;
 using namespace quanttrading::testmdapi;
 
 const char* ConfigName = "TestMdApi.json";

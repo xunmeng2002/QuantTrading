@@ -2,6 +2,8 @@
 #include <QuantTrading/TraderApi.h>
 
 
+namespace quanttrading
+{
 class TraderSpiMiddle : public TraderSpi
 {
 public:
@@ -26,3 +28,4 @@ public:
 	virtual void OnRtnMoneyTransfer(MoneyTransferField* moneyTransfer) override;
 	virtual void OnRtnAccountLogout(AccountLogoutField* accountLogout) override;
 };
+}

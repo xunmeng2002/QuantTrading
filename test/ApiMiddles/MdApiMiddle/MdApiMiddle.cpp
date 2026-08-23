@@ -4,7 +4,8 @@
 using namespace spark::core;
 
 
-
+namespace quanttrading
+{
 MdApiMiddle* MdApiMiddle::CreateMdApiMiddle()
 {
 	WriteLog(LogLevel::Info, "CreateMdApi");
@@ -101,4 +102,5 @@ int MdApiMiddle::ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData,
 		WriteLog(LogLevel::Info, "reqUnSubMarketData is nullptr");
 	}
 	return m_MdApi->ReqUnSubMarketData(reqUnSubMarketData, requestID);
+}
 }

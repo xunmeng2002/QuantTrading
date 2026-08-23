@@ -2,6 +2,8 @@
 #include <QuantTrading/BackTestApi.h>
 
 
+namespace quanttrading
+{
 class BackTestSpiMiddle : public BackTestSpi
 {
 public:
@@ -19,3 +21,4 @@ public:
 	virtual void OnRtnOrder(OrderField* order) override;
 	virtual void OnRtnTrade(TradeField* trade) override;
 };
+}

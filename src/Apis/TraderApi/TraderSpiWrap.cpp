@@ -1,6 +1,8 @@
 ﻿#include "TraderSpiWrap.h"
 
 
+namespace quanttrading
+{
 void TraderSpiWrap::RegisterSpi(TraderCSpi* spi)
 {
 	m_TraderCSpi = spi;
@@ -138,4 +140,5 @@ void TraderSpiWrap::OnRtnAccountLogout(AccountLogoutField* accountLogout)
 	{
 		m_TraderCSpi->OnRtnAccountLogout(accountLogout);
 	}
+}
 }

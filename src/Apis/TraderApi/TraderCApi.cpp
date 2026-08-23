@@ -2,6 +2,7 @@
 #include <QuantTrading/TraderApi.h>
 #include "TraderSpiWrap.h"
 
+using namespace quanttrading;
 
 static TraderApi* s_TraderApi = nullptr;
 static TraderSpiWrap* s_TraderSpiWrap = nullptr;

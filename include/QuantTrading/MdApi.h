@@ -2,7 +2,8 @@
 #include "Fields.h"
 #include <QuantTrading/MdApi/MdApiExport.h>
 
-
+namespace quanttrading
+{
 class MdSpi
 {
 public:
@@ -32,4 +33,4 @@ public:
 	virtual int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID) = 0;
 	virtual int ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID) = 0;
 };
-
+}

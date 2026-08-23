@@ -2,6 +2,8 @@
 #include <QuantTrading/SimExchangeApi.h>
 
 
+namespace quanttrading
+{
 class SimExchangeSpiMiddle : public SimExchangeSpi
 {
 public:
@@ -18,3 +20,4 @@ public:
 	virtual void OnRtnOrder(OrderField* order) override;
 	virtual void OnRtnTrade(TradeField* trade) override;
 };
+}

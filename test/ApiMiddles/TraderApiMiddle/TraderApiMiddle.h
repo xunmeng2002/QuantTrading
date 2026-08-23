@@ -2,6 +2,8 @@
 #include <QuantTrading/TraderApi.h>
 
 
+namespace quanttrading
+{
 class TraderApiMiddle : public TraderApi
 {
 public:
@@ -30,3 +32,4 @@ public:
 private:
 	TraderApi* m_TraderApi;
 };
+}

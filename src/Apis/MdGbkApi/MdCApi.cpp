@@ -2,6 +2,7 @@
 #include <QuantTrading/MdApi.h>
 #include "MdSpiWrap.h"
 
+using namespace quanttrading;
 
 static MdApi* s_MdApi = nullptr;
 static MdSpiWrap* s_MdSpiWrap = nullptr;

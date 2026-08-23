@@ -2,6 +2,8 @@
 #include <QuantTrading/MdApi.h>
 
 
+namespace quanttrading
+{
 class MdApiMiddle : public MdApi
 {
 public:
@@ -21,3 +23,4 @@ public:
 private:
 	MdApi* m_MdApi;
 };
+}

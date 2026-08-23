@@ -2,6 +2,7 @@
 #include <QuantTrading/SimExchangeApi.h>
 #include "SimExchangeSpiWrap.h"
 
+using namespace quanttrading;
 
 static SimExchangeApi* s_SimExchangeApi = nullptr;
 static SimExchangeSpiWrap* s_SimExchangeSpiWrap = nullptr;

@@ -3,6 +3,8 @@
 
 using namespace spark::core;
 
+namespace quanttrading
+{
 double GetDoubleValue(const double& value)
 {
     if (value == std::numeric_limits<double>::max())
@@ -135,4 +137,5 @@ void MdSpiMiddle::OnRtnBarMarketData(BarMarketDataField* barMarketData)
 	{
 		WriteLog(LogLevel::Info, "barMarketData is nullptr");
 	}
+}
 }

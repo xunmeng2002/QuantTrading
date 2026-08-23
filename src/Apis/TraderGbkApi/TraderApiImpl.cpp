@@ -7,6 +7,8 @@
 using namespace spark;
 using namespace spark::serialization;
 
+namespace quanttrading
+{
 TraderApi* TraderApi::CreateTraderApi()
 {
 	return new TraderApiImpl();
@@ -503,4 +505,4 @@ int TraderApiImpl::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int reque
 	reqPackage->Deallocate();
 	return result;
 }
-
+}

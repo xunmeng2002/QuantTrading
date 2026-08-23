@@ -4,6 +4,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace quanttrading;
 using namespace quanttrading::testbacktest;
 
 const char* ConfigName = "TestBackTest.json";

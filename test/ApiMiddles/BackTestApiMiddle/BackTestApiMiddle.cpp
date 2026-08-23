@@ -4,7 +4,8 @@
 using namespace spark::core;
 
 
-
+namespace quanttrading
+{
 BackTestApiMiddle* BackTestApiMiddle::CreateBackTestApiMiddle()
 {
 	WriteLog(LogLevel::Info, "CreateBackTestApi");
@@ -101,4 +102,5 @@ int BackTestApiMiddle::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int r
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
 	return m_BackTestApi->ReqCancelOrder(reqCancelOrder, requestID);
+}
 }

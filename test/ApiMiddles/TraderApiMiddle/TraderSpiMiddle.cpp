@@ -3,6 +3,8 @@
 
 using namespace spark::core;
 
+namespace quanttrading
+{
 double GetDoubleValue(const double& value)
 {
     if (value == std::numeric_limits<double>::max())
@@ -359,4 +361,5 @@ void TraderSpiMiddle::OnRtnAccountLogout(AccountLogoutField* accountLogout)
 	{
 		WriteLog(LogLevel::Info, "accountLogout is nullptr");
 	}
+}
 }

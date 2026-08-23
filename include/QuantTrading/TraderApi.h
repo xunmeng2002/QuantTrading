@@ -1,8 +1,9 @@
-﻿#pragma once
+#pragma once
 #include "Fields.h"
 #include <QuantTrading/TraderApi/TraderApiExport.h>
 
-
+namespace quanttrading
+{
 class TraderSpi
 {
 public:
@@ -52,4 +53,4 @@ public:
 	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
 	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
 };
-
+}

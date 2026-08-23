@@ -5,6 +5,7 @@
 
 
 using namespace std;
+using namespace quanttrading;
 
 static const char* ConfigName = "BackTest.json";
 

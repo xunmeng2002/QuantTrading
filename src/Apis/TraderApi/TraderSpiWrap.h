@@ -3,6 +3,8 @@
 #include <QuantTrading/TraderApi.h>
 
 
+namespace quanttrading
+{
 class TraderSpiWrap : public TraderSpi
 {
 public:
@@ -31,3 +33,4 @@ public:
 private:
 	TraderCSpi* m_TraderCSpi = nullptr;
 };
+}

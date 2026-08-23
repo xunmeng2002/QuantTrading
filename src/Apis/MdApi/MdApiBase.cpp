@@ -1,6 +1,8 @@
 ﻿#include "MdApiBase.h"
 #include "QuantTrading/Version.h"
 
+namespace quanttrading
+{
 const char* MdApi::GetApiVersion()
 {
 	return QUANTTRADING_VERSION;
@@ -46,4 +48,5 @@ void MdApiBase::RegisterFront(const char* address)
 void MdApiBase::RegisterSpi(MdSpi* spi)
 {
 	m_MdSpi = spi;
+}
 }

@@ -1,6 +1,8 @@
 ﻿#include "SimExchangeApiBase.h"
 #include "QuantTrading/Version.h"
 
+namespace quanttrading
+{
 const char* SimExchangeApi::GetApiVersion()
 {
 	return QUANTTRADING_VERSION;
@@ -46,4 +48,5 @@ void SimExchangeApiBase::RegisterFront(const char* address)
 void SimExchangeApiBase::RegisterSpi(SimExchangeSpi* spi)
 {
 	m_SimExchangeSpi = spi;
+}
 }

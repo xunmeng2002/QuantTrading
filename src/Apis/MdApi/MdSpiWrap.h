@@ -3,6 +3,8 @@
 #include <QuantTrading/MdApi.h>
 
 
+namespace quanttrading
+{
 class MdSpiWrap : public MdSpi
 {
 public:
@@ -20,3 +22,4 @@ public:
 private:
 	MdCSpi* m_MdCSpi = nullptr;
 };
+}

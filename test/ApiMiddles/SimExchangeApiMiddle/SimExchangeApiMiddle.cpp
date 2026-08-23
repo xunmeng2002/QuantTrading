@@ -4,7 +4,8 @@
 using namespace spark::core;
 
 
-
+namespace quanttrading
+{
 SimExchangeApiMiddle* SimExchangeApiMiddle::CreateSimExchangeApiMiddle()
 {
 	WriteLog(LogLevel::Info, "CreateSimExchangeApi");
@@ -143,4 +144,5 @@ int SimExchangeApiMiddle::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, in
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
 	return m_SimExchangeApi->ReqCancelOrder(reqCancelOrder, requestID);
+}
 }

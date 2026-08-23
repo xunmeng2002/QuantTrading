@@ -1,6 +1,8 @@
 ﻿#include "SimExchangeSpiWrap.h"
 
 
+namespace quanttrading
+{
 void SimExchangeSpiWrap::RegisterSpi(SimExchangeCSpi* spi)
 {
 	m_SimExchangeCSpi = spi;
@@ -82,4 +84,5 @@ void SimExchangeSpiWrap::OnRtnTrade(TradeField* trade)
 	{
 		m_SimExchangeCSpi->OnRtnTrade(trade);
 	}
+}
 }
