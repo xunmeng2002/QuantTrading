@@ -3,7 +3,8 @@
 #include <Spark/Network/IO/IOFactory.h>
 
 
-
+namespace quanttrading
+{
 ApiBase::ApiBase(const char* name)
 	:m_Protocol(nullptr), m_ProtocolType(ProtocolTypeType::Xtp)
 {
@@ -19,4 +20,5 @@ ApiBase::~ApiBase()
 		delete m_Protocol;
 		m_Protocol = nullptr;
 	}
+}
 }

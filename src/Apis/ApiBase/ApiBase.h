@@ -5,6 +5,9 @@
 #include <string>
 
 using namespace spark::network;
+
+namespace quanttrading
+{
 class ApiBase : public ProtocolSubscriber
 {
 public:
@@ -17,4 +20,5 @@ protected:
 	IOThread* m_IOThread;
 	Protocol* m_Protocol;
 };
+}
 
