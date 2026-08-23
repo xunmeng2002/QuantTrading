@@ -4,11 +4,10 @@
 #include <Spark/Network/IO/IOThread.h>
 #include <string>
 
-using namespace spark::network;
 
 namespace quanttrading
 {
-class ApiBase : public ProtocolSubscriber
+class ApiBase : public spark::network::ProtocolSubscriber
 {
 public:
 	ApiBase(const char* name);
@@ -17,8 +16,8 @@ public:
 protected:
 	ProtocolTypeType m_ProtocolType;
 
-	IOThread* m_IOThread;
-	Protocol* m_Protocol;
+    spark::network::IOThread* m_IOThread;
+    spark::network::Protocol* m_Protocol;
 };
 }
 

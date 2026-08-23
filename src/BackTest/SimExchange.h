@@ -15,13 +15,10 @@
 #include <list>
 #include <map>
 
-using namespace spark::core;
-using namespace dbadapters;
-using namespace quanttrading::packages;
 
 namespace quanttrading::backtest
 {
-class SimExchange : public ThreadBase, public DBSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber
+class SimExchange : public spark::core::ThreadBase, public dbadapters::DBSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber
 {
 public:
 	SimExchange(const Config& config);
@@ -55,9 +52,9 @@ private:
 	void PushNextTick(mdb::DepthMarketData* mdTick);
 	void PushNextBar(mdb::BarMarketData* mdBar);
 
-	void HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* reqPackage);
-	void HandleInsertOrder(ReqInsertOrderPackage* reqPackage);
-	void HandleCancelOrder(ReqCancelOrderPackage* reqPackage);
+	void HandleSubMarketDataFinished(quanttrading::packages::ReqSubMarketDataFinishedPackage* reqPackage);
+	void HandleInsertOrder(quanttrading::packages::ReqInsertOrderPackage* reqPackage);
+	void HandleCancelOrder(quanttrading::packages::ReqCancelOrderPackage* reqPackage);
 
 	void InitMdInstrument();
 	void InitMainInstrument();
@@ -75,8 +72,8 @@ private:
 	PriceType GetSettlementPrice(mdb::PositionDetail* positionDetail);
 	void CalcCapital(mdb::Capital* capital);
 
-	void SendRspOrderInsert(ReqInsertOrderPackage* reqPackage, int errorID);
-	void SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorID);
+	void SendRspOrderInsert(quanttrading::packages::ReqInsertOrderPackage* reqPackage, int errorID);
+	void SendRspCancelOrder(quanttrading::packages::ReqCancelOrderPackage* reqPackage, int errorID);
 	void SendRtnOrder(mdb::Order* order);
 	void SendRtnTrade(mdb::Trade* trade);
 	void SendRtnDepthMarketData(mdb::DepthMarketData* mdTick);
@@ -91,10 +88,10 @@ private:
 	BackTestSpi* m_BackTestSpi;
     quanttrading::ordermatch::OrderMatch* m_OrderMatch;
 	mdb::Mdb* m_Mdb;
-	DB* m_DB;
-	DB* m_InitDB;
+    dbadapters::DB* m_DB;
+    dbadapters::DB* m_InitDB;
 	mdb::MdbTableRegistry m_Registry;
-    AsyncDBWriter* m_DBWriter;
+    dbadapters::AsyncDBWriter* m_DBWriter;
 	bool m_HasSubMd;
 	DateType m_TradingDay;
 	DateType m_StartTradingDay;

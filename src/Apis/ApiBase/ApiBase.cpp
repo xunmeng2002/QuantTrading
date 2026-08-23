@@ -2,6 +2,7 @@
 #include "PackageFactory.h"
 #include <Spark/Network/IO/IOFactory.h>
 
+using namespace spark::network;
 
 namespace quanttrading
 {

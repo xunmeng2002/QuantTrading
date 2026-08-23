@@ -21,7 +21,7 @@ namespace quanttrading::simexchange
 class SimExchange : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber
 {
 public:
-	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* innerMdSpi, MatchModeType matchMode);
+	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* mdSpi, MatchModeType matchMode);
 	~SimExchange();
 
 	void Init();

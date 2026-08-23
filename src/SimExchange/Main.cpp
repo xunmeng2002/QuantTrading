@@ -88,10 +88,10 @@ int main(int argc, char* argv[])
 	dbWriter->Subscribe(mdb);
 
 
-	MdApi* MdApi = MdApi::CreateMdApi();
-	MdSpiImpl* MdSpi = new MdSpiImpl(MdApi, config.MdUser, config.MdPassword);
-	MdApi->RegisterSpi(MdSpi);
-	MdApi->RegisterFront(serverConfig.MdOfferAddress.c_str());
+	MdApi* mdApi = MdApi::CreateMdApi();
+	MdSpiImpl* MdSpi = new MdSpiImpl(mdApi, config.MdUser, config.MdPassword);
+	mdApi->RegisterSpi(MdSpi);
+	mdApi->RegisterFront(serverConfig.MdOfferAddress.c_str());
 	TradeFront* tradeFront = new TradeFront(serverConfig.TradeFrontAddress.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str());
 	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, MdSpi, (MatchModeType)config.MatchMode);
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 	simExchange->Init();
 	tradeFront->Init();
 	//mdFront->Init();
-	MdApi->Init();
+	mdApi->Init();
 	dbWriter->Start();
 	simExchange->Start();
 	tradeFront->Start();
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 	simExchange->Join();
 	tradeFront->Join();
 	mdFront->Join();
-	MdApi->Join(); 
+	mdApi->Join(); 
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

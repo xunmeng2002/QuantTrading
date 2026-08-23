@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "TraderApiBase.h"
+#include <Spark/Network/Protocol/Package.h>
 
 
 namespace quanttrading
@@ -8,7 +9,7 @@ class TraderApiImpl : public TraderApiBase
 {
 public:
 	TraderApiImpl();
-	virtual void OnMessage(Package* package) override;
+	virtual void OnMessage(spark::network::Package* package) override;
 	
 	virtual int ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, int requestID) override;
 	virtual int ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout, int requestID) override;
