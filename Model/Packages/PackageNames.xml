@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<apipackages name="QuantTrading">
+<apipackages project="QuantTrading">
 	<package name="NotifyConnect"/>
 	<package name="NotifyDisConnect"/>
 	<package name="NotifyDBConnect"/>
