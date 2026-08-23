@@ -188,7 +188,7 @@ void MdSpiImpl::ReqMdUserLogin()
 {
 	ReqMdUserLoginField reqMdUserLogin;
 	memset(&reqMdUserLogin, 0, sizeof(ReqMdUserLoginField));
-    Utility:: Strcpy(reqMdUserLogin.UserID, m_MdUser.c_str());
+    Utility::Strcpy(reqMdUserLogin.UserID, m_MdUser.c_str());
     Utility::Strcpy(reqMdUserLogin.Password, m_MdPassword.c_str());
 	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
 }

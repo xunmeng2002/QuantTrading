@@ -211,10 +211,6 @@ target_link_libraries(TestBackTest PRIVATE QuantTradingCommonStatic PackagesStat
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestBackTest.json)
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
 
-add_application(TestMdOffer ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdOffer ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdOffer)
-target_link_libraries(TestMdOffer PRIVATE QuantTradingCommonStatic PackagesStatic Spark::Core Spark::Serialization)
-copy_config_file(TestMdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestMdOffer.json)
-
 add_application(TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdApi)
 target_link_libraries(TestMdApi PRIVATE QuantTradingCommonStatic MdApiMiddleStatic Spark::Core Spark::Serialization)
 copy_config_file(TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestMdApi.json)

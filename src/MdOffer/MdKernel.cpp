@@ -1,12 +1,12 @@
 #include "MdKernel.h"
-#include <Spark/Core/Logger/Logger.h>
 #include "Error.h"
-#include <Spark/Core/Utility/Utility.h>
-#include <Spark/Core/Utility/TimeUtility.h>
-#include "MdbFieldConverter.h"
-#include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
 #include "MdSnap.h"
 #include "MinuteBar.h"
+#include "MdbFieldConverter.h"
+#include <Spark/Core/Utility/Utility.h>
+#include <Spark/Core/Utility/TimeUtility.h>
+#include <Spark/Core/Logger/Logger.h>
+#include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
 
 using namespace std;
 using namespace mdb;

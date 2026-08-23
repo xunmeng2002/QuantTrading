@@ -1,7 +1,4 @@
 #pragma once
-#include <Spark/Core/Thread/ThreadBase.h>
-#include <Spark/Network/Protocol/ProtocolSubscriber.h>
-#include <Spark/Network/Protocol/Package.h>
 #include "Packages.h"
 #include "MdFront.h"
 #include "ThostFtdcMdSpiImpl.h"
@@ -9,6 +6,9 @@
 #include "BarInterface.h"
 #include "MinuteBar.h"
 #include "Mdb.h"
+#include <Spark/Core/Thread/ThreadBase.h>
+#include <Spark/Network/Protocol/ProtocolSubscriber.h>
+#include <Spark/Network/Protocol/Package.h>
 #include <map>
 #include <set>
 #include <list>

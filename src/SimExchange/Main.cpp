@@ -89,15 +89,15 @@ int main(int argc, char* argv[])
 
 
 	MdApi* mdApi = MdApi::CreateMdApi();
-	MdSpiImpl* MdSpi = new MdSpiImpl(mdApi, config.MdUser, config.MdPassword);
-	mdApi->RegisterSpi(MdSpi);
+	MdSpiImpl* mdSpi = new MdSpiImpl(mdApi, config.MdUser, config.MdPassword);
+	mdApi->RegisterSpi(mdSpi);
 	mdApi->RegisterFront(serverConfig.MdOfferAddress.c_str());
 	TradeFront* tradeFront = new TradeFront(serverConfig.TradeFrontAddress.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str());
-	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, MdSpi, (MatchModeType)config.MatchMode);
+	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, mdSpi, (MatchModeType)config.MatchMode);
 	tradeFront->Subscribe(simExchange);
 	//mdFront->Subscribe(*);
-	MdSpi->SetSimExchange(simExchange);
+	mdSpi->SetSimExchange(simExchange);
 
 
 	simExchange->Init();

@@ -460,7 +460,7 @@ void SimExchange::SendRspInsertOrder(ReqInsertOrderPackage* reqPackage, int erro
 }
 void SimExchange::SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorID)
 {
-	m_RspCancelOrderPackage->Prepare(reqPackage->SessionID, false, errorID);
+	m_RspCancelOrderPackage->Prepare(reqPackage->SessionID, false, reqPackage->Head.MsgSeqNum);
 	m_RspCancelOrderPackage->RspInfo->ErrorID = errorID;
 	strcpy(m_RspCancelOrderPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
 	memcpy(m_RspCancelOrderPackage->ReqCancelOrder, reqPackage->ReqCancelOrder, sizeof(ReqCancelOrderField));

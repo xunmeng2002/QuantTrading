@@ -22,10 +22,7 @@
 
     <pump dest="./test/TestBackTest/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/TestBackTest.xml"/>
     <pump dest="./test/TestBackTest/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/TestBackTest.xml"/>
-    
-    <pump dest="./test/TestMdOffer/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/TestMdOffer.xml"/>
-    <pump dest="./test/TestMdOffer/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/TestMdOffer.xml"/>
-	
+    	
 	<pump dest="./test/TestMdApi/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/TestMdApi.xml"/>
     <pump dest="./test/TestMdApi/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/TestMdApi.xml"/>
 
