@@ -32,12 +32,11 @@ using namespace std;
 using namespace mdb;
 using namespace spark::core;
 using namespace dbadapters;
-using namespace quanttrading::mdoffer;
-using namespace quanttrading::bar;
 using namespace quanttrading;
+using namespace quanttrading::bar;
+using namespace quanttrading::mdoffer;
 
 const char* ConfigName = "MdOffer.json";
-
 const char* initSqliteDBName = "./MdOfferInit.db";
 const char* sqliteDBName = "./MdOffer.db";
 const char* duckdbDBName = "./MdOffer.duckdb";

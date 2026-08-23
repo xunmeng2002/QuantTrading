@@ -3,17 +3,19 @@
 #include <Spark/Network/Protocol/Protocol.h>
 
 
-class MdFront : public spark::network::Protocol
+namespace quanttrading::mdoffer
 {
-public:
-	MdFront(IOModelType ioModel, const char* address, int milliSecond = 1);
+    class MdFront : public spark::network::Protocol
+    {
+    public:
+        MdFront(IOModelType ioModel, const char* address, int milliSecond = 1);
 
 
 
-private:
-	std::string m_Address;
-    spark::network::IOThread* m_IOThread;
-};
-
+    private:
+        std::string m_Address;
+        spark::network::IOThread* m_IOThread;
+    };
+}
 
 
