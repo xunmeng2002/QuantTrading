@@ -180,7 +180,7 @@ void SimExchange::HandleRspMdUserLogin(RspMdUserLoginPackage* package)
 	m_IsMdLogged = true;
 	for (auto& reqSubMd : m_SubscribeInstruments)
 	{
-		m_MdSpi->ReqSubMarketData((ReqSubMarketDataField*)&reqSubMd);
+		m_MdSpi->ReqSubMarketData(&reqSubMd);
 	}
 }
 void SimExchange::HandleRspMdUserLogout(RspMdUserLogoutPackage* package)
