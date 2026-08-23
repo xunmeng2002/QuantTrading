@@ -30,9 +30,14 @@ namespace quanttrading::mdoffer
     {
         CThostFtdcMdSpiMiddle::OnRspUserLogin(pRspUserLogin, pRspInfo, nRequestID, bIsLast);
         m_IsLogged = true;
-        if (!m_ReqSubInstruments.empty())
+        std::vector<const char*> reqSubInstruments;
         {
-            m_MdApi->SubscribeMarketData(const_cast<char**>(m_ReqSubInstruments.data()), (int)m_ReqSubInstruments.size());
+            std::lock_guard<std::mutex> guard(m_Mutex);
+            reqSubInstruments = m_ReqSubInstruments;
+        }
+        if (!reqSubInstruments.empty())
+        {
+            m_MdApi->SubscribeMarketData(const_cast<char**>(reqSubInstruments.data()), (int)reqSubInstruments.size());
         }
     }
     void CThostFtdcMdSpiImpl::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData)
@@ -57,9 +62,14 @@ namespace quanttrading::mdoffer
         {
             Utility::Strcpy(package->DepthMarketData->ExchangeID, pDepthMarketData->ExchangeID);
         }
-        else if (m_ReqSubMds[package->DepthMarketData->InstrumentID] != nullptr)
+        else
         {
-            Utility::Strcpy(package->DepthMarketData->ExchangeID, m_ReqSubMds[package->DepthMarketData->InstrumentID]->ExchangeID);
+            std::lock_guard<std::mutex> guard(m_Mutex);
+            auto reqSubMdIt = m_ReqSubMds.find(package->DepthMarketData->InstrumentID);
+            if (reqSubMdIt != m_ReqSubMds.end())
+            {
+                Utility::Strcpy(package->DepthMarketData->ExchangeID, reqSubMdIt->second->ExchangeID);
+            }
         }
         package->DepthMarketData->LastPrice = pDepthMarketData->LastPrice;
         package->DepthMarketData->PreSettlementPrice = pDepthMarketData->PreSettlementPrice;
