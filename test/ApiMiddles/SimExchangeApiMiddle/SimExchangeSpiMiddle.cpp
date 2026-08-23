@@ -24,7 +24,7 @@ void SimExchangeSpiMiddle::OnDisConnected()
 	WriteLog(LogLevel::Info, "OnDisConnected");
 }
 
-void SimExchangeSpiMiddle::OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspAccountLogin: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspAccountLogin != nullptr)
@@ -46,7 +46,7 @@ void SimExchangeSpiMiddle::OnRspAccountLogin(RspAccountLoginField* rspAccountLog
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspAccountLogout(RspAccountLogoutField* rspAccountLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspAccountLogout: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspAccountLogout != nullptr)
@@ -68,7 +68,7 @@ void SimExchangeSpiMiddle::OnRspAccountLogout(RspAccountLogoutField* rspAccountL
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspQryOrder(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (order != nullptr)
@@ -90,7 +90,7 @@ void SimExchangeSpiMiddle::OnRspQryOrder(OrderField* order, RspInfoField* rspInf
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspQryTrade(TradeField* trade, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryTrade: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (trade != nullptr)
@@ -112,7 +112,7 @@ void SimExchangeSpiMiddle::OnRspQryTrade(TradeField* trade, RspInfoField* rspInf
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspQryInstrument(InstrumentField* instrument, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryInstrument: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (instrument != nullptr)
@@ -134,7 +134,7 @@ void SimExchangeSpiMiddle::OnRspQryInstrument(InstrumentField* instrument, RspIn
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (reqInsertOrder != nullptr)
@@ -156,7 +156,7 @@ void SimExchangeSpiMiddle::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder,
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (reqCancelOrder != nullptr)
@@ -178,7 +178,7 @@ void SimExchangeSpiMiddle::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder,
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRtnOrder(OrderField* order)
+void SimExchangeSpiMiddle::OnRtnOrder(const OrderField* order)
 {
 	WriteLog(LogLevel::Info, "OnRtnOrder");
 	if (order != nullptr)
@@ -191,7 +191,7 @@ void SimExchangeSpiMiddle::OnRtnOrder(OrderField* order)
 		WriteLog(LogLevel::Info, "order is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRtnTrade(TradeField* trade)
+void SimExchangeSpiMiddle::OnRtnTrade(const TradeField* trade)
 {
 	WriteLog(LogLevel::Info, "OnRtnTrade");
 	if (trade != nullptr)

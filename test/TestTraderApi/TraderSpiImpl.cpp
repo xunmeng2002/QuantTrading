@@ -22,16 +22,16 @@ void TraderSpiImpl::OnConnected()
 	TraderSpiMiddle::OnConnected();
 	ReqAccountLogin();
 }
-void TraderSpiImpl::OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiImpl::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	TraderSpiMiddle::OnRspAccountLogin(rspAccountLogin, rspInfo, requestID, isLast);
 	ReqQryInstrument();
 }
-void TraderSpiImpl::OnRspAccountLogout(RspAccountLogoutField* rspAccountLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiImpl::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	TraderSpiMiddle::OnRspAccountLogout(rspAccountLogout, rspInfo, requestID, isLast);
 }
-void TraderSpiImpl::OnRspInsertOrder(ReqInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiImpl::OnRspInsertOrder(const ReqInsertOrderField* reqSEInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	TraderSpiMiddle::OnRspInsertOrder(reqSEInsertOrder, rspInfo, requestID, isLast);
 	if (++m_OrderCount < 10000 && m_OrderCount % 10 == 0)
@@ -43,7 +43,7 @@ void TraderSpiImpl::OnRspInsertOrder(ReqInsertOrderField* reqSEInsertOrder, RspI
 		m_Finished = true;
 	}
 }
-void TraderSpiImpl::OnRspQryInstrument(InstrumentField* sEInstrument, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiImpl::OnRspQryInstrument(const InstrumentField* sEInstrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	TraderSpiMiddle::OnRspQryInstrument(sEInstrument, rspInfo, requestID, isLast);
 	if (m_HasInstrument == false && sEInstrument != nullptr && strcmp(sEInstrument->ExchangeID, "CFFEX") == 0)
@@ -65,7 +65,7 @@ void TraderSpiImpl::OnRspQryInstrument(InstrumentField* sEInstrument, RspInfoFie
 	}
 }
 
-void TraderSpiImpl::OnRtnOrder(OrderField* order)
+void TraderSpiImpl::OnRtnOrder(const OrderField* order)
 {
 	TraderSpiMiddle::OnRtnOrder(order);
 }
@@ -125,7 +125,7 @@ void TraderSpiImpl::ReqInsertOrder(DirectionType direction, OffsetFlagType offse
 
 	m_TraderApi->ReqInsertOrder(&insertOrder, ++m_MaxRequestID);
 }
-void TraderSpiImpl::ReqCancelOrder(OrderField* order)
+void TraderSpiImpl::ReqCancelOrder(const OrderField* order)
 {
 	ReqCancelOrderField cancelOrder;
 	memset(&cancelOrder, 0, sizeof(ReqCancelOrderField));

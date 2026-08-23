@@ -22,16 +22,16 @@ void SimExchangeSpiImpl::OnConnected()
 	SimExchangeSpiMiddle::OnConnected();
 	ReqAccountLogin();
 }
-void SimExchangeSpiImpl::OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiImpl::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	SimExchangeSpiMiddle::OnRspAccountLogin(rspAccountLogin, rspInfo, requestID, isLast);
 	ReqQryInstrument();
 }
-void SimExchangeSpiImpl::OnRspAccountLogout(RspAccountLogoutField* rspAccountLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiImpl::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	SimExchangeSpiMiddle::OnRspAccountLogout(rspAccountLogout, rspInfo, requestID, isLast);
 }
-void SimExchangeSpiImpl::OnRspInsertOrder(ReqInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiImpl::OnRspInsertOrder(const ReqInsertOrderField* reqSEInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	SimExchangeSpiMiddle::OnRspInsertOrder(reqSEInsertOrder, rspInfo, requestID, isLast);
 	if (++m_OrderCount < 10000 && m_OrderCount % 10 == 0)
@@ -43,7 +43,7 @@ void SimExchangeSpiImpl::OnRspInsertOrder(ReqInsertOrderField* reqSEInsertOrder,
 		m_Finished = true;
 	}
 }
-void SimExchangeSpiImpl::OnRspQryInstrument(InstrumentField* sEInstrument, RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiImpl::OnRspQryInstrument(const InstrumentField* sEInstrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	SimExchangeSpiMiddle::OnRspQryInstrument(sEInstrument, rspInfo, requestID, isLast);
 	if (m_HasInstrument == false && sEInstrument != nullptr && strcmp(sEInstrument->ExchangeID, "CFFEX") == 0)
@@ -65,7 +65,7 @@ void SimExchangeSpiImpl::OnRspQryInstrument(InstrumentField* sEInstrument, RspIn
 	}
 }
 
-void SimExchangeSpiImpl::OnRtnOrder(OrderField* order)
+void SimExchangeSpiImpl::OnRtnOrder(const OrderField* order)
 {
 	SimExchangeSpiMiddle::OnRtnOrder(order);
 }
@@ -125,7 +125,7 @@ void SimExchangeSpiImpl::ReqInsertOrder(DirectionType direction, OffsetFlagType 
 
 	m_SimExchangeApi->ReqInsertOrder(&insertOrder, ++m_MaxRequestID);
 }
-void SimExchangeSpiImpl::ReqCancelOrder(OrderField* order)
+void SimExchangeSpiImpl::ReqCancelOrder(const OrderField* order)
 {
 	ReqCancelOrderField cancelOrder;
 	memset(&cancelOrder, 0, sizeof(ReqCancelOrderField));

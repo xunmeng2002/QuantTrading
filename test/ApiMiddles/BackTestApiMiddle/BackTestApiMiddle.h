@@ -15,10 +15,10 @@ public:
 	virtual void RegisterFront(const char* address) override;
 	virtual void RegisterSpi(BackTestSpi* pSpi) override;
 	
-	virtual int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID) override;
-	virtual int ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID) override;
-	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) override;
-	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) override;
+	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID) override;
+	virtual int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID) override;
+	virtual int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID) override;
+	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) override;
 
 private:
 	BackTestApi* m_BackTestApi;

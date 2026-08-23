@@ -43,7 +43,7 @@ MDAPI_EXPORTS void MDAPI_CALL Release()
 	}
 	s_MdSpiWrap = nullptr;
 }
-MDAPI_EXPORTS void MDAPI_CALLRegisterFront(const char* address)
+MDAPI_EXPORTS void MDAPI_CALL RegisterFront(const char* address)
 {
 	s_MdApi->RegisterFront(address);
 }
@@ -53,19 +53,19 @@ MDAPI_EXPORTS void MDAPI_CALL RegisterSpi(MdCSpi* spi)
 	s_MdSpiWrap->RegisterSpi(spi);
 }
 
-MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID)
+MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID)
 {
 	return s_MdApi->ReqMdUserLogin(reqMdUserLogin, requestID);
 }
-MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID)
+MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID)
 {
 	return s_MdApi->ReqMdUserLogout(reqMdUserLogout, requestID);
 }
-MDAPI_EXPORTS int MDAPI_CALL ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
+MDAPI_EXPORTS int MDAPI_CALL ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 	return s_MdApi->ReqSubMarketData(reqSubMarketData, requestID);
 }
-MDAPI_EXPORTS int MDAPI_CALL ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
+MDAPI_EXPORTS int MDAPI_CALL ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
 {
 	return s_MdApi->ReqUnSubMarketData(reqUnSubMarketData, requestID);
 }

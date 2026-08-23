@@ -11,16 +11,16 @@ public:
 
 	virtual void OnConnected() override;
 	virtual void OnDisConnected() override;
-	virtual void OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRtnDepthMarketData(DepthMarketDataField* depthMarketData) override;
-	virtual void OnRtnBarMarketData(BarMarketDataField* barMarketData) override;
-	virtual void OnRtnSessionBegin(SessionBeginField* sessionBegin) override;
-	virtual void OnRtnSessionEnd(SessionEndField* sessionEnd) override;
-	virtual void OnRtnMarketDataEnd(MarketDataEndField* marketDataEnd) override;
-	virtual void OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRtnOrder(OrderField* order) override;
-	virtual void OnRtnTrade(TradeField* trade) override;
+	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) override;
+	virtual void OnRtnBarMarketData(const BarMarketDataField* barMarketData) override;
+	virtual void OnRtnSessionBegin(const SessionBeginField* sessionBegin) override;
+	virtual void OnRtnSessionEnd(const SessionEndField* sessionEnd) override;
+	virtual void OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd) override;
+	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRtnOrder(const OrderField* order) override;
+	virtual void OnRtnTrade(const TradeField* trade) override;
 
 	void ReqSubMarketData();
 

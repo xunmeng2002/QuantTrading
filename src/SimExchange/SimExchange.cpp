@@ -178,9 +178,9 @@ void SimExchange::HandlePackages()
 void SimExchange::HandleRspMdUserLogin(RspMdUserLoginPackage* package)
 {
 	m_IsMdLogged = true;
-	for (auto reqSubMd : m_ReqSubMarketDatas)
+	for (auto& reqSubMd : m_SubscribeInstruments)
 	{
-		m_MdSpi->ReqSubMarketData(reqSubMd);
+		m_MdSpi->ReqSubMarketData((ReqSubMarketDataField*)&reqSubMd);
 	}
 }
 void SimExchange::HandleRspMdUserLogout(RspMdUserLogoutPackage* package)
@@ -629,20 +629,13 @@ Package* SimExchange::GetNextPackage()
 }
 void SimExchange::ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID)
 {
-	ReqSubMarketDataField* reqSubMd = ::Allocate<ReqSubMarketDataField>();
-	Utility::Strcpy(reqSubMd->ExchangeID, exchangeID);
-	Utility::Strcpy(reqSubMd->InstrumentID, instrumentID);
-	if (m_ReqSubMarketDatas.find(reqSubMd) == m_ReqSubMarketDatas.end())
-	{
-		m_ReqSubMarketDatas.insert(reqSubMd);
-		if (m_IsMdLogged)
-		{
-			m_MdSpi->ReqSubMarketData(reqSubMd);
-		}
-	}
-	else
-	{
-		::Deallocate(reqSubMd);
-	}
+    ReqSubMarketDataField reqSubMd{0};
+	Utility::Strcpy(reqSubMd.ExchangeID, exchangeID);
+	Utility::Strcpy(reqSubMd.InstrumentID, instrumentID);
+    auto [canonicalIt, isNew] = m_SubscribeInstruments.insert(reqSubMd);
+    if (isNew && m_IsMdLogged)
+    {
+        m_MdSpi->ReqSubMarketData(&*canonicalIt);
+    }
 }
 }

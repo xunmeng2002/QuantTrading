@@ -43,7 +43,7 @@ SIMEXCHANGEAPI_EXPORTS void SIMEXCHANGEAPI_CALL Release()
 	}
 	s_SimExchangeSpiWrap = nullptr;
 }
-SIMEXCHANGEAPI_EXPORTS void SIMEXCHANGEAPI_CALLRegisterFront(const char* address)
+SIMEXCHANGEAPI_EXPORTS void SIMEXCHANGEAPI_CALL RegisterFront(const char* address)
 {
 	s_SimExchangeApi->RegisterFront(address);
 }
@@ -53,31 +53,31 @@ SIMEXCHANGEAPI_EXPORTS void SIMEXCHANGEAPI_CALL RegisterSpi(SimExchangeCSpi* spi
 	s_SimExchangeSpiWrap->RegisterSpi(spi);
 }
 
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
 {
 	return s_SimExchangeApi->ReqAccountLogin(reqAccountLogin, requestID);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
 {
 	return s_SimExchangeApi->ReqAccountLogout(reqAccountLogout, requestID);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
 {
 	return s_SimExchangeApi->ReqQryOrder(reqQryOrder, requestID);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
 {
 	return s_SimExchangeApi->ReqQryTrade(reqQryTrade, requestID);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
 {
 	return s_SimExchangeApi->ReqQryInstrument(reqQryInstrument, requestID);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	return s_SimExchangeApi->ReqInsertOrder(reqInsertOrder, requestID);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	return s_SimExchangeApi->ReqCancelOrder(reqCancelOrder, requestID);
 }

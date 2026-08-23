@@ -47,7 +47,7 @@ void TraderApiMiddle::RegisterSpi(TraderSpi* pSpi)
 	m_TraderApi->RegisterSpi(pSpi);
 }
 
-int TraderApiMiddle::ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, int requestID)
+int TraderApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqAccountLogin: RequestID:%d", requestID);
 	if (reqAccountLogin != nullptr)
@@ -61,7 +61,7 @@ int TraderApiMiddle::ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, int 
 	}
 	return m_TraderApi->ReqAccountLogin(reqAccountLogin, requestID);
 }
-int TraderApiMiddle::ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout, int requestID)
+int TraderApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqAccountLogout: RequestID:%d", requestID);
 	if (reqAccountLogout != nullptr)
@@ -75,7 +75,7 @@ int TraderApiMiddle::ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout, i
 	}
 	return m_TraderApi->ReqAccountLogout(reqAccountLogout, requestID);
 }
-int TraderApiMiddle::ReqQryHolderAccount(ReqQryHolderAccountField* reqQryHolderAccount, int requestID)
+int TraderApiMiddle::ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryHolderAccount, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryHolderAccount: RequestID:%d", requestID);
 	if (reqQryHolderAccount != nullptr)
@@ -89,7 +89,7 @@ int TraderApiMiddle::ReqQryHolderAccount(ReqQryHolderAccountField* reqQryHolderA
 	}
 	return m_TraderApi->ReqQryHolderAccount(reqQryHolderAccount, requestID);
 }
-int TraderApiMiddle::ReqQryCapital(ReqQryCapitalField* reqQryCapital, int requestID)
+int TraderApiMiddle::ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryCapital: RequestID:%d", requestID);
 	if (reqQryCapital != nullptr)
@@ -103,7 +103,7 @@ int TraderApiMiddle::ReqQryCapital(ReqQryCapitalField* reqQryCapital, int reques
 	}
 	return m_TraderApi->ReqQryCapital(reqQryCapital, requestID);
 }
-int TraderApiMiddle::ReqQryPosition(ReqQryPositionField* reqQryPosition, int requestID)
+int TraderApiMiddle::ReqQryPosition(const ReqQryPositionField* reqQryPosition, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryPosition: RequestID:%d", requestID);
 	if (reqQryPosition != nullptr)
@@ -117,7 +117,7 @@ int TraderApiMiddle::ReqQryPosition(ReqQryPositionField* reqQryPosition, int req
 	}
 	return m_TraderApi->ReqQryPosition(reqQryPosition, requestID);
 }
-int TraderApiMiddle::ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID)
+int TraderApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryOrder: RequestID:%d", requestID);
 	if (reqQryOrder != nullptr)
@@ -131,7 +131,7 @@ int TraderApiMiddle::ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID)
 	}
 	return m_TraderApi->ReqQryOrder(reqQryOrder, requestID);
 }
-int TraderApiMiddle::ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID)
+int TraderApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryTrade: RequestID:%d", requestID);
 	if (reqQryTrade != nullptr)
@@ -145,7 +145,7 @@ int TraderApiMiddle::ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID)
 	}
 	return m_TraderApi->ReqQryTrade(reqQryTrade, requestID);
 }
-int TraderApiMiddle::ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument, int requestID)
+int TraderApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryInstrument: RequestID:%d", requestID);
 	if (reqQryInstrument != nullptr)
@@ -159,7 +159,7 @@ int TraderApiMiddle::ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument, i
 	}
 	return m_TraderApi->ReqQryInstrument(reqQryInstrument, requestID);
 }
-int TraderApiMiddle::ReqQryOptionInstrument(ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestID)
+int TraderApiMiddle::ReqQryOptionInstrument(const ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryOptionInstrument: RequestID:%d", requestID);
 	if (reqQryOptionInstrument != nullptr)
@@ -173,7 +173,7 @@ int TraderApiMiddle::ReqQryOptionInstrument(ReqQryOptionInstrumentField* reqQryO
 	}
 	return m_TraderApi->ReqQryOptionInstrument(reqQryOptionInstrument, requestID);
 }
-int TraderApiMiddle::ReqQryCommissionRate(ReqQryCommissionRateField* reqQryCommissionRate, int requestID)
+int TraderApiMiddle::ReqQryCommissionRate(const ReqQryCommissionRateField* reqQryCommissionRate, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryCommissionRate: RequestID:%d", requestID);
 	if (reqQryCommissionRate != nullptr)
@@ -187,7 +187,7 @@ int TraderApiMiddle::ReqQryCommissionRate(ReqQryCommissionRateField* reqQryCommi
 	}
 	return m_TraderApi->ReqQryCommissionRate(reqQryCommissionRate, requestID);
 }
-int TraderApiMiddle::ReqQryMoneyTransfer(ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestID)
+int TraderApiMiddle::ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryMoneyTransfer: RequestID:%d", requestID);
 	if (reqQryMoneyTransfer != nullptr)
@@ -201,7 +201,7 @@ int TraderApiMiddle::ReqQryMoneyTransfer(ReqQryMoneyTransferField* reqQryMoneyTr
 	}
 	return m_TraderApi->ReqQryMoneyTransfer(reqQryMoneyTransfer, requestID);
 }
-int TraderApiMiddle::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID)
+int TraderApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);
 	if (reqInsertOrder != nullptr)
@@ -215,7 +215,7 @@ int TraderApiMiddle::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int req
 	}
 	return m_TraderApi->ReqInsertOrder(reqInsertOrder, requestID);
 }
-int TraderApiMiddle::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
+int TraderApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestID);
 	if (reqCancelOrder != nullptr)

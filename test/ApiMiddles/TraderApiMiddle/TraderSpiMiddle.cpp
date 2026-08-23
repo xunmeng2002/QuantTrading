@@ -24,7 +24,7 @@ void TraderSpiMiddle::OnDisConnected()
 	WriteLog(LogLevel::Info, "OnDisConnected");
 }
 
-void TraderSpiMiddle::OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspAccountLogin: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspAccountLogin != nullptr)
@@ -46,7 +46,7 @@ void TraderSpiMiddle::OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, R
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspAccountLogout(RspAccountLogoutField* rspAccountLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspAccountLogout: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspAccountLogout != nullptr)
@@ -68,7 +68,7 @@ void TraderSpiMiddle::OnRspAccountLogout(RspAccountLogoutField* rspAccountLogout
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryHolderAccount(HolderAccountField* holderAccount, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryHolderAccount(const HolderAccountField* holderAccount, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryHolderAccount: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (holderAccount != nullptr)
@@ -90,7 +90,7 @@ void TraderSpiMiddle::OnRspQryHolderAccount(HolderAccountField* holderAccount, R
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryCapital(CapitalField* capital, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryCapital(const CapitalField* capital, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryCapital: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (capital != nullptr)
@@ -112,7 +112,7 @@ void TraderSpiMiddle::OnRspQryCapital(CapitalField* capital, RspInfoField* rspIn
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryPosition(PositionField* position, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryPosition(const PositionField* position, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryPosition: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (position != nullptr)
@@ -134,7 +134,7 @@ void TraderSpiMiddle::OnRspQryPosition(PositionField* position, RspInfoField* rs
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryOrder(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (order != nullptr)
@@ -156,7 +156,7 @@ void TraderSpiMiddle::OnRspQryOrder(OrderField* order, RspInfoField* rspInfo, in
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryTrade(TradeField* trade, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryTrade: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (trade != nullptr)
@@ -178,7 +178,7 @@ void TraderSpiMiddle::OnRspQryTrade(TradeField* trade, RspInfoField* rspInfo, in
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryInstrument(InstrumentField* instrument, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryInstrument: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (instrument != nullptr)
@@ -200,7 +200,7 @@ void TraderSpiMiddle::OnRspQryInstrument(InstrumentField* instrument, RspInfoFie
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryOptionInstrument(OptionInstrumentField* optionInstrument, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryOptionInstrument(const OptionInstrumentField* optionInstrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryOptionInstrument: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (optionInstrument != nullptr)
@@ -222,7 +222,7 @@ void TraderSpiMiddle::OnRspQryOptionInstrument(OptionInstrumentField* optionInst
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryCommissionRate(CommissionRateField* commissionRate, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryCommissionRate(const CommissionRateField* commissionRate, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryCommissionRate: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (commissionRate != nullptr)
@@ -244,7 +244,7 @@ void TraderSpiMiddle::OnRspQryCommissionRate(CommissionRateField* commissionRate
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspQryMoneyTransfer(MoneyTransferField* moneyTransfer, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspQryMoneyTransfer(const MoneyTransferField* moneyTransfer, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspQryMoneyTransfer: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (moneyTransfer != nullptr)
@@ -266,7 +266,7 @@ void TraderSpiMiddle::OnRspQryMoneyTransfer(MoneyTransferField* moneyTransfer, R
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (reqInsertOrder != nullptr)
@@ -288,7 +288,7 @@ void TraderSpiMiddle::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspI
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void TraderSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (reqCancelOrder != nullptr)
@@ -310,7 +310,7 @@ void TraderSpiMiddle::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspI
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRtnOrder(OrderField* order)
+void TraderSpiMiddle::OnRtnOrder(const OrderField* order)
 {
 	WriteLog(LogLevel::Info, "OnRtnOrder");
 	if (order != nullptr)
@@ -323,7 +323,7 @@ void TraderSpiMiddle::OnRtnOrder(OrderField* order)
 		WriteLog(LogLevel::Info, "order is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRtnTrade(TradeField* trade)
+void TraderSpiMiddle::OnRtnTrade(const TradeField* trade)
 {
 	WriteLog(LogLevel::Info, "OnRtnTrade");
 	if (trade != nullptr)
@@ -336,7 +336,7 @@ void TraderSpiMiddle::OnRtnTrade(TradeField* trade)
 		WriteLog(LogLevel::Info, "trade is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRtnMoneyTransfer(MoneyTransferField* moneyTransfer)
+void TraderSpiMiddle::OnRtnMoneyTransfer(const MoneyTransferField* moneyTransfer)
 {
 	WriteLog(LogLevel::Info, "OnRtnMoneyTransfer");
 	if (moneyTransfer != nullptr)
@@ -349,7 +349,7 @@ void TraderSpiMiddle::OnRtnMoneyTransfer(MoneyTransferField* moneyTransfer)
 		WriteLog(LogLevel::Info, "moneyTransfer is nullptr");
 	}
 }
-void TraderSpiMiddle::OnRtnAccountLogout(AccountLogoutField* accountLogout)
+void TraderSpiMiddle::OnRtnAccountLogout(const AccountLogoutField* accountLogout)
 {
 	WriteLog(LogLevel::Info, "OnRtnAccountLogout");
 	if (accountLogout != nullptr)

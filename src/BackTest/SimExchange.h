@@ -37,10 +37,10 @@ public:
 	virtual void OnTrade(mdb::Trade* trade) override;
 
 	void RegisterSpi(BackTestSpi* pSpi);
-	int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID);
-	int ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID);
-	int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID);
-	int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID);
+	int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID);
+	int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID);
+	int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID);
+	int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID);
 
 protected:
 	virtual void Run() override;

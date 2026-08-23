@@ -47,7 +47,7 @@ void MdApiMiddle::RegisterSpi(MdSpi* pSpi)
 	m_MdApi->RegisterSpi(pSpi);
 }
 
-int MdApiMiddle::ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID)
+int MdApiMiddle::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqMdUserLogin: RequestID:%d", requestID);
 	if (reqMdUserLogin != nullptr)
@@ -61,7 +61,7 @@ int MdApiMiddle::ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int request
 	}
 	return m_MdApi->ReqMdUserLogin(reqMdUserLogin, requestID);
 }
-int MdApiMiddle::ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID)
+int MdApiMiddle::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqMdUserLogout: RequestID:%d", requestID);
 	if (reqMdUserLogout != nullptr)
@@ -75,7 +75,7 @@ int MdApiMiddle::ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requ
 	}
 	return m_MdApi->ReqMdUserLogout(reqMdUserLogout, requestID);
 }
-int MdApiMiddle::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
+int MdApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestID);
 	if (reqSubMarketData != nullptr)
@@ -89,7 +89,7 @@ int MdApiMiddle::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int r
 	}
 	return m_MdApi->ReqSubMarketData(reqSubMarketData, requestID);
 }
-int MdApiMiddle::ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
+int MdApiMiddle::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqUnSubMarketData: RequestID:%d", requestID);
 	if (reqUnSubMarketData != nullptr)

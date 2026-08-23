@@ -218,14 +218,14 @@ void SimExchange::RegisterSpi(BackTestSpi* pSpi)
 {
 	m_BackTestSpi = pSpi;
 }
-int SimExchange::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
+int SimExchange::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 	ReqSubMarketDataField* reqSubMd = ::Allocate<ReqSubMarketDataField>();
 	memcpy(reqSubMd, reqSubMarketData, sizeof(ReqSubMarketDataField));
 	m_ReqSubMds.push_back(reqSubMd);
 	return 0;
 }
-int SimExchange::ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
+int SimExchange::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
 {
 	ReqSubMarketDataFinishedPackage* reqPackage = ReqSubMarketDataFinishedPackage::Allocate();
 	reqPackage->Prepare(0LL, false, requestID);
@@ -235,7 +235,7 @@ int SimExchange::ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* reqSubM
 	m_Packages.push_back(reqPackage);
 	return 0;
 }
-int SimExchange::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID)
+int SimExchange::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	ReqInsertOrderPackage* reqPackage = ReqInsertOrderPackage::Allocate();
 	reqPackage->Prepare(0LL, false, requestID);
@@ -245,7 +245,7 @@ int SimExchange::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int request
 	m_Packages.push_back(reqPackage);
 	return 0;
 }
-int SimExchange::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
+int SimExchange::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	ReqCancelOrderPackage* reqPackage = ReqCancelOrderPackage::Allocate();
 	reqPackage->Prepare(0LL, false, requestID);

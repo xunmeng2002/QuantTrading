@@ -17,12 +17,12 @@ public:
 	void SetAccountInfo(AccountInfo* accountInfo);
 
 	virtual void OnConnected() override;
-	virtual void OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspAccountLogout(RspAccountLogoutField* rspAccountLogout, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspInsertOrder(ReqInsertOrderField* reqSEInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspQryInstrument(InstrumentField* sEInstrument, RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqSEInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspQryInstrument(const InstrumentField* sEInstrument, const RspInfoField* rspInfo, int requestID, bool isLast) override;
 
-	virtual void OnRtnOrder(OrderField* order) override;
+	virtual void OnRtnOrder(const OrderField* order) override;
 
 	void ReqQryOrder();
 	void ReqInsertOrders();
@@ -30,7 +30,7 @@ private:
 	void ReqAccountLogin();
 	void ReqQryInstrument();
 	void ReqInsertOrder(DirectionType direction, OffsetFlagType offsetFlag, OrderPriceTypeType orderPriceType, PriceType price, VolumeType volume);
-	void ReqCancelOrder(OrderField* order);
+	void ReqCancelOrder(const OrderField* order);
 
 public:
 	bool m_InitStatus;

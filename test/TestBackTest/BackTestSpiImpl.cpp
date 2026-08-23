@@ -20,11 +20,11 @@ void BackTestSpiImpl::OnDisConnected()
 {
 	BackTestSpiMiddle::OnDisConnected();
 }
-void BackTestSpiImpl::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiImpl::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	BackTestSpiMiddle::OnRspSubMarketData(rspSubMarketData, rspInfo, requestID, isLast);
 }
-void BackTestSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
+void BackTestSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
 	//BackTestSpiMiddle::OnRtnDepthMarketData(depthMarketData);
 	if (m_LastOrderTickMd == nullptr)
@@ -44,7 +44,7 @@ void BackTestSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData
 		memcpy(m_LastOrderTickMd, depthMarketData, sizeof(DepthMarketDataField));
 	}
 }
-void BackTestSpiImpl::OnRtnBarMarketData(BarMarketDataField* barMarketData)
+void BackTestSpiImpl::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
 	//BackTestSpiMiddle::OnRtnBarMarketData(barMarketData);
 	if (m_LastOrderBarMd == nullptr)
@@ -64,32 +64,32 @@ void BackTestSpiImpl::OnRtnBarMarketData(BarMarketDataField* barMarketData)
 		ReqInsertOrder(barMarketData->ExchangeID, barMarketData->InstrumentID, barMarketData->Close, DirectionType::Buy);
 	}
 }
-void BackTestSpiImpl::OnRtnSessionBegin(SessionBeginField* sessionBegin)
+void BackTestSpiImpl::OnRtnSessionBegin(const SessionBeginField* sessionBegin)
 {
 	BackTestSpiMiddle::OnRtnSessionBegin(sessionBegin);
 }
-void BackTestSpiImpl::OnRtnSessionEnd(SessionEndField* sessionEnd)
+void BackTestSpiImpl::OnRtnSessionEnd(const SessionEndField* sessionEnd)
 {
 	BackTestSpiMiddle::OnRtnSessionEnd(sessionEnd);
 }
-void BackTestSpiImpl::OnRtnMarketDataEnd(MarketDataEndField* marketDataEnd)
+void BackTestSpiImpl::OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd)
 {
 	BackTestSpiMiddle::OnRtnMarketDataEnd(marketDataEnd);
 	m_BackTestApi->Release();
 }
-void BackTestSpiImpl::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiImpl::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	BackTestSpiMiddle::OnRspInsertOrder(reqInsertOrder, rspInfo, requestID, isLast);
 }
-void BackTestSpiImpl::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiImpl::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	BackTestSpiMiddle::OnRspCancelOrder(reqCancelOrder, rspInfo, requestID, isLast);
 }
-void BackTestSpiImpl::OnRtnOrder(OrderField* order)
+void BackTestSpiImpl::OnRtnOrder(const OrderField* order)
 {
 	BackTestSpiMiddle::OnRtnOrder(order);
 }
-void BackTestSpiImpl::OnRtnTrade(TradeField* trade)
+void BackTestSpiImpl::OnRtnTrade(const TradeField* trade)
 {
 	BackTestSpiMiddle::OnRtnTrade(trade);
 }

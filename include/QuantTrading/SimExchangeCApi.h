@@ -13,15 +13,15 @@ extern "C"
 {
 	typedef void (SIMEXCHANGEAPI_CALL *OnConnected)();
 	typedef void (SIMEXCHANGEAPI_CALL *OnDisConnected)();
-	typedef void (SIMEXCHANGEAPI_CALL *OnRspAccountLogin)(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (SIMEXCHANGEAPI_CALL *OnRspAccountLogout)(RspAccountLogoutField* rspAccountLogout, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (SIMEXCHANGEAPI_CALL *OnRspQryOrder)(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (SIMEXCHANGEAPI_CALL *OnRspQryTrade)(TradeField* trade, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (SIMEXCHANGEAPI_CALL *OnRspQryInstrument)(InstrumentField* instrument, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (SIMEXCHANGEAPI_CALL *OnRspInsertOrder)(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (SIMEXCHANGEAPI_CALL *OnRspCancelOrder)(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (SIMEXCHANGEAPI_CALL *OnRtnOrder)(OrderField* order);
-	typedef void (SIMEXCHANGEAPI_CALL *OnRtnTrade)(TradeField* trade);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRspAccountLogin)(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRspAccountLogout)(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRspQryOrder)(const OrderField* order, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRspQryTrade)(const TradeField* trade, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRspQryInstrument)(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRspInsertOrder)(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRspCancelOrder)(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRtnOrder)(const OrderField* order);
+	typedef void (SIMEXCHANGEAPI_CALL *OnRtnTrade)(const TradeField* trade);
 	
 	struct SimExchangeCSpi
 	{
@@ -46,11 +46,11 @@ extern "C"
 	SIMEXCHANGEAPI_EXPORTS void SIMEXCHANGEAPI_CALL Release();
 	SIMEXCHANGEAPI_EXPORTS void SIMEXCHANGEAPI_CALL RegisterFront(const char* address);
 	SIMEXCHANGEAPI_EXPORTS void SIMEXCHANGEAPI_CALL RegisterSpi(SimExchangeCSpi* spi);
-	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, int requestID);
-	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout, int requestID);
-	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID);
-	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID);
-	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument, int requestID);
-	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID);
-	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID);
+	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID);
+	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID);
+	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID);
+	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID);
+	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID);
+	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID);
+	SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID);
 }

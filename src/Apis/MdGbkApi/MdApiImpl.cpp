@@ -117,7 +117,7 @@ void MdApiImpl::OnMessage(Package* package)
 }
 
 
-int MdApiImpl::ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID)
+int MdApiImpl::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID)
 {
 	ReqMdUserLoginPackage* reqPackage = ReqMdUserLoginPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -131,7 +131,7 @@ int MdApiImpl::ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID
 	reqPackage->Deallocate();
 	return result;
 }
-int MdApiImpl::ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID)
+int MdApiImpl::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID)
 {
 	ReqMdUserLogoutPackage* reqPackage = ReqMdUserLogoutPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -144,7 +144,7 @@ int MdApiImpl::ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int reques
 	reqPackage->Deallocate();
 	return result;
 }
-int MdApiImpl::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
+int MdApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 	ReqSubMarketDataPackage* reqPackage = ReqSubMarketDataPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -158,7 +158,7 @@ int MdApiImpl::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int req
 	reqPackage->Deallocate();
 	return result;
 }
-int MdApiImpl::ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
+int MdApiImpl::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
 {
 	ReqUnSubMarketDataPackage* reqPackage = ReqUnSubMarketDataPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);

@@ -24,7 +24,7 @@ void BackTestSpiMiddle::OnDisConnected()
 	WriteLog(LogLevel::Info, "OnDisConnected");
 }
 
-void BackTestSpiMiddle::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiMiddle::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspSubMarketData != nullptr)
@@ -46,7 +46,7 @@ void BackTestSpiMiddle::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketDa
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
+void BackTestSpiMiddle::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
 	WriteLog(LogLevel::Info, "OnRtnDepthMarketData");
 	if (depthMarketData != nullptr)
@@ -59,7 +59,7 @@ void BackTestSpiMiddle::OnRtnDepthMarketData(DepthMarketDataField* depthMarketDa
 		WriteLog(LogLevel::Info, "depthMarketData is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRtnBarMarketData(BarMarketDataField* barMarketData)
+void BackTestSpiMiddle::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
 	WriteLog(LogLevel::Info, "OnRtnBarMarketData");
 	if (barMarketData != nullptr)
@@ -72,7 +72,7 @@ void BackTestSpiMiddle::OnRtnBarMarketData(BarMarketDataField* barMarketData)
 		WriteLog(LogLevel::Info, "barMarketData is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRtnSessionBegin(SessionBeginField* sessionBegin)
+void BackTestSpiMiddle::OnRtnSessionBegin(const SessionBeginField* sessionBegin)
 {
 	WriteLog(LogLevel::Info, "OnRtnSessionBegin");
 	if (sessionBegin != nullptr)
@@ -85,7 +85,7 @@ void BackTestSpiMiddle::OnRtnSessionBegin(SessionBeginField* sessionBegin)
 		WriteLog(LogLevel::Info, "sessionBegin is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRtnSessionEnd(SessionEndField* sessionEnd)
+void BackTestSpiMiddle::OnRtnSessionEnd(const SessionEndField* sessionEnd)
 {
 	WriteLog(LogLevel::Info, "OnRtnSessionEnd");
 	if (sessionEnd != nullptr)
@@ -98,7 +98,7 @@ void BackTestSpiMiddle::OnRtnSessionEnd(SessionEndField* sessionEnd)
 		WriteLog(LogLevel::Info, "sessionEnd is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRtnMarketDataEnd(MarketDataEndField* marketDataEnd)
+void BackTestSpiMiddle::OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd)
 {
 	WriteLog(LogLevel::Info, "OnRtnMarketDataEnd");
 	if (marketDataEnd != nullptr)
@@ -111,7 +111,7 @@ void BackTestSpiMiddle::OnRtnMarketDataEnd(MarketDataEndField* marketDataEnd)
 		WriteLog(LogLevel::Info, "marketDataEnd is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (reqInsertOrder != nullptr)
@@ -133,7 +133,7 @@ void BackTestSpiMiddle::OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, Rs
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (reqCancelOrder != nullptr)
@@ -155,7 +155,7 @@ void BackTestSpiMiddle::OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, Rs
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRtnOrder(OrderField* order)
+void BackTestSpiMiddle::OnRtnOrder(const OrderField* order)
 {
 	WriteLog(LogLevel::Info, "OnRtnOrder");
 	if (order != nullptr)
@@ -168,7 +168,7 @@ void BackTestSpiMiddle::OnRtnOrder(OrderField* order)
 		WriteLog(LogLevel::Info, "order is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRtnTrade(TradeField* trade)
+void BackTestSpiMiddle::OnRtnTrade(const TradeField* trade)
 {
 	WriteLog(LogLevel::Info, "OnRtnTrade");
 	if (trade != nullptr)

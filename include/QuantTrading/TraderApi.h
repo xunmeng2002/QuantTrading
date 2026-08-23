@@ -9,23 +9,23 @@ class TraderSpi
 public:
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
-	virtual void OnRspAccountLogin(RspAccountLoginField* rspAccountLogin, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspAccountLogout(RspAccountLogoutField* rspAccountLogout, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryHolderAccount(HolderAccountField* holderAccount, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryCapital(CapitalField* capital, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryPosition(PositionField* position, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryOrder(OrderField* order, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryTrade(TradeField* trade, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryInstrument(InstrumentField* instrument, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryOptionInstrument(OptionInstrumentField* optionInstrument, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryCommissionRate(CommissionRateField* commissionRate, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspQryMoneyTransfer(MoneyTransferField* moneyTransfer, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRtnOrder(OrderField* order) {}
-	virtual void OnRtnTrade(TradeField* trade) {}
-	virtual void OnRtnMoneyTransfer(MoneyTransferField* moneyTransfer) {}
-	virtual void OnRtnAccountLogout(AccountLogoutField* accountLogout) {}
+	virtual void OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryHolderAccount(const HolderAccountField* holderAccount, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryCapital(const CapitalField* capital, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryPosition(const PositionField* position, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryOptionInstrument(const OptionInstrumentField* optionInstrument, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryCommissionRate(const CommissionRateField* commissionRate, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspQryMoneyTransfer(const MoneyTransferField* moneyTransfer, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRtnOrder(const OrderField* order) {}
+	virtual void OnRtnTrade(const TradeField* trade) {}
+	virtual void OnRtnMoneyTransfer(const MoneyTransferField* moneyTransfer) {}
+	virtual void OnRtnAccountLogout(const AccountLogoutField* accountLogout) {}
 };
 
 class TRADERAPI_EXPORTS TraderApi
@@ -39,18 +39,18 @@ public:
 	virtual void RegisterFront(const char* address) = 0;
 	virtual void RegisterSpi(TraderSpi* pSpi) = 0;
 	
-	virtual int ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, int requestID) = 0;
-	virtual int ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout, int requestID) = 0;
-	virtual int ReqQryHolderAccount(ReqQryHolderAccountField* reqQryHolderAccount, int requestID) = 0;
-	virtual int ReqQryCapital(ReqQryCapitalField* reqQryCapital, int requestID) = 0;
-	virtual int ReqQryPosition(ReqQryPositionField* reqQryPosition, int requestID) = 0;
-	virtual int ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID) = 0;
-	virtual int ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID) = 0;
-	virtual int ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument, int requestID) = 0;
-	virtual int ReqQryOptionInstrument(ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestID) = 0;
-	virtual int ReqQryCommissionRate(ReqQryCommissionRateField* reqQryCommissionRate, int requestID) = 0;
-	virtual int ReqQryMoneyTransfer(ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestID) = 0;
-	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
-	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
+	virtual int ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID) = 0;
+	virtual int ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID) = 0;
+	virtual int ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryHolderAccount, int requestID) = 0;
+	virtual int ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int requestID) = 0;
+	virtual int ReqQryPosition(const ReqQryPositionField* reqQryPosition, int requestID) = 0;
+	virtual int ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID) = 0;
+	virtual int ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID) = 0;
+	virtual int ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID) = 0;
+	virtual int ReqQryOptionInstrument(const ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestID) = 0;
+	virtual int ReqQryCommissionRate(const ReqQryCommissionRateField* reqQryCommissionRate, int requestID) = 0;
+	virtual int ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestID) = 0;
+	virtual int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
+	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
 };
 }

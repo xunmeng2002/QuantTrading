@@ -57,19 +57,19 @@ void BackTestApiImpl::RegisterSpi(BackTestSpi* pSpi)
 	m_SimExchange->RegisterSpi(pSpi);
 }
 
-int BackTestApiImpl::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
+int BackTestApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 	return m_SimExchange->ReqSubMarketData(reqSubMarketData, requestID);
 }
-int BackTestApiImpl::ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
+int BackTestApiImpl::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
 {
 	return m_SimExchange->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
 }
-int BackTestApiImpl::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID)
+int BackTestApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	return m_SimExchange->ReqInsertOrder(reqInsertOrder, requestID);
 }
-int BackTestApiImpl::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
+int BackTestApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	return m_SimExchange->ReqCancelOrder(reqCancelOrder, requestID);
 }

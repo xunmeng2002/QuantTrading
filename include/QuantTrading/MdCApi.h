@@ -13,12 +13,12 @@ extern "C"
 {
 	typedef void (MDAPI_CALL *OnConnected)();
 	typedef void (MDAPI_CALL *OnDisConnected)();
-	typedef void (MDAPI_CALL *OnRspMdUserLogin)(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (MDAPI_CALL *OnRspMdUserLogout)(RspMdUserLogoutField* rspMdUserLogout, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (MDAPI_CALL *OnRspSubMarketData)(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (MDAPI_CALL *OnRspUnSubMarketData)(RspUnSubMarketDataField* rspUnSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast);
-	typedef void (MDAPI_CALL *OnRtnDepthMarketData)(DepthMarketDataField* depthMarketData);
-	typedef void (MDAPI_CALL *OnRtnBarMarketData)(BarMarketDataField* barMarketData);
+	typedef void (MDAPI_CALL *OnRspMdUserLogin)(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (MDAPI_CALL *OnRspMdUserLogout)(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (MDAPI_CALL *OnRspSubMarketData)(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (MDAPI_CALL *OnRspUnSubMarketData)(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast);
+	typedef void (MDAPI_CALL *OnRtnDepthMarketData)(const DepthMarketDataField* depthMarketData);
+	typedef void (MDAPI_CALL *OnRtnBarMarketData)(const BarMarketDataField* barMarketData);
 	
 	struct MdCSpi
 	{
@@ -40,8 +40,8 @@ extern "C"
 	MDAPI_EXPORTS void MDAPI_CALL Release();
 	MDAPI_EXPORTS void MDAPI_CALL RegisterFront(const char* address);
 	MDAPI_EXPORTS void MDAPI_CALL RegisterSpi(MdCSpi* spi);
-	MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID);
-	MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID);
-	MDAPI_EXPORTS int MDAPI_CALL ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID);
-	MDAPI_EXPORTS int MDAPI_CALL ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID);
+	MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID);
+	MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID);
+	MDAPI_EXPORTS int MDAPI_CALL ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID);
+	MDAPI_EXPORTS int MDAPI_CALL ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID);
 }

@@ -24,12 +24,12 @@ void MdSpiImpl::OnDisConnected()
 {
 	MdSpiMiddle::OnDisConnected();
 }
-void MdSpiImpl::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	MdSpiMiddle::OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
 	ReqSubscribeMd();
 }
-void MdSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
+void MdSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
 	MdSpiMiddle::OnRtnDepthMarketData(depthMarketData);
 }

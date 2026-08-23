@@ -30,7 +30,7 @@ void MdSpiImpl::OnDisConnected()
 	WriteLog(LogLevel::Info, "OnDisConnected");
 }
 
-void MdSpiImpl::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspMdUserLogin: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspMdUserLogin != nullptr)
@@ -64,7 +64,7 @@ void MdSpiImpl::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoFie
 	}
 	m_SimExchange->OnMessage(package);
 }
-void MdSpiImpl::OnRspMdUserLogout(RspMdUserLogoutField* rspMdUserLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspMdUserLogout != nullptr)
@@ -99,7 +99,7 @@ void MdSpiImpl::OnRspMdUserLogout(RspMdUserLogoutField* rspMdUserLogout, RspInfo
 	}
 	m_SimExchange->OnMessage(package);
 }
-void MdSpiImpl::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspSubMarketData != nullptr)
@@ -121,7 +121,7 @@ void MdSpiImpl::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspI
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void MdSpiImpl::OnRspUnSubMarketData(RspUnSubMarketDataField* rspUnSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspUnSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspUnSubMarketData != nullptr)
@@ -143,7 +143,7 @@ void MdSpiImpl::OnRspUnSubMarketData(RspUnSubMarketDataField* rspUnSubMarketData
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void MdSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
+void MdSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
 	WriteLog(LogLevel::Info, "OnRtnDepthMarketData");
 	if (depthMarketData != nullptr)
@@ -163,7 +163,7 @@ void MdSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
 	memcpy(package->DepthMarketData, depthMarketData, sizeof(DepthMarketDataField));
 	m_SimExchange->OnMessage(package);
 }
-void MdSpiImpl::OnRtnBarMarketData(BarMarketDataField* barMarketData)
+void MdSpiImpl::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
 	WriteLog(LogLevel::Info, "OnRtnBarMarketData");
 	if (barMarketData != nullptr)
@@ -192,7 +192,7 @@ void MdSpiImpl::ReqMdUserLogin()
     Utility::Strcpy(reqMdUserLogin.Password, m_MdPassword.c_str());
 	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
 }
-void MdSpiImpl::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData)
+void MdSpiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData)
 {
 	m_MdApi->ReqSubMarketData(reqSubMarketData, ++m_RequestID);
 }

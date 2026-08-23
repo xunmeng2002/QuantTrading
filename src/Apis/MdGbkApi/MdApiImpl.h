@@ -11,9 +11,9 @@ public:
 	MdApiImpl();
 	virtual void OnMessage(spark::network::Package* package) override;
 	
-	virtual int ReqMdUserLogin(ReqMdUserLoginField* reqMdUserLogin, int requestID) override;
-	virtual int ReqMdUserLogout(ReqMdUserLogoutField* reqMdUserLogout, int requestID) override;
-	virtual int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID) override;
-	virtual int ReqUnSubMarketData(ReqUnSubMarketDataField* reqUnSubMarketData, int requestID) override;
+	virtual int ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID) override;
+	virtual int ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID) override;
+	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID) override;
+	virtual int ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID) override;
 };
 }

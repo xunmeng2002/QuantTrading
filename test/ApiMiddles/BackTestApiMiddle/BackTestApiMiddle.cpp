@@ -47,7 +47,7 @@ void BackTestApiMiddle::RegisterSpi(BackTestSpi* pSpi)
 	m_BackTestApi->RegisterSpi(pSpi);
 }
 
-int BackTestApiMiddle::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID)
+int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestID);
 	if (reqSubMarketData != nullptr)
@@ -61,7 +61,7 @@ int BackTestApiMiddle::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData,
 	}
 	return m_BackTestApi->ReqSubMarketData(reqSubMarketData, requestID);
 }
-int BackTestApiMiddle::ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
+int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqSubMarketDataFinished: RequestID:%d", requestID);
 	if (reqSubMarketDataFinished != nullptr)
@@ -75,7 +75,7 @@ int BackTestApiMiddle::ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* r
 	}
 	return m_BackTestApi->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
 }
-int BackTestApiMiddle::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID)
+int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);
 	if (reqInsertOrder != nullptr)
@@ -89,7 +89,7 @@ int BackTestApiMiddle::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int r
 	}
 	return m_BackTestApi->ReqInsertOrder(reqInsertOrder, requestID);
 }
-int BackTestApiMiddle::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
+int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestID);
 	if (reqCancelOrder != nullptr)

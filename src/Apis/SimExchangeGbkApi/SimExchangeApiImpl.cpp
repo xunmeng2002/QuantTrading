@@ -196,7 +196,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 }
 
 
-int SimExchangeApiImpl::ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, int requestID)
+int SimExchangeApiImpl::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
 {
 	ReqAccountLoginPackage* reqPackage = ReqAccountLoginPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -210,7 +210,7 @@ int SimExchangeApiImpl::ReqAccountLogin(ReqAccountLoginField* reqAccountLogin, i
 	reqPackage->Deallocate();
 	return result;
 }
-int SimExchangeApiImpl::ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout, int requestID)
+int SimExchangeApiImpl::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
 {
 	ReqAccountLogoutPackage* reqPackage = ReqAccountLogoutPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -223,7 +223,7 @@ int SimExchangeApiImpl::ReqAccountLogout(ReqAccountLogoutField* reqAccountLogout
 	reqPackage->Deallocate();
 	return result;
 }
-int SimExchangeApiImpl::ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID)
+int SimExchangeApiImpl::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
 {
 	ReqQryOrderPackage* reqPackage = ReqQryOrderPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -236,7 +236,7 @@ int SimExchangeApiImpl::ReqQryOrder(ReqQryOrderField* reqQryOrder, int requestID
 	reqPackage->Deallocate();
 	return result;
 }
-int SimExchangeApiImpl::ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID)
+int SimExchangeApiImpl::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
 {
 	ReqQryTradePackage* reqPackage = ReqQryTradePackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -249,7 +249,7 @@ int SimExchangeApiImpl::ReqQryTrade(ReqQryTradeField* reqQryTrade, int requestID
 	reqPackage->Deallocate();
 	return result;
 }
-int SimExchangeApiImpl::ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument, int requestID)
+int SimExchangeApiImpl::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
 {
 	ReqQryInstrumentPackage* reqPackage = ReqQryInstrumentPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -263,7 +263,7 @@ int SimExchangeApiImpl::ReqQryInstrument(ReqQryInstrumentField* reqQryInstrument
 	reqPackage->Deallocate();
 	return result;
 }
-int SimExchangeApiImpl::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID)
+int SimExchangeApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	ReqInsertOrderPackage* reqPackage = ReqInsertOrderPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);
@@ -278,7 +278,7 @@ int SimExchangeApiImpl::ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int 
 	reqPackage->Deallocate();
 	return result;
 }
-int SimExchangeApiImpl::ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID)
+int SimExchangeApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	ReqCancelOrderPackage* reqPackage = ReqCancelOrderPackage::Allocate();
 	reqPackage->Prepare(m_SessionID, false, requestID);

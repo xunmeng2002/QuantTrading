@@ -84,7 +84,7 @@ protected:
 	DateType m_CurrDate;
 	TimeType m_CurrTime;
 
-	std::set<ReqSubMarketDataField*> m_ReqSubMarketDatas;
+	std::set<ReqSubMarketDataField> m_SubscribeInstruments;
 	bool m_IsMdLogged;
 
 	std::list<Package*> m_Packages;

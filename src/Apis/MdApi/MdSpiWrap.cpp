@@ -22,42 +22,42 @@ void MdSpiWrap::OnDisConnected()
 	}
 }
 
-void MdSpiWrap::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiWrap::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_MdCSpi != nullptr)
 	{
 		m_MdCSpi->OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
 	}
 }
-void MdSpiWrap::OnRspMdUserLogout(RspMdUserLogoutField* rspMdUserLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiWrap::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_MdCSpi != nullptr)
 	{
 		m_MdCSpi->OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
 	}
 }
-void MdSpiWrap::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiWrap::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_MdCSpi != nullptr)
 	{
 		m_MdCSpi->OnRspSubMarketData(rspSubMarketData, rspInfo, requestID, isLast);
 	}
 }
-void MdSpiWrap::OnRspUnSubMarketData(RspUnSubMarketDataField* rspUnSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiWrap::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	if (m_MdCSpi != nullptr)
 	{
 		m_MdCSpi->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, requestID, isLast);
 	}
 }
-void MdSpiWrap::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
+void MdSpiWrap::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
 	if (m_MdCSpi != nullptr)
 	{
 		m_MdCSpi->OnRtnDepthMarketData(depthMarketData);
 	}
 }
-void MdSpiWrap::OnRtnBarMarketData(BarMarketDataField* barMarketData)
+void MdSpiWrap::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
 	if (m_MdCSpi != nullptr)
 	{

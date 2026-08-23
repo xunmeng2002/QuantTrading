@@ -2,7 +2,6 @@
 #include "Fields.h"
 #include <QuantTrading/BackTest/BackTestExport.h>
 
-
 namespace quanttrading
 {
 class BackTestSpi
@@ -10,16 +9,16 @@ class BackTestSpi
 public:
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
-	virtual void OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRtnDepthMarketData(DepthMarketDataField* depthMarketData) {}
-	virtual void OnRtnBarMarketData(BarMarketDataField* barMarketData) {}
-	virtual void OnRtnSessionBegin(SessionBeginField* sessionBegin) {}
-	virtual void OnRtnSessionEnd(SessionEndField* sessionEnd) {}
-	virtual void OnRtnMarketDataEnd(MarketDataEndField* marketDataEnd) {}
-	virtual void OnRspInsertOrder(ReqInsertOrderField* reqInsertOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspCancelOrder(ReqCancelOrderField* reqCancelOrder, RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRtnOrder(OrderField* order) {}
-	virtual void OnRtnTrade(TradeField* trade) {}
+	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) {}
+	virtual void OnRtnBarMarketData(const BarMarketDataField* barMarketData) {}
+	virtual void OnRtnSessionBegin(const SessionBeginField* sessionBegin) {}
+	virtual void OnRtnSessionEnd(const SessionEndField* sessionEnd) {}
+	virtual void OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd) {}
+	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRtnOrder(const OrderField* order) {}
+	virtual void OnRtnTrade(const TradeField* trade) {}
 };
 
 class BACKTEST_EXPORTS BackTestApi
@@ -33,10 +32,9 @@ public:
 	virtual void RegisterFront(const char* address) = 0;
 	virtual void RegisterSpi(BackTestSpi* pSpi) = 0;
 	
-	virtual int ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData, int requestID) = 0;
-	virtual int ReqSubMarketDataFinished(ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID) = 0;
-	virtual int ReqInsertOrder(ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
-	virtual int ReqCancelOrder(ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
+	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID) = 0;
+	virtual int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID) = 0;
+	virtual int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
+	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
 };
 }
-
