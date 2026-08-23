@@ -20,13 +20,13 @@
 #include <DBAdapters/MariadbWrapper/MariadbWrapper.h>
 #include "MdFront.h"
 #include "MdKernel.h"
+#include "ShutdownSignal.h"
 #include "TradeSession.h"
-#include <iostream>
+#include <chrono>
 #include <fstream>
+#include <iostream>
 #include <string.h>
-#ifdef LINUX
-#include <signal.h>
-#endif // LINUX
+#include <thread>
 
 using namespace std;
 using namespace mdb;
@@ -81,6 +81,7 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
 	Logger::GetInstance().Start();
+	ShutdownSignal::InstallHandlers();
 
 	map<string, Environment*> environments;
 	ReadEnvironment(environments, config.EnvironmentFile.c_str());
@@ -137,14 +138,20 @@ int main(int argc, char* argv[])
 	mdKernel->Start();
 	mdFront->Start();
 
-	mdFront->Join();
-	mdKernel->Join();
-	dbWriter->Join();
+	// 等待退出请求（Ctrl+C / SIGTERM），按依赖序有序关停，替代原先阻塞的 Join 链。
+	while (!ShutdownSignal::IsRequested())
+	{
+		this_thread::sleep_for(chrono::milliseconds(100));
+	}
+	WriteLog(LogLevel::Info, "Shutdown requested, stopping in dependency order.");
 
-	mdApi->Release();
-	mdFront->Stop();
+	mdApi->Release();                          // ① 停 CTP 行情源
 	mdKernel->Stop();
+	mdKernel->Join();                          // ② 业务线程清空消息队列
+	mdFront->Stop();
+	mdFront->Join();                           // ③ 行情服务端关闭
 	dbWriter->Stop();
+	dbWriter->Join();                          // ④ 刷完剩余落库操作
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

@@ -53,6 +53,10 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - **安全修复**：`ApiMiddle.cpp.tpl` 生成日志时排除 `Password` 字段（逗号与字段均受 `@name != 'Password'` 保护），三个封装登录不再打印明文密码（原打印 UserID/AccountID + Password）。
   - **健壮性修复**（TestTraderApi/TestSimExchangeApi）：`m_Instrument` 裸指针 + `new` 泄漏 → 值成员 + `m_HasInstrument` 标志（消除泄漏与空指针解引用，查询无 CFFEX 合约时不再发单）；`ReqQryOrder`/`ReqAccountLogin` 补 `memset` 清零脏字节；`Main.cpp` 的 `while (!m_Finished)` 死等加 120s 超时兜底。
   - 遗留：`TestMdApi` 仍硬编码 `sleep(120s)`；C# 模板 `TableViews.razor.cs.tpl` 仍引用 `@withtradingday`（C# 侧计划整体重写，暂缓）。
+- **2026-08-24 P1-1 重连路径并发修复 + 优雅退出**：
+  - **并发修复**（`src/MdOffer/ThostFtdcMdSpiImpl.cpp`）：`OnRtnDepthMarketData` 反查 `m_ReqSubMds` 改同锁 `find()`（消除 `operator[]` 键缺失插入副作用）；`OnRspUserLogin` 重连补订改锁内取 `m_ReqSubInstruments` 快照后批量订阅。
+  - **优雅退出**（新增 `src/QuantTradingCommon/ShutdownSignal.{h,cpp}`，改 `src/MdOffer/Main.cpp`、`src/SimExchange/Main.cpp`）：Windows `SetConsoleCtrlHandler` / Linux `signal(SIGINT/SIGTERM)` 仅置位原子标志；main 尾部由阻塞 Join 链改为「轮询退出标志 → 按依赖序 Stop/Join」。MdOffer 顺序：mdApi Release → mdKernel → mdFront → dbWriter → Logger；SimExchange：mdApi Release → simExchange → tradeFront → mdFront → dbWriter → Logger。
+  - 依据库源码核实：所有 ThreadBase 派生线程 `Run()` 均以 `wait_for`/`select` 超时兜底，`Stop()` 后 ≤100ms 退出；`AsyncDBWriter` 退出前刷完剩余 `m_DBOperates`。全量 x64-Debug 编译链接通过，MdOffer.exe 启动冒烟通过；Ctrl+C 交互验证待真实控制台执行。
 
 ## 🔄 进行中
 
@@ -67,7 +71,6 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
 - **P2-3 Bar 算法单测**：补 bar / 交易时段 / 集合竞价逻辑无测试覆盖。
 - **P2-4 订阅范围配置化**：当前 `HandleNotifyDBConnect` 遍历 `t_Instrument` 全市场订阅，应改为按交易所/产品/合约配置。
 - **硬编码凭证**：`Main.cpp` 中数据库/账户明文密码，接真实环境前需迁移到配置/密钥管理。
-- **优雅退出**：无信号处理，仅靠杀进程退出。
 
 ## 备注
 

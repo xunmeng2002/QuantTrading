@@ -7,6 +7,7 @@
 #include "SimExchangeTableList.h"
 #include "MdSpiImpl.h"
 #include "MdFront.h"
+#include "ShutdownSignal.h"
 #include "TradeFront.h"
 #include "SimExchange.h"
 #include <QuantTrading/MdApi.h>
@@ -16,10 +17,9 @@
 #include <DBAdapters/SqliteWrapper/SqliteWrapper.h>
 #include <DBAdapters/MysqlWrapper/MysqlWrapper.h>
 #include <DBAdapters/MariadbWrapper/MariadbWrapper.h>
+#include <chrono>
 #include <string.h>
-#ifdef LINUX
-#include <signal.h>
-#endif // LINUX
+#include <thread>
 
 using namespace std;
 using namespace mdb;
@@ -65,6 +65,7 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
 	Logger::GetInstance().Start();
+	ShutdownSignal::InstallHandlers();
 
 	DB* initDB = CreateDB(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
 	DB* db = CreateDB(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
@@ -109,11 +110,22 @@ int main(int argc, char* argv[])
 	tradeFront->Start();
 	//mdFront->Start();
 
-	dbWriter->Join();
-	simExchange->Join();
-	tradeFront->Join();
-	mdFront->Join();
-	mdApi->Join(); 
+	// 等待退出请求（Ctrl+C / SIGTERM），按依赖序有序关停，替代原先阻塞的 Join 链。
+	while (!ShutdownSignal::IsRequested())
+	{
+		this_thread::sleep_for(chrono::milliseconds(100));
+	}
+	WriteLog(LogLevel::Info, "Shutdown requested, stopping in dependency order.");
+
+	mdApi->Release();                          // ① 停行情客户端（数据源）
+	simExchange->Stop();
+	simExchange->Join();                       // ② 撮合线程清空队列
+	tradeFront->Stop();
+	tradeFront->Join();                        // ③ 交易服务端
+	mdFront->Stop();
+	mdFront->Join();                           // ④ 行情服务端（未启动，Stop/Join 为无操作）
+	dbWriter->Stop();
+	dbWriter->Join();                          // ⑤ 刷完剩余落库操作
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

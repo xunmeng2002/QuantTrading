@@ -36,6 +36,7 @@
 **/.vs
 **/out
 pumptemp.py
+*.zip
 *.duckdb*
 *.sqlitedb*
 /bin
