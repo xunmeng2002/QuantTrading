@@ -34,7 +34,7 @@ using namespace spark::core;
 using namespace dbadapters;
 using namespace quanttrading::mdoffer;
 using namespace quanttrading::bar;
-using namespace quanttrading::quanttradingcommon;
+using namespace quanttrading;
 
 const char* ConfigName = "MdOffer.json";
 

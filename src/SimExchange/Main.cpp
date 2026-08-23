@@ -25,7 +25,7 @@ using namespace mdb;
 using namespace spark::core;
 using namespace dbadapters;
 using namespace quanttrading::simexchange;
-using namespace quanttrading::quanttradingcommon;
+using namespace quanttrading;
 
 const char* ConfigName = "SimExchange.json";
 

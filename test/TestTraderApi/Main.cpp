@@ -9,7 +9,7 @@
 using namespace std;
 using namespace quanttrading;
 using namespace quanttrading::testtraderapi;
-using namespace quanttrading::quanttradingcommon;
+using namespace quanttrading;
 
 const char* ConfigName = "TestTraderApi.json";
 

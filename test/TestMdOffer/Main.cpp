@@ -5,7 +5,7 @@
 #include <Spark/Core/Logger/Logger.h>
 
 using namespace quanttrading::testmdoffer;
-using namespace quanttrading::quanttradingcommon;
+using namespace quanttrading;
 
 const char* ConfigName = "TestMdOffer.json";
 

@@ -12,7 +12,9 @@ using namespace std;
 using namespace mdb;
 using namespace spark;
 using namespace spark::core;
+using namespace quanttrading;
 using namespace quanttrading::bar;
+
 
 MdKernel::MdKernel(mdb::Mdb* mdb)
 	:ThreadBase("MdKernel"), m_Mdb(mdb), m_MdFront(nullptr), m_MdSpi(nullptr)

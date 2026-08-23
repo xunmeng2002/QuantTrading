@@ -9,7 +9,7 @@
 using namespace std;
 using namespace spark::core;
 
-namespace quanttrading::quanttradingcommon
+namespace quanttrading
 {
 
     void PrintEnvironment(Environment* environment)

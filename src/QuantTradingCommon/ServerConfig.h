@@ -3,7 +3,7 @@
 
 using std::string;
 
-namespace quanttrading::quanttradingcommon
+namespace quanttrading
 {
     class ServerConfig
     {

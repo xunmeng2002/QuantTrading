@@ -7,7 +7,7 @@
 #include <atomic>
 #include <vector>
 
-using quanttrading::quanttradingcommon::AccountInfo;
+using quanttrading::AccountInfo;
 namespace quanttrading::simexchangeinit
 {
 class CThostFtdcTraderSpiImpl : public CThostFtdcTraderSpiMiddle

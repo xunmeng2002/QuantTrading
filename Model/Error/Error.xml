@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<errors>
+<errors project="QuantTrading" module="QuantTradingCommon">
 	<error name="None" 								id="0x0000" desc="正确"/>
 	<error name="Network" 							desc="网络错误"/>
 	<error name="IncorrectPassword" 				desc="密码错误"/>

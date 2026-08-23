@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace quanttrading::quanttradingcommon
+namespace quanttrading
 {
     struct FrontInfo
     {

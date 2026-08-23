@@ -1,4 +1,8 @@
 <pumplist>
+    <pump dest="./src/QuantTradingCommon/Error.h" tpl="../Templates/Cpp/Error/Error.h.tpl" model="./Model/Error/Error.xml"/>
+    <pump dest="./src/QuantTradingCommon/Error.cpp" tpl="../Templates/Cpp/Error/Error.cpp.tpl" model="./Model/Error/Error.xml"/>
+
+
     <pump dest="./src/Mdb/Mdb.h" tpl="../Templates/Cpp/Mdb/Mdb.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/TableNames.xml"/>
     <pump dest="./src/Mdb/Mdb.cpp" tpl="../Templates/Cpp/Mdb/Mdb.cpp.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/TableNames.xml"/>
     <pump dest="./src/Mdb/MdbStructs.h" tpl="../Templates/Cpp/Mdb/MdbStructs.h.tpl" model="./Model/Tables/Tables.xml ./Model/Tables/TableNames.xml ../Model/Types.xml"/>

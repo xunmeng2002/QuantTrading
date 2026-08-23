@@ -1,7 +1,7 @@
 #include "QuantUtility.h"
 
 
-namespace quanttrading::quanttradingcommon
+namespace quanttrading
 {
     DirectionType GetOppoDirection(const DirectionType& direction)
     {

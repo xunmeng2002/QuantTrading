@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace quanttrading::quanttradingcommon
+namespace quanttrading
 {
     ServerConfig ServerConfig::m_Instance;
     ServerConfig::ServerConfig()
