@@ -6,7 +6,7 @@
 #include "TradeFront.h"
 #include "OrderMatch.h"
 #include "FieldsCompare.h"
-#include "InnerMdSpiImpl.h"
+#include "MdSpiImpl.h"
 #include <Spark/Core/Thread/ThreadBase.h>
 #include <list>
 #include <map>
@@ -21,7 +21,7 @@ namespace quanttrading::simexchange
 class SimExchange : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber
 {
 public:
-	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, InnerMdSpiImpl* innerMdSpi, MatchModeType matchMode);
+	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* innerMdSpi, MatchModeType matchMode);
 	~SimExchange();
 
 	void Init();
@@ -74,7 +74,7 @@ private:
 protected:
 	MdFront* m_MdFront;
 	TradeFront* m_TradeFront;
-	InnerMdSpiImpl* m_MdSpi;
+	MdSpiImpl* m_MdSpi;
 	mdb::Mdb* m_Mdb;
     quanttrading::ordermatch::OrderMatch* m_OrderMatch;
 	std::mutex m_Mutex;

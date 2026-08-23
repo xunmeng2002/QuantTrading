@@ -1,4 +1,4 @@
-#include "InnerMdSpiImpl.h"
+#include "MdSpiImpl.h"
 #include "Error.h"
 #include "SimExchange.h"
 #include <Spark/Core/Logger/Logger.h>
@@ -12,25 +12,25 @@ using namespace spark::core;
 
 namespace quanttrading::simexchange
 {
-InnerMdSpiImpl::InnerMdSpiImpl(InnerMdApi* mdApi, const std::string& mdUser, const std::string& mdPassword)
+MdSpiImpl::MdSpiImpl(MdApi* mdApi, const std::string& mdUser, const std::string& mdPassword)
 	:m_MdApi(mdApi), m_SimExchange(nullptr), m_MdUser(mdUser), m_MdPassword(mdPassword), m_RequestID(0)
 {
 }
-void InnerMdSpiImpl::SetSimExchange(SimExchange* simExchange)
+void MdSpiImpl::SetSimExchange(SimExchange* simExchange)
 {
 	m_SimExchange = simExchange;
 }
-void InnerMdSpiImpl::OnConnected()
+void MdSpiImpl::OnConnected()
 {
 	WriteLog(LogLevel::Info, "OnConnected:");
 	ReqMdUserLogin();
 }
-void InnerMdSpiImpl::OnDisConnected()
+void MdSpiImpl::OnDisConnected()
 {
 	WriteLog(LogLevel::Info, "OnDisConnected");
 }
 
-void InnerMdSpiImpl::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspMdUserLogin: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspMdUserLogin != nullptr)
@@ -64,7 +64,7 @@ void InnerMdSpiImpl::OnRspMdUserLogin(RspMdUserLoginField* rspMdUserLogin, RspIn
 	}
 	m_SimExchange->OnMessage(package);
 }
-void InnerMdSpiImpl::OnRspMdUserLogout(RspMdUserLogoutField* rspMdUserLogout, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogout(RspMdUserLogoutField* rspMdUserLogout, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspMdUserLogout != nullptr)
@@ -99,7 +99,7 @@ void InnerMdSpiImpl::OnRspMdUserLogout(RspMdUserLogoutField* rspMdUserLogout, Rs
 	}
 	m_SimExchange->OnMessage(package);
 }
-void InnerMdSpiImpl::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspSubMarketData != nullptr)
@@ -121,7 +121,7 @@ void InnerMdSpiImpl::OnRspSubMarketData(RspSubMarketDataField* rspSubMarketData,
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void InnerMdSpiImpl::OnRspUnSubMarketData(RspUnSubMarketDataField* rspUnSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspUnSubMarketData(RspUnSubMarketDataField* rspUnSubMarketData, RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspUnSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspUnSubMarketData != nullptr)
@@ -143,7 +143,7 @@ void InnerMdSpiImpl::OnRspUnSubMarketData(RspUnSubMarketDataField* rspUnSubMarke
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void InnerMdSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
+void MdSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
 {
 	WriteLog(LogLevel::Info, "OnRtnDepthMarketData");
 	if (depthMarketData != nullptr)
@@ -163,7 +163,7 @@ void InnerMdSpiImpl::OnRtnDepthMarketData(DepthMarketDataField* depthMarketData)
 	memcpy(package->DepthMarketData, depthMarketData, sizeof(DepthMarketDataField));
 	m_SimExchange->OnMessage(package);
 }
-void InnerMdSpiImpl::OnRtnBarMarketData(BarMarketDataField* barMarketData)
+void MdSpiImpl::OnRtnBarMarketData(BarMarketDataField* barMarketData)
 {
 	WriteLog(LogLevel::Info, "OnRtnBarMarketData");
 	if (barMarketData != nullptr)
@@ -184,7 +184,7 @@ void InnerMdSpiImpl::OnRtnBarMarketData(BarMarketDataField* barMarketData)
 	m_SimExchange->OnMessage(package);
 }
 
-void InnerMdSpiImpl::ReqMdUserLogin()
+void MdSpiImpl::ReqMdUserLogin()
 {
 	ReqMdUserLoginField reqMdUserLogin;
 	memset(&reqMdUserLogin, 0, sizeof(ReqMdUserLoginField));
@@ -192,7 +192,7 @@ void InnerMdSpiImpl::ReqMdUserLogin()
     Utility::Strcpy(reqMdUserLogin.Password, m_MdPassword.c_str());
 	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
 }
-void InnerMdSpiImpl::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData)
+void MdSpiImpl::ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData)
 {
 	m_MdApi->ReqSubMarketData(reqSubMarketData, ++m_RequestID);
 }

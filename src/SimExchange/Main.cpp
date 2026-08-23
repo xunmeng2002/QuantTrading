@@ -1,20 +1,21 @@
-#include <Spark/Core/Logger/Logger.h>
+
 #include "Config/Config.h"
 #include "ServerConfig.h"
 #include "Mdb.h"
 #include "InitMdbFromDB.h"
 #include "MdbTableRegistry.h"
 #include "SimExchangeTableList.h"
+#include "MdSpiImpl.h"
+#include "MdFront.h"
+#include "TradeFront.h"
+#include "SimExchange.h"
+#include <QuantTrading/MdApi.h>
+#include <Spark/Core/Logger/Logger.h>
 #include <DBAdapters/AsyncDBWriter/AsyncDBWriter.h>
 #include <DBAdapters/DuckdbWrapper/DuckdbWrapper.h>
 #include <DBAdapters/SqliteWrapper/SqliteWrapper.h>
 #include <DBAdapters/MysqlWrapper/MysqlWrapper.h>
 #include <DBAdapters/MariadbWrapper/MariadbWrapper.h>
-#include "MdFront.h"
-#include "TradeFront.h"
-#include "SimExchange.h"
-#include "InnerMdApi.h"
-#include "InnerMdSpiImpl.h"
 #include <string.h>
 #ifdef LINUX
 #include <signal.h>
@@ -24,8 +25,8 @@ using namespace std;
 using namespace mdb;
 using namespace spark::core;
 using namespace dbadapters;
-using namespace quanttrading::simexchange;
 using namespace quanttrading;
+using namespace quanttrading::simexchange;
 
 const char* ConfigName = "SimExchange.json";
 
@@ -87,22 +88,22 @@ int main(int argc, char* argv[])
 	dbWriter->Subscribe(mdb);
 
 
-	InnerMdApi* innerMdApi = new InnerMdApi();
-	InnerMdSpiImpl* innerMdSpi = new InnerMdSpiImpl(innerMdApi, config.MdUser, config.MdPassword);
-	innerMdApi->RegisterSpi(innerMdSpi);
-	innerMdApi->RegisterFront(serverConfig.MdOfferAddress.c_str());
+	MdApi* MdApi = MdApi::CreateMdApi();
+	MdSpiImpl* MdSpi = new MdSpiImpl(MdApi, config.MdUser, config.MdPassword);
+	MdApi->RegisterSpi(MdSpi);
+	MdApi->RegisterFront(serverConfig.MdOfferAddress.c_str());
 	TradeFront* tradeFront = new TradeFront(serverConfig.TradeFrontAddress.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str());
-	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, innerMdSpi, (MatchModeType)config.MatchMode);
+	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, MdSpi, (MatchModeType)config.MatchMode);
 	tradeFront->Subscribe(simExchange);
 	//mdFront->Subscribe(*);
-	innerMdSpi->SetSimExchange(simExchange);
+	MdSpi->SetSimExchange(simExchange);
 
 
 	simExchange->Init();
 	tradeFront->Init();
 	//mdFront->Init();
-	innerMdApi->Init();
+	MdApi->Init();
 	dbWriter->Start();
 	simExchange->Start();
 	tradeFront->Start();
@@ -112,7 +113,7 @@ int main(int argc, char* argv[])
 	simExchange->Join();
 	tradeFront->Join();
 	mdFront->Join();
-	innerMdApi->Join(); 
+	MdApi->Join(); 
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();

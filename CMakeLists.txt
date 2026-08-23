@@ -127,6 +127,33 @@ target_link_libraries(CtpTraderApiMiddleStatic PUBLIC CtpHeaders CTP::traderapi)
 target_link_libraries(CtpTraderApiMiddleStatic PRIVATE Spark::Core CtpStructLogFuncStatic)
 
 
+add_static_md_module(ApiBase ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/ApiBase ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/ApiBase)
+target_link_libraries(ApiBaseStatic PUBLIC Spark::Network PackagesStatic)
+
+add_shared_module(MdApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdApi)
+target_link_libraries(MdApi PUBLIC QuantTradingInterface)
+target_link_libraries(MdApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network)
+add_shared_module(MdGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdGbkApi)
+target_link_libraries(MdGbkApi PUBLIC QuantTradingInterface)
+target_link_libraries(MdGbkApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network Spark::Serialization)
+target_compile_definitions(MdGbkApi PRIVATE MdApi_EXPORTS)
+
+add_shared_module(TraderApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/TraderApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/TraderApi)
+target_link_libraries(TraderApi PUBLIC QuantTradingInterface)
+target_link_libraries(TraderApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network)
+add_shared_module(TraderGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/TraderGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/TraderGbkApi)
+target_link_libraries(TraderGbkApi PUBLIC QuantTradingInterface)
+target_link_libraries(TraderGbkApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network Spark::Serialization)
+target_compile_definitions(TraderGbkApi PRIVATE TraderApi_EXPORTS)
+
+add_shared_module(SimExchangeApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/SimExchangeApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/SimExchangeApi)
+target_link_libraries(SimExchangeApi PUBLIC QuantTradingInterface)
+target_link_libraries(SimExchangeApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network)
+add_shared_module(SimExchangeGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/SimExchangeGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/SimExchangeGbkApi)
+target_link_libraries(SimExchangeGbkApi PUBLIC QuantTradingInterface)
+target_link_libraries(SimExchangeGbkApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network Spark::Serialization)
+target_compile_definitions(SimExchangeGbkApi PRIVATE SimExchangeApi_EXPORTS)
+
 add_application(MdOffer  ${CMAKE_CURRENT_SOURCE_DIR}/src/MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/src/MdOffer)
 target_link_libraries(MdOffer PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic CtpMdApiMiddleStatic
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
@@ -139,7 +166,7 @@ copy_config_file(MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/ServerConfig.json)
 
 
 add_application(SimExchange  ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange)
-target_link_libraries(SimExchange PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic
+target_link_libraries(SimExchange PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic MdApi
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
     DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
 copy_dll_file(SimExchange)
@@ -165,39 +192,6 @@ target_link_libraries(BackTestInit PRIVATE QuantTradingInterface QuantTradingCom
     DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
 copy_dll_file(BackTestInit)
 copy_config_file(BackTestInit ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTestInit.json)
-
-
-add_static_md_module(ApiBase ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/ApiBase ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/ApiBase)
-target_link_libraries(ApiBaseStatic PUBLIC Spark::Network PackagesStatic)
-
-add_shared_module(MdApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdApi)
-target_link_libraries(MdApi PUBLIC QuantTradingInterface)
-target_link_libraries(MdApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network)
-
-add_shared_module(MdGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/MdGbkApi)
-target_link_libraries(MdGbkApi PUBLIC QuantTradingInterface)
-target_link_libraries(MdGbkApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network Spark::Serialization)
-target_compile_definitions(MdGbkApi PRIVATE MdApi_EXPORTS)
-
-
-add_shared_module(TraderApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/TraderApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/TraderApi)
-target_link_libraries(TraderApi PUBLIC QuantTradingInterface)
-target_link_libraries(TraderApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network)
-
-add_shared_module(TraderGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/TraderGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/TraderGbkApi)
-target_link_libraries(TraderGbkApi PUBLIC QuantTradingInterface)
-target_link_libraries(TraderGbkApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network Spark::Serialization)
-target_compile_definitions(TraderGbkApi PRIVATE TraderApi_EXPORTS)
-
-
-add_shared_module(SimExchangeApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/SimExchangeApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/SimExchangeApi)
-target_link_libraries(SimExchangeApi PUBLIC QuantTradingInterface)
-target_link_libraries(SimExchangeApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network)
-
-add_shared_module(SimExchangeGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/SimExchangeGbkApi ${CMAKE_CURRENT_SOURCE_DIR}/src/Apis/SimExchangeGbkApi)
-target_link_libraries(SimExchangeGbkApi PUBLIC QuantTradingInterface)
-target_link_libraries(SimExchangeGbkApi PRIVATE QuantTradingCommonStatic ApiBaseStatic PackagesStatic Spark::Network Spark::Serialization)
-target_compile_definitions(SimExchangeGbkApi PRIVATE SimExchangeApi_EXPORTS)
 
 
 

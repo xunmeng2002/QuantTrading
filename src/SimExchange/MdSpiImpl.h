@@ -1,5 +1,5 @@
 #pragma once
-#include "InnerMdApi.h"
+#include <QuantTrading/MdApi.h>
 #include <set>
 #include <atomic>
 #include <mutex>
@@ -7,10 +7,10 @@
 namespace quanttrading::simexchange
 {
 class SimExchange;
-class InnerMdSpiImpl : public MdSpi
+class MdSpiImpl : public MdSpi
 {
 public:
-	InnerMdSpiImpl(InnerMdApi* mdApi, const std::string& mdUser, const std::string& mdPassword);
+	MdSpiImpl(MdApi* mdApi, const std::string& mdUser, const std::string& mdPassword);
 	void SetSimExchange(SimExchange* simExchange);
 	virtual void OnConnected() override;
 	virtual void OnDisConnected() override;
@@ -27,7 +27,7 @@ public:
 	void ReqSubMarketData(ReqSubMarketDataField* reqSubMarketData);
 
 private:
-	InnerMdApi* m_MdApi;
+	MdApi* m_MdApi;
 	SimExchange* m_SimExchange;
 	int m_RequestID;
 	std::string m_MdUser;

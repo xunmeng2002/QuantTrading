@@ -18,8 +18,8 @@ using namespace quanttrading::ordermatch;
 
 namespace quanttrading::simexchange
 {
-SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, InnerMdSpiImpl* innerMdSpi, MatchModeType matchMode)
-	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_MdSpi(innerMdSpi), m_TradingDay(""), m_CurrDate(""), m_CurrTime(""), m_IsMdLogged(false)
+SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* mdSpi, MatchModeType matchMode)
+	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_MdSpi(mdSpi), m_TradingDay(""), m_CurrDate(""), m_CurrTime(""), m_IsMdLogged(false)
 {
 	auto tradingDay = m_Mdb->t_TradingDay->m_PrimaryKey->Select(1);
 	if (tradingDay != nullptr)
