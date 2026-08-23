@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<apipackages prefix="SimExchange" projectname="QuantTrading" modulename="SimExchangeApi">
+<apipackages prefix="SimExchange" project="QuantTrading" module="SimExchangeApi">
 	<package name="ReqAccountLogin"/>
 	<package name="RspAccountLogin"/>
 	<package name="ReqAccountLogout"/>

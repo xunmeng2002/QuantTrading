@@ -129,7 +129,7 @@ def WriteFullApiPackagesFile(fullApiPackageFile, packagesName, packages):
     impl = xml.dom.minidom.getDOMImplementation()
     dom = impl.createDocument(None, 'apipackages', None)
     root = dom.documentElement
-    root.setAttribute("name", packagesName)
+    root.setAttribute("project", packagesName)
     for package in packages:
         packageNode = dom.createElement('package')
         packageNode.setAttribute("name", package.Name)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<apipackages prefix="Md" projectname="QuantTrading" modulename="MdApi">
+<apipackages prefix="Md" project="QuantTrading" module="MdApi">
 	<package name="ReqMdUserLogin"/>
 	<package name="RspMdUserLogin"/>
 	<package name="ReqMdUserLogout"/>
