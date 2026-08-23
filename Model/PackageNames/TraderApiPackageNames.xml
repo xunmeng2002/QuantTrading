@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<apipackages prefix="Trader" project="QuantTrading" module="TraderApi">
+<apipackages prefix="Trader" module="TraderApi">
 	<package name="ReqAccountLogin"/>
 	<package name="RspAccountLogin"/>
 	<package name="ReqAccountLogout"/>

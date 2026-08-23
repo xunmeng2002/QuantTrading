@@ -9,7 +9,7 @@ ApiBase::ApiBase(const char* name)
 	:m_Protocol(nullptr), m_ProtocolType(ProtocolTypeType::Xtp)
 {
 	m_IOThread = new IOThread(name);
-	m_Protocol = new Protocol(m_ProtocolType, ServerTypeType::Client, IOModelType::Select, 100, new PackageFactory());
+	m_Protocol = new Protocol(m_ProtocolType, ServerTypeType::Client, IOModelType::Select, 100, new quanttrading::packages::PackageFactory());
 	m_Protocol->Subscribe(this);
 	m_Protocol->SetIOThread(m_IOThread);
 }

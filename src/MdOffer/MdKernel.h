@@ -14,6 +14,7 @@
 #include <mutex>
 #include <condition_variable>
 
+using namespace quanttrading::packages;
 class MinuteBar;
 class MdKernel : public spark::core::ThreadBase, public ProtocolSubscriber, public BarSubscriber, public dbadapters::DBSubscriber
 {

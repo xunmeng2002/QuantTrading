@@ -9,6 +9,7 @@
 using namespace spark;
 using namespace spark::core;
 using namespace spark::network;
+using namespace quanttrading::packages;
 
 namespace quanttrading::testmdoffer
 {

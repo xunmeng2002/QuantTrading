@@ -4,6 +4,8 @@
 
 using namespace spark::network;
 
+namespace quanttrading::packages
+{
 Package* PackageFactory::CreatePackage(UShortType packageID)
 {
 	switch (packageID)
@@ -213,4 +215,4 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	}
 	return nullptr;
 }
-
+}

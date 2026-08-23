@@ -1,9 +1,11 @@
 ﻿#pragma once
-#include "QuantTrading/Fields.h"
+#include <QuantTrading/Fields.h>
 #include <Spark/Network/Protocol/Package.h>
 
 using spark::network::Package;
 
+namespace quanttrading::packages
+{
 class NotifyConnectPackage : public Package
 {
 public:
@@ -872,3 +874,4 @@ public:
 	static constexpr UShortType PackageID = 0x2020;
 	AccountLogoutField* AccountLogout = nullptr;
 };
+}

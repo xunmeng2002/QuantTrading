@@ -2,7 +2,7 @@
 #include "PackageFactory.h"
 
 MdFront::MdFront(IOModelType ioModel, const char* address, int milliSecond)
-	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new PackageFactory()), m_Address(address)
+	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new quanttrading::packages::PackageFactory()), m_Address(address)
 {
 	RegisterFront(address);
 	m_IOThread = new IOThread("MdFront");

@@ -9,6 +9,7 @@
 using namespace std;
 using namespace spark;
 using namespace spark::core;
+using namespace quanttrading::packages;
 
 
 CThostFtdcMdSpiImpl::CThostFtdcMdSpiImpl(CThostFtdcMdApi* MdApi, MdKernel* mdKernel)

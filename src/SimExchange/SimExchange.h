@@ -14,6 +14,8 @@
 #include <mutex>
 #include <condition_variable>
 
+using namespace quanttrading::packages;
+
 namespace quanttrading::simexchange
 {
 class SimExchange : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public OrderMatchSubscriber

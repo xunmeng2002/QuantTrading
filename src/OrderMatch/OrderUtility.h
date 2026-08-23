@@ -18,7 +18,7 @@ struct OrderLessForOrderID
 
 int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument);
 int CheckForCancelOrder(mdb::Order* order);
-mdb::Order* CreateOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, mdb::Instrument* instrument,
+mdb::Order* CreateOrder(quanttrading::packages::ReqInsertOrderPackage* reqPackage, mdb::Account* account, mdb::Instrument* instrument,
 	const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIDType& offerID = 0);
 mdb::Position* CreatePosition(mdb::Trade* trade, const PosiDirectionType& posiDirection);
 mdb::PositionDetail* CreatePositionDetail(mdb::Trade* trade, const PosiDirectionType& posiDirection);

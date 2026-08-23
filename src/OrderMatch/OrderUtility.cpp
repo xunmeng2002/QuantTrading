@@ -7,6 +7,7 @@
 using namespace std;
 using namespace mdb;
 using namespace spark::core;
+using namespace quanttrading::packages;
 
 bool OrderLessForPrice::operator()(const mdb::Order* const left, const mdb::Order* const right) const
 {

@@ -17,6 +17,7 @@
 
 using namespace spark::core;
 using namespace dbadapters;
+using namespace quanttrading::packages;
 
 namespace quanttrading::backtest
 {

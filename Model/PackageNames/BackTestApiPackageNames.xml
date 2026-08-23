@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<apipackages prefix="BackTest" project="QuantTrading" module="BackTestApi">
+<apipackages prefix="BackTest" module="BackTestApi">
 	<package name="ReqSubMarketData"/>
 	<package name="RspSubMarketData"/>
 	<package name="ReqSubMarketDataFinished"/>

@@ -4,6 +4,7 @@
 #include <Spark/Network/Protocol/Items.h>
 
 using namespace spark;
+using namespace quanttrading::packages;
 
 namespace quanttrading
 {

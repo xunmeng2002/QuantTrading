@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 
+using quanttrading::packages::RtnDepthMarketDataPackage;
 class MdSnap
 {
 	MdSnap();

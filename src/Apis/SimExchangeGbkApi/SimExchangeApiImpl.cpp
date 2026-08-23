@@ -6,6 +6,7 @@
 
 using namespace spark;
 using namespace spark::serialization;
+using namespace quanttrading::packages;
 
 namespace quanttrading
 {
