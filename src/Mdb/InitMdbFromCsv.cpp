@@ -70,7 +70,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_TradingDay.csv failed");
 			}
 
-			auto record = new TradingDay();
+			auto record = TradingDay::Allocate();
 			record->PK = csv_record.GetFieldAsInt("PK");
 			Utility::Strcpy(record->CurrTradingDay, csv_record.GetFieldAsString("CurrTradingDay"));
 			Utility::Strcpy(record->PreTradingDay, csv_record.GetFieldAsString("PreTradingDay"));
@@ -105,7 +105,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_Exchange.csv failed");
 			}
 
-			auto record = new Exchange();
+			auto record = Exchange::Allocate();
 			Utility::Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Utility::Strcpy(record->ExchangeName, csv_record.GetFieldAsString("ExchangeName"));
 			mdb->t_Exchange->Insert(record);
@@ -139,7 +139,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_Product.csv failed");
 			}
 
-			auto record = new Product();
+			auto record = Product::Allocate();
 			Utility::Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Utility::Strcpy(record->ProductID, csv_record.GetFieldAsString("ProductID"));
 			Utility::Strcpy(record->ProductName, csv_record.GetFieldAsString("ProductName"));
@@ -182,7 +182,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_HotInstrument.csv failed");
 			}
 
-			auto record = new HotInstrument();
+			auto record = HotInstrument::Allocate();
 			Utility::Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Utility::Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Utility::Strcpy(record->ProductID, csv_record.GetFieldAsString("ProductID"));
@@ -226,7 +226,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_Instrument.csv failed");
 			}
 
-			auto record = new Instrument();
+			auto record = Instrument::Allocate();
 			Utility::Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Utility::Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
 			Utility::Strcpy(record->ExchangeInstID, csv_record.GetFieldAsString("ExchangeInstID"));
@@ -273,7 +273,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_DepthMarketData.csv failed");
 			}
 
-			auto record = new DepthMarketData();
+			auto record = DepthMarketData::Allocate();
 			Utility::Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Utility::Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Utility::Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
@@ -366,7 +366,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_BarMarketData.csv failed");
 			}
 
-			auto record = new BarMarketData();
+			auto record = BarMarketData::Allocate();
 			Utility::Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Utility::Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Utility::Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
@@ -418,7 +418,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_MdSubscribe.csv failed");
 			}
 
-			auto record = new MdSubscribe();
+			auto record = MdSubscribe::Allocate();
 			Utility::Strcpy(record->ExchangeID, csv_record.GetFieldAsString("ExchangeID"));
 			Utility::Strcpy(record->InstrumentID, csv_record.GetFieldAsString("InstrumentID"));
 			Utility::Strcpy(record->RealInstrumentID, csv_record.GetFieldAsString("RealInstrumentID"));
@@ -457,7 +457,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_MdUser.csv failed");
 			}
 
-			auto record = new MdUser();
+			auto record = MdUser::Allocate();
 			Utility::Strcpy(record->MdUserID, csv_record.GetFieldAsString("MdUserID"));
 			Utility::Strcpy(record->MdUserName, csv_record.GetFieldAsString("MdUserName"));
 			Utility::Strcpy(record->Password, csv_record.GetFieldAsString("Password"));
@@ -492,7 +492,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_MdUserLoginSession.csv failed");
 			}
 
-			auto record = new MdUserLoginSession();
+			auto record = MdUserLoginSession::Allocate();
 			Utility::Strcpy(record->MdUserID, csv_record.GetFieldAsString("MdUserID"));
 			record->SessionID = csv_record.GetFieldAsInt64("SessionID");
 			Utility::Strcpy(record->IPAddress, csv_record.GetFieldAsString("IPAddress"));
@@ -527,7 +527,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_PrimaryAccount.csv failed");
 			}
 
-			auto record = new PrimaryAccount();
+			auto record = PrimaryAccount::Allocate();
 			Utility::Strcpy(record->PrimaryAccountID, csv_record.GetFieldAsString("PrimaryAccountID"));
 			Utility::Strcpy(record->PrimaryAccountName, csv_record.GetFieldAsString("PrimaryAccountName"));
 			record->AccountClass = (AccountClassType)csv_record.GetFieldAsInt("AccountClass");
@@ -568,7 +568,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_Account.csv failed");
 			}
 
-			auto record = new Account();
+			auto record = Account::Allocate();
 			Utility::Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			Utility::Strcpy(record->AccountName, csv_record.GetFieldAsString("AccountName"));
 			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
@@ -608,7 +608,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_Capital.csv failed");
 			}
 
-			auto record = new Capital();
+			auto record = Capital::Allocate();
 			Utility::Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Utility::Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
@@ -660,7 +660,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_Position.csv failed");
 			}
 
-			auto record = new Position();
+			auto record = Position::Allocate();
 			Utility::Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Utility::Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
@@ -717,7 +717,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_PositionDetail.csv failed");
 			}
 
-			auto record = new PositionDetail();
+			auto record = PositionDetail::Allocate();
 			Utility::Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Utility::Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
@@ -774,7 +774,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_Order.csv failed");
 			}
 
-			auto record = new Order();
+			auto record = Order::Allocate();
 			Utility::Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Utility::Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
@@ -839,7 +839,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_Trade.csv failed");
 			}
 
-			auto record = new Trade();
+			auto record = Trade::Allocate();
 			Utility::Strcpy(record->TradingDay, csv_record.GetFieldAsString("TradingDay"));
 			Utility::Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			record->AccountType = (AccountTypeType)csv_record.GetFieldAsInt("AccountType");
@@ -889,7 +889,7 @@ namespace mdb
 				throw std::string("AnalysisFieldContent t_AccountLoginSession.csv failed");
 			}
 
-			auto record = new AccountLoginSession();
+			auto record = AccountLoginSession::Allocate();
 			Utility::Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
 			record->SessionID = csv_record.GetFieldAsInt64("SessionID");
 			Utility::Strcpy(record->IPAddress, csv_record.GetFieldAsString("IPAddress"));
