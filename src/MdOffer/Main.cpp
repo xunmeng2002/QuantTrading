@@ -6,6 +6,7 @@
 #include "ServerConfig.h"
 #include "Environment.h"
 #include <Spark/Core/Utility/TimeUtility.h>
+#include <Spark/Core/Utility/Utility.h>
 #include "Mdb.h"
 #include "InitMdbFromDB.h"
 #include "MdbTableRegistry.h"
@@ -38,12 +39,6 @@ using namespace quanttrading::mdoffer;
 
 const char* ConfigName = "MdOffer.json";
 const char* initSqliteDBName = "./MdOfferInit.db";
-const char* sqliteDBName = "./MdOffer.db";
-const char* duckdbDBName = "./MdOffer.duckdb";
-const char* mysqlHost = "mysqlx://sams:sams@localhost:33060/MdOffer";
-const char* mariadbHost = "tcp://localhost:3306/MdOffer";
-const char* mariadbUser = "sams";
-const char* mariadbPassword = "sams";
 
 static DB* CreateDataDb(const Config& config)
 {
@@ -111,7 +106,14 @@ int main(int argc, char* argv[])
 	initDB->DisConnect();
 	delete initDB;
 
-    mdb->t_MdUser->Insert(new MdUser("MdUser", "", "123456"));
+    if (!config.MdUserID.empty())
+    {
+        MdUser* mdUser = MdUser::Allocate();
+        Utility::Strcpy(mdUser->MdUserID, config.MdUserID.c_str());
+        Utility::Strcpy(mdUser->MdUserName, "");
+        Utility::Strcpy(mdUser->Password, config.MdPassword.c_str());
+        mdb->t_MdUser->Insert(mdUser);
+    }
 
 	MdKernel* mdKernel = new MdKernel(mdb);
 	dbWriter->Subscribe(mdKernel);

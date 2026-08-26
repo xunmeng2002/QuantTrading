@@ -11,5 +11,7 @@
 		<item name="DbPassword" type="string"></item>
 		<item name="DbHost" type="string"></item>
 		<item name="DbInitHost" type="string"></item>
+		<item name="MdUserID" type="string"></item>
+		<item name="MdPassword" type="string"></item>
 	</items>
 </config>

@@ -57,7 +57,6 @@ void Config::Print()
 	printf("LogLevel:%d\n", LogLevel);
 	printf("ServerConfigPath:%s\n", ServerConfigPath.c_str());
 	printf("MdUser:%s\n", MdUser.c_str());
-	printf("MdPassword:%s\n", MdPassword.c_str());
 	printf("SubscribeInstruments:[\n");
 	for (auto record : SubscribeInstruments)
 	{

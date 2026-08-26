@@ -61,7 +61,6 @@ void Config::Print()
 	printf("TradingDay:%s\n", TradingDay.c_str());
 	printf("DbType:%s\n", DbType.c_str());
 	printf("DbUser:%s\n", DbUser.c_str());
-	printf("DbPassword:%s\n", DbPassword.c_str());
 	printf("DbHost:%s\n", DbHost.c_str());
 }
 

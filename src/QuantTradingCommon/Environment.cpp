@@ -3,7 +3,6 @@
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Logger/Logger.h>
 #include <fstream>
-#include <iostream>
 #include <stdexcept>
 
 using namespace std;
@@ -14,15 +13,15 @@ namespace quanttrading
 
     void PrintEnvironment(Environment* environment)
     {
-        printf("Environment: Name:%s\n", environment->Name);
+        WriteLog(LogLevel::Info, "Environment: Name:%s", environment->Name);
         for (auto frontInfo : environment->Fronts)
         {
-            printf("\tTradeFront:%s, MdFront:%s\n", frontInfo->TradeFront, frontInfo->MdFront);
+            WriteLog(LogLevel::Info, "TradeFront:%s, MdFront:%s", frontInfo->TradeFront, frontInfo->MdFront);
         }
         for (auto account : environment->Accounts)
         {
-            printf("\tBrokerID:%s,  InvestorID:%s, Password:%s, Phone:%s, UserProductInfo:%s, AuthCode:%s,  AppID:%s\n",
-                account->BrokerID, account->InvestorID, account->Password, account->Phone, account->UserProductInfo, account->AuthCode, account->AppID);
+            WriteLog(LogLevel::Info, "BrokerID:%s, InvestorID:%s, Phone:%s, UserProductInfo:%s, AppID:%s",
+                account->BrokerID, account->InvestorID, account->Phone, account->UserProductInfo, account->AppID);
         }
     }
     void ReadEnvironment(std::map<std::string, Environment*>& environments, const char* environmentFile)
@@ -34,15 +33,12 @@ namespace quanttrading
         ifstream in_file(environmentFile, ios::binary);
         if (!reader.parse(in_file, root))
         {
-            std::cout << "Parse Config Failed." << std::endl;
-            std::string s;
-            in_file >> s;
-            std::cout << s << std::endl;
+            WriteLog(LogLevel::Error, "Parse Config Failed: %s", environmentFile);
             throw std::logic_error("Parse Config Failed.");
         }
         else
         {
-            std::cout << "Parse Config Success." << std::endl;
+            WriteLog(LogLevel::Info, "Parse Config Success: %s", environmentFile);
         }
         for (auto i = 0u; i < root.size(); i++)
         {

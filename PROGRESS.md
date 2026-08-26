@@ -58,6 +58,11 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - **优雅退出**（新增 `src/QuantTradingCommon/ShutdownSignal.{h,cpp}`，改 `src/MdOffer/Main.cpp`、`src/SimExchange/Main.cpp`）：Windows `SetConsoleCtrlHandler` / Linux `signal(SIGINT/SIGTERM)` 仅置位原子标志；main 尾部由阻塞 Join 链改为「轮询退出标志 → 按依赖序 Stop/Join」。MdOffer 顺序：mdApi Release → mdKernel → mdFront → dbWriter → Logger；SimExchange：mdApi Release → simExchange → tradeFront → mdFront → dbWriter → Logger。
   - 依据库源码核实：所有 ThreadBase 派生线程 `Run()` 均以 `wait_for`/`select` 超时兜底，`Stop()` 后 ≤100ms 退出；`AsyncDBWriter` 退出前刷完剩余 `m_DBOperates`。全量 x64-Debug 编译链接通过，MdOffer.exe 启动冒烟通过；Ctrl+C 交互验证待真实控制台执行。
 - **2026-08-24 BackTest 端到端验证**（TestBackTest，`D:\Md` 旧格式 parquet）：MdReader 读 tick/bar → OrderMatch 撮合（IF2503，20241001-20241231，61 根日 Bar、10 月 45 万+ tick）→ 结算 → 落库全链路跑通。注意：数据为旧列名格式，MdReader SQL 的 NULL 占位符与 `AskPrices[1]` 等旧列名兜底正是为此而设；撮合/结算正确性由 `GetSettlementPrice` 对 +inf 回退 + OrderMatch 涨跌停校验注释保证，数据真正对齐 mdb 前该回退不可移除。
+- **2026-08-27 安全修复 S1–S4**（先修安全问题，按类型/名称过滤 + 配置驱动）：
+  - **S1 行情日志脱敏**（模板 `Templates/Cpp/LibTest/CtpWrapper/StructLogFunc.cpp.tpl`，重新 pump `src/Ctp/StructLogFunc/StructLogFunc.cpp`）：定义 15 个 CTP 敏感类型集合（`TThostFtdcPasswordType`/`*KeyType`/`*AuthKeyType`/`*AuthenticDataType` 等），日志生成按类型过滤 Password/Key/Token 字段，逗号与字段均受保护；497 处 WriteLog 格式串/实参 0 失配，无敏感字段名残留。`WriteReqUserLogin` 不再打印 Password/OneTimePassword。
+  - **S2 Environment 输出修复**（`src/QuantTradingCommon/Environment.cpp`）：`PrintEnvironment` 不再打印账户 `Password`/`AuthCode`（只输出 BrokerID/InvestorID/Phone/UserProductInfo/AppID）；`ReadEnvironment` 解析失败路径不再 `in_file >> s; std::cout << s;` 倾倒配置文件内容；输出全部改走 `WriteLog`（4 个调用点均在 Logger 启动后）。
+  - **S3 Config 模板密码过滤**（`Templates/Cpp/Config/Config.cpp.tpl`，重新 pump 9 个 `src/*/Config/Config.cpp`）：`Print()` 顶层/记录字段/子记录三处统一按 `@name.lower().endswith('password')` 过滤（配置模型为扁平 string/int，无法按类型过滤）；9 个模块的配置文件打印不再输出 `DbPassword`/`MdPassword`。
+  - **S4 MdOffer 种子用户配置化**（`Model/Configs/MdOffer.xml` + `Configs/MdOffer.json` + `src/MdOffer/Main.cpp`）：删除 `Main.cpp` 6 个死常量（sqliteDBName/duckdbDBName/mysqlHost/mariadbHost/mariadbUser/mariadbPassword）；`t_MdUser` 种子记录改由 `MdUserID`/`MdPassword` 配置驱动，`MdUserID` 为空时跳过插入（杜绝空凭证记录，防"空 UserID+空密码"登录）；默认值 `MdUser`/`123456` 与 `TestMdApi.json` 一致，测试登录不受影响。重新 pump 后 `Config.h` 新增两字段，`Print()` 按 S3 过滤不打印 `MdPassword`。**记录用 `MdUser::Allocate()` + `Utility::Strcpy` 逐字段填充**（MSVC 的 C++20 括号聚合初始化无法用字符串字面量初始化 `char[N]` 数组成员，初版 `new MdUser(...)` 触发 C2440；改用对象池分配，与 `Insert` 失败时表调用 `Deallocate()` 回池的契约一致）。x64-Debug 编译链接通过（MdOffer.exe）。
 
 ## 🔄 进行中
 
@@ -71,7 +76,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
 - **P2-2 Bar 内存策略**：`MinuteBar` 用裸 `new` 且 `m_TodayBars` 无日界清理，考虑改对象池 + 日界重置。
 - **P2-3 Bar 算法单测**：补 bar / 交易时段 / 集合竞价逻辑无测试覆盖。
 - **P2-4 订阅范围配置化**：当前 `HandleNotifyDBConnect` 遍历 `t_Instrument` 全市场订阅，应改为按交易所/产品/合约配置。
-- **硬编码凭证**：`Main.cpp` 中数据库/账户明文密码（`CtpAccountInfo.json` 含 SimNow 账户密码），接真实环境前需迁移到配置/密钥管理。
+- **配置明文凭证（源码硬编码已消除，S4 完成）**：`Main.cpp` 的 MdOffer 种子用户与死常量已迁移到配置（S4），但配置文件本身仍明文存储密码——`CtpAccountInfo.json`（SimNow 账户 Password/AuthCode）、各 `Configs/*.json`（`DbPassword`/`MdPassword`）、`TestMdApi.json`（`MdPassword`）。接真实环境前需迁移到密钥管理/环境变量；`MdPassword` 测试值 `123456` 仅限开发。
 - **优雅退出 Ctrl+C 交互验证**：MdOffer / SimExchange 的有序关停逻辑已就绪，但 shell 无法模拟 Ctrl+C，需在真实控制台运行并确认退出顺序与日志。
 - **TestMdApi 遗留**：仍硬编码 `sleep(120s)` 等待行情，应改为条件变量/超时轮询。
 - **LICENSE 缺失**：项目无 LICENSE 文件，发布前需确定开源协议（README 中已标注待定）。

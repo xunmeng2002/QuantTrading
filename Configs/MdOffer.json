@@ -10,6 +10,8 @@
 	"DbUser": "",
 	"DbPassword": "",
 	"DbHost": "./MdOffer.db",
-	"DbInitHost": "./MdOfferInit.db"
+	"DbInitHost": "./MdOfferInit.db",
+	"MdUserID": "MdUser",
+	"MdPassword": "123456"
 }
 
