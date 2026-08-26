@@ -67,6 +67,15 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - **H10 对象池分配器不匹配**：`Templates/Cpp/Mdb/InitMdbFromCsv.cpp.tpl` 的 `new !!@name!!()` → `!!@name!!::Allocate()`；`MdbTables.cpp.tpl` 的 `InitDB` 内 `new !!$structName!!(**it)` → `!!$structName!!::Allocate()` + `memcpy`（与 `BatchInsert` 既有模式一致）。此前 `new` 分配的对象被 DB 订阅者经池 `Deallocate()` 回收 → 分配器不匹配/堆损坏；`ObjectPool<T>::Allocate()` 无参 placement-new `T()` 值初始化，与 `new X()` 零初始化语义完全一致，行为保持。重新 pump 生成 `src/Mdb/MdbTables.cpp`、`src/Mdb/InitMdbFromCsv.cpp`。
   - **H12 InitDB 空守卫**：`InitDB()` 无 `m_MdbSubscriber` 守卫，`OnRecordTruncate`/`OnRecordBatchInsert` 直接解引用 → 无订阅者时空指针崩溃；改为无订阅者提前返回（置 `m_DBInited=true`），并将锁作用域收敛到拷贝循环（对齐 `BatchInsert`，避免持共享锁调用订阅者回调）。重新 pump 后 x64-Debug 编译链接通过（MdOffer.exe）。
   - **H11 读方法锁契约（用户决策：仅记录文档，代码零改动）**：`Select`/`SelectAll`（主键）与 `LowerBound`/`UpperBound`/`EqualRange`（索引）内部 `std::shared_lock` 只保护查找本身，返回的裸指针/迭代器在锁释放后被使用。核查结论：全库无 `LockShared()` 调用者（无嵌套加锁死锁），表访问按模块串行化（MdKernel 单线程、SimExchange 各自 `m_Mutex`），**当前无活跃 bug，属潜在设计缺陷**。经用户确认不做代码改动，契约仅记录于此：**返回的指针/迭代器仅在调用方间串行访问表（无并发 Erase/Update/Truncate）时有效**。未来交易链路接入时若需跨线程改表，须在调用方持锁或改返回语义。x64-Debug 编译链接通过（MdOffer.exe）。
+- **2026-08-27 评审修复 H13–H19（OrderMatch / SimExchange / Bar）**：
+  - **H13 BackTest 包队列数据竞争**（`src/BackTest/SimExchange.{h,cpp}`）：测试线程 `ReqXxx` 对 `m_ReqSubMds`/`m_Packages` push、SimExchange 线程 `HandlePackages`/`HandleSubMarketDataFinished` pop/读/清均无锁 → 数据竞争。新增 `m_QueueMutex`（`#include <mutex>`），4 处 push 上锁；`HandlePackages` 锁内 `swap` 出队、`HandleSubMarketDataFinished` 锁内 `swap m_ReqSubMds` 后处理，对齐实盘 `OnMessage`/`GetNextPackage` 既有模式。**附带修复同函数池泄漏**：重复订阅/找不到合约两条 `continue` 路径跳过 `::Deallocate(reqSubMd)`，补回池。
+  - **H14 买盘同价 LIFO 违反 FIFO**（`src/OrderMatch/OrderUtility.cpp`）：`OrderLessForPriceOpposite` 同价 tiebreak `OrderID >` 使最新单先成交（LIFO）；改 `<`，与卖盘 `OrderLessForPrice`（`OrderID <`）一致，同价转最早单优先（价格-时间优先）。
+  - **H15 OrderBook 市价单（用户决策：仅文档化，代码零改动）**：`CheckMatch` 只遍历对手限价队列，`m_MarketBuy/SellOrders` 滞留无消费；且 `OnTick/OnBar` 为空实现，该模式本就无价格驱动撮合，属整条路径缺口而非单点 bug。经用户确认不修代码，列入待办（见 ❓）。
+  - **H16 实盘 `OnTick(mdTick)` 悬垂**（`src/SimExchange/SimExchange.cpp`）：`InitMdbFromDB::LoadTables` 不调 `InitDB()` → `m_DBInited==false`；实盘 `Update(oldMdTick, mdTick)` 走 `else→Deallocate()` 释放 `mdTick`，随后 `OnTick(mdTick)` 悬垂（回测 `PushNextTick` 顺序正确，先 OnTick 后落库）。改为 `OnTick` 移至 `Insert/Update` 之前；`HandleBarMarketData` 同理（`OnBar` 提前于 `Insert`）。
+  - **H17 OrderID 计数器无种子**（`src/OrderMatch/OrderUtility.{h,cpp}`）：`GetNextOrderID()` 静态从 0 起，而实盘/回测均从 init DB 装载 t_Order，重复回测或装载历史单时主键冲突。计数器改文件级静态 `g_MaxOrderID`，新增 `SeedNextOrderIDFromMaxOrderID`/`SeedNextOrderIDFromOrders`；回测 `SimExchange::Init`、实盘 `SimExchange::Init` 在 `LoadTables` 后从 t_Order 最大 OrderID 续接。
+  - **H18 BackTest `new`→池不匹配**（`src/BackTest/SimExchange.cpp`）：`new MdSubscribe/Capital/Position/PositionDetail` 后被 `Mdb.Insert` 池回收 → 分配器不匹配/堆损坏；改 `X::Allocate()`（与 `CreateOrder`/`CreatePosition` 模式一致，`Allocate()` 值初始化 + `memcpy` 覆盖）。
+  - **H19 `GetFirstBarTime` 空指针解引用**（`src/Bar/TradeSession.cpp` + `src/Bar/MinuteBar.cpp`）：无 `Section` 段时 `GetFirstTradeSection()` 返回 `nullptr`，`tradeSection->From` 崩溃；加空守卫返回 0，`CheckHasLostBar` 调用侧对 `lostBarMinuteTime <= 0` 直接返回，避免合成 0 时伪造丢失 bar。
+  - x64-Debug 编译链接验证通过（2026-08-27）：OrderMatchStatic/BarStatic 重建，MdOffer.exe、SimExchange.exe、BackTestd.dll 均成功（TestBackTest 动态加载新 BackTestd.dll）。
 
 ## 🔄 进行中
 
@@ -74,6 +83,8 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
 
 ## ❓ 待讨论 / 待决策
 
+- **H15 OrderBook 市价撮合缺口**（2026-08-27 用户决策：先文档化，代码不动）：`OrderBookOrderMatch::CheckMatch` 只遍历对手限价队列，`m_MarketBuy/SellOrders`（`OrderMatch.h:48-49`）滞留无消费；`OnTick`/`OnBar`（`OrderBookOrderMatch.cpp:19-26`）为空实现，整条路径无价格驱动撮合。待 OrderBook 引擎设计（OnTick 驱动撮合 + 市价队列语义）时一并处理。
+- **BackTest `yearMdSubscribes` 局部 list 泄漏**（2026-08-27 复查发现）：`HandleSubMarketDataFinished` 中 `new list<MdSubscribe*>()`（按年建组）随函数返回永不释放，每次订阅结束泄漏少量 list 容器对象（元素已入 `t_MdSubscribe` 表，不属池对象）；低频小泄漏，待与订阅生命周期重构一并处理。
 - **数据源整理对齐 mdb**（用户负责）：TestBackTest 已能在旧格式 parquet（`LastTraded`/`LastTurnover`/数组盘口，缺 OpenPrice/ClosePrice/Upper/LowerLimitPrice/AveragePrice 5 列）上端到端跑通，**靠 MdReader SQL 的 NULL 占位 + 旧列名兜底**；数据侧未真正对齐 mdb schema。真正对齐后 SQL 可删掉占位符，且 tick 的涨跌停价列才真实可用（当前 OrderMatch 的涨跌停校验处于注释状态，`GetSettlementPrice` 对 +inf 有回退，故暂不影响撮合/结算正确性）。
 - **P1-1 完整重连**：当前仅重置登录态，CTP 断线自动重连/退避策略未实现。需确认所用 CTP 版本的 `Reconnect()`/自动重连行为后设计。
 - **P2-1 MdKernel 职责拆分**：`HandleRtnDepthMarketData` 同时做 bar 聚合/Mdb 更新/快照/广播，建议预留 tick 处理管线。
@@ -88,4 +99,5 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
 ## 备注
 
 - 提交信息历史多为 `1`，建议后续写描述性提交信息。
+- `D:\Gitee\Templates` 仓库有未提交的模板改动（S1 `StructLogFunc.cpp.tpl`、S3 `Config.cpp.tpl`），需同步提交到该仓库。
 - `rules/cpp-style.md` 成员命名要求 snake_case，现有代码为 `m_` + PascalCase，项目自洽但与规范不一致（待统一）。

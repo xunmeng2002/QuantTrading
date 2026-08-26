@@ -1,5 +1,6 @@
 #include "OrderUtility.h"
 #include "Error.h"
+#include "MdbTables.h"
 #include <Spark/Core/Utility/Utility.h>
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <string>
@@ -11,6 +12,8 @@ using namespace quanttrading::packages;
 
 namespace quanttrading::ordermatch
 {
+    static OrderIDType g_MaxOrderID = 0;
+
     bool OrderLessForPrice::operator()(const mdb::Order* const left, const mdb::Order* const right) const
     {
         if (left->Price < right->Price)
@@ -25,7 +28,7 @@ namespace quanttrading::ordermatch
             return true;
         else if (left->Price < right->Price)
             return false;
-        return left->OrderID > right->OrderID;
+        return left->OrderID < right->OrderID;
     }
     bool OrderLessForOrderID::operator()(const mdb::Order* const left, const mdb::Order* const right) const
     {
@@ -34,8 +37,27 @@ namespace quanttrading::ordermatch
 
     OrderIDType GetNextOrderID()
     {
-        static OrderIDType m_MaxOrderID = 0;
-        return ++m_MaxOrderID;
+        return ++g_MaxOrderID;
+    }
+    void SeedNextOrderIDFromMaxOrderID(OrderIDType maxOrderID)
+    {
+        if (maxOrderID > g_MaxOrderID)
+        {
+            g_MaxOrderID = maxOrderID;
+        }
+    }
+    void SeedNextOrderIDFromOrders(mdb::OrderTable* orderTable)
+    {
+        OrderIDType maxOrderID = 0;
+        auto orderPair = orderTable->m_PrimaryKey->SelectAll();
+        for (auto& it = orderPair.first; it != orderPair.second; ++it)
+        {
+            if ((*it)->OrderID > maxOrderID)
+            {
+                maxOrderID = (*it)->OrderID;
+            }
+        }
+        SeedNextOrderIDFromMaxOrderID(maxOrderID);
     }
     int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument)
     {

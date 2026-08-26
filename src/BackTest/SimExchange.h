@@ -14,6 +14,7 @@
 #include <DBAdapters/AsyncDBWriter/AsyncDBWriter.h>
 #include <list>
 #include <map>
+#include <mutex>
 
 
 namespace quanttrading::backtest
@@ -83,6 +84,7 @@ private:
 	void SendRtnSessionEnd(const DateType& tradingDay);
 
 private:
+	std::mutex m_QueueMutex;
 	std::list<ReqSubMarketDataField*> m_ReqSubMds;
 	std::list<Package*> m_Packages;
 	BackTestSpi* m_BackTestSpi;

@@ -177,7 +177,7 @@ namespace quanttrading::bar
         if (preBar == nullptr)
         {
             auto lostBarMinuteTime = tradeSession->GetFirstBarTime(tradingDay);
-            if (lostBarMinuteTime >= nextBarMinuteTime)
+            if (lostBarMinuteTime <= 0 || lostBarMinuteTime >= nextBarMinuteTime)
                 return;
             preBar = InitLostBarFromDepthMd(depthMd, lostBarMinuteTime, lostBarMinuteTime);
             m_LostBars.push_back(preBar);

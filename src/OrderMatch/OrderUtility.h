@@ -3,6 +3,11 @@
 #include "Packages.h"
 
 
+namespace mdb
+{
+    class OrderTable;
+}
+
 namespace quanttrading::ordermatch
 {
     struct OrderLessForPrice
@@ -26,6 +31,10 @@ namespace quanttrading::ordermatch
     mdb::PositionDetail* CreatePositionDetail(mdb::Trade* trade, const PosiDirectionType& posiDirection);
 
     PriceType GetMatchPrice(OrderPriceTypeType orderPriceType, PriceType orderPrice, PriceType oppoPrice, PriceType lastPrice);
+
+    OrderIDType GetNextOrderID();
+    void SeedNextOrderIDFromMaxOrderID(OrderIDType maxOrderID);
+    void SeedNextOrderIDFromOrders(mdb::OrderTable* orderTable);
 }
 
 

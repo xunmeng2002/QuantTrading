@@ -87,6 +87,7 @@ bool SimExchange::Init()
 		return false;
 	}
 	InitMdbFromDB::LoadTables(m_Mdb, m_InitDB, backtestTableList);
+	SeedNextOrderIDFromOrders(m_Mdb->t_Order);
 	m_Mdb->Subscribe(m_DBWriter);
 
 	m_MdReader->Init();
@@ -222,7 +223,10 @@ int SimExchange::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData,
 {
 	ReqSubMarketDataField* reqSubMd = ::Allocate<ReqSubMarketDataField>();
 	memcpy(reqSubMd, reqSubMarketData, sizeof(ReqSubMarketDataField));
-	m_ReqSubMds.push_back(reqSubMd);
+	{
+		lock_guard<mutex> guard(m_QueueMutex);
+		m_ReqSubMds.push_back(reqSubMd);
+	}
 	return 0;
 }
 int SimExchange::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
@@ -232,7 +236,10 @@ int SimExchange::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* r
 	reqPackage->ReqSubMarketDataFinished = ::Allocate<ReqSubMarketDataFinishedField>();
 	memcpy(reqPackage->ReqSubMarketDataFinished, reqSubMarketDataFinished, sizeof(ReqSubMarketDataFinishedField));
 
-	m_Packages.push_back(reqPackage);
+	{
+		lock_guard<mutex> guard(m_QueueMutex);
+		m_Packages.push_back(reqPackage);
+	}
 	return 0;
 }
 int SimExchange::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
@@ -242,7 +249,10 @@ int SimExchange::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int r
 	reqPackage->ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
 	memcpy(reqPackage->ReqInsertOrder, reqInsertOrder, sizeof(ReqInsertOrderField));
 
-	m_Packages.push_back(reqPackage);
+	{
+		lock_guard<mutex> guard(m_QueueMutex);
+		m_Packages.push_back(reqPackage);
+	}
 	return 0;
 }
 int SimExchange::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
@@ -252,7 +262,10 @@ int SimExchange::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int r
 	reqPackage->ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
 	memcpy(reqPackage->ReqCancelOrder, reqCancelOrder, sizeof(ReqCancelOrderField));
 
-	m_Packages.push_back(reqPackage);
+	{
+		lock_guard<mutex> guard(m_QueueMutex);
+		m_Packages.push_back(reqPackage);
+	}
 	return 0;
 }
 void SimExchange::Run()
@@ -270,10 +283,13 @@ void SimExchange::Run()
 }
 void SimExchange::HandlePackages()
 {
-	while (!m_Packages.empty())
+	std::list<Package*> packages;
 	{
-		auto package = m_Packages.front();
-		m_Packages.pop_front();
+		lock_guard<mutex> guard(m_QueueMutex);
+		packages.swap(m_Packages);
+	}
+	for (auto package : packages)
+	{
 		switch (package->Head.PackageID)
 		{
 		case ReqSubMarketDataFinishedPackage::PackageID:
@@ -380,12 +396,18 @@ void SimExchange::PushNextBar(mdb::BarMarketData* mdBar)
 
 void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* reqPackage)
 {
+	std::list<ReqSubMarketDataField*> reqSubMds;
+	{
+		lock_guard<mutex> guard(m_QueueMutex);
+		reqSubMds.swap(m_ReqSubMds);
+	}
 	map<std::string, list<MdSubscribe*>> instrumentMdSubscribes;
-	for (auto reqSubMd : m_ReqSubMds)
+	for (auto reqSubMd : reqSubMds)
 	{
 		if (instrumentMdSubscribes.find(reqSubMd->InstrumentID) != instrumentMdSubscribes.end())
 		{
 			WriteLog(LogLevel::Warning, "Repeat Subscribe for ExchangeID:%s InstrumentID:%s", reqSubMd->ExchangeID, reqSubMd->InstrumentID);
+			::Deallocate(reqSubMd);
 			continue;
 		}
 		auto& mdSubscribes = instrumentMdSubscribes[reqSubMd->InstrumentID];
@@ -393,6 +415,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		if (instrument == nullptr)
 		{
 			WriteLog(LogLevel::Error, "Cannot Find Instrument While SubMarketData. ExchangeID:%s, InstrumentID:%s", reqSubMd->ExchangeID, reqSubMd->InstrumentID);
+			::Deallocate(reqSubMd);
 			continue;
 		}
 		if (instrument->InstrumentClass == InstrumentClassType::Normal)
@@ -454,7 +477,6 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		}
         ::Deallocate(reqSubMd);
 	}
-	m_ReqSubMds.clear();
 	for (auto& it : instrumentMdSubscribes)
 	{
 		auto& mdSubscribes = it.second;
@@ -466,7 +488,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			int endYear = int(atoi(mdSubscribe->EndTradingDay) / 10000);
 			while (endYear > startYear)
 			{
-				auto newMdSubscribe = new MdSubscribe();
+				auto newMdSubscribe = MdSubscribe::Allocate();
 				memcpy(newMdSubscribe, mdSubscribe, sizeof(MdSubscribe));
 				strcpy(newMdSubscribe->EndTradingDay, to_string(startYear * 10000 + 1231).c_str());
 				addMdSubscribes.push_back(newMdSubscribe);
@@ -836,7 +858,7 @@ void SimExchange::InitAccount(const DateType& nextTradingDay)
 	}
 	for (auto capital : capitals)
 	{
-		auto newCapital = new mdb::Capital();
+		auto newCapital = mdb::Capital::Allocate();
 		memcpy(newCapital, capital, sizeof(mdb::Capital));
 		strcpy(newCapital->TradingDay, nextTradingDay);
 		newCapital->PreBalance = capital->Balance;
@@ -867,7 +889,7 @@ void SimExchange::InitPosition(const DateType& nextTradingDay)
 	{
 		if (position->TotalPosition == 0)
 			continue;
-		auto newPosition = new mdb::Position();
+		auto newPosition = mdb::Position::Allocate();
 		memcpy(newPosition, position, sizeof(mdb::Position));
 		strcpy(newPosition->TradingDay, nextTradingDay);
 		newPosition->PositionFrozen = 0;
@@ -897,7 +919,7 @@ void SimExchange::InitPositionDetail(const DateType& nextTradingDay)
 	{
 		if (positionDetail->Volume - positionDetail->CloseVolume == 0)
 			continue;
-		auto newPositionDetail = new mdb::PositionDetail();
+		auto newPositionDetail = mdb::PositionDetail::Allocate();
 		memcpy(newPositionDetail, positionDetail, sizeof(mdb::PositionDetail));
 		strcpy(newPositionDetail->TradingDay, nextTradingDay);
 		newPositionDetail->CashIn = 0;

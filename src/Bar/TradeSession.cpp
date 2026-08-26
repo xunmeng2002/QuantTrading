@@ -21,6 +21,10 @@ namespace quanttrading::bar
     long long TradeSession::GetFirstBarTime(int tradingDay)
     {
         auto tradeSection = GetFirstTradeSection();
+        if (tradeSection == nullptr)
+        {
+            return 0;
+        }
         if (tradeSection->From > 1800)
         {
             char preTradingDay[16]{ 0 };
