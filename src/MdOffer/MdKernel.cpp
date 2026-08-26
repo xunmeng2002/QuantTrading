@@ -164,6 +164,13 @@ namespace quanttrading::mdoffer
     {
         m_LoggedSessions.erase(package->NotifyDisConnect->SessionID);
         m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionID);
+
+        // 同步清理持久化会话记录，否则同 SessionID 重连会命中 ErrorSessionAlreadyLogin。
+        auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(package->NotifyDisConnect->SessionID);
+        if (mdUserLoginSession != nullptr)
+        {
+            m_Mdb->t_MdUserLoginSession->Erase(mdUserLoginSession);
+        }
         return 0;
     }
     int MdKernel::HandleNotifyDBConnect(NotifyDBConnectPackage* package)
@@ -185,7 +192,10 @@ namespace quanttrading::mdoffer
                 reqSubMds.push_back(&*fieldIt);
             }
         }
-        m_MdSpi->SubscribeMds(reqSubMds);
+        if (m_MdSpi != nullptr)
+        {
+            m_MdSpi->SubscribeMds(reqSubMds);
+        }
         return 0;
     }
     int MdKernel::HandleNotifyDBDisConnect(NotifyDBDisConnectPackage* package)
@@ -219,9 +229,14 @@ namespace quanttrading::mdoffer
                 Utility::Strcpy(mdUserLoginSession->MdUserID, mdUser->MdUserID);
                 mdUserLoginSession->SessionID = package->SessionID;
                 Utility::Strcpy(mdUserLoginSession->IPAddress, package->IPAddress);
-                m_Mdb->t_MdUserLoginSession->Insert(mdUserLoginSession);
-
-                m_LoggedSessions.insert(package->SessionID);
+                if (m_Mdb->t_MdUserLoginSession->Insert(mdUserLoginSession))
+                {
+                    m_LoggedSessions.insert(package->SessionID);
+                }
+                else
+                {
+                    errorID = ErrorSessionAlreadyLogin;
+                }
             }
         }
 
@@ -250,6 +265,13 @@ namespace quanttrading::mdoffer
     {
         m_LoggedSessions.erase(package->SessionID);
         m_SessionSubscribeInstruments.erase(package->SessionID);
+
+        // 同步清理持久化会话记录，否则同 SessionID 重登会命中 ErrorSessionAlreadyLogin。
+        auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(package->SessionID);
+        if (mdUserLoginSession != nullptr)
+        {
+            m_Mdb->t_MdUserLoginSession->Erase(mdUserLoginSession);
+        }
 
         RspMdUserLogoutPackage* rspPackage = RspMdUserLogoutPackage::Allocate();
         rspPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);

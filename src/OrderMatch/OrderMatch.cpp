@@ -64,7 +64,7 @@ namespace quanttrading::ordermatch
         memcpy(newOrder, order, sizeof(Order));
         newOrder->VolumeTraded += volume;
         newOrder->VolumeTotal -= volume;
-        newOrder->OrderStatus = order->VolumeTotal > 0 ? OrderStatusType::PartTraded : OrderStatusType::AllTraded;
+        newOrder->OrderStatus = newOrder->VolumeTotal > 0 ? OrderStatusType::PartTraded : OrderStatusType::AllTraded;
         m_OrderMatchSubscriber->OnOrderUpdate(order, newOrder);
 
         auto trade = Trade::Allocate();

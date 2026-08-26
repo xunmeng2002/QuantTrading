@@ -29,15 +29,24 @@ namespace quanttrading::mdoffer
     void CThostFtdcMdSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
     {
         CThostFtdcMdSpiMiddle::OnRspUserLogin(pRspUserLogin, pRspInfo, nRequestID, bIsLast);
-        m_IsLogged = true;
-        std::vector<const char*> reqSubInstruments;
+        if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
         {
-            std::lock_guard<std::mutex> guard(m_Mutex);
-            reqSubInstruments = m_ReqSubInstruments;
+            WriteLog(LogLevel::Error, "OnRspUserLogin Failed: ErrorID:%d, ErrorMsg:%s", pRspInfo->ErrorID, pRspInfo->ErrorMsg);
+            m_IsLogged = false;
+            return;
         }
-        if (!reqSubInstruments.empty())
+        if (!bIsLast)
         {
-            m_MdApi->SubscribeMarketData(const_cast<char**>(reqSubInstruments.data()), (int)reqSubInstruments.size());
+            return;
+        }
+        m_IsLogged = true;
+        {
+            // CTP API 非线程安全：回调线程与内核线程（SubscribeMd/SubscribeMds）须经同一把锁串行调用。
+            std::lock_guard<std::mutex> guard(m_Mutex);
+            if (!m_ReqSubInstruments.empty())
+            {
+                m_MdApi->SubscribeMarketData(const_cast<char**>(m_ReqSubInstruments.data()), (int)m_ReqSubInstruments.size());
+            }
         }
     }
     void CThostFtdcMdSpiImpl::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData)
@@ -157,6 +166,11 @@ namespace quanttrading::mdoffer
 
     void CThostFtdcMdSpiImpl::ReqUserLogin()
     {
+        if (m_AccountInfo == nullptr)
+        {
+            WriteLog(LogLevel::Error, "ReqUserLogin Failed: AccountInfo is nullptr, call SetAccountInfo first.");
+            return;
+        }
         CThostFtdcReqUserLoginField userLogin;
         ::memset(&userLogin, 0, sizeof(userLogin));
         Utility::Strcpy(userLogin.TradingDay, "");
