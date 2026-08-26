@@ -99,5 +99,5 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
 ## 备注
 
 - 提交信息历史多为 `1`，建议后续写描述性提交信息。
-- `D:\Gitee\Templates` 仓库有未提交的模板改动（S1 `StructLogFunc.cpp.tpl`、S3 `Config.cpp.tpl`），需同步提交到该仓库。
+- `D:\Gitee\Templates` 仓库的模板改动（S1/S3/H10/H12 对应 `.tpl`）已提交（`6d12e3d`）。
 - `rules/cpp-style.md` 成员命名要求 snake_case，现有代码为 `m_` + PascalCase，项目自洽但与规范不一致（待统一）。
