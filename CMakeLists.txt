@@ -11,7 +11,6 @@ SET(PROJECT_NAME "QuantTrading")
 project(${PROJECT_NAME} VERSION 1.0.0 LANGUAGES CXX)
 include(GNUInstallDirs)
 include(GenerateExportHeader)
-include(submodules/CMakeCommon/CMakeCommon.cmake)
 
 # 用 project() 的 VERSION 生成版本头文件到构建目录。
 # 各模块宏已把 ${CMAKE_CURRENT_BINARY_DIR} 挂入 PUBLIC include 路径，故所有 target 均可访问。
