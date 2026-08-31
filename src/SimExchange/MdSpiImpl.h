@@ -3,6 +3,7 @@
 #include <set>
 #include <atomic>
 #include <mutex>
+#include <string>
 
 namespace quanttrading::simexchange
 {

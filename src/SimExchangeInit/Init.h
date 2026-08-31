@@ -1,6 +1,7 @@
 #pragma once
 #include "Mdb.h"
 #include "Environment.h"
+#include <string>
 
 using quanttrading::AccountInfo;
 namespace quanttrading::simexchangeinit

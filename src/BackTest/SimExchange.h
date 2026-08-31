@@ -12,6 +12,7 @@
 #include <Spark/Core/Thread/ThreadBase.h>
 #include <DBAdapters/DBInterface/DB.h>
 #include <DBAdapters/AsyncDBWriter/AsyncDBWriter.h>
+#include <string>
 #include <list>
 #include <map>
 #include <mutex>

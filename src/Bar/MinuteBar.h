@@ -5,6 +5,7 @@
 #include <mutex>
 #include <map>
 #include <list>
+#include <string>
 
 namespace quanttrading::bar
 {

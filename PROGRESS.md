@@ -76,6 +76,18 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - **H18 BackTest `new`→池不匹配**（`src/BackTest/SimExchange.cpp`）：`new MdSubscribe/Capital/Position/PositionDetail` 后被 `Mdb.Insert` 池回收 → 分配器不匹配/堆损坏；改 `X::Allocate()`（与 `CreateOrder`/`CreatePosition` 模式一致，`Allocate()` 值初始化 + `memcpy` 覆盖）。
   - **H19 `GetFirstBarTime` 空指针解引用**（`src/Bar/TradeSession.cpp` + `src/Bar/MinuteBar.cpp`）：无 `Section` 段时 `GetFirstTradeSection()` 返回 `nullptr`，`tradeSection->From` 崩溃；加空守卫返回 0，`CheckHasLostBar` 调用侧对 `lostBarMinuteTime <= 0` 直接返回，避免合成 0 时伪造丢失 bar。
   - x64-Debug 编译链接验证通过（2026-08-27）：OrderMatchStatic/BarStatic 重建，MdOffer.exe、SimExchange.exe、BackTestd.dll 均成功（TestBackTest 动态加载新 BackTestd.dll）。
+- **2026-08-31 CMake 全局标志整改**（`CMakeLists.txt`）：
+  - 删除 `set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /bigobj /utf-8")` 全局变异与按 config 重复的 `add_compile_options`/`add_compile_definitions`（`/Od /Zi /O2 /O1`、`-O0/-O3/-O2/-Os`、`NDEBUG` 均与 CMake 默认值逐项等价，`/EHsc` 本就在 MSVC 默认标志内，曾致 `/EHsc /EHsc` 重复）。
+  - 改为平台分支：`if(WIN32)` 内 `add_compile_definitions(UNICODE _UNICODE _CRT_SECURE_NO_WARNINGS _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)` + `add_compile_options(/utf-8 /bigobj)`（不设 `MSVC` 子门，按用户约定分流；`/bigobj` 供 Packages.cpp 等超段上限的生成文件）。WSL 实测（g++，即 WSL-GCC-* preset 环境）：`MSVC` 为空、`UNIX=1`——撤 `MSVC` 门对 Linux 构建无影响，Windows 构建 FLAGS 与改前逐字节一致。
+  - **`WINDOWS`/`LINUX` 平台 define 删除**（当日二次评估）：C++ 侧平台判断统一为编译器内置宏（`ShutdownSignal.cpp` 改 `_WIN32`）。Spark 源码虽 15+ 文件使用 `WINDOWS`/`LINUX`，但由 **Spark 自身构建**的 CMake 定义解析，与其消费者无关；消费者侧核查为零引用——QuantTrading 全目录零引用，Spark 公共头仅 `Platform.h:3` 一处 `#ifdef LINUX`（经 `Core.h` 传递包含，仅声明 `spark::core::GetLastError`/`WSAGetLastError`，QuantTrading 零调用，声明消失无影响），DBAdapters/Templates 零引用。`elseif(UNIX)` 空分支一并移除。
+  - 生效核对（build.ninja FLAGS）：Debug `/DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MDd /utf-8 /bigobj`（重复 `/Od /Zi` 消除）；Release `/DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++20 -MD /utf-8 /bigobj`（`/O2`、`NDEBUG` 由默认提供）。Linux Debug 的 `-ggdb` 与 `_DEBUG` 因全库（含 Spark/DBAdapters 头）零引用而删。
+  - x64-Debug / x64-Release 全量编译链接验证通过（各 131/131 步；删除两个平台 define 后 x64-Debug 再次全量重建通过，DEFINES 已无 `-DWINDOWS`）。本机 shell 无 ninja，验证经 VS 2022 Enterprise 自带 ninja + vcvars64 执行；x64-Debug 缓存 `CMAKE_MAKE_PROGRAM` 已固化为该 ninja 路径（与 VS 所用一致，无副作用）。
+
+- **2026-08-31 WSL-GCC 构建打通（缺 `<string>` 自包含修复 ×8）**：
+  - 现象：WSL-GCC-Debug 全量重编时 `MdSpiImpl.h:14` 报 `'string' in namespace 'std' does not name a type`。
+  - **与同日 CMake 改动无关（实验证明）**：用旧 Linux Debug 标志（`-DLINUX -D_DEBUG -O0 -g -ggdb`）编译同一 TU，报一模一样的错。根因是 `MdSpiImpl.h` 于 2026-08-24（`2bab7a2`）引入 `std::string` 成员后从未在 GCC 下编译过（MSVC 的 `<cstring>` 传递包含 `<string>`，libstdc++ 没有）；当日 CMake flag 变更触发全量重编才第一次在 GCC 踩到。
+  - 修复：8 个"用 `std::string` 但未含 `<string>`"的头文件补 `#include <string>`（`SimExchange/MdSpiImpl.h`、`SimExchangeInit/{ThostFtdcTraderSpiImpl.h,Init.h}`、`Bar/{TradeSession.h,MinuteBar.h}`、`MdOffer/MdFront.h`、`BackTestInit/Init.h`、`BackTest/SimExchange.h`）；预扫 `std::vector`/`std::shared_ptr` 无同类缺口。
+  - 验证：WSL-GCC-Debug 28/28 全绿（MdOffer/SimExchange/SimExchangeInit/BackTestInit/TestBackTest + `libBackTestd.so`），**真实 Linux/GCC 环境验证了 `LINUX` define 删除的正确性**（编译行已无 `-DLINUX`）；Windows x64-Debug 131/131 重建通过。修复文件经 cp 同步至 VS 远程副本 `~/.vs/QuantTrading` 后在 WSL 内 ninja 执行，VS 下次同步自动覆盖为相同内容。
 
 ## 🔄 进行中
 
@@ -83,6 +95,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
 
 ## ❓ 待讨论 / 待决策
 
+- **平台宏统一（WINDOWS→_WIN32、LINUX→__linux__）**（2026-08-31 评估）：`_WIN32`/`__linux__` 为编译器内置宏，可替代 CMake 注入的 `WINDOWS`/`LINUX` 家族约定。使用面：Spark 15+ 文件（Logger、Network/Tcp Iocp/Epoll/Select、Shm 等），DBAdapters/Templates 零使用。QuantTrading 侧已完成：`ShutdownSignal.cpp` 3 处 `#ifdef WIN32` 改 `_WIN32`（裸 cl 对照实验证实 `WIN32` 非编译器内置、依赖 CMake 注入 `/DWIN32`，离开构建系统即走错平台分支——且 MSVC CRT 也有 signal.h/signal，属静默劣化而非编译错误）。CMakeLists 的 `WINDOWS`/`LINUX` define 已于当日删除（消费面核查为零引用）；剩余待决策：Spark 仓库源码内部迁移 `WINDOWS→_WIN32`、`LINUX→__linux__`（属 Spark 自身构建范围，不影响 QuantTrading；迁移前 Spark 自己的 CMake 需继续定义这两个宏）。
 - **H15 OrderBook 市价撮合缺口**（2026-08-27 用户决策：先文档化，代码不动）：`OrderBookOrderMatch::CheckMatch` 只遍历对手限价队列，`m_MarketBuy/SellOrders`（`OrderMatch.h:48-49`）滞留无消费；`OnTick`/`OnBar`（`OrderBookOrderMatch.cpp:19-26`）为空实现，整条路径无价格驱动撮合。待 OrderBook 引擎设计（OnTick 驱动撮合 + 市价队列语义）时一并处理。
 - **BackTest `yearMdSubscribes` 局部 list 泄漏**（2026-08-27 复查发现）：`HandleSubMarketDataFinished` 中 `new list<MdSubscribe*>()`（按年建组）随函数返回永不释放，每次订阅结束泄漏少量 list 容器对象（元素已入 `t_MdSubscribe` 表，不属池对象）；低频小泄漏，待与订阅生命周期重构一并处理。
 - **数据源整理对齐 mdb**（用户负责）：TestBackTest 已能在旧格式 parquet（`LastTraded`/`LastTurnover`/数组盘口，缺 OpenPrice/ClosePrice/Upper/LowerLimitPrice/AveragePrice 5 列）上端到端跑通，**靠 MdReader SQL 的 NULL 占位 + 旧列名兜底**；数据侧未真正对齐 mdb schema。真正对齐后 SQL 可删掉占位符，且 tick 的涨跌停价列才真实可用（当前 OrderMatch 的涨跌停校验处于注释状态，`GetSettlementPrice` 对 +inf 有回退，故暂不影响撮合/结算正确性）。

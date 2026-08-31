@@ -25,35 +25,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_VERBOSE_MAKEFILE ON)
-add_definitions(-DUNICODE -D_UNICODE)
-
-
-IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /bigobj /utf-8")
-    add_definitions(-DWINDOWS -D_CRT_SECURE_NO_WARNINGS -D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
-	add_compile_options(
-        $<$<CONFIG:Debug>:/Od>
-        $<$<CONFIG:Debug>:/Zi>
-        $<$<CONFIG:Release>:/O2>
-        $<$<CONFIG:RelWithDebInfo>:/O2>
-        $<$<CONFIG:RelWithDebInfo>:/Zi>
-        $<$<CONFIG:MinSizeRel>:/O1>)
-ELSEIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	add_definitions("-DLINUX")
-    add_compile_options(
-        $<$<CONFIG:Debug>:-O0>
-        $<$<CONFIG:Debug>:-g>
-        $<$<CONFIG:Debug>:-ggdb>
-        $<$<CONFIG:Release>:-O3>
-        $<$<CONFIG:RelWithDebInfo>:-O2>
-        $<$<CONFIG:RelWithDebInfo>:-g>
-        $<$<CONFIG:MinSizeRel>:-Os>)
-    add_compile_definitions(
-        $<$<CONFIG:Debug>:_DEBUG>
-        $<$<CONFIG:Release>:NDEBUG>
-        $<$<CONFIG:RelWithDebInfo>:NDEBUG>
-        $<$<CONFIG:MinSizeRel>:NDEBUG>)
-ENDIF()
+if(WIN32)
+    add_compile_definitions(UNICODE _UNICODE _CRT_SECURE_NO_WARNINGS _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
+    # /utf-8：源码为 UTF-8；/bigobj：Packages.cpp 等生成文件超出 MSVC 默认段数上限
+    add_compile_options(/utf-8 /bigobj)
+endif()
 message("CMAKE_BUILD_TYPE:" ${CMAKE_BUILD_TYPE})
 message("CMAKE_SYSTEM_NAME:" ${CMAKE_SYSTEM_NAME})
 message("CMAKE_CL_64:" ${CMAKE_CL_64})

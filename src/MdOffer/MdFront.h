@@ -1,6 +1,7 @@
 #pragma once
 #include <Spark/Network/IO/IOFactory.h>
 #include <Spark/Network/Protocol/Protocol.h>
+#include <string>
 
 
 namespace quanttrading::mdoffer

@@ -6,6 +6,7 @@
 #include "MdbStructs.h"
 #include <atomic>
 #include <vector>
+#include <string>
 
 using quanttrading::AccountInfo;
 namespace quanttrading::simexchangeinit
