@@ -89,6 +89,18 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - 修复：8 个"用 `std::string` 但未含 `<string>`"的头文件补 `#include <string>`（`SimExchange/MdSpiImpl.h`、`SimExchangeInit/{ThostFtdcTraderSpiImpl.h,Init.h}`、`Bar/{TradeSession.h,MinuteBar.h}`、`MdOffer/MdFront.h`、`BackTestInit/Init.h`、`BackTest/SimExchange.h`）；预扫 `std::vector`/`std::shared_ptr` 无同类缺口。
   - 验证：WSL-GCC-Debug 28/28 全绿（MdOffer/SimExchange/SimExchangeInit/BackTestInit/TestBackTest + `libBackTestd.so`），**真实 Linux/GCC 环境验证了 `LINUX` define 删除的正确性**（编译行已无 `-DLINUX`）；Windows x64-Debug 131/131 重建通过。修复文件经 cp 同步至 VS 远程副本 `~/.vs/QuantTrading` 后在 WSL 内 ninja 执行，VS 下次同步自动覆盖为相同内容。
 
+- **2026-08-31 单元测试框架落地（doctest v2.5.3）+ 首批用例**：
+  - 框架选型：对比 gtest（vcpkg 路线）/ FetchContent / submodule 后采用 **vendored 单头文件**——doctest 全库即一个头，WSL 构建流不走 vcpkg、配置期零网络依赖，符合"单元测试越轻越好"的标准。`test/UnitTests/doctest/doctest.h`（v2.5.3，9148 行，MIT）+ `LICENSE.txt` 入库；仓库内 `parts/`（拼装脚手架）、`extensions/`（MPI 附加）、`doctest.cpp`（独立 TU 便利文件）均不需要。
+  - CMake：根 `CMakeLists.txt` 新增 `add_application(UnitTests ...)`，链接 BarStatic/OrderMatchStatic（含传递依赖）与 Spark::Serialization（TradeSession.cpp 的 Json::Reader 链接符号）；零被测代码改动。
+  - 首批用例（`Main.cpp` / `OrderMatchTests.cpp` / `TradeSessionTests.cpp` / `MinuteBarTests.cpp` + `TestHelpers.h`，每文件 <200 行）：
+    - OrderMatch（OrderBookOrderMatch）：同价 FIFO（**H14 回归**：买盘队列同价按 OrderID 升序，修复前 LIFO）、卖盘同价 FIFO、价格优先吃穿多档深度、部分成交状态机、限价不越过（99 不成交/100 成交）、`GetMatchPrice` 三价取值分支。
+    - TradeSession：无时段/仅集合竞价时段 `GetFirstBarTime` 返回 0（**H19 回归**，修复前空指针解引用）、日盘首根与时段起止 bar 时间、夜盘与跨零点（2400-2700）换算、`GetTradeSection` 边界与 <800 跨零点归属、`GetNextTradeSection` 跳过集合竞价、`ParseTradeSessions` JSON 解析与 `From/To<800 → +2400` 归一化。
+    - MinuteBar：分钟内聚合并跨分钟闭合（OHLC/CurrVolume/CurrTurnover 账目）、仅集合竞价时段丢失 bar 合成不崩溃（H19 配套路径）、开盘跳档按交易时段合成丢失 bar（901-1435 共 320 根）、早于上一根 bar `UpdateTs` 的乱序 tick 被忽略。
+  - 测试基础设施：`TestHelpers.h` 提供 `CopyString`（规范禁用 strcpy）/`MakeUpdateTs`/`LoadTradeSessionJson`/`ResetTradeSessions`（`ParseTradeSessions` 只 new 不 delete，测试侧配平）；撮合测试池对象经 `OrderPoolGuard` 在用例结束回池（`Match()` 的 newOrder/trade 副本所有权归订阅方）。
+  - 契约发现（重要）：`OrderMatch` 引擎从不修改调用方传入的原始 `mdb::Order`，撮合队列持有原始指针并**依赖订阅方在 `OnOrderUpdate` 中把 `newOrder` 状态写回原对象**（实盘/回测经 `t_Order->Update` 的 `memcpy(oldRecord, newRecord)` 落实）；不写回则同一挂单会被重复撮合。测试订阅者按此契约写回。
+  - 用例修正记录：丢帧合成数量最初断言 320 系把 HHMM 当十进制连减误算（0901→1015 跨小时实为 75 根），引擎输出 200 根（75+60+65）经分段探针逐段核对正确；另 JSON 归一化期望 `To:230 → 2630`（初版误写 2700）。
+  - 验证：**双平台全绿** —— Windows x64-Debug（vcvars64 + VS ninja → `bin/Debug/UnitTests.exe`）与 WSL-GCC-Debug（`~/.vs/QuantTrading` 远程副本，38/38 步含依赖库重建）均 **17/17 用例、101/101 断言通过**。
+
 ## 🔄 进行中
 
 - 无。

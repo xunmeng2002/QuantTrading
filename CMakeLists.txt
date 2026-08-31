@@ -199,6 +199,12 @@ target_link_libraries(TestSimExchangeApi PRIVATE QuantTradingCommonStatic SimExc
 copy_config_file(TestSimExchangeApi ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestSimExchangeApi.json)
 
 
+add_application(UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/test/UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/test/UnitTests)
+target_link_libraries(UnitTests PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic OrderMatchStatic
+    Spark::Core Spark::Serialization)
+copy_dll_file(UnitTests)
+
+
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(TARGETS
     QuantTradingInterface
