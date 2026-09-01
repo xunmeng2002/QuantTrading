@@ -83,6 +83,9 @@ add_static_md_module(OrderMatch ${CMAKE_CURRENT_SOURCE_DIR}/src/OrderMatch ${CMA
 target_link_libraries(OrderMatchStatic PUBLIC QuantTradingInterface MdbStatic PackagesStatic)
 target_link_libraries(OrderMatchStatic PRIVATE QuantTradingCommonStatic Spark::Core)
 
+add_static_md_module(Strategy ${CMAKE_CURRENT_SOURCE_DIR}/src/Strategy ${CMAKE_CURRENT_SOURCE_DIR}/src/Strategy)
+target_link_libraries(StrategyStatic PUBLIC QuantTradingInterface Spark::Core)
+
 
 add_library(CtpHeaders INTERFACE)
 get_target_property(CTP_INCLUDE_DIR CTP::traderapi INTERFACE_INCLUDE_DIRECTORIES)
@@ -186,6 +189,11 @@ target_link_libraries(TestBackTest PRIVATE QuantTradingCommonStatic PackagesStat
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestBackTest.json)
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
 
+add_application(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid)
+target_link_libraries(TestStrategyGrid PRIVATE QuantTradingCommonStatic PackagesStatic StrategyStatic BackTestApiMiddleStatic Spark::Core Spark::Serialization)
+copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestStrategyGrid.json)
+copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
+
 add_application(TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdApi)
 target_link_libraries(TestMdApi PRIVATE QuantTradingCommonStatic MdApiMiddleStatic Spark::Core Spark::Serialization)
 copy_config_file(TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestMdApi.json)
@@ -200,8 +208,13 @@ copy_config_file(TestSimExchangeApi ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestSimE
 
 
 add_application(UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/test/UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/test/UnitTests)
-target_link_libraries(UnitTests PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic OrderMatchStatic
+target_link_libraries(UnitTests PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic OrderMatchStatic StrategyStatic
     Spark::Core Spark::Serialization)
+# GridStrategy 状态机直接进单测（不经 Config 生成代码，参数由 GridParams 注入）
+target_sources(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid/GridStrategy.cpp)
+target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid)
+# 单测的 FakeBackTestApi 继承 BackTestApi 但不链接 BackTest DLL，去掉 dllimport 装饰
+target_compile_definitions(UnitTests PRIVATE BACKTEST_STATIC_DEFINE)
 copy_dll_file(UnitTests)
 
 

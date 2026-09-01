@@ -113,12 +113,22 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - **TestMdApi 等待改造**：`sleep(120s)` 死等改为 `m_RtnMdCount`（`MdSpiImpl::OnRtnDepthMarketData` 内原子计数）+ 120s 超时轮询，收到首笔行情即提前退出，超时打印提示（对齐 TestTraderApi 既有模式）。
   - 验证：**双平台全绿** —— Windows x64-Debug 与 WSL-GCC-Debug 的 UnitTests/BackTest(TestMdApi) 均编译链接通过，UnitTests 均 **33/33 用例、169/169 断言 SUCCESS**；TestBackTest 端到端冒烟（动态加载修正后 `BackTestd.dll`，默认配置即 OppositePrice 模式）重跑通过。
 
+- **2026-09-01 策略层抽象 StrategyBase + 网格策略 Demo（TestStrategyGrid）**：
+  - **`src/Strategy`（新静态库 `StrategyStatic`）**：`StrategyBase : protected BackTestSpi` 吸收策略脚手架——订阅两步走（ReqSubMarketData + Finished，RequestID 自增）、四向限价报单封装（自动填 AccountID/OrderPriceType/ClientOrderID）、`CancelOrder` 双路径（有回报缓存走 OrderID 主路径；未收到过回报的挂单——OppositePrice/LastPrice 模式引擎不推报单接受确认——走 `ClientCancelOrderID=ClientOrderID` 回退路径）、事件流维护的持仓/最新价视图、`OnRtnMarketDataEnd → OnEnd → api->Release` 生命周期收口（修正旧 Demo 的倒挂）。线程契约写入类注释：钩子均在引擎线程触发，内部状态无锁。`OnTrade` 钩子带 `clientOrderID`（TradeField 无此字段，经 OrderID 反查补齐）。
+  - **`test/TestStrategyGrid`（新 Demo，不动 TestBackTest）**：成对网格策略（每格一开一平，利润 = 步长 × 乘数 × 手数），格位状态机 Empty → OpenPending → OpenFilled → ClosePending → Closed；日级重锚（SessionBegin 复位 Closed 格为 Empty，首笔有效 tick 为新中枢补挂）、**未成交格位跨日保留、日终不撤单**（引擎挂单跨日仍有效且会成交，撤单反而制造幻影风险，见下条冒烟发现）、平仓单价格取自开仓成交价 ∓ 步长与锚点无关、防重复补单（状态机守卫）。Config 经 pumpall 生成（`Model/Configs/TestStrategyGrid.xml` + pumplist 2 条目），参数结构 `GridParams` 不依赖生成代码以便单测直驱。
+  - **单测 +13 例**（`StrategyBaseTests.cpp` 7 例 / `GridStrategyTests.cpp` 6 例，`FakeBackTestApi` 捕获 SPI 注册与 Req 请求）：订阅、持仓/最新价累计、撤单主/回退/拒绝路径、Release 幂等、首锚挂梯价格序列、成交补平仓恰一笔（重放不重复）、配对平仓归零、拒单次日电位重挂、ClosePending/OpenPending 跨日保留不重挂、Closed 格次日按新锚重挂。`TestHelpers.h` 增 `FakeBackTestApi` 与 `MakeMdTickField/MakeTradeField/MakeOrderField` 工厂。
+  - **单测抓住 1 个真 Bug**：GridStrategy 原未重写 `OnSessionBegin`，日切后 `m_AwaitingAnchor` 恒为 false，次日永不重锚——已补上。另 UnitTests 定义 `BACKTEST_STATIC_DEFINE`（FakeBackTestApi 继承 BackTestApi 但不链接 BackTest DLL，消除 dllimport 符号）。
+  - **冒烟发现（引擎行为实证，推翻此前代码阅读推测）**：首轮冒烟日终撤单 4115"委托不存在"——根因是 `SimExchange::HandleCancelOrder` 两条查单路径都以**当前** `m_TradingDay` 为首键（`SimExchange.cpp:575-580`），而撤单请求经队列在日切翻日之后才被消费，前日订单必然查不到；同时 `Settlement`/`Init` 均不触碰 `m_OrderMatch`（构造时创建一次）→ **挂单跨日不清、价格到了仍会成交，只是跨日撤单永远失败**。据此修正策略：日终不撤单、未成交格位跨日保留原价位（fixed level 即网格语义），避免"复位 Empty 重挂 + 旧单仍活着"的幻影仓位。引擎侧修复（查单去掉交易日域或日切结算时统一撤单并推送回报）列入待决策。
+  - 验证：**双平台全绿** —— Windows x64-Debug（vcvars64 + VS ninja）与 WSL-GCC-Debug 均编译通过，UnitTests 均 **46/46 用例、241/241 断言 SUCCESS**；`TestStrategyGrid.exe` 冒烟 IF2503 三个月数据：66 笔开仓 / 56 对平仓 / 已实现盈亏 613.8 / 期末双向持仓 0 / 全程零撤单零 4115 / 退出码 0（修正前 Closed 格不复活导致两天后停摆：15 笔 / 10 对 / 120.4）。
+
 ## 🔄 进行中
 
 - 无。
 
 ## ❓ 待讨论 / 待决策
 
+- **引擎补报单接受确认**（2026-09-01 提出，StrategyBase 实施时发现）：`OppositePriceOrderMatch`/`LastPriceOrderMatch` 的 `InsertOrder` 不调 `m_OrderMatchSubscriber->OnOrder(order)`（仅 `OrderBookOrderMatch.cpp:37` 有），挂单未成交前策略拿不到引擎 OrderID——与真实 CTP"已报"回报语义不一致。StrategyBase 已用 `ClientCancelOrderID` 回退路径兼容，但属引擎行为缺口，修复需单独评审 + 回归（TestBackTest 冒烟 + 单测）。
+- **HandleCancelOrder 跨日查单失败 + 字段疑似误用**（2026-09-01 实证，待用户决策修法）：两条查单路径都以当前 `m_TradingDay` 为首键（`SimExchange.cpp:575-580`），撤单请求经队列在日切后消费时前日订单必查不到（冒烟实证 4115"委托不存在"）；且回退路径用撤单请求的 `ClientCancelOrderID` 匹配订单 `ClientOrderID` 唯一键，语义上该字段应为撤单请求自身编号。另一层语义矛盾：引擎挂单跨日永不清除（`Settlement`/`Init` 不触碰 `m_OrderMatch`），而真实 CTP 日终结算会撤销全部未成交日单——修引擎时需一并定夺：①查单去掉交易日域（最小修）；②日切结算统一撤单并推送 OnRtnOrder(Canceled)（对齐真实交易所，策略需处理撤单回报）。当前策略侧已按"挂单跨日有效"设计，不依赖跨日撤单。
 - **平台宏统一（WINDOWS→_WIN32、LINUX→__linux__）**（2026-08-31 评估）：`_WIN32`/`__linux__` 为编译器内置宏，可替代 CMake 注入的 `WINDOWS`/`LINUX` 家族约定。使用面：Spark 15+ 文件（Logger、Network/Tcp Iocp/Epoll/Select、Shm 等），DBAdapters/Templates 零使用。QuantTrading 侧已完成：`ShutdownSignal.cpp` 3 处 `#ifdef WIN32` 改 `_WIN32`（裸 cl 对照实验证实 `WIN32` 非编译器内置、依赖 CMake 注入 `/DWIN32`，离开构建系统即走错平台分支——且 MSVC CRT 也有 signal.h/signal，属静默劣化而非编译错误）。CMakeLists 的 `WINDOWS`/`LINUX` define 已于当日删除（消费面核查为零引用）；剩余待决策：Spark 仓库源码内部迁移 `WINDOWS→_WIN32`、`LINUX→__linux__`（属 Spark 自身构建范围，不影响 QuantTrading；迁移前 Spark 自己的 CMake 需继续定义这两个宏）。
 - **H15 OrderBook 市价撮合缺口**（2026-08-27 用户决策：先文档化，代码不动）：`OrderBookOrderMatch::CheckMatch` 只遍历对手限价队列，`m_MarketBuy/SellOrders`（`OrderMatch.h:48-49`）滞留无消费；`OnTick`/`OnBar`（`OrderBookOrderMatch.cpp:19-26`）为空实现，整条路径无价格驱动撮合。待 OrderBook 引擎设计（OnTick 驱动撮合 + 市价队列语义）时一并处理。
 - **数据源整理对齐 mdb**（用户负责）：TestBackTest 已能在旧格式 parquet（`LastTraded`/`LastTurnover`/数组盘口，缺 OpenPrice/ClosePrice/Upper/LowerLimitPrice/AveragePrice 5 列）上端到端跑通，**靠 MdReader SQL 的 NULL 占位 + 旧列名兜底**；数据侧未真正对齐 mdb schema。真正对齐后 SQL 可删掉占位符，且 tick 的涨跌停价列才真实可用（当前 OrderMatch 的涨跌停校验处于注释状态，`GetSettlementPrice` 对 +inf 有回退，故暂不影响撮合/结算正确性）。

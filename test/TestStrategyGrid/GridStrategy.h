@@ -1,0 +1,75 @@
+#pragma once
+#include "StrategyBase.h"
+#include <string>
+#include <vector>
+
+namespace quanttrading::teststrategygrid
+{
+struct GridParams
+{
+	double GridStep = 0.0;
+	int GridCount = 0;
+	int VolumePerGrid = 0;
+	std::string ExchangeID;
+	std::string InstrumentID;
+};
+
+// 成对网格：每格一开一平，利润 = 步长 × 乘数 × 手数，仓位天然有界（≤ GridCount 手/向）。
+// 格位状态机：Empty → OpenPending → OpenFilled → ClosePending → Closed。
+// 日级重锚：SessionBegin 复位 Closed 格为 Empty，首笔 tick LastPrice 为新中枢补挂阶梯；
+// 未成交格位跨日保留（引擎挂单跨日仍有效且会成交，实证见冒烟日志的 4115 现象——
+// 跨日撤单因 HandleCancelOrder 按当前交易日查单而失败，故日终不撤单、不依赖撤单结果），
+// 平仓单价格取自开仓成交价 ∓ 步长，与锚点无关，跨日继续有效。
+class GridStrategy : public quanttrading::strategy::StrategyBase
+{
+public:
+	GridStrategy(quanttrading::BackTestApi* backTestApi, const char* accountID, const GridParams& gridParams);
+
+protected:
+	void OnStart() override;
+	void OnTick(const DepthMarketDataField* depthMarketData) override;
+	void OnTrade(const TradeField* trade, ClientOrderIDType clientOrderID) override;
+	void OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo) override;
+	// 日切后等待首笔有效 tick 重锚
+	void OnSessionBegin(const SessionBeginField* sessionBegin) override;
+	void OnSessionEnd(const SessionEndField* sessionEnd) override;
+	void OnEnd() override;
+
+private:
+	enum class GridSlotState
+	{
+		Empty = 0,
+		OpenPending,
+		OpenFilled,
+		ClosePending,
+		Closed,
+	};
+	struct GridSlot
+	{
+		GridSlotState State = GridSlotState::Empty;
+		DirectionType Direction = DirectionType::Buy;   // 开仓方向：Buy=中枢下方买开格，Sell=中枢上方卖开格
+		PriceType OpenPrice = 0.0;
+		PriceType OpenFillPrice = 0.0;
+		PriceType ClosePrice = 0.0;
+		ClientOrderIDType OpenClientOrderID = 0;
+		ClientOrderIDType CloseClientOrderID = 0;
+		VolumeType OpenFilledVolume = 0;
+		VolumeType CloseFilledVolume = 0;
+	};
+
+	void PlaceLadder(PriceType anchorPrice);
+	void PlaceOpenOrder(GridSlot& gridSlot);
+	void PlaceCloseOrder(GridSlot& gridSlot, VolumeType volume);
+	void HandleOpenTrade(const TradeField* trade, GridSlot* gridSlot);
+	void HandleCloseTrade(const TradeField* trade, GridSlot* gridSlot);
+	GridSlot* FindSlotByOpenOrder(ClientOrderIDType clientOrderID);
+	GridSlot* FindSlotByCloseOrder(ClientOrderIDType clientOrderID);
+
+	GridParams m_Params;
+	std::vector<GridSlot> m_Slots;   // [0, GridCount) 买开格；[GridCount, 2×GridCount) 卖开格
+	bool m_AwaitingAnchor = true;
+	int m_ClosedPairCount = 0;
+	double m_RealizedProfit = 0.0;
+	double m_TotalCommission = 0.0;
+};
+}

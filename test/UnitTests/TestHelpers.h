@@ -1,6 +1,7 @@
 #pragma once
 #include "TradeSession.h"
 #include "OrderMatch.h"
+#include <QuantTrading/BackTestApi.h>
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -171,5 +172,73 @@ namespace quanttrading::unittest
         bar->Low = low_price;
         bar->Close = close_price;
         return bar;
+    }
+
+    // 回测策略层测试桩：实现 BackTestApi 纯虚接口，捕获 SPI 注册与 Req 请求，供测试回放引擎事件
+    class FakeBackTestApi : public quanttrading::BackTestApi
+    {
+    public:
+        bool Init() override { return init_result; }
+        void Join() override {}
+        void Release() override { ++release_count; }
+        void RegisterFront(const char* /*address*/) override {}
+        void RegisterSpi(quanttrading::BackTestSpi* spi) override { registered_spi = spi; }
+        int ReqSubMarketData(const ReqSubMarketDataField* /*req*/, int /*requestID*/) override { ++subscribe_count; return 0; }
+        int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* /*req*/, int /*requestID*/) override { return 0; }
+        int ReqInsertOrder(const ReqInsertOrderField* req_insert_order, int /*requestID*/) override
+        {
+            insert_requests.push_back(*req_insert_order);
+            return 0;
+        }
+        int ReqCancelOrder(const ReqCancelOrderField* req_cancel_order, int /*requestID*/) override
+        {
+            cancel_requests.push_back(*req_cancel_order);
+            return 0;
+        }
+
+        bool init_result = true;
+        int release_count = 0;
+        int subscribe_count = 0;
+        quanttrading::BackTestSpi* registered_spi = nullptr;
+        std::vector<ReqInsertOrderField> insert_requests;
+        std::vector<ReqCancelOrderField> cancel_requests;
+    };
+
+    // 造 DepthMarketDataField（值类型，栈上使用）
+    inline DepthMarketDataField MakeMdTickField(const char* instrument_id, double last_price)
+    {
+        DepthMarketDataField md_tick;
+        std::memset(&md_tick, 0, sizeof(md_tick));
+        CopyString(md_tick.InstrumentID, instrument_id);
+        md_tick.LastPrice = last_price;
+        return md_tick;
+    }
+
+    // 造 TradeField（值类型）
+    inline TradeField MakeTradeField(const char* instrument_id, int order_id, DirectionType direction,
+        OffsetFlagType offset_flag, double price, long long volume, int volume_multiple, double commission)
+    {
+        TradeField trade;
+        std::memset(&trade, 0, sizeof(trade));
+        CopyString(trade.InstrumentID, instrument_id);
+        trade.OrderID = order_id;
+        trade.Direction = direction;
+        trade.OffsetFlag = offset_flag;
+        trade.Price = price;
+        trade.Volume = volume;
+        trade.VolumeMultiple = volume_multiple;
+        trade.Commission = commission;
+        return trade;
+    }
+
+    // 造 OrderField（值类型，只填订单路由相关字段）
+    inline OrderField MakeOrderField(const char* instrument_id, int order_id, int client_order_id)
+    {
+        OrderField order;
+        std::memset(&order, 0, sizeof(order));
+        CopyString(order.InstrumentID, instrument_id);
+        order.OrderID = order_id;
+        order.ClientOrderID = client_order_id;
+        return order;
     }
 }
