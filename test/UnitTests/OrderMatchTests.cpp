@@ -4,96 +4,14 @@
 
 #include "doctest/doctest.h"
 
-#include <cstring>
 #include <limits>
 #include <vector>
 
 using namespace quanttrading::ordermatch;
+using namespace quanttrading::unittest;
 
 TEST_SUITE("OrderMatch")
 {
-
-namespace
-{
-struct OrderUpdateRecord
-{
-    int order_id;
-    long long volume_total;
-    long long volume_traded;
-    OrderStatusType order_status;
-};
-
-struct TradeRecord
-{
-    int order_id;
-    DirectionType direction;
-    double price;
-    long long volume;
-};
-
-class RecordingOrderMatchSubscriber : public OrderMatchSubscriber
-{
-public:
-    void OnOrder(mdb::Order* order) override
-    {
-        resting_order_ids.push_back(order->OrderID);
-    }
-
-    void OnOrderUpdate(mdb::Order* order, mdb::Order* new_order) override
-    {
-        // 撮合队列持有原始 order，须把新状态写回原对象（与 t_Order->Update 的 memcpy 契约一致），否则同单会被重复撮合
-        std::memcpy(order, new_order, sizeof(mdb::Order));
-        order_updates.push_back({new_order->OrderID, new_order->VolumeTotal, new_order->VolumeTraded, new_order->OrderStatus});
-        new_order->Deallocate();
-    }
-
-    void OnTrade(mdb::Trade* trade) override
-    {
-        trades.push_back({trade->OrderID, trade->Direction, trade->Price, trade->Volume});
-        trade->Deallocate();
-    }
-
-    std::vector<int> resting_order_ids;
-    std::vector<OrderUpdateRecord> order_updates;
-    std::vector<TradeRecord> trades;
-};
-
-// 测试订单由对象池分配，析构时统一回池，与撮合引擎"池对象归还订阅方"的所有权契约一致
-class OrderPoolGuard
-{
-public:
-    ~OrderPoolGuard()
-    {
-        for (auto* order : orders_)
-        {
-            order->Deallocate();
-        }
-    }
-
-    mdb::Order* MakeOrder(int order_id, DirectionType direction, double price, long long volume)
-    {
-        auto* order = mdb::Order::Allocate();
-        quanttrading::unittest::CopyString(order->TradingDay, "20240301");
-        quanttrading::unittest::CopyString(order->AccountID, "test");
-        quanttrading::unittest::CopyString(order->ExchangeID, "SHFE");
-        quanttrading::unittest::CopyString(order->InstrumentID, "cu2503");
-        order->OrderID = order_id;
-        order->Direction = direction;
-        order->OffsetFlag = OffsetFlagType::Open;
-        order->OrderPriceType = OrderPriceTypeType::LimitPrice;
-        order->Price = price;
-        order->Volume = volume;
-        order->VolumeTotal = volume;
-        order->OrderStatus = OrderStatusType::Inserted;
-        order->VolumeMultiple = 1;
-        orders_.push_back(order);
-        return order;
-    }
-
-private:
-    std::vector<mdb::Order*> orders_;
-};
-}
 
 TEST_CASE("同价买单按先到先成交(H14回归)")
 {
@@ -227,4 +145,5 @@ TEST_CASE("GetMatchPrice按委托价对手价最新价取有效价")
     CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 95.0, 97.0, 100.0) == 97.0);
     CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 95.0, 90.0, 93.0) == 93.0);
 }
+
 }

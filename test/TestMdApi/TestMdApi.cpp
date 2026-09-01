@@ -31,7 +31,16 @@ int main(int argc, char* argv[])
 	api->RegisterFront(serverConfig.MdOfferAddress.c_str());
 	api->Init();
 
-	std::this_thread::sleep_for(chrono::seconds(120));
+	int waitSeconds = 0;
+	while (spi->m_RtnMdCount == 0 && waitSeconds < 120)
+	{
+		std::this_thread::sleep_for(chrono::seconds(1));
+		++waitSeconds;
+	}
+	if (spi->m_RtnMdCount == 0)
+	{
+		cout << "Timeout waiting for market data." << endl;
+	}
 	api->Release();
 	std::this_thread::sleep_for(chrono::seconds(1));
 

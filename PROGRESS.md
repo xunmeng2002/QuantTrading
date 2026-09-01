@@ -101,6 +101,18 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - 用例修正记录：丢帧合成数量最初断言 320 系把 HHMM 当十进制连减误算（0901→1015 跨小时实为 75 根），引擎输出 200 根（75+60+65）经分段探针逐段核对正确；另 JSON 归一化期望 `To:230 → 2630`（初版误写 2700）。
   - 验证：**双平台全绿** —— Windows x64-Debug（vcvars64 + VS ninja → `bin/Debug/UnitTests.exe`）与 WSL-GCC-Debug（`~/.vs/QuantTrading` 远程副本，38/38 步含依赖库重建）均 **17/17 用例、101/101 断言通过**。
 
+- **2026-09-01 撮合引擎第二批单测 + OppositePrice 成交价方向修正 + 两处小修**：
+  - **OppositePrice 成交价方向修正**（`src/OrderMatch/OppositePriceOrderMatch.{h,cpp}`，用户判定为 bug）：原实现买单按 `BidPrice1`、卖单按 `AskPrice1` 成交（本方价），与 README"对手价"语义相反——市价买单以买一价成交在任何微观结构模型下不成立；且 `Configs/BackTest.json` 默认 `MatchMode:2` 正用此模式，直接影响回测成交假设（买得更低、卖得更高，整体偏乐观）。改为教科书对手价：买单按 `AskPrice1`（守卫 `AskVolume1`）、卖单按 `BidPrice1`（守卫 `BidVolume1`），protected 方法改名 `CheckBidMatch/CheckAskMatch → CheckBuyMatch/CheckSellMatch`（对外接口不变）。TestBackTest 端到端冒烟重跑通过（全链路至 20241231 撮合/成交/结算/Dump 正常，成交价如 3925.2 限价单按对手价 3925.0 成交，符合修正后语义）。
+  - **第二批单测**（`LastPriceOrderMatchTests.cpp` / `OppositePriceOrderMatchTests.cpp` / `BarOrderMatchTests.cpp` / `OrderIDSeedTests.cpp`，每文件 <200 行）：
+    - LastPrice：市价单首个有效 tick 全额成交于最新价且不重复成交、限价按最新价成交、低于最新价不追价（挂单待回落成交）、无效 tick（LastPrice=+inf / Volume=0）与 OnBar 不触发。
+    - OppositePrice（修正后行为基线）：市价买按卖一/市价卖按买一、限价按对手价成交与挂单后续成交、对手方无流动性或 +inf 不撮合。
+    - Bar：限价在 bar 区间内按委托价、高于 bar 最高价按最高价成交（悲观假设）、低于 bar 最低价不成交直到触及（按触及 bar 最高价成交）、卖单对称（低于最低价按最低价）、市价单按 (High+Low)/2、OnTick 不触发。
+    - OrderIDSeed（H17 回归）：`SeedNextOrderIDFromMaxOrderID` 只上移不拉低；`SeedNextOrderIDFromOrders` 从栈构 `OrderTable`（3 行订单，ClientOrderID 互异避免唯一键冲突，Insert 失败路径会 Deallocate）取最大 OrderID 续接；断言采用相对/隔离写法，不依赖用例执行顺序。
+  - **测试设施 DRY**：`RecordingOrderMatchSubscriber`/`OrderPoolGuard` 自 `OrderMatchTests.cpp` 上收至 `TestHelpers.h`；新增泛型 `PoolRecordGuard<T>`（池记录登记回池）与 `MakeMdTick`/`MakeBarRecord` 行情工厂；`OrderPoolGuard` 改为复用 `PoolRecordGuard<mdb::Order>`，`MakeOrder` 增加 `OrderPriceType` 参数支持市价单。
+  - **yearMdSubscribes 泄漏修复**（`src/BackTest/SimExchange.cpp`）：`map<int, list<MdSubscribe*>*>` 改值语义 `map<int, list<MdSubscribe*>>`，消除按年 `new list` 随函数返回泄漏（元素仍归 `t_MdSubscribe` 表管理）；读取处 `auto` 改 `auto&` 避免整表拷贝。
+  - **TestMdApi 等待改造**：`sleep(120s)` 死等改为 `m_RtnMdCount`（`MdSpiImpl::OnRtnDepthMarketData` 内原子计数）+ 120s 超时轮询，收到首笔行情即提前退出，超时打印提示（对齐 TestTraderApi 既有模式）。
+  - 验证：**双平台全绿** —— Windows x64-Debug 与 WSL-GCC-Debug 的 UnitTests/BackTest(TestMdApi) 均编译链接通过，UnitTests 均 **33/33 用例、169/169 断言 SUCCESS**；TestBackTest 端到端冒烟（动态加载修正后 `BackTestd.dll`，默认配置即 OppositePrice 模式）重跑通过。
+
 ## 🔄 进行中
 
 - 无。
@@ -109,12 +121,11 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
 
 - **平台宏统一（WINDOWS→_WIN32、LINUX→__linux__）**（2026-08-31 评估）：`_WIN32`/`__linux__` 为编译器内置宏，可替代 CMake 注入的 `WINDOWS`/`LINUX` 家族约定。使用面：Spark 15+ 文件（Logger、Network/Tcp Iocp/Epoll/Select、Shm 等），DBAdapters/Templates 零使用。QuantTrading 侧已完成：`ShutdownSignal.cpp` 3 处 `#ifdef WIN32` 改 `_WIN32`（裸 cl 对照实验证实 `WIN32` 非编译器内置、依赖 CMake 注入 `/DWIN32`，离开构建系统即走错平台分支——且 MSVC CRT 也有 signal.h/signal，属静默劣化而非编译错误）。CMakeLists 的 `WINDOWS`/`LINUX` define 已于当日删除（消费面核查为零引用）；剩余待决策：Spark 仓库源码内部迁移 `WINDOWS→_WIN32`、`LINUX→__linux__`（属 Spark 自身构建范围，不影响 QuantTrading；迁移前 Spark 自己的 CMake 需继续定义这两个宏）。
 - **H15 OrderBook 市价撮合缺口**（2026-08-27 用户决策：先文档化，代码不动）：`OrderBookOrderMatch::CheckMatch` 只遍历对手限价队列，`m_MarketBuy/SellOrders`（`OrderMatch.h:48-49`）滞留无消费；`OnTick`/`OnBar`（`OrderBookOrderMatch.cpp:19-26`）为空实现，整条路径无价格驱动撮合。待 OrderBook 引擎设计（OnTick 驱动撮合 + 市价队列语义）时一并处理。
-- **BackTest `yearMdSubscribes` 局部 list 泄漏**（2026-08-27 复查发现）：`HandleSubMarketDataFinished` 中 `new list<MdSubscribe*>()`（按年建组）随函数返回永不释放，每次订阅结束泄漏少量 list 容器对象（元素已入 `t_MdSubscribe` 表，不属池对象）；低频小泄漏，待与订阅生命周期重构一并处理。
 - **数据源整理对齐 mdb**（用户负责）：TestBackTest 已能在旧格式 parquet（`LastTraded`/`LastTurnover`/数组盘口，缺 OpenPrice/ClosePrice/Upper/LowerLimitPrice/AveragePrice 5 列）上端到端跑通，**靠 MdReader SQL 的 NULL 占位 + 旧列名兜底**；数据侧未真正对齐 mdb schema。真正对齐后 SQL 可删掉占位符，且 tick 的涨跌停价列才真实可用（当前 OrderMatch 的涨跌停校验处于注释状态，`GetSettlementPrice` 对 +inf 有回退，故暂不影响撮合/结算正确性）。
 - **P1-1 完整重连**：当前仅重置登录态，CTP 断线自动重连/退避策略未实现。需确认所用 CTP 版本的 `Reconnect()`/自动重连行为后设计。
 - **P2-1 MdKernel 职责拆分**：`HandleRtnDepthMarketData` 同时做 bar 聚合/Mdb 更新/快照/广播，建议预留 tick 处理管线。
 - **P2-2 Bar 内存策略**：`MinuteBar` 用裸 `new` 且 `m_TodayBars` 无日界清理，考虑改对象池 + 日界重置。
-- **P2-3 Bar 算法单测**：补 bar / 交易时段 / 集合竞价逻辑无测试覆盖。
+- **P2-3 Bar 算法单测**：已由 2026-08-31/09-01 两批 UnitTests 覆盖（bar 聚合、交易时段、集合竞价、丢失 bar 合成、撮合四模式），条目关闭。
 - **P2-4 订阅范围配置化**：当前 `HandleNotifyDBConnect` 遍历 `t_Instrument` 全市场订阅，应改为按交易所/产品/合约配置。
 - **配置明文凭证（源码硬编码已消除，S4 完成）**：`Main.cpp` 的 MdOffer 种子用户与死常量已迁移到配置（S4），但配置文件本身仍明文存储密码——`CtpAccountInfo.json`（SimNow 账户 Password/AuthCode）、各 `Configs/*.json`（`DbPassword`/`MdPassword`）、`TestMdApi.json`（`MdPassword`）。接真实环境前需迁移到密钥管理/环境变量；`MdPassword` 测试值 `123456` 仅限开发。
 - **优雅退出 Ctrl+C 交互验证**：MdOffer / SimExchange 的有序关停逻辑已就绪，但 shell 无法模拟 Ctrl+C，需在真实控制台运行并确认退出顺序与日志。

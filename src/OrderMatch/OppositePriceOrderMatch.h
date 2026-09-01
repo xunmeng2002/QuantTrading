@@ -13,8 +13,8 @@ namespace quanttrading::ordermatch
         virtual void OnBar(mdb::BarMarketData* mdBar) override;
         virtual void InsertOrder(mdb::Order* order) override;
     protected:
-        void CheckBidMatch(mdb::DepthMarketData* mdTick);
-        void CheckAskMatch(mdb::DepthMarketData* mdTick);
+        void CheckBuyMatch(mdb::DepthMarketData* mdTick);
+        void CheckSellMatch(mdb::DepthMarketData* mdTick);
         bool CheckMatchForOrder(mdb::Order* order, const double& price);
 
     };

@@ -32,6 +32,7 @@ void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, cons
 void MdSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
 	MdSpiMiddle::OnRtnDepthMarketData(depthMarketData);
+	++m_RtnMdCount;
 }
 void MdSpiImpl::ReqUserLogin()
 {

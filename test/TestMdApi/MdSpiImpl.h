@@ -4,6 +4,7 @@
 #include <chrono>
 #include <vector>
 #include <map>
+#include <atomic>
 
 namespace quanttrading::testmdapi
 {
@@ -12,6 +13,8 @@ class MdSpiImpl : public MdSpiMiddle
 public:
 	MdSpiImpl(MdApi* mdApi);
 	~MdSpiImpl();
+
+	std::atomic<int> m_RtnMdCount{0};
 
 	virtual void OnConnected() override;
 	virtual void OnDisConnected() override;

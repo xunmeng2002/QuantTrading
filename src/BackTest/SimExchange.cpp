@@ -500,18 +500,14 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			mdSubscribes.push_back(mdSubscribe);
 		}
 	}
-	map<int, list<MdSubscribe*>*> yearMdSubscribes;
+	map<int, list<MdSubscribe*>> yearMdSubscribes;
 	for (auto& it : instrumentMdSubscribes)
 	{
 		for (auto mdSubscribe : it.second)
 		{
 			int year = int(atoi(mdSubscribe->StartTradingDay) / 10000);
 			auto& mdSubscribes = yearMdSubscribes[year];
-			if (mdSubscribes == nullptr)
-			{
-				mdSubscribes = new list<MdSubscribe*>();
-			}
-			mdSubscribes->push_back(mdSubscribe);
+			mdSubscribes.push_back(mdSubscribe);
 			m_Mdb->t_MdSubscribe->Insert(mdSubscribe);
 		}
 	}
@@ -526,8 +522,8 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		std::list<DepthMarketData*> mdTicks;
 		for (auto& it : yearMdSubscribes)
 		{
-			auto mdSubscribes = it.second;
-			m_MdReader->ReadMdTick(*mdSubscribes, mdTicks);
+			auto& mdSubscribes = it.second;
+			m_MdReader->ReadMdTick(mdSubscribes, mdTicks);
 			m_MdTicks.splice(m_MdTicks.end(), mdTicks);
 		}
 	}
@@ -536,8 +532,8 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		std::list<BarMarketData*> mdBars;
 		for (auto& it : yearMdSubscribes)
 		{
-			auto mdSubscribes = it.second;
-			m_MdReader->ReadMdBar(*mdSubscribes, mdBars);
+			auto& mdSubscribes = it.second;
+			m_MdReader->ReadMdBar(mdSubscribes, mdBars);
 			m_MdBars.splice(m_MdBars.end(), mdBars);
 		}
 	}
