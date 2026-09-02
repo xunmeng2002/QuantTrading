@@ -175,6 +175,17 @@ void GridStrategy::UpdateClosePrice(GridSlot& gridSlot)
 	}
 }
 
+void GridStrategy::ResetSlotToEmpty(GridSlot& gridSlot)
+{
+	// 清净周期态字段：格位跨周期复用，残留的 CloseFilledVolume 会使新周期的平仓剩余量
+	// 计算为 0，撤单后不再补平仓单，格位带持仓困死在 ClosePending
+	gridSlot.State = GridSlotState::Empty;
+	gridSlot.OpenClientOrderID = 0;
+	gridSlot.CloseClientOrderID = 0;
+	gridSlot.OpenFilledVolume = 0;
+	gridSlot.CloseFilledVolume = 0;
+}
+
 void GridStrategy::HandleOpenOrderCanceled(GridSlot* gridSlot)
 {
 	if (gridSlot->State != GridSlotState::OpenPending)
@@ -183,8 +194,7 @@ void GridStrategy::HandleOpenOrderCanceled(GridSlot* gridSlot)
 	}
 	if (gridSlot->OpenFilledVolume == 0)
 	{
-		gridSlot->State = GridSlotState::Empty;
-		gridSlot->OpenClientOrderID = 0;
+		ResetSlotToEmpty(*gridSlot);
 		WriteLog(LogLevel::Info, "Open order canceled without fill, slot reset to Empty, Price:%f", gridSlot->OpenPrice);
 		return;
 	}
@@ -222,8 +232,7 @@ void GridStrategy::OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, c
 	{
 		if (gridSlot->State == GridSlotState::OpenPending)
 		{
-			gridSlot->State = GridSlotState::Empty;
-			gridSlot->OpenClientOrderID = 0;
+			ResetSlotToEmpty(*gridSlot);
 			WriteLog(LogLevel::Warning, "Open order rejected, slot reset to Empty, Price:%f", gridSlot->OpenPrice);
 		}
 	}
@@ -242,7 +251,7 @@ void GridStrategy::OnSessionBegin(const SessionBeginField* sessionBegin)
 	{
 		if (gridSlot.State == GridSlotState::Closed)
 		{
-			gridSlot.State = GridSlotState::Empty;
+			ResetSlotToEmpty(gridSlot);
 		}
 	}
 	m_AwaitingAnchor = true;

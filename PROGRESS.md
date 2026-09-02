@@ -126,7 +126,9 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - **模拟盘决策**：维持"不支持结算与交易日切换"（用户确认）——交易日经 SimExchangeInit 固化、运行期资金/持仓表不更新（无可结算实时状态）、结算结果无落库结转闭环，维持"每日停机 → 重跑 SimExchangeInit → 重启"外部流程；`src/SimExchange` 零日切改动。
   - **双重 OnTick 修复**：`src/SimExchange` `HandleDepthMarketData` 原在同一 tick 上调用两次 `m_OrderMatch->OnTick`，部分成交场景（市价量 > 对手量）第二次调用以同一 tick 对手量再成交、流动性被重复扣减；删除多余调用（保留与回测 `PushNextTick` 一致的先撮合后落库顺序）。
   - **GridStrategy 适配**（原"挂单跨日有效、日终不撤单"前提失效）：新增 `OnOrder` 覆写处理 Canceled/PartTradedCanceled——零成交开仓格复位 Empty（次日重锚重挂）、部分成交开仓格按已成交量即时补平仓、被撤平仓格按剩余量原价位重下（`CloseFilledVolume` 累计保留）；平仓价计算抽为 `UpdateClosePrice`（与满量成交路径 DRY）。测试设施上收 `GridStrategyTestHelpers.h`（`MakeGridParams`/`GridStrategyProbe`/`MakeCanceledOrderField`，消除跨文件重复定义）。
-  - **单测 +4**（`GridStrategyDaySwitchTests.cpp`）：零成交撤单复位重挂、部成撤单补平、平仓单被撤重下（累计保留）、四格全撤重锚全量重挂。验证：UnitTests **50/50 用例、275/275 断言 SUCCESS**（Windows x64-Debug）；`TestStrategyGrid.exe` 冒烟 IF2503 三个月：73 对平仓 / 已实现盈亏 779.2（旧基线 56 对 / 613.8，提升来自跨日卡死格位日终撤销后重锚重挂）、51 笔日终撤单全部正确处理、期末余 5 多 5 空（末日平仓单被清算，预期）、零 4115 零错误、退出码 0。
+  - **单测 +4**（`GridStrategyDaySwitchTests.cpp`）：零成交撤单复位重挂、部成撤单补平、平仓单被撤重下（累计保留）、四格全撤重锚全量重挂。
+  - **用户实测抓住适配引入的真 Bug（格位困死停摆）**：`GridSlot.CloseFilledVolume` 从未在复位时清零（三个复位路径只改 State），格位跨周期复用残留上周期值；旧代码下无害（结对待条件 `CloseFilledVolume >= OpenFilledVolume` 立即成立），但新加的 `HandleCloseOrderCanceled` 以 `OpenFilledVolume - CloseFilledVolume` 算剩余量被污染为 0 → "zero remaining" 分支放弃重下平仓单 → 格位带持仓困死 ClosePending，数日内全部格位困死、策略停摆（实证：20241106 起每日仅锚价 + 日结日志、零委托）。修复：抽 `ResetSlotToEmpty` 统一清净周期态（State + Open/Close ClientOrderID + 两个成交量字段），三个复位路径（SessionBegin Closed 复位、拒单复位、零成交撤单复位）全部收敛调用；"zero remaining" 分支保留为防御性告警（正常流此后不可达）。单测 +1 回归（配对完成 → 次日 SessionBegin 复用该格 → 新周期平仓单被日终撤 → 必须重下 1 手，修复前该用例少一笔委托插入即失败）。
+  - 验证：UnitTests **51/51 用例、292/292 断言 SUCCESS**（Windows x64-Debug）；`TestStrategyGrid.exe` 冒烟 IF2503 三个月：161 对平仓 / 已实现盈亏 1714.2、期末余 3 多 3 空（末日 6 个 ClosePending 格位的平仓单被日终清算后重下、数据结束时尚未成交，预期）、全程零 "zero remaining" 告警、零 4115 零错误、退出码 0；末段交易日（12 月下旬）每日仍有 1-5 笔开仓，停摆消失。**注意：修复前的冒烟数字（73 对 / 779.2）受困死格位污染，不可作为基线。**
 
 ## 🔄 进行中
 

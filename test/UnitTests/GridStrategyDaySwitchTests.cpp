@@ -108,6 +108,64 @@ TEST_CASE("GridStrategy re-places close order for remaining volume when close or
     CHECK(strategy.GetLongPosition("IF2503") == 0);
 }
 
+TEST_CASE("GridStrategy re-places close after day-end cancel when slot cycles through completed pair")
+{
+    FakeBackTestApi fake_api;
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    strategy.Start();
+    auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
+    fake_api.registered_spi->OnRtnDepthMarketData(&anchor_tick);
+    REQUIRE(fake_api.insert_requests.size() == 4);
+
+    // 首周期：买开 3990 成交 → 补平仓 4000 → 平仓成交，格位完成配对（CloseFilledVolume 累计为 1）
+    auto open_order = MakeOrderField("IF2503", 42, 1);
+    fake_api.registered_spi->OnRtnOrder(&open_order);
+    auto open_trade = MakeTradeField("IF2503", 42, DirectionType::Buy, OffsetFlagType::Open, 3990.0, 1, 300, 8.5);
+    fake_api.registered_spi->OnRtnTrade(&open_trade);
+    auto close_order = MakeOrderField("IF2503", 43, 5);
+    fake_api.registered_spi->OnRtnOrder(&close_order);
+    auto close_trade = MakeTradeField("IF2503", 43, DirectionType::Sell, OffsetFlagType::Close, 4000.0, 1, 300, 8.5);
+    fake_api.registered_spi->OnRtnTrade(&close_trade);
+    REQUIRE(fake_api.insert_requests.size() == 5);
+    CHECK(strategy.GetLongPosition("IF2503") == 0);
+
+    // 次日 SessionBegin：Closed 格复位 Empty（须清净上周期成交量），重锚仅重挂该格（4050-10=4040）
+    SessionBeginField session_begin;
+    fake_api.registered_spi->OnRtnSessionBegin(&session_begin);
+    auto next_day_tick = MakeMdTickField("IF2503", 4050.0);
+    fake_api.registered_spi->OnRtnDepthMarketData(&next_day_tick);
+    REQUIRE(fake_api.insert_requests.size() == 6);
+    CHECK(fake_api.insert_requests[5].Direction == DirectionType::Buy);
+    CHECK(fake_api.insert_requests[5].OffsetFlag == OffsetFlagType::Open);
+    CHECK(fake_api.insert_requests[5].Price == doctest::Approx(4040.0));
+
+    // 新周期：买开 4040 成交 → 补平仓 4050
+    auto open_order2 = MakeOrderField("IF2503", 52, 6);
+    fake_api.registered_spi->OnRtnOrder(&open_order2);
+    auto open_trade2 = MakeTradeField("IF2503", 52, DirectionType::Buy, OffsetFlagType::Open, 4040.0, 1, 300, 8.5);
+    fake_api.registered_spi->OnRtnTrade(&open_trade2);
+    REQUIRE(fake_api.insert_requests.size() == 7);
+    CHECK(fake_api.insert_requests[6].Direction == DirectionType::Sell);
+    CHECK(fake_api.insert_requests[6].OffsetFlag == OffsetFlagType::Close);
+    CHECK(fake_api.insert_requests[6].Price == doctest::Approx(4050.0));
+
+    // 关键回归：上周期残留的 CloseFilledVolume 不得污染剩余量——平仓单日终零成交被撤后须重下 1 手
+    auto canceled_close_order = MakeCanceledOrderField("IF2503", 53, 7, OrderStatusType::Canceled, 0);
+    fake_api.registered_spi->OnRtnOrder(&canceled_close_order);
+    REQUIRE(fake_api.insert_requests.size() == 8);
+    CHECK(fake_api.insert_requests[7].Direction == DirectionType::Sell);
+    CHECK(fake_api.insert_requests[7].OffsetFlag == OffsetFlagType::Close);
+    CHECK(fake_api.insert_requests[7].Price == doctest::Approx(4050.0));
+    CHECK(fake_api.insert_requests[7].Volume == 1);
+
+    // 重下平仓单成交：新周期配对结清、持仓归零
+    auto replaced_close_order = MakeOrderField("IF2503", 54, 8);
+    fake_api.registered_spi->OnRtnOrder(&replaced_close_order);
+    auto replaced_close_trade = MakeTradeField("IF2503", 54, DirectionType::Sell, OffsetFlagType::Close, 4050.0, 1, 300, 8.5);
+    fake_api.registered_spi->OnRtnTrade(&replaced_close_trade);
+    CHECK(strategy.GetLongPosition("IF2503") == 0);
+}
+
 TEST_CASE("GridStrategy full day-end cancel sweep resets all open slots and re-places ladder next day")
 {
     FakeBackTestApi fake_api;

@@ -64,6 +64,7 @@ private:
 	void HandleOpenTrade(const TradeField* trade, GridSlot* gridSlot);
 	void HandleCloseTrade(const TradeField* trade, GridSlot* gridSlot);
 	void UpdateClosePrice(GridSlot& gridSlot);
+	void ResetSlotToEmpty(GridSlot& gridSlot);
 	void HandleOpenOrderCanceled(GridSlot* gridSlot);
 	void HandleCloseOrderCanceled(GridSlot* gridSlot);
 	GridSlot* FindSlotByOpenOrder(ClientOrderIDType clientOrderID);
