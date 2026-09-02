@@ -33,7 +33,7 @@ CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线�
 
 - 四种撮合模式（`MatchMode`）：`OrderBook` 订单簿 / `LastPrice` 最新价 / `OppositePrice` 对手价 / `Bar`
 - 撮合引擎 `OrderMatch` 与行情、结算解耦，四模式独立实现
-- 结算逻辑：持仓浮盈（逐日 / 逐笔）、平仓盈亏、市值、保证金，结算价缺省回退
+- 结算与交易日切换：模拟盘不做（交易日经 `SimExchangeInit` 固化，每日停机后由外部重新初始化并重启）；结算逻辑位于回测引擎（见下节）
 
 ### 3. BackTest —— 历史回测（动态库）
 
