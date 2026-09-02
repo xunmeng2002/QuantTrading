@@ -203,7 +203,6 @@ void SimExchange::HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage)
 	{
 		m_Mdb->t_DepthMarketData->Update(oldMdTick, mdTick);
 	}
-	m_OrderMatch->OnTick(mdTick);
 }
 void SimExchange::HandleBarMarketData(RtnBarMarketDataPackage* rtnPackage)
 {
