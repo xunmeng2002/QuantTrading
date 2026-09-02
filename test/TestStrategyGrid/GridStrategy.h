@@ -17,9 +17,9 @@ struct GridParams
 // 成对网格：每格一开一平，利润 = 步长 × 乘数 × 手数，仓位天然有界（≤ GridCount 手/向）。
 // 格位状态机：Empty → OpenPending → OpenFilled → ClosePending → Closed。
 // 日级重锚：SessionBegin 复位 Closed 格为 Empty，首笔 tick LastPrice 为新中枢补挂阶梯；
-// 未成交格位跨日保留（引擎挂单跨日仍有效且会成交，实证见冒烟日志的 4115 现象——
-// 跨日撤单因 HandleCancelOrder 按当前交易日查单而失败，故日终不撤单、不依赖撤单结果），
-// 平仓单价格取自开仓成交价 ∓ 步长，与锚点无关，跨日继续有效。
+// 引擎日切结算统一撤销全部未成交挂单（撤单回报先于 SessionEnd 推送）：零成交开仓格经撤单
+// 回报复位 Empty 等次日重锚重挂；部分成交开仓格与被撤平仓格按已成交/剩余量即时补平仓单，
+// 新平仓单经引擎队列在次一交易日撮合。平仓单价格取自开仓成交价 ∓ 步长，与锚点无关。
 class GridStrategy : public quanttrading::strategy::StrategyBase
 {
 public:
@@ -29,6 +29,7 @@ protected:
 	void OnStart() override;
 	void OnTick(const DepthMarketDataField* depthMarketData) override;
 	void OnTrade(const TradeField* trade, ClientOrderIDType clientOrderID) override;
+	void OnOrder(const OrderField* order) override;
 	void OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo) override;
 	// 日切后等待首笔有效 tick 重锚
 	void OnSessionBegin(const SessionBeginField* sessionBegin) override;
@@ -62,6 +63,9 @@ private:
 	void PlaceCloseOrder(GridSlot& gridSlot, VolumeType volume);
 	void HandleOpenTrade(const TradeField* trade, GridSlot* gridSlot);
 	void HandleCloseTrade(const TradeField* trade, GridSlot* gridSlot);
+	void UpdateClosePrice(GridSlot& gridSlot);
+	void HandleOpenOrderCanceled(GridSlot* gridSlot);
+	void HandleCloseOrderCanceled(GridSlot* gridSlot);
 	GridSlot* FindSlotByOpenOrder(ClientOrderIDType clientOrderID);
 	GridSlot* FindSlotByCloseOrder(ClientOrderIDType clientOrderID);
 

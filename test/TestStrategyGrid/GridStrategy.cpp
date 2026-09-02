@@ -103,6 +103,22 @@ void GridStrategy::OnTrade(const TradeField* trade, ClientOrderIDType clientOrde
 	}
 }
 
+void GridStrategy::OnOrder(const OrderField* order)
+{
+	if (order->OrderStatus != OrderStatusType::Canceled && order->OrderStatus != OrderStatusType::PartTradedCanceled)
+	{
+		return;
+	}
+	if (GridSlot* gridSlot = FindSlotByOpenOrder(order->ClientOrderID))
+	{
+		HandleOpenOrderCanceled(gridSlot);
+	}
+	else if (GridSlot* gridSlot = FindSlotByCloseOrder(order->ClientOrderID))
+	{
+		HandleCloseOrderCanceled(gridSlot);
+	}
+}
+
 void GridStrategy::HandleOpenTrade(const TradeField* trade, GridSlot* gridSlot)
 {
 	if (gridSlot->State != GridSlotState::OpenPending)
@@ -115,14 +131,7 @@ void GridStrategy::HandleOpenTrade(const TradeField* trade, GridSlot* gridSlot)
 	{
 		return;
 	}
-	if (gridSlot->Direction == DirectionType::Buy)
-	{
-		gridSlot->ClosePrice = gridSlot->OpenFillPrice + m_Params.GridStep;
-	}
-	else
-	{
-		gridSlot->ClosePrice = gridSlot->OpenFillPrice - m_Params.GridStep;
-	}
+	UpdateClosePrice(*gridSlot);
 	PlaceCloseOrder(*gridSlot, gridSlot->OpenFilledVolume);
 }
 
@@ -154,6 +163,54 @@ void GridStrategy::HandleCloseTrade(const TradeField* trade, GridSlot* gridSlot)
 	WriteLog(LogLevel::Info, "Pair closed, open:%f close:%f profit:%f", gridSlot->OpenFillPrice, trade->Price, pairProfit);
 }
 
+void GridStrategy::UpdateClosePrice(GridSlot& gridSlot)
+{
+	if (gridSlot.Direction == DirectionType::Buy)
+	{
+		gridSlot.ClosePrice = gridSlot.OpenFillPrice + m_Params.GridStep;
+	}
+	else
+	{
+		gridSlot.ClosePrice = gridSlot.OpenFillPrice - m_Params.GridStep;
+	}
+}
+
+void GridStrategy::HandleOpenOrderCanceled(GridSlot* gridSlot)
+{
+	if (gridSlot->State != GridSlotState::OpenPending)
+	{
+		return;
+	}
+	if (gridSlot->OpenFilledVolume == 0)
+	{
+		gridSlot->State = GridSlotState::Empty;
+		gridSlot->OpenClientOrderID = 0;
+		WriteLog(LogLevel::Info, "Open order canceled without fill, slot reset to Empty, Price:%f", gridSlot->OpenPrice);
+		return;
+	}
+	// 部分成交后被日终撤销：按已成交量即时补平仓单，新单经引擎队列在次一交易日撮合
+	UpdateClosePrice(*gridSlot);
+	PlaceCloseOrder(*gridSlot, gridSlot->OpenFilledVolume);
+	WriteLog(LogLevel::Warning, "Partially filled open order canceled by day-end settlement, close volume:%lld", gridSlot->OpenFilledVolume);
+}
+
+void GridStrategy::HandleCloseOrderCanceled(GridSlot* gridSlot)
+{
+	if (gridSlot->State != GridSlotState::ClosePending)
+	{
+		return;
+	}
+	VolumeType remainingVolume = gridSlot->OpenFilledVolume - gridSlot->CloseFilledVolume;
+	if (remainingVolume <= 0)
+	{
+		WriteLog(LogLevel::Warning, "Close order canceled with zero remaining volume, ClosePrice:%f", gridSlot->ClosePrice);
+		return;
+	}
+	// 平仓单被日终撤销：按剩余未平量以原价位重下平仓单，CloseFilledVolume 累计保留
+	PlaceCloseOrder(*gridSlot, remainingVolume);
+	WriteLog(LogLevel::Warning, "Close order canceled by day-end settlement, re-place close volume:%lld", remainingVolume);
+}
+
 void GridStrategy::OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo)
 {
 	if (reqInsertOrder == nullptr || rspInfo == nullptr || rspInfo->ErrorID == 0)
@@ -179,7 +236,8 @@ void GridStrategy::OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, c
 
 void GridStrategy::OnSessionBegin(const SessionBeginField* sessionBegin)
 {
-	// Closed 格复位重挂；OpenPending/ClosePending 挂单跨日仍有效，保留原价位继续工作
+	// 引擎已在结算时统一撤单（撤单回报先于 SessionEnd）：OpenPending 格位已经撤单回报复位 Empty
+	// 或转换为 ClosePending，此处仅需复位 Closed 格等待重锚
 	for (auto& gridSlot : m_Slots)
 	{
 		if (gridSlot.State == GridSlotState::Closed)
@@ -192,16 +250,17 @@ void GridStrategy::OnSessionBegin(const SessionBeginField* sessionBegin)
 
 void GridStrategy::OnSessionEnd(const SessionEndField* sessionEnd)
 {
-	// 引擎挂单跨日不清且会继续成交（撤单跨日必失败，见类注释），日终不做任何撤单
-	int workingCount = 0;
+	// 引擎日切结算已撤销全部未成交挂单（撤单回报先于本回调）：OpenPending 格位已在 OnOrder 中
+	// 复位/转换，此处统计的是转换后仍带平仓单、次一交易日继续工作的格位
+	int closePendingCount = 0;
 	for (auto& gridSlot : m_Slots)
 	{
-		if (gridSlot.State == GridSlotState::OpenPending || gridSlot.State == GridSlotState::ClosePending)
+		if (gridSlot.State == GridSlotState::ClosePending)
 		{
-			++workingCount;
+			++closePendingCount;
 		}
 	}
-	WriteLog(LogLevel::Info, "Session end: %d grid orders keep working next day", workingCount);
+	WriteLog(LogLevel::Info, "Session end: %d slots closing next day after day-end cancel sweeps", closePendingCount);
 }
 
 void GridStrategy::OnEnd()
