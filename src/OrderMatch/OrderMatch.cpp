@@ -45,6 +45,16 @@ namespace quanttrading::ordermatch
         m_OrderMatchSubscriber = orderMatchSubscriber;
     }
 
+    void OrderMatch::OnTradingDayChange(const DateType& nextTradingDay)
+    {
+        CancelOrders();
+        memcpy(m_TradingDay, nextTradingDay, sizeof(DateType));
+        m_MaxTradeID = 0;
+        m_BuyOrders.clear();
+        m_SellOrders.clear();
+        m_MarketBuyOrders.clear();
+        m_MarketSellOrders.clear();
+    }
     void OrderMatch::CancelOrder(mdb::Order* order)
     {
         auto newOrder = Order::Allocate();
@@ -112,6 +122,49 @@ namespace quanttrading::ordermatch
             else
             {
                 m_MarketSellOrders[order->InstrumentID].insert(order);
+            }
+        }
+    }
+    void OrderMatch::CancelOrders()
+    {
+        for (auto& it : m_MarketBuyOrders)
+        {
+            for (auto order : it.second)
+            {
+                if (order->VolumeTotal > 0)
+                {
+                    CancelOrder(order);
+                }
+            }
+        }
+        for (auto& it : m_MarketSellOrders)
+        {
+            for (auto order : it.second)
+            {
+                if (order->VolumeTotal > 0)
+                {
+                    CancelOrder(order);
+                }
+            }
+        }
+        for (auto& it : m_BuyOrders)
+        {
+            for (auto order : it.second)
+            {
+                if (order->VolumeTotal > 0)
+                {
+                    CancelOrder(order);
+                }
+            }
+        }
+        for (auto& it : m_SellOrders)
+        {
+            for (auto order : it.second)
+            {
+                if (order->VolumeTotal > 0)
+                {
+                    CancelOrder(order);
+                }
             }
         }
     }

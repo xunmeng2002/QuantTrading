@@ -344,6 +344,7 @@ void SimExchange::OnMdEnd()
 	}
 	m_IsMdEnd = true;
 	WriteLog(LogLevel::Info, "OnMdEnd");
+    m_OrderMatch->OnTradingDayChange(m_TradingDay);
 	Settlement();
 	m_Mdb->Dump(m_DumpPath.c_str());
 	WriteLog(LogLevel::Info, "Dump Completed\n");
@@ -726,6 +727,7 @@ void SimExchange::InitMainInstrument()
 }
 void SimExchange::ChangeTradingDay(const DateType& nextTradingDay)
 {
+    m_OrderMatch->OnTradingDayChange(nextTradingDay);
 	Settlement();
 	Init(nextTradingDay);
 }

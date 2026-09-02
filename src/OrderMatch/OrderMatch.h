@@ -23,6 +23,7 @@ namespace quanttrading::ordermatch
         virtual ~OrderMatch();
         void Subscribe(OrderMatchSubscriber* orderMatchSubscriber);
 
+        virtual void OnTradingDayChange(const DateType& nextTradingDay);
         virtual void OnTick(mdb::DepthMarketData* mdTick) = 0;
         virtual void OnBar(mdb::BarMarketData* mdBar) = 0;
         virtual void InsertOrder(mdb::Order* order) = 0;
@@ -31,6 +32,7 @@ namespace quanttrading::ordermatch
     protected:
         void Match(mdb::Order* order, PriceType price, VolumeType volume, const TradeIDType& tradeID);
         void AddOrderToQueue(mdb::Order* order);
+        void CancelOrders();
         void GetNextTradeID(TradeIDType& tradeID);
         void UpdateDateTime();
         void UpdateDateTime(const Int64Type& updateTs);
