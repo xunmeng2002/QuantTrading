@@ -137,6 +137,8 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - **单测 +11 例**（`PositionMaintenanceTests.cpp` 7 例 / `SettlementTests.cpp` 4 例 + `SettlementTestHelpers.h` 测试设施）：开仓建仓与明细、同向加仓（锁定 TodayPosition 移植基线）、FIFO 先开先平 + 跨日盈亏按昨结算、当日开平按开仓价、同日按 TradeID、超量平仓扣负、期权平仓 CashOut；Settle 三级盈亏 + 期权市值、Settle 聚合与资金核算（Balance/Available）、RollToNextDay 结转与过滤、MdbTickSettlementPriceSource 异常值逐级回退（LastPrice inf / PreSettlementPrice inf / 缺行情 / 全 inf）。
   - 验证（Windows x64-Debug）：UnitTests **62/62 用例、399/399 断言 SUCCESS**；`TestStrategyGrid.exe` 冒烟与基线**逐字一致**（closedPairs:161 realizedProfit:1714.200000、期末 3 多 3 空、零 "zero remaining" 告警、退出码 0）；`TestBackTest.exe` 冒烟 20241001→20241231 全程 62 次 SessionBegin/SessionEnd、2238 笔成交、零错误码、退出码 0。WSL-GCC 双平台编译本轮未跑（后续补验）。
 
+- **2026-09-03 Order/Trade 回报字段拷贝提取（DRY）**：`MdbFieldConverter` 新增 `MdbToField`（mdb::Order→OrderField、mdb::Trade→TradeField，memset 清零 + 逐字段映射）；替换回测/模拟盘共 6 处手写字段拷贝（SendRtnOrder / SendRtnTrade / SendRspQryOrder / SendRspQryTrade），净删约 170 行。关键点：mdb::Order/Trade 比报文字段多库内字段（AccountType/OfferID/分组 ID 等），布局非镜像，**不走 `TryBulkCopy` 整块拷贝捷径**（代码注释已说明）；模拟盘四处原无 memset，统一清零仅影响 padding 字节（字段已全覆盖），回测侧原 memset 语义保留。验证：UnitTests 62/62 用例 399/399 断言 SUCCESS；TestStrategyGrid 冒烟与基线逐字一致（161 对 / 1714.2 / 退出码 0）；TestBackTest 冒烟 62/62 日切、2238 笔成交、退出码 0。用户决策：两个 SimExchange 的 HandleInsertOrder/HandleCancelOrder 校验段与 tick 落库 upsert 属各自业务代码，不提取。
+
 ## 🔄 进行中
 
 - 无。

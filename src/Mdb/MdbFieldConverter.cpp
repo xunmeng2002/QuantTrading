@@ -115,6 +115,58 @@ namespace detail
 		dst.Turnover = src.Turnover;
 		dst.OpenInterest = src.OpenInterest;
 	}
+	// Order 逐字段映射（仅 Mdb→Field 单向）：mdb 行比报文字段多账户类型/报盘/分组等库内字段，布局非镜像，不可整块拷贝
+	void CopyOrderFields(const mdb::Order& src, OrderField& dst)
+	{
+		strcpy(dst.TradingDay, src.TradingDay);
+		strcpy(dst.AccountID, src.AccountID);
+		strcpy(dst.ExchangeID, src.ExchangeID);
+		strcpy(dst.InstrumentID, src.InstrumentID);
+		dst.ProductClass = src.ProductClass;
+		dst.OrderID = src.OrderID;
+		strcpy(dst.OrderSysID, src.OrderSysID);
+		dst.Direction = src.Direction;
+		dst.OffsetFlag = src.OffsetFlag;
+		dst.OrderPriceType = src.OrderPriceType;
+		dst.Price = src.Price;
+		dst.Volume = src.Volume;
+		dst.VolumeTotal = src.VolumeTotal;
+		dst.VolumeTraded = src.VolumeTraded;
+		dst.VolumeMultiple = src.VolumeMultiple;
+		dst.OrderStatus = src.OrderStatus;
+		strcpy(dst.OrderDate, src.OrderDate);
+		strcpy(dst.OrderTime, src.OrderTime);
+		strcpy(dst.CancelDate, src.CancelDate);
+		strcpy(dst.CancelTime, src.CancelTime);
+		dst.SessionID = src.SessionID;
+		dst.ClientOrderID = src.ClientOrderID;
+		dst.RequestID = src.RequestID;
+		dst.FrozenCash = src.FrozenCash;
+		dst.FrozenMargin = src.FrozenMargin;
+		dst.FrozenCommission = src.FrozenCommission;
+	}
+
+	// Trade 逐字段映射（仅 Mdb→Field 单向）：mdb 行多账户类型字段，布局非镜像，不可整块拷贝
+	void CopyTradeFields(const mdb::Trade& src, TradeField& dst)
+	{
+		strcpy(dst.TradingDay, src.TradingDay);
+		strcpy(dst.AccountID, src.AccountID);
+		strcpy(dst.ExchangeID, src.ExchangeID);
+		strcpy(dst.InstrumentID, src.InstrumentID);
+		dst.ProductClass = src.ProductClass;
+		dst.OrderID = src.OrderID;
+		strcpy(dst.OrderSysID, src.OrderSysID);
+		strcpy(dst.TradeID, src.TradeID);
+		dst.Direction = src.Direction;
+		dst.OffsetFlag = src.OffsetFlag;
+		dst.Price = src.Price;
+		dst.Volume = src.Volume;
+		dst.VolumeMultiple = src.VolumeMultiple;
+		dst.TradeAmount = src.TradeAmount;
+		dst.Commission = src.Commission;
+		strcpy(dst.TradeDate, src.TradeDate);
+		strcpy(dst.TradeTime, src.TradeTime);
+	}
 }
 
 void FieldToMdb(const DepthMarketDataField* field, mdb::DepthMarketData* dbStruct)
@@ -149,4 +201,15 @@ void MdbToField(const mdb::BarMarketData* dbStruct, BarMarketDataField* field)
 		return;
 	}
 	detail::CopyBarFields(*dbStruct, *field);
+}
+
+void MdbToField(const mdb::Order* dbStruct, OrderField* field)
+{
+	memset(field, 0, sizeof(OrderField));
+	detail::CopyOrderFields(*dbStruct, *field);
+}
+void MdbToField(const mdb::Trade* dbStruct, TradeField* field)
+{
+	memset(field, 0, sizeof(TradeField));
+	detail::CopyTradeFields(*dbStruct, *field);
 }

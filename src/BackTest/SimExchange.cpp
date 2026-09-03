@@ -716,57 +716,14 @@ void SimExchange::SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int erro
 void SimExchange::SendRtnOrder(mdb::Order* order)
 {
 	auto orderField = ::Allocate<OrderField>();
-	memset(orderField, 0, sizeof(OrderField));
-	strcpy(orderField->TradingDay, order->TradingDay);
-	strcpy(orderField->AccountID, order->AccountID);
-	strcpy(orderField->ExchangeID, order->ExchangeID);
-	strcpy(orderField->InstrumentID, order->InstrumentID);
-	orderField->ProductClass = order->ProductClass;
-	orderField->OrderID = order->OrderID;
-	strcpy(orderField->OrderSysID, order->OrderSysID);
-	orderField->Direction = order->Direction;
-	orderField->OffsetFlag = order->OffsetFlag;
-	orderField->OrderPriceType = order->OrderPriceType;
-	orderField->Price = order->Price;
-	orderField->Volume = order->Volume;
-	orderField->VolumeTotal = order->VolumeTotal;
-	orderField->VolumeTraded = order->VolumeTraded;
-	orderField->VolumeMultiple = order->VolumeMultiple;
-	orderField->OrderStatus = order->OrderStatus;
-	strcpy(orderField->OrderDate, order->OrderDate);
-	strcpy(orderField->OrderTime, order->OrderTime);
-	strcpy(orderField->CancelDate, order->CancelDate);
-	strcpy(orderField->CancelTime, order->CancelTime);
-	orderField->SessionID = order->SessionID;
-	orderField->ClientOrderID = order->ClientOrderID;
-	orderField->RequestID = order->RequestID;
-	orderField->FrozenCash = order->FrozenCash;
-	orderField->FrozenMargin = order->FrozenMargin;
-	orderField->FrozenCommission = order->FrozenCommission;
+	MdbToField(order, orderField);
 	m_BackTestSpi->OnRtnOrder(orderField);
 	::Deallocate(orderField);
 }
 void SimExchange::SendRtnTrade(mdb::Trade* trade)
 {
 	auto tradeField = ::Allocate<TradeField>();
-	memset(tradeField, 0, sizeof(TradeField));
-	strcpy(tradeField->TradingDay, trade->TradingDay);
-	strcpy(tradeField->AccountID, trade->AccountID);
-	strcpy(tradeField->ExchangeID, trade->ExchangeID);
-	strcpy(tradeField->InstrumentID, trade->InstrumentID);
-	tradeField->ProductClass = trade->ProductClass;
-	tradeField->OrderID = trade->OrderID;
-	strcpy(tradeField->OrderSysID, trade->OrderSysID);
-	strcpy(tradeField->TradeID, trade->TradeID);
-	tradeField->Direction = trade->Direction;
-	tradeField->OffsetFlag = trade->OffsetFlag;
-	tradeField->Price = trade->Price;
-	tradeField->Volume = trade->Volume;
-	tradeField->VolumeMultiple = trade->VolumeMultiple;
-	tradeField->TradeAmount = trade->TradeAmount;
-	tradeField->Commission = trade->Commission;
-	strcpy(tradeField->TradeDate, trade->TradeDate);
-	strcpy(tradeField->TradeTime, trade->TradeTime);
+	MdbToField(trade, tradeField);
 	m_BackTestSpi->OnRtnTrade(tradeField);
 	::Deallocate(tradeField);
 }
