@@ -1,0 +1,104 @@
+#include "PositionMaintenance.h"
+#include "Mdb.h"
+#include "OrderUtility.h"
+#include "QuantUtility.h"
+#include <Spark/Core/Logger/Logger.h>
+#include <algorithm>
+#include <cstring>
+
+using namespace mdb;
+using namespace spark;
+using namespace spark::core;
+using namespace quanttrading;
+using namespace quanttrading::ordermatch;
+
+namespace quanttrading::settlement
+{
+	bool PositionDetailLessForOpenDate::operator()(const mdb::PositionDetail* const left, const mdb::PositionDetail* const right) const
+	{
+		auto openDateResult = strcmp(left->OpenDate, right->OpenDate);
+		if (openDateResult != 0)
+		{
+			return openDateResult < 0;
+		}
+		return strcmp(left->TradeID, right->TradeID) < 0;
+	}
+
+	PositionMaintenance::PositionMaintenance(mdb::Mdb* mdb)
+		:m_Mdb(mdb)
+	{
+	}
+
+	void PositionMaintenance::UpdateOnTrade(mdb::Trade* trade)
+	{
+		auto posiDirection = quanttrading::GetPosiDirection(trade->OffsetFlag, trade->Direction);
+		auto position = m_Mdb->t_Position->m_PrimaryKey->Select(trade->TradingDay, trade->AccountID, trade->ExchangeID, trade->InstrumentID, posiDirection);
+		if (position == nullptr)
+		{
+			position = quanttrading::ordermatch::CreatePosition(trade, posiDirection);
+			m_Mdb->t_Position->Insert(position);
+		}
+		else
+		{
+			if (trade->OffsetFlag == OffsetFlagType::Open)
+			{
+				position->TotalPosition += trade->Volume;
+			}
+			else
+			{
+				if (position->TotalPosition < trade->Volume)
+				{
+					WriteLog(LogLevel::Warning, "Position not Enough For Close Trade. Position:%s, Trade:%s", position->GetDebugString(), trade->GetDebugString());
+				}
+				position->TotalPosition -= trade->Volume;
+			}
+		}
+
+		if (trade->OffsetFlag == OffsetFlagType::Open)
+		{
+			auto positionDetail = quanttrading::ordermatch::CreatePositionDetail(trade, posiDirection);
+			m_Mdb->t_PositionDetail->Insert(positionDetail);
+		}
+		else
+		{
+			std::set<mdb::PositionDetail*, PositionDetailLessForOpenDate> positionDetails;
+			auto itPair = m_Mdb->t_PositionDetail->m_TradeMatchIndex->EqualRange(position->TradingDay, position->AccountID, position->ExchangeID,
+				position->InstrumentID, position->PosiDirection);
+			for (auto& it = itPair.first; it != itPair.second; ++it)
+			{
+				positionDetails.insert(*it);
+			}
+			auto flag = position->PosiDirection == PosiDirectionType::Long ? 1 : -1;
+			auto remainVolume = trade->Volume;
+			for (auto positionDetail : positionDetails)
+			{
+				auto currVolume = std::min(remainVolume, positionDetail->Volume - positionDetail->CloseVolume);
+				if (currVolume <= 0)
+				{
+					continue;
+				}
+				auto closeAmount = trade->Price * currVolume * position->VolumeMultiple;
+				positionDetail->CloseVolume += currVolume;
+				positionDetail->CloseAmount += closeAmount;
+				positionDetail->CloseProfitByTrade += flag * (trade->Price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
+				if (strcmp(positionDetail->OpenDate, positionDetail->TradingDay) == 0)
+				{
+					positionDetail->CloseProfitByDate += flag * (trade->Price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
+				}
+				else
+				{
+					positionDetail->CloseProfitByDate += flag * (trade->Price - positionDetail->PreSettlementPrice) * currVolume * positionDetail->VolumeMultiple;
+				}
+				if (position->ProductClass == ProductClassType::FutureOption || position->ProductClass == ProductClassType::StockOption
+					|| position->ProductClass == ProductClassType::Stock || position->ProductClass == ProductClassType::ETF)
+				{
+					positionDetail->CashIn += trade->Direction == DirectionType::Sell ? closeAmount : 0.0;
+					positionDetail->CashOut += trade->Direction == DirectionType::Buy ? closeAmount : 0.0;
+				}
+				remainVolume -= currVolume;
+				if (remainVolume <= 0)
+					break;
+			}
+		}
+	}
+}

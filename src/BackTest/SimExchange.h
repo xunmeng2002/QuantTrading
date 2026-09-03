@@ -3,7 +3,9 @@
 #include "Config/Config.h"
 #include "OrderUtility.h"
 #include "OrderMatch.h"
-#include "BackTestUtility.h"
+#include "PositionMaintenance.h"
+#include "Settlement.h"
+#include "SettlementPriceSource.h"
 #include "MdReader.h"
 #include "Mdb.h"
 #include "MdbTableRegistry.h"
@@ -62,17 +64,14 @@ private:
 	void InitMainInstrument();
 	void ChangeTradingDay(const DateType& nextTradingDay);
 	void Settlement();
-	void SettlementAccount(); 
-	void SettlementPosition();
-	void SettlementPositionDetail();
 	void Init(const DateType& nextTradingDay);
-	void InitAccount(const DateType& nextTradingDay);
-	void InitPosition(const DateType& nextTradingDay);
-	void InitPositionDetail(const DateType& nextTradingDay);
-	
 
-	PriceType GetSettlementPrice(mdb::PositionDetail* positionDetail);
-	void CalcCapital(mdb::Capital* capital);
+	// Bar 撮合模式无逐笔行情表，结算价取各合约当日末根 bar 收盘价（嵌套类不持有外围实例，经指针访问引擎末根 bar 表）
+	struct BarSettlementPriceSource : quanttrading::settlement::SettlementPriceSource
+	{
+		std::map<std::string, mdb::BarMarketData*>* m_LastMdBars;
+		PriceType GetSettlementPrice(const mdb::PositionDetail* positionDetail) override;
+	};
 
 	void SendRspOrderInsert(quanttrading::packages::ReqInsertOrderPackage* reqPackage, int errorID);
 	void SendRspCancelOrder(quanttrading::packages::ReqCancelOrderPackage* reqPackage, int errorID);
@@ -90,6 +89,10 @@ private:
 	std::list<Package*> m_Packages;
 	BackTestSpi* m_BackTestSpi;
     quanttrading::ordermatch::OrderMatch* m_OrderMatch;
+	quanttrading::settlement::PositionMaintenance* m_PositionMaintenance;
+	quanttrading::settlement::Settlement* m_Settlement;
+	quanttrading::settlement::SettlementPriceSource* m_SettlementPriceSource;
+	BarSettlementPriceSource m_BarSettlementPriceSource;
 	mdb::Mdb* m_Mdb;
     dbadapters::DB* m_DB;
     dbadapters::DB* m_InitDB;

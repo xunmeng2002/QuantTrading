@@ -15,7 +15,7 @@ Created by [xunmeng2002](https://gitee.com/xunmeng2002)
 
 ## 二、核心功能模块
 
-整体分为**业务链路**（MdOffer / SimExchange / BackTest）、**基础设施**（Mdb / OrderMatch / Bar / Packages / QuantTradingCommon / Ctp）与**对外接口**（Apis）三部分。
+整体分为**业务链路**（MdOffer / SimExchange / BackTest）、**基础设施**（Mdb / OrderMatch / Bar / Packages / Settlement / QuantTradingCommon / Ctp）与**对外接口**（Apis）三部分。
 
 ### 1. MdOffer —— 行情服务（可执行程序）
 
@@ -33,11 +33,11 @@ CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线�
 
 - 四种撮合模式（`MatchMode`）：`OrderBook` 订单簿 / `LastPrice` 最新价 / `OppositePrice` 对手价 / `Bar`
 - 撮合引擎 `OrderMatch` 与行情、结算解耦，四模式独立实现
-- 结算与交易日切换：模拟盘不做（交易日经 `SimExchangeInit` 固化，每日停机后由外部重新初始化并重启）；结算逻辑位于回测引擎（见下节）
+- 结算与交易日切换：模拟盘不做结算与日切（交易日经 `SimExchangeInit` 固化，每日停机后由外部重新初始化并重启）；运行期持仓维护已启用（公共结算库 `src/Settlement` 的 `PositionMaintenance` 实时维护持仓与开仓明细），日结与结转逻辑位于回测引擎（见下节）
 
 ### 3. BackTest —— 历史回测（动态库）
 
-`MdReader` 从 parquet 读入 tick / Bar → `SimExchange` 按时间重放撮合 → 结算 → 落库：
+`MdReader` 从 parquet 读入 tick / Bar → `SimExchange` 按时间重放撮合 → 结算（公共结算库 `src/Settlement`）→ 落库：
 
 - DuckDB 向量化批量读（`SelectWithSqlVectorized`），NULL 写类型哨兵
 - 三种查询（Instrument / Tick / Bar）复用 mdb `GetSchema()`，按 mdb 列序自动装配
@@ -66,6 +66,7 @@ CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线�
 | 模块 | 说明 |
 | --- | --- |
 | `OrderMatch` | 四模式撮合引擎：`OrderBookOrderMatch` / `LastPriceOrderMatch` / `OppositePriceOrderMatch` / `BarOrderMatch` |
+| `Settlement` | 结算公共库：持仓维护（`PositionMaintenance`，FIFO 先开先平）、日结（`Settle`：明细 → 持仓 → 资金核算）、跨日结转（`RollToNextDay`），结算价经 `SettlementPriceSource` 注入 |
 | `Bar` | 分钟 Bar 聚合（`MinuteBar`）、交易时段（`TradeSession`）、Bar 接口（`BarInterface`） |
 | `Packages` | 报文与数据结构包（对象池分配 / 释放） |
 | `QuantTradingCommon` | 环境配置（`Environment`）、服务端配置（`ServerConfig`）、`ShutdownSignal`、字段比较、错误码 |
@@ -77,7 +78,7 @@ CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线�
 CTP 行情 ──► MdOffer（订阅→内存库→异步落库→广播）──► MdFront
                                                       │
                                                       ▼
-                     SimExchange（撮合→持仓→结算）──► TradeFront / MdFront
+                     SimExchange（撮合→持仓维护）──► TradeFront / MdFront
                                                       │
                                                       ▼
       BackTest（MdReader 读 parquet ──► 重放 ──► 撮合 ──► 结算 ──► 落库）
@@ -97,6 +98,7 @@ QuantTrading/
 │   ├── SimExchangeInit/          # 撮合初始化工具（含 Init 库装载）
 │   ├── Mdb/                      # 内存数据库（表 / 索引 / 注册表 / 装配）
 │   ├── OrderMatch/               # 四模式撮合引擎
+│   ├── Settlement/               # 结算公共库（PositionMaintenance 持仓维护 + Settlement 日结/结转 + 结算价源）
 │   ├── Bar/                      # Bar 聚合 + 交易时段
 │   ├── Packages/                 # 报文 / 数据结构包
 │   ├── QuantTradingCommon/       # 公共基础（Environment / ServerConfig / ShutdownSignal / 错误码）

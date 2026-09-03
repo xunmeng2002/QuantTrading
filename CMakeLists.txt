@@ -86,6 +86,10 @@ target_link_libraries(OrderMatchStatic PRIVATE QuantTradingCommonStatic Spark::C
 add_static_md_module(Strategy ${CMAKE_CURRENT_SOURCE_DIR}/src/Strategy ${CMAKE_CURRENT_SOURCE_DIR}/src/Strategy)
 target_link_libraries(StrategyStatic PUBLIC QuantTradingInterface Spark::Core)
 
+add_static_md_module(Settlement ${CMAKE_CURRENT_SOURCE_DIR}/src/Settlement ${CMAKE_CURRENT_SOURCE_DIR}/src/Settlement)
+target_link_libraries(SettlementStatic PUBLIC QuantTradingInterface MdbStatic)
+target_link_libraries(SettlementStatic PRIVATE QuantTradingCommonStatic OrderMatchStatic Spark::Core)
+
 
 add_library(CtpHeaders INTERFACE)
 get_target_property(CTP_INCLUDE_DIR CTP::traderapi INTERFACE_INCLUDE_DIRECTORIES)
@@ -144,7 +148,7 @@ copy_config_file(MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/ServerConfig.json)
 
 
 add_application(SimExchange  ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange)
-target_link_libraries(SimExchange PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic MdApi
+target_link_libraries(SimExchange PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic SettlementStatic MdApi
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
     DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
 copy_dll_file(SimExchange)
@@ -152,7 +156,7 @@ copy_config_file(SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchange.jso
 
 
 add_shared_module(BackTest  ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
-target_link_libraries(BackTest PRIVATE QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic
+target_link_libraries(BackTest PRIVATE QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic SettlementStatic
     Spark::Core Spark::Serialization
     DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
 
@@ -208,11 +212,13 @@ copy_config_file(TestSimExchangeApi ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestSimE
 
 
 add_application(UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/test/UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/test/UnitTests)
-target_link_libraries(UnitTests PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic OrderMatchStatic StrategyStatic
+target_link_libraries(UnitTests PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic OrderMatchStatic StrategyStatic SettlementStatic
     Spark::Core Spark::Serialization)
 # GridStrategy 状态机直接进单测（不经 Config 生成代码，参数由 GridParams 注入）
 target_sources(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid/GridStrategy.cpp)
 target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid)
+# 结算单测复用模拟盘表清单构造 Mdb
+target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange)
 # 单测的 FakeBackTestApi 继承 BackTestApi 但不链接 BackTest DLL，去掉 dllimport 装饰
 target_compile_definitions(UnitTests PRIVATE BACKTEST_STATIC_DEFINE)
 copy_dll_file(UnitTests)

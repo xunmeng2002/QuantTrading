@@ -1,4 +1,5 @@
 #include "SimExchange.h"
+#include "MdbTickSettlementPriceSource.h"
 #include "MdbTableRegistry.h"
 #include "BackTestTableList.h"
 #include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
@@ -66,6 +67,17 @@ SimExchange::SimExchange(const Config& config)
 	m_Mdb = new Mdb(backtestTableList);
 	m_OrderMatch = OrderMatch::CreateOrderMatch(matchMode, m_TradingDay);
 	m_OrderMatch->Subscribe(this);
+	m_PositionMaintenance = new quanttrading::settlement::PositionMaintenance(m_Mdb);
+	m_BarSettlementPriceSource.m_LastMdBars = &m_LastMdBars;
+	if (m_MarketDataType == MarketDataTypeType::Tick)
+	{
+		m_SettlementPriceSource = new quanttrading::settlement::MdbTickSettlementPriceSource(m_Mdb);
+	}
+	else
+	{
+		m_SettlementPriceSource = &m_BarSettlementPriceSource;
+	}
+	m_Settlement = new quanttrading::settlement::Settlement(m_Mdb, m_SettlementPriceSource);
 }
 SimExchange::~SimExchange()
 {
@@ -141,77 +153,7 @@ void SimExchange::OnTrade(mdb::Trade* trade)
 {
     m_Mdb->t_Trade->Insert(trade);
 	SendRtnTrade(trade);
-
-	auto posiDirection = GetPosiDirection(trade->OffsetFlag, trade->Direction);
-	auto position = m_Mdb->t_Position->m_PrimaryKey->Select(trade->TradingDay, trade->AccountID, trade->ExchangeID, trade->InstrumentID, posiDirection);
-	if (position == nullptr)
-	{
-		position = ::CreatePosition(trade, posiDirection);
-		m_Mdb->t_Position->Insert(position);
-	}
-	else
-	{
-		if (trade->OffsetFlag == OffsetFlagType::Open)
-		{
-			position->TotalPosition += trade->Volume;
-		}
-		else
-		{
-			if (position->TotalPosition < trade->Volume)
-			{
-				WriteLog(LogLevel::Warning, "Position not Enough For Close Trade. Position:%s, Trade:%s", position->GetDebugString(), trade->GetDebugString());
-			}
-			position->TotalPosition -= trade->Volume;
-		}
-	}
-
-	auto tradeAmount = trade->Price * trade->Volume * trade->VolumeMultiple;
-	if (trade->OffsetFlag == OffsetFlagType::Open)
-	{
-		auto positionDetail = ::CreatePositionDetail(trade, posiDirection);
-		m_Mdb->t_PositionDetail->Insert(positionDetail);
-	}
-	else
-	{
-		std::set<mdb::PositionDetail*, PositionDetialLessForOpenDate> positionDetails;
-		auto itPair = m_Mdb->t_PositionDetail->m_TradeMatchIndex->EqualRange(position->TradingDay, position->AccountID, position->ExchangeID, 
-			position->InstrumentID, position->PosiDirection);
-		for (auto& it = itPair.first; it != itPair.second; ++it)
-		{
-			positionDetails.insert(*it);
-		}
-		auto flag = position->PosiDirection == PosiDirectionType::Long ? 1 : -1;
-		auto remainVolume = trade->Volume;
-		for (auto positionDetail : positionDetails)
-		{
-			auto currVolume = std::min(remainVolume, positionDetail->Volume - positionDetail->CloseVolume);
-			if (currVolume <= 0)
-			{
-				continue;
-			}
-			auto closeAmount = trade->Price * currVolume * position->VolumeMultiple;
-			positionDetail->CloseVolume += currVolume;
-			positionDetail->CloseAmount += closeAmount;
-			positionDetail->CloseProfitByTrade += flag * (trade->Price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
-			if (strcmp(positionDetail->OpenDate, positionDetail->TradingDay) == 0)
-			{
-				positionDetail->CloseProfitByDate += flag * (trade->Price - positionDetail->OpenPrice) * currVolume * positionDetail->VolumeMultiple;
-			}
-			else
-			{
-				positionDetail->CloseProfitByDate += flag * (trade->Price - positionDetail->PreSettlementPrice) * currVolume * positionDetail->VolumeMultiple;
-			}
-			if (position->ProductClass == ProductClassType::FutureOption || position->ProductClass == ProductClassType::StockOption 
-				|| position->ProductClass == ProductClassType::Stock || position->ProductClass == ProductClassType::ETF)
-			{
-				positionDetail->CashIn += trade->Direction == DirectionType::Sell ? closeAmount : 0.0;
-				positionDetail->CashOut += trade->Direction == DirectionType::Buy ? closeAmount : 0.0;
-			}
-			remainVolume -= currVolume;
-			if (remainVolume <= 0)
-				break;
-		}
-	}
+	m_PositionMaintenance->UpdateOnTrade(trade);
 }
 
 
@@ -733,238 +675,24 @@ void SimExchange::ChangeTradingDay(const DateType& nextTradingDay)
 }
 void SimExchange::Settlement()
 {
-	SettlementAccount();
+	m_Settlement->Settle(m_TradingDay);
 	SendRtnSessionEnd(m_TradingDay);
-}
-void SimExchange::SettlementAccount()
-{
-	SettlementPosition();
-	std::vector<mdb::Capital*> capitals;
-	auto capitalItPair = m_Mdb->t_Capital->m_TradingDayIndex->EqualRange(m_TradingDay);
-	for (auto& capitalIt = capitalItPair.first; capitalIt != capitalItPair.second; ++capitalIt)
-	{
-		capitals.push_back(*capitalIt);
-	}
-	for (auto capital : capitals)
-	{
-		capital->MarketValue = 0;
-		capital->CashIn = 0;
-		capital->CashOut = 0;
-		capital->Margin = 0;
-		capital->Commission = 0;
-		capital->CloseProfitByDate = 0;
-		capital->CloseProfitByTrade = 0;
-		capital->PositionProfitByDate = 0;
-		capital->PositionProfitByTrade = 0;
-		auto positionItPair = m_Mdb->t_Position->m_AccountIndex->EqualRange(capital->TradingDay, capital->AccountID);
-		for (auto& positionIt = positionItPair.first; positionIt != positionItPair.second; ++positionIt)
-		{
-			auto position = *positionIt;
-			capital->MarketValue += position->MarketValue;
-			capital->CashIn += position->CashIn;
-			capital->CashOut += position->CashOut;
-			capital->Margin += position->Margin;
-			capital->Commission += position->Commission;
-			capital->CloseProfitByDate += position->CloseProfitByDate;
-			capital->CloseProfitByTrade += position->CloseProfitByTrade;
-			capital->PositionProfitByDate += position->PositionProfitByDate;
-			capital->PositionProfitByTrade += position->PositionProfitByTrade;
-		}
-		CalcCapital(capital);
-	}
-}
-void SimExchange::SettlementPosition()
-{
-	SettlementPositionDetail();
-	std::vector<mdb::Position*> positions;
-	auto positionItPair = m_Mdb->t_Position->m_TradingDayIndex->EqualRange(m_TradingDay);
-	for (auto& positionIt = positionItPair.first; positionIt != positionItPair.second; ++positionIt)
-	{
-		positions.push_back(*positionIt);
-	}
-	for (auto position : positions)
-	{
-		position->PositionFrozen = 0;
-		position->MarketValue = 0;
-		position->CashIn = 0;
-		position->CashOut = 0;
-		position->Margin = 0;
-		position->Commission = 0;
-		position->CloseProfitByDate = 0;
-		position->CloseProfitByTrade = 0;
-		position->PositionProfitByDate = 0;
-		position->PositionProfitByTrade = 0;
-
-		auto positionDetailItPair = m_Mdb->t_PositionDetail->m_TradeMatchIndex->EqualRange(m_TradingDay, position->AccountID, position->ExchangeID, position->InstrumentID, position->PosiDirection);
-		for (auto& positionDetailIt = positionDetailItPair.first; positionDetailIt != positionDetailItPair.second; ++positionDetailIt)
-		{
-			auto positionDetail = *positionDetailIt;
-			position->MarketValue += positionDetail->MarketValue;
-			position->CashIn += positionDetail->CashIn;
-			position->CashOut += positionDetail->CashOut;
-			position->Margin += positionDetail->Margin;
-			position->Commission += positionDetail->Commission;
-			position->CloseProfitByDate += positionDetail->CloseProfitByDate;
-			position->CloseProfitByTrade += positionDetail->CloseProfitByTrade;
-			position->PositionProfitByDate += positionDetail->PositionProfitByDate;
-			position->PositionProfitByTrade += positionDetail->PositionProfitByTrade;
-			position->SettlementPrice = positionDetail->SettlementPrice;
-		}
-	}
-}
-void SimExchange::SettlementPositionDetail()
-{
-	std::vector<mdb::PositionDetail*> positionDetails;
-	auto positionDetailItPair = m_Mdb->t_PositionDetail->m_TradingDayIndex->EqualRange(m_TradingDay);
-	for (auto& positionDetailIt = positionDetailItPair.first; positionDetailIt != positionDetailItPair.second; ++positionDetailIt)
-	{
-		positionDetails.push_back(*positionDetailIt);
-	}
-	for (auto positionDetail : positionDetails)
-	{
-		auto flag = positionDetail->PosiDirection == PosiDirectionType::Long ? 1 : -1;
-		positionDetail->SettlementPrice = GetSettlementPrice(positionDetail);
-		if (strcmp(positionDetail->OpenDate, m_TradingDay) == 0)
-		{
-			positionDetail->PositionProfitByDate = flag * (positionDetail->SettlementPrice - positionDetail->OpenPrice) * (positionDetail->Volume - positionDetail->CloseVolume) * positionDetail->VolumeMultiple;
-		}
-		else
-		{
-			positionDetail->PositionProfitByDate = flag * (positionDetail->SettlementPrice - positionDetail->PreSettlementPrice) * (positionDetail->Volume - positionDetail->CloseVolume) * positionDetail->VolumeMultiple;
-		}
-		positionDetail->PositionProfitByTrade = flag * (positionDetail->SettlementPrice - positionDetail->OpenPrice) * (positionDetail->Volume - positionDetail->CloseVolume) * positionDetail->VolumeMultiple;
-		if (positionDetail->ProductClass == ProductClassType::FutureOption || positionDetail->ProductClass == ProductClassType::StockOption)
-		{
-			positionDetail->MarketValue = flag * positionDetail->SettlementPrice * (positionDetail->Volume - positionDetail->CloseVolume) * positionDetail->VolumeMultiple;
-		}
-	}
 }
 void SimExchange::Init(const DateType& nextTradingDay)
 {
-	InitAccount(nextTradingDay);
+	m_Settlement->RollToNextDay(m_TradingDay, nextTradingDay);
 	strcpy(m_TradingDay, nextTradingDay);
 	SendRtnSessionBegin(nextTradingDay);
 }
-void SimExchange::InitAccount(const DateType& nextTradingDay)
-{
-	InitPosition(nextTradingDay);
-	std::vector<mdb::Capital*> capitals;
-	auto capitalItPair = m_Mdb->t_Capital->m_TradingDayIndex->EqualRange(m_TradingDay);
-	for (auto& capitalIt = capitalItPair.first; capitalIt != capitalItPair.second; ++capitalIt)
-	{
-		capitals.push_back(*capitalIt);
-	}
-	for (auto capital : capitals)
-	{
-		auto newCapital = mdb::Capital::Allocate();
-		memcpy(newCapital, capital, sizeof(mdb::Capital));
-		strcpy(newCapital->TradingDay, nextTradingDay);
-		newCapital->PreBalance = capital->Balance;
-		newCapital->MarketValue = 0.0;
-		newCapital->CashIn = 0.0;
-		newCapital->CashOut = 0.0;
-		newCapital->Commission = 0.0;
-		newCapital->FrozenCash = 0.0;
-		newCapital->FrozenMargin = 0.0;
-		newCapital->FrozenCommission = 0.0;
-		newCapital->CloseProfitByDate = 0.0;
-		newCapital->CloseProfitByDate = 0.0;
-		newCapital->PositionProfitByDate = 0.0;
-		
-		m_Mdb->t_Capital->Insert(newCapital);
-	}
-}
-void SimExchange::InitPosition(const DateType& nextTradingDay)
-{
-	InitPositionDetail(nextTradingDay);
-	std::vector<mdb::Position*> positions;
-	auto positionItPair = m_Mdb->t_Position->m_TradingDayIndex->EqualRange(m_TradingDay);
-	for (auto& positionIt = positionItPair.first; positionIt != positionItPair.second; ++positionIt)
-	{
-		positions.push_back(*positionIt);
-	}
-	for (auto position : positions)
-	{
-		if (position->TotalPosition == 0)
-			continue;
-		auto newPosition = mdb::Position::Allocate();
-		memcpy(newPosition, position, sizeof(mdb::Position));
-		strcpy(newPosition->TradingDay, nextTradingDay);
-		newPosition->PositionFrozen = 0;
-		newPosition->TodayPosition = 0;
-		newPosition->CashIn = 0;
-		newPosition->CashOut = 0;
-		newPosition->Commission = 0.0;
-		newPosition->FrozenCash = 0;
-		newPosition->FrozenMargin = 0;
-		newPosition->FrozenCommission = 0;
-		newPosition->CloseProfitByDate = 0.0;
-		newPosition->CloseProfitByTrade = 0.0;
-		newPosition->PositionProfitByDate = 0.0;
-		newPosition->PreSettlementPrice = position->SettlementPrice;
-		m_Mdb->t_Position->Insert(newPosition);
-	}
-}
-void SimExchange::InitPositionDetail(const DateType& nextTradingDay)
-{
-	std::vector<mdb::PositionDetail*> positionDetails;
-	auto positionDetailItPair = m_Mdb->t_PositionDetail->m_TradingDayIndex->EqualRange(m_TradingDay);
-	for (auto& positionDetailIt = positionDetailItPair.first; positionDetailIt != positionDetailItPair.second; ++positionDetailIt)
-	{
-		positionDetails.push_back(*positionDetailIt);
-	}
-	for (auto positionDetail : positionDetails)
-	{
-		if (positionDetail->Volume - positionDetail->CloseVolume == 0)
-			continue;
-		auto newPositionDetail = mdb::PositionDetail::Allocate();
-		memcpy(newPositionDetail, positionDetail, sizeof(mdb::PositionDetail));
-		strcpy(newPositionDetail->TradingDay, nextTradingDay);
-		newPositionDetail->CashIn = 0;
-		newPositionDetail->CashOut = 0;
-		newPositionDetail->Commission = 0;
-		newPositionDetail->CloseProfitByDate = 0.0;
-		newPositionDetail->CloseProfitByTrade = 0.0;
-		newPositionDetail->PositionProfitByDate = 0.0;
-		newPositionDetail->PreSettlementPrice = positionDetail->SettlementPrice;
-		m_Mdb->t_PositionDetail->Insert(newPositionDetail);
-	}
-}
 
-
-
-PriceType SimExchange::GetSettlementPrice(mdb::PositionDetail* positionDetail)
+PriceType SimExchange::BarSettlementPriceSource::GetSettlementPrice(const mdb::PositionDetail* positionDetail)
 {
-	if (m_MarketDataType == MarketDataTypeType::Tick)
+	auto it = m_LastMdBars->find(positionDetail->InstrumentID);
+	if (it != m_LastMdBars->end() && it->second != nullptr)
 	{
-		auto mdTick = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(positionDetail->TradingDay, positionDetail->ExchangeID, positionDetail->InstrumentID);
-		if (mdTick == nullptr)
-		{
-			return positionDetail->PreSettlementPrice;
-		}
-		else if (!isinf(mdTick->LastPrice) && !isnan(mdTick->LastPrice))
-		{
-			return mdTick->LastPrice;
-		}
-		else if (!isinf(mdTick->PreSettlementPrice) && !isnan(mdTick->PreSettlementPrice))
-		{
-			return mdTick->PreSettlementPrice;
-		}
-	}
-	else
-	{
-		auto mdBar = m_LastMdBars[positionDetail->InstrumentID];
-		if (mdBar != nullptr)
-		{
-			return mdBar->Close;
-		}
+		return it->second->Close;
 	}
 	return positionDetail->PreSettlementPrice;
-}
-void SimExchange::CalcCapital(mdb::Capital* capital)
-{
-	capital->Balance = capital->PreBalance + capital->CloseProfitByDate + capital->PositionProfitByDate  - capital->Commission;
-	capital->Available = capital->Balance - capital->MarketValue - capital->Margin - capital->FrozenCash - capital->FrozenMargin - capital->FrozenCommission;
 }
 
 void SimExchange::SendRspOrderInsert(ReqInsertOrderPackage* reqPackage, int errorID)

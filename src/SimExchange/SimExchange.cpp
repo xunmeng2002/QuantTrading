@@ -29,6 +29,7 @@ SimExchange::SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront
 
 	m_OrderMatch = OrderMatch::CreateOrderMatch(matchMode, m_TradingDay);
 	m_OrderMatch->Subscribe(this);
+	m_PositionMaintenance = new quanttrading::settlement::PositionMaintenance(m_Mdb);
 
 	m_RspAccountLoginPackage = Allocate<RspAccountLoginPackage>();
 	m_RspAccountLoginPackage->RspInfo = Allocate<RspInfoField>();
@@ -108,6 +109,7 @@ void SimExchange::OnTrade(mdb::Trade* trade)
 {
     m_Mdb->t_Trade->Insert(trade);
 	SendRtnTrade(trade);
+	m_PositionMaintenance->UpdateOnTrade(trade);
 }
 
 void SimExchange::Run()

@@ -5,6 +5,7 @@
 #include "MdFront.h"
 #include "TradeFront.h"
 #include "OrderMatch.h"
+#include "PositionMaintenance.h"
 #include "FieldsCompare.h"
 #include "MdSpiImpl.h"
 #include <Spark/Core/Thread/ThreadBase.h>
@@ -77,6 +78,7 @@ protected:
 	MdSpiImpl* m_MdSpi;
 	mdb::Mdb* m_Mdb;
     quanttrading::ordermatch::OrderMatch* m_OrderMatch;
+	quanttrading::settlement::PositionMaintenance* m_PositionMaintenance;
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
 
