@@ -118,13 +118,13 @@ namespace detail
 	// Order 逐字段映射（仅 Mdb→Field 单向）：mdb 行比报文字段多账户类型/报盘/分组等库内字段，布局非镜像，不可整块拷贝
 	void CopyOrderFields(const mdb::Order& src, OrderField& dst)
 	{
-		strcpy(dst.TradingDay, src.TradingDay);
-		strcpy(dst.AccountID, src.AccountID);
-		strcpy(dst.ExchangeID, src.ExchangeID);
-		strcpy(dst.InstrumentID, src.InstrumentID);
+		memcpy(dst.TradingDay, src.TradingDay, sizeof(DateType));
+		memcpy(dst.AccountID, src.AccountID, sizeof(AccountIDType));
+		memcpy(dst.ExchangeID, src.ExchangeID, sizeof(ExchangeIDType));
+		memcpy(dst.InstrumentID, src.InstrumentID, sizeof(InstrumentIDType));
 		dst.ProductClass = src.ProductClass;
 		dst.OrderID = src.OrderID;
-		strcpy(dst.OrderSysID, src.OrderSysID);
+		memcpy(dst.OrderSysID, src.OrderSysID, sizeof(OrderSysIDType));
 		dst.Direction = src.Direction;
 		dst.OffsetFlag = src.OffsetFlag;
 		dst.OrderPriceType = src.OrderPriceType;
@@ -134,10 +134,10 @@ namespace detail
 		dst.VolumeTraded = src.VolumeTraded;
 		dst.VolumeMultiple = src.VolumeMultiple;
 		dst.OrderStatus = src.OrderStatus;
-		strcpy(dst.OrderDate, src.OrderDate);
-		strcpy(dst.OrderTime, src.OrderTime);
-		strcpy(dst.CancelDate, src.CancelDate);
-		strcpy(dst.CancelTime, src.CancelTime);
+		memcpy(dst.OrderDate, src.OrderDate, sizeof(DateType));
+		memcpy(dst.OrderTime, src.OrderTime, sizeof(TimeType));
+		memcpy(dst.CancelDate, src.CancelDate, sizeof(DateType));
+		memcpy(dst.CancelTime, src.CancelTime, sizeof(TimeType));
 		dst.SessionID = src.SessionID;
 		dst.ClientOrderID = src.ClientOrderID;
 		dst.RequestID = src.RequestID;
@@ -149,14 +149,14 @@ namespace detail
 	// Trade 逐字段映射（仅 Mdb→Field 单向）：mdb 行多账户类型字段，布局非镜像，不可整块拷贝
 	void CopyTradeFields(const mdb::Trade& src, TradeField& dst)
 	{
-		strcpy(dst.TradingDay, src.TradingDay);
-		strcpy(dst.AccountID, src.AccountID);
-		strcpy(dst.ExchangeID, src.ExchangeID);
-		strcpy(dst.InstrumentID, src.InstrumentID);
+		memcpy(dst.TradingDay, src.TradingDay, sizeof(DateType));
+		memcpy(dst.AccountID, src.AccountID, sizeof(AccountIDType));
+		memcpy(dst.ExchangeID, src.ExchangeID, sizeof(ExchangeIDType));
+		memcpy(dst.InstrumentID, src.InstrumentID, sizeof(InstrumentIDType));
 		dst.ProductClass = src.ProductClass;
 		dst.OrderID = src.OrderID;
-		strcpy(dst.OrderSysID, src.OrderSysID);
-		strcpy(dst.TradeID, src.TradeID);
+		memcpy(dst.OrderSysID, src.OrderSysID, sizeof(OrderSysIDType));
+		memcpy(dst.TradeID, src.TradeID, sizeof(TradeIDType));
 		dst.Direction = src.Direction;
 		dst.OffsetFlag = src.OffsetFlag;
 		dst.Price = src.Price;
@@ -164,8 +164,8 @@ namespace detail
 		dst.VolumeMultiple = src.VolumeMultiple;
 		dst.TradeAmount = src.TradeAmount;
 		dst.Commission = src.Commission;
-		strcpy(dst.TradeDate, src.TradeDate);
-		strcpy(dst.TradeTime, src.TradeTime);
+		memcpy(dst.TradeDate, src.TradeDate, sizeof(DateType));
+		memcpy(dst.TradeTime, src.TradeTime, sizeof(TimeType));
 	}
 }
 
