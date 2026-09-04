@@ -2,7 +2,7 @@
 #include "Fields.h"
 #include <QuantTrading/SimExchangeApi/SimExchangeApiExport.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define SIMEXCHANGEAPI_CALL _stdcall
 #else
 #define SIMEXCHANGEAPI_CALL

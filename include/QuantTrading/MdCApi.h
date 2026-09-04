@@ -2,7 +2,7 @@
 #include "Fields.h"
 #include <QuantTrading/MdApi/MdApiExport.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define MDAPI_CALL _stdcall
 #else
 #define MDAPI_CALL

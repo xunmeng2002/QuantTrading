@@ -2,7 +2,7 @@
 #include "Fields.h"
 #include <QuantTrading/TraderApi/TraderApiExport.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define TRADERAPI_CALL _stdcall
 #else
 #define TRADERAPI_CALL
