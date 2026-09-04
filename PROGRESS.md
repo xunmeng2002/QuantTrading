@@ -4,7 +4,7 @@
 
 ## 项目定位
 
-CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，已实现行情服务 **MdOffer**，交易链路（TraderApiMiddle）已封装但未接入应用。
+CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：行情服务 **MdOffer**、回测引擎 **BackTest**（C++/Python 双端策略）、模拟盘 **SimExchange** 均已落地并经单测/冒烟验证；实盘交易链路（TraderApiMiddle）已封装但未接入应用。
 
 ## ✅ 已完成
 
@@ -138,6 +138,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
   - 验证（Windows x64-Debug）：UnitTests **62/62 用例、399/399 断言 SUCCESS**；`TestStrategyGrid.exe` 冒烟与基线**逐字一致**（closedPairs:161 realizedProfit:1714.200000、期末 3 多 3 空、零 "zero remaining" 告警、退出码 0）；`TestBackTest.exe` 冒烟 20241001→20241231 全程 62 次 SessionBegin/SessionEnd、2238 笔成交、零错误码、退出码 0。WSL-GCC 双平台编译本轮未跑（后续补验）。
 
 - **2026-09-03 Order/Trade 回报字段拷贝提取（DRY）**：`MdbFieldConverter` 新增 `MdbToField`（mdb::Order→OrderField、mdb::Trade→TradeField，memset 清零 + 逐字段映射）；替换回测/模拟盘共 6 处手写字段拷贝（SendRtnOrder / SendRtnTrade / SendRspQryOrder / SendRspQryTrade），净删约 170 行。关键点：mdb::Order/Trade 比报文字段多库内字段（AccountType/OfferID/分组 ID 等），布局非镜像，**不走 `TryBulkCopy` 整块拷贝捷径**（代码注释已说明）；模拟盘四处原无 memset，统一清零仅影响 padding 字节（字段已全覆盖），回测侧原 memset 语义保留。验证：UnitTests 62/62 用例 399/399 断言 SUCCESS；TestStrategyGrid 冒烟与基线逐字一致（161 对 / 1714.2 / 退出码 0）；TestBackTest 冒烟 62/62 日切、2238 笔成交、退出码 0。用户决策：两个 SimExchange 的 HandleInsertOrder/HandleCancelOrder 校验段与 tick 落库 upsert 属各自业务代码，不提取。
+- **2026-09-04 Python 绑定落地 + 平台宏统一收官**：新增 `src/PythonBindings`（quanttrading.pyd：BackTestApi + StrategyBase 十钩子经 GIL 手动 `get_overload` 分发（Python 收快照拷贝、回退走基类指针路径）+ 9 字段类型注册）；绑定开关跟随构建类型（Debug 自动跳过——CPython 官方解释器为 Release CRT，非 Debug 自动启用，仅显式 `-DQUANTTRADING_ENABLE_PYTHON=OFF` 关闭）；`test/PythonStrategyGrid/grid_strategy.py` 为 GridStrategy 的 Python 移植，经回测冒烟验证；策略配置归集至 `Configs/TestStrategyGrid.json`（与 C++ 版共用单份），脚本与配置随 pyd 构建拷贝至 `bin/<CONFIG>`，运行方式 `cd bin/<CONFIG> && python grid_strategy.py`（`bd54728`）。平台宏统一五仓收官：QuantTrading 头文件 `WIN32→_WIN32`、Beacon/DBAdapters/Mdb CMake 平台块收敛为 `if(WIN32)` 最小块、Spark 源码 36 文件 115 处 `WINDOWS/LINUX→_WIN32/__linux__` 迁移（`cmake_minimum_required` 升 3.25 撑起 `LINUX` 变量）。
 
 ## 🔄 进行中
 
@@ -147,7 +148,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**，�
 
 - **引擎补报单接受确认**（2026-09-01 提出，StrategyBase 实施时发现）：`OppositePriceOrderMatch`/`LastPriceOrderMatch` 的 `InsertOrder` 不调 `m_OrderMatchSubscriber->OnOrder(order)`（仅 `OrderBookOrderMatch.cpp:37` 有），挂单未成交前策略拿不到引擎 OrderID——与真实 CTP"已报"回报语义不一致。StrategyBase 已用 `ClientCancelOrderID` 回退路径兼容，但属引擎行为缺口，修复需单独评审 + 回归（TestBackTest 冒烟 + 单测）。
 - **HandleCancelOrder 跨日查单失败 + 字段疑似误用**（2026-09-01 实证）：两条查单路径都以当前 `m_TradingDay` 为首键（`SimExchange.cpp:575-580`），撤单请求经队列在日切后消费时前日订单必查不到（冒烟实证 4115"委托不存在"）；且回退路径用撤单请求的 `ClientCancelOrderID` 匹配订单 `ClientOrderID` 唯一键，语义上该字段应为撤单请求自身编号。**跨日语义已于 2026-09-02 落地"日切结算统一撤单并推送 OnRtnOrder(Canceled)"**（`OrderMatch::OnTradingDayChange`）：日切后跨日撤单请求面对已清算订单返回 4115 属对齐真实交易所的预期行为，策略侧原"挂单跨日有效"设计已由 GridStrategy 适配（2026-09-02）替代。残留待决策：同日撤单回退路径的 `ClientCancelOrderID` 字段语义修正（需单独评审 + 回归）。
-- **平台宏统一（WINDOWS→_WIN32、LINUX→__linux__）**（2026-08-31 评估）：`_WIN32`/`__linux__` 为编译器内置宏，可替代 CMake 注入的 `WINDOWS`/`LINUX` 家族约定。使用面：Spark 15+ 文件（Logger、Network/Tcp Iocp/Epoll/Select、Shm 等），DBAdapters/Templates 零使用。QuantTrading 侧已完成：`ShutdownSignal.cpp` 3 处 `#ifdef WIN32` 改 `_WIN32`（裸 cl 对照实验证实 `WIN32` 非编译器内置、依赖 CMake 注入 `/DWIN32`，离开构建系统即走错平台分支——且 MSVC CRT 也有 signal.h/signal，属静默劣化而非编译错误）。CMakeLists 的 `WINDOWS`/`LINUX` define 已于当日删除（消费面核查为零引用）；剩余待决策：Spark 仓库源码内部迁移 `WINDOWS→_WIN32`、`LINUX→__linux__`（属 Spark 自身构建范围，不影响 QuantTrading；迁移前 Spark 自己的 CMake 需继续定义这两个宏）。
+- **平台宏统一（WINDOWS→_WIN32、LINUX→__linux__）**（2026-08-31 评估）：`_WIN32`/`__linux__` 为编译器内置宏，可替代 CMake 注入的 `WINDOWS`/`LINUX` 家族约定。使用面：Spark 15+ 文件（Logger、Network/Tcp Iocp/Epoll/Select、Shm 等），DBAdapters/Templates 零使用。QuantTrading 侧已完成：`ShutdownSignal.cpp` 3 处 `#ifdef WIN32` 改 `_WIN32`（裸 cl 对照实验证实 `WIN32` 非编译器内置、依赖 CMake 注入 `/DWIN32`，离开构建系统即走错平台分支——且 MSVC CRT 也有 signal.h/signal，属静默劣化而非编译错误）。CMakeLists 的 `WINDOWS`/`LINUX` define 已于当日删除（消费面核查为零引用）；剩余待决策：Spark 仓库源码内部迁移 `WINDOWS→_WIN32`、`LINUX→__linux__`（属 Spark 自身构建范围，不影响 QuantTrading；迁移前 Spark 自己的 CMake 需继续定义这两个宏）。**✅ 2026-09-04 全部关闭**：Spark 源码 36 文件 115 处迁移完毕，其 CMake 不再定义 `WINDOWS`/`LINUX`；Beacon/DBAdapters/Mdb CMake 平台块同步收敛至 QuantTrading 约定。
 - **H15 OrderBook 市价撮合缺口**（2026-08-27 用户决策：先文档化，代码不动）：`OrderBookOrderMatch::CheckMatch` 只遍历对手限价队列，`m_MarketBuy/SellOrders`（`OrderMatch.h:48-49`）滞留无消费；`OnTick`/`OnBar`（`OrderBookOrderMatch.cpp:19-26`）为空实现，整条路径无价格驱动撮合。待 OrderBook 引擎设计（OnTick 驱动撮合 + 市价队列语义）时一并处理。
 - **数据源整理对齐 mdb**（用户负责）：TestBackTest 已能在旧格式 parquet（`LastTraded`/`LastTurnover`/数组盘口，缺 OpenPrice/ClosePrice/Upper/LowerLimitPrice/AveragePrice 5 列）上端到端跑通，**靠 MdReader SQL 的 NULL 占位 + 旧列名兜底**；数据侧未真正对齐 mdb schema。真正对齐后 SQL 可删掉占位符，且 tick 的涨跌停价列才真实可用（当前 OrderMatch 的涨跌停校验处于注释状态，`GetSettlementPrice` 对 +inf 有回退，故暂不影响撮合/结算正确性）。
 - **P1-1 完整重连**：当前仅重置登录态，CTP 断线自动重连/退避策略未实现。需确认所用 CTP 版本的 `Reconnect()`/自动重连行为后设计。
