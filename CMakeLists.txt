@@ -261,11 +261,14 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
+# Python 绑定跟随构建类型：Debug 自动跳过（CPython 官方解释器为 Release CRT），非 Debug 自动启用；
+# 仅显式 -DQUANTTRADING_ENABLE_PYTHON=OFF 才整体关闭（缓存记住，切换配置无需删缓存重配）
 option(QUANTTRADING_ENABLE_PYTHON "Build Python bindings (pybind11; requires: pip install pybind11)" ON)
-if(QUANTTRADING_ENABLE_PYTHON)
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		message(FATAL_ERROR "Python bindings are Release-only (CPython official builds use Release CRT). Configure with x64-Release preset or set QUANTTRADING_ENABLE_PYTHON=OFF.")
-	endif()
+if(NOT QUANTTRADING_ENABLE_PYTHON)
+	message(STATUS "Python bindings: disabled (QUANTTRADING_ENABLE_PYTHON=OFF)")
+elseif(CMAKE_BUILD_TYPE MATCHES "[Dd]ebug")
+	message(STATUS "Python bindings: skipped for Debug (CPython official builds use Release CRT)")
+else()
 	find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
 	# pybind11 由 pip 提供，用 `python -m pybind11 --cmakedir` 定位其 CMake 配置目录
 	execute_process(COMMAND "${Python3_EXECUTABLE}" -m pybind11 --cmakedir
