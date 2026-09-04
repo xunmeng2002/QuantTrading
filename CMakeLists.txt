@@ -260,3 +260,22 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
+
+option(QUANTTRADING_ENABLE_PYTHON "Build Python bindings (pybind11; requires: pip install pybind11)" ON)
+if(QUANTTRADING_ENABLE_PYTHON)
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		message(FATAL_ERROR "Python bindings are Release-only (CPython official builds use Release CRT). Configure with x64-Release preset or set QUANTTRADING_ENABLE_PYTHON=OFF.")
+	endif()
+	find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+	# pybind11 由 pip 提供，用 `python -m pybind11 --cmakedir` 定位其 CMake 配置目录
+	execute_process(COMMAND "${Python3_EXECUTABLE}" -m pybind11 --cmakedir
+		RESULT_VARIABLE QUANTTRADING_PYBIND11_RC
+		OUTPUT_VARIABLE QUANTTRADING_PYBIND11_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+	if(NOT QUANTTRADING_PYBIND11_RC EQUAL 0)
+		message(FATAL_ERROR "QUANTTRADING_ENABLE_PYTHON=ON requires pybind11: run `pip install pybind11` first.")
+	endif()
+	set(pybind11_DIR "${QUANTTRADING_PYBIND11_DIR}" CACHE PATH "pybind11 CMake config directory (from pip)" FORCE)
+	find_package(pybind11 CONFIG REQUIRED)
+	add_subdirectory(src/PythonBindings)
+endif()
