@@ -32,8 +32,8 @@ namespace
 		return new BackTestApiHandle(quanttrading::BackTestApiMiddle::CreateBackTestApiMiddle());
 	}
 
-	// StrategyBase 的 Python 桥接：钩子覆写统一「取得 GIL → 按值拷贝分发 → 吞掉 Python 异常记日志」，
-	// Python 侧拿到的字段对象是快照副本，回调结束后仍可安全持有
+	// StrategyBase 的 Python 桥接：钩子统一「取得 GIL → 存在 Python 覆写按值拷贝分发 / 无覆写走基类 →
+	// 吞掉 Python 异常记日志」，Python 侧拿到的字段对象是快照副本，回调结束后仍可安全持有
 	class StrategyBasePy : public StrategyBase
 	{
 	public:
@@ -63,7 +63,7 @@ namespace
 	protected:
 		void OnStart() override
 		{
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_start", OnStart); });
+			DispatchHookWithGil("on_start", [&] { StrategyBase::OnStart(); });
 		}
 		void OnTick(const DepthMarketDataField* depthMarketData) override
 		{
@@ -71,7 +71,7 @@ namespace
 			{
 				return;
 			}
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_tick", OnTick, *depthMarketData); });
+			DispatchHookWithGil("on_tick", [&] { StrategyBase::OnTick(depthMarketData); }, *depthMarketData);
 		}
 		void OnBar(const BarMarketDataField* barMarketData) override
 		{
@@ -79,7 +79,7 @@ namespace
 			{
 				return;
 			}
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_bar", OnBar, *barMarketData); });
+			DispatchHookWithGil("on_bar", [&] { StrategyBase::OnBar(barMarketData); }, *barMarketData);
 		}
 		void OnTrade(const TradeField* trade, ClientOrderIDType clientOrderID) override
 		{
@@ -87,7 +87,7 @@ namespace
 			{
 				return;
 			}
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_trade", OnTrade, *trade, clientOrderID); });
+			DispatchHookWithGil("on_trade", [&] { StrategyBase::OnTrade(trade, clientOrderID); }, *trade, clientOrderID);
 		}
 		void OnOrder(const OrderField* order) override
 		{
@@ -95,7 +95,7 @@ namespace
 			{
 				return;
 			}
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_order", OnOrder, *order); });
+			DispatchHookWithGil("on_order", [&] { StrategyBase::OnOrder(order); }, *order);
 		}
 		void OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo) override
 		{
@@ -103,7 +103,7 @@ namespace
 			{
 				return;
 			}
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_insert_order_rsp", OnInsertOrderRsp, *reqInsertOrder, *rspInfo); });
+			DispatchHookWithGil("on_insert_order_rsp", [&] { StrategyBase::OnInsertOrderRsp(reqInsertOrder, rspInfo); }, *reqInsertOrder, *rspInfo);
 		}
 		void OnCancelOrderRsp(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo) override
 		{
@@ -111,7 +111,7 @@ namespace
 			{
 				return;
 			}
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_cancel_order_rsp", OnCancelOrderRsp, *reqCancelOrder, *rspInfo); });
+			DispatchHookWithGil("on_cancel_order_rsp", [&] { StrategyBase::OnCancelOrderRsp(reqCancelOrder, rspInfo); }, *reqCancelOrder, *rspInfo);
 		}
 		void OnSessionBegin(const SessionBeginField* sessionBegin) override
 		{
@@ -119,7 +119,7 @@ namespace
 			{
 				return;
 			}
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_session_begin", OnSessionBegin, *sessionBegin); });
+			DispatchHookWithGil("on_session_begin", [&] { StrategyBase::OnSessionBegin(sessionBegin); }, *sessionBegin);
 		}
 		void OnSessionEnd(const SessionEndField* sessionEnd) override
 		{
@@ -127,14 +127,32 @@ namespace
 			{
 				return;
 			}
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_session_end", OnSessionEnd, *sessionEnd); });
+			DispatchHookWithGil("on_session_end", [&] { StrategyBase::OnSessionEnd(sessionEnd); }, *sessionEnd);
 		}
 		void OnEnd() override
 		{
-			RunWithGil([&] { PYBIND11_OVERRIDE_NAME(void, StrategyBase, "on_end", OnEnd); });
+			DispatchHookWithGil("on_end", [&] { StrategyBase::OnEnd(); });
 		}
 
 	private:
+		// 钩子统一分发：pybind11 宏无法为回退路径与 Python 路径传不同实参（基类收指针、Python 收拷贝），
+		// 故手动 get_overload；存在覆写则按值拷贝转发，否则走基类实现
+		template <typename BaseDispatch, typename... PythonArgs>
+		void DispatchHookWithGil(const char* hookName, BaseDispatch fallback, PythonArgs&&... pythonArgs)
+		{
+			RunWithGil([&]
+			{
+				if (auto hookOverload = py::get_overload(this, hookName))
+				{
+					hookOverload(pythonArgs...);
+				}
+				else
+				{
+					fallback();
+				}
+			});
+		}
+
 		template <typename Dispatch>
 		void RunWithGil(Dispatch dispatch)
 		{
