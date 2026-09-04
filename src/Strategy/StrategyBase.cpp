@@ -102,8 +102,7 @@ bool StrategyBase::CancelOrder(ClientOrderIDType clientOrderID)
 	Utility::Strcpy(reqCancelOrder.ExchangeID, orderContextIt->second.ExchangeID.c_str());
 	Utility::Strcpy(reqCancelOrder.InstrumentID, orderContextIt->second.InstrumentID.c_str());
 	reqCancelOrder.ClientOrderID = clientOrderID;
-	// 引擎回退路径（SimExchange::HandleCancelOrder）以 ClientCancelOrderID 匹配订单 ClientOrderID 唯一键
-	reqCancelOrder.ClientCancelOrderID = clientOrderID;
+	reqCancelOrder.ClientCancelOrderID = ++m_NextClientCancelOrderID;
 	auto orderIt = m_Orders.find(clientOrderID);
 	if (orderIt != m_Orders.end())
 	{

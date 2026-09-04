@@ -30,6 +30,7 @@ namespace quanttrading::ordermatch
     void BarOrderMatch::InsertOrder(mdb::Order* order)
     {
         AddOrderToQueue(order);
+        m_OrderMatchSubscriber->OnOrder(order);
     }
     void BarOrderMatch::CheckMatch(mdb::BarMarketData* mdBar)
     {

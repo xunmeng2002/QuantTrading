@@ -113,7 +113,6 @@ TEST_CASE("StrategyBase cancels by ClientOrderID fallback without report")
     REQUIRE(strategy.CancelOrder(client_order_id));
     REQUIRE(fake_api.cancel_requests.size() == 1);
     CHECK(fake_api.cancel_requests[0].OrderID == 0);
-    CHECK(fake_api.cancel_requests[0].ClientCancelOrderID == client_order_id);
     CHECK(fake_api.cancel_requests[0].ClientOrderID == client_order_id);
     CHECK(std::string(fake_api.cancel_requests[0].ExchangeID) == "CFFEX");
     CHECK(std::string(fake_api.cancel_requests[0].InstrumentID) == "IF2503");

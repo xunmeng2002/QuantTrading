@@ -37,6 +37,7 @@ namespace quanttrading::ordermatch
     void OppositePriceOrderMatch::InsertOrder(mdb::Order* order)
     {
         AddOrderToQueue(order);
+        m_OrderMatchSubscriber->OnOrder(order);
     }
 
     void OppositePriceOrderMatch::CheckBuyMatch(mdb::DepthMarketData* mdTick)

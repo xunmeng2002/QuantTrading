@@ -490,17 +490,16 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	auto instrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID);
 	if (instrument == nullptr)
 	{
-		errorID = ErrorInstrumentNotExist;
-	}
-	else
-	{
-		errorID = CheckForInsertOrder(reqInsertOrder, instrument);
+		SendRspOrderInsert(reqPackage, ErrorInstrumentNotExist);
+		return;
 	}
 	auto account = m_Mdb->t_Account->m_PrimaryKey->Select(reqInsertOrder->AccountID);
 	if (account == nullptr)
 	{
-		errorID = ErrorAccountNotExist;
+		SendRspOrderInsert(reqPackage, ErrorAccountNotExist);
+		return;
 	}
+	errorID = CheckForInsertOrder(reqInsertOrder, instrument);
 	SendRspOrderInsert(reqPackage, errorID);
 	if (errorID != ErrorNone)
 	{
@@ -520,7 +519,7 @@ void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 	if (order == nullptr)
 	{
 		order = m_Mdb->t_Order->m_ClientOrderIDUniqueKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID,
-			reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->SessionID, reqPackage->ReqCancelOrder->ClientCancelOrderID);
+			reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->SessionID, reqPackage->ReqCancelOrder->ClientOrderID);
 		if (order == nullptr)
 		{
 			errorID = ErrorOrderNotExist;

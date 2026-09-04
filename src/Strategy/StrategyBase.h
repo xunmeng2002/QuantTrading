@@ -91,6 +91,7 @@ private:
 	std::string m_AccountID;
 	int m_NextRequestID = 0;
 	ClientOrderIDType m_NextClientOrderID = 0;
+    ClientOrderIDType m_NextClientCancelOrderID = 0;
 	bool m_IsMdEnded = false;
 };
 }

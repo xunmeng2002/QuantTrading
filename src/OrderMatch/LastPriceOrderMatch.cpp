@@ -32,6 +32,7 @@ namespace quanttrading::ordermatch
     void LastPriceOrderMatch::InsertOrder(mdb::Order* order)
     {
         AddOrderToQueue(order);
+        m_OrderMatchSubscriber->OnOrder(order);
     }
 
     void LastPriceOrderMatch::CheckMatch(mdb::DepthMarketData* mdTick)
