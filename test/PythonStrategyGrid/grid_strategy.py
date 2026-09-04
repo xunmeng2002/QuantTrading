@@ -1,7 +1,7 @@
 """成对网格策略 Python 移植（对应 test/TestStrategyGrid/GridStrategy.cpp，经 quanttrading.pyd 驱动回测引擎）。
 
-运行方式（引擎从 CWD 读 BackTest.json，pyd 在 bin/Release）：
-    cd bin/Release && python ../../test/PythonStrategyGrid/grid_strategy.py
+运行方式（脚本与配置由构建拷贝至 bin/Release，引擎从 CWD 读 BackTest.json 与 TestStrategyGrid.json）：
+    cd bin/Release && python grid_strategy.py
 """
 
 import json
@@ -239,8 +239,7 @@ class GridStrategy(qt.StrategyBase):
 
 
 def main():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(script_dir, "grid_strategy.json"), encoding="utf-8") as config_file:
+    with open("TestStrategyGrid.json", encoding="utf-8") as config_file:
         config = json.load(config_file)
     qt.init_logger(sys.argv[0], config["LogLevel"])
     api = qt.create_backtest_api()
