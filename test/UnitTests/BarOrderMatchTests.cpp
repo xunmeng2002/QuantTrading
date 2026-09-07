@@ -93,8 +93,8 @@ TEST_CASE("市价单按bar中价成交")
     OrderPoolGuard order_pool;
     PoolRecordGuard<mdb::BarMarketData> bar_pool;
 
-    order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPrice));
-    order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Sell, 0.0, 10, OrderPriceTypeType::AnyPrice));
+    order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
+    order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Sell, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
     order_match.OnBar(MakeBarRecord(bar_pool, MakeUpdateTs(20240301, 90100, 0), 99.0, 101.0, 99.0, 100.0));
 
     REQUIRE(subscriber.trades.size() == 2);
@@ -111,7 +111,7 @@ TEST_CASE("OnTick不触发撮合")
     OrderPoolGuard order_pool;
     PoolRecordGuard<mdb::DepthMarketData> tick_pool;
 
-    order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPrice));
+    order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
     order_match.OnTick(MakeMdTick(tick_pool, MakeUpdateTs(20240301, 90000, 0), 100.0, 10, 99.0, 10, 101.0, 10));
     CHECK(subscriber.trades.empty());
 }

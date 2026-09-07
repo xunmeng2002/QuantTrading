@@ -32,6 +32,11 @@ namespace quanttrading::ordermatch
 
     PriceType GetMatchPrice(OrderPriceTypeType orderPriceType, PriceType orderPrice, PriceType oppoPrice, PriceType lastPrice);
 
+    // 市价类委托:价格不由下单者指定,入口量限走合约市价参数(MaxMarketOrderVolume)
+    bool IsMarketPriceClass(OrderPriceTypeType orderPriceType);
+    // 受价委托:扫簿受委托价格约束(限价族与已解析的对方最优),无界市价族不受约束
+    bool HasOrderPriceBound(OrderPriceTypeType orderPriceType);
+
     OrderIDType GetNextOrderID();
     void SeedNextOrderIDFromMaxOrderID(OrderIDType maxOrderID);
     void SeedNextOrderIDFromOrders(mdb::OrderTable* orderTable);

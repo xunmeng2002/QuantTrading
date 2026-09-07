@@ -27,11 +27,6 @@ namespace quanttrading::ordermatch
         UpdateDateTime(mdBar->UpdateTs);
         CheckMatch(mdBar);
     }
-    void BarOrderMatch::InsertOrder(mdb::Order* order)
-    {
-        AddOrderToQueue(order);
-        m_OrderMatchSubscriber->OnOrder(order);
-    }
     void BarOrderMatch::CheckMatch(mdb::BarMarketData* mdBar)
     {
         auto& marketBuyQueueOrders = m_MarketBuyOrders[mdBar->InstrumentID];
@@ -55,6 +50,7 @@ namespace quanttrading::ordermatch
                 break;
             }
         }
+        CancelUnfilledImmediateOrders(buyQueueOrders);
         std::erase_if(buyQueueOrders, [](mdb::Order* order) {return order->VolumeTotal == 0; });
 
         auto& sellQueueOrders = m_SellOrders[mdBar->InstrumentID];
@@ -65,13 +61,25 @@ namespace quanttrading::ordermatch
                 break;
             }
         }
+        CancelUnfilledImmediateOrders(sellQueueOrders);
         std::erase_if(sellQueueOrders, [](mdb::Order* order) {return order->VolumeTotal == 0; });
     }
     bool BarOrderMatch::CheckMatchForOrder(mdb::BarMarketData* mdBar, mdb::Order* order)
     {
         PriceType matchPrice;
-        if (order->OrderPriceType == OrderPriceTypeType::LimitPrice)
+        switch (order->OrderPriceType)
         {
+        case OrderPriceTypeType::AnyPriceFAK:
+        case OrderPriceTypeType::AnyPriceFOK:
+            // 市价族按 bar 中价成交
+            matchPrice = (mdBar->High + mdBar->Low) / 2;
+            break;
+        case OrderPriceTypeType::BestOppoPrice:
+            // 对方最优按 bar 收盘价成交
+            matchPrice = mdBar->Close;
+            break;
+        default:
+            // 限价族(含已解析的本方最优)按 bar 区间受价成交
             if (order->Direction == DirectionType::Buy)
             {
                 if (DoubleUtility::DoubleLess(order->Price, mdBar->Low))
@@ -84,10 +92,7 @@ namespace quanttrading::ordermatch
                     return false;
                 matchPrice = DoubleUtility::DoubleLess(order->Price, mdBar->Low) ? mdBar->Low : order->Price;
             }
-        }
-        else
-        {
-            matchPrice = (mdBar->High + mdBar->Low) / 2;
+            break;
         }
         GetNextTradeID(m_TradeID);
         Match(order, matchPrice, order->VolumeTotal, m_TradeID);

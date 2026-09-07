@@ -138,7 +138,7 @@ TEST_CASE("限价单不越过限价成交")
 
 TEST_CASE("GetMatchPrice按委托价对手价最新价取有效价")
 {
-    CHECK(GetMatchPrice(OrderPriceTypeType::AnyPrice, 90.0, 95.0, 100.0) == 95.0);
+    CHECK(GetMatchPrice(OrderPriceTypeType::AnyPriceFAK, 90.0, 95.0, 100.0) == 95.0);
     CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 90.0, 95.0, std::numeric_limits<double>::infinity()) == 95.0);
     CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 95.0, 90.0, 100.0) == 95.0);
     CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 95.0, 100.0, 90.0) == 95.0);

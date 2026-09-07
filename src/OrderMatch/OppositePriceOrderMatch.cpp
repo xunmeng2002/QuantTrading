@@ -34,11 +34,6 @@ namespace quanttrading::ordermatch
     {
 
     }
-    void OppositePriceOrderMatch::InsertOrder(mdb::Order* order)
-    {
-        AddOrderToQueue(order);
-        m_OrderMatchSubscriber->OnOrder(order);
-    }
 
     void OppositePriceOrderMatch::CheckBuyMatch(mdb::DepthMarketData* mdTick)
     {
@@ -58,6 +53,7 @@ namespace quanttrading::ordermatch
                 break;
             }
         }
+        CancelUnfilledImmediateOrders(buyQueueOrders);
         std::erase_if(buyQueueOrders, [](mdb::Order* order) {return order->VolumeTotal == 0; });
     }
     void OppositePriceOrderMatch::CheckSellMatch(mdb::DepthMarketData* mdTick)
@@ -78,6 +74,7 @@ namespace quanttrading::ordermatch
                 break;
             }
         }
+        CancelUnfilledImmediateOrders(sellQueueOrders);
         std::erase_if(sellQueueOrders, [](mdb::Order* order) {return order->VolumeTotal == 0; });
     }
     bool OppositePriceOrderMatch::CheckMatchForOrder(mdb::Order* order, const double& price)

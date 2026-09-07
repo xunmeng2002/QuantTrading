@@ -59,6 +59,30 @@ namespace quanttrading::ordermatch
         }
         SeedNextOrderIDFromMaxOrderID(maxOrderID);
     }
+    bool IsMarketPriceClass(OrderPriceTypeType orderPriceType)
+    {
+        switch (orderPriceType)
+        {
+        case OrderPriceTypeType::AnyPriceFAK:
+        case OrderPriceTypeType::AnyPriceFOK:
+            return true;
+        default:
+            return false;
+        }
+    }
+    bool HasOrderPriceBound(OrderPriceTypeType orderPriceType)
+    {
+        switch (orderPriceType)
+        {
+        case OrderPriceTypeType::LimitPrice:
+        case OrderPriceTypeType::LimitPriceFAK:
+        case OrderPriceTypeType::LimitPriceFOK:
+        case OrderPriceTypeType::BestOppoPrice:
+            return true;
+        default:
+            return false;
+        }
+    }
     int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument)
     {
         if (strlen(reqInsertOrder->AccountID) == 0)
@@ -67,24 +91,35 @@ namespace quanttrading::ordermatch
             return ErrorInvalidDirection;
         if (reqInsertOrder->OffsetFlag != OffsetFlagType::Open && reqInsertOrder->OffsetFlag != OffsetFlagType::Close && reqInsertOrder->OffsetFlag != OffsetFlagType::CloseToday)
             return ErrorInvalidOffsetFlag;
-        if (reqInsertOrder->OrderPriceType != OrderPriceTypeType::LimitPrice && reqInsertOrder->OrderPriceType != OrderPriceTypeType::AnyPrice)
+        switch (reqInsertOrder->OrderPriceType)
+        {
+        case OrderPriceTypeType::LimitPrice:
+        case OrderPriceTypeType::AnyPriceFAK:
+        case OrderPriceTypeType::AnyPriceFOK:
+        case OrderPriceTypeType::LimitPriceFAK:
+        case OrderPriceTypeType::LimitPriceFOK:
+        case OrderPriceTypeType::BestOwnPrice:
+        case OrderPriceTypeType::BestOppoPrice:
+            break;
+        default:
             return ErrorInvalidOrderPriceType;
+        }
         //if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::LimitPrice && (reqInsertOrder->Price > instrument->UpperLimitPrice || reqInsertOrder->Price < instrument->LowerLimitPrice))
         //	return ErrorInvalidOrderPrice;
         if (reqInsertOrder->Volume <= 0)
             return ErrorInvalidOrderVolume;
-        if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::LimitPrice)
-        {
-            if (instrument->MaxLimitOrderVolume > 0 && reqInsertOrder->Volume > instrument->MaxLimitOrderVolume)
-                return ErrorInvalidOrderVolume;
-            if (instrument->MinLimitOrderVolume > 0 && reqInsertOrder->Volume < instrument->MinLimitOrderVolume)
-                return ErrorInvalidOrderVolume;
-        }
-        if (reqInsertOrder->OrderPriceType == OrderPriceTypeType::AnyPrice)
+        if (IsMarketPriceClass(reqInsertOrder->OrderPriceType))
         {
             if (instrument->MaxMarketOrderVolume > 0 && reqInsertOrder->Volume > instrument->MaxMarketOrderVolume)
                 return ErrorInvalidOrderVolume;
             if (instrument->MinMarketOrderVolume > 0 && reqInsertOrder->Volume < instrument->MinMarketOrderVolume)
+                return ErrorInvalidOrderVolume;
+        }
+        else
+        {
+            if (instrument->MaxLimitOrderVolume > 0 && reqInsertOrder->Volume > instrument->MaxLimitOrderVolume)
+                return ErrorInvalidOrderVolume;
+            if (instrument->MinLimitOrderVolume > 0 && reqInsertOrder->Volume < instrument->MinLimitOrderVolume)
                 return ErrorInvalidOrderVolume;
         }
         return ErrorNone;
