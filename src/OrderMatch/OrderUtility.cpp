@@ -211,23 +211,4 @@ namespace quanttrading::ordermatch
         positionDetail->SettlementPrice = trade->Price;
         return positionDetail;
     }
-
-
-    PriceType GetMatchPrice(OrderPriceTypeType orderPriceType, PriceType orderPrice, PriceType oppoPrice, PriceType lastPrice)
-    {
-        if (orderPriceType != OrderPriceTypeType::LimitPrice || lastPrice == std::numeric_limits<double>::infinity())
-        {
-            return oppoPrice;
-        }
-        if (oppoPrice <= orderPrice && orderPrice <= lastPrice)
-            return orderPrice;
-        if (oppoPrice >= orderPrice && orderPrice >= lastPrice)
-            return orderPrice;
-
-        if (orderPrice <= oppoPrice && oppoPrice <= lastPrice)
-            return oppoPrice;
-        if (orderPrice >= oppoPrice && oppoPrice >= lastPrice)
-            return oppoPrice;
-        return lastPrice;
-    }
 }

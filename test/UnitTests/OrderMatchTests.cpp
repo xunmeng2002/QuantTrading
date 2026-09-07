@@ -4,7 +4,6 @@
 
 #include "doctest/doctest.h"
 
-#include <limits>
 #include <vector>
 
 using namespace quanttrading::ordermatch;
@@ -134,16 +133,6 @@ TEST_CASE("限价单不越过限价成交")
     CHECK(subscriber.trades[0].price == 100.0);
     CHECK(subscriber.trades[0].volume == 1);
     CHECK(subscriber.resting_order_ids == std::vector<int>{1, 2});
-}
-
-TEST_CASE("GetMatchPrice按委托价对手价最新价取有效价")
-{
-    CHECK(GetMatchPrice(OrderPriceTypeType::AnyPriceFAK, 90.0, 95.0, 100.0) == 95.0);
-    CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 90.0, 95.0, std::numeric_limits<double>::infinity()) == 95.0);
-    CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 95.0, 90.0, 100.0) == 95.0);
-    CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 95.0, 100.0, 90.0) == 95.0);
-    CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 95.0, 97.0, 100.0) == 97.0);
-    CHECK(GetMatchPrice(OrderPriceTypeType::LimitPrice, 95.0, 90.0, 93.0) == 93.0);
 }
 
 }
