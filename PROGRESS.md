@@ -166,6 +166,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 - **P2-3 Bar 算法单测**：已由 2026-08-31/09-01 两批 UnitTests 覆盖（bar 聚合、交易时段、集合竞价、丢失 bar 合成、撮合四模式），条目关闭。
 - **P2-4 订阅范围配置化**：当前 `HandleNotifyDBConnect` 遍历 `t_Instrument` 全市场订阅，应改为按交易所/产品/合约配置。
 - **配置明文凭证（源码硬编码已消除，S4 完成）**：`Main.cpp` 的 MdOffer 种子用户与死常量已迁移到配置（S4），但配置文件本身仍明文存储密码——`CtpAccountInfo.json`（SimNow 账户 Password/AuthCode）、各 `Configs/*.json`（`DbPassword`/`MdPassword`）、`TestMdApi.json`（`MdPassword`）。接真实环境前需迁移到密钥管理/环境变量；`MdPassword` 测试值 `123456` 仅限开发。
+- **SimExchangeInit 无超时死等**（2026-09-08 冒烟发现）：`Main.cpp:94` 的 `while (!m_QryFinished)` 无超时兜底，`OnFrontDisconnected`（`ThostFtdcTraderSpiImpl.cpp:28`）不置完成标志——SimNow 不可达或认证失败时进程永久挂起；此时 Ctrl+C 强退会丢失已排队未落库的种子数据（0 字节 `SimExchangeInit.db` 实证），下游 SimExchange 空库启动后登录一律 `ErrorBrokerNotExist`(4127)。修复方向：断线/认证失败置位 + 超时兜底退出（可循 TestMdApi 120s 轮询先例），并考虑启动时对 init 库空表告警。
 - **优雅退出 Ctrl+C 交互验证**：MdOffer / SimExchange 的有序关停逻辑已就绪，但 shell 无法模拟 Ctrl+C，需在真实控制台运行并确认退出顺序与日志。
 - **TestMdApi 遗留**：仍硬编码 `sleep(120s)` 等待行情，应改为条件变量/超时轮询。
 - **LICENSE 缺失**：项目无 LICENSE 文件，发布前需确定开源协议（README 中已标注待定）。
