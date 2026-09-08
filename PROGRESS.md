@@ -156,6 +156,15 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
   - **用户侧待办**：SimNow 站点改密后 `setx CTP_SIMNOW_PASSWORD <新密码>`、`setx CTP_SIMNOW24_PASSWORD <新密码>`、`setx CTP_SIMNOW_AUTHCODE <新AuthCode>`、`setx CTP_SIMNOW24_AUTHCODE <新AuthCode>`（setx 仅对新开控制台生效）。
   - **范围外遗留**：各 `Configs/*.json` 的 `DbPassword`/`MdPassword`（开发库测试凭证，无外泄风险）与 git 历史中的旧凭证（改写历史需 force push，须用户书面授权；轮换后旧值作废，不建议做）。
 
+- **2026-09-08 回测行情源切换 BaoStock（股票 Bar 数据链路落地）**：
+  - **背景与决策**：原 `D:\Md` parquet 生产源断供。评估结论：BaoStock 完全免费但仅覆盖沪深 A 股 + 部分指数（无期货/期权、无 tick、无 1 分钟，指数无分钟线）；akshare 免积分但期货分钟线为新浪固定窗口（5m 约 1 个月）无法回补历史。决策：回测标的转向 A 股个股，用 BaoStock 5 分钟线 + Bar 撮合模式；导出器落在 `D:\Gitee\QuoteHub`（`BaoStockParquet.py`，新依赖 pyarrow，用户批准）。
+  - **既有数据发现**：`D:\Md\Bar` 下已有旧源落好的股票 bar（`Identity=SSE.Stock/SSE.Fund`、`SZSE.Index`，2024-11 起，1m/1h/1d 混存、按天分文件、ProductID=代码前三位）——2024-11 之后的回测可直接用旧数据。
+  - **QuoteHub 导出器**：BaoStock 5m+日线 → Bar parquet，24 列镜像既有文件类型（int64 时间戳、decimal128(24,8) 价格、ZSTD 压缩）；`UpdateTs`=bar 结束分钟（12 位，BaoStock 分钟 time 即结束时间）；Volume=日内累计/LastTraded=增量（按日自动判别累计口径并 diff 还原）；首根 PreClosePrice/PreSettlementPrice 取日线 preclose；分钟量合计与日线存在 ~0.4% 固有口径差（大宗交易/集合竞价归属），偏差 >1% 才告警；幂等合并（同 InstrumentID+日期段重跑覆盖）。输出独立根（默认 `D:\MdBaoStock`）——Bar 回放 SQL 无 Preces 过滤且按 `Identity=<EXCH>.*` 交易所前缀通配，与旧树混放会同窗口混精度重放。
+  - **QuantTrading 改动**（用户批准）：`MdReader::GetInstrumentSqlString` 的 `Identity=CFFEX.*` 放开为 `Identity=*` 且删除 `Preces='1d'` 过滤——任意一行即可标识合约（CFFEX distinct 集合不变）；不改则股票合约无法发现、订阅被拒（`SimExchange.cpp:357`）。
+  - **验证**：导出 600000/600519/000001 全年 2024（各 11616 根 = 242 交易日 × 48 根，0935→1500）；产出 schema 与既有文件逐字段一致。TestBackTest 端到端（SSE.600519、MatchMode=Bar、`MdDataPath=D:\MdBaoStock`、`DbHost=./BackTest600519.db` 独立运行库）：合约发现 3 只、600519 读 2928 根（61 交易日 × 48）、62 组 SessionBegin/End、406 笔成交、ErrorID 全 0、零告警、退出码 0；UnitTests 74/74 用例 478/478 断言保持基线；运行时配置已复原（CFFEX IF2503 OppositePrice）。
+  - **使用方式**：`cd D:\Gitee\QuoteHub && python BaoStockParquet.py --start 2024-01-01 --end 2024-12-31`（缺省读 `config.json` stocks，输出 `D:\MdBaoStock`）；股票回测改 `BackTest.json`：`MdDataPath=D:\MdBaoStock`、`MatchMode=3`，`TestBackTest.json`：`ExchangeID=SSE/SZSE` + 6 位代码。
+  - **遗留**：① Bar 回放 SQL 无 Preces 过滤、`BarPreces/BarPeriod` 硬编码 Minute/1——混精度树无法共存（独立根规避），将来合一需加 Preces 过滤与周期参数化；② BaoStock 停牌/零成交日仍产出平价 bar，Bar 引擎无量门控会按平价撮合（数据保真优先，暂不剔除）；③ `t_Product` 无股票条目，走兜底 VolumeMultiple=1/PriceTick=0/SessionName=FD0900（不影响 Bar 撮合正确性）。
+
 ## 🔄 进行中
 
 - 无。
