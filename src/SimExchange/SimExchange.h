@@ -9,6 +9,7 @@
 #include "FieldsCompare.h"
 #include "MdSpiImpl.h"
 #include <Spark/Core/Thread/ThreadBase.h>
+#include <atomic>
 #include <list>
 #include <map>
 #include <string>
@@ -26,6 +27,8 @@ public:
 	~SimExchange();
 
 	void Init();
+
+	void OnMdDisConnected();
 
 	virtual void OnProtocolConnect(SessionIDType sessionID, const char* ip, int port) override;
 	virtual void OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port) override;
@@ -87,7 +90,7 @@ protected:
 	TimeType m_CurrTime;
 
 	std::set<ReqSubMarketDataField> m_SubscribeInstruments;
-	bool m_IsMdLogged;
+	std::atomic<bool> m_IsMdLogged;
 
 	std::list<Package*> m_Packages;
 	RspAccountLoginPackage* m_RspAccountLoginPackage;

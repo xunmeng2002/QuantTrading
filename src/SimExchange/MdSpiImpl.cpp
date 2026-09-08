@@ -28,6 +28,7 @@ void MdSpiImpl::OnConnected()
 void MdSpiImpl::OnDisConnected()
 {
 	WriteLog(LogLevel::Info, "OnDisConnected");
+	m_SimExchange->OnMdDisConnected();
 }
 
 void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)

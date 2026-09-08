@@ -19,12 +19,18 @@ SimExchangeApiBase::~SimExchangeApiBase()
 void SimExchangeApiBase::OnProtocolConnect(SessionIDType sessionID, const char* ip, int port)
 {
 	m_SessionID = sessionID;
-	m_SimExchangeSpi->OnConnected();
+	if (m_SimExchangeSpi != nullptr)
+	{
+		m_SimExchangeSpi->OnConnected();
+	}
 }
 void SimExchangeApiBase::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port)
 {
 	m_SessionID = -1;
-	m_SimExchangeSpi->OnDisConnected();
+	if (m_SimExchangeSpi != nullptr)
+	{
+		m_SimExchangeSpi->OnDisConnected();
+	}
 }
 
 bool SimExchangeApiBase::Init()

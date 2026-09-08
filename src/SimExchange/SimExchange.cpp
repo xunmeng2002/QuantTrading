@@ -87,6 +87,11 @@ void SimExchange::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, 
 	package->NotifyDisConnect->Port = port;
 	OnMessage(package);
 }
+void SimExchange::OnMdDisConnected()
+{
+	WriteLog(LogLevel::Info, "OnMdDisConnected: Reset Md Login State.");
+	m_IsMdLogged = false;
+}
 void SimExchange::OnMessage(Package* package)
 {
 	{

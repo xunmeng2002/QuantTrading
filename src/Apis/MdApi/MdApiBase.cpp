@@ -19,12 +19,18 @@ MdApiBase::~MdApiBase()
 void MdApiBase::OnProtocolConnect(SessionIDType sessionID, const char* ip, int port)
 {
 	m_SessionID = sessionID;
-	m_MdSpi->OnConnected();
+	if (m_MdSpi != nullptr)
+	{
+		m_MdSpi->OnConnected();
+	}
 }
 void MdApiBase::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port)
 {
 	m_SessionID = -1;
-	m_MdSpi->OnDisConnected();
+	if (m_MdSpi != nullptr)
+	{
+		m_MdSpi->OnDisConnected();
+	}
 }
 
 bool MdApiBase::Init()

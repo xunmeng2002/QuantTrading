@@ -19,12 +19,18 @@ TraderApiBase::~TraderApiBase()
 void TraderApiBase::OnProtocolConnect(SessionIDType sessionID, const char* ip, int port)
 {
 	m_SessionID = sessionID;
-	m_TraderSpi->OnConnected();
+	if (m_TraderSpi != nullptr)
+	{
+		m_TraderSpi->OnConnected();
+	}
 }
 void TraderApiBase::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port)
 {
 	m_SessionID = -1;
-	m_TraderSpi->OnDisConnected();
+	if (m_TraderSpi != nullptr)
+	{
+		m_TraderSpi->OnDisConnected();
+	}
 }
 
 bool TraderApiBase::Init()
