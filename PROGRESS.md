@@ -149,6 +149,13 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
   - **六个 ApiBase SPI 判空**（用户决策一并修）：`MdApi`/`MdGbkApi`/`TraderApi`/`TraderGbkApi`/`SimExchangeApi`/`SimExchangeGbkApi` 的 `OnProtocolConnect`/`OnProtocolDisConnect` 将 SPI 回调包进 `!= nullptr` 判空（连接事件先于 `RegisterSpi` 到达不再空指针解引用；当前所有入口先 RegisterSpi 后 Init，不可达，纯加固，与 Spark 自身对 subscriber 判空惯例一致）。
   - 验证：Windows x64-Debug 构建 SimExchange/UnitTests 通过（本机 shell 无 ninja，经 VS 18 Insiders vcvars64 + 自带 ninja）；UnitTests **74/74 用例 478/478 断言 SUCCESS**（与基线一致）；`bin/Debug/Networkd.dll` 经 applocal 重拷新装 Spark DLL。**端到端冒烟通过**（2026-09-08，真实控制台用户执行确认）：`SimExchangeInit` 重建种子库（原 0 字节 `SimExchangeInit.db` 系历史中断遗留）→ `SimExchange` 重启装载后 `TestSimExchangeApi` 登录/查询正常，不再 4127/12294。冒烟过程顺带发现 `SimExchangeInit` 无超时死等缺口（见 ❓ 条目，已记录）。
 
+- **2026-09-08 配置明文凭证出库（CtpAccountInfo 环境变量覆盖层）**：
+  - **背景**：仓库托管在 Gitee **公开仓库**，`CtpAccountInfo.json` 匿名可下载——SimNow Password/AuthCode 实际已公开泄露，仅靠后续历史清理无意义，凭证轮换（用户在 SimNow 站点改密）才是根治；代码侧任务是让配置文件不再携带凭证。
+  - **设计**（用户决策"覆盖层"）：`Environment` 语义不变（交易环境信息，与 OS 环境变量无关）；在 `ReadEnvironment` 末尾追加 `OverrideSecretsFromSystemEnvironment`——按环境名生成键 `CTP_<环境名大写>_PASSWORD` / `_AUTHCODE`（如 `CTP_SIMNOW_PASSWORD`、`CTP_SIMNOW24_AUTHCODE`），非空则覆盖内存中凭证字段，超长拒绝并跳过（不截断避免拼出错误凭证），无环境变量且配置为空时打 Warning 提示键名。`Configs/CtpAccountInfo.json` 两个环境的 `Password`/`AuthCode` 全部清空入库。
+  - **验证**：Debug + Release 四消费方（MdOffer/SimExchangeInit/TestTraderApi/TestSimExchangeApi）构建零警告错误；`bin/` 下两份运行时配置确认无旧凭证（bin/ 已 gitignore）。功能冒烟：设置哑值环境变量运行 MdOffer → 4 条 `applied` Info 日志（两环境 × Password/AuthCode）齐全；不设变量运行 → 4 条 `Password/AuthCode empty ... Set CTP_xxx` Warning 日志齐全。
+  - **用户侧待办**：SimNow 站点改密后 `setx CTP_SIMNOW_PASSWORD <新密码>`、`setx CTP_SIMNOW24_PASSWORD <新密码>`、`setx CTP_SIMNOW_AUTHCODE <新AuthCode>`、`setx CTP_SIMNOW24_AUTHCODE <新AuthCode>`（setx 仅对新开控制台生效）。
+  - **范围外遗留**：各 `Configs/*.json` 的 `DbPassword`/`MdPassword`（开发库测试凭证，无外泄风险）与 git 历史中的旧凭证（改写历史需 force push，须用户书面授权；轮换后旧值作废，不建议做）。
+
 ## 🔄 进行中
 
 - 无。
@@ -165,7 +172,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 - **P2-2 Bar 内存策略**：`MinuteBar` 用裸 `new` 且 `m_TodayBars` 无日界清理，考虑改对象池 + 日界重置。
 - **P2-3 Bar 算法单测**：已由 2026-08-31/09-01 两批 UnitTests 覆盖（bar 聚合、交易时段、集合竞价、丢失 bar 合成、撮合四模式），条目关闭。
 - **P2-4 订阅范围配置化**：当前 `HandleNotifyDBConnect` 遍历 `t_Instrument` 全市场订阅，应改为按交易所/产品/合约配置。
-- **配置明文凭证（源码硬编码已消除，S4 完成）**：`Main.cpp` 的 MdOffer 种子用户与死常量已迁移到配置（S4），但配置文件本身仍明文存储密码——`CtpAccountInfo.json`（SimNow 账户 Password/AuthCode）、各 `Configs/*.json`（`DbPassword`/`MdPassword`）、`TestMdApi.json`（`MdPassword`）。接真实环境前需迁移到密钥管理/环境变量；`MdPassword` 测试值 `123456` 仅限开发。
+- **配置明文凭证（源码硬编码已消除，S4 完成）**：`Main.cpp` 的 MdOffer 种子用户与死常量已迁移到配置（S4），但配置文件本身仍明文存储密码——`CtpAccountInfo.json`（SimNow 账户 Password/AuthCode）、各 `Configs/*.json`（`DbPassword`/`MdPassword`）、`TestMdApi.json`（`MdPassword`）。接真实环境前需迁移到密钥管理/环境变量；`MdPassword` 测试值 `123456` 仅限开发。**✅ 2026-09-08 关闭（CtpAccountInfo 部分）**：`CtpAccountInfo.json` 凭证清空 + `ReadEnvironment` 环境变量覆盖层落地（见当日 ✅ 条目）；`DbPassword`/`MdPassword` 为开发库测试凭证，风险可接受，记录在 ✅ 条目"范围外遗留"。剩余动作在用户侧：SimNow 凭证轮换 + `setx` 四个环境变量。
 - **SimExchangeInit 无超时死等**（2026-09-08 冒烟发现）：`Main.cpp:94` 的 `while (!m_QryFinished)` 无超时兜底，`OnFrontDisconnected`（`ThostFtdcTraderSpiImpl.cpp:28`）不置完成标志——SimNow 不可达或认证失败时进程永久挂起；此时 Ctrl+C 强退会丢失已排队未落库的种子数据（0 字节 `SimExchangeInit.db` 实证），下游 SimExchange 空库启动后登录一律 `ErrorBrokerNotExist`(4127)。修复方向：断线/认证失败置位 + 超时兜底退出（可循 TestMdApi 120s 轮询先例），并考虑启动时对 init 库空表告警。
 - **优雅退出 Ctrl+C 交互验证**：MdOffer / SimExchange 的有序关停逻辑已就绪，但 shell 无法模拟 Ctrl+C，需在真实控制台运行并确认退出顺序与日志。
 - **TestMdApi 遗留**：仍硬编码 `sleep(120s)` 等待行情，应改为条件变量/超时轮询。
