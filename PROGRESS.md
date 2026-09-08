@@ -162,7 +162,14 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
   - **QuoteHub 导出器**：BaoStock 5m+日线 → Bar parquet，24 列镜像既有文件类型（int64 时间戳、decimal128(24,8) 价格、ZSTD 压缩）；`UpdateTs`=bar 结束分钟（12 位，BaoStock 分钟 time 即结束时间）；Volume=日内累计/LastTraded=增量（按日自动判别累计口径并 diff 还原）；首根 PreClosePrice/PreSettlementPrice 取日线 preclose；分钟量合计与日线存在 ~0.4% 固有口径差（大宗交易/集合竞价归属），偏差 >1% 才告警；幂等合并（同 InstrumentID+日期段重跑覆盖）。输出独立根（默认 `D:\MdBaoStock`）——Bar 回放 SQL 无 Preces 过滤且按 `Identity=<EXCH>.*` 交易所前缀通配，与旧树混放会同窗口混精度重放。
   - **QuantTrading 改动**（用户批准）：`MdReader::GetInstrumentSqlString` 的 `Identity=CFFEX.*` 放开为 `Identity=*` 且删除 `Preces='1d'` 过滤——任意一行即可标识合约（CFFEX distinct 集合不变）；不改则股票合约无法发现、订阅被拒（`SimExchange.cpp:357`）。
   - **验证**：导出 600000/600519/000001 全年 2024（各 11616 根 = 242 交易日 × 48 根，0935→1500）；产出 schema 与既有文件逐字段一致。TestBackTest 端到端（SSE.600519、MatchMode=Bar、`MdDataPath=D:\MdBaoStock`、`DbHost=./BackTest600519.db` 独立运行库）：合约发现 3 只、600519 读 2928 根（61 交易日 × 48）、62 组 SessionBegin/End、406 笔成交、ErrorID 全 0、零告警、退出码 0；UnitTests 74/74 用例 478/478 断言保持基线；运行时配置已复原（CFFEX IF2503 OppositePrice）。
-  - **使用方式**：`cd D:\Gitee\QuoteHub && python BaoStockParquet.py --start 2024-01-01 --end 2024-12-31`（缺省读 `config.json` stocks，输出 `D:\MdBaoStock`）；股票回测改 `BackTest.json`：`MdDataPath=D:\MdBaoStock`、`MatchMode=3`，`TestBackTest.json`：`ExchangeID=SSE/SZSE` + 6 位代码。
+  - **使用方式**：`cd D:\Gitee\QuoteHub && python BaoStockParquet.py <子命令>`（缺省读 `config.json` stocks，输出 `D:\MdBaoStock`）；股票回测改 `BackTest.json`：`MdDataPath=D:\MdBaoStock`、`MatchMode=3`，`TestBackTest.json`：`ExchangeID=SSE/SZSE` + 6 位代码。
+  - **导出器管线重设计（2026-09-08 同日，用户决策：SQLite 为事实源）**：`BaoStockParquet.py` 重构为四子命令管线，Parquet 不再做文件侧合并（旧"幂等掩码"按 InstrumentID+TradingDay 删行不区分 Preces，换频率重跑会误删跨精度数据——新架构下问题整体消解）：
+    - `update`：增量拉取入库（续传起点=库中最后交易日本身，当日重拉自愈半截数据；主键 UPSERT 幂等），每个交易日写一个独立 Parquet（`YYYYMMDD_5m.parquet`，当月只增不改——Parquet 不可修改）；
+    - `merge-month [--month YYYYMM]`（缺省上月）：整月从库导出 `YYYYMM_5m.parquet`，日度文件移入 `Year=YYYY/archive/`（重命名不删除，回放 glob `Year=*/*.parquet` 不扫描 archive 层）；
+    - `merge-year [--year YYYY]`（缺省去年）：整年导出 `YYYY_5m.parquet`，归档月度/残留日度文件；
+    - `backfill --start --end`：区间入库并直接写出年度文件（不产生日度文件）。
+    - 库表：`MinuteBars`（PK Code+Frequency+Time）与 `MinuteBarTradingDays`（PK Code+TradingDay，存 preclose/日量额），`sql/upgrades/Update_v2.1.0.sql` 随 `BaoStock.init_database` 自动应用；文件名带频率后缀（四种频率可并存）；重写既有文件前做覆盖收缩双告警（既有 span 超出导出区间 / 超出库中数据）。
+    - **验证**：测试根 D:\MdBaoStockTest 全链路（backfill→update→merge-month→merge-year→幂等重跑，行数 2784/1392 稳定，schema 与既有文件逐字段一致，覆盖告警两分支实测触发）；真实根迁移：旧 `2024_0.parquet` 移入 archive/，全 2024 回补后 SSE 23232 行/SZSE 11616 行与旧文件完全一致，600000/600519 七关键列逐行相等；TestBackTest 复跑（SSE.600519、Bar 模式、`MdDataPath=D:\MdBaoStock`）exit 0、ErrorID 全 0、2928 根/62 组会话/203 笔成交（此前记录"406 笔"为 OnRtnTrade+TradeField 两行模式的双重计数，实际 203）；运行时配置已复原（CFFEX IF2503 OppositePrice）。QuoteHub 提交 `1da468d`。
   - **遗留**：① Bar 回放 SQL 无 Preces 过滤、`BarPreces/BarPeriod` 硬编码 Minute/1——混精度树无法共存（独立根规避），将来合一需加 Preces 过滤与周期参数化；② BaoStock 停牌/零成交日仍产出平价 bar，Bar 引擎无量门控会按平价撮合（数据保真优先，暂不剔除）；③ `t_Product` 无股票条目，走兜底 VolumeMultiple=1/PriceTick=0/SessionName=FD0900（不影响 Bar 撮合正确性）。
 
 ## 🔄 进行中
