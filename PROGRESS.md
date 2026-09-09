@@ -180,7 +180,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 
 - **2026-09-09 Bar 回放周期配置化（BackTest.json 新增 `BarPreces`）**：
   - **缘起**：用户跑股票回测发现 Bar 回放 SQL 无周期字段/过滤。考古证实**非回归而是历史缺口**：`GetBarSqlString` 自 init 提交（`fd7afef`）起硬编码 `Minute/1` 且无 Preces 过滤，配置面从未有过周期键（全历史 grep 证实）；仅合约发现 SQL 曾有 `Preces='1d'`（f64eb99 按批准放开）。**实测旧 `D:\Md` 树单个 parquet 内 1m/1h/1d 三精度混存**——旧 Bar 回放一直把三种周期混着当 1 分钟跑，属潜在缺陷。
-  - **落地**：`BackTest.json` 新增 `BarPreces`（字符串与 Parquet `Preces` 列同格式 `<n><s|m|h|d>`，如 1m/5m/15m/30m/60m/1h/1d；缺省 `1m` 兼容旧配置并打提示）。`Config::Load` 解析并拆解为（`BarPrecesType` 枚举, 周期数）：s→Second、m/h→Minute（h×60）、d→Day，非法值抛 `logic_error` 拒启；`MdReader::GetBarSqlString` 第 4/5 列改由配置填充并加 `and Preces = '<配置串>'` 过滤（同根多精度文件不再混入；`BarPreces`/`BarPeriod` 是行情主键组成部分，此前错标会污染 Mdb 去重）。
+  - **落地**：`BackTest.json`（XML 原型生成，只存用户字段）新增 `BarPreces`，字符串与 Parquet `Preces` 列同格式 `<n><s|m|h|d>`（1m/5m/15m/30m/60m/1h/1d）。`Config` 按既有惯例仅作字段袋（对齐 `DbType` 字符串→消费方 `CreateDataDb` 转换的模式）；解析在唯一消费方 `MdReader` 构造时完成——`ParseBarPreces` 拆解为（`BarPrecesType` 枚举, 周期数）：s→Second、m/h→Minute（h×60）、d→Day，失败 WriteLog + 抛 `logic_error` 拒启；`GetBarSqlString` 第 4/5 列由解析结果填充并加 `and Preces = '<配置串>'` 过滤（同根多精度文件不再混入；`BarPreces`/`BarPeriod` 是行情主键组成部分，此前错标会污染 Mdb 去重）。首版曾把解析与 `1m` 兜底放进 `Config::Load`，用户纠正（配置文件由 XML 原型生成、不得承载解析语义）后移至 `MdReader`（`967bf47`）。
   - **验证**：BackTest 目标重编零警告；UnitTests 74/74 用例 478/478 断言保持基线；端到端冒烟（SZSE/000001、2024Q4、`D:\MdBaoStock`）：SQL 实测 `Select ..., 1, 5, ... and Preces = '5m'`，RecordCount 2928 与过滤前一致、ErrorID 全 0、exit 0；负例 `BarPreces:"5x"` 启动即报 `Invalid BarPreces...` 拒绝运行。
   - **遗留收窄**：原遗留①（Bar 回放 SQL 无 Preces 过滤、周期硬编码）中"过滤+周期配置化"部分已关闭；`MinuteBar.cpp` tick→bar 聚合的 `BarPreces=Minute/BarPeriod=1` 硬编码仍在（实时聚合另属 SimExchange 配置面），仅 Bar 回放不受影响。
 
