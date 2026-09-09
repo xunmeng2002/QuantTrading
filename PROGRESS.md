@@ -178,6 +178,12 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
   - **量差告警成因核实**（探针脚本 `probe_volume_mismatch.py`，一次性分析用，未入库）：`update`/`backfill` 日志中"分钟量与日量对不上"经逐日分类核实**非检测误判**（0 天累计口径误判），属 BaoStock 分钟/日线两套源表固有口径差——两个方向皆有（600000 2024：10 天分钟多 + 12 天分钟少；000001 2024：67 天全偏多，似该股系统性口径问题），幅度 ±1% ~ 7.29%；对回测无影响（Bar 撮合消费价格，量列文件内自洽，日线量仅用于口径监测）。另核实日志归属：告警在建文件时打出，属于其**下面**一行"写入"的年份。
   - **量口径明细报告落地**（QuoteHub `4508720`，用户三选一决策：明细 CSV / 按日线缩放 / 现状，取明细 CSV）：`build_bar_frame` 改为返回 (bar_frame, mismatch_records)，偏差 >1% 逐日记录；`export_bars_from_database` 统一写 `<period>_<freq>m_mismatch.csv` 到 Parquet 同目录（utf-8-sig 可直接 Excel 打开，按代码+日期排序，列 InstrumentID/TradingDay/MinuteVolumeSum/DailyVolume/DeviationPercent，正偏差=分钟多于日线），>5% 极端天逐日 WARNING，原"有 N 天对不上"告警改为指向明细文件。**验证**：`merge-year --year 2024` 离线重导行数不变（SSE 23232 / SZSE 11616），明细数与探针一致（SSE 28 = 22+6、SZSE 67），-7.29% 极端天告警触发；管线文档第 6/7 节同步。
 
+- **2026-09-09 Bar 回放周期配置化（BackTest.json 新增 `BarPreces`）**：
+  - **缘起**：用户跑股票回测发现 Bar 回放 SQL 无周期字段/过滤。考古证实**非回归而是历史缺口**：`GetBarSqlString` 自 init 提交（`fd7afef`）起硬编码 `Minute/1` 且无 Preces 过滤，配置面从未有过周期键（全历史 grep 证实）；仅合约发现 SQL 曾有 `Preces='1d'`（f64eb99 按批准放开）。**实测旧 `D:\Md` 树单个 parquet 内 1m/1h/1d 三精度混存**——旧 Bar 回放一直把三种周期混着当 1 分钟跑，属潜在缺陷。
+  - **落地**：`BackTest.json` 新增 `BarPreces`（字符串与 Parquet `Preces` 列同格式 `<n><s|m|h|d>`，如 1m/5m/15m/30m/60m/1h/1d；缺省 `1m` 兼容旧配置并打提示）。`Config::Load` 解析并拆解为（`BarPrecesType` 枚举, 周期数）：s→Second、m/h→Minute（h×60）、d→Day，非法值抛 `logic_error` 拒启；`MdReader::GetBarSqlString` 第 4/5 列改由配置填充并加 `and Preces = '<配置串>'` 过滤（同根多精度文件不再混入；`BarPreces`/`BarPeriod` 是行情主键组成部分，此前错标会污染 Mdb 去重）。
+  - **验证**：BackTest 目标重编零警告；UnitTests 74/74 用例 478/478 断言保持基线；端到端冒烟（SZSE/000001、2024Q4、`D:\MdBaoStock`）：SQL 实测 `Select ..., 1, 5, ... and Preces = '5m'`，RecordCount 2928 与过滤前一致、ErrorID 全 0、exit 0；负例 `BarPreces:"5x"` 启动即报 `Invalid BarPreces...` 拒绝运行。
+  - **遗留收窄**：原遗留①（Bar 回放 SQL 无 Preces 过滤、周期硬编码）中"过滤+周期配置化"部分已关闭；`MinuteBar.cpp` tick→bar 聚合的 `BarPreces=Minute/BarPeriod=1` 硬编码仍在（实时聚合另属 SimExchange 配置面），仅 Bar 回放不受影响。
+
 ## 🔄 进行中
 
 - 无。

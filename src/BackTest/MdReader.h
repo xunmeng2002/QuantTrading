@@ -33,6 +33,9 @@ private:
 
 private:
 	std::string m_MdDataPath;
+	std::string m_BarPreces;
+	BarPrecesType m_BarPrecesType;
+	int m_BarPeriod;
 	DateType m_StartTradingDay;
 	DateType m_EndTradingDay;
 	std::unique_ptr<dbadapters::DuckdbWrapper> m_DuckdbWrapper;

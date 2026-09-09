@@ -65,6 +65,9 @@ namespace quanttrading::backtest
 {
 MdReader::MdReader(const Config& config)
     : m_MdDataPath(config.MdDataPath)
+    , m_BarPreces(config.BarPreces)
+    , m_BarPrecesType(config.BarPrecesValue)
+    , m_BarPeriod(config.BarPeriod)
 {
     strcpy(m_StartTradingDay, config.StartTradingDay.c_str());
     strcpy(m_EndTradingDay, config.EndTradingDay.c_str());
@@ -206,12 +209,14 @@ std::string MdReader::GetTickSqlString(mdb::MdSubscribe* mdSubscribe) const
 
 std::string MdReader::GetBarSqlString(mdb::MdSubscribe* mdSubscribe) const
 {
+    // 按配置的 BarPreces 过滤：同一数据根可并存多精度文件（旧 D:\Md 树单文件内 1m/1h/1d 混存），
+    // 不过滤会把非本周期 bar 混入回放；精度枚举与周期数同样取自配置而非写死 Minute/1。
     static const char* sqlTemplate =
-        "Select TradingDay, ExchangeID, InstrumentID, %d, 1, UpdateTs, UpdateTs, "
+        "Select TradingDay, ExchangeID, InstrumentID, %d, %d, UpdateTs, UpdateTs, "
         "PreSettlementPrice, PreClosePrice, HighestPrice, LowestPrice, Open, High, Low, Close, LastTraded, Volume, LastTurnover, Turnover, OpenInterest "
         "from read_parquet('%s/Bar/Identity=%s.*/Year=*/*.parquet', union_by_name=true) "
-        "where TradingDay >= '%s' and TradingDay <= '%s' and InstrumentID = '%s';";
-    return FormatSql(sqlTemplate, static_cast<int>(BarPrecesType::Minute),
-        m_MdDataPath.c_str(), mdSubscribe->ExchangeID, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, mdSubscribe->RealInstrumentID);
+        "where TradingDay >= '%s' and TradingDay <= '%s' and Preces = '%s' and InstrumentID = '%s';";
+    return FormatSql(sqlTemplate, static_cast<int>(m_BarPrecesType), m_BarPeriod,
+        m_MdDataPath.c_str(), mdSubscribe->ExchangeID, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, m_BarPreces.c_str(), mdSubscribe->RealInstrumentID);
 }
 }
