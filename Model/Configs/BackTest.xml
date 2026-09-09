@@ -1,6 +1,7 @@
 <config project="QuantTrading" module="BackTest">
 	<items>
 		<item name="MatchMode" type="int"></item>
+		<item name="BarPreces" type="string"></item>
 		<item name="MdDataPath" type="string"></item>
 		<item name="DumpPath" type="string"></item>
 		<item name="SessionFile" type="string"></item>
