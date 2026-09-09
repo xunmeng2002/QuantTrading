@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <Spark/Core/ConfigStructs/ConfigStructs.h>
-#include <Spark/Types.h>
 #include <string>
 #include <list>
 
@@ -16,12 +15,10 @@ public:
 	static Config& GetInstance();
 	void Load(const char* fileName);
 	void Print();
-
+	
 public:
 	int MatchMode;
 	string BarPreces;
-	BarPrecesType BarPrecesValue;
-	int BarPeriod;
 	string MdDataPath;
 	string DumpPath;
 	string SessionFile;

@@ -43,6 +43,48 @@ namespace
         }
     }
 
+    // BarPreces 与 Parquet Preces 列同格式（<n><s|m|h|d>，如 1m/5m/1h/1d），
+    // 拆解为行情主键的精度枚举与周期数：s→Second、m→Minute、h→Minute×60、d→Day。
+    bool ParseBarPreces(const std::string& barPreces, BarPrecesType& barPrecesType, int& barPeriod)
+    {
+        if (barPreces.size() < 2 || barPreces.size() > 6)
+        {
+            return false;
+        }
+        const char unit = barPreces.back();
+        int count = 0;
+        for (std::size_t index = 0; index + 1 < barPreces.size(); ++index)
+        {
+            if (barPreces[index] < '0' || barPreces[index] > '9')
+            {
+                return false;
+            }
+            count = count * 10 + (barPreces[index] - '0');
+        }
+        if (count <= 0)
+        {
+            return false;
+        }
+        switch (unit)
+        {
+            case 's':
+                barPrecesType = BarPrecesType::Second;
+                break;
+            case 'm':
+            case 'h':
+                barPrecesType = BarPrecesType::Minute;
+                barPeriod = unit == 'h' ? count * 60 : count;
+                return true;
+            case 'd':
+                barPrecesType = BarPrecesType::Day;
+                break;
+            default:
+                return false;
+        }
+        barPeriod = count;
+        return true;
+    }
+
     // 三种查询共用的记录工厂：对象池分配 + 清零 + 压入调用方 std::list<T*>。
     // 复用 mdb 结构的 GetSchema()，仅需补齐分配/追加回调。
     template <typename T>
@@ -66,11 +108,15 @@ namespace quanttrading::backtest
 MdReader::MdReader(const Config& config)
     : m_MdDataPath(config.MdDataPath)
     , m_BarPreces(config.BarPreces)
-    , m_BarPrecesType(config.BarPrecesValue)
-    , m_BarPeriod(config.BarPeriod)
 {
     strcpy(m_StartTradingDay, config.StartTradingDay.c_str());
     strcpy(m_EndTradingDay, config.EndTradingDay.c_str());
+    if (!ParseBarPreces(m_BarPreces, m_BarPrecesType, m_BarPeriod))
+    {
+        const std::string errorMsg = "Invalid BarPreces, expect <n><s|m|h|d> e.g. 1m/5m/1h/1d. BarPreces:" + m_BarPreces;
+        WriteLog(LogLevel::Error, "%s", errorMsg.c_str());
+        throw std::logic_error(errorMsg);
+    }
 }
 MdReader::~MdReader()
 {
