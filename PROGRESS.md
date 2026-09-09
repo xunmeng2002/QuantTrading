@@ -172,6 +172,12 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
     - **验证**：测试根 D:\MdBaoStockTest 全链路（backfill→update→merge-month→merge-year→幂等重跑，行数 2784/1392 稳定，schema 与既有文件逐字段一致，覆盖告警两分支实测触发）；真实根迁移：旧 `2024_0.parquet` 移入 archive/，全 2024 回补后 SSE 23232 行/SZSE 11616 行与旧文件完全一致，600000/600519 七关键列逐行相等；TestBackTest 复跑（SSE.600519、Bar 模式、`MdDataPath=D:\MdBaoStock`）exit 0、ErrorID 全 0、2928 根/62 组会话/203 笔成交（此前记录"406 笔"为 OnRtnTrade+TradeField 两行模式的双重计数，实际 203）；运行时配置已复原（CFFEX IF2503 OppositePrice）。QuoteHub 提交 `1da468d`。
   - **遗留**：① Bar 回放 SQL 无 Preces 过滤、`BarPreces/BarPeriod` 硬编码 Minute/1——混精度树无法共存（独立根规避），将来合一需加 Preces 过滤与周期参数化；② BaoStock 停牌/零成交日仍产出平价 bar，Bar 引擎无量门控会按平价撮合（数据保真优先，暂不剔除）；③ `t_Product` 无股票条目，走兜底 VolumeMultiple=1/PriceTick=0/SessionName=FD0900（不影响 Bar 撮合正确性）。
 
+- **2026-09-09 QuoteHub：库重建溯源、分钟回补与量差明细报告**：
+  - **库文件重建溯源**：`stock_data.db` 创建时间 2026-09-09 10:33（比用户 10:43 `--update-all` 早 10 分钟），昨日 8.2MB 旧库（含 34,848 根分钟 bar）整体丢失、分钟表归零；日线/基本面由当日 `--update-all` 重建。`D:\MdBaoStock` Parquet 交付物不受影响，回测照常。删除成因未查明（非本会话任何操作），已向用户标记留意。
+  - **分钟回补**：用户执行 `backfill --start 2020-01-01`，分钟表回补至 233,424 根 bar / 4,863 交易日统计（3 只 × 2020~2026），年度文件 2020~2026 齐备。
+  - **量差告警成因核实**（探针脚本 `probe_volume_mismatch.py`，一次性分析用，未入库）：`update`/`backfill` 日志中"分钟量与日量对不上"经逐日分类核实**非检测误判**（0 天累计口径误判），属 BaoStock 分钟/日线两套源表固有口径差——两个方向皆有（600000 2024：10 天分钟多 + 12 天分钟少；000001 2024：67 天全偏多，似该股系统性口径问题），幅度 ±1% ~ 7.29%；对回测无影响（Bar 撮合消费价格，量列文件内自洽，日线量仅用于口径监测）。另核实日志归属：告警在建文件时打出，属于其**下面**一行"写入"的年份。
+  - **量口径明细报告落地**（QuoteHub `4508720`，用户三选一决策：明细 CSV / 按日线缩放 / 现状，取明细 CSV）：`build_bar_frame` 改为返回 (bar_frame, mismatch_records)，偏差 >1% 逐日记录；`export_bars_from_database` 统一写 `<period>_<freq>m_mismatch.csv` 到 Parquet 同目录（utf-8-sig 可直接 Excel 打开，按代码+日期排序，列 InstrumentID/TradingDay/MinuteVolumeSum/DailyVolume/DeviationPercent，正偏差=分钟多于日线），>5% 极端天逐日 WARNING，原"有 N 天对不上"告警改为指向明细文件。**验证**：`merge-year --year 2024` 离线重导行数不变（SSE 23232 / SZSE 11616），明细数与探针一致（SSE 28 = 22+6、SZSE 67），-7.29% 极端天告警触发；管线文档第 6/7 节同步。
+
 ## 🔄 进行中
 
 - 无。
