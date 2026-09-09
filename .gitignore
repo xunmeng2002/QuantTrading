@@ -42,3 +42,4 @@ pumptemp.py
 /bin
 /lib
 /build
+*.bat
