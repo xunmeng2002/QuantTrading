@@ -43,6 +43,7 @@ public:
 	void RegisterSpi(BackTestSpi* pSpi);
 	int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID);
 	int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID);
+	int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID);
 	int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID);
 	int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID);
 
@@ -56,6 +57,7 @@ private:
 	void PushNextTick(mdb::DepthMarketData* mdTick);
 	void PushNextBar(mdb::BarMarketData* mdBar);
 
+	void HandleRegisterAccount(quanttrading::packages::ReqRegisterAccountPackage* reqPackage);
 	void HandleSubMarketDataFinished(quanttrading::packages::ReqSubMarketDataFinishedPackage* reqPackage);
 	void HandleInsertOrder(quanttrading::packages::ReqInsertOrderPackage* reqPackage);
 	void HandleCancelOrder(quanttrading::packages::ReqCancelOrderPackage* reqPackage);
@@ -73,6 +75,7 @@ private:
 		PriceType GetSettlementPrice(const mdb::PositionDetail* positionDetail) override;
 	};
 
+	void SendRspRegisterAccount(quanttrading::packages::ReqRegisterAccountPackage* reqPackage, int errorID);
 	void SendRspOrderInsert(quanttrading::packages::ReqInsertOrderPackage* reqPackage, int errorID);
 	void SendRspCancelOrder(quanttrading::packages::ReqCancelOrderPackage* reqPackage, int errorID);
 	void SendRtnOrder(mdb::Order* order);
@@ -107,6 +110,7 @@ private:
 	TimeType m_CurrTime;
 	
 	MarketDataTypeType m_MarketDataType;
+	std::string m_RunID;
 	std::string m_DumpPath;
 
 	MdReader* m_MdReader;

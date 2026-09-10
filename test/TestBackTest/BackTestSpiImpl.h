@@ -22,6 +22,7 @@ public:
 	virtual void OnRtnOrder(const OrderField* order) override;
 	virtual void OnRtnTrade(const TradeField* trade) override;
 
+	void ReqRegisterAccount();
 	void ReqSubMarketData();
 
 private:

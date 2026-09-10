@@ -24,6 +24,11 @@ bool StrategyBase::Start()
 		WriteLog(LogLevel::Error, "StrategyBase::Start: api init failed");
 		return false;
 	}
+	// 账户注册先于 OnStart 的行情订阅：引擎账户表按需自建，注册与下单同队列 FIFO，撮合检查账户时必已存在
+	ReqRegisterAccountField reqRegisterAccount;
+	memset(&reqRegisterAccount, 0, sizeof(ReqRegisterAccountField));
+	Utility::Strcpy(reqRegisterAccount.AccountID, m_AccountID.c_str());
+	m_BackTestApi->ReqRegisterAccount(&reqRegisterAccount, ++m_NextRequestID);
 	OnStart();
 	return true;
 }
@@ -157,6 +162,14 @@ void StrategyBase::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketD
 	if (rspInfo != nullptr && rspInfo->ErrorID != 0)
 	{
 		WriteLog(LogLevel::Error, "SubscribeMarketData failed: ErrorID:%d ErrorMsg:%s", rspInfo->ErrorID, rspInfo->ErrorMsg);
+	}
+}
+void StrategyBase::OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	if (rspInfo != nullptr && rspInfo->ErrorID != 0)
+	{
+		WriteLog(LogLevel::Error, "RegisterAccount failed: AccountID:%s ErrorID:%d ErrorMsg:%s",
+			rspRegisterAccount != nullptr ? rspRegisterAccount->AccountID : "", rspInfo->ErrorID, rspInfo->ErrorMsg);
 	}
 }
 void StrategyBase::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)

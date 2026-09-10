@@ -16,7 +16,9 @@
 #include <DBAdapters/MysqlWrapper/MysqlWrapper.h>
 #include <DBAdapters/MariadbWrapper/MariadbWrapper.h>
 #include <assert.h>
+#include <chrono>
 #include <cmath>
+#include <filesystem>
 
 using namespace std;
 using namespace mdb;
@@ -44,11 +46,34 @@ static DB* CreateDataDb(const std::string dbType, const std::string dbHost, cons
     return new SqliteWrapper(dbHost);
 }
 
+// RunID：本地时间到毫秒，作为本次回测输出库/快照目录的隔离后缀，多次回测互不覆盖
+static std::string MakeRunID()
+{
+    std::tm* localTm = TimeUtility::GetLocalTm();
+    auto milliSecond = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 1000;
+    char runID[32] = { 0 };
+    snprintf(runID, sizeof(runID), "%04d%02d%02d_%02d%02d%02d_%03lld",
+        localTm->tm_year + 1900, localTm->tm_mon + 1, localTm->tm_mday,
+        localTm->tm_hour, localTm->tm_min, localTm->tm_sec, static_cast<long long>(milliSecond));
+    return runID;
+}
+
+// 输出库文件名派生：在扩展名前插入 _<RunID>（./BackTest.db → ./BackTest_<RunID>.db）
+static std::string DeriveRunDbHost(const std::string& dbHost, const std::string& runID)
+{
+    auto extensionPos = dbHost.rfind('.');
+    if (extensionPos == std::string::npos)
+    {
+        return dbHost + "_" + runID;
+    }
+    return dbHost.substr(0, extensionPos) + "_" + runID + dbHost.substr(extensionPos);
+}
+
 
 namespace quanttrading::backtest
 {
 SimExchange::SimExchange(const Config& config)
-	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false), m_DumpPath(config.DumpPath),
+	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false),
 	m_Registry(backtestTableList),
 	m_CurrDate(""), m_CurrTime("")
 {
@@ -60,8 +85,25 @@ SimExchange::SimExchange(const Config& config)
 	memset(&m_PushMdTick, 0, sizeof(DepthMarketDataField));
 	memset(&m_PushMdBar, 0, sizeof(BarMarketDataField));
 	m_MdReader = new MdReader(config);
-	m_InitDB = CreateDataDb(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
-	m_DB = CreateDataDb(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+	m_RunID = MakeRunID();
+	// Dump 以 fopen(dir//t_Xxx.csv) 落盘，目录缺失时静默失败，按 RunID 隔离前须先建目录
+	m_DumpPath = config.DumpPath + "/" + m_RunID;
+	std::error_code dumpDirError;
+	std::filesystem::create_directories(m_DumpPath, dumpDirError);
+	auto runDbHost = DeriveRunDbHost(config.DbHost, m_RunID);
+	// init 库仅用于续跑恢复（历史表加载与 OrderID 起号）；缺失时跳过加载空表自举。
+	// 不能以 Connect 失败判断（SQLite/DuckDB 会静默建空库），须做文件存在性检查
+	if (std::filesystem::exists(config.DbInitHost))
+	{
+		m_InitDB = CreateDataDb(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
+	}
+	else
+	{
+		m_InitDB = nullptr;
+		WriteLog(LogLevel::Warning, "Init DB not found, bootstrap from empty tables:%s", config.DbInitHost.c_str());
+	}
+	m_DB = CreateDataDb(config.DbType, runDbHost, config.DbUser, config.DbPassword);
+	WriteLog(LogLevel::Info, "RunID:%s, DbHost:%s, DumpPath:%s", m_RunID.c_str(), runDbHost.c_str(), m_DumpPath.c_str());
     m_DBWriter = new AsyncDBWriter(m_DB, &m_Registry);
 	m_DBWriter->Subscribe(this);
 	m_Mdb = new Mdb(backtestTableList);
@@ -88,18 +130,21 @@ SimExchange::~SimExchange()
 }
 bool SimExchange::Init()
 {
-	if (m_InitDB == nullptr || m_DB == nullptr)
+	if (m_DB == nullptr)
 	{
 		WriteLog(LogLevel::Error, "Create DB Failed.");
 		return false;
 	}
-	if (!m_InitDB->Connect())
+	if (m_InitDB != nullptr)
 	{
-		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
-		return false;
+		if (!m_InitDB->Connect())
+		{
+			WriteLog(LogLevel::Error, "InitDB Connect Failed.");
+			return false;
+		}
+		InitMdbFromDB::LoadTables(m_Mdb, m_InitDB, backtestTableList);
+		SeedNextOrderIDFromOrders(m_Mdb->t_Order);
 	}
-	InitMdbFromDB::LoadTables(m_Mdb, m_InitDB, backtestTableList);
-	SeedNextOrderIDFromOrders(m_Mdb->t_Order);
 	m_Mdb->Subscribe(m_DBWriter);
 
 	m_MdReader->Init();
@@ -184,6 +229,19 @@ int SimExchange::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* r
 	}
 	return 0;
 }
+int SimExchange::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
+{
+	ReqRegisterAccountPackage* reqPackage = ReqRegisterAccountPackage::Allocate();
+	reqPackage->Prepare(0LL, false, requestID);
+	reqPackage->ReqRegisterAccount = ::Allocate<ReqRegisterAccountField>();
+	memcpy(reqPackage->ReqRegisterAccount, reqRegisterAccount, sizeof(ReqRegisterAccountField));
+
+	{
+		lock_guard<mutex> guard(m_QueueMutex);
+		m_Packages.push_back(reqPackage);
+	}
+	return 0;
+}
 int SimExchange::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	ReqInsertOrderPackage* reqPackage = ReqInsertOrderPackage::Allocate();
@@ -234,6 +292,9 @@ void SimExchange::HandlePackages()
 	{
 		switch (package->Head.PackageID)
 		{
+		case ReqRegisterAccountPackage::PackageID:
+			HandleRegisterAccount((ReqRegisterAccountPackage*)package);
+			break;
 		case ReqSubMarketDataFinishedPackage::PackageID:
 			HandleSubMarketDataFinished((ReqSubMarketDataFinishedPackage*)package);
 			break;
@@ -482,6 +543,39 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 	}
 	m_HasSubMd = true;
 }
+void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
+{
+	WriteLog(LogLevel::Info, "HandleRegisterAccount %s", reqPackage->GetDebugString());
+	auto reqRegisterAccount = reqPackage->ReqRegisterAccount;
+	auto account = m_Mdb->t_Account->m_PrimaryKey->Select(reqRegisterAccount->AccountID);
+	if (account == nullptr)
+	{
+		// 回测账户按需自建（同 BackTestInit 种子语义）：Balance=0，资金账目由日终结算按日滚动
+		account = mdb::Account::Allocate();
+		memset(account, 0, sizeof(mdb::Account));
+		strcpy(account->AccountID, reqRegisterAccount->AccountID);
+		strcpy(account->AccountName, reqRegisterAccount->AccountID);
+		account->AccountType = AccountTypeType::Primary;
+		account->AccountStatus = AccountStatusType::Normal;
+		account->TradeGroupID = 1;
+		account->RiskGroupID = 1;
+		account->CommissionGroupID = 1;
+		m_Mdb->t_Account->Insert(account);
+
+		auto capital = mdb::Capital::Allocate();
+		memset(capital, 0, sizeof(mdb::Capital));
+		strcpy(capital->TradingDay, m_TradingDay);
+		strcpy(capital->AccountID, account->AccountID);
+		capital->AccountType = AccountTypeType::Primary;
+		m_Mdb->t_Capital->Insert(capital);
+		WriteLog(LogLevel::Info, "Account registered, AccountID:%s, TradingDay:%s", account->AccountID, m_TradingDay);
+	}
+	else
+	{
+		WriteLog(LogLevel::Info, "Account already registered, AccountID:%s", account->AccountID);
+	}
+	SendRspRegisterAccount(reqPackage, ErrorNone);
+}
 void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleInsertOrder %s", reqPackage->GetDebugString());
@@ -694,6 +788,17 @@ PriceType SimExchange::BarSettlementPriceSource::GetSettlementPrice(const mdb::P
 	return positionDetail->PreSettlementPrice;
 }
 
+void SimExchange::SendRspRegisterAccount(ReqRegisterAccountPackage* reqPackage, int errorID)
+{
+	RspInfoField rspInfo;
+	rspInfo.ErrorID = errorID;
+	strcpy(rspInfo.ErrorMsg, GetErrorMessage(errorID));
+	RspRegisterAccountField rspRegisterAccount;
+	memset(&rspRegisterAccount, 0, sizeof(RspRegisterAccountField));
+	strcpy(rspRegisterAccount.AccountID, reqPackage->ReqRegisterAccount->AccountID);
+	m_BackTestSpi->OnRspRegisterAccount(&rspRegisterAccount, &rspInfo, reqPackage->Head.MsgSeqNum, true);
+	WriteLog(LogLevel::Info, "SendRspRegisterAccount: AccountID:%s, ErrorID:%d, ErrorMsg:%s", rspRegisterAccount.AccountID, rspInfo.ErrorID, rspInfo.ErrorMsg);
+}
 void SimExchange::SendRspOrderInsert(ReqInsertOrderPackage* reqPackage, int errorID)
 {
 	RspInfoField rspInfo;

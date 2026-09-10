@@ -103,6 +103,15 @@ void BackTestSpiImpl::OnRtnTrade(const TradeField* trade)
 	BackTestSpiMiddle::OnRtnTrade(trade);
 }
 
+// 裸 SPI 不经 StrategyBase::Start 的自动注册，须在订阅行情前显式注册账户（引擎按需自建 Account/Capital）
+void BackTestSpiImpl::ReqRegisterAccount()
+{
+	ReqRegisterAccountField reqRegisterAccount;
+	memset(&reqRegisterAccount, 0, sizeof(ReqRegisterAccountField));
+	strcpy(reqRegisterAccount.AccountID, m_AccountID);
+	m_BackTestApi->ReqRegisterAccount(&reqRegisterAccount, ++m_MaxRequestID);
+}
+
 void BackTestSpiImpl::ReqSubMarketData()
 {
 	ReqSubMarketDataField reqSubMd;

@@ -54,6 +54,27 @@ TEST_CASE("StrategyBase subscribes market data on start")
     CHECK(fake_api.subscribe_count == 1);
 }
 
+// 账户注册先于 OnStart 的行情订阅（requestID 1 = 注册，2 = 订阅）：引擎账户表在首次下单前必已自建
+TEST_CASE("StrategyBase registers account before subscribing market data on start")
+{
+    FakeBackTestApi fake_api;
+    ProbeStrategy strategy(&fake_api, "accountA");
+    strategy.SetSubscribeOnStart("CFFEX", "IF2503");
+    CHECK(strategy.Start());
+    REQUIRE(fake_api.register_account_requests.size() == 1);
+    CHECK(std::string(fake_api.register_account_requests[0].AccountID) == "accountA");
+    CHECK(fake_api.register_account_request_id == 1);
+    CHECK(fake_api.last_subscribe_request_id > fake_api.register_account_request_id);
+}
+
+TEST_CASE("StrategyBase registers account exactly once across repeated start state")
+{
+    FakeBackTestApi fake_api;
+    ProbeStrategy strategy(&fake_api, "accountA");
+    CHECK(strategy.Start());
+    CHECK(fake_api.register_account_requests.size() == 1);
+}
+
 TEST_CASE("StrategyBase accumulates position and last price from events")
 {
     FakeBackTestApi fake_api;

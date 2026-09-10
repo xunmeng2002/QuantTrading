@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
 	BackTestSpiImpl* spi = new BackTestSpiImpl(api, config);
 	api->RegisterSpi(spi);
 	api->Init();
+	spi->ReqRegisterAccount();
 	spi->ReqSubMarketData();
 
 	api->Join();

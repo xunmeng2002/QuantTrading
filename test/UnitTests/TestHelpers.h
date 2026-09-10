@@ -183,8 +183,17 @@ namespace quanttrading::unittest
         void Release() override { ++release_count; }
         void RegisterFront(const char* /*address*/) override {}
         void RegisterSpi(quanttrading::BackTestSpi* spi) override { registered_spi = spi; }
-        int ReqSubMarketData(const ReqSubMarketDataField* /*req*/, int /*requestID*/) override { ++subscribe_count; return 0; }
+        int ReqSubMarketData(const ReqSubMarketDataField* /*req*/, int requestID) override { ++subscribe_count; last_subscribe_request_id = requestID; return 0; }
         int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* /*req*/, int /*requestID*/) override { return 0; }
+        int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID) override
+        {
+            if (reqRegisterAccount != nullptr)
+            {
+                register_account_requests.push_back(*reqRegisterAccount);
+            }
+            register_account_request_id = requestID;
+            return 0;
+        }
         int ReqInsertOrder(const ReqInsertOrderField* req_insert_order, int /*requestID*/) override
         {
             insert_requests.push_back(*req_insert_order);
@@ -199,7 +208,10 @@ namespace quanttrading::unittest
         bool init_result = true;
         int release_count = 0;
         int subscribe_count = 0;
+        int last_subscribe_request_id = 0;
+        int register_account_request_id = 0;
         quanttrading::BackTestSpi* registered_spi = nullptr;
+        std::vector<ReqRegisterAccountField> register_account_requests;
         std::vector<ReqInsertOrderField> insert_requests;
         std::vector<ReqCancelOrderField> cancel_requests;
     };

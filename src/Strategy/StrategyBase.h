@@ -21,7 +21,7 @@ public:
 	StrategyBase(quanttrading::BackTestApi* backTestApi, const char* accountID);
 	virtual ~StrategyBase();
 
-	// RegisterSpi → api->Init → OnStart（策略在 OnStart 内订阅行情）
+	// RegisterSpi → api->Init → ReqRegisterAccount（账户按需自建，先于 OnStart 的行情订阅）→ OnStart
 	bool Start();
 	// 等待引擎线程退出（回测结束由 OnRtnMarketDataEnd 桥接收口 api->Release）
 	void WaitForEnd();
@@ -70,6 +70,7 @@ private:
 	void OnRtnSessionBegin(const SessionBeginField* sessionBegin) override;
 	void OnRtnSessionEnd(const SessionEndField* sessionEnd) override;
 	void OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd) override;
+	void OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast) override;
 	void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
 	void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
 	void OnRtnOrder(const OrderField* order) override;
