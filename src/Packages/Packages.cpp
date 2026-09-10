@@ -3537,6 +3537,373 @@ const char* RtnMarketDataEndPackage::GetDebugString() const
 	return t_DataStringBuffer;
 }
  
+ReqRegisterAccountPackage::ReqRegisterAccountPackage()
+	:ReqRegisterAccount(nullptr)
+{
+}
+ReqRegisterAccountPackage::~ReqRegisterAccountPackage()
+{
+	if (ReqRegisterAccount != nullptr)
+	{
+		ObjectPool<ReqRegisterAccountField>::GetInstance().Deallocate(ReqRegisterAccount);
+		ReqRegisterAccount = nullptr;
+	}
+}
+ReqRegisterAccountPackage* ReqRegisterAccountPackage::Allocate()
+{
+	return ObjectPool<ReqRegisterAccountPackage>::GetInstance().Allocate();
+}
+void ReqRegisterAccountPackage::Deallocate()
+{
+	ObjectPool<ReqRegisterAccountPackage>::GetInstance().Deallocate(this);
+}
+void ReqRegisterAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int ReqRegisterAccountPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (ReqRegisterAccount != nullptr)
+	{
+		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqRegisterAccountField::FieldID);
+		if (strlen(ReqRegisterAccount->AccountID) >= sizeof(ReqRegisterAccount->AccountID))
+		{
+			ReqRegisterAccount->AccountID[sizeof(ReqRegisterAccount->AccountID) - 1] = 0;
+		}
+		StepUtility::WriteString(ppos, Items::AccountID, ReqRegisterAccount->AccountID);
+		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqRegisterAccountField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool ReqRegisterAccountPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case ReqRegisterAccountField::FieldID:
+			{
+				ReqRegisterAccount = ObjectPool<ReqRegisterAccountField>::GetInstance().Allocate();
+				memset(ReqRegisterAccount, 0, sizeof(*ReqRegisterAccount));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::AccountID:
+						{
+							size_t len = value.length() >= sizeof(ReqRegisterAccount->AccountID) ? sizeof(ReqRegisterAccount->AccountID) - 1 : value.length();
+							memcpy(ReqRegisterAccount->AccountID, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqRegisterAccountField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqRegisterAccountPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For ReqRegisterAccountPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int ReqRegisterAccountPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	if (ReqRegisterAccount != nullptr)
+	{
+		memcpy(buff + offset, &ReqRegisterAccountField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, ReqRegisterAccount, sizeof(ReqRegisterAccountField));
+		offset += sizeof(ReqRegisterAccountField);
+	}
+	return offset;
+}
+bool ReqRegisterAccountPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	while(offset < endIndex)
+	{
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case ReqRegisterAccountField::FieldID:
+		{
+			ReqRegisterAccount = ObjectPool<ReqRegisterAccountField>::GetInstance().Allocate();
+			memcpy(ReqRegisterAccount, buff + offset, sizeof(ReqRegisterAccountField));
+			offset += sizeof(ReqRegisterAccountField);	
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+	return offset == endIndex;
+}
+const char* ReqRegisterAccountPackage::GetDebugString() const
+{
+	int offset = 0;
+	if (ReqRegisterAccount != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "ReqRegisterAccount:AccountID:[%s]", ReqRegisterAccount->AccountID);
+	}
+	return t_DataStringBuffer;
+}
+ 
+RspRegisterAccountPackage::RspRegisterAccountPackage()
+	:RspRegisterAccount(nullptr), RspInfo(nullptr)
+{
+}
+RspRegisterAccountPackage::~RspRegisterAccountPackage()
+{
+	if (RspRegisterAccount != nullptr)
+	{
+		ObjectPool<RspRegisterAccountField>::GetInstance().Deallocate(RspRegisterAccount);
+		RspRegisterAccount = nullptr;
+	}
+	if (RspInfo != nullptr)
+	{
+		ObjectPool<RspInfoField>::GetInstance().Deallocate(RspInfo);
+		RspInfo = nullptr;
+	}
+}
+RspRegisterAccountPackage* RspRegisterAccountPackage::Allocate()
+{
+	return ObjectPool<RspRegisterAccountPackage>::GetInstance().Allocate();
+}
+void RspRegisterAccountPackage::Deallocate()
+{
+	ObjectPool<RspRegisterAccountPackage>::GetInstance().Deallocate(this);
+}
+void RspRegisterAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+{
+	Package::Prepare(sessionID, messageChain, msgSeqNum);
+	Head.PackageID = PackageID;
+}
+int RspRegisterAccountPackage::ToStepStream(char* buff, int size) const
+{
+	char* ppos = buff;
+	if (RspRegisterAccount != nullptr)
+	{
+		StepUtility::WriteHexString(ppos, Items::FieldStart, RspRegisterAccountField::FieldID);
+		if (strlen(RspRegisterAccount->AccountID) >= sizeof(RspRegisterAccount->AccountID))
+		{
+			RspRegisterAccount->AccountID[sizeof(RspRegisterAccount->AccountID) - 1] = 0;
+		}
+		StepUtility::WriteString(ppos, Items::AccountID, RspRegisterAccount->AccountID);
+		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspRegisterAccountField::FieldID);
+	}
+	if (RspInfo != nullptr)
+	{
+		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
+		{
+			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
+		}
+		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+	}
+	return int(ppos - buff);
+}
+bool RspRegisterAccountPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+{
+	while (startIndex < endIndex)
+	{
+		unsigned short fieldID;
+		int fieldStartIndex;
+		int fieldEndIndex;
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		{
+			int itemStartIndex = fieldStartIndex;
+			switch (fieldID)
+			{
+			case RspRegisterAccountField::FieldID:
+			{
+				RspRegisterAccount = ObjectPool<RspRegisterAccountField>::GetInstance().Allocate();
+				memset(RspRegisterAccount, 0, sizeof(*RspRegisterAccount));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::AccountID:
+						{
+							size_t len = value.length() >= sizeof(RspRegisterAccount->AccountID) ? sizeof(RspRegisterAccount->AccountID) - 1 : value.length();
+							memcpy(RspRegisterAccount->AccountID, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspRegisterAccountField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspRegisterAccountPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			case RspInfoField::FieldID:
+			{
+				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
+				memset(RspInfo, 0, sizeof(*RspInfo));
+				while (itemStartIndex < fieldEndIndex)
+				{
+					unsigned short  itemID;
+					std::string value;
+					int sohIndex;
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					{
+						switch (itemID)
+						{
+						case Items::FieldStart:
+						case Items::FieldEnd:
+							break;
+						case Items::ErrorID:
+						{
+							RspInfo->ErrorID = atoi(value.c_str());
+							break;
+						}
+						case Items::ErrorMsg:
+						{
+							size_t len = value.length() >= sizeof(RspInfo->ErrorMsg) ? sizeof(RspInfo->ErrorMsg) - 1 : value.length();
+							memcpy(RspInfo->ErrorMsg, value.c_str(), len);
+							break;
+						}
+						default:
+							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							return false;
+						}
+						itemStartIndex = sohIndex + 1;
+					}
+					else
+					{
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspRegisterAccountPackage FieldID:0x%X", fieldID);
+						return false;
+					}
+				}
+				break;
+			}
+			default:
+				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				return false;
+			}
+			startIndex = fieldEndIndex;
+		}
+		else
+		{
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For RspRegisterAccountPackage");
+			return false;
+		}
+	}
+	return true;
+}
+int RspRegisterAccountPackage::ToXtpStream(char* buff, int size) const
+{
+	int offset = 0;
+	if (RspRegisterAccount != nullptr)
+	{
+		memcpy(buff + offset, &RspRegisterAccountField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspRegisterAccount, sizeof(RspRegisterAccountField));
+		offset += sizeof(RspRegisterAccountField);
+	}
+	if (RspInfo != nullptr)
+	{
+		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UShortType));
+		offset += sizeof(UShortType);
+		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
+		offset += sizeof(RspInfoField);
+	}
+	return offset;
+}
+bool RspRegisterAccountPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+{
+	int offset = startIndex;
+	while(offset < endIndex)
+	{
+		auto fieldID = *(UShortType*)(buff + offset);
+		offset += sizeof(UShortType);
+		switch (fieldID)
+		{
+		case RspRegisterAccountField::FieldID:
+		{
+			RspRegisterAccount = ObjectPool<RspRegisterAccountField>::GetInstance().Allocate();
+			memcpy(RspRegisterAccount, buff + offset, sizeof(RspRegisterAccountField));
+			offset += sizeof(RspRegisterAccountField);	
+			break;
+		}
+		case RspInfoField::FieldID:
+		{
+			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
+			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
+			offset += sizeof(RspInfoField);	
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+	return offset == endIndex;
+}
+const char* RspRegisterAccountPackage::GetDebugString() const
+{
+	int offset = 0;
+	if (RspRegisterAccount != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspRegisterAccount:AccountID:[%s]", RspRegisterAccount->AccountID);
+	}
+	if (RspInfo != nullptr)
+	{
+		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+	}
+	return t_DataStringBuffer;
+}
+ 
 ReqAccountLoginPackage::ReqAccountLoginPackage()
 	:ReqAccountLogin(nullptr)
 {

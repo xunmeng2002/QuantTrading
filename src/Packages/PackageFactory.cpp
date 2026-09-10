@@ -82,6 +82,14 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 	{
 		return RtnMarketDataEndPackage::Allocate();
 	}
+	case ReqRegisterAccountPackage::PackageID:
+	{
+		return ReqRegisterAccountPackage::Allocate();
+	}
+	case RspRegisterAccountPackage::PackageID:
+	{
+		return RspRegisterAccountPackage::Allocate();
+	}
 	case ReqAccountLoginPackage::PackageID:
 	{
 		return ReqAccountLoginPackage::Allocate();
