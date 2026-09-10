@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<apipackages prefix="BackTest" module="BackTestApi">
+<apipackages prefix="BackTest" module="BackTest">
 	<package name="ReqSubMarketData"/>
 	<package name="RspSubMarketData"/>
 	<package name="ReqSubMarketDataFinished"/>
@@ -8,7 +8,9 @@
 	<package name="RtnSessionBegin"/>
 	<package name="RtnSessionEnd"/>
 	<package name="RtnMarketDataEnd"/>
-	
+
+    <package name="ReqRegisterAccount"/>
+    <package name="RspRegisterAccount"/>
 	<package name="ReqInsertOrder"/>
 	<package name="RspInsertOrder"/>
 	<package name="ReqCancelOrder"/>

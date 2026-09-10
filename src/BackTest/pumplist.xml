@@ -1,0 +1,6 @@
+<pumplist>
+    <pump dest="./include/QuantTrading/BackTestApi.h" tpl="../Templates/Cpp/BackTestApi/BackTestApi.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
+   
+    <pump dest="./src/BackTest/BackTestApiImpl.h" tpl="../Templates/Cpp/BackTestApi/BackTestApiImpl.h.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
+    <pump dest="./src/BackTest/BackTestApiImpl.cpp" tpl="../Templates/Cpp/BackTestApi/BackTestApiImpl.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/BackTestApiPackageNames.xml"/>
+</pumplist>

@@ -16,6 +16,7 @@ public:
 	virtual void OnRtnSessionBegin(const SessionBeginField* sessionBegin) override;
 	virtual void OnRtnSessionEnd(const SessionEndField* sessionEnd) override;
 	virtual void OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd) override;
+	virtual void OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast) override;
 	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
 	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
 	virtual void OnRtnOrder(const OrderField* order) override;

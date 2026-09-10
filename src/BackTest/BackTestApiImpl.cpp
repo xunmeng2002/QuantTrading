@@ -1,4 +1,4 @@
-#include "BackTestApiImpl.h"
+﻿#include "BackTestApiImpl.h"
 #include "SimExchange.h"
 #include "Config/Config.h"
 #include "QuantTrading/Version.h"
@@ -65,6 +65,10 @@ int BackTestApiImpl::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedFiel
 {
 	return m_SimExchange->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
 }
+int BackTestApiImpl::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
+{
+	return m_SimExchange->ReqRegisterAccount(reqRegisterAccount, requestID);
+}
 int BackTestApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	return m_SimExchange->ReqInsertOrder(reqInsertOrder, requestID);
@@ -74,4 +78,3 @@ int BackTestApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, i
 	return m_SimExchange->ReqCancelOrder(reqCancelOrder, requestID);
 }
 }
-

@@ -75,6 +75,20 @@ int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedFi
 	}
 	return m_BackTestApi->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
 }
+int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
+{
+	WriteLog(LogLevel::Info, "ReqRegisterAccount: RequestID:%d", requestID);
+	if (reqRegisterAccount != nullptr)
+	{
+		WriteLog(LogLevel::Info, "ReqRegisterAccountField:AccountID:[%s]",
+			reqRegisterAccount->AccountID);
+	}
+	else
+	{
+		WriteLog(LogLevel::Info, "reqRegisterAccount is nullptr");
+	}
+	return m_BackTestApi->ReqRegisterAccount(reqRegisterAccount, requestID);
+}
 int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);

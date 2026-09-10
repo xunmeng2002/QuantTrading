@@ -111,6 +111,28 @@ void BackTestSpiMiddle::OnRtnMarketDataEnd(const MarketDataEndField* marketDataE
 		WriteLog(LogLevel::Info, "marketDataEnd is nullptr");
 	}
 }
+void BackTestSpiMiddle::OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	WriteLog(LogLevel::Info, "OnRspRegisterAccount: RequestID:%d, IsLast:%d", requestID, isLast);
+	if (rspRegisterAccount != nullptr)
+	{
+		WriteLog(LogLevel::Info, "RspRegisterAccountField:AccountID:[%s]",
+			rspRegisterAccount->AccountID);
+	}
+	else
+	{
+		WriteLog(LogLevel::Info, "rspRegisterAccount is nullptr");
+	}
+	if (rspInfo != nullptr)
+	{
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorID, rspInfo->ErrorMsg);
+	}
+	else
+	{
+		WriteLog(LogLevel::Info, "rspInfo is nullptr");
+	}
+}
 void BackTestSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestID, isLast);

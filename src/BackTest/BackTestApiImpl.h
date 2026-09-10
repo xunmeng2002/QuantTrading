@@ -1,6 +1,7 @@
-#pragma once
-#include "MdbStructs.h"
-#include "QuantTrading/BackTestApi.h"
+﻿#pragma once
+#include <QuantTrading/BackTestApi.h>
+#include <Spark/Network/Protocol/Package.h>
+
 
 namespace quanttrading::backtest
 {
@@ -16,9 +17,10 @@ public:
 	virtual void Release() override;
 	virtual void RegisterFront(const char* address) override;
 	virtual void RegisterSpi(BackTestSpi* pSpi) override;
-
+	
 	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID) override;
 	virtual int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID) override;
+	virtual int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID) override;
 	virtual int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID) override;
 	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) override;
 
@@ -26,5 +28,3 @@ private:
 	SimExchange* m_SimExchange;
 };
 }
-
-

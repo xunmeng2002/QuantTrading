@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Fields.h"
 #include <QuantTrading/BackTest/BackTestExport.h>
 
@@ -15,6 +15,7 @@ public:
 	virtual void OnRtnSessionBegin(const SessionBeginField* sessionBegin) {}
 	virtual void OnRtnSessionEnd(const SessionEndField* sessionEnd) {}
 	virtual void OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd) {}
+	virtual void OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) {}
 	virtual void OnRtnOrder(const OrderField* order) {}
@@ -34,6 +35,7 @@ public:
 	
 	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID) = 0;
 	virtual int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID) = 0;
+	virtual int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID) = 0;
 	virtual int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
 	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
 };
