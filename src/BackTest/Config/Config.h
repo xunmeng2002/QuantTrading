@@ -28,7 +28,6 @@ public:
 	string DbUser;
 	string DbPassword;
 	string DbHost;
-	string DbInitHost;
 	
 private:
 	static Config m_Instance;

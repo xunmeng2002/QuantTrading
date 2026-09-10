@@ -168,17 +168,6 @@ copy_dll_file(SimExchangeInit)
 copy_config_file(SimExchangeInit ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchangeInit.json)
 
 
-# BackTestInit 已弃用（2026-09-10）：回测账户由策略 ReqRegisterAccount 按需自建，init 库（DbInitHost）
-# 降级为可选的续跑恢复源，输出库按 RunID 独立命名。源码保留备查，不再参与构建。
-#add_application(BackTestInit  ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTestInit ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTestInit)
-#target_link_libraries(BackTestInit PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic
-#    Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
-#    DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
-#copy_dll_file(BackTestInit)
-#copy_config_file(BackTestInit ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTestInit.json)
-
-
-
 add_static_md_module(BackTestApiMiddle ${CMAKE_CURRENT_SOURCE_DIR}/test/ApiMiddles/BackTestApiMiddle ${CMAKE_CURRENT_SOURCE_DIR}/test/ApiMiddles/BackTestApiMiddle)
 add_static_md_module(MdApiMiddle ${CMAKE_CURRENT_SOURCE_DIR}/test/ApiMiddles/MdApiMiddle ${CMAKE_CURRENT_SOURCE_DIR}/test/ApiMiddles/MdApiMiddle)
 add_static_md_module(TraderApiMiddle ${CMAKE_CURRENT_SOURCE_DIR}/test/ApiMiddles/TraderApiMiddle ${CMAKE_CURRENT_SOURCE_DIR}/test/ApiMiddles/TraderApiMiddle)

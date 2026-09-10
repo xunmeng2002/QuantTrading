@@ -7,7 +7,6 @@
 #include "QuantUtility.h"
 #include "OrderUtility.h"
 #include "InitMdbFromCsv.h"
-#include "InitMdbFromDB.h"
 #include "MdbFieldConverter.h"
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Logger/Logger.h>
@@ -91,17 +90,6 @@ SimExchange::SimExchange(const Config& config)
 	std::error_code dumpDirError;
 	std::filesystem::create_directories(m_DumpPath, dumpDirError);
 	auto runDbHost = DeriveRunDbHost(config.DbHost, m_RunID);
-	// init 库仅用于续跑恢复（历史表加载与 OrderID 起号）；缺失时跳过加载空表自举。
-	// 不能以 Connect 失败判断（SQLite/DuckDB 会静默建空库），须做文件存在性检查
-	if (std::filesystem::exists(config.DbInitHost))
-	{
-		m_InitDB = CreateDataDb(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
-	}
-	else
-	{
-		m_InitDB = nullptr;
-		WriteLog(LogLevel::Warning, "Init DB not found, bootstrap from empty tables:%s", config.DbInitHost.c_str());
-	}
 	m_DB = CreateDataDb(config.DbType, runDbHost, config.DbUser, config.DbPassword);
 	WriteLog(LogLevel::Info, "RunID:%s, DbHost:%s, DumpPath:%s", m_RunID.c_str(), runDbHost.c_str(), m_DumpPath.c_str());
     m_DBWriter = new AsyncDBWriter(m_DB, &m_Registry);
@@ -135,27 +123,11 @@ bool SimExchange::Init()
 		WriteLog(LogLevel::Error, "Create DB Failed.");
 		return false;
 	}
-	if (m_InitDB != nullptr)
-	{
-		if (!m_InitDB->Connect())
-		{
-			WriteLog(LogLevel::Error, "InitDB Connect Failed.");
-			return false;
-		}
-		InitMdbFromDB::LoadTables(m_Mdb, m_InitDB, backtestTableList);
-		SeedNextOrderIDFromOrders(m_Mdb->t_Order);
-	}
 	m_Mdb->Subscribe(m_DBWriter);
 
 	m_MdReader->Init();
 	InitMdInstrument();
 	InitMainInstrument();
-	auto capitalPair = m_Mdb->t_Capital->m_PrimaryKey->SelectAll();
-	for (auto& it = capitalPair.first; it != capitalPair.second; ++it)
-	{
-		auto capital = *it;
-		strcpy(capital->TradingDay, m_TradingDay);
-	}
 	SendRtnSessionBegin(m_TradingDay);
 	return true;
 }

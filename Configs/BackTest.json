@@ -11,7 +11,6 @@
   "DbType": "1",
   "DbUser": "",
   "DbPassword": "",
-  "DbHost": "./BackTest.db",
-  "DbInitHost": "./BackTestInit.db"
+  "DbHost": "./BackTest.db"
 }
 

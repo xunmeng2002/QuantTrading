@@ -98,7 +98,6 @@ private:
 	BarSettlementPriceSource m_BarSettlementPriceSource;
 	mdb::Mdb* m_Mdb;
     dbadapters::DB* m_DB;
-    dbadapters::DB* m_InitDB;
 	mdb::MdbTableRegistry m_Registry;
     dbadapters::AsyncDBWriter* m_DBWriter;
 	bool m_HasSubMd;

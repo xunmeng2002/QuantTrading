@@ -42,10 +42,6 @@
     <pump dest="./src/BackTest/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/BackTest.xml"/>
     <pump dest="./src/BackTest/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/BackTest.xml"/>
 
-    <pump dest="./src/BackTestInit/BackTestTableList.h" tpl="../Templates/Cpp/Mdb/ModuleTableList.h.tpl" model="./Model/TableNames/BackTestTableNames.xml"/>
-    <pump dest="./src/BackTestInit/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/BackTestInit.xml"/>
-    <pump dest="./src/BackTestInit/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/BackTestInit.xml"/>
-
 
     <pump dest="./src/SimExchange/SimExchangeTableList.h" tpl="../Templates/Cpp/Mdb/ModuleTableList.h.tpl" model="./Model/TableNames/SimExchangeTableNames.xml"/>
     <pump dest="./src/SimExchange/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/SimExchange.xml"/>
