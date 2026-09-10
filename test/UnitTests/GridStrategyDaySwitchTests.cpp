@@ -4,6 +4,40 @@
 
 using namespace quanttrading::unittest;
 
+// 配置键 BarPreces 经 GridParams 传入即声明周期；非法格式在构造期拒启（拒启语义同 DeclareBarPeriod）
+TEST_CASE("GridStrategy declares bar period from params and rejects invalid preces at construction")
+{
+    FakeBackTestApi fake_api;
+    auto fine_params = MakeGridParams(10.0, 2);
+    fine_params.BarPreces = "5m";
+    GridStrategyProbe fine_strategy(&fake_api, "accountA", fine_params);
+    REQUIRE(fine_strategy.Start());
+
+    auto bad_params = MakeGridParams(10.0, 2);
+    bad_params.BarPreces = "5x";
+    REQUIRE_THROWS_AS(GridStrategyProbe(&fake_api, "accountA", bad_params), std::logic_error);
+}
+
+// Bar 回放模式无 tick 回调：首根有效 bar Close 为锚价补挂阶梯，后续 bar 不重复锚定
+TEST_CASE("GridStrategy anchors ladder from first bar when replay delivers bars instead of ticks")
+{
+    FakeBackTestApi fake_api;
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    strategy.Start();
+
+    auto anchor_bar = MakeMdBarField("IF2503", 202410010935LL, 4000.0);
+    fake_api.registered_spi->OnRtnBarMarketData(&anchor_bar);
+    REQUIRE(fake_api.insert_requests.size() == 4);
+    CHECK(fake_api.insert_requests[0].Direction == DirectionType::Buy);
+    CHECK(fake_api.insert_requests[0].Price == doctest::Approx(3990.0));
+    CHECK(fake_api.insert_requests[1].Direction == DirectionType::Sell);
+    CHECK(fake_api.insert_requests[1].Price == doctest::Approx(4010.0));
+
+    auto next_bar = MakeMdBarField("IF2503", 202410010940LL, 4050.0);
+    fake_api.registered_spi->OnRtnBarMarketData(&next_bar);
+    CHECK(fake_api.insert_requests.size() == 4);
+}
+
 // 场景基线：引擎日切结算统一撤单（撤单回报先于 SessionEnd 推送），策略在 OnOrder 中处理格位
 TEST_CASE("GridStrategy resets unfilled open slot on day-end cancel and re-places at next anchor")
 {

@@ -44,6 +44,7 @@ class GridParams:
     volume_per_grid: int
     exchange_id: str
     instrument_id: str
+    bar_preces: str = ""   # 策略期望 bar 周期（"5m" 格式，同 BackTest.json BarPreces）；空=on_bar 纯透传
 
 
 class GridStrategy(qt.StrategyBase):
@@ -57,6 +58,8 @@ class GridStrategy(qt.StrategyBase):
     def __init__(self, backtest_api, account_id, params):
         super().__init__(backtest_api=backtest_api, account_id=account_id)
         self.params = params
+        if params.bar_preces:
+            self.declare_bar_period(params.bar_preces)
         self.slots = [GridSlot(qt.DirectionType.Buy) for _ in range(params.grid_count)] + \
             [GridSlot(qt.DirectionType.Sell) for _ in range(params.grid_count)]
         self.awaiting_anchor = True
@@ -248,7 +251,8 @@ def main():
         grid_count=config["GridCount"],
         volume_per_grid=config["VolumePerGrid"],
         exchange_id=config["ExchangeID"],
-        instrument_id=config["InstrumentID"])
+        instrument_id=config["InstrumentID"],
+        bar_preces=config.get("BarPreces", ""))
     strategy = GridStrategy(api, config["AccountID"], params)
     if not strategy.start():
         qt.shutdown_logger()

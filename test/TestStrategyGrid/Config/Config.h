@@ -21,6 +21,7 @@ public:
 	string AccountID;
 	string ExchangeID;
 	string InstrumentID;
+	string BarPreces;
 	double GridStep;
 	int GridCount;
 	int VolumePerGrid;

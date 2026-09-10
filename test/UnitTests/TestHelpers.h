@@ -214,6 +214,25 @@ namespace quanttrading::unittest
         return md_tick;
     }
 
+    // 造 BarMarketDataField（值类型，栈上使用；四价统一填 close_price，时间字段按 bar 结束分钟填充）
+    inline BarMarketDataField MakeMdBarField(const char* instrument_id, long long end_bar_minute, double close_price)
+    {
+        BarMarketDataField md_bar;
+        std::memset(&md_bar, 0, sizeof(md_bar));
+        CopyString(md_bar.InstrumentID, instrument_id);
+        md_bar.BarPreces = BarPrecesType::Minute;
+        md_bar.BarPeriod = 5;
+        md_bar.BarTime = end_bar_minute * 100000;
+        md_bar.UpdateTs = md_bar.BarTime;
+        md_bar.Open = close_price;
+        md_bar.High = close_price;
+        md_bar.Low = close_price;
+        md_bar.Close = close_price;
+        md_bar.HighestPrice = close_price;
+        md_bar.LowestPrice = close_price;
+        return md_bar;
+    }
+
     // 造 TradeField（值类型）
     inline TradeField MakeTradeField(const char* instrument_id, int order_id, DirectionType direction,
         OffsetFlagType offset_flag, double price, long long volume, int volume_multiple, double commission)

@@ -1,7 +1,10 @@
 #include "StrategyBase.h"
+
+#include "BarUtility.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Core/Utility/Utility.h>
 #include <cstring>
+#include <stdexcept>
 
 using namespace spark::core;
 
@@ -48,6 +51,19 @@ void StrategyBase::SubscribeTick(const char* exchangeID, const char* instrumentI
 void StrategyBase::SubscribeBar(const char* exchangeID, const char* instrumentID)
 {
 	SubscribeMarketData(exchangeID, instrumentID);
+}
+void StrategyBase::DeclareBarPeriod(const char* barPreces)
+{
+	BarPrecesType barPrecesType;
+	int barPeriod = 0;
+	if (!bar::ParseBarPreces(barPreces != nullptr ? barPreces : "", barPrecesType, barPeriod))
+	{
+		WriteLog(LogLevel::Error, "DeclareBarPeriod: Invalid barPreces:%s, expect <n><s|m|h|d> e.g. 5m", barPreces != nullptr ? barPreces : "");
+		throw std::logic_error("StrategyBase::DeclareBarPeriod: invalid barPreces");
+	}
+	m_BarAggregator = std::make_unique<bar::BarAggregator>(barPrecesType, barPeriod);
+	m_BarAggregator->Subscribe(this);
+	m_BarAggregationEnabled = true;
 }
 
 ClientOrderIDType StrategyBase::InsertLimitOrder(const char* exchangeID, const char* instrumentID, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume)
@@ -150,7 +166,16 @@ void StrategyBase::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketD
 }
 void StrategyBase::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
+	if (m_BarAggregationEnabled)
+	{
+		m_BarAggregator->OnBarMarketData(barMarketData);
+		return;
+	}
 	OnBar(barMarketData);
+}
+void StrategyBase::OnBarMarketData(BarMarketDataField* bar)
+{
+	OnBar(bar);
 }
 void StrategyBase::OnRtnSessionBegin(const SessionBeginField* sessionBegin)
 {
@@ -167,6 +192,10 @@ void StrategyBase::OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd)
 	if (!m_IsMdEnded)
 	{
 		m_IsMdEnded = true;
+		if (m_BarAggregationEnabled)
+		{
+			m_BarAggregator->Flush();
+		}
 		OnEnd();
 		m_BackTestApi->Release();
 	}

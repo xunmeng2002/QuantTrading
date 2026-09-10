@@ -12,11 +12,13 @@ struct GridParams
 	int VolumePerGrid = 0;
 	std::string ExchangeID;
 	std::string InstrumentID;
+	std::string BarPreces;   // 策略期望 bar 周期（"5m" 格式，同 BackTest.json BarPreces）；空=OnBar 纯透传
 };
 
 // 成对网格：每格一开一平，利润 = 步长 × 乘数 × 手数，仓位天然有界（≤ GridCount 手/向）。
 // 格位状态机：Empty → OpenPending → OpenFilled → ClosePending → Closed。
-// 日级重锚：SessionBegin 复位 Closed 格为 Empty，首笔 tick LastPrice 为新中枢补挂阶梯；
+// 日级重锚：SessionBegin 复位 Closed 格为 Empty，首笔 tick LastPrice 或首根 bar Close（Bar 回放模式无 tick）
+// 为新中枢补挂阶梯，两者先到先锚；
 // 引擎日切结算统一撤销全部未成交挂单（撤单回报先于 SessionEnd 推送）：零成交开仓格经撤单
 // 回报复位 Empty 等次日重锚重挂；部分成交开仓格与被撤平仓格按已成交/剩余量即时补平仓单，
 // 新平仓单经引擎队列在次一交易日撮合。平仓单价格取自开仓成交价 ∓ 步长，与锚点无关。
@@ -28,6 +30,7 @@ public:
 protected:
 	void OnStart() override;
 	void OnTick(const DepthMarketDataField* depthMarketData) override;
+	void OnBar(const BarMarketDataField* barMarketData) override;
 	void OnTrade(const TradeField* trade, ClientOrderIDType clientOrderID) override;
 	void OnOrder(const OrderField* order) override;
 	void OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo) override;

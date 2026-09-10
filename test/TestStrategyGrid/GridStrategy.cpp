@@ -9,6 +9,10 @@ namespace quanttrading::teststrategygrid
 GridStrategy::GridStrategy(quanttrading::BackTestApi* backTestApi, const char* accountID, const GridParams& gridParams)
 	:StrategyBase(backTestApi, accountID), m_Params(gridParams)
 {
+	if (!m_Params.BarPreces.empty())
+	{
+		DeclareBarPeriod(m_Params.BarPreces.c_str());
+	}
 	m_Slots.resize(gridParams.GridCount * 2);
 	for (int level = 0; level < gridParams.GridCount; ++level)
 	{
@@ -31,6 +35,23 @@ void GridStrategy::OnTick(const DepthMarketDataField* depthMarketData)
 	constexpr PriceType InvalidPrice = std::numeric_limits<PriceType>::max();
 	PriceType anchorPrice = depthMarketData->LastPrice;
 	if (anchorPrice <= 0 || anchorPrice == InvalidPrice)
+	{
+		return;
+	}
+	m_AwaitingAnchor = false;
+	WriteLog(LogLevel::Info, "Anchor price: %f", anchorPrice);
+	PlaceLadder(anchorPrice);
+}
+
+// Bar 回放模式（MatchMode=Bar）无 tick 回调，以首根有效 bar 的 Close 为锚价；与 OnTick 先到先锚
+void GridStrategy::OnBar(const BarMarketDataField* barMarketData)
+{
+	if (!m_AwaitingAnchor || barMarketData == nullptr)
+	{
+		return;
+	}
+	PriceType anchorPrice = barMarketData->Close;
+	if (anchorPrice <= 0)
 	{
 		return;
 	}

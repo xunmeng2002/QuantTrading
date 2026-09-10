@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
 	gridParams.VolumePerGrid = config.VolumePerGrid;
 	gridParams.ExchangeID = config.ExchangeID;
 	gridParams.InstrumentID = config.InstrumentID;
+	gridParams.BarPreces = config.BarPreces;
 	GridStrategy gridStrategy(api, config.AccountID.c_str(), gridParams);
 	if (!gridStrategy.Start())
 	{

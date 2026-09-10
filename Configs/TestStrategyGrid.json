@@ -1,9 +1,10 @@
 {
-	"LogLevel": 2,
-	"AccountID": "18511899894",
-	"ExchangeID": "CFFEX",
-	"InstrumentID": "IF2503",
-	"GridStep": 10.0,
-	"GridCount": 5,
-	"VolumePerGrid": 1
+  "LogLevel": 2,
+  "AccountID": "18511899894",
+  "ExchangeID": "SSE",
+  "InstrumentID": "600519",
+  "BarPreces": "5m",
+  "GridStep": 10.0,
+  "GridCount": 5,
+  "VolumePerGrid": 1
 }

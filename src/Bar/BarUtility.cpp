@@ -15,6 +15,46 @@ namespace quanttrading::bar
         return instrumentID;
     }
 
+    bool ParseBarPreces(const std::string& barPreces, BarPrecesType& barPrecesType, int& barPeriod)
+    {
+        if (barPreces.size() < 2 || barPreces.size() > 6)
+        {
+            return false;
+        }
+        const char unit = barPreces.back();
+        int count = 0;
+        for (std::size_t index = 0; index + 1 < barPreces.size(); ++index)
+        {
+            if (barPreces[index] < '0' || barPreces[index] > '9')
+            {
+                return false;
+            }
+            count = count * 10 + (barPreces[index] - '0');
+        }
+        if (count <= 0)
+        {
+            return false;
+        }
+        switch (unit)
+        {
+            case 's':
+                barPrecesType = BarPrecesType::Second;
+                break;
+            case 'm':
+            case 'h':
+                barPrecesType = BarPrecesType::Minute;
+                barPeriod = unit == 'h' ? count * 60 : count;
+                return true;
+            case 'd':
+                barPrecesType = BarPrecesType::Day;
+                break;
+            default:
+                return false;
+        }
+        barPeriod = count;
+        return true;
+    }
+
     void UpdateBarFromDepthMarketData(DepthMarketDataField* depthMd, BarMarketDataField* bar)
     {
         strcpy(bar->TradingDay, depthMd->TradingDay);

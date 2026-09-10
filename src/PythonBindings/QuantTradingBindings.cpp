@@ -50,6 +50,8 @@ namespace
 				.def("wait_for_end", &StrategyBasePy::WaitForEnd, py::call_guard<py::gil_scoped_release>())
 				.def("subscribe_tick", &StrategyBasePy::SubscribeTick)
 				.def("subscribe_bar", &StrategyBasePy::SubscribeBar)
+				// 须在 on_start 前或 on_start 内声明；on_start 内抛出会被钩子分发吞为日志，建议构造后立即调用
+				.def("declare_bar_period", &StrategyBasePy::DeclareBarPeriod)
 				.def("buy_open", &StrategyBasePy::BuyOpen)
 				.def("sell_open", &StrategyBasePy::SellOpen)
 				.def("buy_close", &StrategyBasePy::BuyClose)

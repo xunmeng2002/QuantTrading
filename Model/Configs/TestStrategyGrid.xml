@@ -4,6 +4,7 @@
 		<item name="AccountID" type="string"></item>
 		<item name="ExchangeID" type="string"></item>
 		<item name="InstrumentID" type="string"></item>
+        <item name="BarPreces" type="string"></item>
 		<item name="GridStep" type="double"></item>
 		<item name="GridCount" type="int"></item>
 		<item name="VolumePerGrid" type="int"></item>

@@ -1,6 +1,9 @@
 #pragma once
 #include <QuantTrading/BackTestApi.h>
+
+#include "BarAggregator.h"
 #include <map>
+#include <memory>
 #include <string>
 
 namespace quanttrading::strategy
@@ -12,7 +15,7 @@ namespace quanttrading::strategy
 // 线程契约：所有钩子在引擎线程内触发（与 CTP 回调同线程模型），策略逻辑只在回调线程执行，
 // StrategyBase 内部状态因此不加锁；若未来策略从其他线程调用 Req 接口，须先在此层加锁。
 // 钩子收到的指针仅在本次回调内有效，如需保留请自行拷贝。
-class StrategyBase : protected quanttrading::BackTestSpi
+class StrategyBase : protected quanttrading::BackTestSpi, private bar::BarSubscriber
 {
 public:
 	StrategyBase(quanttrading::BackTestApi* backTestApi, const char* accountID);
@@ -39,6 +42,11 @@ protected:
 
 	void SubscribeTick(const char* exchangeID, const char* instrumentID);
 	void SubscribeBar(const char* exchangeID, const char* instrumentID);
+
+	// 声明策略期望的 bar 周期（格式同 BackTest.json BarPreces：<n><s|m|h|d>，如 "5m"）。
+	// 声明后 OnBar 收到聚合到该周期的 bar（输入==期望透传；输入<期望聚合；输入>期望/不整除拒启抛 std::logic_error）；
+	// 未声明 → OnBar 纯透传。应在构造或 OnStart 内调用一次。
+	void DeclareBarPeriod(const char* barPreces);
 
 	ClientOrderIDType BuyOpen(const char* exchangeID, const char* instrumentID, PriceType price, VolumeType volume);
 	ClientOrderIDType SellOpen(const char* exchangeID, const char* instrumentID, PriceType price, VolumeType volume);
@@ -67,6 +75,8 @@ private:
 	void OnRtnOrder(const OrderField* order) override;
 	void OnRtnTrade(const TradeField* trade) override;
 
+	void OnBarMarketData(BarMarketDataField* bar) override;   // bar::BarSubscriber 桥 → OnBar
+
 	void SubscribeMarketData(const char* exchangeID, const char* instrumentID);
 	ClientOrderIDType InsertLimitOrder(const char* exchangeID, const char* instrumentID, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume);
 
@@ -89,9 +99,11 @@ private:
 
 	quanttrading::BackTestApi* m_BackTestApi;
 	std::string m_AccountID;
+	std::unique_ptr<bar::BarAggregator> m_BarAggregator;
 	int m_NextRequestID = 0;
 	ClientOrderIDType m_NextClientOrderID = 0;
     ClientOrderIDType m_NextClientCancelOrderID = 0;
+	bool m_BarAggregationEnabled = false;   // 默认 false = OnBar 纯透传
 	bool m_IsMdEnded = false;
 };
 }

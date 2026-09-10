@@ -40,6 +40,7 @@ void Config::Load(const char* fileName)
 	AccountID = root["AccountID"].asString();
 	ExchangeID = root["ExchangeID"].asString();
 	InstrumentID = root["InstrumentID"].asString();
+	BarPreces = root["BarPreces"].asString();
 	GridStep = root["GridStep"].asDouble();
 	GridCount = root["GridCount"].asInt();
 	VolumePerGrid = root["VolumePerGrid"].asInt();
@@ -54,6 +55,7 @@ void Config::Print()
 	printf("AccountID:%s\n", AccountID.c_str());
 	printf("ExchangeID:%s\n", ExchangeID.c_str());
 	printf("InstrumentID:%s\n", InstrumentID.c_str());
+	printf("BarPreces:%s\n", BarPreces.c_str());
 	printf("GridStep:%f\n", GridStep);
 	printf("GridCount:%d\n", GridCount);
 	printf("VolumePerGrid:%d\n", VolumePerGrid);

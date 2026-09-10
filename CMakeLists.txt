@@ -84,7 +84,7 @@ target_link_libraries(OrderMatchStatic PUBLIC QuantTradingInterface MdbStatic Pa
 target_link_libraries(OrderMatchStatic PRIVATE QuantTradingCommonStatic Spark::Core)
 
 add_static_md_module(Strategy ${CMAKE_CURRENT_SOURCE_DIR}/src/Strategy ${CMAKE_CURRENT_SOURCE_DIR}/src/Strategy)
-target_link_libraries(StrategyStatic PUBLIC QuantTradingInterface Spark::Core)
+target_link_libraries(StrategyStatic PUBLIC QuantTradingInterface BarStatic Spark::Core)
 
 add_static_md_module(Settlement ${CMAKE_CURRENT_SOURCE_DIR}/src/Settlement ${CMAKE_CURRENT_SOURCE_DIR}/src/Settlement)
 target_link_libraries(SettlementStatic PUBLIC QuantTradingInterface MdbStatic)
@@ -156,7 +156,7 @@ copy_config_file(SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchange.jso
 
 
 add_shared_module(BackTest  ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
-target_link_libraries(BackTest PRIVATE QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic SettlementStatic
+target_link_libraries(BackTest PRIVATE QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic SettlementStatic BarStatic
     Spark::Core Spark::Serialization
     DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
 
