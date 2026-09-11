@@ -37,6 +37,7 @@ void Config::Load(const char* fileName)
 	inFile.close();
 	
 	LogLevel = root["LogLevel"].asInt();
+	SessionFile = root["SessionFile"].asString();
 	AccountID = root["AccountID"].asString();
 	ExchangeID = root["ExchangeID"].asString();
 	InstrumentID = root["InstrumentID"].asString();
@@ -52,6 +53,7 @@ void Config::Load(const char* fileName)
 void Config::Print()
 {
 	printf("LogLevel:%d\n", LogLevel);
+	printf("SessionFile:%s\n", SessionFile.c_str());
 	printf("AccountID:%s\n", AccountID.c_str());
 	printf("ExchangeID:%s\n", ExchangeID.c_str());
 	printf("InstrumentID:%s\n", InstrumentID.c_str());

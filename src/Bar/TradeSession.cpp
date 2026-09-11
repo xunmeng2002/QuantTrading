@@ -1,12 +1,30 @@
 #include "TradeSession.h"
+#include "BarUtility.h"
+#include <Spark/Core/Logger/Logger.h>
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Serialization/json/json.h>
+#include <algorithm>
+#include <fstream>
+#include <iterator>
 
 using namespace std;
 using namespace spark::core;
 
 namespace quanttrading::bar
 {
+    TradeSession* TradeSessions::GetTradeSessionForInstrument(const char* exchangeID, const char* instrumentID)
+    {
+        // 交易所与品种共同决定交易节：先按品种精确匹配（同交易所不同节，如 IF/IC 与 cu/al），
+        // 再按该交易所的 "*" 兜底（股票等代码无品种前缀）。Check 是字面量匹配，"*" 无通配语义，故两次查询不可合并
+        const std::string productID = GetUnderlyingID(instrumentID);
+        TradeSession* tradeSession = GetTradeSession(exchangeID, productID.c_str());
+        if (tradeSession == nullptr)
+        {
+            tradeSession = GetTradeSession(exchangeID, "*");
+        }
+        return tradeSession;
+    }
+
     bool TradeSession::Check(const char* exchangeID, const char* productID)
     {
         auto it = ExchangeProducts.find(exchangeID);
@@ -137,6 +155,28 @@ namespace quanttrading::bar
     bool TradeSessions::m_Inited = false;
     std::string TradeSessions::m_SessionJsonString;
     std::vector<TradeSession*> TradeSessions::m_TradeSessions;
+    bool TradeSessions::LoadFromFile(const std::string& sessionFile)
+    {
+        if (m_Inited)
+        {
+            return true;
+        }
+        std::ifstream sessionFileStream(sessionFile.c_str());
+        if (!sessionFileStream.is_open())
+        {
+            WriteLog(LogLevel::Error, "TradeSessions: Open session file failed. SessionFile:%s", sessionFile.c_str());
+            return false;
+        }
+        m_SessionJsonString = std::string((std::istreambuf_iterator<char>(sessionFileStream)), std::istreambuf_iterator<char>());
+        if (!ParseTradeSessions())
+        {
+            WriteLog(LogLevel::Error, "TradeSessions: Parse session file failed. SessionFile:%s", sessionFile.c_str());
+            return false;
+        }
+        WriteLog(LogLevel::Info, "TradeSessions: Trade sessions loaded. SessionCount:%d, SessionFile:%s",
+            static_cast<int>(m_TradeSessions.size()), sessionFile.c_str());
+        return true;
+    }
     bool TradeSessions::ParseTradeSessions()
     {
         Json::Reader reader;

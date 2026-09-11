@@ -18,13 +18,7 @@ namespace quanttrading::bar
     }
     void MinuteBar::ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID)
     {
-        TradeSession* selectedTradeSession = nullptr;
-        auto productID = GetUnderlyingID(instrumentID);
-        selectedTradeSession = TradeSessions::GetTradeSession(exchangeID, productID.c_str());
-        if (selectedTradeSession == nullptr)
-        {
-            selectedTradeSession = TradeSessions::GetTradeSession(exchangeID, "*");
-        }
+        TradeSession* selectedTradeSession = TradeSessions::GetTradeSessionForInstrument(exchangeID, instrumentID);
         if (selectedTradeSession != nullptr)
         {
             m_InstrumentTradeSessions[instrumentID] = selectedTradeSession;

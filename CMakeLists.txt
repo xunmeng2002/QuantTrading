@@ -188,6 +188,7 @@ add_application(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGr
 target_link_libraries(TestStrategyGrid PRIVATE QuantTradingCommonStatic PackagesStatic StrategyStatic BackTestApiMiddleStatic Spark::Core Spark::Serialization)
 copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestStrategyGrid.json)
 copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
+copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/Sessions.json)
 
 add_application(TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdApi)
 target_link_libraries(TestMdApi PRIVATE QuantTradingCommonStatic MdApiMiddleStatic Spark::Core Spark::Serialization)

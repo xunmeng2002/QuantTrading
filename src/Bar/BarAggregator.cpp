@@ -2,8 +2,10 @@
 #include "BarUtility.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Core/Utility/TimeUtility.h>
+#include <charconv>
 #include <cstring>
 #include <stdexcept>
+#include <system_error>
 
 using namespace spark::core;
 
@@ -11,6 +13,19 @@ namespace quanttrading::bar
 {
     namespace
     {
+        // 交易日（YYYYMMDD）解析：失败返回 0，由调用方回落墙钟对齐（不静默当作有效日期使用）
+        int ParseTradingDay(const char* tradingDay)
+        {
+            if (tradingDay == nullptr || tradingDay[0] == '\0')
+                return 0;
+            int tradingDayValue = 0;
+            const char* tradingDayEnd = tradingDay + strlen(tradingDay);
+            const std::from_chars_result parseResult = std::from_chars(tradingDay, tradingDayEnd, tradingDayValue);
+            if (parseResult.ec != std::errc() || parseResult.ptr != tradingDayEnd || tradingDayValue <= 0)
+                return 0;
+            return tradingDayValue;
+        }
+
         long long PrecesToSeconds(BarPrecesType barPreces, int barPeriod)
         {
             switch (barPreces)
@@ -72,7 +87,7 @@ namespace quanttrading::bar
         if (!bucket.HasBar)
         {
             bucket.Bar = *bar;   // 整字段拷贝：Open/High/Low/HighestPrice/LowestPrice/Pre* 以首根为基线（清零后合并会丢 Low 极值）
-            bucket.EndMinute = AlignBucketEndMinute(barMinute, m_TargetPeriod);
+            bucket.EndMinute = AlignBucketEndMinute(*bar, barMinute);
             bucket.HasBar = true;
         }
         else
@@ -98,6 +113,13 @@ namespace quanttrading::bar
 
     void BarAggregator::ValidateInputBar(const BarMarketDataField& bar)
     {
+        if (m_TargetPreces == BarPrecesType::Day)
+        {
+            // 同精度 Day→Day 已由透传分支直发；跨精度聚合日线需要交易日历（午休/夜盘/法定假日）与日线量额结算字段，不支持
+            WriteLog(LogLevel::Error, "BarAggregator: Day target only passes through same-preces bars, cross-preces aggregation is not supported. Input BarPreces:%d BarPeriod:%d, Target BarPeriod:%d, InstrumentID:%s",
+                static_cast<int>(bar.BarPreces), bar.BarPeriod, m_TargetPeriod, bar.InstrumentID);
+            throw std::logic_error("BarAggregator: day target can not aggregate cross preces input");
+        }
         if (bar.BarPreces == BarPrecesType::Second)
         {
             WriteLog(LogLevel::Error, "BarAggregator: Second preces input can not aggregate (BarTime is minute-grained). InstrumentID:%s", bar.InstrumentID);
@@ -123,22 +145,93 @@ namespace quanttrading::bar
     {
         bucket.Bar.BarPreces = m_TargetPreces;
         bucket.Bar.BarPeriod = m_TargetPeriod;
-        if (m_TargetPreces != BarPrecesType::Day)
-        {
-            // 名义桶尾：断档/Flush 的部分桶同样取名义桶尾，保证多合约跨品种时间对齐
-            bucket.Bar.BarTime = bucket.EndMinute * 100000LL;
-            bucket.Bar.UpdateTs = bucket.Bar.BarTime;
-        }
-        // Day 目标保留末根输入 bar 的 BarTime/UpdateTs（日桶随 TradingDay 变化闭合，与 BaoStock 1d UpdateTs 格式待对账）
+        // 名义桶尾：断档/段末尾桶同样取名义桶尾，保证多合约跨品种时间对齐
+        bucket.Bar.BarTime = bucket.EndMinute * 100000LL;
+        bucket.Bar.UpdateTs = bucket.Bar.BarTime;
         if (m_BarSubscriber != nullptr)
             m_BarSubscriber->OnBarMarketData(&bucket.Bar);
         bucket.HasBar = false;
     }
 
-    long long BarAggregator::AlignBucketEndMinute(long long barMinute, int period)
+    TradeSession* BarAggregator::ResolveTradeSession(const BarMarketDataField& bar)
     {
-        const long long minuteOfDay = barMinute % 10000;
-        const long long delta = (period - minuteOfDay % period) % period;
-        return delta == 0 ? barMinute : TimeUtility::MinuteAdd(barMinute, static_cast<int>(delta));
+        auto cachedIt = m_InstrumentTradeSessions.find(bar.InstrumentID);
+        if (cachedIt != m_InstrumentTradeSessions.end())
+            return cachedIt->second;
+
+        TradeSession* tradeSession = TradeSessions::GetTradeSessionForInstrument(bar.ExchangeID, bar.InstrumentID);
+        if (tradeSession == nullptr)
+        {
+            WriteLog(LogLevel::Warning, "BarAggregator: Trade session not found, fall back to wall-clock alignment. ExchangeID:%s, InstrumentID:%s",
+                bar.ExchangeID, bar.InstrumentID);
+        }
+        m_InstrumentTradeSessions[bar.InstrumentID] = tradeSession;
+        return tradeSession;
+    }
+
+    long long BarAggregator::AlignBucketEndMinute(const BarMarketDataField& bar, long long barMinute)
+    {
+        TradeSession* tradeSession = ResolveTradeSession(bar);
+        if (tradeSession != nullptr)
+        {
+            const long long sectionEndMinute = AlignBucketEndMinuteByTradeSection(bar, barMinute, tradeSession);
+            if (sectionEndMinute > 0LL)
+                return sectionEndMinute;
+        }
+        return AlignBucketEndMinuteByWallClock(barMinute, m_TargetPeriod);
+    }
+
+    long long BarAggregator::AlignBucketEndMinuteByTradeSection(const BarMarketDataField& bar, long long barMinute, TradeSession* tradeSession)
+    {
+        TradeSection* tradeSection = tradeSession->GetTradeSection(static_cast<int>(barMinute % 10000LL));
+        if (tradeSection != nullptr && tradeSection->SectionClass == SectionClassType::Auction)
+        {
+            // 集合竞价的成交由行情侧并入随后的连续竞价首根 bar（MinuteBar::CalculateBarTime 用撮合时刻改写 BarTime），
+            // 故竞价段的输入 bar 一律归其后的连续竞价段；竞价段自身的分钟（如股票 09:25-09:29）会被下面的包含性校验挡下回落墙钟
+            tradeSection = tradeSession->GetNextTradeSection(tradeSection);
+        }
+        if (tradeSection == nullptr || tradeSection->SectionClass != SectionClassType::Section)
+            return 0LL;
+
+        const int tradingDay = ParseTradingDay(bar.TradingDay);
+        if (tradingDay == 0)
+        {
+            WriteLog(LogLevel::Warning, "BarAggregator: Invalid TradingDay, fall back to wall-clock alignment. TradingDay:%s, InstrumentID:%s",
+                bar.TradingDay, bar.InstrumentID);
+            return 0LL;
+        }
+        long long sectionBeginBarTime = 0LL;
+        long long sectionEndBarTime = 0LL;
+        tradeSession->GetSectionBarTime(tradeSection, tradingDay, sectionBeginBarTime, sectionEndBarTime);
+        if (sectionBeginBarTime <= 0LL || sectionEndBarTime <= sectionBeginBarTime)
+            return 0LL;
+        const long long sectionFromMinute = TimeUtility::MinuteAdd(sectionBeginBarTime, -1);
+        const long long sectionLastBarMinute = TimeUtility::MinuteAdd(sectionEndBarTime, -1);
+        // 段起止由 bar.TradingDay 推出，日期化后仍不含 bar 说明数据集的 TradingDay 约定与交易节不一致（如夜盘用日历日），回落墙钟
+        if (barMinute < sectionFromMinute || barMinute > sectionLastBarMinute)
+            return 0LL;
+        // 段内按目标周期自段首逐桶推进：断档（bar 迟到/缺失）时也能定位到正确的名义桶，段末不满一桶的尾桶按段末收口
+        long long bucketEndMinute = TimeUtility::MinuteAdd(sectionBeginBarTime, m_TargetPeriod - 1);
+        if (bucketEndMinute > sectionLastBarMinute)
+            bucketEndMinute = sectionLastBarMinute;
+        while (bucketEndMinute < barMinute)
+        {
+            bucketEndMinute = TimeUtility::MinuteAdd(bucketEndMinute, m_TargetPeriod);
+            if (bucketEndMinute >= sectionLastBarMinute)
+            {
+                bucketEndMinute = sectionLastBarMinute;
+                break;   // 已到段末：匹配到的段必然包含 barMinute，仅防越界时死循环
+            }
+        }
+        return bucketEndMinute;
+    }
+
+    long long BarAggregator::AlignBucketEndMinuteByWallClock(long long barMinute, int targetPeriod)
+    {
+        const int hour = static_cast<int>((barMinute % 10000LL) / 100LL);
+        const int minute = static_cast<int>(barMinute % 100LL);
+        const long long minuteOfDay = TimeUtility::CalculateMinutes(hour, minute);
+        const long long deltaMinutes = (targetPeriod - minuteOfDay % targetPeriod) % targetPeriod;
+        return deltaMinutes == 0LL ? barMinute : TimeUtility::MinuteAdd(barMinute, static_cast<int>(deltaMinutes));
     }
 }

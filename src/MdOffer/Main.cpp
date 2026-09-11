@@ -24,7 +24,6 @@
 #include "ShutdownSignal.h"
 #include "TradeSession.h"
 #include <chrono>
-#include <fstream>
 #include <iostream>
 #include <string.h>
 #include <thread>
@@ -86,9 +85,11 @@ int main(int argc, char* argv[])
 		return Exit();
 	}
 
-	std::ifstream inFile(config.SessionFile.c_str());
-	TradeSessions::m_SessionJsonString = std::string((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-	TradeSessions::ParseTradeSessions();
+	if (!TradeSessions::LoadFromFile(config.SessionFile))
+	{
+		WriteLog(LogLevel::Error, "Load trade sessions failed. SessionFile:%s", config.SessionFile.c_str());
+		return Exit();
+	}
 
     DB* db = CreateDataDb(config);
     SqliteWrapper* initDB = new SqliteWrapper(config.DbInitHost.empty() ? initSqliteDBName : config.DbInitHost);

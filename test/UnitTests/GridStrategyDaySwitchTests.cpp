@@ -2,6 +2,8 @@
 
 #include "doctest/doctest.h"
 
+#include <stdexcept>
+
 using namespace quanttrading::unittest;
 
 // 配置键 BarPreces 经 GridParams 传入即声明周期；非法格式在构造期拒启（拒启语义同 DeclareBarPeriod）
