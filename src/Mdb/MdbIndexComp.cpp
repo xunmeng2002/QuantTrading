@@ -42,6 +42,19 @@ namespace mdb
 		return false;
 	}
 	
+	bool MdUserLoginSessionEqualForSessionIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	{
+		return left->SessionID == right->SessionID ;
+	}
+	bool MdUserLoginSessionLessForSessionIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	{
+		if (left->SessionID < right->SessionID)
+			return true;
+		else if (left->SessionID > right->SessionID)
+			return false;
+		return false;
+	}
+	
 	bool MdUserLoginSessionEqualForMdUserIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
 	{
 		return strcmp(left->MdUserID, right->MdUserID) == 0;
@@ -187,6 +200,19 @@ namespace mdb
 		return false;
 	}
 	
+	bool AccountLoginSessionEqualForSessionIDIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
+	{
+		return left->SessionID == right->SessionID ;
+	}
+	bool AccountLoginSessionLessForSessionIDIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
+	{
+		if (left->SessionID < right->SessionID)
+			return true;
+		else if (left->SessionID > right->SessionID)
+			return false;
+		return false;
+	}
+	
 	bool AccountLoginSessionEqualForAccountIDIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
 	{
 		return strcmp(left->AccountID, right->AccountID) == 0;
@@ -196,6 +222,19 @@ namespace mdb
 		if (strcmp(left->AccountID, right->AccountID) < 0)
 			return true;
 		else if (strcmp(left->AccountID, right->AccountID) > 0)
+			return false;
+		return false;
+	}
+	
+	bool PrimaryAccountLoginSessionEqualForSessionIDIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	{
+		return left->SessionID == right->SessionID ;
+	}
+	bool PrimaryAccountLoginSessionLessForSessionIDIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	{
+		if (left->SessionID < right->SessionID)
+			return true;
+		else if (left->SessionID > right->SessionID)
 			return false;
 		return false;
 	}

@@ -1773,12 +1773,15 @@ namespace mdb
 	{
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new MdUserLoginSessionPrimaryKey(this);
+		m_SessionIDIndex = new MdUserLoginSessionIndexSessionID(this);
 		m_MdUserIDIndex = new MdUserLoginSessionIndexMdUserID(this);
 	}
 	MdUserLoginSessionTable::~MdUserLoginSessionTable()
 	{
 		delete m_PrimaryKey;
 		m_PrimaryKey = nullptr;
+		delete m_SessionIDIndex;
+		m_SessionIDIndex = nullptr;
 		delete m_MdUserIDIndex;
 		m_MdUserIDIndex = nullptr;
 	}
@@ -1839,6 +1842,7 @@ namespace mdb
 
 		m_PrimaryKey->Insert(record);
 
+		m_SessionIDIndex->Insert(record);
 		m_MdUserIDIndex->Insert(record);
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
@@ -1857,6 +1861,7 @@ namespace mdb
 				memcpy(newRecord, record, sizeof(MdUserLoginSession));
 				m_PrimaryKey->Insert(newRecord);
 
+				m_SessionIDIndex->Insert(newRecord);
 				m_MdUserIDIndex->Insert(newRecord);
 			}
 		}
@@ -1882,6 +1887,30 @@ namespace mdb
 		{
 			record->Deallocate();
 		}
+	}
+	int MdUserLoginSessionTable::EraseBySessionIDIndex(const SessionIDType& SessionID)
+	{
+		m_SessionIDIndex->FillCompareRecord(SessionID);
+		std::vector<MdUserLoginSession*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_SessionIDIndex->m_Index.equal_range(&t_CompareMdUserLoginSession);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Deallocate();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = MdUserLoginSession::Allocate();
+			memcpy(record, &t_CompareMdUserLoginSession, sizeof(MdUserLoginSession));
+			m_MdbSubscriber->OnRecordEraseByIndex(MdUserLoginSession::TableID, MdUserLoginSessionIndexSessionID::IndexID, record);
+		}
+		return (int)records.size();
 	}
 	int MdUserLoginSessionTable::EraseByMdUserIDIndex(const UserIDType& MdUserID)
 	{
@@ -1918,6 +1947,12 @@ namespace mdb
 			return false;
 		}
 
+		bool SessionIDIndexUpdate = m_SessionIDIndex->NeedUpdate(oldRecord, newRecord);
+		MdUserLoginSessionIndexSessionID::iterator itSessionID;
+		if (SessionIDIndexUpdate)
+		{
+			itSessionID = m_SessionIDIndex->FindNode(oldRecord);
+		}
 		bool MdUserIDIndexUpdate = m_MdUserIDIndex->NeedUpdate(oldRecord, newRecord);
 		MdUserLoginSessionIndexMdUserID::iterator itMdUserID;
 		if (MdUserIDIndexUpdate)
@@ -1925,6 +1960,10 @@ namespace mdb
 			itMdUserID = m_MdUserIDIndex->FindNode(oldRecord);
 		}
 		::memcpy((void*)oldRecord, newRecord, sizeof(MdUserLoginSession));
+		if (SessionIDIndexUpdate)
+		{
+			m_SessionIDIndex->Update(itSessionID);
+		}
 		if (MdUserIDIndexUpdate)
 		{
 			m_MdUserIDIndex->Update(itMdUserID);
@@ -1948,6 +1987,7 @@ namespace mdb
 			(*it)->Deallocate();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_SessionIDIndex->m_Index.clear();
 		m_MdUserIDIndex->m_Index.clear();
 	}
 	void MdUserLoginSessionTable::TruncateTable()
@@ -1958,6 +1998,7 @@ namespace mdb
 			(*it)->Deallocate();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_SessionIDIndex->m_Index.clear();
 		m_MdUserIDIndex->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -1994,6 +2035,7 @@ namespace mdb
 	}
 	void MdUserLoginSessionTable::EraseIndex(MdUserLoginSession* record)
 	{
+		m_SessionIDIndex->Erase(record);
 		m_MdUserIDIndex->Erase(record);
 	}
 
@@ -3647,12 +3689,15 @@ namespace mdb
 	{
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new AccountLoginSessionPrimaryKey(this);
+		m_SessionIDIndex = new AccountLoginSessionIndexSessionID(this);
 		m_AccountIDIndex = new AccountLoginSessionIndexAccountID(this);
 	}
 	AccountLoginSessionTable::~AccountLoginSessionTable()
 	{
 		delete m_PrimaryKey;
 		m_PrimaryKey = nullptr;
+		delete m_SessionIDIndex;
+		m_SessionIDIndex = nullptr;
 		delete m_AccountIDIndex;
 		m_AccountIDIndex = nullptr;
 	}
@@ -3713,6 +3758,7 @@ namespace mdb
 
 		m_PrimaryKey->Insert(record);
 
+		m_SessionIDIndex->Insert(record);
 		m_AccountIDIndex->Insert(record);
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
@@ -3731,6 +3777,7 @@ namespace mdb
 				memcpy(newRecord, record, sizeof(AccountLoginSession));
 				m_PrimaryKey->Insert(newRecord);
 
+				m_SessionIDIndex->Insert(newRecord);
 				m_AccountIDIndex->Insert(newRecord);
 			}
 		}
@@ -3756,6 +3803,30 @@ namespace mdb
 		{
 			record->Deallocate();
 		}
+	}
+	int AccountLoginSessionTable::EraseBySessionIDIndex(const SessionIDType& SessionID)
+	{
+		m_SessionIDIndex->FillCompareRecord(SessionID);
+		std::vector<AccountLoginSession*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_SessionIDIndex->m_Index.equal_range(&t_CompareAccountLoginSession);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Deallocate();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = AccountLoginSession::Allocate();
+			memcpy(record, &t_CompareAccountLoginSession, sizeof(AccountLoginSession));
+			m_MdbSubscriber->OnRecordEraseByIndex(AccountLoginSession::TableID, AccountLoginSessionIndexSessionID::IndexID, record);
+		}
+		return (int)records.size();
 	}
 	int AccountLoginSessionTable::EraseByAccountIDIndex(const AccountIDType& AccountID)
 	{
@@ -3792,6 +3863,12 @@ namespace mdb
 			return false;
 		}
 
+		bool SessionIDIndexUpdate = m_SessionIDIndex->NeedUpdate(oldRecord, newRecord);
+		AccountLoginSessionIndexSessionID::iterator itSessionID;
+		if (SessionIDIndexUpdate)
+		{
+			itSessionID = m_SessionIDIndex->FindNode(oldRecord);
+		}
 		bool AccountIDIndexUpdate = m_AccountIDIndex->NeedUpdate(oldRecord, newRecord);
 		AccountLoginSessionIndexAccountID::iterator itAccountID;
 		if (AccountIDIndexUpdate)
@@ -3799,6 +3876,10 @@ namespace mdb
 			itAccountID = m_AccountIDIndex->FindNode(oldRecord);
 		}
 		::memcpy((void*)oldRecord, newRecord, sizeof(AccountLoginSession));
+		if (SessionIDIndexUpdate)
+		{
+			m_SessionIDIndex->Update(itSessionID);
+		}
 		if (AccountIDIndexUpdate)
 		{
 			m_AccountIDIndex->Update(itAccountID);
@@ -3822,6 +3903,7 @@ namespace mdb
 			(*it)->Deallocate();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_SessionIDIndex->m_Index.clear();
 		m_AccountIDIndex->m_Index.clear();
 	}
 	void AccountLoginSessionTable::TruncateTable()
@@ -3832,6 +3914,7 @@ namespace mdb
 			(*it)->Deallocate();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_SessionIDIndex->m_Index.clear();
 		m_AccountIDIndex->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -3868,6 +3951,7 @@ namespace mdb
 	}
 	void AccountLoginSessionTable::EraseIndex(AccountLoginSession* record)
 	{
+		m_SessionIDIndex->Erase(record);
 		m_AccountIDIndex->Erase(record);
 	}
 
@@ -3875,12 +3959,15 @@ namespace mdb
 	{
 		m_MdbSubscriber = nullptr;
 		m_PrimaryKey = new PrimaryAccountLoginSessionPrimaryKey(this);
+		m_SessionIDIndex = new PrimaryAccountLoginSessionIndexSessionID(this);
 		m_PrimaryAccountIDIndex = new PrimaryAccountLoginSessionIndexPrimaryAccountID(this);
 	}
 	PrimaryAccountLoginSessionTable::~PrimaryAccountLoginSessionTable()
 	{
 		delete m_PrimaryKey;
 		m_PrimaryKey = nullptr;
+		delete m_SessionIDIndex;
+		m_SessionIDIndex = nullptr;
 		delete m_PrimaryAccountIDIndex;
 		m_PrimaryAccountIDIndex = nullptr;
 	}
@@ -3941,6 +4028,7 @@ namespace mdb
 
 		m_PrimaryKey->Insert(record);
 
+		m_SessionIDIndex->Insert(record);
 		m_PrimaryAccountIDIndex->Insert(record);
 		
 		if (m_MdbSubscriber != nullptr && m_DBInited)
@@ -3959,6 +4047,7 @@ namespace mdb
 				memcpy(newRecord, record, sizeof(PrimaryAccountLoginSession));
 				m_PrimaryKey->Insert(newRecord);
 
+				m_SessionIDIndex->Insert(newRecord);
 				m_PrimaryAccountIDIndex->Insert(newRecord);
 			}
 		}
@@ -3984,6 +4073,30 @@ namespace mdb
 		{
 			record->Deallocate();
 		}
+	}
+	int PrimaryAccountLoginSessionTable::EraseBySessionIDIndex(const SessionIDType& SessionID)
+	{
+		m_SessionIDIndex->FillCompareRecord(SessionID);
+		std::vector<PrimaryAccountLoginSession*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_SessionIDIndex->m_Index.equal_range(&t_ComparePrimaryAccountLoginSession);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Deallocate();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = PrimaryAccountLoginSession::Allocate();
+			memcpy(record, &t_ComparePrimaryAccountLoginSession, sizeof(PrimaryAccountLoginSession));
+			m_MdbSubscriber->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableID, PrimaryAccountLoginSessionIndexSessionID::IndexID, record);
+		}
+		return (int)records.size();
 	}
 	int PrimaryAccountLoginSessionTable::EraseByPrimaryAccountIDIndex(const AccountIDType& PrimaryAccountID)
 	{
@@ -4020,6 +4133,12 @@ namespace mdb
 			return false;
 		}
 
+		bool SessionIDIndexUpdate = m_SessionIDIndex->NeedUpdate(oldRecord, newRecord);
+		PrimaryAccountLoginSessionIndexSessionID::iterator itSessionID;
+		if (SessionIDIndexUpdate)
+		{
+			itSessionID = m_SessionIDIndex->FindNode(oldRecord);
+		}
 		bool PrimaryAccountIDIndexUpdate = m_PrimaryAccountIDIndex->NeedUpdate(oldRecord, newRecord);
 		PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator itPrimaryAccountID;
 		if (PrimaryAccountIDIndexUpdate)
@@ -4027,6 +4146,10 @@ namespace mdb
 			itPrimaryAccountID = m_PrimaryAccountIDIndex->FindNode(oldRecord);
 		}
 		::memcpy((void*)oldRecord, newRecord, sizeof(PrimaryAccountLoginSession));
+		if (SessionIDIndexUpdate)
+		{
+			m_SessionIDIndex->Update(itSessionID);
+		}
 		if (PrimaryAccountIDIndexUpdate)
 		{
 			m_PrimaryAccountIDIndex->Update(itPrimaryAccountID);
@@ -4050,6 +4173,7 @@ namespace mdb
 			(*it)->Deallocate();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_SessionIDIndex->m_Index.clear();
 		m_PrimaryAccountIDIndex->m_Index.clear();
 	}
 	void PrimaryAccountLoginSessionTable::TruncateTable()
@@ -4060,6 +4184,7 @@ namespace mdb
 			(*it)->Deallocate();
 		}
 		m_PrimaryKey->m_Index.clear();
+		m_SessionIDIndex->m_Index.clear();
 		m_PrimaryAccountIDIndex->m_Index.clear();
 		if (m_MdbSubscriber != nullptr && m_DBInited)
 		{
@@ -4096,6 +4221,7 @@ namespace mdb
 	}
 	void PrimaryAccountLoginSessionTable::EraseIndex(PrimaryAccountLoginSession* record)
 	{
+		m_SessionIDIndex->Erase(record);
 		m_PrimaryAccountIDIndex->Erase(record);
 	}
 

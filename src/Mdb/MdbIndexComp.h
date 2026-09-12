@@ -21,6 +21,15 @@ namespace mdb
 		bool operator()(const Instrument* const left, const Instrument* const right) const;
 	};
 	
+	struct MdUserLoginSessionEqualForSessionIDIndex
+	{
+		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
+	};
+	struct MdUserLoginSessionLessForSessionIDIndex
+	{
+		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
+	};
+	
 	struct MdUserLoginSessionEqualForMdUserIDIndex
 	{
 		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
@@ -102,6 +111,15 @@ namespace mdb
 		bool operator()(const Trade* const left, const Trade* const right) const;
 	};
 	
+	struct AccountLoginSessionEqualForSessionIDIndex
+	{
+		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
+	};
+	struct AccountLoginSessionLessForSessionIDIndex
+	{
+		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
+	};
+	
 	struct AccountLoginSessionEqualForAccountIDIndex
 	{
 		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
@@ -109,6 +127,15 @@ namespace mdb
 	struct AccountLoginSessionLessForAccountIDIndex
 	{
 		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
+	};
+	
+	struct PrimaryAccountLoginSessionEqualForSessionIDIndex
+	{
+		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
+	};
+	struct PrimaryAccountLoginSessionLessForSessionIDIndex
+	{
+		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
 	};
 	
 	struct PrimaryAccountLoginSessionEqualForPrimaryAccountIDIndex

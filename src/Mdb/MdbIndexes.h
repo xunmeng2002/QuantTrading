@@ -58,6 +58,30 @@ namespace mdb
 	};
 	
 	class MdUserLoginSessionTable;
+	class MdUserLoginSessionIndexSessionID
+	{
+		using iterator = std::multiset<MdUserLoginSession*, MdUserLoginSessionLessForSessionIDIndex>::iterator;
+		friend class MdUserLoginSessionTable;
+	public:
+		MdUserLoginSessionIndexSessionID(MdUserLoginSessionTable* table);
+		iterator LowerBound(const SessionIDType& SessionID);
+		iterator UpperBound(const SessionIDType& SessionID);
+		std::pair<iterator, iterator> EqualRange(const SessionIDType& SessionID);
+	public:
+		static constexpr unsigned int IndexID = 0x0000;
+	protected:
+		void Insert(MdUserLoginSession* const record);
+		void Erase(MdUserLoginSession* const record);
+		void Update(iterator it);
+		bool NeedUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord);
+		iterator FindNode(MdUserLoginSession* const record);
+		void FillCompareRecord(const SessionIDType& SessionID);
+
+	private:
+		MdUserLoginSessionTable* m_Table;
+		multiset<MdUserLoginSession*, MdUserLoginSessionLessForSessionIDIndex> m_Index;
+	};
+	
 	class MdUserLoginSessionIndexMdUserID
 	{
 		using iterator = std::multiset<MdUserLoginSession*, MdUserLoginSessionLessForMdUserIDIndex>::iterator;
@@ -68,7 +92,7 @@ namespace mdb
 		iterator UpperBound(const UserIDType& MdUserID);
 		std::pair<iterator, iterator> EqualRange(const UserIDType& MdUserID);
 	public:
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = 0x0001;
 	protected:
 		void Insert(MdUserLoginSession* const record);
 		void Erase(MdUserLoginSession* const record);
@@ -281,6 +305,30 @@ namespace mdb
 	};
 	
 	class AccountLoginSessionTable;
+	class AccountLoginSessionIndexSessionID
+	{
+		using iterator = std::multiset<AccountLoginSession*, AccountLoginSessionLessForSessionIDIndex>::iterator;
+		friend class AccountLoginSessionTable;
+	public:
+		AccountLoginSessionIndexSessionID(AccountLoginSessionTable* table);
+		iterator LowerBound(const SessionIDType& SessionID);
+		iterator UpperBound(const SessionIDType& SessionID);
+		std::pair<iterator, iterator> EqualRange(const SessionIDType& SessionID);
+	public:
+		static constexpr unsigned int IndexID = 0x0000;
+	protected:
+		void Insert(AccountLoginSession* const record);
+		void Erase(AccountLoginSession* const record);
+		void Update(iterator it);
+		bool NeedUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord);
+		iterator FindNode(AccountLoginSession* const record);
+		void FillCompareRecord(const SessionIDType& SessionID);
+
+	private:
+		AccountLoginSessionTable* m_Table;
+		multiset<AccountLoginSession*, AccountLoginSessionLessForSessionIDIndex> m_Index;
+	};
+	
 	class AccountLoginSessionIndexAccountID
 	{
 		using iterator = std::multiset<AccountLoginSession*, AccountLoginSessionLessForAccountIDIndex>::iterator;
@@ -291,7 +339,7 @@ namespace mdb
 		iterator UpperBound(const AccountIDType& AccountID);
 		std::pair<iterator, iterator> EqualRange(const AccountIDType& AccountID);
 	public:
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = 0x0001;
 	protected:
 		void Insert(AccountLoginSession* const record);
 		void Erase(AccountLoginSession* const record);
@@ -306,6 +354,30 @@ namespace mdb
 	};
 	
 	class PrimaryAccountLoginSessionTable;
+	class PrimaryAccountLoginSessionIndexSessionID
+	{
+		using iterator = std::multiset<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionLessForSessionIDIndex>::iterator;
+		friend class PrimaryAccountLoginSessionTable;
+	public:
+		PrimaryAccountLoginSessionIndexSessionID(PrimaryAccountLoginSessionTable* table);
+		iterator LowerBound(const SessionIDType& SessionID);
+		iterator UpperBound(const SessionIDType& SessionID);
+		std::pair<iterator, iterator> EqualRange(const SessionIDType& SessionID);
+	public:
+		static constexpr unsigned int IndexID = 0x0000;
+	protected:
+		void Insert(PrimaryAccountLoginSession* const record);
+		void Erase(PrimaryAccountLoginSession* const record);
+		void Update(iterator it);
+		bool NeedUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord);
+		iterator FindNode(PrimaryAccountLoginSession* const record);
+		void FillCompareRecord(const SessionIDType& SessionID);
+
+	private:
+		PrimaryAccountLoginSessionTable* m_Table;
+		multiset<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionLessForSessionIDIndex> m_Index;
+	};
+	
 	class PrimaryAccountLoginSessionIndexPrimaryAccountID
 	{
 		using iterator = std::multiset<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionLessForPrimaryAccountIDIndex>::iterator;
@@ -316,7 +388,7 @@ namespace mdb
 		iterator UpperBound(const AccountIDType& PrimaryAccountID);
 		std::pair<iterator, iterator> EqualRange(const AccountIDType& PrimaryAccountID);
 	public:
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = 0x0001;
 	protected:
 		void Insert(PrimaryAccountLoginSession* const record);
 		void Erase(PrimaryAccountLoginSession* const record);

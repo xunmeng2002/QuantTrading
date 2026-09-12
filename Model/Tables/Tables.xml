@@ -252,6 +252,9 @@
 		</primarykey>
 		<uniquekeys/>
 		<indexes>
+			<index name="SessionID">
+				<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+			</index>
 			<index name="MdUserID">
 				<item name="MdUserID" id="0x100F" type="UserID" desc="行情用户代码"/>
 			</index>
@@ -534,6 +537,9 @@
 		</primarykey>
 		<uniquekeys/>
 		<indexes>
+			<index name="SessionID">
+				<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+			</index>
 			<index name="AccountID">
 				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			</index>
@@ -551,6 +557,9 @@
 		</primarykey>
 		<uniquekeys/>
 		<indexes>
+			<index name="SessionID">
+				<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+			</index>
 			<index name="PrimaryAccountID">
 				<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
 			</index>

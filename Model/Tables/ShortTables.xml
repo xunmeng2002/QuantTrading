@@ -253,6 +253,9 @@
 		<uniquekeys>
 		</uniquekeys>
 		<indexes>
+            <index name="SessionID">
+                <item name="SessionID"/>
+            </index>
 			<index name="MdUserID">
 				<item name="MdUserID"/>
 			</index>
@@ -537,6 +540,9 @@
 		<uniquekeys>
 		</uniquekeys>
 		<indexes>
+            <index name="SessionID">
+                <item name="SessionID"/>
+            </index>
 			<index name="AccountID">
 				<item name="AccountID"/>
 			</index>
@@ -555,6 +561,9 @@
         <uniquekeys>
         </uniquekeys>
         <indexes>
+            <index name="SessionID">
+                <item name="SessionID"/>
+            </index>
             <index name="PrimaryAccountID">
                 <item name="PrimaryAccountID"/>
             </index>

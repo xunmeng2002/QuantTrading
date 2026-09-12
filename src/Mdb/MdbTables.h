@@ -281,6 +281,7 @@ namespace mdb
 		bool Insert(MdUserLoginSession* record);
 		void BatchInsert(std::vector<mdb::MdUserLoginSession*>* records);
 		void Erase(MdUserLoginSession* record);
+		int EraseBySessionIDIndex(const SessionIDType& SessionID);
 		int EraseByMdUserIDIndex(const UserIDType& MdUserID);
 		bool Update(MdUserLoginSession* const oldRecord, MdUserLoginSession* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -295,6 +296,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		MdUserLoginSessionPrimaryKey* m_PrimaryKey;
+		MdUserLoginSessionIndexSessionID* m_SessionIDIndex;
 		MdUserLoginSessionIndexMdUserID* m_MdUserIDIndex;
 	};
 
@@ -524,6 +526,7 @@ namespace mdb
 		bool Insert(AccountLoginSession* record);
 		void BatchInsert(std::vector<mdb::AccountLoginSession*>* records);
 		void Erase(AccountLoginSession* record);
+		int EraseBySessionIDIndex(const SessionIDType& SessionID);
 		int EraseByAccountIDIndex(const AccountIDType& AccountID);
 		bool Update(AccountLoginSession* const oldRecord, AccountLoginSession* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -538,6 +541,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		AccountLoginSessionPrimaryKey* m_PrimaryKey;
+		AccountLoginSessionIndexSessionID* m_SessionIDIndex;
 		AccountLoginSessionIndexAccountID* m_AccountIDIndex;
 	};
 
@@ -554,6 +558,7 @@ namespace mdb
 		bool Insert(PrimaryAccountLoginSession* record);
 		void BatchInsert(std::vector<mdb::PrimaryAccountLoginSession*>* records);
 		void Erase(PrimaryAccountLoginSession* record);
+		int EraseBySessionIDIndex(const SessionIDType& SessionID);
 		int EraseByPrimaryAccountIDIndex(const AccountIDType& PrimaryAccountID);
 		bool Update(PrimaryAccountLoginSession* const oldRecord, PrimaryAccountLoginSession* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -568,6 +573,7 @@ namespace mdb
 		MdbSubscriber* m_MdbSubscriber;
 		std::shared_mutex m_SharedMutex;
 		PrimaryAccountLoginSessionPrimaryKey* m_PrimaryKey;
+		PrimaryAccountLoginSessionIndexSessionID* m_SessionIDIndex;
 		PrimaryAccountLoginSessionIndexPrimaryAccountID* m_PrimaryAccountIDIndex;
 	};
 

@@ -126,6 +126,64 @@ namespace mdb
 		Utility::Strcpy(t_CompareInstrument.ExchangeID, ExchangeID);
 	}
 	
+	MdUserLoginSessionIndexSessionID::MdUserLoginSessionIndexSessionID(MdUserLoginSessionTable* table)
+		:m_Table(table)
+	{
+	}
+	MdUserLoginSessionIndexSessionID::iterator MdUserLoginSessionIndexSessionID::LowerBound(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.lower_bound(&t_CompareMdUserLoginSession);
+	}
+	MdUserLoginSessionIndexSessionID::iterator MdUserLoginSessionIndexSessionID::UpperBound(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.upper_bound(&t_CompareMdUserLoginSession);
+	}
+	std::pair<MdUserLoginSessionIndexSessionID::iterator, MdUserLoginSessionIndexSessionID::iterator> MdUserLoginSessionIndexSessionID::EqualRange(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.equal_range(&t_CompareMdUserLoginSession);
+	}
+	void MdUserLoginSessionIndexSessionID::Insert(MdUserLoginSession* const record)
+	{
+		m_Index.insert(record);
+	}
+	void MdUserLoginSessionIndexSessionID::Erase(MdUserLoginSession* const record)
+	{
+		auto it = FindNode(record);
+		m_Index.erase(it);
+	}
+	void MdUserLoginSessionIndexSessionID::Update(iterator it)
+	{
+		auto record = *it;
+		m_Index.erase(it);
+		m_Index.insert(record);
+	}
+	bool MdUserLoginSessionIndexSessionID::NeedUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord)
+	{
+		return !(MdUserLoginSessionEqualForSessionIDIndex()(oldRecord, newRecord));
+	}
+	MdUserLoginSessionIndexSessionID::iterator MdUserLoginSessionIndexSessionID::FindNode(MdUserLoginSession* const record)
+	{
+		auto p = m_Index.equal_range(record);
+		for (auto it = p.first; it != p.second; ++it)
+		{
+			if (*it == record)
+			{
+				return it;
+			}
+		}
+		return m_Index.end();
+	}
+	void MdUserLoginSessionIndexSessionID::FillCompareRecord(const SessionIDType& SessionID)
+	{
+		t_CompareMdUserLoginSession.SessionID = SessionID;
+	}
+	
 	MdUserLoginSessionIndexMdUserID::MdUserLoginSessionIndexMdUserID(MdUserLoginSessionTable* table)
 		:m_Table(table)
 	{
@@ -655,6 +713,64 @@ namespace mdb
 		Utility::Strcpy(t_CompareTrade.AccountID, AccountID);
 	}
 	
+	AccountLoginSessionIndexSessionID::AccountLoginSessionIndexSessionID(AccountLoginSessionTable* table)
+		:m_Table(table)
+	{
+	}
+	AccountLoginSessionIndexSessionID::iterator AccountLoginSessionIndexSessionID::LowerBound(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.lower_bound(&t_CompareAccountLoginSession);
+	}
+	AccountLoginSessionIndexSessionID::iterator AccountLoginSessionIndexSessionID::UpperBound(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.upper_bound(&t_CompareAccountLoginSession);
+	}
+	std::pair<AccountLoginSessionIndexSessionID::iterator, AccountLoginSessionIndexSessionID::iterator> AccountLoginSessionIndexSessionID::EqualRange(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.equal_range(&t_CompareAccountLoginSession);
+	}
+	void AccountLoginSessionIndexSessionID::Insert(AccountLoginSession* const record)
+	{
+		m_Index.insert(record);
+	}
+	void AccountLoginSessionIndexSessionID::Erase(AccountLoginSession* const record)
+	{
+		auto it = FindNode(record);
+		m_Index.erase(it);
+	}
+	void AccountLoginSessionIndexSessionID::Update(iterator it)
+	{
+		auto record = *it;
+		m_Index.erase(it);
+		m_Index.insert(record);
+	}
+	bool AccountLoginSessionIndexSessionID::NeedUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord)
+	{
+		return !(AccountLoginSessionEqualForSessionIDIndex()(oldRecord, newRecord));
+	}
+	AccountLoginSessionIndexSessionID::iterator AccountLoginSessionIndexSessionID::FindNode(AccountLoginSession* const record)
+	{
+		auto p = m_Index.equal_range(record);
+		for (auto it = p.first; it != p.second; ++it)
+		{
+			if (*it == record)
+			{
+				return it;
+			}
+		}
+		return m_Index.end();
+	}
+	void AccountLoginSessionIndexSessionID::FillCompareRecord(const SessionIDType& SessionID)
+	{
+		t_CompareAccountLoginSession.SessionID = SessionID;
+	}
+	
 	AccountLoginSessionIndexAccountID::AccountLoginSessionIndexAccountID(AccountLoginSessionTable* table)
 		:m_Table(table)
 	{
@@ -711,6 +827,64 @@ namespace mdb
 	void AccountLoginSessionIndexAccountID::FillCompareRecord(const AccountIDType& AccountID)
 	{
 		Utility::Strcpy(t_CompareAccountLoginSession.AccountID, AccountID);
+	}
+	
+	PrimaryAccountLoginSessionIndexSessionID::PrimaryAccountLoginSessionIndexSessionID(PrimaryAccountLoginSessionTable* table)
+		:m_Table(table)
+	{
+	}
+	PrimaryAccountLoginSessionIndexSessionID::iterator PrimaryAccountLoginSessionIndexSessionID::LowerBound(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.lower_bound(&t_ComparePrimaryAccountLoginSession);
+	}
+	PrimaryAccountLoginSessionIndexSessionID::iterator PrimaryAccountLoginSessionIndexSessionID::UpperBound(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.upper_bound(&t_ComparePrimaryAccountLoginSession);
+	}
+	std::pair<PrimaryAccountLoginSessionIndexSessionID::iterator, PrimaryAccountLoginSessionIndexSessionID::iterator> PrimaryAccountLoginSessionIndexSessionID::EqualRange(const SessionIDType& SessionID)
+	{
+		FillCompareRecord(SessionID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.equal_range(&t_ComparePrimaryAccountLoginSession);
+	}
+	void PrimaryAccountLoginSessionIndexSessionID::Insert(PrimaryAccountLoginSession* const record)
+	{
+		m_Index.insert(record);
+	}
+	void PrimaryAccountLoginSessionIndexSessionID::Erase(PrimaryAccountLoginSession* const record)
+	{
+		auto it = FindNode(record);
+		m_Index.erase(it);
+	}
+	void PrimaryAccountLoginSessionIndexSessionID::Update(iterator it)
+	{
+		auto record = *it;
+		m_Index.erase(it);
+		m_Index.insert(record);
+	}
+	bool PrimaryAccountLoginSessionIndexSessionID::NeedUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
+	{
+		return !(PrimaryAccountLoginSessionEqualForSessionIDIndex()(oldRecord, newRecord));
+	}
+	PrimaryAccountLoginSessionIndexSessionID::iterator PrimaryAccountLoginSessionIndexSessionID::FindNode(PrimaryAccountLoginSession* const record)
+	{
+		auto p = m_Index.equal_range(record);
+		for (auto it = p.first; it != p.second; ++it)
+		{
+			if (*it == record)
+			{
+				return it;
+			}
+		}
+		return m_Index.end();
+	}
+	void PrimaryAccountLoginSessionIndexSessionID::FillCompareRecord(const SessionIDType& SessionID)
+	{
+		t_ComparePrimaryAccountLoginSession.SessionID = SessionID;
 	}
 	
 	PrimaryAccountLoginSessionIndexPrimaryAccountID::PrimaryAccountLoginSessionIndexPrimaryAccountID(PrimaryAccountLoginSessionTable* table)
