@@ -69,6 +69,19 @@ static std::string DeriveRunDbHost(const std::string& dbHost, const std::string&
     return dbHost.substr(0, extensionPos) + "_" + runID + dbHost.substr(extensionPos);
 }
 
+// 合约落库：主键已存在则就地更新，否则插入。
+// 不能写成「先 Insert，失败再 Update」——Insert 失败路径已把记录回池，再拿它去 Select/Update 会读已释放对象并二次回池
+static void InsertInstrumentOrUpdate(InstrumentTable* instrumentTable, Instrument* instrument)
+{
+    auto oldInstrument = instrumentTable->m_PrimaryKey->Select(instrument->ExchangeID, instrument->InstrumentID);
+    if (oldInstrument == nullptr)
+    {
+        instrumentTable->Insert(instrument);
+        return;
+    }
+    instrumentTable->Update(oldInstrument, instrument);
+}
+
 
 namespace quanttrading::backtest
 {
@@ -374,8 +387,12 @@ void SimExchange::PushNextBar(mdb::BarMarketData* mdBar)
 	// 撮合始终用数据集精度的原始 bar（聚合只改变推送给策略的粒度，不降低撮合精度）
 	m_OrderMatch->OnBar(mdBar);
 	PushBarMarketData(mdBar);
-	m_Mdb->t_BarMarketData->Insert(mdBar);
-	m_LastMdBars[mdBar->InstrumentID] = mdBar;
+	// Insert 失败即回池（记录已被表释放，失败原因由表内日志给出）：末根 bar 只在入库成功时登记，
+	// 否则结算价来源会取到悬空指针，且失败后读取 mdBar->InstrumentID 已是释放后访问
+	if (m_Mdb->t_BarMarketData->Insert(mdBar))
+	{
+		m_LastMdBars[mdBar->InstrumentID] = mdBar;
+	}
 }
 void SimExchange::PushBarMarketData(mdb::BarMarketData* mdBar)
 {
@@ -540,7 +557,8 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			mdSubscribes.push_back(mdSubscribe);
 		}
 	}
-	// 聚合器按推送 bar 实际的 InstrumentID 登记：声明了周期的合约走聚合，未声明的透传；
+	// 聚合器登记键取订阅的 InstrumentID（MdReader 按 mdSubscribe->InstrumentID 给 bar 打戳，PushBarMarketData 也按同一字段查表），
+	// 不能用 SQL 读取用的 RealInstrumentID（热门合约滚动时二者不同，用它登记会让 find 落空、声明的周期静默失效）；
 	// 声明的周期无法由数据集精度聚合时属配置错误，与「订阅为空」同样直接收尾，不静默降级为数据集精度
 	bool hasRejectedBarPeriod = false;
 	for (auto& it : instrumentMdSubscribes)
@@ -552,7 +570,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		}
 		for (auto mdSubscribe : it.second)
 		{
-			if (!BindBarAggregator(mdSubscribe->ExchangeID, mdSubscribe->RealInstrumentID, reqSubMdIt->second.BarPreces, reqSubMdIt->second.BarPeriod))
+			if (!BindBarAggregator(mdSubscribe->ExchangeID, mdSubscribe->InstrumentID, reqSubMdIt->second.BarPreces, reqSubMdIt->second.BarPeriod))
 			{
 				hasRejectedBarPeriod = true;
 			}
@@ -569,9 +587,14 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		for (auto mdSubscribe : it.second)
 		{
 			int year = int(atoi(mdSubscribe->StartTradingDay) / 10000);
-			auto& mdSubscribes = yearMdSubscribes[year];
-			mdSubscribes.push_back(mdSubscribe);
-			m_Mdb->t_MdSubscribe->Insert(mdSubscribe);
+			// 先入库再入年份队列：Insert 失败即回池，此指针不可再读取（明细由表内日志给出），
+			// 也不得进年份队列——否则行情读取线程会拿着已释放的订阅去取数
+			if (!m_Mdb->t_MdSubscribe->Insert(mdSubscribe))
+			{
+				WriteLog(LogLevel::Warning, "MdSubscribe dropped, its market data will not be read. InstrumentID:%s, Year:%d", it.first.c_str(), year);
+				continue;
+			}
+			yearMdSubscribes[year].push_back(mdSubscribe);
 		}
 	}
 	if (yearMdSubscribes.empty())
@@ -724,11 +747,7 @@ void SimExchange::InitMdInstrument()
 				instrument->MaxLimitOrderVolume = product->MaxLimitOrderVolume;
 				instrument->MinLimitOrderVolume = product->MinLimitOrderVolume;
 				strcpy(instrument->SessionName, product->SessionName);
-				if (!m_Mdb->t_Instrument->Insert(instrument))
-				{
-					auto oldInstrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(instrument->ExchangeID, instrument->InstrumentID);
-					m_Mdb->t_Instrument->Update(oldInstrument, instrument);
-				}
+				InsertInstrumentOrUpdate(m_Mdb->t_Instrument, instrument);
 			}
 		}
 		else
@@ -746,11 +765,7 @@ void SimExchange::InitMdInstrument()
 				instrument->MinLimitOrderVolume = 0;
 				strcpy(instrument->SessionName, "FD0900");
 
-				if (!m_Mdb->t_Instrument->Insert(instrument))
-				{
-					auto oldInstrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(instrument->ExchangeID, instrument->InstrumentID);
-					m_Mdb->t_Instrument->Update(oldInstrument, instrument);
-				}
+				InsertInstrumentOrUpdate(m_Mdb->t_Instrument, instrument);
 			}
 		}
 	}

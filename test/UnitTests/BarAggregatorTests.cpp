@@ -545,6 +545,7 @@ TEST_CASE("装载期精度预校验：数据集精度到目标周期的可聚合
     BarAggregator::ValidatePrecesRelation(BarPrecesType::Minute, 5, BarPrecesType::Minute, 15, "600000");
     BarAggregator::ValidatePrecesRelation(BarPrecesType::Minute, 5, BarPrecesType::Minute, 60, "600000");
     BarAggregator::ValidatePrecesRelation(BarPrecesType::Minute, 1, BarPrecesType::Minute, 5, "600000");
+    BarAggregator::ValidatePrecesRelation(BarPrecesType::Minute, 5, BarPrecesType::Minute, 5, "600000");   // 同精度同周期透传
     BarAggregator::ValidatePrecesRelation(BarPrecesType::Day, 1, BarPrecesType::Day, 1, "600000");   // 同精度透传
 
     // 目标周期小于数据集精度：目标大周期由小周期聚合而来，反向不可行
@@ -558,6 +559,12 @@ TEST_CASE("装载期精度预校验：数据集精度到目标周期的可聚合
     // 日线/秒级数据集不可再聚合
     REQUIRE_THROWS_AS(BarAggregator::ValidatePrecesRelation(BarPrecesType::Day, 1, BarPrecesType::Minute, 5, "600000"), std::logic_error);
     REQUIRE_THROWS_AS(BarAggregator::ValidatePrecesRelation(BarPrecesType::Second, 60, BarPrecesType::Minute, 5, "600000"), std::logic_error);
+    // 秒级目标本身非法（分钟粒度 BarTime 装不下）：即便数据集同为 Second，也不得借同精度分支直通构造期
+    REQUIRE_THROWS_AS(BarAggregator::ValidatePrecesRelation(BarPrecesType::Second, 10, BarPrecesType::Second, 10, "600000"), std::logic_error);
+    REQUIRE_THROWS_AS(BarAggregator::ValidatePrecesRelation(BarPrecesType::Minute, 5, BarPrecesType::Second, 30, "600000"), std::logic_error);
+    // 目标周期数非正一律拒（"未声明周期"由调用方在更外层过滤，不得进本判据）
+    REQUIRE_THROWS_AS(BarAggregator::ValidatePrecesRelation(BarPrecesType::Minute, 5, BarPrecesType::Minute, 0, "600000"), std::logic_error);
+    REQUIRE_THROWS_AS(BarAggregator::ValidatePrecesRelation(BarPrecesType::Day, 1, BarPrecesType::Day, 0, "600000"), std::logic_error);
 }
 
 TEST_CASE("日线目标仅同精度透传，跨精度拒启")

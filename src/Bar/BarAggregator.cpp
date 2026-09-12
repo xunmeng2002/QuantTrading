@@ -115,6 +115,14 @@ namespace quanttrading::bar
 
     void BarAggregator::ValidatePrecesRelation(BarPrecesType inputPreces, int inputPeriod, BarPrecesType targetPreces, int targetPeriod, const char* instrumentID)
     {
+        // 目标周期本身非法（Second 精度无分钟粒度 BarTime 可用、周期数 <=0）先拒，且必须早于同精度放行：
+        // 否则"数据集精度即 Second"的声明会经同精度分支直通构造期，绕过构造期校验在引擎线程内抛异常
+        if (!quanttrading::IsValidBarPrecesTarget(targetPreces, targetPeriod))
+        {
+            WriteLog(LogLevel::Error, "BarAggregator: Invalid target preces. Target BarPreces:%d BarPeriod:%d, InstrumentID:%s",
+                static_cast<int>(targetPreces), targetPeriod, instrumentID);
+            throw std::logic_error("BarAggregator: invalid target preces");
+        }
         // 同精度同周期无需聚合（OnBarMarketData 的透传分支直发，不建桶）：
         // 装载期预校验据此放行"数据集精度与目标一致"的声明，否则日线数据集声明 1d 会被误判为跨精度聚合而拒启
         if (inputPreces == targetPreces && inputPeriod == targetPeriod)
