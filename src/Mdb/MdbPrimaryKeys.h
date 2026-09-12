@@ -192,7 +192,7 @@ namespace mdb
 		friend class MdUserLoginSessionTable;
 	public:
 		MdUserLoginSessionPrimaryKey(MdUserLoginSessionTable* table, size_t buckets = 1000);
-		MdUserLoginSession* Select(const SessionIDType& SessionID);
+		MdUserLoginSession* Select(const UserIDType& MdUserID, const SessionIDType& SessionID);
 		std::pair<iterator, iterator> SelectAll();
 		
 	protected:
@@ -370,7 +370,7 @@ namespace mdb
 		friend class AccountLoginSessionTable;
 	public:
 		AccountLoginSessionPrimaryKey(AccountLoginSessionTable* table, size_t buckets = 1000);
-		AccountLoginSession* Select(const SessionIDType& SessionID);
+		AccountLoginSession* Select(const AccountIDType& AccountID, const SessionIDType& SessionID);
 		std::pair<iterator, iterator> SelectAll();
 		
 	protected:
@@ -382,5 +382,25 @@ namespace mdb
 	private:
 		AccountLoginSessionTable* m_Table;
 		std::unordered_set<AccountLoginSession*, AccountLoginSessionHashForAccountLoginSessionPrimaryKey, AccountLoginSessionEqualForAccountLoginSessionPrimaryKey> m_Index;
+	};
+	class PrimaryAccountLoginSessionTable;
+	class PrimaryAccountLoginSessionPrimaryKey
+	{
+		using iterator = std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey>::iterator;
+		friend class PrimaryAccountLoginSessionTable;
+	public:
+		PrimaryAccountLoginSessionPrimaryKey(PrimaryAccountLoginSessionTable* table, size_t buckets = 1000);
+		PrimaryAccountLoginSession* Select(const AccountIDType& PrimaryAccountID, const SessionIDType& SessionID);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(PrimaryAccountLoginSession* const record);
+		void Erase(PrimaryAccountLoginSession* const record);
+		bool CheckInsert(PrimaryAccountLoginSession* const record);
+		bool CheckUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord);
+
+	private:
+		PrimaryAccountLoginSessionTable* m_Table;
+		std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey> m_Index;
 	};
 }

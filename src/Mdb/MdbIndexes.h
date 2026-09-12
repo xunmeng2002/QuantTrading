@@ -305,4 +305,29 @@ namespace mdb
 		multiset<AccountLoginSession*, AccountLoginSessionLessForAccountIDIndex> m_Index;
 	};
 	
+	class PrimaryAccountLoginSessionTable;
+	class PrimaryAccountLoginSessionIndexPrimaryAccountID
+	{
+		using iterator = std::multiset<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionLessForPrimaryAccountIDIndex>::iterator;
+		friend class PrimaryAccountLoginSessionTable;
+	public:
+		PrimaryAccountLoginSessionIndexPrimaryAccountID(PrimaryAccountLoginSessionTable* table);
+		iterator LowerBound(const AccountIDType& PrimaryAccountID);
+		iterator UpperBound(const AccountIDType& PrimaryAccountID);
+		std::pair<iterator, iterator> EqualRange(const AccountIDType& PrimaryAccountID);
+	public:
+		static constexpr unsigned int IndexID = 0x0000;
+	protected:
+		void Insert(PrimaryAccountLoginSession* const record);
+		void Erase(PrimaryAccountLoginSession* const record);
+		void Update(iterator it);
+		bool NeedUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord);
+		iterator FindNode(PrimaryAccountLoginSession* const record);
+		void FillCompareRecord(const AccountIDType& PrimaryAccountID);
+
+	private:
+		PrimaryAccountLoginSessionTable* m_Table;
+		multiset<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionLessForPrimaryAccountIDIndex> m_Index;
+	};
+	
 }

@@ -713,4 +713,62 @@ namespace mdb
 		Utility::Strcpy(t_CompareAccountLoginSession.AccountID, AccountID);
 	}
 	
+	PrimaryAccountLoginSessionIndexPrimaryAccountID::PrimaryAccountLoginSessionIndexPrimaryAccountID(PrimaryAccountLoginSessionTable* table)
+		:m_Table(table)
+	{
+	}
+	PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator PrimaryAccountLoginSessionIndexPrimaryAccountID::LowerBound(const AccountIDType& PrimaryAccountID)
+	{
+		FillCompareRecord(PrimaryAccountID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.lower_bound(&t_ComparePrimaryAccountLoginSession);
+	}
+	PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator PrimaryAccountLoginSessionIndexPrimaryAccountID::UpperBound(const AccountIDType& PrimaryAccountID)
+	{
+		FillCompareRecord(PrimaryAccountID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.upper_bound(&t_ComparePrimaryAccountLoginSession);
+	}
+	std::pair<PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator, PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator> PrimaryAccountLoginSessionIndexPrimaryAccountID::EqualRange(const AccountIDType& PrimaryAccountID)
+	{
+		FillCompareRecord(PrimaryAccountID);
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return m_Index.equal_range(&t_ComparePrimaryAccountLoginSession);
+	}
+	void PrimaryAccountLoginSessionIndexPrimaryAccountID::Insert(PrimaryAccountLoginSession* const record)
+	{
+		m_Index.insert(record);
+	}
+	void PrimaryAccountLoginSessionIndexPrimaryAccountID::Erase(PrimaryAccountLoginSession* const record)
+	{
+		auto it = FindNode(record);
+		m_Index.erase(it);
+	}
+	void PrimaryAccountLoginSessionIndexPrimaryAccountID::Update(iterator it)
+	{
+		auto record = *it;
+		m_Index.erase(it);
+		m_Index.insert(record);
+	}
+	bool PrimaryAccountLoginSessionIndexPrimaryAccountID::NeedUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
+	{
+		return !(PrimaryAccountLoginSessionEqualForPrimaryAccountIDIndex()(oldRecord, newRecord));
+	}
+	PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator PrimaryAccountLoginSessionIndexPrimaryAccountID::FindNode(PrimaryAccountLoginSession* const record)
+	{
+		auto p = m_Index.equal_range(record);
+		for (auto it = p.first; it != p.second; ++it)
+		{
+			if (*it == record)
+			{
+				return it;
+			}
+		}
+		return m_Index.end();
+	}
+	void PrimaryAccountLoginSessionIndexPrimaryAccountID::FillCompareRecord(const AccountIDType& PrimaryAccountID)
+	{
+		Utility::Strcpy(t_ComparePrimaryAccountLoginSession.PrimaryAccountID, PrimaryAccountID);
+	}
+	
 }

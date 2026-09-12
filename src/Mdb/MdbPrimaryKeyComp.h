@@ -233,5 +233,17 @@ namespace mdb
 	{
 		size_t operator()(const AccountLoginSession* const record) const;
 	};
+	struct PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey
+	{
+		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
+	};
+	struct PrimaryAccountLoginSessionLessForPrimaryAccountLoginSessionPrimaryKey
+	{
+		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
+	};
+	struct PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey
+	{
+		size_t operator()(const PrimaryAccountLoginSession* const record) const;
+	};
 }
 

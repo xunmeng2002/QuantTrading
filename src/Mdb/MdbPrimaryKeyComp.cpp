@@ -210,10 +210,14 @@ namespace mdb
 	}
 	bool MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
 	{
-		return left->SessionID == right->SessionID;
+		return strcmp(left->MdUserID, right->MdUserID) == 0 && left->SessionID == right->SessionID;
 	}
 	bool MdUserLoginSessionLessForMdUserLoginSessionPrimaryKey::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
 	{
+		if (strcmp(left->MdUserID, right->MdUserID) < 0)
+			return true;
+		else if (strcmp(left->MdUserID, right->MdUserID) > 0)
+			return false;
 		if (left->SessionID < right->SessionID)
 			return true;
 		else if (left->SessionID > right->SessionID)
@@ -222,7 +226,7 @@ namespace mdb
 	}
 	size_t MdUserLoginSessionHashForMdUserLoginSessionPrimaryKey::operator()(const MdUserLoginSession* const record) const
 	{
-		return std::hash<long long>()(record->SessionID);
+		return std::hash<string>()(record->MdUserID) + std::hash<long long>()(record->SessionID);
 	}
 	bool PrimaryAccountEqualForPrimaryAccountPrimaryKey::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
 	{
@@ -447,10 +451,14 @@ namespace mdb
 	}
 	bool AccountLoginSessionEqualForAccountLoginSessionPrimaryKey::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
 	{
-		return left->SessionID == right->SessionID;
+		return strcmp(left->AccountID, right->AccountID) == 0 && left->SessionID == right->SessionID;
 	}
 	bool AccountLoginSessionLessForAccountLoginSessionPrimaryKey::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
 	{
+		if (strcmp(left->AccountID, right->AccountID) < 0)
+			return true;
+		else if (strcmp(left->AccountID, right->AccountID) > 0)
+			return false;
 		if (left->SessionID < right->SessionID)
 			return true;
 		else if (left->SessionID > right->SessionID)
@@ -459,6 +467,26 @@ namespace mdb
 	}
 	size_t AccountLoginSessionHashForAccountLoginSessionPrimaryKey::operator()(const AccountLoginSession* const record) const
 	{
-		return std::hash<long long>()(record->SessionID);
+		return std::hash<string>()(record->AccountID) + std::hash<long long>()(record->SessionID);
+	}
+	bool PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	{
+		return strcmp(left->PrimaryAccountID, right->PrimaryAccountID) == 0 && left->SessionID == right->SessionID;
+	}
+	bool PrimaryAccountLoginSessionLessForPrimaryAccountLoginSessionPrimaryKey::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	{
+		if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) < 0)
+			return true;
+		else if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) > 0)
+			return false;
+		if (left->SessionID < right->SessionID)
+			return true;
+		else if (left->SessionID > right->SessionID)
+			return false;
+		return false;
+	}
+	size_t PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey::operator()(const PrimaryAccountLoginSession* const record) const
+	{
+		return std::hash<string>()(record->PrimaryAccountID) + std::hash<long long>()(record->SessionID);
 	}
 }

@@ -360,8 +360,9 @@ namespace mdb
 		:m_Table(table), m_Index(buckets)
 	{
 	}
-	MdUserLoginSession* MdUserLoginSessionPrimaryKey::Select(const SessionIDType& SessionID)
+	MdUserLoginSession* MdUserLoginSessionPrimaryKey::Select(const UserIDType& MdUserID, const SessionIDType& SessionID)
 	{
+		Utility::Strcpy(t_CompareMdUserLoginSession.MdUserID, MdUserID);
 		t_CompareMdUserLoginSession.SessionID = SessionID;
 		
 		std::shared_lock guard(m_Table->m_SharedMutex);
@@ -711,8 +712,9 @@ namespace mdb
 		:m_Table(table), m_Index(buckets)
 	{
 	}
-	AccountLoginSession* AccountLoginSessionPrimaryKey::Select(const SessionIDType& SessionID)
+	AccountLoginSession* AccountLoginSessionPrimaryKey::Select(const AccountIDType& AccountID, const SessionIDType& SessionID)
 	{
+		Utility::Strcpy(t_CompareAccountLoginSession.AccountID, AccountID);
 		t_CompareAccountLoginSession.SessionID = SessionID;
 		
 		std::shared_lock guard(m_Table->m_SharedMutex);
@@ -743,5 +745,43 @@ namespace mdb
 	bool AccountLoginSessionPrimaryKey::CheckUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord)
 	{
 		return AccountLoginSessionEqualForAccountLoginSessionPrimaryKey()(oldRecord, newRecord);
+	}
+	PrimaryAccountLoginSessionPrimaryKey::PrimaryAccountLoginSessionPrimaryKey(PrimaryAccountLoginSessionTable* table, size_t buckets)
+		:m_Table(table), m_Index(buckets)
+	{
+	}
+	PrimaryAccountLoginSession* PrimaryAccountLoginSessionPrimaryKey::Select(const AccountIDType& PrimaryAccountID, const SessionIDType& SessionID)
+	{
+		Utility::Strcpy(t_ComparePrimaryAccountLoginSession.PrimaryAccountID, PrimaryAccountID);
+		t_ComparePrimaryAccountLoginSession.SessionID = SessionID;
+		
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		auto it = m_Index.find(&t_ComparePrimaryAccountLoginSession);
+		if (it == m_Index.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<PrimaryAccountLoginSessionPrimaryKey::iterator, PrimaryAccountLoginSessionPrimaryKey::iterator> PrimaryAccountLoginSessionPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(m_Table->m_SharedMutex);
+		return std::pair<iterator, iterator>(m_Index.begin(), m_Index.end());
+	}
+	bool PrimaryAccountLoginSessionPrimaryKey::Insert(PrimaryAccountLoginSession* const record)
+	{
+		return m_Index.insert(record).second;
+	}
+	void PrimaryAccountLoginSessionPrimaryKey::Erase(PrimaryAccountLoginSession* const  record)
+	{
+		m_Index.erase(record);
+	}
+	bool PrimaryAccountLoginSessionPrimaryKey::CheckInsert(PrimaryAccountLoginSession* const record)
+	{
+		return m_Index.find(record) == m_Index.end();
+	}
+	bool PrimaryAccountLoginSessionPrimaryKey::CheckUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
+	{
+		return PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey()(oldRecord, newRecord);
 	}
 }

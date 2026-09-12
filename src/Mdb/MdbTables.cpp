@@ -3871,5 +3871,233 @@ namespace mdb
 		m_AccountIDIndex->Erase(record);
 	}
 
+	PrimaryAccountLoginSessionTable::PrimaryAccountLoginSessionTable()
+	{
+		m_MdbSubscriber = nullptr;
+		m_PrimaryKey = new PrimaryAccountLoginSessionPrimaryKey(this);
+		m_PrimaryAccountIDIndex = new PrimaryAccountLoginSessionIndexPrimaryAccountID(this);
+	}
+	PrimaryAccountLoginSessionTable::~PrimaryAccountLoginSessionTable()
+	{
+		delete m_PrimaryKey;
+		m_PrimaryKey = nullptr;
+		delete m_PrimaryAccountIDIndex;
+		m_PrimaryAccountIDIndex = nullptr;
+	}
+	void PrimaryAccountLoginSessionTable::Subscribe(MdbSubscriber* mdbSubscriber)
+	{
+		m_MdbSubscriber = mdbSubscriber;
+	}
+	void PrimaryAccountLoginSessionTable::UnSubscribe()
+	{
+		m_MdbSubscriber = nullptr;
+	}
+	void PrimaryAccountLoginSessionTable::LockShared()
+	{
+		m_SharedMutex.lock_shared();
+	}
+	void PrimaryAccountLoginSessionTable::UnlockShared()
+	{
+		m_SharedMutex.unlock_shared();
+	}
+	void PrimaryAccountLoginSessionTable::InitDB()
+	{
+		if (m_MdbSubscriber == nullptr)
+		{
+			m_DBInited = true;
+			return;
+		}
+		m_MdbSubscriber->OnRecordTruncate(PrimaryAccountLoginSession::TableID);
+
+		auto records = new std::vector<const void*>();
+		{
+			std::shared_lock guard(m_SharedMutex);
+			for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+			{
+				auto record = PrimaryAccountLoginSession::Allocate();
+				memcpy(record, *it, sizeof(PrimaryAccountLoginSession));
+				records->push_back(record);
+			}
+		}
+		if (!records->empty())
+		{
+			m_MdbSubscriber->OnRecordBatchInsert(PrimaryAccountLoginSession::TableID, records);
+		}
+		else
+		{
+			delete records;
+		}
+		m_DBInited = true;
+	}
+	bool PrimaryAccountLoginSessionTable::Insert(PrimaryAccountLoginSession* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for PrimaryAccountLoginSession:[%s]", record->GetString());
+			record->Deallocate();
+			return false;
+		}
+
+		m_PrimaryKey->Insert(record);
+
+		m_PrimaryAccountIDIndex->Insert(record);
+		
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnRecordInsert(PrimaryAccountLoginSession::TableID, record);
+		}
+		return true;
+	}
+	void PrimaryAccountLoginSessionTable::BatchInsert(std::vector<mdb::PrimaryAccountLoginSession*>* records)
+	{
+		{
+			std::lock_guard guard(m_SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = PrimaryAccountLoginSession::Allocate();
+				memcpy(newRecord, record, sizeof(PrimaryAccountLoginSession));
+				m_PrimaryKey->Insert(newRecord);
+
+				m_PrimaryAccountIDIndex->Insert(newRecord);
+			}
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto dbRecords = new std::vector<const void*>();
+			dbRecords->reserve(records->size());
+			for (auto* r : *records) dbRecords->push_back(r);
+			m_MdbSubscriber->OnRecordBatchInsert(PrimaryAccountLoginSession::TableID, dbRecords);
+		}
+		delete records;
+	}
+	void PrimaryAccountLoginSessionTable::Erase(PrimaryAccountLoginSession* record)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnRecordErase(PrimaryAccountLoginSession::TableID, record);
+		}
+		else
+		{
+			record->Deallocate();
+		}
+	}
+	int PrimaryAccountLoginSessionTable::EraseByPrimaryAccountIDIndex(const AccountIDType& PrimaryAccountID)
+	{
+		m_PrimaryAccountIDIndex->FillCompareRecord(PrimaryAccountID);
+		std::vector<PrimaryAccountLoginSession*> records;
+		std::lock_guard guard(m_SharedMutex);
+		auto range = m_PrimaryAccountIDIndex->m_Index.equal_range(&t_ComparePrimaryAccountLoginSession);
+		for (auto& it = range.first; it != range.second; ++it)
+		{
+			records.push_back(*it);
+		}
+		for (auto record : records)
+		{
+			EraseUniqueKey(record);
+			EraseIndex(record);
+			record->Deallocate();
+		}
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			auto record = PrimaryAccountLoginSession::Allocate();
+			memcpy(record, &t_ComparePrimaryAccountLoginSession, sizeof(PrimaryAccountLoginSession));
+			m_MdbSubscriber->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableID, PrimaryAccountLoginSessionIndexPrimaryAccountID::IndexID, record);
+		}
+		return (int)records.size();
+	}
+	bool PrimaryAccountLoginSessionTable::Update(PrimaryAccountLoginSession* const oldRecord, PrimaryAccountLoginSession* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(m_SharedMutex);
+		if (!m_PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for PrimaryAccountLoginSession:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New PrimaryAccountLoginSession:[%s]", newRecord->GetString());
+			newRecord->Deallocate();
+			return false;
+		}
+
+		bool PrimaryAccountIDIndexUpdate = m_PrimaryAccountIDIndex->NeedUpdate(oldRecord, newRecord);
+		PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator itPrimaryAccountID;
+		if (PrimaryAccountIDIndexUpdate)
+		{
+			itPrimaryAccountID = m_PrimaryAccountIDIndex->FindNode(oldRecord);
+		}
+		::memcpy((void*)oldRecord, newRecord, sizeof(PrimaryAccountLoginSession));
+		if (PrimaryAccountIDIndexUpdate)
+		{
+			m_PrimaryAccountIDIndex->Update(itPrimaryAccountID);
+		}
+
+		if (updateDB && m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnRecordUpdate(PrimaryAccountLoginSession::TableID, newRecord);
+		}
+		else
+		{
+			newRecord->Deallocate();
+		}
+		return true;
+	}
+	void PrimaryAccountLoginSessionTable::TruncateTables()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Deallocate();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_PrimaryAccountIDIndex->m_Index.clear();
+	}
+	void PrimaryAccountLoginSessionTable::TruncateTable()
+	{
+		std::lock_guard guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			(*it)->Deallocate();
+		}
+		m_PrimaryKey->m_Index.clear();
+		m_PrimaryAccountIDIndex->m_Index.clear();
+		if (m_MdbSubscriber != nullptr && m_DBInited)
+		{
+			m_MdbSubscriber->OnRecordTruncate(PrimaryAccountLoginSession::TableID);
+		}
+	}
+	void PrimaryAccountLoginSessionTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_PrimaryAccountLoginSession.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "PrimaryAccountID,SessionID,IPAddress\n");
+		char buff[4096] = { 0 };
+		set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionLessForPrimaryAccountLoginSessionPrimaryKey> records;
+		std::shared_lock guard(m_SharedMutex);
+		for (auto it = m_PrimaryKey->m_Index.begin(); it != m_PrimaryKey->m_Index.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void PrimaryAccountLoginSessionTable::EraseUniqueKey(PrimaryAccountLoginSession* record)
+	{
+		m_PrimaryKey->Erase(record);
+	}
+	void PrimaryAccountLoginSessionTable::EraseIndex(PrimaryAccountLoginSession* record)
+	{
+		m_PrimaryAccountIDIndex->Erase(record);
+	}
+
 }
 

@@ -200,4 +200,17 @@ namespace mdb
 		return false;
 	}
 	
+	bool PrimaryAccountLoginSessionEqualForPrimaryAccountIDIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	{
+		return strcmp(left->PrimaryAccountID, right->PrimaryAccountID) == 0;
+	}
+	bool PrimaryAccountLoginSessionLessForPrimaryAccountIDIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	{
+		if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) < 0)
+			return true;
+		else if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) > 0)
+			return false;
+		return false;
+	}
+	
 }

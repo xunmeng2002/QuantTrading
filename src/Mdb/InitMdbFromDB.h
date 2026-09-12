@@ -29,5 +29,6 @@ namespace mdb
 		static void LoadOrderTable(Mdb* mdb, DB* db);
 		static void LoadTradeTable(Mdb* mdb, DB* db);
 		static void LoadAccountLoginSessionTable(Mdb* mdb, DB* db);
+		static void LoadPrimaryAccountLoginSessionTable(Mdb* mdb, DB* db);
 	};
 }

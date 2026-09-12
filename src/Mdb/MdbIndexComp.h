@@ -111,4 +111,13 @@ namespace mdb
 		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
 	};
 	
+	struct PrimaryAccountLoginSessionEqualForPrimaryAccountIDIndex
+	{
+		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
+	};
+	struct PrimaryAccountLoginSessionLessForPrimaryAccountIDIndex
+	{
+		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
+	};
+	
 }

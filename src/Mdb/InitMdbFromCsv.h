@@ -27,5 +27,6 @@ namespace mdb
 		static void LoadOrderTable(Mdb* mdb, const char* dir);
 		static void LoadTradeTable(Mdb* mdb, const char* dir);
 		static void LoadAccountLoginSessionTable(Mdb* mdb, const char* dir);
+		static void LoadPrimaryAccountLoginSessionTable(Mdb* mdb, const char* dir);
 	};
 }

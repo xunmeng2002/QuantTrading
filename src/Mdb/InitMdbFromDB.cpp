@@ -32,6 +32,7 @@ namespace mdb
 			case Order::TableID:  LoadOrderTable(mdb, db); break;
 			case Trade::TableID:  LoadTradeTable(mdb, db); break;
 			case AccountLoginSession::TableID:  LoadAccountLoginSessionTable(mdb, db); break;
+			case PrimaryAccountLoginSession::TableID:  LoadPrimaryAccountLoginSessionTable(mdb, db); break;
 			default: break;
 			}
 		}
@@ -215,6 +216,16 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_AccountLoginSession->Insert(record);
+		}
+	}
+	void InitMdbFromDB::LoadPrimaryAccountLoginSessionTable(Mdb* mdb, DB* db)
+	{
+		TypedTable<PrimaryAccountLoginSession> table(db);
+		vector<PrimaryAccountLoginSession*> records;
+		table.SelectAll(records);
+		for (auto record : records)
+		{
+			mdb->t_PrimaryAccountLoginSession->Insert(record);
 		}
 	}
 }
