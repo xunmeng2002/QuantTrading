@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kernelpackages project="QuantTrading" module="SimExchange" kernelClass="SimExchange" replyVia="m_TradeFront">
+	<package name="RspMdUserLogin"/>
+	<package name="RspMdUserLogout"/>
+	<package name="RtnDepthMarketData"/>
+	<package name="RtnBarMarketData"/>
+	<package name="NotifyDisConnect"/>
+	<package name="ReqAccountLogin"/>
+	<package name="ReqAccountLogout"/>
+	<package name="ReqInsertOrder"/>
+	<package name="ReqCancelOrder"/>
+	<package name="ReqQryOrder"/>
+	<package name="ReqQryTrade"/>
+	<package name="ReqQryInstrument"/>
+</kernelpackages>

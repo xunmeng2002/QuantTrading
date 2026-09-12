@@ -33,7 +33,10 @@
     <pump dest="./src/Packages/Packages.cpp" tpl="../Templates/Cpp/Protocol/Packages/Packages.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/PackageNames.xml ../Model/Types.xml"/>
     <pump dest="./src/Packages/PackageFactory.h" tpl="../Templates/Cpp/Protocol/Packages/PackageFactory.h.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/PackageNames.xml"/>
     <pump dest="./src/Packages/PackageFactory.cpp" tpl="../Templates/Cpp/Protocol/Packages/PackageFactory.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/Packages/PackageNames.xml"/>
-    
+
+    <pump dest="./src/MdOffer/MdKernelGen.cpp" tpl="../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/MdKernelPackageNames.xml ./Model/PackageNames/MdApiPackageNames.xml"/>
+    <pump dest="./src/SimExchange/SimExchangeGen.cpp" tpl="../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl" model="./Model/Packages/Packages.xml ./Model/PackageNames/SimExchangeKernelPackageNames.xml ./Model/PackageNames/SimExchangeApiPackageNames.xml"/>
+
     <pump dest="./src/MdOffer/MdOfferTableList.h" tpl="../Templates/Cpp/Mdb/ModuleTableList.h.tpl" model="./Model/TableNames/MdOfferTableNames.xml"/>
     <pump dest="./src/MdOffer/Config/Config.h" tpl="../Templates/Cpp/Config/Config.h.tpl" model="./Model/Configs/MdOffer.xml"/>
     <pump dest="./src/MdOffer/Config/Config.cpp" tpl="../Templates/Cpp/Config/Config.cpp.tpl" model="./Model/Configs/MdOffer.xml"/>

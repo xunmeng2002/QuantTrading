@@ -42,22 +42,24 @@ protected:
 	virtual void Run() override;
 	void CheckPackages();
 	void HandlePackages();
+	// 返回 true 表示包已用完可回收，false 表示 Handler 接管了所有权
+	bool DispatchPackage(Package* package);
 
 private:
 	void HandleRspMdUserLogin(RspMdUserLoginPackage* package);
 	void HandleRspMdUserLogout(RspMdUserLogoutPackage* package);
-	void HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage);
-	void HandleBarMarketData(RtnBarMarketDataPackage* rtnPackage);
+	void HandleRtnDepthMarketData(RtnDepthMarketDataPackage* rtnPackage);
+	void HandleRtnBarMarketData(RtnBarMarketDataPackage* rtnPackage);
 
 	void HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage);
-	void HandleAccountLogin(ReqAccountLoginPackage* reqPackage);
-	void HandleAccountLogout(ReqAccountLogoutPackage* reqPackage);
+	void HandleReqAccountLogin(ReqAccountLoginPackage* reqPackage);
+	void HandleReqAccountLogout(ReqAccountLogoutPackage* reqPackage);
 	
-	void HandleInsertOrder(ReqInsertOrderPackage* reqPackage);
-	void HandleCancelOrder(ReqCancelOrderPackage* reqPackage);
-	void HandleQryOrder(ReqQryOrderPackage* reqPackage);
-	void HandleQryTrade(ReqQryTradePackage* reqPackage);
-	void HandleQryInstrument(ReqQryInstrumentPackage* reqPackage);
+	void HandleReqInsertOrder(ReqInsertOrderPackage* reqPackage);
+	void HandleReqCancelOrder(ReqCancelOrderPackage* reqPackage);
+	void HandleReqQryOrder(ReqQryOrderPackage* reqPackage);
+	void HandleReqQryTrade(ReqQryTradePackage* reqPackage);
+	void HandleReqQryInstrument(ReqQryInstrumentPackage* reqPackage);
 
 
 	bool CheckSessionLogin(const SessionIDType& sessionID);

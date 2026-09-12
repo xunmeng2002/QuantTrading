@@ -42,6 +42,8 @@ namespace quanttrading::mdoffer
         virtual void Run() override;
         void CheckEvent();
         int HandlePackage();
+        // 返回 true 表示包已用完可回收，false 表示 Handler 接管了所有权
+        bool DispatchPackage(Package* package);
         int HandleNotifyDisConnect(NotifyDisConnectPackage* package);
         int HandleNotifyDBConnect(NotifyDBConnectPackage* package);
         int HandleNotifyDBDisConnect(NotifyDBDisConnectPackage* package);

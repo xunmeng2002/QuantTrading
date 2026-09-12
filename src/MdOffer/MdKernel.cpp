@@ -117,45 +117,7 @@ namespace quanttrading::mdoffer
         Package* package = nullptr;
         while ((package = GetPackage()) != nullptr)
         {
-            bool needFree = true;
-            switch (package->Head.PackageID)
-            {
-            case NotifyDisConnectPackage::PackageID:
-            {
-                HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
-                break;
-            }
-            case NotifyDBConnectPackage::PackageID:
-            {
-                HandleNotifyDBConnect((NotifyDBConnectPackage*)package);
-                break;
-            }
-            case NotifyDBDisConnectPackage::PackageID:
-            {
-                HandleNotifyDBDisConnect((NotifyDBDisConnectPackage*)package);
-                break;
-            }
-            case ReqMdUserLoginPackage::PackageID:
-            {
-                HandleReqMdUserLogin((ReqMdUserLoginPackage*)package);
-                break;
-            }
-            case ReqSubMarketDataPackage::PackageID:
-            {
-                HandleReqSubMarketData((ReqSubMarketDataPackage*)package);
-                break;
-            }
-            case RtnDepthMarketDataPackage::PackageID:
-            {
-                needFree = false;
-                HandleRtnDepthMarketData((RtnDepthMarketDataPackage*)package);
-                break;
-            }
-            default:
-                WriteLog(LogLevel::Warning, "UnExpected PackageID:%d", package->Head.PackageID);
-                break;
-            }
-            if (needFree)
+            if (DispatchPackage(package))
             {
                 package->Deallocate();
             }
@@ -385,7 +347,7 @@ namespace quanttrading::mdoffer
         if (package->DepthMarketData == nullptr)
         {
             // 字段区缺失时解析层仍返回成功，往下走 MinuteBar 会按空指针取合约会话；
-            // 本分支由 HandlePackage 置 needFree=false（所有权交给 MdSnap），丢弃时须自行归还
+            // 本分支由 DispatchPackage 返回 false（所有权交给 MdSnap），丢弃时须自行归还
             WriteLog(LogLevel::Warning, "HandleRtnDepthMarketData: missing field zone. SessionID:%lld", package->SessionID);
             package->Deallocate();
             return 0;

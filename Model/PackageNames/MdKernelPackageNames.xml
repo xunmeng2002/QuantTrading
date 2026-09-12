@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kernelpackages project="QuantTrading" module="MdOffer" kernelClass="MdKernel" replyVia="m_MdFront">
+	<package name="NotifyDisConnect"/>
+	<package name="NotifyDBConnect"/>
+	<package name="NotifyDBDisConnect"/>
+	<package name="ReqMdUserLogin"/>
+	<package name="ReqMdUserLogout"/>
+	<package name="ReqSubMarketData"/>
+	<package name="RtnDepthMarketData" transferOwnership="true"/>
+</kernelpackages>

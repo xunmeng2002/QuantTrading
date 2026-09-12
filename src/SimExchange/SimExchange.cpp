@@ -137,49 +137,10 @@ void SimExchange::HandlePackages()
 		package = GetNextPackage();
 		if (package == nullptr)
 			break;
-		switch (package->Head.PackageID)
+		if (DispatchPackage(package))
 		{
-		case RspMdUserLoginPackage::PackageID:
-			HandleRspMdUserLogin((RspMdUserLoginPackage*)package);
-			break;
-		case RspMdUserLogoutPackage::PackageID:
-			HandleRspMdUserLogout((RspMdUserLogoutPackage*)package);
-			break;
-		case RtnDepthMarketDataPackage::PackageID:
-			HandleDepthMarketData((RtnDepthMarketDataPackage*)package);
-			break;
-		case RtnBarMarketDataPackage::PackageID:
-			HandleBarMarketData((RtnBarMarketDataPackage*)package);
-			break;
-		case NotifyDisConnectPackage::PackageID:
-			HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
-			break;
-		case ReqAccountLoginPackage::PackageID:
-			HandleAccountLogin((ReqAccountLoginPackage*)package);
-			break;
-		case ReqAccountLogoutPackage::PackageID:
-			HandleAccountLogout((ReqAccountLogoutPackage*)package);
-			break;
-		case ReqInsertOrderPackage::PackageID:
-			HandleInsertOrder((ReqInsertOrderPackage*)package);
-			break;
-		case ReqCancelOrderPackage::PackageID:
-			HandleCancelOrder((ReqCancelOrderPackage*)package);
-			break;
-		case ReqQryOrderPackage::PackageID:
-			HandleQryOrder((ReqQryOrderPackage*)package);
-			break;
-		case ReqQryTradePackage::PackageID:
-			HandleQryTrade((ReqQryTradePackage*)package);
-			break;
-		case ReqQryInstrumentPackage::PackageID:
-			HandleQryInstrument((ReqQryInstrumentPackage*)package);
-			break;
-		default:
-			WriteLog(LogLevel::Warning, "UnExpect Package, PackageID:%d", package->Head.PackageID);
-			break;
+			package->Deallocate();
 		}
-		package->Deallocate();
 	}
 }
 
@@ -195,9 +156,9 @@ void SimExchange::HandleRspMdUserLogout(RspMdUserLogoutPackage* package)
 {
 	m_IsMdLogged = false;
 }
-void SimExchange::HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage)
+void SimExchange::HandleRtnDepthMarketData(RtnDepthMarketDataPackage* rtnPackage)
 {
-	WriteLog(LogLevel::Info, "HandleDepthMarketData %s", rtnPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleRtnDepthMarketData %s", rtnPackage->GetDebugString());
 	auto mdTick = mdb::DepthMarketData::Allocate();
     FieldToMdb(rtnPackage->DepthMarketData, mdTick);
 	m_OrderMatch->OnTick(mdTick);
@@ -211,9 +172,9 @@ void SimExchange::HandleDepthMarketData(RtnDepthMarketDataPackage* rtnPackage)
 		m_Mdb->t_DepthMarketData->Update(oldMdTick, mdTick);
 	}
 }
-void SimExchange::HandleBarMarketData(RtnBarMarketDataPackage* rtnPackage)
+void SimExchange::HandleRtnBarMarketData(RtnBarMarketDataPackage* rtnPackage)
 {
-	WriteLog(LogLevel::Info, "HandleBarMarketData %s", rtnPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleRtnBarMarketData %s", rtnPackage->GetDebugString());
 	auto mdBar = mdb::BarMarketData::Allocate();
     FieldToMdb(rtnPackage->BarMarketData, mdBar);
 	m_OrderMatch->OnBar(mdBar);
@@ -229,9 +190,9 @@ void SimExchange::HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage)
 		m_Mdb->t_AccountLoginSession->Erase(loginSession);
 	}
 }
-void SimExchange::HandleAccountLogin(ReqAccountLoginPackage* reqPackage)
+void SimExchange::HandleReqAccountLogin(ReqAccountLoginPackage* reqPackage)
 {
-	WriteLog(LogLevel::Info, "HandleAccountLogin %s", reqPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleReqAccountLogin %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	auto primaryAccount = m_Mdb->t_PrimaryAccount->m_PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountID);
 	if (primaryAccount == nullptr)
@@ -261,7 +222,7 @@ void SimExchange::HandleAccountLogin(ReqAccountLoginPackage* reqPackage)
 	}
 	SendRspAccountLogin(reqPackage, primaryAccount, errorID);
 }
-void SimExchange::HandleAccountLogout(ReqAccountLogoutPackage* reqPackage)
+void SimExchange::HandleReqAccountLogout(ReqAccountLogoutPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleBrokerLogout %s", reqPackage->GetDebugString());
 	
@@ -285,9 +246,9 @@ void SimExchange::HandleAccountLogout(ReqAccountLogoutPackage* reqPackage)
 	m_TradeFront->Send(m_RspAccountLogoutPackage);
 }
 
-void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
+void SimExchange::HandleReqInsertOrder(ReqInsertOrderPackage* reqPackage)
 {
-	WriteLog(LogLevel::Info, "HandleInsertOrder %s", reqPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleReqInsertOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -318,9 +279,9 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	m_Mdb->t_Order->Insert(order);
 	m_OrderMatch->InsertOrder(order);
 }
-void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
+void SimExchange::HandleReqCancelOrder(ReqCancelOrderPackage* reqPackage)
 {
-	WriteLog(LogLevel::Info, "HandleCancelOrder %s", reqPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleReqCancelOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -349,9 +310,9 @@ void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 	}
 	m_OrderMatch->CancelOrder(order);
 }
-void SimExchange::HandleQryOrder(ReqQryOrderPackage* reqPackage)
+void SimExchange::HandleReqQryOrder(ReqQryOrderPackage* reqPackage)
 {
-	WriteLog(LogLevel::Info, "HandleQryOrder %s", reqPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleReqQryOrder %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -375,9 +336,9 @@ void SimExchange::HandleQryOrder(ReqQryOrderPackage* reqPackage)
 		m_RspQryOrderPackage->Order = nullptr;
 	}
 }
-void SimExchange::HandleQryTrade(ReqQryTradePackage* reqPackage)
+void SimExchange::HandleReqQryTrade(ReqQryTradePackage* reqPackage)
 {
-	WriteLog(LogLevel::Info, "HandleQryTrade %s", reqPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleReqQryTrade %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
@@ -401,9 +362,9 @@ void SimExchange::HandleQryTrade(ReqQryTradePackage* reqPackage)
 		m_RspQryTradePackage->Trade = nullptr;
 	}
 }
-void SimExchange::HandleQryInstrument(ReqQryInstrumentPackage* reqPackage)
+void SimExchange::HandleReqQryInstrument(ReqQryInstrumentPackage* reqPackage)
 {
-	WriteLog(LogLevel::Info, "HandleQryInstrument %s", reqPackage->GetDebugString());
+	WriteLog(LogLevel::Info, "HandleReqQryInstrument %s", reqPackage->GetDebugString());
 	auto errorID = ErrorNone;
 	if (!CheckSessionLogin(reqPackage->SessionID))
 	{
