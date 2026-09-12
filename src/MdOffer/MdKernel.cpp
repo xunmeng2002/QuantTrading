@@ -17,8 +17,9 @@ using namespace quanttrading::bar;
 
 namespace quanttrading::mdoffer
 {
-    MdKernel::MdKernel(mdb::Mdb* mdb, const TradeSessions& tradeSessions)
-        :ThreadBase("MdKernel"), m_Mdb(mdb), m_MdFront(nullptr), m_MdSpi(nullptr)
+    MdKernel::MdKernel(mdb::Mdb* mdb, const TradeSessions& tradeSessions,
+        const std::list<spark::core::SubscribeInstrument*>& startupSubscribeInstruments)
+        :ThreadBase("MdKernel"), m_Mdb(mdb), m_MdFront(nullptr), m_MdSpi(nullptr), m_StartupSubscribeInstruments(startupSubscribeInstruments)
     {
         m_MinuteBar = new MinuteBar(tradeSessions);
         m_MinuteBar->Subscribe(this);
@@ -148,16 +149,14 @@ namespace quanttrading::mdoffer
     {
         m_Mdb->InitDB();
         list<const ReqSubMarketDataField*> reqSubMds;
-        ExchangeIDType exchangeID = "SHFE";
-        auto instrumentItPair = m_Mdb->t_Instrument->m_PrimaryKey->SelectAll();
-        for (auto& it = instrumentItPair.first; it != instrumentItPair.second; ++it)
+        for (auto startupSubscribeInstrument : m_StartupSubscribeInstruments)
         {
-            // 全市场订阅复用全局注册表：重复合约自动去重，且消除此前的裸分配泄漏。
-            // 全市场订阅不对 bar 周期提要求，BarPreces/BarPeriod 置 0
+            // 启动订阅复用全局注册表：重复合约自动去重，且消除此前的裸分配泄漏。
+            // 启动订阅不对 bar 周期提要求，BarPreces/BarPeriod 置 0
             ReqSubMarketDataField field;
             memset(&field, 0, sizeof(ReqSubMarketDataField));
-            Utility::Strcpy(field.ExchangeID, (*it)->ExchangeID);
-            Utility::Strcpy(field.InstrumentID, (*it)->InstrumentID);
+            Utility::Strcpy(field.ExchangeID, startupSubscribeInstrument->ExchangeID.c_str());
+            Utility::Strcpy(field.InstrumentID, startupSubscribeInstrument->InstrumentID.c_str());
             auto [fieldIt, isNew] = m_SubscribeInstruments.insert(field);
             if (isNew)
             {
@@ -214,6 +213,7 @@ namespace quanttrading::mdoffer
                     if (m_Mdb->t_MdUserLoginSession->Insert(mdUserLoginSession))
                     {
                         m_LoggedSessions.insert(package->SessionID);
+                        errorID = ErrorNone;
                     }
                     else
                     {

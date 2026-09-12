@@ -15,11 +15,16 @@ public:
 	~MdSpiImpl();
 
 	std::atomic<int> m_RtnMdCount{0};
+	std::atomic<int> m_RspMdUserLoginCount{0};
+	std::atomic<int> m_RspMdUserLogoutCount{0};
 
 	virtual void OnConnected() override;
 	virtual void OnDisConnected() override;
 	virtual void OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast) override;
 	virtual void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) override;
+
+	void ReqUserLogout();
 
 private:
 	void ReqUserLogin();
@@ -27,7 +32,7 @@ private:
 
 private:
 	MdApi* m_MdApi;
-	int m_RequestID;
+	std::atomic<int> m_RequestID{0};
 	ReqSubMarketDataField* m_ReqSubMarketData;
 };
 }

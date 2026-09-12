@@ -28,7 +28,16 @@ void MdSpiImpl::OnDisConnected()
 void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	MdSpiMiddle::OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
+	++m_RspMdUserLoginCount;
 	ReqSubscribeMd();
+}
+void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
+{
+	MdSpiMiddle::OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
+	++m_RspMdUserLogoutCount;
+	// 同一条连接立即重登：内核按传输层 SessionID 清理会话记录，重登应回 ErrorNone，
+	// 清理失效则回 ErrorSessionAlreadyLogin，故这次重登本身就是对该清理的验证
+	ReqUserLogin();
 }
 void MdSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
@@ -42,6 +51,13 @@ void MdSpiImpl::ReqUserLogin()
 	Utility::Strcpy(reqMdUserLogin.UserID, Config::GetInstance().MdUser.c_str());
     Utility::Strcpy(reqMdUserLogin.Password, Config::GetInstance().MdPassword.c_str());
 	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
+}
+void MdSpiImpl::ReqUserLogout()
+{
+	ReqMdUserLogoutField reqMdUserLogout;
+	memset(&reqMdUserLogout, 0, sizeof(ReqMdUserLogoutField));
+	Utility::Strcpy(reqMdUserLogout.UserID, Config::GetInstance().MdUser.c_str());
+	m_MdApi->ReqMdUserLogout(&reqMdUserLogout, ++m_RequestID);
 }
 void MdSpiImpl::ReqSubscribeMd()
 {
