@@ -18,7 +18,6 @@ public:
 	
 public:
 	int LogLevel;
-	string SessionFile;
 	string AccountID;
 	string ExchangeID;
 	string InstrumentID;

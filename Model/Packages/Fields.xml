@@ -39,6 +39,8 @@
 	<field name="ReqSubMarketData" id="0x1005" desc="订阅行情请求">
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="BarPreces" id="0x901A" type="BarPreces" desc="Bar精度"/>
+		<item name="BarPeriod" id="0x1003" type="Int" desc="Bar周期"/>
 	</field>
 	<field name="RspSubMarketData" id="0x1006" desc="订阅行情应答">
 		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>

@@ -1,6 +1,6 @@
 #include "MdReader.h"
 
-#include "BarUtility.h"
+#include "QuantUtility.h"
 
 #include <Spark/Core/Logger/Logger.h>
 #include <chrono>
@@ -72,7 +72,7 @@ MdReader::MdReader(const Config& config)
 {
     strcpy(m_StartTradingDay, config.StartTradingDay.c_str());
     strcpy(m_EndTradingDay, config.EndTradingDay.c_str());
-    if (!bar::ParseBarPreces(m_BarPreces, m_BarPrecesType, m_BarPeriod))
+    if (!quanttrading::ParseBarPreces(m_BarPreces, m_BarPrecesType, m_BarPeriod))
     {
         const std::string errorMsg = "Invalid BarPreces, expect <n><s|m|h|d> e.g. 1m/5m/1h/1d. BarPreces:" + m_BarPreces;
         WriteLog(LogLevel::Error, "%s", errorMsg.c_str());

@@ -17,13 +17,15 @@
 
 using namespace quanttrading::packages;
 using quanttrading::bar::MinuteBar;
+using quanttrading::bar::TradeSessions;
 
 namespace quanttrading::mdoffer
 {
     class MdKernel : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public quanttrading::bar::BarSubscriber, public dbadapters::DBSubscriber
     {
     public:
-        MdKernel(mdb::Mdb* mdb);
+        // tradeSessions 须长于本对象（转交 MinuteBar 持有），且须在首个订阅到达前装载完成
+        MdKernel(mdb::Mdb* mdb, const TradeSessions& tradeSessions);
         void SetMdFront(MdFront* mdFront);
         void SetMdSpi(CThostFtdcMdSpiImpl* mdSpi);
 

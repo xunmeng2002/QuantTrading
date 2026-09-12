@@ -9,20 +9,24 @@
 #include "MdReader.h"
 #include "Mdb.h"
 #include "MdbTableRegistry.h"
+#include "BarAggregator.h"
+#include "TradeSession.h"
 #include <QuantTrading/Fields.h>
 #include <QuantTrading/BackTestApi.h>
 #include <Spark/Core/Thread/ThreadBase.h>
 #include <DBAdapters/DBInterface/DB.h>
 #include <DBAdapters/AsyncDBWriter/AsyncDBWriter.h>
-#include <string>
 #include <list>
 #include <map>
+#include <memory>
 #include <mutex>
+#include <string>
+#include <utility>
 
 
 namespace quanttrading::backtest
 {
-class SimExchange : public spark::core::ThreadBase, public dbadapters::DBSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber
+class SimExchange : public spark::core::ThreadBase, public dbadapters::DBSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber, private quanttrading::bar::BarSubscriber
 {
 public:
 	SimExchange(const Config& config);
@@ -40,6 +44,9 @@ public:
     virtual void OnOrderUpdate(mdb::Order* order, mdb::Order* newOrder) override;
 	virtual void OnTrade(mdb::Trade* trade) override;
 
+	// bar::BarSubscriber 桥：聚合器闭桶回调 → 推送目标周期 bar（指针仅在本次回调内有效）
+	void OnBarMarketData(BarMarketDataField* bar) override;
+
 	void RegisterSpi(BackTestSpi* pSpi);
 	int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID);
 	int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID);
@@ -56,6 +63,12 @@ protected:
 private:
 	void PushNextTick(mdb::DepthMarketData* mdTick);
 	void PushNextBar(mdb::BarMarketData* mdBar);
+	// bar 出口：该合约声明了目标周期则送入聚合器（闭桶时经 OnBarMarketData 推送），否则透传数据集精度 bar
+	void PushBarMarketData(mdb::BarMarketData* mdBar);
+	// 按订阅声明的目标周期登记合约的聚合器（同周期合约共用一个）；周期非法或无法由数据集精度聚合时记日志并返回 false
+	bool BindBarAggregator(const char* exchangeID, const char* instrumentID, BarPrecesType barPreces, int barPeriod);
+	// 闭合全部未闭合桶并按序推送：换交易日与行情收尾时调用，保证不满一桶的尾桶落在其所属交易日内
+	void FlushBarAggregators();
 
 	void HandleRegisterAccount(quanttrading::packages::ReqRegisterAccountPackage* reqPackage);
 	void HandleSubMarketDataFinished(quanttrading::packages::ReqSubMarketDataFinishedPackage* reqPackage);
@@ -81,7 +94,6 @@ private:
 	void SendRtnOrder(mdb::Order* order);
 	void SendRtnTrade(mdb::Trade* trade);
 	void SendRtnDepthMarketData(mdb::DepthMarketData* mdTick);
-	void SendRtnBarMarketData(mdb::BarMarketData* mdBar);
     void SendRtnMarketDataEnd();
 	void SendRtnSessionBegin(const DateType& tradingDay);
 	void SendRtnSessionEnd(const DateType& tradingDay);
@@ -118,5 +130,14 @@ private:
 	std::map<std::string, mdb::BarMarketData*> m_LastMdBars;
 	DepthMarketDataField m_PushMdTick;
 	BarMarketDataField m_PushMdBar;
+
+	// 交易节由引擎自己持有并装载（BackTest.json 的 SessionFile）：聚合器的桶边界锚定在交易节段首。
+	// 持有期长于全部聚合器，装载完成后内容不再变化，聚合器缓存的 TradeSession* 因此长期有效。
+	std::string m_SessionFile;
+	quanttrading::bar::TradeSessions m_TradeSessions;
+	// 目标周期 → 聚合器（同周期合约共用一个实例，实例内部按合约分桶）；唯一持有者
+	std::map<std::pair<BarPrecesType, int>, std::unique_ptr<quanttrading::bar::BarAggregator>> m_BarAggregators;
+	// 合约 → 其目标周期聚合器；未声明周期的合约不在表中，走透传。裸指针指向 m_BarAggregators 的 value
+	std::map<std::string, quanttrading::bar::BarAggregator*> m_InstrumentBarAggregators;
 };
 }

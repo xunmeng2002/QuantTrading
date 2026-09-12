@@ -40,6 +40,8 @@
 	<field name="ReqSubMarketData" 				desc="订阅行情请求">
 		<item name="ExchangeID"/>
 		<item name="InstrumentID"/>
+		<item name="BarPreces"/>
+		<item name="BarPeriod"/>
 	</field>
 	<field name="RspSubMarketData" 				desc="订阅行情应答">
 		<item name="ExchangeID"/>

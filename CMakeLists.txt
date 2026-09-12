@@ -83,8 +83,9 @@ add_static_md_module(OrderMatch ${CMAKE_CURRENT_SOURCE_DIR}/src/OrderMatch ${CMA
 target_link_libraries(OrderMatchStatic PUBLIC QuantTradingInterface MdbStatic PackagesStatic)
 target_link_libraries(OrderMatchStatic PRIVATE QuantTradingCommonStatic Spark::Core)
 
+# 策略层只声明期望的 bar 周期（字符串 → 精度/周期数）并经 API 上报，不持有聚合器与交易节，故不依赖 Bar 模块
 add_static_md_module(Strategy ${CMAKE_CURRENT_SOURCE_DIR}/src/Strategy ${CMAKE_CURRENT_SOURCE_DIR}/src/Strategy)
-target_link_libraries(StrategyStatic PUBLIC QuantTradingInterface BarStatic Spark::Core)
+target_link_libraries(StrategyStatic PUBLIC QuantTradingInterface QuantTradingCommonStatic Spark::Core)
 
 add_static_md_module(Settlement ${CMAKE_CURRENT_SOURCE_DIR}/src/Settlement ${CMAKE_CURRENT_SOURCE_DIR}/src/Settlement)
 target_link_libraries(SettlementStatic PUBLIC QuantTradingInterface MdbStatic)
@@ -183,12 +184,13 @@ add_application(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/test/TestBackTest ${CMA
 target_link_libraries(TestBackTest PRIVATE QuantTradingCommonStatic PackagesStatic BackTestApiMiddleStatic Spark::Core Spark::Serialization)
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestBackTest.json)
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
+# 交易节由 BackTest.dll 内的引擎按 BackTest.json 的 SessionFile 装载
+copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/Sessions.json)
 
 add_application(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid)
 target_link_libraries(TestStrategyGrid PRIVATE QuantTradingCommonStatic PackagesStatic StrategyStatic BackTestApiMiddleStatic Spark::Core Spark::Serialization)
 copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestStrategyGrid.json)
 copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
-copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/Sessions.json)
 
 add_application(TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdApi ${CMAKE_CURRENT_SOURCE_DIR}/test/TestMdApi)
 target_link_libraries(TestMdApi PRIVATE QuantTradingCommonStatic MdApiMiddleStatic Spark::Core Spark::Serialization)

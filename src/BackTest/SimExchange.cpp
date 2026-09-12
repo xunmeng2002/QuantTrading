@@ -18,6 +18,7 @@
 #include <chrono>
 #include <cmath>
 #include <filesystem>
+#include <stdexcept>
 
 using namespace std;
 using namespace mdb;
@@ -73,8 +74,7 @@ namespace quanttrading::backtest
 {
 SimExchange::SimExchange(const Config& config)
 	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false),
-	m_Registry(backtestTableList),
-	m_CurrDate(""), m_CurrTime("")
+	m_Registry(backtestTableList), m_CurrDate(""), m_CurrTime(""), m_SessionFile(config.SessionFile)
 {
 	auto matchMode = (MatchModeType)config.MatchMode;
 	strcpy(m_TradingDay, config.StartTradingDay.c_str());
@@ -121,6 +121,12 @@ bool SimExchange::Init()
 	if (m_DB == nullptr)
 	{
 		WriteLog(LogLevel::Error, "Create DB Failed.");
+		return false;
+	}
+	// 交易节在首个订阅到达前装载：聚合器按交易节段首锚定桶边界，缺了它会静默回落墙钟对齐而不报错
+	if (!m_TradeSessions.LoadFromFile(m_SessionFile))
+	{
+		WriteLog(LogLevel::Error, "Load trade sessions failed. SessionFile:%s", m_SessionFile.c_str());
 		return false;
 	}
 	m_Mdb->Subscribe(m_DBWriter);
@@ -319,6 +325,7 @@ void SimExchange::OnMdEnd()
 	}
 	m_IsMdEnd = true;
 	WriteLog(LogLevel::Info, "OnMdEnd");
+	FlushBarAggregators();
     m_OrderMatch->OnTradingDayChange(m_TradingDay);
 	Settlement();
 	m_Mdb->Dump(m_DumpPath.c_str());
@@ -364,10 +371,64 @@ void SimExchange::PushNextBar(mdb::BarMarketData* mdBar)
 		ChangeTradingDay(mdBar->TradingDay);
 	}
     TimeUtility::GetDateTimeFromTimeStamp(mdBar->UpdateTs, m_CurrDate, m_CurrTime);
+	// 撮合始终用数据集精度的原始 bar（聚合只改变推送给策略的粒度，不降低撮合精度）
 	m_OrderMatch->OnBar(mdBar);
-	SendRtnBarMarketData(mdBar);
+	PushBarMarketData(mdBar);
 	m_Mdb->t_BarMarketData->Insert(mdBar);
 	m_LastMdBars[mdBar->InstrumentID] = mdBar;
+}
+void SimExchange::PushBarMarketData(mdb::BarMarketData* mdBar)
+{
+	// 输入字段就地读进 m_PushMdBar：未声明周期的合约直接把这份字段推给策略，不额外占缓冲
+	MdbToField(mdBar, &m_PushMdBar);
+	auto barAggregatorIt = m_InstrumentBarAggregators.find(mdBar->InstrumentID);
+	if (barAggregatorIt == m_InstrumentBarAggregators.end())
+	{
+		OnBarMarketData(&m_PushMdBar);
+		return;
+	}
+	// 声明了周期的合约交聚合器：闭桶时经 OnBarMarketData 推送桶内 bar，未闭桶则不推送
+	barAggregatorIt->second->OnBarMarketData(&m_PushMdBar);
+}
+void SimExchange::OnBarMarketData(BarMarketDataField* bar)
+{
+	// 桶内 bar 与透传 bar 都是本次回调内有效的字段，订阅方复制后即弃
+	m_BackTestSpi->OnRtnBarMarketData(bar);
+}
+bool SimExchange::BindBarAggregator(const char* exchangeID, const char* instrumentID, BarPrecesType barPreces, int barPeriod)
+{
+	if (barPeriod <= 0)
+	{
+		return true;
+	}
+	try
+	{
+		// 装载期预校验：数据集精度本就在手，不必等首根 bar 才发现不可聚合（那时已是引擎线程内抛异常）
+		bar::BarAggregator::ValidatePrecesRelation(m_MdReader->GetBarPrecesType(), m_MdReader->GetBarPeriod(), barPreces, barPeriod, instrumentID);
+	}
+	catch (const std::logic_error& e)
+	{
+		WriteLog(LogLevel::Error, "SubMarketData rejected, bar period can not be served. ExchangeID:%s, InstrumentID:%s, Error:%s",
+			exchangeID, instrumentID, e.what());
+		return false;
+	}
+	const std::pair<BarPrecesType, int> targetPeriod(barPreces, barPeriod);
+	auto barAggregatorIt = m_BarAggregators.find(targetPeriod);
+	if (barAggregatorIt == m_BarAggregators.end())
+	{
+		auto barAggregator = std::make_unique<bar::BarAggregator>(m_TradeSessions, barPreces, barPeriod);
+		barAggregator->Subscribe(this);
+		barAggregatorIt = m_BarAggregators.emplace(targetPeriod, std::move(barAggregator)).first;
+	}
+	m_InstrumentBarAggregators[instrumentID] = barAggregatorIt->second.get();
+	return true;
+}
+void SimExchange::FlushBarAggregators()
+{
+	for (auto& barAggregatorEntry : m_BarAggregators)
+	{
+		barAggregatorEntry.second->Flush();
+	}
 }
 
 void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* reqPackage)
@@ -378,6 +439,8 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		reqSubMds.swap(m_ReqSubMds);
 	}
 	map<std::string, list<MdSubscribe*>> instrumentMdSubscribes;
+	// 订阅声明的目标周期按合约代码暂存：实际登记要等 MdSubscribe 展开出 RealInstrumentID（热门合约滚动时二者不同）
+	map<std::string, ReqSubMarketDataField> instrumentBarPeriods;
 	for (auto reqSubMd : reqSubMds)
 	{
 		if (instrumentMdSubscribes.find(reqSubMd->InstrumentID) != instrumentMdSubscribes.end())
@@ -386,6 +449,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			::Deallocate(reqSubMd);
 			continue;
 		}
+		instrumentBarPeriods[reqSubMd->InstrumentID] = *reqSubMd;
 		auto& mdSubscribes = instrumentMdSubscribes[reqSubMd->InstrumentID];
 		auto instrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(reqSubMd->ExchangeID, reqSubMd->InstrumentID);
 		if (instrument == nullptr)
@@ -475,6 +539,29 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		{
 			mdSubscribes.push_back(mdSubscribe);
 		}
+	}
+	// 聚合器按推送 bar 实际的 InstrumentID 登记：声明了周期的合约走聚合，未声明的透传；
+	// 声明的周期无法由数据集精度聚合时属配置错误，与「订阅为空」同样直接收尾，不静默降级为数据集精度
+	bool hasRejectedBarPeriod = false;
+	for (auto& it : instrumentMdSubscribes)
+	{
+		auto reqSubMdIt = instrumentBarPeriods.find(it.first);
+		if (reqSubMdIt == instrumentBarPeriods.end() || reqSubMdIt->second.BarPeriod <= 0)
+		{
+			continue;
+		}
+		for (auto mdSubscribe : it.second)
+		{
+			if (!BindBarAggregator(mdSubscribe->ExchangeID, mdSubscribe->RealInstrumentID, reqSubMdIt->second.BarPreces, reqSubMdIt->second.BarPeriod))
+			{
+				hasRejectedBarPeriod = true;
+			}
+		}
+	}
+	if (hasRejectedBarPeriod)
+	{
+		OnMdEnd();
+		return;
 	}
 	map<int, list<MdSubscribe*>> yearMdSubscribes;
 	for (auto& it : instrumentMdSubscribes)
@@ -734,6 +821,8 @@ void SimExchange::InitMainInstrument()
 }
 void SimExchange::ChangeTradingDay(const DateType& nextTradingDay)
 {
+	// 先闭合本日残桶：尾桶的 BarTime 属上一交易日，晚一交易日的首根 bar 才收口会把它推到次日推送
+	FlushBarAggregators();
     m_OrderMatch->OnTradingDayChange(nextTradingDay);
 	Settlement();
 	Init(nextTradingDay);
@@ -807,11 +896,6 @@ void SimExchange::SendRtnDepthMarketData(mdb::DepthMarketData* mdTick)
 {
     MdbToField(mdTick, &m_PushMdTick);
 	m_BackTestSpi->OnRtnDepthMarketData(&m_PushMdTick);
-}
-void SimExchange::SendRtnBarMarketData(mdb::BarMarketData* mdBar)
-{
-    MdbToField(mdBar, &m_PushMdBar);
-	m_BackTestSpi->OnRtnBarMarketData(&m_PushMdBar);
 }
 void SimExchange::SendRtnMarketDataEnd()
 {

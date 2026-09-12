@@ -9,8 +9,9 @@ using namespace spark::core;
 
 namespace quanttrading::bar
 {
-    MinuteBar::MinuteBar()
-        :m_BarSubscriber(nullptr)
+    MinuteBar::MinuteBar(const TradeSessions& tradeSessions)
+        :m_TradeSessions(tradeSessions)
+        ,m_BarSubscriber(nullptr)
     {}
     void MinuteBar::Subscribe(BarSubscriber* barSubscriber)
     {
@@ -18,7 +19,7 @@ namespace quanttrading::bar
     }
     void MinuteBar::ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID)
     {
-        TradeSession* selectedTradeSession = TradeSessions::GetTradeSessionForInstrument(exchangeID, instrumentID);
+        const TradeSession* selectedTradeSession = m_TradeSessions.GetTradeSessionForInstrument(exchangeID, instrumentID);
         if (selectedTradeSession != nullptr)
         {
             m_InstrumentTradeSessions[instrumentID] = selectedTradeSession;
@@ -67,7 +68,7 @@ namespace quanttrading::bar
         }
     }
 
-    void MinuteBar::CalculateBarTime(TradeSection* tradeSection, int tickDate, long long tickMinuteTime, long long& barMinuteTime, long long& updateTsMinuteTime)
+    void MinuteBar::CalculateBarTime(const TradeSection* tradeSection, int tickDate, long long tickMinuteTime, long long& barMinuteTime, long long& updateTsMinuteTime)
     {
         if (tradeSection == nullptr)
             return;
@@ -165,7 +166,7 @@ namespace quanttrading::bar
         bar->OpenInterest = depthMd->OpenInterest;
         return bar;
     }
-    void MinuteBar::CheckHasLostBar(BarMarketDataField* preBar, DepthMarketDataField* depthMd, TradeSession* tradeSession, long long nextBarMinuteTime)
+    void MinuteBar::CheckHasLostBar(BarMarketDataField* preBar, DepthMarketDataField* depthMd, const TradeSession* tradeSession, long long nextBarMinuteTime)
     {
         auto tradingDay = atoi(depthMd->TradingDay);
         if (preBar == nullptr)
@@ -197,7 +198,7 @@ namespace quanttrading::bar
             tradeSection = tradeSession->GetNextTradeSection(tradeSection);
             if (tradeSection == nullptr)
             {
-                printf("NextTradeSection Not Exist\n");
+                WriteLog(LogLevel::Warning, "MinuteBar: NextTradeSection not exist. InstrumentID:%s, TradingDay:%s", depthMd->InstrumentID, depthMd->TradingDay);
                 break;
             }
             tradeSession->GetSectionBarTime(tradeSection, tradingDay, sectionBeginBarTime, sectionEndBarTime);
@@ -205,7 +206,7 @@ namespace quanttrading::bar
             lostBarMinuteTime = sectionBeginBarTime;
         }
     }
-    BarMarketDataField* MinuteBar::InitMinuteBarFromDepthMarketData(DepthMarketDataField* depthMd, BarMarketDataField* preBar, TradeSession* tradeSession)
+    BarMarketDataField* MinuteBar::InitMinuteBarFromDepthMarketData(DepthMarketDataField* depthMd, BarMarketDataField* preBar, const TradeSession* tradeSession)
     {
         long long tickDate = depthMd->UpdateTs / 1000000000LL;
         long long tickMinuteTime = depthMd->UpdateTs / 100000LL;

@@ -85,7 +85,9 @@ int main(int argc, char* argv[])
 		return Exit();
 	}
 
-	if (!TradeSessions::LoadFromFile(config.SessionFile))
+	// 交易节由行情服务自己持有并装载（组合根作用域长于 MdKernel/MinuteBar）；回测环境由引擎各自装载自己的那份
+	TradeSessions tradeSessions;
+	if (!tradeSessions.LoadFromFile(config.SessionFile))
 	{
 		WriteLog(LogLevel::Error, "Load trade sessions failed. SessionFile:%s", config.SessionFile.c_str());
 		return Exit();
@@ -116,7 +118,7 @@ int main(int argc, char* argv[])
         mdb->t_MdUser->Insert(mdUser);
     }
 
-	MdKernel* mdKernel = new MdKernel(mdb);
+	MdKernel* mdKernel = new MdKernel(mdb, tradeSessions);
 	dbWriter->Subscribe(mdKernel);
 	MdFront* mdFront = new MdFront(IOModelType::Select, serverConfig.MdOfferAddress.c_str(), 100);
 

@@ -1,6 +1,6 @@
 #include "StrategyBase.h"
 
-#include "BarUtility.h"
+#include "QuantUtility.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Core/Utility/Utility.h>
 #include <cstring>
@@ -43,6 +43,8 @@ void StrategyBase::SubscribeMarketData(const char* exchangeID, const char* instr
 	memset(&reqSubMarketData, 0, sizeof(ReqSubMarketDataField));
 	Utility::Strcpy(reqSubMarketData.ExchangeID, exchangeID);
 	Utility::Strcpy(reqSubMarketData.InstrumentID, instrumentID);
+	reqSubMarketData.BarPreces = m_DeclaredBarPreces;
+	reqSubMarketData.BarPeriod = m_DeclaredBarPeriod;
 	m_BackTestApi->ReqSubMarketData(&reqSubMarketData, ++m_NextRequestID);
 
 	ReqSubMarketDataFinishedField reqSubMarketDataFinished;
@@ -59,16 +61,20 @@ void StrategyBase::SubscribeBar(const char* exchangeID, const char* instrumentID
 }
 void StrategyBase::DeclareBarPeriod(const char* barPreces)
 {
-	BarPrecesType barPrecesType;
+	BarPrecesType barPrecesType = BarPrecesType::Minute;
 	int barPeriod = 0;
-	if (!bar::ParseBarPreces(barPreces != nullptr ? barPreces : "", barPrecesType, barPeriod))
+	if (!ParseBarPreces(barPreces != nullptr ? barPreces : "", barPrecesType, barPeriod))
 	{
 		WriteLog(LogLevel::Error, "DeclareBarPeriod: Invalid barPreces:%s, expect <n><s|m|h|d> e.g. 5m", barPreces != nullptr ? barPreces : "");
 		throw std::logic_error("StrategyBase::DeclareBarPeriod: invalid barPreces");
 	}
-	m_BarAggregator = std::make_unique<bar::BarAggregator>(barPrecesType, barPeriod);
-	m_BarAggregator->Subscribe(this);
-	m_BarAggregationEnabled = true;
+	if (!IsValidBarPrecesTarget(barPrecesType, barPeriod))
+	{
+		WriteLog(LogLevel::Error, "DeclareBarPeriod: BarPreces:%s can not be a target, expect <n><m|h|d> e.g. 5m", barPreces != nullptr ? barPreces : "");
+		throw std::logic_error("StrategyBase::DeclareBarPeriod: barPreces can not be a target");
+	}
+	m_DeclaredBarPreces = barPrecesType;
+	m_DeclaredBarPeriod = barPeriod;
 }
 
 ClientOrderIDType StrategyBase::InsertLimitOrder(const char* exchangeID, const char* instrumentID, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume)
@@ -179,16 +185,7 @@ void StrategyBase::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketD
 }
 void StrategyBase::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
-	if (m_BarAggregationEnabled)
-	{
-		m_BarAggregator->OnBarMarketData(barMarketData);
-		return;
-	}
 	OnBar(barMarketData);
-}
-void StrategyBase::OnBarMarketData(BarMarketDataField* bar)
-{
-	OnBar(bar);
 }
 void StrategyBase::OnRtnSessionBegin(const SessionBeginField* sessionBegin)
 {
@@ -205,10 +202,6 @@ void StrategyBase::OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd)
 	if (!m_IsMdEnded)
 	{
 		m_IsMdEnded = true;
-		if (m_BarAggregationEnabled)
-		{
-			m_BarAggregator->Flush();
-		}
 		OnEnd();
 		m_BackTestApi->Release();
 	}

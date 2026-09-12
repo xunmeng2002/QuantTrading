@@ -6,18 +6,18 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
+#include <sstream>
 
-using namespace std;
 using namespace spark::core;
 
 namespace quanttrading::bar
 {
-    TradeSession* TradeSessions::GetTradeSessionForInstrument(const char* exchangeID, const char* instrumentID)
+    const TradeSession* TradeSessions::GetTradeSessionForInstrument(const char* exchangeID, const char* instrumentID) const
     {
         // 交易所与品种共同决定交易节：先按品种精确匹配（同交易所不同节，如 IF/IC 与 cu/al），
         // 再按该交易所的 "*" 兜底（股票等代码无品种前缀）。Check 是字面量匹配，"*" 无通配语义，故两次查询不可合并
         const std::string productID = GetUnderlyingID(instrumentID);
-        TradeSession* tradeSession = GetTradeSession(exchangeID, productID.c_str());
+        const TradeSession* tradeSession = GetTradeSession(exchangeID, productID.c_str());
         if (tradeSession == nullptr)
         {
             tradeSession = GetTradeSession(exchangeID, "*");
@@ -25,7 +25,7 @@ namespace quanttrading::bar
         return tradeSession;
     }
 
-    bool TradeSession::Check(const char* exchangeID, const char* productID)
+    bool TradeSession::Check(const char* exchangeID, const char* productID) const
     {
         auto it = ExchangeProducts.find(exchangeID);
         if (it == ExchangeProducts.end())
@@ -36,7 +36,7 @@ namespace quanttrading::bar
             return false;
         return true;
     }
-    long long TradeSession::GetFirstBarTime(int tradingDay)
+    long long TradeSession::GetFirstBarTime(int tradingDay) const
     {
         auto tradeSection = GetFirstTradeSection();
         if (tradeSection == nullptr)
@@ -46,27 +46,27 @@ namespace quanttrading::bar
         if (tradeSection->From > 1800)
         {
             char preTradingDay[16]{ 0 };
-            TimeUtility::GetPreTradingDay(to_string(tradingDay).c_str(), preTradingDay);
+            TimeUtility::GetPreTradingDay(std::to_string(tradingDay).c_str(), preTradingDay);
             tradingDay = atoi(preTradingDay);
         }
         return tradingDay * 10000LL + tradeSection->From + 1;
     }
-    TradeSection* TradeSession::GetTradeSection(int time)
+    const TradeSection* TradeSession::GetTradeSection(int time) const
     {
         if (time < 800)
         {
             time += 2400;
         }
-        for (auto section : TradeSections)
+        for (auto& section : TradeSections)
         {
             if (time >= section->From && time <= section->To)
             {
-                return section;
+                return section.get();
             }
         }
         return nullptr;
     }
-    TradeSection* TradeSession::GetNextTradeSection(TradeSection* preTradeSection)
+    const TradeSection* TradeSession::GetNextTradeSection(const TradeSection* preTradeSection) const
     {
         bool find = false;
         for (auto it = TradeSections.begin(); it != TradeSections.end(); ++it)
@@ -74,33 +74,33 @@ namespace quanttrading::bar
             if (find)
             {
                 if ((*it)->SectionClass == SectionClassType::Section)
-                    return *it;
+                    return it->get();
             }
             else
             {
-                find = *it == preTradeSection;
+                find = it->get() == preTradeSection;
             }
         }
         return nullptr;
     }
-    TradeSection* TradeSession::GetFirstTradeSection()
+    const TradeSection* TradeSession::GetFirstTradeSection() const
     {
-        for (auto section : TradeSections)
+        for (auto& section : TradeSections)
         {
             if (section->SectionClass == SectionClassType::Section)
             {
-                return section;
+                return section.get();
             }
         }
         return nullptr;
     }
-    void TradeSession::GetSectionBarTime(TradeSection* tradeSection, int tradingDay, long long& beginBarTime, long long& endBarTime)
+    void TradeSession::GetSectionBarTime(const TradeSection* tradeSection, int tradingDay, long long& beginBarTime, long long& endBarTime) const
     {
         int preTradingDay = 0;
         if ((tradeSection->From > 1800 && tradeSection->From < 2400) || (tradeSection->To > 1800 && tradeSection->To < 2400))
         {
             char date[16]{ 0 };
-            TimeUtility::GetPreTradingDay(to_string(tradingDay).c_str(), date);
+            TimeUtility::GetPreTradingDay(std::to_string(tradingDay).c_str(), date);
             preTradingDay = atoi(date);
         }
         if (tradeSection->From > 1800 && tradeSection->From < 2400)
@@ -128,38 +128,45 @@ namespace quanttrading::bar
             endBarTime = tradingDay * 10000LL + tradeSection->To + 1;
         }
     }
-    const char* TradeSession::ToString() const
+    std::string TradeSession::ToString() const
     {
-        static char buff[1024];
-        int index = 0;
-        memset(buff, 0, 1024);
-        index += sprintf(buff + index, "{Name:%s, Exchanges:[", Name.c_str());
+        std::ostringstream sessionText;
+        sessionText << "{Name:" << Name << ", Exchanges:[";
         for (auto& it : ExchangeProducts)
         {
-            index += sprintf(buff + index, "{ExchangeID:%s, Products:[", it.first.c_str());
+            sessionText << "{ExchangeID:" << it.first << ", Products:[";
             for (auto& productID : it.second)
             {
-                index += sprintf(buff + index, "%s, ", productID.c_str());
+                sessionText << productID << ", ";
             }
-            index += sprintf(buff + index, "]},");
+            sessionText << "]},";
         }
-        index += sprintf(buff + index, "], Sections:[");
-        for (auto tradeSection : TradeSections)
+        sessionText << "], Sections:[";
+        for (auto& tradeSection : TradeSections)
         {
-            index += sprintf(buff + index, "{From:%d, To:%d, SectionClass:%d}, ", tradeSection->From, tradeSection->To, (int)(tradeSection->SectionClass));
+            sessionText << "{From:" << tradeSection->From << ", To:" << tradeSection->To
+                << ", SectionClass:" << static_cast<int>(tradeSection->SectionClass) << "}, ";
         }
-        index += sprintf(buff + index, "]}");
-        return buff;
+        sessionText << "]}";
+        return sessionText.str();
     }
 
-    bool TradeSessions::m_Inited = false;
-    std::string TradeSessions::m_SessionJsonString;
-    std::vector<TradeSession*> TradeSessions::m_TradeSessions;
+    bool TradeSessions::RejectIfAlreadyLoaded(const char* sessionSource) const
+    {
+        if (!m_IsLoaded)
+        {
+            return false;
+        }
+        // 已装载后内容不再变化是他方缓存裸指针（BarAggregator/MinuteBar 按合约缓存 TradeSession*）的前提，重复装载会令其失效
+        WriteLog(LogLevel::Error, "TradeSessions: Already loaded, refuse reload. SessionSource:%s", sessionSource);
+        return true;
+    }
+
     bool TradeSessions::LoadFromFile(const std::string& sessionFile)
     {
-        if (m_Inited)
+        if (RejectIfAlreadyLoaded(sessionFile.c_str()))
         {
-            return true;
+            return false;
         }
         std::ifstream sessionFileStream(sessionFile.c_str());
         if (!sessionFileStream.is_open())
@@ -167,8 +174,8 @@ namespace quanttrading::bar
             WriteLog(LogLevel::Error, "TradeSessions: Open session file failed. SessionFile:%s", sessionFile.c_str());
             return false;
         }
-        m_SessionJsonString = std::string((std::istreambuf_iterator<char>(sessionFileStream)), std::istreambuf_iterator<char>());
-        if (!ParseTradeSessions())
+        const std::string sessionJsonString((std::istreambuf_iterator<char>(sessionFileStream)), std::istreambuf_iterator<char>());
+        if (!ParseFromJsonString(sessionJsonString))
         {
             WriteLog(LogLevel::Error, "TradeSessions: Parse session file failed. SessionFile:%s", sessionFile.c_str());
             return false;
@@ -177,25 +184,29 @@ namespace quanttrading::bar
             static_cast<int>(m_TradeSessions.size()), sessionFile.c_str());
         return true;
     }
-    bool TradeSessions::ParseTradeSessions()
+    bool TradeSessions::ParseFromJsonString(const std::string& sessionJsonString)
     {
+        if (RejectIfAlreadyLoaded("JsonString"))
+        {
+            return false;
+        }
         Json::Reader reader;
         Json::Value root;
-        if (!reader.parse(m_SessionJsonString, root))
+        if (!reader.parse(sessionJsonString, root))
         {
-            printf("ParseTradeSessions Failed. JsonStr:%s\n", m_SessionJsonString.c_str());
+            WriteLog(LogLevel::Error, "TradeSessions: Parse json string failed. JsonStr:%s", sessionJsonString.c_str());
             return false;
         }
         for (auto i = 0u; i < root.size(); ++i)
         {
             auto& tradeSessionValue = root[i];
-            TradeSession* tradeSession = new TradeSession();
+            auto tradeSession = std::make_unique<TradeSession>();
             tradeSession->Name = tradeSessionValue["Name"].asString();
             for (auto j = 0u; j < tradeSessionValue["Exchanges"].size(); ++j)
             {
                 auto& exchangesValue = tradeSessionValue["Exchanges"][j];
                 auto exchangeID = exchangesValue["ExchangeID"].asString();
-                tradeSession->ExchangeProducts.insert(make_pair(exchangeID, list<string>()));
+                tradeSession->ExchangeProducts.insert(std::make_pair(exchangeID, std::list<std::string>()));
                 for (auto k = 0u; k < exchangesValue["Products"].size(); ++k)
                 {
                     auto& productValue = exchangesValue["Products"][k];
@@ -205,10 +216,10 @@ namespace quanttrading::bar
             for (auto j = 0u; j < tradeSessionValue["Sections"].size(); ++j)
             {
                 auto& tradeSectionValue = tradeSessionValue["Sections"][j];
-                TradeSection* tradeSection = new TradeSection();
+                auto tradeSection = std::make_unique<TradeSection>();
                 tradeSection->From = tradeSectionValue["From"].asInt();
                 tradeSection->To = tradeSectionValue["To"].asInt();
-                tradeSection->SectionClass = (SectionClassType)tradeSectionValue["SectionClass"].asInt();
+                tradeSection->SectionClass = static_cast<SectionClassType>(tradeSectionValue["SectionClass"].asInt());
 
                 if (tradeSection->From < 800)
                 {
@@ -218,26 +229,26 @@ namespace quanttrading::bar
                 {
                     tradeSection->To += 2400;
                 }
-                tradeSession->TradeSections.push_back(tradeSection);
+                tradeSession->TradeSections.push_back(std::move(tradeSection));
             }
 
-            m_TradeSessions.push_back(tradeSession);
+            m_TradeSessions.push_back(std::move(tradeSession));
         }
 
-        for (auto tradeSession : m_TradeSessions)
+        for (auto& tradeSession : m_TradeSessions)
         {
-            printf("TradeSession:%s\n", tradeSession->ToString());
+            WriteLog(LogLevel::Info, "TradeSessions: TradeSession:%s", tradeSession->ToString().c_str());
         }
-        m_Inited = true;
+        m_IsLoaded = true;
         return true;
     }
-    TradeSession* TradeSessions::GetTradeSession(const char* exchangeID, const char* productID)
+    const TradeSession* TradeSessions::GetTradeSession(const char* exchangeID, const char* productID) const
     {
-        for (auto tradeSession : m_TradeSessions)
+        for (auto& tradeSession : m_TradeSessions)
         {
             if (tradeSession->Check(exchangeID, productID))
             {
-                return tradeSession;
+                return tradeSession.get();
             }
         }
         return nullptr;

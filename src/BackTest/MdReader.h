@@ -16,6 +16,10 @@ public:
 	~MdReader();
 	bool Init();
 
+	// 数据集精度（BackTest.json 的 BarPreces）：订阅声明的目标周期须能由它聚合而来，引擎在装载期据此预校验
+	BarPrecesType GetBarPrecesType() const { return m_BarPrecesType; }
+	int GetBarPeriod() const { return m_BarPeriod; }
+
 	void ReadMdInstrument(std::list<mdb::Instrument*>& instruments);
 	void ReadMdTick(std::list<mdb::MdSubscribe*>& mdSubscribes, std::list<mdb::DepthMarketData*>& mdTicks);
 	void ReadMdBar(std::list<mdb::MdSubscribe*>& mdSubscribes, std::list<mdb::BarMarketData*>& mdBars);

@@ -114,11 +114,14 @@ void BackTestSpiImpl::ReqRegisterAccount()
 
 void BackTestSpiImpl::ReqSubMarketData()
 {
+	// BarPeriod 留 0 = 不做周期聚合，按数据集精度收 bar
 	ReqSubMarketDataField reqSubMd;
+	memset(&reqSubMd, 0, sizeof(ReqSubMarketDataField));
 	strcpy(reqSubMd.ExchangeID, m_ExchangeID);
 	strcpy(reqSubMd.InstrumentID, m_InstrumentID);
 	m_BackTestApi->ReqSubMarketData(&reqSubMd, ++m_MaxRequestID);
 	ReqSubMarketDataFinishedField reqSubMdFinished;
+	memset(&reqSubMdFinished, 0, sizeof(ReqSubMarketDataFinishedField));
 	m_BackTestApi->ReqSubMarketDataFinished(&reqSubMdFinished, ++m_MaxRequestID);
 }
 void BackTestSpiImpl::ReqInsertOrder(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID, const double& price, DirectionType direction)

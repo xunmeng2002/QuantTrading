@@ -70,6 +70,8 @@ public:
 	static constexpr UShortType FieldID = 0x1005;
 	ExchangeIDType ExchangeID;		//交易所代码
 	InstrumentIDType InstrumentID;		//合约代码
+	BarPrecesType BarPreces;		//Bar精度
+	IntType BarPeriod;		//Bar周期
 };
 class RspSubMarketDataField
 {

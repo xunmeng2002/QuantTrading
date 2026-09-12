@@ -52,25 +52,21 @@ DepthMarketDataField MakeTick(const char* instrument_id, long long update_ts, do
     return tick;
 }
 
-// 每个用例独立装载时段与 MinuteBar，结束时清理静态时段状态
+// 每个用例独立装载时段与 MinuteBar。trade_sessions_ 须先于 minute_bar_ 声明：
+// MinuteBar 持有其引用，构造在前、析构在后，用例结束即随成员自然回收
 class MinuteBarEnvironment
 {
 public:
     MinuteBarEnvironment(const char* exchange_id, const char* instrument_id)
+        :minute_bar_(trade_sessions_)
     {
-        ResetTradeSessions();
-        REQUIRE(LoadTradeSessionJson(kBarSessionJson));
+        REQUIRE(LoadTradeSessionJson(trade_sessions_, kBarSessionJson));
         ExchangeIDType exchange_id_buffer{};
         InstrumentIDType instrument_id_buffer{};
         CopyString(exchange_id_buffer, exchange_id);
         CopyString(instrument_id_buffer, instrument_id);
         minute_bar_.Subscribe(&subscriber_);
         minute_bar_.ReqSubMarketData(exchange_id_buffer, instrument_id_buffer);
-    }
-
-    ~MinuteBarEnvironment()
-    {
-        ResetTradeSessions();
     }
 
     MinuteBar& GetMinuteBar()
@@ -84,6 +80,7 @@ public:
     }
 
 private:
+    TradeSessions trade_sessions_;
     MinuteBar minute_bar_;
     RecordingBarSubscriber subscriber_;
 };

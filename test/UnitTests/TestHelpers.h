@@ -22,27 +22,10 @@ namespace quanttrading::unittest
         return static_cast<long long>(tradingDay) * 1000000000LL + static_cast<long long>(hhmmss) * 1000 + milliSecond;
     }
 
-    // 用 JSON 字符串装载交易时段（ParseTradeSessions 的入参为静态成员，绕开文件读取）
-    inline bool LoadTradeSessionJson(const char* sessionJson)
+    // 用 JSON 字符串装载交易时段（绕开文件读取）；实例由持有方管理生命周期，析构即回收，无需手动清理
+    inline bool LoadTradeSessionJson(quanttrading::bar::TradeSessions& tradeSessions, const char* sessionJson)
     {
-        quanttrading::bar::TradeSessions::m_SessionJsonString = sessionJson;
-        return quanttrading::bar::TradeSessions::ParseTradeSessions();
-    }
-
-    // 清理 ParseTradeSessions 在静态区遗留的对象（库侧只 new 不 delete，测试须自行配平）
-    inline void ResetTradeSessions()
-    {
-        for (auto* tradeSession : quanttrading::bar::TradeSessions::m_TradeSessions)
-        {
-            for (auto* tradeSection : tradeSession->TradeSections)
-            {
-                delete tradeSection;
-            }
-            delete tradeSession;
-        }
-        quanttrading::bar::TradeSessions::m_TradeSessions.clear();
-        quanttrading::bar::TradeSessions::m_Inited = false;
-        quanttrading::bar::TradeSessions::m_SessionJsonString.clear();
+        return tradeSessions.ParseFromJsonString(sessionJson);
     }
 
     // 池分配记录（tick/bar/order 等）统一登记、析构回池，与"池对象所有权归订阅方/测试侧"契约配平
@@ -183,7 +166,16 @@ namespace quanttrading::unittest
         void Release() override { ++release_count; }
         void RegisterFront(const char* /*address*/) override {}
         void RegisterSpi(quanttrading::BackTestSpi* spi) override { registered_spi = spi; }
-        int ReqSubMarketData(const ReqSubMarketDataField* /*req*/, int requestID) override { ++subscribe_count; last_subscribe_request_id = requestID; return 0; }
+        int ReqSubMarketData(const ReqSubMarketDataField* req, int requestID) override
+        {
+            ++subscribe_count;
+            last_subscribe_request_id = requestID;
+            if (req != nullptr)
+            {
+                subscribe_requests.push_back(*req);
+            }
+            return 0;
+        }
         int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* /*req*/, int /*requestID*/) override { return 0; }
         int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID) override
         {
@@ -211,6 +203,8 @@ namespace quanttrading::unittest
         int last_subscribe_request_id = 0;
         int register_account_request_id = 0;
         quanttrading::BackTestSpi* registered_spi = nullptr;
+        // 逐条留存订阅请求：策略声明的 bar 周期随请求上报，测试据此断言声明的周期已挂到订阅上
+        std::vector<ReqSubMarketDataField> subscribe_requests;
         std::vector<ReqRegisterAccountField> register_account_requests;
         std::vector<ReqInsertOrderField> insert_requests;
         std::vector<ReqCancelOrderField> cancel_requests;

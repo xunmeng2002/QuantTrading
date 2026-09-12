@@ -12,7 +12,7 @@ struct GridParams
 	int VolumePerGrid = 0;
 	std::string ExchangeID;
 	std::string InstrumentID;
-	std::string BarPreces;   // 策略期望 bar 周期（"5m" 格式，同 BackTest.json BarPreces）；空=OnBar 纯透传
+	std::string BarPreces;   // 策略期望 bar 周期（"5m" 格式）；空=不声明，OnBar 收数据集精度 bar（由引擎按 BackTest.json BarPreces 聚合推送）
 };
 
 // 成对网格：每格一开一平，利润 = 步长 × 乘数 × 手数，仓位天然有界（≤ GridCount 手/向）。

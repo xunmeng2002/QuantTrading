@@ -1435,6 +1435,8 @@ int ReqSubMarketDataPackage::ToStepStream(char* buff, int size) const
 			ReqSubMarketData->InstrumentID[sizeof(ReqSubMarketData->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(ppos, Items::InstrumentID, ReqSubMarketData->InstrumentID);
+		StepUtility::WriteString(ppos, Items::BarPreces, (int)ReqSubMarketData->BarPreces);
+		StepUtility::WriteString(ppos, Items::BarPeriod, ReqSubMarketData->BarPeriod);
 		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqSubMarketDataField::FieldID);
 	}
 	return int(ppos - buff);
@@ -1477,6 +1479,16 @@ bool ReqSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						{
 							size_t len = value.length() >= sizeof(ReqSubMarketData->InstrumentID) ? sizeof(ReqSubMarketData->InstrumentID) - 1 : value.length();
 							memcpy(ReqSubMarketData->InstrumentID, value.c_str(), len);
+							break;
+						}
+						case Items::BarPreces:
+						{
+							ReqSubMarketData->BarPreces = (BarPrecesType)(atoi(value.c_str()));
+							break;
+						}
+						case Items::BarPeriod:
+						{
+							ReqSubMarketData->BarPeriod = atoi(value.c_str());
 							break;
 						}
 						default:
@@ -1546,7 +1558,7 @@ const char* ReqSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqSubMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID);
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID, (int)ReqSubMarketData->BarPreces, ReqSubMarketData->BarPeriod);
 	}
 	return t_DataStringBuffer;
 }

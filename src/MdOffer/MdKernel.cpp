@@ -17,12 +17,14 @@ using namespace quanttrading::bar;
 
 namespace quanttrading::mdoffer
 {
-    MdKernel::MdKernel(mdb::Mdb* mdb)
+    MdKernel::MdKernel(mdb::Mdb* mdb, const TradeSessions& tradeSessions)
         :ThreadBase("MdKernel"), m_Mdb(mdb), m_MdFront(nullptr), m_MdSpi(nullptr)
     {
-        m_MinuteBar = new MinuteBar();
+        m_MinuteBar = new MinuteBar(tradeSessions);
         m_MinuteBar->Subscribe(this);
+        // 复用为查询键（仅 ExchangeID/InstrumentID 参与比较），零初始化以免未参与赋值的字段带出随机值
         m_ReqSubMarketData = new ReqSubMarketDataField();
+        memset(m_ReqSubMarketData, 0, sizeof(ReqSubMarketDataField));
         m_BarMdPackage = new RtnBarMarketDataPackage();
     }
     void MdKernel::SetMdFront(MdFront* mdFront)
@@ -182,7 +184,9 @@ namespace quanttrading::mdoffer
         for (auto& it = instrumentItPair.first; it != instrumentItPair.second; ++it)
         {
             // 全市场订阅复用全局注册表：重复合约自动去重，且消除此前的裸分配泄漏。
+            // 全市场订阅不对 bar 周期提要求，BarPreces/BarPeriod 置 0
             ReqSubMarketDataField field;
+            memset(&field, 0, sizeof(ReqSubMarketDataField));
             Utility::Strcpy(field.ExchangeID, (*it)->ExchangeID);
             Utility::Strcpy(field.InstrumentID, (*it)->InstrumentID);
             auto [fieldIt, isNew] = m_SubscribeInstruments.insert(field);

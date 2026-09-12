@@ -52,8 +52,8 @@ int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarke
 	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestID);
 	if (reqSubMarketData != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeID:[%s], InstrumentID:[%s]",
-			reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID);
+		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]",
+			reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID, (int)reqSubMarketData->BarPreces, reqSubMarketData->BarPeriod);
 	}
 	else
 	{

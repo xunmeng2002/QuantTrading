@@ -9,6 +9,7 @@ MdSpiImpl::MdSpiImpl(MdApi* mdApi)
 	:m_MdApi(mdApi), m_RequestID(0)
 {
 	m_ReqSubMarketData = new ReqSubMarketDataField();
+	memset(m_ReqSubMarketData, 0, sizeof(ReqSubMarketDataField));
 }
 MdSpiImpl::~MdSpiImpl()
 {
