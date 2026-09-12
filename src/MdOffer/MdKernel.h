@@ -7,6 +7,7 @@
 #include "MinuteBar.h"
 #include "Mdb.h"
 #include <Spark/Core/Thread/ThreadBase.h>
+#include <Spark/Core/ConfigStructs/ConfigStructs.h>
 #include <Spark/Network/Protocol/ProtocolSubscriber.h>
 #include <Spark/Network/Protocol/Package.h>
 #include <map>
@@ -24,8 +25,10 @@ namespace quanttrading::mdoffer
     class MdKernel : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public quanttrading::bar::BarSubscriber, public dbadapters::DBSubscriber
     {
     public:
-        // tradeSessions 须长于本对象（转交 MinuteBar 持有），且须在首个订阅到达前装载完成
-        MdKernel(mdb::Mdb* mdb, const TradeSessions& tradeSessions);
+        // tradeSessions 须长于本对象（转交 MinuteBar 持有），且须在首个订阅到达前装载完成；
+        // 启动订阅清单项指向配置单例，生命周期同进程
+        MdKernel(mdb::Mdb* mdb, const TradeSessions& tradeSessions,
+            const std::list<spark::core::SubscribeInstrument*>& startupSubscribeInstruments);
         void SetMdFront(MdFront* mdFront);
         void SetMdSpi(CThostFtdcMdSpiImpl* mdSpi);
 
@@ -61,6 +64,7 @@ namespace quanttrading::mdoffer
         MdFront* m_MdFront;
         CThostFtdcMdSpiImpl* m_MdSpi;
         MinuteBar* m_MinuteBar;
+        std::list<spark::core::SubscribeInstrument*> m_StartupSubscribeInstruments;
 
         std::mutex m_Mutex;
         std::condition_variable m_ConditionVariable;

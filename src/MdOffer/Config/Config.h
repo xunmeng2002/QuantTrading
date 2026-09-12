@@ -27,9 +27,9 @@ public:
 	string DbUser;
 	string DbPassword;
 	string DbHost;
-	string DbInitHost;
 	string MdUserID;
 	string MdPassword;
+	std::list<SubscribeInstrument*> SubscribeInstruments;
 	
 private:
 	static Config m_Instance;

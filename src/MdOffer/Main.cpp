@@ -8,7 +8,6 @@
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Utility/Utility.h>
 #include "Mdb.h"
-#include "InitMdbFromDB.h"
 #include "MdbTableRegistry.h"
 #include "MdOfferTableList.h"
 #include <DBAdapters/DBInterface/DB.h>
@@ -37,7 +36,6 @@ using namespace quanttrading::bar;
 using namespace quanttrading::mdoffer;
 
 const char* ConfigName = "MdOffer.json";
-const char* initSqliteDBName = "./MdOfferInit.db";
 
 static DB* CreateDataDb(const Config& config)
 {
@@ -94,20 +92,12 @@ int main(int argc, char* argv[])
 	}
 
     DB* db = CreateDataDb(config);
-    SqliteWrapper* initDB = new SqliteWrapper(config.DbInitHost.empty() ? initSqliteDBName : config.DbInitHost);
-	
+
     Mdb* mdb = new Mdb(mdofferTableList);
     mdb::MdbTableRegistry schemaRegistry(mdofferTableList);
     AsyncDBWriter* dbWriter = new AsyncDBWriter(db, &schemaRegistry);
     mdb->Subscribe(dbWriter);
     dbWriter->Subscribe(mdb);
-
-	
-	InitMdbFromDB::LoadMdUserTable(mdb, initDB);
-	InitMdbFromDB::LoadExchangeTable(mdb, initDB);
-	InitMdbFromDB::LoadInstrumentTable(mdb, initDB);
-	initDB->DisConnect();
-	delete initDB;
 
     if (!config.MdUserID.empty())
     {
@@ -118,7 +108,7 @@ int main(int argc, char* argv[])
         mdb->t_MdUser->Insert(mdUser);
     }
 
-	MdKernel* mdKernel = new MdKernel(mdb, tradeSessions);
+	MdKernel* mdKernel = new MdKernel(mdb, tradeSessions, config.SubscribeInstruments);
 	dbWriter->Subscribe(mdKernel);
 	MdFront* mdFront = new MdFront(IOModelType::Select, serverConfig.MdOfferAddress.c_str(), 100);
 

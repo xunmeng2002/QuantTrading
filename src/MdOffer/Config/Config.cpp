@@ -46,9 +46,15 @@ void Config::Load(const char* fileName)
 	DbUser = root["DbUser"].asString();
 	DbPassword = root["DbPassword"].asString();
 	DbHost = root["DbHost"].asString();
-	DbInitHost = root["DbInitHost"].asString();
 	MdUserID = root["MdUserID"].asString();
 	MdPassword = root["MdPassword"].asString();
+	for (auto& subValue : root["SubscribeInstruments"])
+	{
+		SubscribeInstrument* subRecord = new SubscribeInstrument();
+		subRecord->ExchangeID = subValue["ExchangeID"].asString();
+		subRecord->InstrumentID = subValue["InstrumentID"].asString();
+		SubscribeInstruments.push_back(subRecord);
+	}
 	Print();
 }
 
@@ -65,8 +71,16 @@ void Config::Print()
 	printf("DbType:%s\n", DbType.c_str());
 	printf("DbUser:%s\n", DbUser.c_str());
 	printf("DbHost:%s\n", DbHost.c_str());
-	printf("DbInitHost:%s\n", DbInitHost.c_str());
 	printf("MdUserID:%s\n", MdUserID.c_str());
+	printf("SubscribeInstruments:[\n");
+	for (auto record : SubscribeInstruments)
+	{
+		printf("{\n");
+		printf("\tExchangeID:%s, InstrumentID:%s, \n",
+			record->ExchangeID.c_str(), record->InstrumentID.c_str());
+		printf("},\n");
+	}
+	printf("]\n");
 }
 
 }
