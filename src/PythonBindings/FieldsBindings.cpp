@@ -41,6 +41,11 @@ void BindEnums(py::module_& module)
 		.value("NotTouched", OrderStatusType::NotTouched)
 		.value("Touched", OrderStatusType::Touched)
 		.value("Unknown", OrderStatusType::Unknown);
+
+	py::enum_<BarPrecesType>(module, "BarPrecesType")
+		.value("Second", BarPrecesType::Second)
+		.value("Minute", BarPrecesType::Minute)
+		.value("Day", BarPrecesType::Day);
 }
 
 void BindFields(py::module_& module)
@@ -87,6 +92,8 @@ void BindFields(py::module_& module)
 		.def_property_readonly("trading_day", [](const BarMarketDataField& field) { return std::string(field.TradingDay); })
 		.def_property_readonly("exchange_id", [](const BarMarketDataField& field) { return std::string(field.ExchangeID); })
 		.def_property_readonly("instrument_id", [](const BarMarketDataField& field) { return std::string(field.InstrumentID); })
+		.def_readonly("bar_preces", &BarMarketDataField::BarPreces)
+		.def_readonly("bar_period", &BarMarketDataField::BarPeriod)
 		.def_readonly("bar_time", &BarMarketDataField::BarTime)
 		.def_readonly("update_ts", &BarMarketDataField::UpdateTs)
 		.def_readonly("open", &BarMarketDataField::Open)
