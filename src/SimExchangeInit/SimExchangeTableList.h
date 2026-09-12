@@ -18,7 +18,7 @@ namespace quanttrading::simexchange
 		PositionDetail::TableID,
 		Order::TableID,
 		Trade::TableID,
-		AccountLoginSession::TableID,
+		PrimaryAccountLoginSession::TableID,
 		DepthMarketData::TableID,
 		BarMarketData::TableID,
 	};

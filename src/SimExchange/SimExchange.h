@@ -62,7 +62,8 @@ private:
 	void HandleReqQryInstrument(ReqQryInstrumentPackage* reqPackage);
 
 
-	bool CheckSessionLogin(const SessionIDType& sessionID);
+	int CheckSessionLogin(const SessionIDType& sessionID);
+	int CheckSessionLogin(const AccountIDType& primaryAccountID, const SessionIDType& sessionID);
 	
 	void SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, mdb::PrimaryAccount* primaryAccount, int errorID);
 	void SendRspInsertOrder(ReqInsertOrderPackage* reqPackage, int errorID);

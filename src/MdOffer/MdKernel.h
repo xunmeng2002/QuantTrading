@@ -58,6 +58,7 @@ namespace quanttrading::mdoffer
         Package* GetPackage();
         void PushToAll(Package* package);
         void PushToAllSubscribed(ReqSubMarketDataField* reqSubMarketData, Package* package);
+        bool IsSessionLoggedIn(const SessionIDType& sessionID);
 
     private:
         mdb::Mdb* m_Mdb;
@@ -69,7 +70,6 @@ namespace quanttrading::mdoffer
         std::mutex m_Mutex;
         std::condition_variable m_ConditionVariable;
 
-        std::set<SessionIDType> m_LoggedSessions;
         std::set<ReqSubMarketDataField> m_SubscribeInstruments;
         std::map<SessionIDType, std::set<ReqSubMarketDataField>> m_SessionSubscribeInstruments;
         std::list<Package*> m_RecvPackages;

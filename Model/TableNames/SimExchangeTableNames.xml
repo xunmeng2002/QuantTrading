@@ -11,7 +11,7 @@
 	<table name="PositionDetail"/>
 	<table name="Order"/>
 	<table name="Trade"/>
-	<table name="AccountLoginSession"/>
+	<table name="PrimaryAccountLoginSession"/>
 
 	<table name="DepthMarketData"/>
 	<table name="BarMarketData"/>

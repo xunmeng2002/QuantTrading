@@ -20,7 +20,6 @@ namespace mdb
 		static void LoadBarMarketDataTable(Mdb* mdb, DB* db);
 		static void LoadMdSubscribeTable(Mdb* mdb, DB* db);
 		static void LoadMdUserTable(Mdb* mdb, DB* db);
-		static void LoadMdUserLoginSessionTable(Mdb* mdb, DB* db);
 		static void LoadPrimaryAccountTable(Mdb* mdb, DB* db);
 		static void LoadAccountTable(Mdb* mdb, DB* db);
 		static void LoadCapitalTable(Mdb* mdb, DB* db);
@@ -28,7 +27,5 @@ namespace mdb
 		static void LoadPositionDetailTable(Mdb* mdb, DB* db);
 		static void LoadOrderTable(Mdb* mdb, DB* db);
 		static void LoadTradeTable(Mdb* mdb, DB* db);
-		static void LoadAccountLoginSessionTable(Mdb* mdb, DB* db);
-		static void LoadPrimaryAccountLoginSessionTable(Mdb* mdb, DB* db);
 	};
 }

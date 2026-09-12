@@ -23,7 +23,6 @@ namespace mdb
 			case BarMarketData::TableID:  LoadBarMarketDataTable(mdb, db); break;
 			case MdSubscribe::TableID:  LoadMdSubscribeTable(mdb, db); break;
 			case MdUser::TableID:  LoadMdUserTable(mdb, db); break;
-			case MdUserLoginSession::TableID:  LoadMdUserLoginSessionTable(mdb, db); break;
 			case PrimaryAccount::TableID:  LoadPrimaryAccountTable(mdb, db); break;
 			case Account::TableID:  LoadAccountTable(mdb, db); break;
 			case Capital::TableID:  LoadCapitalTable(mdb, db); break;
@@ -31,8 +30,6 @@ namespace mdb
 			case PositionDetail::TableID:  LoadPositionDetailTable(mdb, db); break;
 			case Order::TableID:  LoadOrderTable(mdb, db); break;
 			case Trade::TableID:  LoadTradeTable(mdb, db); break;
-			case AccountLoginSession::TableID:  LoadAccountLoginSessionTable(mdb, db); break;
-			case PrimaryAccountLoginSession::TableID:  LoadPrimaryAccountLoginSessionTable(mdb, db); break;
 			default: break;
 			}
 		}
@@ -128,16 +125,6 @@ namespace mdb
 			mdb->t_MdUser->Insert(record);
 		}
 	}
-	void InitMdbFromDB::LoadMdUserLoginSessionTable(Mdb* mdb, DB* db)
-	{
-		TypedTable<MdUserLoginSession> table(db);
-		vector<MdUserLoginSession*> records;
-		table.SelectAll(records);
-		for (auto record : records)
-		{
-			mdb->t_MdUserLoginSession->Insert(record);
-		}
-	}
 	void InitMdbFromDB::LoadPrimaryAccountTable(Mdb* mdb, DB* db)
 	{
 		TypedTable<PrimaryAccount> table(db);
@@ -206,26 +193,6 @@ namespace mdb
 		for (auto record : records)
 		{
 			mdb->t_Trade->Insert(record);
-		}
-	}
-	void InitMdbFromDB::LoadAccountLoginSessionTable(Mdb* mdb, DB* db)
-	{
-		TypedTable<AccountLoginSession> table(db);
-		vector<AccountLoginSession*> records;
-		table.SelectAll(records);
-		for (auto record : records)
-		{
-			mdb->t_AccountLoginSession->Insert(record);
-		}
-	}
-	void InitMdbFromDB::LoadPrimaryAccountLoginSessionTable(Mdb* mdb, DB* db)
-	{
-		TypedTable<PrimaryAccountLoginSession> table(db);
-		vector<PrimaryAccountLoginSession*> records;
-		table.SelectAll(records);
-		for (auto record : records)
-		{
-			mdb->t_PrimaryAccountLoginSession->Insert(record);
 		}
 	}
 }

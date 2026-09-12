@@ -134,15 +134,10 @@ namespace quanttrading::mdoffer
             WriteLog(LogLevel::Warning, "HandleNotifyDisConnect: missing field zone. SessionID:%lld", package->SessionID);
             return 0;
         }
-        m_LoggedSessions.erase(package->NotifyDisConnect->SessionID);
         m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionID);
 
         // 同步清理持久化会话记录，否则同 SessionID 重连会命中 ErrorSessionAlreadyLogin。
-        auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(package->NotifyDisConnect->SessionID);
-        if (mdUserLoginSession != nullptr)
-        {
-            m_Mdb->t_MdUserLoginSession->Erase(mdUserLoginSession);
-        }
+        m_Mdb->t_MdUserLoginSession->EraseBySessionIDIndex(package->NotifyDisConnect->SessionID);
         return 0;
     }
     int MdKernel::HandleNotifyDBConnect(NotifyDBConnectPackage* package)
@@ -198,7 +193,7 @@ namespace quanttrading::mdoffer
             }
             else
             {
-                auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(package->SessionID);
+                auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(mdUser->MdUserID, package->SessionID);
                 if (mdUserLoginSession != nullptr)
                 {
                     errorID = ErrorSessionAlreadyLogin;
@@ -212,7 +207,6 @@ namespace quanttrading::mdoffer
                     Utility::Strcpy(mdUserLoginSession->IPAddress, package->IPAddress);
                     if (m_Mdb->t_MdUserLoginSession->Insert(mdUserLoginSession))
                     {
-                        m_LoggedSessions.insert(package->SessionID);
                         errorID = ErrorNone;
                     }
                     else
@@ -249,15 +243,10 @@ namespace quanttrading::mdoffer
     }
     int MdKernel::HandleReqMdUserLogout(ReqMdUserLogoutPackage* package)
     {
-        m_LoggedSessions.erase(package->SessionID);
         m_SessionSubscribeInstruments.erase(package->SessionID);
 
         // 同步清理持久化会话记录，否则同 SessionID 重登会命中 ErrorSessionAlreadyLogin。
-        auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(package->SessionID);
-        if (mdUserLoginSession != nullptr)
-        {
-            m_Mdb->t_MdUserLoginSession->Erase(mdUserLoginSession);
-        }
+        m_Mdb->t_MdUserLoginSession->EraseBySessionIDIndex(package->SessionID);
 
         RspMdUserLogoutPackage* rspPackage = RspMdUserLogoutPackage::Allocate();
         rspPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
@@ -291,8 +280,7 @@ namespace quanttrading::mdoffer
         WriteLog(LogLevel::Info, "HandleReqSubMarketData: %s", package->GetDebugString());
         auto reqSubMarketData = package->ReqSubMarketData;
         auto errorID = ErrorNone;
-        auto loggedSessionIt = m_LoggedSessions.find(package->SessionID);
-        if (loggedSessionIt == m_LoggedSessions.end())
+        if (!IsSessionLoggedIn(package->SessionID))
         {
             errorID = ErrorUserNotLogin;
         }
@@ -371,6 +359,12 @@ namespace quanttrading::mdoffer
         Utility::Strcpy(m_ReqSubMarketData->InstrumentID, package->DepthMarketData->InstrumentID);
         PushToAllSubscribed(m_ReqSubMarketData, package);
         return 0;
+    }
+
+    bool MdKernel::IsSessionLoggedIn(const SessionIDType& sessionID)
+    {
+        auto sessionIDRange = m_Mdb->t_MdUserLoginSession->m_SessionIDIndex->EqualRange(sessionID);
+        return sessionIDRange.first != sessionIDRange.second;
     }
 
     Package* MdKernel::GetPackage()
