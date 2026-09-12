@@ -541,4 +541,34 @@ namespace mdb
 		AccountLoginSessionIndexAccountID* m_AccountIDIndex;
 	};
 
+	class PrimaryAccountLoginSessionTable : public MdbTableBase
+	{
+	public:
+		PrimaryAccountLoginSessionTable();
+		~PrimaryAccountLoginSessionTable() override;
+		virtual void Subscribe(MdbSubscriber* mdbSubscriber) override;
+		virtual void UnSubscribe() override;
+		void LockShared();
+		void UnlockShared();
+		virtual void InitDB() override;
+		bool Insert(PrimaryAccountLoginSession* record);
+		void BatchInsert(std::vector<mdb::PrimaryAccountLoginSession*>* records);
+		void Erase(PrimaryAccountLoginSession* record);
+		int EraseByPrimaryAccountIDIndex(const AccountIDType& PrimaryAccountID);
+		bool Update(PrimaryAccountLoginSession* const oldRecord, PrimaryAccountLoginSession* const newRecord, bool updateDB = true);
+		virtual void TruncateTables() override;
+		void TruncateTable();
+		virtual void Dump(const char* dir) override;
+
+	private:
+		void EraseUniqueKey(PrimaryAccountLoginSession* record);
+		void EraseIndex(PrimaryAccountLoginSession* record);
+
+	public:
+		MdbSubscriber* m_MdbSubscriber;
+		std::shared_mutex m_SharedMutex;
+		PrimaryAccountLoginSessionPrimaryKey* m_PrimaryKey;
+		PrimaryAccountLoginSessionIndexPrimaryAccountID* m_PrimaryAccountIDIndex;
+	};
+
 }

@@ -247,6 +247,7 @@
 			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
 		</items>
 		<primarykey>
+			<item name="MdUserID" id="0x100F" type="UserID" desc="行情用户代码"/>
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 		</primarykey>
 		<uniquekeys/>
@@ -528,12 +529,30 @@
 			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
 		</items>
 		<primarykey>
+			<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 		</primarykey>
 		<uniquekeys/>
 		<indexes>
 			<index name="AccountID">
 				<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+			</index>
+		</indexes>
+	</table>
+	<table name="PrimaryAccountLoginSession" id="0x3009" desc="主账户登录会话" batch="" session="true">
+		<items>
+			<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
+			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
+		</items>
+		<primarykey>
+			<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
+			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+		</primarykey>
+		<uniquekeys/>
+		<indexes>
+			<index name="PrimaryAccountID">
+				<item name="PrimaryAccountID" id="0x1014" type="AccountID" desc="主账户代码"/>
 			</index>
 		</indexes>
 	</table>

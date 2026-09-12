@@ -44,6 +44,7 @@ namespace mdb
 		OrderTable* t_Order = nullptr;
 		TradeTable* t_Trade = nullptr;
 		AccountLoginSessionTable* t_AccountLoginSession = nullptr;
+		PrimaryAccountLoginSessionTable* t_PrimaryAccountLoginSession = nullptr;
 	private:
 		MdbSubscriber* m_MdbSubscriber;
 		std::vector<MdbTableBase*> m_Tables;

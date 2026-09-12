@@ -35,6 +35,7 @@ namespace mdb
 		case Order::TableID: return &Order::GetSchema();
 		case Trade::TableID: return &Trade::GetSchema();
 		case AccountLoginSession::TableID: return &AccountLoginSession::GetSchema();
+		case PrimaryAccountLoginSession::TableID: return &PrimaryAccountLoginSession::GetSchema();
 		default: return nullptr;
 		}
 	}

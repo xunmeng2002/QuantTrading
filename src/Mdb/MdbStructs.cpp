@@ -463,7 +463,7 @@ namespace mdb
 		{"SessionID", FieldType::Int64, offsetof(MdUserLoginSession, SessionID), 0},
 		{"IPAddress", FieldType::Char, offsetof(MdUserLoginSession, IPAddress), sizeof(MdUserLoginSession::IPAddress)},
 	};
-	static const int MdUserLoginSessionPKIndices[] = { 1 };
+	static const int MdUserLoginSessionPKIndices[] = { 0, 1 };
 	static const int kMdUserLoginSessionIdxMdUserID[] = { 0 };
 	static const IndexDefinition MdUserLoginSessionIndices[] = {
 		{MdUserLoginSessionIndexMdUserID::IndexID, kMdUserLoginSessionIdxMdUserID, 1},
@@ -496,7 +496,7 @@ namespace mdb
 	static void DeallocateMdUserLoginSession(void* r) { static_cast<MdUserLoginSession*>(r)->Deallocate(); }
 	const TableSchema& MdUserLoginSession::GetSchema()
 	{
-		static const TableSchema schema = {"t_MdUserLoginSession", MdUserLoginSessionFields, 3, MdUserLoginSessionPKIndices, 1, DeallocateMdUserLoginSession, MdUserLoginSessionIndices, 1};
+		static const TableSchema schema = {"t_MdUserLoginSession", MdUserLoginSessionFields, 3, MdUserLoginSessionPKIndices, 2, DeallocateMdUserLoginSession, MdUserLoginSessionIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor PrimaryAccountFields[] = {
@@ -908,7 +908,7 @@ namespace mdb
 		{"SessionID", FieldType::Int64, offsetof(AccountLoginSession, SessionID), 0},
 		{"IPAddress", FieldType::Char, offsetof(AccountLoginSession, IPAddress), sizeof(AccountLoginSession::IPAddress)},
 	};
-	static const int AccountLoginSessionPKIndices[] = { 1 };
+	static const int AccountLoginSessionPKIndices[] = { 0, 1 };
 	static const int kAccountLoginSessionIdxAccountID[] = { 0 };
 	static const IndexDefinition AccountLoginSessionIndices[] = {
 		{AccountLoginSessionIndexAccountID::IndexID, kAccountLoginSessionIdxAccountID, 1},
@@ -941,7 +941,48 @@ namespace mdb
 	static void DeallocateAccountLoginSession(void* r) { static_cast<AccountLoginSession*>(r)->Deallocate(); }
 	const TableSchema& AccountLoginSession::GetSchema()
 	{
-		static const TableSchema schema = {"t_AccountLoginSession", AccountLoginSessionFields, 3, AccountLoginSessionPKIndices, 1, DeallocateAccountLoginSession, AccountLoginSessionIndices, 1};
+		static const TableSchema schema = {"t_AccountLoginSession", AccountLoginSessionFields, 3, AccountLoginSessionPKIndices, 2, DeallocateAccountLoginSession, AccountLoginSessionIndices, 1};
+		return schema;
+	}
+	static const FieldDescriptor PrimaryAccountLoginSessionFields[] = {
+		{"PrimaryAccountID", FieldType::Char, offsetof(PrimaryAccountLoginSession, PrimaryAccountID), sizeof(PrimaryAccountLoginSession::PrimaryAccountID)},
+		{"SessionID", FieldType::Int64, offsetof(PrimaryAccountLoginSession, SessionID), 0},
+		{"IPAddress", FieldType::Char, offsetof(PrimaryAccountLoginSession, IPAddress), sizeof(PrimaryAccountLoginSession::IPAddress)},
+	};
+	static const int PrimaryAccountLoginSessionPKIndices[] = { 0, 1 };
+	static const int kPrimaryAccountLoginSessionIdxPrimaryAccountID[] = { 0 };
+	static const IndexDefinition PrimaryAccountLoginSessionIndices[] = {
+		{PrimaryAccountLoginSessionIndexPrimaryAccountID::IndexID, kPrimaryAccountLoginSessionIdxPrimaryAccountID, 1},
+	};
+	PrimaryAccountLoginSession* PrimaryAccountLoginSession::Allocate()
+	{
+		return ObjectPool<PrimaryAccountLoginSession>::GetInstance().Allocate();
+	}
+	void PrimaryAccountLoginSession::Deallocate()
+	{
+		ObjectPool<PrimaryAccountLoginSession>::GetInstance().Deallocate(this);
+	}
+	const char* PrimaryAccountLoginSession::GetString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "%s,%lld,%s",
+			PrimaryAccountID, SessionID, IPAddress);
+		return t_MdbDataStringBuffer;
+	}
+	int PrimaryAccountLoginSession::GetSqlString(char* buff) const
+	{
+		return sprintf(buff, "\n('%s','%lld','%s'),",
+			PrimaryAccountID, SessionID, IPAddress);
+	}
+	const char* PrimaryAccountLoginSession::GetDebugString() const
+	{
+		sprintf(t_MdbDataStringBuffer, "PrimaryAccountLoginSession:PrimaryAccountID:[%s], SessionID:[%lld], IPAddress:[%s]",
+			PrimaryAccountID, SessionID, IPAddress);
+		return t_MdbDataStringBuffer;
+	}
+	static void DeallocatePrimaryAccountLoginSession(void* r) { static_cast<PrimaryAccountLoginSession*>(r)->Deallocate(); }
+	const TableSchema& PrimaryAccountLoginSession::GetSchema()
+	{
+		static const TableSchema schema = {"t_PrimaryAccountLoginSession", PrimaryAccountLoginSessionFields, 3, PrimaryAccountLoginSessionPKIndices, 2, DeallocatePrimaryAccountLoginSession, PrimaryAccountLoginSessionIndices, 1};
 		return schema;
 	}
 
@@ -963,5 +1004,6 @@ namespace mdb
 	thread_local Order t_CompareOrder;
 	thread_local Trade t_CompareTrade;
 	thread_local AccountLoginSession t_CompareAccountLoginSession;
+	thread_local PrimaryAccountLoginSession t_ComparePrimaryAccountLoginSession;
 
 }

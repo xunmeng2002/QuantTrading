@@ -778,6 +778,24 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
+	class PrimaryAccountLoginSession
+	{
+	public:
+		static constexpr unsigned int TableID = 0x3009;
+		//主账户代码
+		AccountIDType PrimaryAccountID;
+		//会话编号
+		SessionIDType SessionID;
+		//IP地址
+		IPAddressType IPAddress;
+		
+		static PrimaryAccountLoginSession* Allocate();
+		void Deallocate();
+		const char* GetString() const;
+		int GetSqlString(char* buff) const;
+		const char* GetDebugString() const;
+		static const TableSchema& GetSchema();
+	};
 
 	extern thread_local TradingDay t_CompareTradingDay;
 	extern thread_local Exchange t_CompareExchange;
@@ -797,6 +815,7 @@ namespace mdb
 	extern thread_local Order t_CompareOrder;
 	extern thread_local Trade t_CompareTrade;
 	extern thread_local AccountLoginSession t_CompareAccountLoginSession;
+	extern thread_local PrimaryAccountLoginSession t_ComparePrimaryAccountLoginSession;
 
 }
 

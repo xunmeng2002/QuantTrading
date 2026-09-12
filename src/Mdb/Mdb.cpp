@@ -27,6 +27,7 @@ namespace mdb
 			case Order::TableID:  t_Order = new OrderTable(); m_Tables.push_back(t_Order); break;
 			case Trade::TableID:  t_Trade = new TradeTable(); m_Tables.push_back(t_Trade); break;
 			case AccountLoginSession::TableID:  t_AccountLoginSession = new AccountLoginSessionTable(); m_Tables.push_back(t_AccountLoginSession); break;
+			case PrimaryAccountLoginSession::TableID:  t_PrimaryAccountLoginSession = new PrimaryAccountLoginSessionTable(); m_Tables.push_back(t_PrimaryAccountLoginSession); break;
 			default: break;
 			}
 		}
