@@ -164,6 +164,13 @@ namespace quanttrading::mdoffer
     }
     int MdKernel::HandleNotifyDisConnect(NotifyDisConnectPackage* package)
     {
+        if (package->NotifyDisConnect == nullptr)
+        {
+            // 字段区缺失时解析层仍返回成功（只拦"多余字段"，不校验"缺失字段"），此处不判空即读空指针；
+            // 断开清理以字段内的 SessionID 为键，缺字段则无从清理，直接丢弃
+            WriteLog(LogLevel::Warning, "HandleNotifyDisConnect: missing field zone. SessionID:%lld", package->SessionID);
+            return 0;
+        }
         m_LoggedSessions.erase(package->NotifyDisConnect->SessionID);
         m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionID);
 
@@ -209,37 +216,47 @@ namespace quanttrading::mdoffer
     }
     int MdKernel::HandleReqMdUserLogin(ReqMdUserLoginPackage* package)
     {
-        auto errorID = ErrorNone;
-        auto mdUser = m_Mdb->t_MdUser->m_PrimaryKey->Select(package->ReqMdUserLogin->UserID);
-        if (mdUser == nullptr)
+        auto reqMdUserLogin = package->ReqMdUserLogin;
+        // 登录处理在鉴权之前，字段区缺失时解析层仍返回成功，这里必须先判空：
+        // 否则任何能建立连接的客户端发一个"只有包头"的登录包就能打到空指针上
+        auto errorID = ErrorUserNotExist;
+        if (reqMdUserLogin == nullptr)
         {
-            errorID = ErrorUserNotExist;
-        }
-        else if (strcmp(package->ReqMdUserLogin->Password, mdUser->Password) != 0)
-        {
-            errorID = ErrorIncorrectPassword;
+            WriteLog(LogLevel::Warning, "HandleReqMdUserLogin: missing field zone. SessionID:%lld", package->SessionID);
         }
         else
         {
-            auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(package->SessionID);
-            if (mdUserLoginSession != nullptr)
+            auto mdUser = m_Mdb->t_MdUser->m_PrimaryKey->Select(reqMdUserLogin->UserID);
+            if (mdUser == nullptr)
             {
-                errorID = ErrorSessionAlreadyLogin;
+                errorID = ErrorUserNotExist;
+            }
+            else if (strcmp(reqMdUserLogin->Password, mdUser->Password) != 0)
+            {
+                errorID = ErrorIncorrectPassword;
             }
             else
             {
-                mdUserLoginSession = MdUserLoginSession::Allocate();
-                memset(mdUserLoginSession, 0, sizeof(MdUserLoginSession));
-                Utility::Strcpy(mdUserLoginSession->MdUserID, mdUser->MdUserID);
-                mdUserLoginSession->SessionID = package->SessionID;
-                Utility::Strcpy(mdUserLoginSession->IPAddress, package->IPAddress);
-                if (m_Mdb->t_MdUserLoginSession->Insert(mdUserLoginSession))
+                auto mdUserLoginSession = m_Mdb->t_MdUserLoginSession->m_PrimaryKey->Select(package->SessionID);
+                if (mdUserLoginSession != nullptr)
                 {
-                    m_LoggedSessions.insert(package->SessionID);
+                    errorID = ErrorSessionAlreadyLogin;
                 }
                 else
                 {
-                    errorID = ErrorSessionAlreadyLogin;
+                    mdUserLoginSession = MdUserLoginSession::Allocate();
+                    memset(mdUserLoginSession, 0, sizeof(MdUserLoginSession));
+                    Utility::Strcpy(mdUserLoginSession->MdUserID, mdUser->MdUserID);
+                    mdUserLoginSession->SessionID = package->SessionID;
+                    Utility::Strcpy(mdUserLoginSession->IPAddress, package->IPAddress);
+                    if (m_Mdb->t_MdUserLoginSession->Insert(mdUserLoginSession))
+                    {
+                        m_LoggedSessions.insert(package->SessionID);
+                    }
+                    else
+                    {
+                        errorID = ErrorSessionAlreadyLogin;
+                    }
                 }
             }
         }
@@ -252,7 +269,10 @@ namespace quanttrading::mdoffer
         Utility::Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
 
         rspPackage->RspMdUserLogin = ::Allocate<RspMdUserLoginField>();
-        Utility::Strcpy(rspPackage->RspMdUserLogin->UserID, package->ReqMdUserLogin->UserID);
+        if (reqMdUserLogin != nullptr)
+        {
+            Utility::Strcpy(rspPackage->RspMdUserLogin->UserID, reqMdUserLogin->UserID);
+        }
         rspPackage->RspMdUserLogin->SessionID = package->SessionID;
         if (errorID == ErrorNone)
         {
@@ -284,8 +304,17 @@ namespace quanttrading::mdoffer
         rspPackage->RspInfo->ErrorID = ErrorNone;
         Utility::Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorNone));
 
+        // 字段区缺失时解析层仍返回成功，此处判空避免读空指针；登出以传输层 SessionID 为准，
+        // 响应里的 UserID 只是回显，缺字段时留空即可
         rspPackage->RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
-        Utility::Strcpy(rspPackage->RspMdUserLogout->UserID, package->ReqMdUserLogout->UserID);
+        if (package->ReqMdUserLogout == nullptr)
+        {
+            WriteLog(LogLevel::Warning, "HandleReqMdUserLogout: missing field zone. SessionID:%lld", package->SessionID);
+        }
+        else
+        {
+            Utility::Strcpy(rspPackage->RspMdUserLogout->UserID, package->ReqMdUserLogout->UserID);
+        }
 
 
 
@@ -304,6 +333,13 @@ namespace quanttrading::mdoffer
         if (loggedSessionIt == m_LoggedSessions.end())
         {
             errorID = ErrorUserNotLogin;
+        }
+        else if (reqSubMarketData == nullptr)
+        {
+            // 报文体缺整段字段区时解析层仍返回成功（它只拦"多余字段"，不校验"缺失字段"），
+            // 这里补判空并按"合约不存在"回复，否则下面每处解引用都会读到空指针
+            WriteLog(LogLevel::Warning, "HandleReqSubMarketData: missing field zone. SessionID:%lld", package->SessionID);
+            errorID = ErrorInstrumentNotExist;
         }
         else
         {
@@ -325,21 +361,35 @@ namespace quanttrading::mdoffer
         rspPackage->RspInfo->ErrorID = errorID;
         Utility::Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
         rspPackage->RspSubMarketData = ::Allocate<RspSubMarketDataField>();
-        Utility::Strcpy(rspPackage->RspSubMarketData->ExchangeID, reqSubMarketData->ExchangeID);
-        Utility::Strcpy(rspPackage->RspSubMarketData->InstrumentID, reqSubMarketData->InstrumentID);
+        if (reqSubMarketData != nullptr)
+        {
+            Utility::Strcpy(rspPackage->RspSubMarketData->ExchangeID, reqSubMarketData->ExchangeID);
+            Utility::Strcpy(rspPackage->RspSubMarketData->InstrumentID, reqSubMarketData->InstrumentID);
+        }
         m_MdFront->Send(rspPackage);
         rspPackage->Deallocate();
 
-        auto rtnDepthMdPackage = MdSnap::GetInstance().GetDepthMd(reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID);
-        if (rtnDepthMdPackage != nullptr)
+        if (reqSubMarketData != nullptr)
         {
-            rtnDepthMdPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
-            m_MdFront->Send(rtnDepthMdPackage);
+            auto rtnDepthMdPackage = MdSnap::GetInstance().GetDepthMd(reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID);
+            if (rtnDepthMdPackage != nullptr)
+            {
+                rtnDepthMdPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
+                m_MdFront->Send(rtnDepthMdPackage);
+            }
         }
         return 0;
     }
     int MdKernel::HandleRtnDepthMarketData(RtnDepthMarketDataPackage* package)
     {
+        if (package->DepthMarketData == nullptr)
+        {
+            // 字段区缺失时解析层仍返回成功，往下走 MinuteBar 会按空指针取合约会话；
+            // 本分支由 HandlePackage 置 needFree=false（所有权交给 MdSnap），丢弃时须自行归还
+            WriteLog(LogLevel::Warning, "HandleRtnDepthMarketData: missing field zone. SessionID:%lld", package->SessionID);
+            package->Deallocate();
+            return 0;
+        }
         m_MinuteBar->OnDepthMarketData(package->DepthMarketData);
 
         DepthMarketData* depthMarketData = ::Allocate<DepthMarketData>();

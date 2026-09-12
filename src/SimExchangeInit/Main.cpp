@@ -16,9 +16,11 @@
 #include <DBAdapters/SqliteWrapper/SqliteWrapper.h>
 #include <DBAdapters/MysqlWrapper/MysqlWrapper.h>
 #include <DBAdapters/MariadbWrapper/MariadbWrapper.h>
+#include <chrono>
 #include <iostream>
 #include <map>
 #include <string.h>
+#include <thread>
 
 using namespace std;
 using namespace mdb;
@@ -91,9 +93,18 @@ int main(int argc, char* argv[])
 	traderApi->Init();
 	dbWriter->Start();
 
-	while (!traderSpi->m_QryFinished)
+	// 查询完成标志由前置回报驱动；前置不可达或认证失败时它永不置位，此处用上限兜底，
+	// 免得进程永久挂起——超时后仍走正常收尾，只是种子库可能不完整，故记 ERROR
+	constexpr int QueryWaitTimeoutSeconds = 600;
+	int waitedSeconds = 0;
+	while (!traderSpi->m_QryFinished && waitedSeconds < QueryWaitTimeoutSeconds)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(1));
+		++waitedSeconds;
+	}
+	if (!traderSpi->m_QryFinished)
+	{
+		WriteLog(LogLevel::Error, "Query not finished in %d seconds, seed database may be incomplete. Check front reachability and account.", QueryWaitTimeoutSeconds);
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 

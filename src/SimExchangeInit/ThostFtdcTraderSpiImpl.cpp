@@ -213,11 +213,11 @@ void CThostFtdcTraderSpiImpl::ReqAuthenticate()
 {
 	CThostFtdcReqAuthenticateField authenticate;
 	::memset(&authenticate, 0, sizeof(authenticate));
-	strcpy(authenticate.BrokerID, m_AccountInfo->BrokerID);
-	strcpy(authenticate.UserID, m_AccountInfo->InvestorID);
-	strcpy(authenticate.UserProductInfo, m_AccountInfo->UserProductInfo);
-	strcpy(authenticate.AuthCode, m_AccountInfo->AuthCode);
-	strcpy(authenticate.AppID, m_AccountInfo->AppID);
+	Utility::Strcpy(authenticate.BrokerID, m_AccountInfo->BrokerID);
+	Utility::Strcpy(authenticate.UserID, m_AccountInfo->InvestorID);
+	Utility::Strcpy(authenticate.UserProductInfo, m_AccountInfo->UserProductInfo);
+	Utility::Strcpy(authenticate.AuthCode, m_AccountInfo->AuthCode);
+	Utility::Strcpy(authenticate.AppID, m_AccountInfo->AppID);
 
 	int ret = m_TraderApi->ReqAuthenticate(&authenticate, m_RequestID++);
 	WriteLog(LogLevel::Info, "ReqAuthenticate: ret[%d]", ret);
@@ -226,11 +226,11 @@ void CThostFtdcTraderSpiImpl::ReqUserLogin()
 {
 	CThostFtdcReqUserLoginField userLogin;
 	::memset(&userLogin, 0, sizeof(userLogin));
-	strcpy(userLogin.TradingDay, "");
-	strcpy(userLogin.BrokerID, m_AccountInfo->BrokerID);
-	strcpy(userLogin.UserID, m_AccountInfo->InvestorID);
-	strcpy(userLogin.Password, m_AccountInfo->Password);
-	strcpy(userLogin.UserProductInfo, m_AccountInfo->UserProductInfo);
+	Utility::Strcpy(userLogin.TradingDay, "");
+	Utility::Strcpy(userLogin.BrokerID, m_AccountInfo->BrokerID);
+	Utility::Strcpy(userLogin.UserID, m_AccountInfo->InvestorID);
+	Utility::Strcpy(userLogin.Password, m_AccountInfo->Password);
+	Utility::Strcpy(userLogin.UserProductInfo, m_AccountInfo->UserProductInfo);
 
 	int ret = m_TraderApi->ReqUserLogin(&userLogin, m_RequestID++);
 	WriteLog(LogLevel::Info, "ReqUserLogin: ret[%d]", ret);
@@ -239,10 +239,10 @@ void CThostFtdcTraderSpiImpl::ReqUserPasswordUpdate()
 {
 	CThostFtdcUserPasswordUpdateField userPasswordUpdate;
 	::memset(&userPasswordUpdate, 0, sizeof(userPasswordUpdate));
-	strcpy(userPasswordUpdate.BrokerID, m_AccountInfo->BrokerID);
-	strcpy(userPasswordUpdate.UserID, m_AccountInfo->InvestorID);
-	strcpy(userPasswordUpdate.OldPassword, m_AccountInfo->Password);
-	strcpy(userPasswordUpdate.NewPassword, m_NewPassword.c_str());
+	Utility::Strcpy(userPasswordUpdate.BrokerID, m_AccountInfo->BrokerID);
+	Utility::Strcpy(userPasswordUpdate.UserID, m_AccountInfo->InvestorID);
+	Utility::Strcpy(userPasswordUpdate.OldPassword, m_AccountInfo->Password);
+	Utility::Strcpy(userPasswordUpdate.NewPassword, m_NewPassword.c_str());
 
 	int ret = m_TraderApi->ReqUserPasswordUpdate(&userPasswordUpdate, m_RequestID++);
 	WriteLog(LogLevel::Info, "ReqUserPasswordUpdate: ret[%d]", ret);
