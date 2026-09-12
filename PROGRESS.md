@@ -99,8 +99,9 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 
 > 已关闭/已了结的条目（`Q.00`–`Q.15`、`Q.19` 等）已归档；下面只留未决项。
 
-- **入站包方向与鉴权校验缺失（半关闭；2026-09-13 第九批落地网络侧"不收"）**：`PackageFactoryBase::IsInboundPackageAccepted` + `PackageReader` 两条解析路径过滤，反向包在 `CreatePackage` **之前**即被拒（生成代码按类名前缀推导方向，52 包全分类、无 fail-open）；内核侧"少认"见第六批分发生成。**仍未解决**：① 会话合法性——`NotifyDisConnect` 取的是**报文体**里的 `SessionID`、可指定他人会话（与方向正交），等用户定的会话登录检查；② 候选方案 (a)（由 `PackageNames/*.xml` 生成运行期查表）与 (b)（`Packages.xml` 加 `direction` 列）未采纳但仍在。完整侦察记录（网络层全貌核对、执法点论证、第二层过滤治不了的部分、三件待拍板）见归档 `Q.16`。
+- **入站包方向与鉴权校验缺失（半关闭；2026-09-13 第九批落地网络侧"不收"）**：`PackageFactoryBase::IsInboundPackageAccepted` + `PackageReader` 两条解析路径过滤，反向包在 `CreatePackage` **之前**即被拒（生成代码按类名前缀推导方向，52 包全分类、无 fail-open）；内核侧"少认"见第六批分发生成。**仍未解决**：① 会话合法性——`NotifyDisConnect` 取的是**报文体**里的 `SessionID`、可指定他人会话（与方向正交），等用户定的会话登录检查；② 候选方案 (a)（由 `PackageNames/*.xml` 生成运行期查表）与 (b)（`Packages.xml` 加 `direction` 列）未采纳但仍在。完整侦察记录（网络层全貌核对、执法点论证、第二层过滤治不了的部分、三件待拍板）见归档 `Q.16`。**2026-09-13（第十批）复核：① 的两条线均已关闭**——伪造方向这条，`Notify` 前缀在生成的方向表里一律 `acceptExpr = "false"`（网线上永不合法，包对象创建前即被拒），且内核侧唯一的 `NotifyDisConnectPackage` 生产者是 `SimExchange::OnProtocolDisConnect` 与 `MdKernel::OnProtocolDisConnect`，二者都自造且 `SessionID` 取传输层真值，故"报文体 SessionID 可指定他人会话"不再可达；会话登录检查这条，本批已落地（交易所查 `t_PrimaryAccountLoginSession`、行情查 `t_MdUserLoginSession`，见上 ✅ 第十批）。② 的 (a)/(b) 是当时未采纳的备选，非待办。**本条已无未决内容，待用户确认后入归档**（原侦察记录在归档 `Q.16`）。
 - **`InitMdbFromCsv` 仍枚举会话表（2026-09-13 记录，待决策）**：方案 (a) 只落在 `InitMdbFromDB.{h,cpp}.tpl`（启动从库载入这条活路径）。`InitMdbFromCsv.{h,cpp}` 的 `LoadTables` 仍对三张会话表发 `case ...: LoadXxxTable(mdb, dir)`（`src/Mdb/InitMdbFromCsv.cpp:32/40/41`），同一过滤（`and @session != 'true'`）可原样套用。**未做**：该路径今天**零调用者**——除 `InitMdbFromCsv.*` 自身外全仓只有两处 `#include "InitMdbFromCsv.h"`（`src/BackTest/SimExchange.cpp:9`、`src/SimExchange/SimExchange.cpp:4`），无一处调用 `InitMdbFromCsv::LoadTables`，动它只增重 pump 面、无行为变化。**若将来有模块改用 CSV 播种**，需同步补这个过滤，否则会话表会从 CSV 被载入。
+- **登录路径两个小缺口（2026-09-13 第十批复核时发现，未修，待决策）**：① 主账号未命中时回的是 `ErrorBrokerNotExist`（`src/SimExchange/SimExchange.cpp:196`；`src/QuantTradingCommon/Error.h:42` = 0x101F），而"主账号不存在"早有专用码 `ErrorPrimaryAccountNotExist`（`Error.h:12` = 0x1001）——当前码是券商级语义，客户端拿到 0x101F 无法区分"账号不存在"与"券商不存在"。② `PrimaryAccount.IsAllowLogin`（`Model/Tables/Tables.xml:270`）全仓**只被写入、从未被读**：播种器 `src/SimExchangeInit/Init.cpp:69` 无条件置 `true`，生成代码只在字段注册与 `Dump` 里出现（`src/Mdb/MdbStructs.cpp:510/531/537/541`），没有任何一处参与登录判定，故 `IsAllowLogin = false` 的主账号**仍能登录成功**。**候选修法**：① 改回 `ErrorPrimaryAccountNotExist`（需同步看客户端/测试对 0x1001 的处理）；② 在密码校验后补一行 `if (!primaryAccount->IsAllowLogin) { errorID = ErrorAccountForbidden; }`（`ErrorAccountForbidden` = 0xA001，已存在），属登录路径上的一行守卫。
 - **数据源整理对齐 mdb**（用户负责）：TestBackTest 已能在旧格式 parquet（`LastTraded`/`LastTurnover`/数组盘口，缺 OpenPrice/ClosePrice/Upper/LowerLimitPrice/AveragePrice 5 列）上端到端跑通，**靠 MdReader SQL 的 NULL 占位 + 旧列名兜底**；数据侧未真正对齐 mdb schema。真正对齐后 SQL 可删掉占位符，且 tick 的涨跌停价列才真实可用（当前 OrderMatch 的涨跌停校验处于注释状态，`GetSettlementPrice` 对 +inf 有回退，故暂不影响撮合/结算正确性）。
 - **P2-1 MdKernel 职责拆分**：`HandleRtnDepthMarketData` 同时做 bar 聚合/Mdb 更新/快照/广播，建议预留 tick 处理管线。
 - **P2-2 Bar 内存策略**：`MinuteBar` 用裸 `new` 且 `m_TodayBars` 无日界清理，考虑改对象池 + 日界重置。
@@ -112,6 +113,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 
 ## 备注
 
+- **待推送（按约定 AI 不推送，由用户执行）**：截至 2026-09-13 会话末，`QuantTrading` master 领先 `origin/master` 19 笔、`D:\Gitee\Templates` master 领先 3 笔（含本批 `726fad4` 方向过滤模板、`fe01756` 会话表过滤模板）。
 - 提交信息历史多为 `1`，建议后续写描述性提交信息。
 - `D:\Gitee\Templates` 仓库的模板改动（S1/S3/H10/H12 对应 `.tpl`）已提交（`6d12e3d`）。
 - `rules/cpp-style.md` 成员命名要求 snake_case，现有代码为 `m_` + PascalCase，项目自洽但与规范不一致（待统一）。
