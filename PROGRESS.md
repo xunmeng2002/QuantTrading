@@ -228,8 +228,29 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
   - **顺带清理**：`TradeSession.cpp` 的 `printf` 改 `WriteLog`；`ToString()` 由 `static char buff[1024]` + `sprintf` 改 `ostringstream` 返回 `std::string`；`MinuteBar` 的 `printf("NextTradeSection Not Exist")` 改 `WriteLog(Warning)`；新增字段后 `ReqSubMarketDataField` 的**未初始化构造点**（`TestBackTest/BackTestSpiImpl.cpp`、`TestMdApi/MdSpiImpl.cpp`、`MdOffer/MdKernel.cpp` 两处）补 `memset`——新字段带随机值会让引擎误判 `BarPeriod` 并走拒启分支。
   - **验证**：全量构建（含 `BackTestd.dll`/`MdOffer`/`TestStrategyGrid`/`TestBackTest`）零错误零警告；UnitTests **100/100 用例 662/662 断言 SUCCESS**（基线 99/643），新增「装载期精度预校验矩阵」（同精度透传、目标粗于数据集、非整除 5m→7m、数据集周期数 0 不触发除零、Day 目标跨精度、Day/Second 输入不可聚合）、「声明的周期随订阅请求上报引擎」（未声明 → BarPeriod 0；`5m` → Minute×5；`60m` → Minute×60），改写两个 StrategyBase 用例为"声明周期上报 + OnBar 原样透传"（聚合已在引擎侧，策略侧不再有可单测的聚合路径）。`TradeSessionTests.cpp` 的 `SectionOwner` 收紧为 `AddTradeSection(tradeSession, from, to, class)`（所有权归 `TradeSession`，返回裸指针仅供身份断言）。
   - **端到端冒烟（部分）**：`TestStrategyGrid` 与 `TestBackTest` 均正常启动，**引擎侧日志 `TradeSessions: Trade sessions loaded. SessionCount:7, SessionFile:Sessions.json`**（宿主已不再装载，证明交易节装载确实发生在 dll 内的引擎里，`SessionFile` 归于 BackTest 层这一意图达成），无 `rejected`/周期拒启日志。
-  - **未验证（须补）**：本环境 `D:\MdBaoStock` 数据集缺失（`IO Error: No files found that match the pattern`），两个冒烟都在数据集发现阶段止步，**bar 流经引擎侧聚合器的端到端路径未跑通**。现有 5m 冒烟即便有数据也测不出桶对齐回归（SSE 570 分钟可被 5/10/15/30 整除，墙钟网格与交易节网格重合）——需非整除周期（45m）或夜盘品种（SHFE cu）才能暴露。
-  - **风险点**：① **线协议破坏性变更**——`ReqSubMarketDataField` 加字段，序列化按 ItemID 自描述但对未知 ItemID `return false`（"Unexpected ItemID ... Please Check ApiVersion"），旧客户端解析新消息即失败；而 `GetApiVersion()` 仍返回 `QUANTTRADING_VERSION`(`1.0.0`)，**不随模型变更递增**，无法用它做兼容性判别（既有弱点，本期未动）。② `SimExchange::m_TradeSessions` 声明必须早于 `m_BarAggregators`（聚合器持其引用），已按序；`MdOffer/Main.cpp` 的 `TradeSessions` 为 `main` 局部量、`MdKernel` 为 `new` 且不析构，靠"`mdKernel->Join()` 早于 `main` 返回"保证生命周期，未改其现有 `new` 风格（改智能指针属内存管理重构，须另行确认）。③ 桶内 bar 由聚合器内部存储发出（`&bucket.Bar`），指针仅在本次回调内有效——与既有"回调内有效"契约一致，跨回调暂存仍会悬空。
+  - **未验证（须补）**：本环境 `D:\MdBaoStock` 数据集缺失（`IO Error: No files found that match the pattern`），两个冒烟都在数据集发现阶段止步，**bar 流经引擎侧聚合器的端到端路径未跑通**。现有 5m 冒烟即便有数据也测不出桶对齐回归（SSE 570 分钟可被 5/10/15/30 整除，墙钟网格与交易节网格重合）——需非整除周期（45m）或夜盘品种（SHFE cu）才能暴露。**✅ 2026-09-12（第二批）关闭**：用户补齐 `D:\MdBaoStock` 后已用 60m 声明跑通并三重比对证实桶按交易节段首锚定，详见下方第二批条目。
+  - **风险点**：① **线协议破坏性变更**——`ReqSubMarketDataField` 加字段，序列化按 ItemID 自描述但对未知 ItemID `return false`（"Unexpected ItemID:0x%X ... Please Check ApiVersion."），旧客户端解析新消息即失败；而 `GetApiVersion()` 仍返回 `QUANTTRADING_VERSION`(`1.0.0`)，**不随模型变更递增**，无法用它做兼容性判别（既有弱点，本期未动）。② `SimExchange::m_TradeSessions` 声明必须早于 `m_BarAggregators`（聚合器持其引用），已按序；`MdOffer/Main.cpp` 的 `TradeSessions` 为 `main` 局部量、`MdKernel` 为 `new` 且不析构，靠"`mdKernel->Join()` 早于 `main` 返回"保证生命周期，未改其现有 `new` 风格（改智能指针属内存管理重构，须另行确认）。③ 桶内 bar 由聚合器内部存储发出（`&bucket.Bar`），指针仅在本次回调内有效——与既有"回调内有效"契约一致，跨回调暂存仍会悬空。
+
+- **2026-09-12（第二批）引擎侧聚合端到端实证 + 补齐 `TestStrategyGrid` 的 `Sessions.json` 部署**：
+  - **缘起**：用户补齐测试数据（`D:\MdBaoStock\Bar\Identity={SSE,SZSE}.Stock`，精度 `5m`）后跑通冒烟，要求复查项目其余问题。复查中发现上一提交（`e5fd794`）遗漏一处构建配置。
+  - **缺陷（本提交引入，已修）**：`SimExchange::Init` 现在按 `BackTest.json` 的 `SessionFile` 硬装载交易节，装载失败 `WriteLog(Error)` 并 `return false`（经 `BackTestApiImpl::Init` 的 `m_SimExchange->Init() && m_SimExchange->Start()` 短路，不会带病启动）。而 `CMakeLists.txt` 只给 `TestBackTest` 加了 `copy_config_file(... Sessions.json)`，**`TestStrategyGrid` 漏加**——它同样链 `BackTestApiMiddleStatic` → 同一引擎、同一 `SessionFile`。当前不发作只因 `bin/<CONFIG>` 是共享输出目录，`MdOffer`/`TestBackTest` 的 POST_BUILD 顺带把 `Sessions.json` 落了进去；一旦单独构建 `TestStrategyGrid` 到干净输出目录，引擎会在 `LoadFromFile("")` 处失败拒启。已补 `copy_config_file(TestStrategyGrid .../Configs/Sessions.json)`，重建确认 POST_BUILD 已输出 `Copying config file .../Configs/Sessions.json to output directory`。
+  - **端到端冒烟（补齐上一条目遗留的未验证项）**：数据集就位、范围 `20241001`–`20241231`、标的 `SSE.600519`。
+    - **先证实"上一轮 5m→5m 冒烟走的是透传分支"**：数据集精度 `5m`、`BackTest.json` 与 `TestStrategyGrid.json` 声明同为 `5m`，`OnBarMarketData` 同精度同周期短路，**不建桶、不走聚合**；日志仅见 `TradeSessions: Trade sessions loaded. SessionCount:7, SessionFile:Sessions.json`（`TradeSession.cpp:184`，证明装载发生在 dll 内的引擎里）与 `ReqSubMarketDataField:ExchangeID:[SSE], InstrumentID:[600519], BarPreces:[1], BarPeriod:[5]`（`BackTestApiMiddle.cpp:56`，证明策略声明的周期已挂到订阅上）。
+    - **再跑判别性用例**：把部署目录的 `bin/Debug/TestStrategyGrid.json`（`/bin` 已 gitignore，纯scratch，非源码）改为 `"BarPreces": "60m"` 重跑。60m 对 SSE 是**判别周期**——段首 570 分钟（09:30）不被 60 整除，墙钟网格（09:00/10:00/11:00…）与交易节网格（09:30/10:30/11:30…）不重合，而 5/10/15/30 均整除 570（这正是上一轮测不出回归的原因）。运行结果显著不同：`closedPairs:55 realizedProfit:550.0`（vs 5m 的 `40 / 430.7`），首日锚点由 `1889.07` 变 `1770.00`。
+    - **三重比对定位对齐口径**：用 pyarrow 直接读 `Year=2024/2024_5m.parquet` 取 600519 的 5m 收盘，对回测区间前 5 个交易日分别算三种假设下的"首根 bar 收盘"——(a) 5m 不聚合 = `09:35` 收盘、(b) 60m 墙钟 = `09:00`–`10:00` 桶即 `10:00` 收盘、(c) 60m 交易节锚定 = `09:30`–`10:30` 桶即 `10:30` 收盘，与日志实测锚点逐一对照：
+
+      | 交易日 | (a) 5m 不聚合 | (b) 60m 墙钟 | (c) 60m 交易节 | 实测锚点 |
+      | :--- | ---: | ---: | ---: | ---: |
+      | 20241008 | 1889.07 | 1852.15 | 1770.00 | 1770.00 |
+      | 20241009 | 1675.00 | 1655.00 | 1638.95 | 1638.95 |
+      | 20241010 | 1624.99 | 1608.00 | 1616.66 | 1616.66 |
+      | 20241011 | 1631.72 | 1633.00 | 1618.01 | 1618.01 |
+      | 20241014 | 1606.01 | 1592.81 | 1585.01 | 1585.01 |
+
+      **5/5 命中 (c)、0/5 命中 (a)(b)** —— 声明周期确实端到端驱动了引擎侧聚合，且桶边界锚定在交易节段首而非午夜墙钟。这是上一批"未验证"项的正面闭环。
+    - **单测侧的对应覆盖**（此前已存在，本次一并核实）：`BarAggregatorTests.cpp` 的 fixture 直接抄自提交版 `Configs/Sessions.json` 的 SSE 段（`925-930` 集合竞价 / `930-1130` / `1300-1500`），其中 60m 用例断言桶尾为 `1030`/`1130`（非墙钟 `1000`/`1100`）、45m 用例断言段末不满桶收口——与本次实盘数据结论一致。
+  - **验证**：`UnitTests` 100/100 用例 662/662 断言 SUCCESS（提交版工作区复跑）；`TestStrategyGrid` 5m 与 60m 两次冒烟均退出码 0、有序关停、`Dump Completed`；`TestStrategyGrid` 单目标重建通过且 POST_BUILD 三份配置齐备。
+  - **本次遗留（未修，供决策）**：① `Configs/SimExchangeInit.json` 的 `SessionFile` 键在 `Model/Configs/SimExchangeInit.xml` 无对应原型、`src/SimExchangeInit/Config/Config.h` 无声明，属死配置（不读不报错），可删可留；② `bin/<CONFIG>` 残留已退役目标的 `BackTestInit.exe`/`TestMdOffer.exe`（CMake 现仅 9 个 `add_application`，输出目录有 11 个 exe），仅本地产物、已 gitignore，但会误导"跑旧 exe 看新行为"；③ Python 绑定侧 `FieldsBindings.cpp` 未暴露 `BarPreces`/`BarPeriod`，且 `src/PythonBindings` 在 Debug 下不参与构建（CPython 官方解释器为 Release CRT），若后续在 Python 策略里依赖 bar 周期会静默缺字段而无编译期提示。
 
 ## 🔄 进行中
 
