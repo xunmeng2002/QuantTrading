@@ -6,6 +6,10 @@ using namespace spark::network;
 
 namespace quanttrading::packages
 {
+PackageFactory::PackageFactory(ServerTypeType serverType)
+	:m_ServerType(serverType)
+{
+}
 Package* PackageFactory::CreatePackage(UShortType packageID)
 {
 	switch (packageID)
@@ -222,5 +226,223 @@ Package* PackageFactory::CreatePackage(UShortType packageID)
 		break;
 	}
 	return nullptr;
+}
+bool PackageFactory::IsInboundPackageAccepted(UShortType packageID)
+{
+	// 方向族按包名前缀生成：Req 只可能由客户端发往服务端，Rsp/Rtn 反过来，Notify 是进程内自造、网线上永不合法
+	switch (packageID)
+	{
+	case NotifyConnectPackage::PackageID:
+	{
+		return false;
+	}
+	case NotifyDisConnectPackage::PackageID:
+	{
+		return false;
+	}
+	case NotifyDBConnectPackage::PackageID:
+	{
+		return false;
+	}
+	case NotifyDBDisConnectPackage::PackageID:
+	{
+		return false;
+	}
+	case ReqMdUserLoginPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspMdUserLoginPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqMdUserLogoutPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspMdUserLogoutPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqSubMarketDataPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspSubMarketDataPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqUnSubMarketDataPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspUnSubMarketDataPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqSubMarketDataFinishedPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RtnDepthMarketDataPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case RtnBarMarketDataPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case RtnSessionBeginPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case RtnSessionEndPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case RtnMarketDataEndPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqRegisterAccountPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspRegisterAccountPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqAccountLoginPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspAccountLoginPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqAccountLogoutPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspAccountLogoutPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryAccountPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryAccountPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryHolderAccountPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryHolderAccountPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryCapitalPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryCapitalPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryPositionPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryPositionPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryOrderPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryOrderPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryTradePackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryTradePackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryInstrumentPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryInstrumentPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryOptionInstrumentPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryOptionInstrumentPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryCommissionRatePackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryCommissionRatePackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqQryMoneyTransferPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspQryMoneyTransferPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqInsertOrderPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspInsertOrderPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case ReqCancelOrderPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Server;
+	}
+	case RspCancelOrderPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case RtnOrderPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case RtnTradePackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case RtnMoneyTransferPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	case RtnAccountLogoutPackage::PackageID:
+	{
+		return m_ServerType == ServerTypeType::Client;
+	}
+	default:
+		break;
+	}
+	return false;
 }
 }

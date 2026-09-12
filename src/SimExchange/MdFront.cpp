@@ -8,7 +8,7 @@ using namespace spark::network;
 namespace quanttrading::simexchange
 {
 MdFront::MdFront(const char* address, int milliSecond)
-	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IOModelType::Select,  milliSecond, new PackageFactory())
+	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IOModelType::Select,  milliSecond, new PackageFactory(ServerTypeType::Server))
 {
 	RegisterFront(address);
 	m_IOThread = new IOThread("MdFront");
