@@ -11,6 +11,26 @@
 
 ## ✅ 已完成（历史，倒序）
 
+### D.41 · 2026-09-12 （第七批） 修登录成功仍回「用户不存在」
+
+- **2026-09-12（第七批）修 `HandleReqMdUserLogin` 成功登录仍回「用户不存在」（第五批 C3 引入的回归）**：
+  - **现象**（用户跑 TestMdApi 冒烟）：登录回 `RspInfoField:ErrorID:[4098], ErrorMsg:[用户不存在]`，但紧接着的 4 条 `ReqSubMarketData` **全部回 `ErrorID:[0]`**，且服务端日志显示内核真的把这 4 个合约订阅到了 CTP（`bin/Release/log/MdOffer.20260912-224105.log:54-69`：每条 `HandleReqSubMarketData` 后跟 `SubscribeMd` + `SubscribeMarketData`）。即"登录报错、会话却已建立"——而订阅网关（`MdKernel.cpp:294` 的 `m_LoggedSessions.find`）是当时**唯一**的会话检查点。
+  - **定位**：`m_LoggedSessions` 只在 `MdKernel.cpp:216` 写入，且写入前必先通过 `t_MdUser` 查表与密码比对（两者任一失败都在 `:194/:198` 回错误、进不到插入分支；密码错回 `ErrorIncorrectPassword` 0x0002，与观测到的 4098 互斥）。故"订阅被受理"反证了**登录实际成功**，4098 是响应里的 `errorID` 没被回写——`auto errorID = ErrorUserNotExist;`（`:184`）是第五批 C3（`0b07e60`）为"字段区缺失回错误而非成功"而设的初值，但**成功分支自始至终没有一处 `errorID = ErrorNone;`**（`0b07e60^` 版本初值是 `ErrorNone`，靠默认值侥幸正确）。同一处还解释了两个附带现象：`LoginDate`/`LoginTime` 只在 `errorID == ErrorNone` 时填写（`:239-242`），故客户端日志恒为 `LoginDate:[], LoginTime:[]`（`TestMdApi.20260912-224110.log:22/52`）。**这是我的 C3 改动引入的回归**，此前无测试覆盖登录成功路径，直到本次冒烟才暴露。
+  - **修法（一行）**：在插入会话成功处回写成功状态，`m_LoggedSessions.insert(package->SessionID);` 之后加 `errorID = ErrorNone;`。保留"默认失败"的初值不动——登录是鉴权路径，宁可少认不可错认，后续若新增提前返回分支忘了置错也只表现为"登录被拒"，不会静默放行。
+  - **同类核查**：`src/SimExchange/SimExchange.cpp` 6 处 `auto errorID = ErrorNone;`、`MdKernel::HandleReqSubMarketData`（`:293`）均为"默认成功 + 逐项置错"，无同类问题；全仓 `errorID` 初值与成功路径回写已逐处比对，仅此一处缺回写。
+  - **测试 I/O 示例**（重编 `MdOffer` + `TestMdApi` 后应看到）：
+
+    ```text
+    正确 MdUser/MdPassword → RspInfoField:ErrorID:[0], ErrorMsg:[正确]，且 LoginDate/LoginTime 非空
+    错误密码               → RspInfoField:ErrorID:[2], ErrorMsg:[密码错误]
+    不存在的用户           → RspInfoField:ErrorID:[4098], ErrorMsg:[用户不存在]
+    登出后同连接重登       → 第二次 ErrorID:[0]（回 0x2015 才说明登出清理失效）
+    ```
+
+  - **风险（§7）**：无。一行赋值，不改所有权、不加锁、不放宽任何鉴权（`m_LoggedSessions` 仍只在登录成功且会话行插入成功后写入）。**未验证**：编译与重跑仍由用户在 VS 侧执行；本次仅静态定位 + 改动。
+  - **同批冒烟的另一发现（与登录缺陷独立，属测试配置）**：`Configs/TestMdApi.json` 订阅的 IF2603 / rb2603 / jd2603 / AP605 分别是 2026-03、2026-03、2026-03、2026-05 合约，相对当前日期（2026-09-12）**均已到期**，CTP 受理订阅（回 `No Error`）但不会推送任何 tick——这才是 `Timeout waiting for market data.`（120s 有界轮询走满）的直接原因，与登录无关。建议把冒烟合约换成活跃月份；另注意 22:41 属日盘收市后，CFFEX 无夜盘，即便合约活跃也只有 SHFE/DCE/CZCE 的夜盘品种在推。
+
+
 ### D.40 · 2026-09-12 （第六批） Kernel 分发改为生成
 
 - **2026-09-12（第六批）Kernel 分发改为生成（包方向纪律进生成层）**（用户批准："可以，你直接实现好了，我去看代码"）：

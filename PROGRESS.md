@@ -11,30 +11,14 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 > `PROGRESS.md` 只保留活内容：🔄 进行中、❓ 未决、最近 3 批 ✅。已关闭与已了结的条目**原文**在 [`PROGRESS-archive.md`](PROGRESS-archive.md)（2026-09-13 拆分，不删不改）。
 
 - 检索：`grep "关键词" PROGRESS-archive.md`（例：`grep "TradeSessions" PROGRESS-archive.md`）。
-- 条目 ID：`D.*` = 原 ✅ 已完成（`D.00`–`D.40` 已归档）；`Q.*` = 原 ❓ 待讨论；`R.*` = 原 🔄 进行中。ID 取自 2026-09-13 拆分时的文档顺序。
+- 条目 ID：`D.*` = 原 ✅ 已完成（`D.00`–`D.41` 已归档）；`Q.*` = 原 ❓ 待讨论；`R.*` = 原 🔄 进行中。ID 取自 2026-09-13 拆分时的文档顺序，此后新归档条目按 `D.42`、`D.43`… 递增。
 - 必须查归档的时机：引用 2026-09-12 及更早的结论时；复审某个已关闭事项时；主文件某条写明"见归档 `Q.xx` / `R.xx`"时。
 - 滚动规矩：已完成区超过 5 批时，把最旧的整条**原样**移入归档（主文件目标 ≤ 50 KB）。
 
 ## ✅ 已完成
 
-> 更早的 41 条（`D.00`–`D.40`，2026-08-08 ~ 2026-09-12）已归档，见 [`PROGRESS-archive.md`](PROGRESS-archive.md)。
+> 更早的 42 条（`D.00`–`D.41`，2026-08-08 ~ 2026-09-12）已归档，见 [`PROGRESS-archive.md`](PROGRESS-archive.md)。本批起滚动一次：第七批（`D.41`，2026-09-14 搬入）。
 
-- **2026-09-12（第七批）修 `HandleReqMdUserLogin` 成功登录仍回「用户不存在」（第五批 C3 引入的回归）**：
-  - **现象**（用户跑 TestMdApi 冒烟）：登录回 `RspInfoField:ErrorID:[4098], ErrorMsg:[用户不存在]`，但紧接着的 4 条 `ReqSubMarketData` **全部回 `ErrorID:[0]`**，且服务端日志显示内核真的把这 4 个合约订阅到了 CTP（`bin/Release/log/MdOffer.20260912-224105.log:54-69`：每条 `HandleReqSubMarketData` 后跟 `SubscribeMd` + `SubscribeMarketData`）。即"登录报错、会话却已建立"——而订阅网关（`MdKernel.cpp:294` 的 `m_LoggedSessions.find`）是当时**唯一**的会话检查点。
-  - **定位**：`m_LoggedSessions` 只在 `MdKernel.cpp:216` 写入，且写入前必先通过 `t_MdUser` 查表与密码比对（两者任一失败都在 `:194/:198` 回错误、进不到插入分支；密码错回 `ErrorIncorrectPassword` 0x0002，与观测到的 4098 互斥）。故"订阅被受理"反证了**登录实际成功**，4098 是响应里的 `errorID` 没被回写——`auto errorID = ErrorUserNotExist;`（`:184`）是第五批 C3（`0b07e60`）为"字段区缺失回错误而非成功"而设的初值，但**成功分支自始至终没有一处 `errorID = ErrorNone;`**（`0b07e60^` 版本初值是 `ErrorNone`，靠默认值侥幸正确）。同一处还解释了两个附带现象：`LoginDate`/`LoginTime` 只在 `errorID == ErrorNone` 时填写（`:239-242`），故客户端日志恒为 `LoginDate:[], LoginTime:[]`（`TestMdApi.20260912-224110.log:22/52`）。**这是我的 C3 改动引入的回归**，此前无测试覆盖登录成功路径，直到本次冒烟才暴露。
-  - **修法（一行）**：在插入会话成功处回写成功状态，`m_LoggedSessions.insert(package->SessionID);` 之后加 `errorID = ErrorNone;`。保留"默认失败"的初值不动——登录是鉴权路径，宁可少认不可错认，后续若新增提前返回分支忘了置错也只表现为"登录被拒"，不会静默放行。
-  - **同类核查**：`src/SimExchange/SimExchange.cpp` 6 处 `auto errorID = ErrorNone;`、`MdKernel::HandleReqSubMarketData`（`:293`）均为"默认成功 + 逐项置错"，无同类问题；全仓 `errorID` 初值与成功路径回写已逐处比对，仅此一处缺回写。
-  - **测试 I/O 示例**（重编 `MdOffer` + `TestMdApi` 后应看到）：
-
-    ```text
-    正确 MdUser/MdPassword → RspInfoField:ErrorID:[0], ErrorMsg:[正确]，且 LoginDate/LoginTime 非空
-    错误密码               → RspInfoField:ErrorID:[2], ErrorMsg:[密码错误]
-    不存在的用户           → RspInfoField:ErrorID:[4098], ErrorMsg:[用户不存在]
-    登出后同连接重登       → 第二次 ErrorID:[0]（回 0x2015 才说明登出清理失效）
-    ```
-
-  - **风险（§7）**：无。一行赋值，不改所有权、不加锁、不放宽任何鉴权（`m_LoggedSessions` 仍只在登录成功且会话行插入成功后写入）。**未验证**：编译与重跑仍由用户在 VS 侧执行；本次仅静态定位 + 改动。
-  - **同批冒烟的另一发现（与登录缺陷独立，属测试配置）**：`Configs/TestMdApi.json` 订阅的 IF2603 / rb2603 / jd2603 / AP605 分别是 2026-03、2026-03、2026-03、2026-05 合约，相对当前日期（2026-09-12）**均已到期**，CTP 受理订阅（回 `No Error`）但不会推送任何 tick——这才是 `Timeout waiting for market data.`（120s 有界轮询走满）的直接原因，与登录无关。建议把冒烟合约换成活跃月份；另注意 22:41 属日盘收市后，CFFEX 无夜盘，即便合约活跃也只有 SHFE/DCE/CZCE 的夜盘品种在推。
 - **2026-09-12（第八批）MdOffer 移除 MdOfferInit：种子用户改配置项，启动订阅改配置清单**：
   - **需求**（用户口头）：「设计有点问题了，我之前刚把 BackTestInit 给干掉了，把初始化放到 BackTest 内部了。这里的 MdOffer 也这样做吧，完全移除 MdOfferInit 相关的内容。主要看看种子用户怎么提供，是使用简单的配置项，还是提供一个 List？」→ 两个子问题经 `AskUserQuestion` 定稿为「单配置项」+「改为配置订阅清单」。**范围仅 MdOffer**；`SimExchange` 仍保留同款 `SimExchangeInit`/`DbInitHost` 模式（用户未点名，未动）。
   - **问题根因（为什么原来跑不通）**：`DbInitHost` 指向的种子库 `MdOfferInit.db` 是 0 字节、0 张表，且**仓库内无任何生产者**——`InitMdbFromDB::LoadMdUserTable/LoadExchangeTable/LoadInstrumentTable` 三个装载全部 `no such table`（对应此前"怎么没有用户表"的排查）。同时 `HandleNotifyDBConnect` 的"全市场订阅"遍历 `t_Instrument->m_PrimaryKey->SelectAll()`，种子库没表 → 空集 → **启动订阅静默失效**，一根 bar 都不会落库，除非客户端逐个 `ReqSubMarketData`。第一版还有一处死代码 `ExchangeIDType exchangeID = "SHFE";`（赋值后从未使用）与逐合约裸分配泄漏（每一行 `Allocate` 的 `ReqSubMarketDataField` 都不释放、也不入注册表）。
@@ -103,6 +87,23 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
   - **风险（§7）**：无。模板改动跨仓、全局生效（其他项目下次跑各自 `pumpall.py` 时其 `InitMdbFromCsv.cpp` 亦按同规则过滤，正合原意）；生成物纯删除，不改任何表的 schema 或写入行为；错误码为单行改值，不涉锁/所有权。**未验证**：编译与运行仍由用户在 VS 侧执行。
   - **提交**：本仓 `81740c0`（生成物）+ `329de62`（错误码），`Templates` 仓 `80ae12e`。
 
+- **2026-09-14（第十二批）扩展 `FieldType`：窄整数与无符号整数可落库（消除模板里潜伏的踩内存路径）**：
+  - **根因**：`Templates/Cpp/Mdb/MdbStructs.cpp.tpl:107` 生成 `FieldDescriptor` 时把 12 个类型 label 塞进 5 个 `FieldType`——`bool→Bool`、`int64→Int64`、`double→Double`、`string→Char`，**其余一律 `else→Int`**（囊括 `uint8_t/int8_t/uint16_t/int16_t/uint32_t/int32_t/uint64_t/enum`）。而 `FieldType` 不是"DB 列宽"、是**对内存 record 的带类型视图**：四个 wrapper 都先 `const char* data = (const char*)record + field.offset;` 再定长 `reinterpret_cast`，**两个方向都是 4 字节**。故 `else→Int` 对 1/2 字节成员是"越界读 + 回写踩烂相邻成员"，对 `uint64_t` 是截断。今天无患（三仓模型都没用这些类型，281 条描述符 0 错配），但这是潜伏的踩内存路径。
+  - **已排除的三条替代方案**：加大 DB 列宽无用（指针运算在内存侧）；用 `Bool` 顶 1 字节会把值域塌成 0/1 且是 UB；用 `Char`+`arraySize` 顶则列变 `char(N)`、丢数值语义。
+  - **四条决策（用户拍板）**：① `FieldType::Int` **改名 `Int32`**，新增 `Int8/UInt8/Int16/UInt16/UInt32/UInt64`，新值**一律追加在末尾**、`Int32` 占原第 0 位故无数值位移；② 读取方向窄化越界**饱和 + Warn**；③ 验证**只用测试夹具**，不给真实模型加窄字段；④ `Mdb`/`DataBase` 的 `type="Int"` **顺带修好**。
+  - **Phase 0（前置修复，无此步两仓是红的）**：`Mdb/Model/Tables/Tables.xml` 与 `DataBase/Model/Tables/Tables.xml` 各 3 处 `type="Int"` → `type="Int32"`（`PK`×2、`Rank`×1）。`Model/Types.xml` 只有 `<int32 name="Int32"/>`、**无 `name="Int"`**，而 `MdbStructs.cpp.tpl:105` 的 `!!itemtype = types[@type]!!` 是真字典下标 → KeyError → `pump.py:322-324` 的 `os.remove(out_file_name)` **直接删掉 `src/Mdb/MdbStructs.cpp`**；同时这两仓已提交的 `MdbStructs.h` 还是 `IntType`，而 `IntType` 已从 `Spark/Types.h` 消失，故它们此前既不能重新生成也不能编译。修完 pump 通过，两仓 `MdbStructs.cpp` 除本次改名外零差异。
+  - **Phase 1｜`include/DBAdapters/DBInterface/Schema.h`**：枚举 11 值（`Int32` 占原位 + 5 个新值 + 6 个旧值）。同头文件补一对收窄漏斗 `TryWriteInt<TDest>` / `TryWriteUInt<TDest>`（越界则写 `lowest()/max()` 并返回 `false`，否则精确写入返回 `true`；用 `static_assert` 挡住"无符号目标比 `long long` 还窄"的误用）、`SaturatingToInt64`、`SaturatingToUInt64(long long, bool&)`，以及两个调度漏斗 `TryWriteIntegerFromSigned/FromUnsigned`。宽度契约与它的执行同居一处；`Schema.h` 原只有 `<cstddef>`，补了 `<limits>`/`<cstdint>`。**不**复用 `FailureLogThrottle`（见下日志约定）。**未删除任何导出符号**（`Int` 是改名，四仓同步）。
+  - **Phase 2｜`DuckdbWrapper.cpp`（设计难点集中于此，五个站点）**：绑定改原生 `duckdb_bind_int8/uint8/int16/uint16/int32/uint32/int64/uint64`；chunk 读新增 `ReadCellAsUInt64`（`ReadCellAsInt64` 的无符号镜像，有符号源为负时置 0 并标记越界），`BindChunkToRecords` 的 `UInt64` 走它；**结果级读不用 `duckdb_value_int8` 一类**（`duckdb.h` 注明越界时静默返回 0），改为 `duckdb_column_type` 判源符号后按源选 `duckdb_value_int64`/`duckdb_value_uint64` 再进漏斗；`WriteNullSentinel` 补新 case 写 0；DDL 补 `TINYINT/UTINYINT/SMALLINT/USMALLINT/INTEGER/UINTEGER/BIGINT/UBIGINT`。
+  - **Phase 3｜`SqliteWrapper.cpp`（三个站点）**：绑定一律 `sqlite3_bind_int64`（**不用 `sqlite3_bind_int`**，`UInt32` 的 4e9 会被截断），按成员真实宽度取值；读取 `sqlite3_column_int64` → 漏斗；DDL 保持现状语义（窄类型写 `int`、64 位写 `bigint`），只补 case——**没有 case 会生成 `CREATE TABLE t(a , b int)` 这种语法错误**。`UInt64` 已知限制留档：SQLite 的 8 字节整数是二补数，位模式可保真往返，但 ≥2⁶³ 的值在 SQL 语义层以负数存在（`WHERE`/`ORDER BY`/聚合皆错），按决策 ② 饱和到 `INT64_MAX` + Warn 并在代码处说明。
+  - **Phase 4｜`MysqlWrapper.cpp` / `MariadbWrapper.cpp`**：Mysql 用 `mysqlx::Value(int64_t)`（`UInt64` 用 `Value(uint64_t)`），读取走 `get<int64_t>()`/`get<uint64_t>()` + 漏斗，DDL 补 `tinyint/smallint/int/bigint`（含 ` unsigned`）；Mariadb 用原生 `setByte/setShort/setInt/setUInt/setUInt64`（`UInt8`→`setShort`、`UInt16`→`setInt` 两处带防御性说明），读取 `getInt64`/`getUInt64` + 漏斗。**明确记录：这两支本地无服务器，本批只做编译覆盖，没有往返测试。**
+  - **Phase 5｜模板**：新增 `!!fieldtypes = {}!!`（与既有 `types`/`formats` 同风格），12 个 section 各声明一次；旧第 107 行的 5 分支 `if/else` 链塌成 `FieldType::!!$fieldtype!!`，`arraySize` 判据原样不动。**踩过的坑**：`!!fieldtypes[@type]!!` 写成裸下标会被 transpile 成"被丢弃的 Python 表达式"（不产出任何文本），必须仿照既有 `format = formats[@type]` 的写法两步走；`!!entry types!!` 只是容器、其后第一个 `!!travel!!` 属于 `!!entry bools!!`，故"默认 Int32"的赋值会落到布尔段上、把 4 个 `bool` 字段变成 `Int32`——本批已修正为 `'Bool'`。**字典必须对 12 段全覆盖**，任何 KeyError 都是删生成文件。
+  - **Phase 6｜测试夹具 `DBAdapters/test/TestDB/TestDB.cpp`**（沿用文件既有风格：手写 struct + 手写描述符表 + `GetSchema()`，对 Sqlite 与 Duckdb 各开独立 `":memory:"`）：新增 `TestNarrowRow`（`int8_t/uint8_t/int16_t/uint16_t/uint32_t/uint64_t` 相邻，外加 3 个 guard 成员），`Allocate()` 一次性 `memset 0xAB` 使 NULL 与"池化复用脏值"可区分；覆盖五点——① 相邻成员回归（值取 `UInt8=200`、`INT8_MIN`、`UINT16_MAX`、`UINT32_MAX`、`0xFFFFFFFFFFFFFFFFULL`，断言逐列精确相等**且 guard 未被踩**）；② Duckdb 两条读路径都测（照 `TestDuckdbVectorized` 的结构补一份，否则 `BindChunkToRecords` 与 `WriteNullSentinel` 的新分支一行都没被覆盖）；③ NULL 哨兵（含 NULL 列期望该字段为 0）；④ 饱和用例（手工建**宽列**再 INSERT 大数——用新 DDL 会把列建成 `TINYINT`、INSERT 直接失败）；⑤ DDL 映射断言（往返测试验不出列类型，用 `SELECT typeof(C)` 直接断言 `UTINYINT` 等）。**注**：`Char` 字段**不可与窄整数相邻**——`SqliteWrapper.cpp` 的 `sqlite3_bind_text(..., -1, ...)` 依赖 NUL 终止，会让"邻居未被踩"的断言出现难以解释的失败（独立的历史缺陷，见 ❓）。
+  - **日志约定（读路径）**：`ReadRow`/`SelectAll`/`SelectWithSql`/`SelectWithSqlVectorized` 加一个 `int* clampedCount` 出参，逐格累加，函数末尾发**一条** Warning（`Table:%s, ClampedCells:%d/%d`）。不逐格打日志、也不借 `FailureLogThrottle`（它是自由函数拿不到 `Impl`，且会污染 `BatchInsert` 用 `FailureCount()` 算出的失败计数）。全是文件内改动，不动头文件。
+  - **验证（六步全做）**：① Phase 0 后两仓 pump 通过、`MdbStructs.cpp` 零差异；② 每改一个 wrapper 就跑 `out/build/build_testdb.bat` 构建 TestDB 并跑夹具——`Sqlite NarrowInteger/NarrowNullSentinel/NarrowSaturation`、`Duckdb NarrowInteger/NarrowSaturation/NarrowColumnTypes`、`DuckdbVectorized NarrowInteger/NarrowNullSentinel` 全 PASS，四条既有回归（`TestSqlite`/`TestDuckdb`/`TestDuckdbVectorized`/`TestDuckdbVectorizedMultiChunk`）同 PASS，exit 0；Warn 实测为 `SqliteWrapper: INSERT narrowed out-of-range values. Table:t_test_narrow, ClampedCells:1/9`（即 `UInt64` 绑定饱和）与 SELECT 侧 `ClampedCells:6/9`；③ **枚举覆盖**：`CMakeCommon.cmake` 没开 `/W4`、编译器不会帮拦，故临时 `/Wall` 重编 14 处 switch——**零 C4062**（每个 `switch(FieldType)` 都处理了全部 11 个枚举值），残留 C4061 均已逐一确认为良性（`DuckdbWrapper.cpp` 5 处是 `duckdb_type` 上的 switch、`Schema.h` 2 处是新漏斗的 `default:`、`SqliteWrapper.cpp` 1 处是 `ReadIntegerFieldForBind` 的 `default: return 0;`）。**控制实验**：另写 `enum class E{A,B,C}` 缺 `E::C` 的 switch 验证——`/W4` **一条不报**，C4062 只在 `/Wall` 下出现，故最初的 `/W4` 检查是空的、已重做；④ 三仓各跑 `pumpall.py`，`exit 0` 且 diff **只含 `FieldType::Int → FieldType::Int32` 的机械替换**（用 `git diff -U0 \| grep -E '^[+-]' \| grep -v 'FieldType::Int[32]\{0,1\}, offsetof'` 过滤后为空）：Mdb 45 行、DataBase 45 行、QuantTrading 50 行；⑤ `audit_fieldtype.py` 仍 281 条描述符 / 19 个结构体 / **0 错配 / 0 未查明 / 0 未收录**（脚本的 `FIELD_TYPE_SIZE` 已同步 11 值并新增"未收录"桶，否则改名后它会静默跳过每一条 `Int32`、把"0 错配"变成无意义的数字）；⑥ **在岸消费方**：`QuantTrading/CMakeLists.txt:52` 的 DBAdapters 取自发布的 `../Libs/DBAdapters/x64-windows`，其安装版 `Schema.h` 仍写着 `Int`，故**真跑 `MdbStatic` 会失败，除非重新发布该共享库**——本批未擅自发布，改用非破坏性代理：从 `out/build/x64-Debug` 取 11 个 `MdbStatic` TU 的 ninja 编译命令，把 `/I D:\Gitee\DBAdapters\include` 插在 `/nologo /TP` 之后（**必须排在最前**，早先插在 `/DWIN32` 前的那版被 `-external:I …Libs\DBAdapters…` 抢先、102 个 `C2838/C2065 "Int32": 未声明的标识符` 全是假警报），重编得 **11/11 TU、0 error 0 warning**，`/showIncludes` 证实解析来源是源码树 `D:\Gitee\DBAdapters\include\DBAdapters/DBInterface/Schema.h`。
+  - **风险（§7）**：① **纯扩展**——新枚举值不改现有值语义，`FieldDescriptor` 布局不变（底层仍是 `unsigned char`），`FieldType` 无任何序列化/持久化点（已全量核查）。② 最高危的是"**漏改站点**"，失败模式分两档：DDL 漏 case → 语法错误（响亮）；**读取方向漏 case → 目标内存保持池化复用值（静默）**；Sqlite 绑定漏 case → 未绑定参数按 NULL 落库；Mysql 漏 case → 命中兜底绑 NULL；Duckdb `WriteNullSentinel` 漏 case → NULL 变脏值。验证第 ③ 步专治这个。③ **行为变更两点**（须写进提交说明）：读侧越界由"静默截断"变为"饱和 + Warn"；读取函数签名多了一个出参。④ **回滚的安全边界是数据库文件本身**：一旦用窄列建过表，回退代码版本会让旧代码把 4 字节写进 1 字节成员，故回滚方案必须包含"重建含窄类型字段的表"。⑤ **存量表列宽漂移**：`CREATE TABLE IF NOT EXISTS` 永不改列，旧表是 `int`、新描述符是 `tinyint` 会长期共存；写入走隐式转换（越界时 MySQL/Duckdb 都响亮报错），读取走新漏斗。⑥ 回滚点：DBAdapters 六个文件 + 模板一个文件 `git checkout` 可回；测试用例是新增代码块、可单独摘掉；Phase 0 的模型改动是纯文本。
+  - **保留的未提交改动**：`DBAdapters/test/TestDB/MdbStructs.h` 的两处 `IntType → Int32Type` 与 `QuantTrading/src/Mdb/MdbPrimaryKeyComp.cpp` 均属本批同一件事，**刻意保留**。`README.md`/`README.en.md` 的示例字段名同步改名。
+  - **未验证**：Mysql/Mariadb 两条支路无往返测试（本地无服务器）；`D:\Gitee\Templates` 按用户指示**仍不提交**。**AI 未推送**。
+
 ## 🔄 进行中
 
 - 无。实时行情周期那条（原本条唯一内容）2026-09-13 已定案：**实时链路恒出 1m、不聚合是有意设计**，剩余的前置约束记入下方备注。⚠️ 曾提议的"`FieldsCompare` 比较器补齐 `BarPreces`/`BarPeriod`"**已撤回**——该比较器是"合约身份键"，补齐周期会让 `PushToAllSubscribed` 的 0 周期探针匹配不到带周期入集的会话，**直接中断行情推送**；撤回证据见归档 `R.01` 与归档 `D.36`。
@@ -110,6 +111,17 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 ## ❓ 待讨论 / 待决策
 
 > 已关闭/已了结的条目（`Q.00`–`Q.15`、`Q.19` 等）已归档；下面只留未决项。
+
+- **第十二批 `FieldType` 扩展留下的 ❓（2026-09-14 记录，均属"刻意不纳入本次"）**：
+  - **① 模板侧编译期宽度断言（建议单独一个提交做）**：模板已能拿到成员的 C++ 类型（`MdbStructs.h.tpl:29` 的 `!!@type!!Type`），可为每个字段生成 `static_assert(sizeof(S::F) == N, ...)`，把"描述符宽度 vs 成员宽度"一整类潜伏缺陷挪到编译期（含"将来有人改 enum basetype"的隐患）。代价是三个仓生成物各多 N 行，会掩盖第十二批"diff 只含改名"的验收，故本次不做。
+  - **② `SqliteWrapper.cpp` 的 `sqlite3_bind_text(..., -1, ...)`**：`-1` 依赖 NUL 终止，而读路径在列值满宽时不写终止符，于是"查出来再写回去"会越界读。修法 `strnlen(data, field.arraySize)` + `SQLITE_TRANSIENT`，属存量语义变更。**这条已实测咬到第十二批的夹具设计**——故该批明确要求"`Char` 字段不可与窄整数相邻"。
+  - **③ Char 满宽不终止的跨后端不一致**：SQLite/MySQL/MariaDB 三支在列值满宽时不补 `\0`，只有 `DuckdbWrapper::ReadCellAsChar` 做了截断 + 补零。
+  - **④ `Templates/SQL/Duckdb/CreateTables.sql.tpl` 的 `uint16s → 'int'`**（应为 `usmallint`）：只影响"表由 SQL 脚本建、由 Wrapper 读"时的源类型判断，写入无损。
+  - **⑤ 存量库表的迁移策略**（`ALTER` 脚本 vs 直接重建 vs 接受漂移）未定；与第十二批风险 ⑤ 同源。
+  - **⑥ Duckdb 结果级读取走的是已废弃的 "Safe Fetch Functions" 组**（`duckdb_value_int64`/`uint64` 等）：`duckdb.h` 推荐改用 `duckdb_fetch_chunk`。第十二批为了让两条读路径都正确，在结果级路径上沿用了该组，属"跟随现状"，未迁移。
+  - **⑦ `ReadCellAsInt64` 对 `UBIGINT` ≥2⁶³ 用 `static_cast<long long>` 转换**：C++20 下是模运算（实现定义 → 已定型为取模），值会变成负数。第十二批已让 `UInt64` 目标走独立的 `ReadCellAsUInt64` 绕开它，但**其他以 `Int64` 为目标的窄位宽读路径仍可能命中**，待核查。
+  - **⑧ `DuckdbWrapper.cpp` 的 `ReadCellAsInt32` 已成死代码**（第十二批把结果级读合并为一条整数臂后无调用者）：**刻意未删**，按 Harness §3.1 删除导出符号须先经用户确认，待用户裁决。
+  - **⑨ Mysql / Mariadb 两支无往返验证**：本地无服务器，第十二批只做了编译覆盖。
 
 - **入站包方向与鉴权校验缺失（半关闭；2026-09-13 第九批落地网络侧"不收"）**：`PackageFactoryBase::IsInboundPackageAccepted` + `PackageReader` 两条解析路径过滤，反向包在 `CreatePackage` **之前**即被拒（生成代码按类名前缀推导方向，52 包全分类、无 fail-open）；内核侧"少认"见第六批分发生成。**仍未解决**：① 会话合法性——`NotifyDisConnect` 取的是**报文体**里的 `SessionID`、可指定他人会话（与方向正交），等用户定的会话登录检查；② 候选方案 (a)（由 `PackageNames/*.xml` 生成运行期查表）与 (b)（`Packages.xml` 加 `direction` 列）未采纳但仍在。完整侦察记录（网络层全貌核对、执法点论证、第二层过滤治不了的部分、三件待拍板）见归档 `Q.16`。**2026-09-13（第十批）复核：① 的两条线均已关闭**——伪造方向这条，`Notify` 前缀在生成的方向表里一律 `acceptExpr = "false"`（网线上永不合法，包对象创建前即被拒），且内核侧唯一的 `NotifyDisConnectPackage` 生产者是 `SimExchange::OnProtocolDisConnect` 与 `MdKernel::OnProtocolDisConnect`，二者都自造且 `SessionID` 取传输层真值，故"报文体 SessionID 可指定他人会话"不再可达；会话登录检查这条，本批已落地（交易所查 `t_PrimaryAccountLoginSession`、行情查 `t_MdUserLoginSession`，见上 ✅ 第十批）。② 的 (a)/(b) 是当时未采纳的备选，非待办。**本条已无未决内容，待用户确认后入归档**（原侦察记录在归档 `Q.16`）。
 - **`PrimaryAccount.IsAllowLogin` 只被写入、从未被读（2026-09-13 记录；原"登录路径两个小缺口"的 ① 已修，见 ✅ 第十一批）**：`Model/Tables/Tables.xml:270` 的该字段全仓**只被写入、从未被读**——播种器 `src/SimExchangeInit/Init.cpp:69` 无条件置 `true`，生成代码只在字段注册与 `Dump` 里出现（`src/Mdb/MdbStructs.cpp:510/531/537/541`），没有任何一处参与登录判定，故 `IsAllowLogin = false` 的主账号**仍能登录成功**。**候选修法**：在密码校验后补一行 `if (!primaryAccount->IsAllowLogin) { errorID = ErrorAccountForbidden; }`（`ErrorAccountForbidden` = 0xA001，已存在），属登录路径上的一行守卫。用户 2026-09-13 指示暂缓。
@@ -125,7 +137,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 ## 备注
 
 - **实时链路恒出 1m、不消费订阅声明的周期（2026-09-13 定案：有意设计，非缺陷；剩余项为将来实盘宿主的前置约束）**：`MinuteBar` 恒定产出 `Minute/1`（`src/Bar/MinuteBar.cpp:116-117` 与 `:151-152` 硬编码；`test/UnitTests/MinuteBarTests.cpp:103-104` 已把 1m 断言成契约），`MdKernel::HandleReqSubMarketData` 不读包里的周期（`src/MdOffer/MdKernel.cpp:302` 只取 `ExchangeID`/`InstrumentID`，`MinuteBar::ReqSubMarketData` 签名也不含周期，`src/Bar/MinuteBar.h:18`），而 `ReqSubMarketDataField` 本身是带 `BarPreces`/`BarPeriod` 的（`include/QuantTrading/Fields.h:73-74`）——故这两个字段在**实时侧无效**。**今天不可达**：全仓唯一给它们赋非零值的是 `StrategyBase::SubscribeMarketData`（`src/Strategy/StrategyBase.cpp:46-47`），而 `StrategyBase` 硬绑 `BackTestApi`（`src/Strategy/StrategyBase.h:19/98`，:10 注释写明"实盘路径（MdApi+TraderApi）"尚未落地），走的是回测侧——那侧才读周期并绑 `BarAggregator`；实时侧两个调用者都发 0（`test/TestMdApi/MdSpiImpl.cpp:11-12` 的 `memset`、`src/SimExchange/SimExchange.cpp:522` 的 `reqSubMd{0}`）。**前置约束**：将来给 `StrategyBase` 接 MdApi 宿主时须先定——要么约定实时只支持 1m 并在 `SubscribeMarketData` 处拒绝/告警非零周期（否则声明 5m 会被静默丢弃、仍回 `ErrorNone`），要么把聚合放到宿主侧。**已否决**：让 MdOffer 自己做多周期聚合（须重做 `PushToAllSubscribed` 的 0 周期探针匹配，风险见本文件 🔄 段的撤回记录）。
-- **待推送（按约定 AI 不推送，由用户执行）**：截至 2026-09-13 会话末，`QuantTrading` master 领先 `origin/master` 22 笔、`D:\Gitee\Templates` master 领先 4 笔（含 `726fad4` 方向过滤模板、`fe01756` 会话表过滤模板、`80ae12e` CSV 会话表过滤模板）。
+- **待推送（按约定 AI 不推送，由用户执行）**：2026-09-14 复核，`QuantTrading` master 领先 `origin/master` 2 笔、`D:\Gitee\Templates` master 领先 4 笔（含方向过滤、会话表过滤、CSV 会话表过滤三份模板，现又加第十二批的 `MdbStructs.cpp.tpl` 改动，**该仓仍按用户指示不提交**）。
 - 提交信息历史多为 `1`，建议后续写描述性提交信息。
 - `D:\Gitee\Templates` 仓库的模板改动（S1/S3/H10/H12 对应 `.tpl`）已提交（`6d12e3d`）。
 - `rules/cpp-style.md` 成员命名要求 snake_case，现有代码为 `m_` + PascalCase，项目自洽但与规范不一致（待统一）。
