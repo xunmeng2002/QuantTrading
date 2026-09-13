@@ -6,7 +6,7 @@ using namespace spark::network;
 namespace quanttrading::mdoffer
 {
     MdFront::MdFront(IOModelType ioModel, const char* address, int milliSecond)
-        :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new quanttrading::packages::PackageFactory(ServerTypeType::Server)), m_Address(address)
+        :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new quanttrading::packages::PackageFactory()), m_Address(address)
     {
         RegisterFront(address);
         m_IOThread = new IOThread("MdFront");
