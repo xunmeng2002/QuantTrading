@@ -29,7 +29,6 @@ namespace mdb
 			case BarMarketData::TableID:  LoadBarMarketDataTable(mdb, dir); break;
 			case MdSubscribe::TableID:  LoadMdSubscribeTable(mdb, dir); break;
 			case MdUser::TableID:  LoadMdUserTable(mdb, dir); break;
-			case MdUserLoginSession::TableID:  LoadMdUserLoginSessionTable(mdb, dir); break;
 			case PrimaryAccount::TableID:  LoadPrimaryAccountTable(mdb, dir); break;
 			case Account::TableID:  LoadAccountTable(mdb, dir); break;
 			case Capital::TableID:  LoadCapitalTable(mdb, dir); break;
@@ -37,8 +36,6 @@ namespace mdb
 			case PositionDetail::TableID:  LoadPositionDetailTable(mdb, dir); break;
 			case Order::TableID:  LoadOrderTable(mdb, dir); break;
 			case Trade::TableID:  LoadTradeTable(mdb, dir); break;
-			case AccountLoginSession::TableID:  LoadAccountLoginSessionTable(mdb, dir); break;
-			case PrimaryAccountLoginSession::TableID:  LoadPrimaryAccountLoginSessionTable(mdb, dir); break;
 			default: break;
 			}
 		}
@@ -466,41 +463,6 @@ namespace mdb
 		}
 		file.close();
 	}
-	void InitMdbFromCsv::LoadMdUserLoginSessionTable(Mdb* mdb, const char* dir)
-	{
-		char fullPath[260];
-		sprintf(fullPath, "%s/t_MdUserLoginSession.csv", dir);
-		fstream file(fullPath, fstream::in);
-		if (!file)
-		{
-			throw std::string(fullPath) + " Open Failed.";
-		}
-
-		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
-		CSVRecord csv_record;
-		if (!csv_record.AnalysisFieldName(HeaderBuffer))
-		{
-			throw std::string("AnalysisFieldName t_MdUserLoginSession.csv failed");
-		}
-		while (!file.eof())
-		{
-			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
-			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
-			if (ContentBuffer[0] == '\0')
-				break;
-			if (!csv_record.AnalysisFieldContent(ContentBuffer))
-			{
-				throw std::string("AnalysisFieldContent t_MdUserLoginSession.csv failed");
-			}
-
-			auto record = MdUserLoginSession::Allocate();
-			Utility::Strcpy(record->MdUserID, csv_record.GetFieldAsString("MdUserID"));
-			record->SessionID = csv_record.GetFieldAsInt64("SessionID");
-			Utility::Strcpy(record->IPAddress, csv_record.GetFieldAsString("IPAddress"));
-			mdb->t_MdUserLoginSession->Insert(record);
-		}
-		file.close();
-	}
 	void InitMdbFromCsv::LoadPrimaryAccountTable(Mdb* mdb, const char* dir)
 	{
 		char fullPath[260];
@@ -860,76 +822,6 @@ namespace mdb
 			Utility::Strcpy(record->TradeDate, csv_record.GetFieldAsString("TradeDate"));
 			Utility::Strcpy(record->TradeTime, csv_record.GetFieldAsString("TradeTime"));
 			mdb->t_Trade->Insert(record);
-		}
-		file.close();
-	}
-	void InitMdbFromCsv::LoadAccountLoginSessionTable(Mdb* mdb, const char* dir)
-	{
-		char fullPath[260];
-		sprintf(fullPath, "%s/t_AccountLoginSession.csv", dir);
-		fstream file(fullPath, fstream::in);
-		if (!file)
-		{
-			throw std::string(fullPath) + " Open Failed.";
-		}
-
-		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
-		CSVRecord csv_record;
-		if (!csv_record.AnalysisFieldName(HeaderBuffer))
-		{
-			throw std::string("AnalysisFieldName t_AccountLoginSession.csv failed");
-		}
-		while (!file.eof())
-		{
-			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
-			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
-			if (ContentBuffer[0] == '\0')
-				break;
-			if (!csv_record.AnalysisFieldContent(ContentBuffer))
-			{
-				throw std::string("AnalysisFieldContent t_AccountLoginSession.csv failed");
-			}
-
-			auto record = AccountLoginSession::Allocate();
-			Utility::Strcpy(record->AccountID, csv_record.GetFieldAsString("AccountID"));
-			record->SessionID = csv_record.GetFieldAsInt64("SessionID");
-			Utility::Strcpy(record->IPAddress, csv_record.GetFieldAsString("IPAddress"));
-			mdb->t_AccountLoginSession->Insert(record);
-		}
-		file.close();
-	}
-	void InitMdbFromCsv::LoadPrimaryAccountLoginSessionTable(Mdb* mdb, const char* dir)
-	{
-		char fullPath[260];
-		sprintf(fullPath, "%s/t_PrimaryAccountLoginSession.csv", dir);
-		fstream file(fullPath, fstream::in);
-		if (!file)
-		{
-			throw std::string(fullPath) + " Open Failed.";
-		}
-
-		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
-		CSVRecord csv_record;
-		if (!csv_record.AnalysisFieldName(HeaderBuffer))
-		{
-			throw std::string("AnalysisFieldName t_PrimaryAccountLoginSession.csv failed");
-		}
-		while (!file.eof())
-		{
-			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
-			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
-			if (ContentBuffer[0] == '\0')
-				break;
-			if (!csv_record.AnalysisFieldContent(ContentBuffer))
-			{
-				throw std::string("AnalysisFieldContent t_PrimaryAccountLoginSession.csv failed");
-			}
-
-			auto record = PrimaryAccountLoginSession::Allocate();
-			Utility::Strcpy(record->PrimaryAccountID, csv_record.GetFieldAsString("PrimaryAccountID"));
-			record->SessionID = csv_record.GetFieldAsInt64("SessionID");
-			Utility::Strcpy(record->IPAddress, csv_record.GetFieldAsString("IPAddress"));
-			mdb->t_PrimaryAccountLoginSession->Insert(record);
 		}
 		file.close();
 	}
