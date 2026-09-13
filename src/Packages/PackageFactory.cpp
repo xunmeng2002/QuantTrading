@@ -6,7 +6,7 @@ using namespace spark::network;
 
 namespace quanttrading::packages
 {
-Package* PackageFactory::CreatePackage(UShortType packageID)
+Package* PackageFactory::CreatePackage(UInt16Type packageID)
 {
 	switch (packageID)
 	{

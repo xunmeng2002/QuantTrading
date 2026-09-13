@@ -109,7 +109,7 @@ namespace mdb
 		bool Insert(HotInstrument* record);
 		void BatchInsert(std::vector<mdb::HotInstrument*>* records);
 		void Erase(HotInstrument* record);
-		int EraseByTradingDayIndex(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay);
+		int EraseByTradingDayIndex(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay);
 		bool Update(HotInstrument* const oldRecord, HotInstrument* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();

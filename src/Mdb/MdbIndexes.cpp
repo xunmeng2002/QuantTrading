@@ -11,19 +11,19 @@ namespace mdb
 		:m_Table(table)
 	{
 	}
-	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::LowerBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay)
+	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::LowerBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
 	{
 		FillCompareRecord(ExchangeID, ProductID, Rank, TradingDay);
 		std::shared_lock guard(m_Table->m_SharedMutex);
 		return m_Index.lower_bound(&t_CompareHotInstrument);
 	}
-	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::UpperBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay)
+	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::UpperBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
 	{
 		FillCompareRecord(ExchangeID, ProductID, Rank, TradingDay);
 		std::shared_lock guard(m_Table->m_SharedMutex);
 		return m_Index.upper_bound(&t_CompareHotInstrument);
 	}
-	std::pair<HotInstrumentIndexTradingDay::iterator, HotInstrumentIndexTradingDay::iterator> HotInstrumentIndexTradingDay::EqualRange(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay)
+	std::pair<HotInstrumentIndexTradingDay::iterator, HotInstrumentIndexTradingDay::iterator> HotInstrumentIndexTradingDay::EqualRange(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
 	{
 		FillCompareRecord(ExchangeID, ProductID, Rank, TradingDay);
 		std::shared_lock guard(m_Table->m_SharedMutex);
@@ -60,7 +60,7 @@ namespace mdb
 		}
 		return m_Index.end();
 	}
-	void HotInstrumentIndexTradingDay::FillCompareRecord(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay)
+	void HotInstrumentIndexTradingDay::FillCompareRecord(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
 	{
 		Utility::Strcpy(t_CompareHotInstrument.ExchangeID, ExchangeID);
 		Utility::Strcpy(t_CompareHotInstrument.ProductID, ProductID);

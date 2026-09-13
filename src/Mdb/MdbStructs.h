@@ -11,7 +11,7 @@ namespace mdb
 	public:
 		static constexpr unsigned int TableID = 0x0001;
 		//主键
-		IntType PK;
+		Int32Type PK;
 		//当前交易日
 		DateType CurrTradingDay;
 		//昨交易日
@@ -101,7 +101,7 @@ namespace mdb
 		//最大持仓量
 		LargeVolumeType MaxOpenInterest;
 		//级别
-		IntType Rank;
+		Int32Type Rank;
 		
 		static HotInstrument* Allocate();
 		void Deallocate();
@@ -129,7 +129,7 @@ namespace mdb
 		//合约类别
 		InstrumentClassType InstrumentClass;
 		//级别
-		IntType Rank;
+		Int32Type Rank;
 		//合约乘数
 		VolumeMultipleType VolumeMultiple;
 		//最小变动价位
@@ -299,7 +299,7 @@ namespace mdb
 		//Bar精度
 		BarPrecesType BarPreces;
 		//Bar周期
-		IntType BarPeriod;
+		Int32Type BarPeriod;
 		//Bar时间
 		Int64Type BarTime;
 		//更新时间戳

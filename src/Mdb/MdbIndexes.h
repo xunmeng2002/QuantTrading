@@ -14,9 +14,9 @@ namespace mdb
 		friend class HotInstrumentTable;
 	public:
 		HotInstrumentIndexTradingDay(HotInstrumentTable* table);
-		iterator LowerBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay);
-		iterator UpperBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay);
-		std::pair<iterator, iterator> EqualRange(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay);
+		iterator LowerBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay);
+		iterator UpperBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay);
+		std::pair<iterator, iterator> EqualRange(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay);
 	public:
 		static constexpr unsigned int IndexID = 0x0000;
 	protected:
@@ -25,7 +25,7 @@ namespace mdb
 		void Update(iterator it);
 		bool NeedUpdate(const HotInstrument* const oldRecord, const HotInstrument* const newRecord);
 		iterator FindNode(HotInstrument* const record);
-		void FillCompareRecord(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay);
+		void FillCompareRecord(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay);
 
 	private:
 		HotInstrumentTable* m_Table;

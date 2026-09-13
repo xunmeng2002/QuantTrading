@@ -4,14 +4,14 @@
 		<field name="NotifyConnect" id="0x0002" desc="连接成功通知">
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
-			<item name="Port" id="0x2902" type="Int" desc="端口"/>
+			<item name="Port" id="0x2902" type="Int32" desc="端口"/>
 		</field>
 	</package>
 	<package name="NotifyDisConnect" id="0x0002" desc="断开连接通知">
 		<field name="NotifyDisConnect" id="0x0003" desc="断开连接通知">
 			<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
 			<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
-			<item name="Port" id="0x2902" type="Int" desc="端口"/>
+			<item name="Port" id="0x2902" type="Int32" desc="端口"/>
 		</field>
 	</package>
 	<package name="NotifyDBConnect" id="0x0003" desc="数据库连接成功通知">
@@ -61,7 +61,7 @@
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 			<item name="BarPreces" id="0x901A" type="BarPreces" desc="Bar精度"/>
-			<item name="BarPeriod" id="0x1003" type="Int" desc="Bar周期"/>
+			<item name="BarPeriod" id="0x1003" type="Int32" desc="Bar周期"/>
 		</field>
 	</package>
 	<package name="RspSubMarketData" id="0x1006" desc="订阅行情应答">
@@ -166,7 +166,7 @@
 			<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
 			<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
 			<item name="BarPreces" id="0x901A" type="BarPreces" desc="Bar精度"/>
-			<item name="BarPeriod" id="0x1003" type="Int" desc="Bar周期"/>
+			<item name="BarPeriod" id="0x1003" type="Int32" desc="Bar周期"/>
 			<item name="BarTime" id="0x4201" type="Int64" desc="Bar时间"/>
 			<item name="UpdateTs" id="0x4202" type="Int64" desc="更新时间戳"/>
 			<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>

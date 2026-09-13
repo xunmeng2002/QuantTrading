@@ -12,7 +12,7 @@ namespace mdb
 		friend class TradingDayTable;
 	public:
 		TradingDayPrimaryKey(TradingDayTable* table, size_t buckets = 1000);
-		TradingDay* Select(const IntType& PK);
+		TradingDay* Select(const Int32Type& PK);
 		std::pair<iterator, iterator> SelectAll();
 		
 	protected:
@@ -72,7 +72,7 @@ namespace mdb
 		friend class HotInstrumentTable;
 	public:
 		HotInstrumentPrimaryKey(HotInstrumentTable* table, size_t buckets = 1000);
-		HotInstrument* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank);
+		HotInstrument* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank);
 		std::pair<iterator, iterator> SelectAll();
 		
 	protected:
@@ -132,7 +132,7 @@ namespace mdb
 		friend class BarMarketDataTable;
 	public:
 		BarMarketDataPrimaryKey(BarMarketDataTable* table, size_t buckets = 1000);
-		BarMarketData* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime);
+		BarMarketData* Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const Int32Type& BarPeriod, const Int64Type& BarTime);
 		std::pair<iterator, iterator> SelectAll();
 		
 	protected:

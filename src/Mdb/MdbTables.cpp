@@ -683,7 +683,7 @@ namespace mdb
 			record->Deallocate();
 		}
 	}
-	int HotInstrumentTable::EraseByTradingDayIndex(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank, const DateType& TradingDay)
+	int HotInstrumentTable::EraseByTradingDayIndex(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
 	{
 		m_TradingDayIndex->FillCompareRecord(ExchangeID, ProductID, Rank, TradingDay);
 		std::vector<HotInstrument*> records;

@@ -13,7 +13,7 @@ namespace mdb
 		:m_Table(table), m_Index(buckets)
 	{
 	}
-	TradingDay* TradingDayPrimaryKey::Select(const IntType& PK)
+	TradingDay* TradingDayPrimaryKey::Select(const Int32Type& PK)
 	{
 		t_CompareTradingDay.PK = PK;
 		
@@ -125,7 +125,7 @@ namespace mdb
 		:m_Table(table), m_Index(buckets)
 	{
 	}
-	HotInstrument* HotInstrumentPrimaryKey::Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const IntType& Rank)
+	HotInstrument* HotInstrumentPrimaryKey::Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank)
 	{
 		Utility::Strcpy(t_CompareHotInstrument.TradingDay, TradingDay);
 		Utility::Strcpy(t_CompareHotInstrument.ExchangeID, ExchangeID);
@@ -242,7 +242,7 @@ namespace mdb
 		:m_Table(table), m_Index(buckets)
 	{
 	}
-	BarMarketData* BarMarketDataPrimaryKey::Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const IntType& BarPeriod, const Int64Type& BarTime)
+	BarMarketData* BarMarketDataPrimaryKey::Select(const DateType& TradingDay, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const BarPrecesType& BarPreces, const Int32Type& BarPeriod, const Int64Type& BarTime)
 	{
 		Utility::Strcpy(t_CompareBarMarketData.TradingDay, TradingDay);
 		Utility::Strcpy(t_CompareBarMarketData.ExchangeID, ExchangeID);
