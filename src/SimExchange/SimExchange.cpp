@@ -193,7 +193,7 @@ void SimExchange::HandleReqAccountLogin(ReqAccountLoginPackage* reqPackage)
 	auto primaryAccount = m_Mdb->t_PrimaryAccount->m_PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountID);
 	if (primaryAccount == nullptr)
 	{
-		errorID = ErrorBrokerNotExist;
+		errorID = ErrorPrimaryAccountNotExist;
 	}
 	else if (strcmp(primaryAccount->Password, reqPackage->ReqAccountLogin->Password) != 0)
 	{
