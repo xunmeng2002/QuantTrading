@@ -40,20 +40,24 @@ void NotifyConnectPackage::Prepare(SessionIDType sessionID, int messageChain, in
 }
 int NotifyConnectPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (NotifyConnect != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, NotifyConnectField::FieldID);
-		StepUtility::WriteString(ppos, Items::SessionID, NotifyConnect->SessionID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyConnectField::FieldID);
+		StepUtility::WriteString(cursor, Items::SessionID, NotifyConnect->SessionID);
 		if (strlen(NotifyConnect->IPAddress) >= sizeof(NotifyConnect->IPAddress))
 		{
 			NotifyConnect->IPAddress[sizeof(NotifyConnect->IPAddress) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::IPAddress, NotifyConnect->IPAddress);
-		StepUtility::WriteString(ppos, Items::Port, NotifyConnect->Port);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, NotifyConnectField::FieldID);
+		StepUtility::WriteString(cursor, Items::IPAddress, NotifyConnect->IPAddress);
+		StepUtility::WriteString(cursor, Items::Port, NotifyConnect->Port);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyConnectField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool NotifyConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -132,6 +136,11 @@ int NotifyConnectPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (NotifyConnect != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(NotifyConnectField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &NotifyConnectField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, NotifyConnect, sizeof(NotifyConnectField));
@@ -198,20 +207,24 @@ void NotifyDisConnectPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int NotifyDisConnectPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (NotifyDisConnect != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, NotifyDisConnectField::FieldID);
-		StepUtility::WriteString(ppos, Items::SessionID, NotifyDisConnect->SessionID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDisConnectField::FieldID);
+		StepUtility::WriteString(cursor, Items::SessionID, NotifyDisConnect->SessionID);
 		if (strlen(NotifyDisConnect->IPAddress) >= sizeof(NotifyDisConnect->IPAddress))
 		{
 			NotifyDisConnect->IPAddress[sizeof(NotifyDisConnect->IPAddress) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::IPAddress, NotifyDisConnect->IPAddress);
-		StepUtility::WriteString(ppos, Items::Port, NotifyDisConnect->Port);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, NotifyDisConnectField::FieldID);
+		StepUtility::WriteString(cursor, Items::IPAddress, NotifyDisConnect->IPAddress);
+		StepUtility::WriteString(cursor, Items::Port, NotifyDisConnect->Port);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDisConnectField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool NotifyDisConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -290,6 +303,11 @@ int NotifyDisConnectPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (NotifyDisConnect != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(NotifyDisConnectField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &NotifyDisConnectField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, NotifyDisConnect, sizeof(NotifyDisConnectField));
@@ -356,18 +374,22 @@ void NotifyDBConnectPackage::Prepare(SessionIDType sessionID, int messageChain, 
 }
 int NotifyDBConnectPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (NotifyDBConnect != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, NotifyDBConnectField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDBConnectField::FieldID);
 		if (strlen(NotifyDBConnect->DBName) >= sizeof(NotifyDBConnect->DBName))
 		{
 			NotifyDBConnect->DBName[sizeof(NotifyDBConnect->DBName) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::DBName, NotifyDBConnect->DBName);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, NotifyDBConnectField::FieldID);
+		StepUtility::WriteString(cursor, Items::DBName, NotifyDBConnect->DBName);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDBConnectField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool NotifyDBConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -436,6 +458,11 @@ int NotifyDBConnectPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (NotifyDBConnect != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(NotifyDBConnectField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &NotifyDBConnectField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, NotifyDBConnect, sizeof(NotifyDBConnectField));
@@ -502,18 +529,22 @@ void NotifyDBDisConnectPackage::Prepare(SessionIDType sessionID, int messageChai
 }
 int NotifyDBDisConnectPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (NotifyDBDisConnect != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, NotifyDBDisConnectField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDBDisConnectField::FieldID);
 		if (strlen(NotifyDBDisConnect->DBName) >= sizeof(NotifyDBDisConnect->DBName))
 		{
 			NotifyDBDisConnect->DBName[sizeof(NotifyDBDisConnect->DBName) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::DBName, NotifyDBDisConnect->DBName);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, NotifyDBDisConnectField::FieldID);
+		StepUtility::WriteString(cursor, Items::DBName, NotifyDBDisConnect->DBName);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDBDisConnectField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool NotifyDBDisConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -582,6 +613,11 @@ int NotifyDBDisConnectPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (NotifyDBDisConnect != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(NotifyDBDisConnectField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &NotifyDBDisConnectField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, NotifyDBDisConnect, sizeof(NotifyDBDisConnectField));
@@ -648,23 +684,27 @@ void ReqMdUserLoginPackage::Prepare(SessionIDType sessionID, int messageChain, i
 }
 int ReqMdUserLoginPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqMdUserLogin != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqMdUserLoginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqMdUserLoginField::FieldID);
 		if (strlen(ReqMdUserLogin->UserID) >= sizeof(ReqMdUserLogin->UserID))
 		{
 			ReqMdUserLogin->UserID[sizeof(ReqMdUserLogin->UserID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::UserID, ReqMdUserLogin->UserID);
+		StepUtility::WriteString(cursor, Items::UserID, ReqMdUserLogin->UserID);
 		if (strlen(ReqMdUserLogin->Password) >= sizeof(ReqMdUserLogin->Password))
 		{
 			ReqMdUserLogin->Password[sizeof(ReqMdUserLogin->Password) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::Password, ReqMdUserLogin->Password);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqMdUserLoginField::FieldID);
+		StepUtility::WriteString(cursor, Items::Password, ReqMdUserLogin->Password);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqMdUserLoginField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -739,6 +779,11 @@ int ReqMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqMdUserLogin != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqMdUserLoginField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqMdUserLoginField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqMdUserLogin, sizeof(ReqMdUserLoginField));
@@ -810,40 +855,44 @@ void RspMdUserLoginPackage::Prepare(SessionIDType sessionID, int messageChain, i
 }
 int RspMdUserLoginPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (RspMdUserLogin != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspMdUserLoginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspMdUserLoginField::FieldID);
 		if (strlen(RspMdUserLogin->UserID) >= sizeof(RspMdUserLogin->UserID))
 		{
 			RspMdUserLogin->UserID[sizeof(RspMdUserLogin->UserID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::UserID, RspMdUserLogin->UserID);
+		StepUtility::WriteString(cursor, Items::UserID, RspMdUserLogin->UserID);
 		if (strlen(RspMdUserLogin->LoginDate) >= sizeof(RspMdUserLogin->LoginDate))
 		{
 			RspMdUserLogin->LoginDate[sizeof(RspMdUserLogin->LoginDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::LoginDate, RspMdUserLogin->LoginDate);
+		StepUtility::WriteString(cursor, Items::LoginDate, RspMdUserLogin->LoginDate);
 		if (strlen(RspMdUserLogin->LoginTime) >= sizeof(RspMdUserLogin->LoginTime))
 		{
 			RspMdUserLogin->LoginTime[sizeof(RspMdUserLogin->LoginTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::LoginTime, RspMdUserLogin->LoginTime);
-		StepUtility::WriteString(ppos, Items::SessionID, RspMdUserLogin->SessionID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspMdUserLoginField::FieldID);
+		StepUtility::WriteString(cursor, Items::LoginTime, RspMdUserLogin->LoginTime);
+		StepUtility::WriteString(cursor, Items::SessionID, RspMdUserLogin->SessionID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspMdUserLoginField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -970,6 +1019,11 @@ int RspMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (RspMdUserLogin != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspMdUserLoginField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspMdUserLoginField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspMdUserLogin, sizeof(RspMdUserLoginField));
@@ -977,6 +1031,11 @@ int RspMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -1054,18 +1113,22 @@ void ReqMdUserLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, 
 }
 int ReqMdUserLogoutPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqMdUserLogout != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqMdUserLogoutField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqMdUserLogoutField::FieldID);
 		if (strlen(ReqMdUserLogout->UserID) >= sizeof(ReqMdUserLogout->UserID))
 		{
 			ReqMdUserLogout->UserID[sizeof(ReqMdUserLogout->UserID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::UserID, ReqMdUserLogout->UserID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqMdUserLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::UserID, ReqMdUserLogout->UserID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqMdUserLogoutField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -1134,6 +1197,11 @@ int ReqMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqMdUserLogout != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqMdUserLogoutField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqMdUserLogoutField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqMdUserLogout, sizeof(ReqMdUserLogoutField));
@@ -1205,29 +1273,33 @@ void RspMdUserLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, 
 }
 int RspMdUserLogoutPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (RspMdUserLogout != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspMdUserLogoutField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspMdUserLogoutField::FieldID);
 		if (strlen(RspMdUserLogout->UserID) >= sizeof(RspMdUserLogout->UserID))
 		{
 			RspMdUserLogout->UserID[sizeof(RspMdUserLogout->UserID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::UserID, RspMdUserLogout->UserID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspMdUserLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::UserID, RspMdUserLogout->UserID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspMdUserLogoutField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -1337,6 +1409,11 @@ int RspMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (RspMdUserLogout != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspMdUserLogoutField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspMdUserLogoutField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspMdUserLogout, sizeof(RspMdUserLogoutField));
@@ -1344,6 +1421,11 @@ int RspMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -1421,25 +1503,29 @@ void ReqSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int ReqSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqSubMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqSubMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqSubMarketDataField::FieldID);
 		if (strlen(ReqSubMarketData->ExchangeID) >= sizeof(ReqSubMarketData->ExchangeID))
 		{
 			ReqSubMarketData->ExchangeID[sizeof(ReqSubMarketData->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqSubMarketData->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqSubMarketData->ExchangeID);
 		if (strlen(ReqSubMarketData->InstrumentID) >= sizeof(ReqSubMarketData->InstrumentID))
 		{
 			ReqSubMarketData->InstrumentID[sizeof(ReqSubMarketData->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, ReqSubMarketData->InstrumentID);
-		StepUtility::WriteString(ppos, Items::BarPreces, (int)ReqSubMarketData->BarPreces);
-		StepUtility::WriteString(ppos, Items::BarPeriod, ReqSubMarketData->BarPeriod);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqSubMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, ReqSubMarketData->InstrumentID);
+		StepUtility::WriteString(cursor, Items::BarPreces, (int)ReqSubMarketData->BarPreces);
+		StepUtility::WriteString(cursor, Items::BarPeriod, ReqSubMarketData->BarPeriod);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqSubMarketDataField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -1524,6 +1610,11 @@ int ReqSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqSubMarketData != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqSubMarketDataField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqSubMarketDataField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqSubMarketData, sizeof(ReqSubMarketDataField));
@@ -1595,34 +1686,38 @@ void RspSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int RspSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (RspSubMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspSubMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspSubMarketDataField::FieldID);
 		if (strlen(RspSubMarketData->ExchangeID) >= sizeof(RspSubMarketData->ExchangeID))
 		{
 			RspSubMarketData->ExchangeID[sizeof(RspSubMarketData->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, RspSubMarketData->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, RspSubMarketData->ExchangeID);
 		if (strlen(RspSubMarketData->InstrumentID) >= sizeof(RspSubMarketData->InstrumentID))
 		{
 			RspSubMarketData->InstrumentID[sizeof(RspSubMarketData->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, RspSubMarketData->InstrumentID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspSubMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, RspSubMarketData->InstrumentID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspSubMarketDataField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -1738,6 +1833,11 @@ int RspSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (RspSubMarketData != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspSubMarketDataField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspSubMarketDataField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspSubMarketData, sizeof(RspSubMarketDataField));
@@ -1745,6 +1845,11 @@ int RspSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -1822,23 +1927,27 @@ void ReqUnSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChai
 }
 int ReqUnSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqUnSubMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqUnSubMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqUnSubMarketDataField::FieldID);
 		if (strlen(ReqUnSubMarketData->ExchangeID) >= sizeof(ReqUnSubMarketData->ExchangeID))
 		{
 			ReqUnSubMarketData->ExchangeID[sizeof(ReqUnSubMarketData->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqUnSubMarketData->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqUnSubMarketData->ExchangeID);
 		if (strlen(ReqUnSubMarketData->InstrumentID) >= sizeof(ReqUnSubMarketData->InstrumentID))
 		{
 			ReqUnSubMarketData->InstrumentID[sizeof(ReqUnSubMarketData->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, ReqUnSubMarketData->InstrumentID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqUnSubMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, ReqUnSubMarketData->InstrumentID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqUnSubMarketDataField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -1913,6 +2022,11 @@ int ReqUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqUnSubMarketData != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqUnSubMarketDataField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqUnSubMarketDataField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqUnSubMarketData, sizeof(ReqUnSubMarketDataField));
@@ -1984,34 +2098,38 @@ void RspUnSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChai
 }
 int RspUnSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (RspUnSubMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspUnSubMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspUnSubMarketDataField::FieldID);
 		if (strlen(RspUnSubMarketData->ExchangeID) >= sizeof(RspUnSubMarketData->ExchangeID))
 		{
 			RspUnSubMarketData->ExchangeID[sizeof(RspUnSubMarketData->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, RspUnSubMarketData->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, RspUnSubMarketData->ExchangeID);
 		if (strlen(RspUnSubMarketData->InstrumentID) >= sizeof(RspUnSubMarketData->InstrumentID))
 		{
 			RspUnSubMarketData->InstrumentID[sizeof(RspUnSubMarketData->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, RspUnSubMarketData->InstrumentID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspUnSubMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, RspUnSubMarketData->InstrumentID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspUnSubMarketDataField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -2127,6 +2245,11 @@ int RspUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (RspUnSubMarketData != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspUnSubMarketDataField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspUnSubMarketDataField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspUnSubMarketData, sizeof(RspUnSubMarketDataField));
@@ -2134,6 +2257,11 @@ int RspUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -2211,14 +2339,18 @@ void ReqSubMarketDataFinishedPackage::Prepare(SessionIDType sessionID, int messa
 }
 int ReqSubMarketDataFinishedPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqSubMarketDataFinished != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqSubMarketDataFinishedField::FieldID);
-		StepUtility::WriteString(ppos, Items::SessionID, ReqSubMarketDataFinished->SessionID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqSubMarketDataFinishedField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqSubMarketDataFinishedField::FieldID);
+		StepUtility::WriteString(cursor, Items::SessionID, ReqSubMarketDataFinished->SessionID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqSubMarketDataFinishedField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqSubMarketDataFinishedPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -2286,6 +2418,11 @@ int ReqSubMarketDataFinishedPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqSubMarketDataFinished != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqSubMarketDataFinishedField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqSubMarketDataFinishedField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqSubMarketDataFinished, sizeof(ReqSubMarketDataFinishedField));
@@ -2352,86 +2489,90 @@ void RtnDepthMarketDataPackage::Prepare(SessionIDType sessionID, int messageChai
 }
 int RtnDepthMarketDataPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (DepthMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, DepthMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, DepthMarketDataField::FieldID);
 		if (strlen(DepthMarketData->TradingDay) >= sizeof(DepthMarketData->TradingDay))
 		{
 			DepthMarketData->TradingDay[sizeof(DepthMarketData->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, DepthMarketData->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, DepthMarketData->TradingDay);
 		if (strlen(DepthMarketData->ExchangeID) >= sizeof(DepthMarketData->ExchangeID))
 		{
 			DepthMarketData->ExchangeID[sizeof(DepthMarketData->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, DepthMarketData->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, DepthMarketData->ExchangeID);
 		if (strlen(DepthMarketData->InstrumentID) >= sizeof(DepthMarketData->InstrumentID))
 		{
 			DepthMarketData->InstrumentID[sizeof(DepthMarketData->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, DepthMarketData->InstrumentID);
-		StepUtility::WriteString(ppos, Items::UpdateTs, DepthMarketData->UpdateTs);
-		StepUtility::WriteString(ppos, Items::LastPrice, DepthMarketData->LastPrice);
-		StepUtility::WriteString(ppos, Items::PreSettlementPrice, DepthMarketData->PreSettlementPrice);
-		StepUtility::WriteString(ppos, Items::PreClosePrice, DepthMarketData->PreClosePrice);
-		StepUtility::WriteString(ppos, Items::PreOpenInterest, DepthMarketData->PreOpenInterest);
-		StepUtility::WriteString(ppos, Items::OpenPrice, DepthMarketData->OpenPrice);
-		StepUtility::WriteString(ppos, Items::HighestPrice, DepthMarketData->HighestPrice);
-		StepUtility::WriteString(ppos, Items::LowestPrice, DepthMarketData->LowestPrice);
-		StepUtility::WriteString(ppos, Items::ClosePrice, DepthMarketData->ClosePrice);
-		StepUtility::WriteString(ppos, Items::CurrVolume, DepthMarketData->CurrVolume);
-		StepUtility::WriteString(ppos, Items::Volume, DepthMarketData->Volume);
-		StepUtility::WriteString(ppos, Items::CurrTurnover, DepthMarketData->CurrTurnover);
-		StepUtility::WriteString(ppos, Items::Turnover, DepthMarketData->Turnover);
-		StepUtility::WriteString(ppos, Items::OpenInterest, DepthMarketData->OpenInterest);
-		StepUtility::WriteString(ppos, Items::SettlementPrice, DepthMarketData->SettlementPrice);
-		StepUtility::WriteString(ppos, Items::UpperLimitPrice, DepthMarketData->UpperLimitPrice);
-		StepUtility::WriteString(ppos, Items::LowerLimitPrice, DepthMarketData->LowerLimitPrice);
-		StepUtility::WriteString(ppos, Items::AveragePrice, DepthMarketData->AveragePrice);
-		StepUtility::WriteString(ppos, Items::AskPrice1, DepthMarketData->AskPrice1);
-		StepUtility::WriteString(ppos, Items::AskPrice2, DepthMarketData->AskPrice2);
-		StepUtility::WriteString(ppos, Items::AskPrice3, DepthMarketData->AskPrice3);
-		StepUtility::WriteString(ppos, Items::AskPrice4, DepthMarketData->AskPrice4);
-		StepUtility::WriteString(ppos, Items::AskPrice5, DepthMarketData->AskPrice5);
-		StepUtility::WriteString(ppos, Items::AskPrice6, DepthMarketData->AskPrice6);
-		StepUtility::WriteString(ppos, Items::AskPrice7, DepthMarketData->AskPrice7);
-		StepUtility::WriteString(ppos, Items::AskPrice8, DepthMarketData->AskPrice8);
-		StepUtility::WriteString(ppos, Items::AskPrice9, DepthMarketData->AskPrice9);
-		StepUtility::WriteString(ppos, Items::AskPrice10, DepthMarketData->AskPrice10);
-		StepUtility::WriteString(ppos, Items::AskVolume1, DepthMarketData->AskVolume1);
-		StepUtility::WriteString(ppos, Items::AskVolume2, DepthMarketData->AskVolume2);
-		StepUtility::WriteString(ppos, Items::AskVolume3, DepthMarketData->AskVolume3);
-		StepUtility::WriteString(ppos, Items::AskVolume4, DepthMarketData->AskVolume4);
-		StepUtility::WriteString(ppos, Items::AskVolume5, DepthMarketData->AskVolume5);
-		StepUtility::WriteString(ppos, Items::AskVolume6, DepthMarketData->AskVolume6);
-		StepUtility::WriteString(ppos, Items::AskVolume7, DepthMarketData->AskVolume7);
-		StepUtility::WriteString(ppos, Items::AskVolume8, DepthMarketData->AskVolume8);
-		StepUtility::WriteString(ppos, Items::AskVolume9, DepthMarketData->AskVolume9);
-		StepUtility::WriteString(ppos, Items::AskVolume10, DepthMarketData->AskVolume10);
-		StepUtility::WriteString(ppos, Items::BidPrice1, DepthMarketData->BidPrice1);
-		StepUtility::WriteString(ppos, Items::BidPrice2, DepthMarketData->BidPrice2);
-		StepUtility::WriteString(ppos, Items::BidPrice3, DepthMarketData->BidPrice3);
-		StepUtility::WriteString(ppos, Items::BidPrice4, DepthMarketData->BidPrice4);
-		StepUtility::WriteString(ppos, Items::BidPrice5, DepthMarketData->BidPrice5);
-		StepUtility::WriteString(ppos, Items::BidPrice6, DepthMarketData->BidPrice6);
-		StepUtility::WriteString(ppos, Items::BidPrice7, DepthMarketData->BidPrice7);
-		StepUtility::WriteString(ppos, Items::BidPrice8, DepthMarketData->BidPrice8);
-		StepUtility::WriteString(ppos, Items::BidPrice9, DepthMarketData->BidPrice9);
-		StepUtility::WriteString(ppos, Items::BidPrice10, DepthMarketData->BidPrice10);
-		StepUtility::WriteString(ppos, Items::BidVolume1, DepthMarketData->BidVolume1);
-		StepUtility::WriteString(ppos, Items::BidVolume2, DepthMarketData->BidVolume2);
-		StepUtility::WriteString(ppos, Items::BidVolume3, DepthMarketData->BidVolume3);
-		StepUtility::WriteString(ppos, Items::BidVolume4, DepthMarketData->BidVolume4);
-		StepUtility::WriteString(ppos, Items::BidVolume5, DepthMarketData->BidVolume5);
-		StepUtility::WriteString(ppos, Items::BidVolume6, DepthMarketData->BidVolume6);
-		StepUtility::WriteString(ppos, Items::BidVolume7, DepthMarketData->BidVolume7);
-		StepUtility::WriteString(ppos, Items::BidVolume8, DepthMarketData->BidVolume8);
-		StepUtility::WriteString(ppos, Items::BidVolume9, DepthMarketData->BidVolume9);
-		StepUtility::WriteString(ppos, Items::BidVolume10, DepthMarketData->BidVolume10);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, DepthMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, DepthMarketData->InstrumentID);
+		StepUtility::WriteString(cursor, Items::UpdateTs, DepthMarketData->UpdateTs);
+		StepUtility::WriteString(cursor, Items::LastPrice, DepthMarketData->LastPrice);
+		StepUtility::WriteString(cursor, Items::PreSettlementPrice, DepthMarketData->PreSettlementPrice);
+		StepUtility::WriteString(cursor, Items::PreClosePrice, DepthMarketData->PreClosePrice);
+		StepUtility::WriteString(cursor, Items::PreOpenInterest, DepthMarketData->PreOpenInterest);
+		StepUtility::WriteString(cursor, Items::OpenPrice, DepthMarketData->OpenPrice);
+		StepUtility::WriteString(cursor, Items::HighestPrice, DepthMarketData->HighestPrice);
+		StepUtility::WriteString(cursor, Items::LowestPrice, DepthMarketData->LowestPrice);
+		StepUtility::WriteString(cursor, Items::ClosePrice, DepthMarketData->ClosePrice);
+		StepUtility::WriteString(cursor, Items::CurrVolume, DepthMarketData->CurrVolume);
+		StepUtility::WriteString(cursor, Items::Volume, DepthMarketData->Volume);
+		StepUtility::WriteString(cursor, Items::CurrTurnover, DepthMarketData->CurrTurnover);
+		StepUtility::WriteString(cursor, Items::Turnover, DepthMarketData->Turnover);
+		StepUtility::WriteString(cursor, Items::OpenInterest, DepthMarketData->OpenInterest);
+		StepUtility::WriteString(cursor, Items::SettlementPrice, DepthMarketData->SettlementPrice);
+		StepUtility::WriteString(cursor, Items::UpperLimitPrice, DepthMarketData->UpperLimitPrice);
+		StepUtility::WriteString(cursor, Items::LowerLimitPrice, DepthMarketData->LowerLimitPrice);
+		StepUtility::WriteString(cursor, Items::AveragePrice, DepthMarketData->AveragePrice);
+		StepUtility::WriteString(cursor, Items::AskPrice1, DepthMarketData->AskPrice1);
+		StepUtility::WriteString(cursor, Items::AskPrice2, DepthMarketData->AskPrice2);
+		StepUtility::WriteString(cursor, Items::AskPrice3, DepthMarketData->AskPrice3);
+		StepUtility::WriteString(cursor, Items::AskPrice4, DepthMarketData->AskPrice4);
+		StepUtility::WriteString(cursor, Items::AskPrice5, DepthMarketData->AskPrice5);
+		StepUtility::WriteString(cursor, Items::AskPrice6, DepthMarketData->AskPrice6);
+		StepUtility::WriteString(cursor, Items::AskPrice7, DepthMarketData->AskPrice7);
+		StepUtility::WriteString(cursor, Items::AskPrice8, DepthMarketData->AskPrice8);
+		StepUtility::WriteString(cursor, Items::AskPrice9, DepthMarketData->AskPrice9);
+		StepUtility::WriteString(cursor, Items::AskPrice10, DepthMarketData->AskPrice10);
+		StepUtility::WriteString(cursor, Items::AskVolume1, DepthMarketData->AskVolume1);
+		StepUtility::WriteString(cursor, Items::AskVolume2, DepthMarketData->AskVolume2);
+		StepUtility::WriteString(cursor, Items::AskVolume3, DepthMarketData->AskVolume3);
+		StepUtility::WriteString(cursor, Items::AskVolume4, DepthMarketData->AskVolume4);
+		StepUtility::WriteString(cursor, Items::AskVolume5, DepthMarketData->AskVolume5);
+		StepUtility::WriteString(cursor, Items::AskVolume6, DepthMarketData->AskVolume6);
+		StepUtility::WriteString(cursor, Items::AskVolume7, DepthMarketData->AskVolume7);
+		StepUtility::WriteString(cursor, Items::AskVolume8, DepthMarketData->AskVolume8);
+		StepUtility::WriteString(cursor, Items::AskVolume9, DepthMarketData->AskVolume9);
+		StepUtility::WriteString(cursor, Items::AskVolume10, DepthMarketData->AskVolume10);
+		StepUtility::WriteString(cursor, Items::BidPrice1, DepthMarketData->BidPrice1);
+		StepUtility::WriteString(cursor, Items::BidPrice2, DepthMarketData->BidPrice2);
+		StepUtility::WriteString(cursor, Items::BidPrice3, DepthMarketData->BidPrice3);
+		StepUtility::WriteString(cursor, Items::BidPrice4, DepthMarketData->BidPrice4);
+		StepUtility::WriteString(cursor, Items::BidPrice5, DepthMarketData->BidPrice5);
+		StepUtility::WriteString(cursor, Items::BidPrice6, DepthMarketData->BidPrice6);
+		StepUtility::WriteString(cursor, Items::BidPrice7, DepthMarketData->BidPrice7);
+		StepUtility::WriteString(cursor, Items::BidPrice8, DepthMarketData->BidPrice8);
+		StepUtility::WriteString(cursor, Items::BidPrice9, DepthMarketData->BidPrice9);
+		StepUtility::WriteString(cursor, Items::BidPrice10, DepthMarketData->BidPrice10);
+		StepUtility::WriteString(cursor, Items::BidVolume1, DepthMarketData->BidVolume1);
+		StepUtility::WriteString(cursor, Items::BidVolume2, DepthMarketData->BidVolume2);
+		StepUtility::WriteString(cursor, Items::BidVolume3, DepthMarketData->BidVolume3);
+		StepUtility::WriteString(cursor, Items::BidVolume4, DepthMarketData->BidVolume4);
+		StepUtility::WriteString(cursor, Items::BidVolume5, DepthMarketData->BidVolume5);
+		StepUtility::WriteString(cursor, Items::BidVolume6, DepthMarketData->BidVolume6);
+		StepUtility::WriteString(cursor, Items::BidVolume7, DepthMarketData->BidVolume7);
+		StepUtility::WriteString(cursor, Items::BidVolume8, DepthMarketData->BidVolume8);
+		StepUtility::WriteString(cursor, Items::BidVolume9, DepthMarketData->BidVolume9);
+		StepUtility::WriteString(cursor, Items::BidVolume10, DepthMarketData->BidVolume10);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, DepthMarketDataField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -2802,6 +2943,11 @@ int RtnDepthMarketDataPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (DepthMarketData != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(DepthMarketDataField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &DepthMarketDataField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, DepthMarketData, sizeof(DepthMarketDataField));
@@ -2868,45 +3014,49 @@ void RtnBarMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int RtnBarMarketDataPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (BarMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, BarMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, BarMarketDataField::FieldID);
 		if (strlen(BarMarketData->TradingDay) >= sizeof(BarMarketData->TradingDay))
 		{
 			BarMarketData->TradingDay[sizeof(BarMarketData->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, BarMarketData->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, BarMarketData->TradingDay);
 		if (strlen(BarMarketData->ExchangeID) >= sizeof(BarMarketData->ExchangeID))
 		{
 			BarMarketData->ExchangeID[sizeof(BarMarketData->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, BarMarketData->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, BarMarketData->ExchangeID);
 		if (strlen(BarMarketData->InstrumentID) >= sizeof(BarMarketData->InstrumentID))
 		{
 			BarMarketData->InstrumentID[sizeof(BarMarketData->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, BarMarketData->InstrumentID);
-		StepUtility::WriteString(ppos, Items::BarPreces, (int)BarMarketData->BarPreces);
-		StepUtility::WriteString(ppos, Items::BarPeriod, BarMarketData->BarPeriod);
-		StepUtility::WriteString(ppos, Items::BarTime, BarMarketData->BarTime);
-		StepUtility::WriteString(ppos, Items::UpdateTs, BarMarketData->UpdateTs);
-		StepUtility::WriteString(ppos, Items::PreSettlementPrice, BarMarketData->PreSettlementPrice);
-		StepUtility::WriteString(ppos, Items::PreClosePrice, BarMarketData->PreClosePrice);
-		StepUtility::WriteString(ppos, Items::HighestPrice, BarMarketData->HighestPrice);
-		StepUtility::WriteString(ppos, Items::LowestPrice, BarMarketData->LowestPrice);
-		StepUtility::WriteString(ppos, Items::Open, BarMarketData->Open);
-		StepUtility::WriteString(ppos, Items::High, BarMarketData->High);
-		StepUtility::WriteString(ppos, Items::Low, BarMarketData->Low);
-		StepUtility::WriteString(ppos, Items::Close, BarMarketData->Close);
-		StepUtility::WriteString(ppos, Items::CurrVolume, BarMarketData->CurrVolume);
-		StepUtility::WriteString(ppos, Items::Volume, BarMarketData->Volume);
-		StepUtility::WriteString(ppos, Items::CurrTurnover, BarMarketData->CurrTurnover);
-		StepUtility::WriteString(ppos, Items::Turnover, BarMarketData->Turnover);
-		StepUtility::WriteString(ppos, Items::OpenInterest, BarMarketData->OpenInterest);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, BarMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, BarMarketData->InstrumentID);
+		StepUtility::WriteString(cursor, Items::BarPreces, (int)BarMarketData->BarPreces);
+		StepUtility::WriteString(cursor, Items::BarPeriod, BarMarketData->BarPeriod);
+		StepUtility::WriteString(cursor, Items::BarTime, BarMarketData->BarTime);
+		StepUtility::WriteString(cursor, Items::UpdateTs, BarMarketData->UpdateTs);
+		StepUtility::WriteString(cursor, Items::PreSettlementPrice, BarMarketData->PreSettlementPrice);
+		StepUtility::WriteString(cursor, Items::PreClosePrice, BarMarketData->PreClosePrice);
+		StepUtility::WriteString(cursor, Items::HighestPrice, BarMarketData->HighestPrice);
+		StepUtility::WriteString(cursor, Items::LowestPrice, BarMarketData->LowestPrice);
+		StepUtility::WriteString(cursor, Items::Open, BarMarketData->Open);
+		StepUtility::WriteString(cursor, Items::High, BarMarketData->High);
+		StepUtility::WriteString(cursor, Items::Low, BarMarketData->Low);
+		StepUtility::WriteString(cursor, Items::Close, BarMarketData->Close);
+		StepUtility::WriteString(cursor, Items::CurrVolume, BarMarketData->CurrVolume);
+		StepUtility::WriteString(cursor, Items::Volume, BarMarketData->Volume);
+		StepUtility::WriteString(cursor, Items::CurrTurnover, BarMarketData->CurrTurnover);
+		StepUtility::WriteString(cursor, Items::Turnover, BarMarketData->Turnover);
+		StepUtility::WriteString(cursor, Items::OpenInterest, BarMarketData->OpenInterest);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, BarMarketDataField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -3072,6 +3222,11 @@ int RtnBarMarketDataPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (BarMarketData != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(BarMarketDataField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &BarMarketDataField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, BarMarketData, sizeof(BarMarketDataField));
@@ -3138,18 +3293,22 @@ void RtnSessionBeginPackage::Prepare(SessionIDType sessionID, int messageChain, 
 }
 int RtnSessionBeginPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (SessionBegin != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, SessionBeginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, SessionBeginField::FieldID);
 		if (strlen(SessionBegin->TradingDay) >= sizeof(SessionBegin->TradingDay))
 		{
 			SessionBegin->TradingDay[sizeof(SessionBegin->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, SessionBegin->TradingDay);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, SessionBeginField::FieldID);
+		StepUtility::WriteString(cursor, Items::TradingDay, SessionBegin->TradingDay);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, SessionBeginField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnSessionBeginPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -3218,6 +3377,11 @@ int RtnSessionBeginPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (SessionBegin != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(SessionBeginField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &SessionBeginField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, SessionBegin, sizeof(SessionBeginField));
@@ -3284,18 +3448,22 @@ void RtnSessionEndPackage::Prepare(SessionIDType sessionID, int messageChain, in
 }
 int RtnSessionEndPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (SessionEnd != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, SessionEndField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, SessionEndField::FieldID);
 		if (strlen(SessionEnd->TradingDay) >= sizeof(SessionEnd->TradingDay))
 		{
 			SessionEnd->TradingDay[sizeof(SessionEnd->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, SessionEnd->TradingDay);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, SessionEndField::FieldID);
+		StepUtility::WriteString(cursor, Items::TradingDay, SessionEnd->TradingDay);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, SessionEndField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnSessionEndPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -3364,6 +3532,11 @@ int RtnSessionEndPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (SessionEnd != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(SessionEndField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &SessionEndField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, SessionEnd, sizeof(SessionEndField));
@@ -3430,18 +3603,22 @@ void RtnMarketDataEndPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int RtnMarketDataEndPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (MarketDataEnd != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, MarketDataEndField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, MarketDataEndField::FieldID);
 		if (strlen(MarketDataEnd->TradingDay) >= sizeof(MarketDataEnd->TradingDay))
 		{
 			MarketDataEnd->TradingDay[sizeof(MarketDataEnd->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, MarketDataEnd->TradingDay);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, MarketDataEndField::FieldID);
+		StepUtility::WriteString(cursor, Items::TradingDay, MarketDataEnd->TradingDay);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, MarketDataEndField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnMarketDataEndPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -3510,6 +3687,11 @@ int RtnMarketDataEndPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (MarketDataEnd != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(MarketDataEndField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &MarketDataEndField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, MarketDataEnd, sizeof(MarketDataEndField));
@@ -3576,18 +3758,22 @@ void ReqRegisterAccountPackage::Prepare(SessionIDType sessionID, int messageChai
 }
 int ReqRegisterAccountPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqRegisterAccount != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqRegisterAccountField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqRegisterAccountField::FieldID);
 		if (strlen(ReqRegisterAccount->AccountID) >= sizeof(ReqRegisterAccount->AccountID))
 		{
 			ReqRegisterAccount->AccountID[sizeof(ReqRegisterAccount->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqRegisterAccount->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqRegisterAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqRegisterAccount->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqRegisterAccountField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqRegisterAccountPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -3656,6 +3842,11 @@ int ReqRegisterAccountPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqRegisterAccount != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqRegisterAccountField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqRegisterAccountField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqRegisterAccount, sizeof(ReqRegisterAccountField));
@@ -3727,29 +3918,33 @@ void RspRegisterAccountPackage::Prepare(SessionIDType sessionID, int messageChai
 }
 int RspRegisterAccountPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (RspRegisterAccount != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspRegisterAccountField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspRegisterAccountField::FieldID);
 		if (strlen(RspRegisterAccount->AccountID) >= sizeof(RspRegisterAccount->AccountID))
 		{
 			RspRegisterAccount->AccountID[sizeof(RspRegisterAccount->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, RspRegisterAccount->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspRegisterAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, RspRegisterAccount->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspRegisterAccountField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspRegisterAccountPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -3859,6 +4054,11 @@ int RspRegisterAccountPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (RspRegisterAccount != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspRegisterAccountField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspRegisterAccountField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspRegisterAccount, sizeof(RspRegisterAccountField));
@@ -3866,6 +4066,11 @@ int RspRegisterAccountPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -3943,23 +4148,27 @@ void ReqAccountLoginPackage::Prepare(SessionIDType sessionID, int messageChain, 
 }
 int ReqAccountLoginPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqAccountLogin != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqAccountLoginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqAccountLoginField::FieldID);
 		if (strlen(ReqAccountLogin->AccountID) >= sizeof(ReqAccountLogin->AccountID))
 		{
 			ReqAccountLogin->AccountID[sizeof(ReqAccountLogin->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqAccountLogin->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqAccountLogin->AccountID);
 		if (strlen(ReqAccountLogin->Password) >= sizeof(ReqAccountLogin->Password))
 		{
 			ReqAccountLogin->Password[sizeof(ReqAccountLogin->Password) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::Password, ReqAccountLogin->Password);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqAccountLoginField::FieldID);
+		StepUtility::WriteString(cursor, Items::Password, ReqAccountLogin->Password);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqAccountLoginField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -4034,6 +4243,11 @@ int ReqAccountLoginPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqAccountLogin != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqAccountLoginField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqAccountLoginField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqAccountLogin, sizeof(ReqAccountLoginField));
@@ -4105,40 +4319,44 @@ void RspAccountLoginPackage::Prepare(SessionIDType sessionID, int messageChain, 
 }
 int RspAccountLoginPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (RspAccountLogin != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspAccountLoginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspAccountLoginField::FieldID);
 		if (strlen(RspAccountLogin->AccountID) >= sizeof(RspAccountLogin->AccountID))
 		{
 			RspAccountLogin->AccountID[sizeof(RspAccountLogin->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, RspAccountLogin->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, RspAccountLogin->AccountID);
 		if (strlen(RspAccountLogin->LoginDate) >= sizeof(RspAccountLogin->LoginDate))
 		{
 			RspAccountLogin->LoginDate[sizeof(RspAccountLogin->LoginDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::LoginDate, RspAccountLogin->LoginDate);
+		StepUtility::WriteString(cursor, Items::LoginDate, RspAccountLogin->LoginDate);
 		if (strlen(RspAccountLogin->LoginTime) >= sizeof(RspAccountLogin->LoginTime))
 		{
 			RspAccountLogin->LoginTime[sizeof(RspAccountLogin->LoginTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::LoginTime, RspAccountLogin->LoginTime);
-		StepUtility::WriteString(ppos, Items::SessionID, RspAccountLogin->SessionID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspAccountLoginField::FieldID);
+		StepUtility::WriteString(cursor, Items::LoginTime, RspAccountLogin->LoginTime);
+		StepUtility::WriteString(cursor, Items::SessionID, RspAccountLogin->SessionID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspAccountLoginField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -4265,6 +4483,11 @@ int RspAccountLoginPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (RspAccountLogin != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspAccountLoginField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspAccountLoginField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspAccountLogin, sizeof(RspAccountLoginField));
@@ -4272,6 +4495,11 @@ int RspAccountLoginPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -4349,18 +4577,22 @@ void ReqAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int ReqAccountLogoutPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqAccountLogout != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqAccountLogoutField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqAccountLogoutField::FieldID);
 		if (strlen(ReqAccountLogout->AccountID) >= sizeof(ReqAccountLogout->AccountID))
 		{
 			ReqAccountLogout->AccountID[sizeof(ReqAccountLogout->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqAccountLogout->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqAccountLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqAccountLogout->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqAccountLogoutField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -4429,6 +4661,11 @@ int ReqAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqAccountLogout != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqAccountLogoutField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqAccountLogoutField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqAccountLogout, sizeof(ReqAccountLogoutField));
@@ -4500,29 +4737,33 @@ void RspAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int RspAccountLogoutPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (RspAccountLogout != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspAccountLogoutField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspAccountLogoutField::FieldID);
 		if (strlen(RspAccountLogout->AccountID) >= sizeof(RspAccountLogout->AccountID))
 		{
 			RspAccountLogout->AccountID[sizeof(RspAccountLogout->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, RspAccountLogout->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspAccountLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, RspAccountLogout->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspAccountLogoutField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -4632,6 +4873,11 @@ int RspAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (RspAccountLogout != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspAccountLogoutField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspAccountLogoutField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspAccountLogout, sizeof(RspAccountLogoutField));
@@ -4639,6 +4885,11 @@ int RspAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -4716,18 +4967,22 @@ void ReqQryAccountPackage::Prepare(SessionIDType sessionID, int messageChain, in
 }
 int ReqQryAccountPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryAccount != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryAccountField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryAccountField::FieldID);
 		if (strlen(ReqQryAccount->AccountID) >= sizeof(ReqQryAccount->AccountID))
 		{
 			ReqQryAccount->AccountID[sizeof(ReqQryAccount->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqQryAccount->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqQryAccount->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryAccountField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryAccountPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -4796,6 +5051,11 @@ int ReqQryAccountPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryAccount != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryAccountField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryAccountField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryAccount, sizeof(ReqQryAccountField));
@@ -4867,34 +5127,38 @@ void RspQryAccountPackage::Prepare(SessionIDType sessionID, int messageChain, in
 }
 int RspQryAccountPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (Account != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, AccountField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, AccountField::FieldID);
 		if (strlen(Account->AccountID) >= sizeof(Account->AccountID))
 		{
 			Account->AccountID[sizeof(Account->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, Account->AccountID);
-		StepUtility::WriteString(ppos, Items::AccountType, (int)Account->AccountType);
-		StepUtility::WriteString(ppos, Items::AccountStatus, (int)Account->AccountStatus);
-		StepUtility::WriteString(ppos, Items::TradeGroupID, Account->TradeGroupID);
-		StepUtility::WriteString(ppos, Items::RiskGroupID, Account->RiskGroupID);
-		StepUtility::WriteString(ppos, Items::CommissionGroupID, Account->CommissionGroupID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, AccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, Account->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountType, (int)Account->AccountType);
+		StepUtility::WriteString(cursor, Items::AccountStatus, (int)Account->AccountStatus);
+		StepUtility::WriteString(cursor, Items::TradeGroupID, Account->TradeGroupID);
+		StepUtility::WriteString(cursor, Items::RiskGroupID, Account->RiskGroupID);
+		StepUtility::WriteString(cursor, Items::CommissionGroupID, Account->CommissionGroupID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, AccountField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryAccountPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -5029,6 +5293,11 @@ int RspQryAccountPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (Account != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(AccountField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &AccountField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Account, sizeof(AccountField));
@@ -5036,6 +5305,11 @@ int RspQryAccountPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -5113,18 +5387,22 @@ void ReqQryHolderAccountPackage::Prepare(SessionIDType sessionID, int messageCha
 }
 int ReqQryHolderAccountPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryHolderAccount != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryHolderAccountField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryHolderAccountField::FieldID);
 		if (strlen(ReqQryHolderAccount->AccountID) >= sizeof(ReqQryHolderAccount->AccountID))
 		{
 			ReqQryHolderAccount->AccountID[sizeof(ReqQryHolderAccount->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqQryHolderAccount->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryHolderAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqQryHolderAccount->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryHolderAccountField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -5193,6 +5471,11 @@ int ReqQryHolderAccountPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryHolderAccount != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryHolderAccountField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryHolderAccountField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryHolderAccount, sizeof(ReqQryHolderAccountField));
@@ -5264,35 +5547,39 @@ void RspQryHolderAccountPackage::Prepare(SessionIDType sessionID, int messageCha
 }
 int RspQryHolderAccountPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (HolderAccount != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, HolderAccountField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, HolderAccountField::FieldID);
 		if (strlen(HolderAccount->ExchangeID) >= sizeof(HolderAccount->ExchangeID))
 		{
 			HolderAccount->ExchangeID[sizeof(HolderAccount->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, HolderAccount->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, HolderAccount->ExchangeID);
 		if (strlen(HolderAccount->HolderAccountID) >= sizeof(HolderAccount->HolderAccountID))
 		{
 			HolderAccount->HolderAccountID[sizeof(HolderAccount->HolderAccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::HolderAccountID, HolderAccount->HolderAccountID);
-		StepUtility::WriteString(ppos, Items::PrimaryFlag, HolderAccount->PrimaryFlag);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, HolderAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::HolderAccountID, HolderAccount->HolderAccountID);
+		StepUtility::WriteString(cursor, Items::PrimaryFlag, HolderAccount->PrimaryFlag);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, HolderAccountField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -5413,6 +5700,11 @@ int RspQryHolderAccountPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (HolderAccount != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(HolderAccountField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &HolderAccountField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, HolderAccount, sizeof(HolderAccountField));
@@ -5420,6 +5712,11 @@ int RspQryHolderAccountPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -5497,18 +5794,22 @@ void ReqQryCapitalPackage::Prepare(SessionIDType sessionID, int messageChain, in
 }
 int ReqQryCapitalPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryCapital != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryCapitalField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryCapitalField::FieldID);
 		if (strlen(ReqQryCapital->AccountID) >= sizeof(ReqQryCapital->AccountID))
 		{
 			ReqQryCapital->AccountID[sizeof(ReqQryCapital->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqQryCapital->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryCapitalField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqQryCapital->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryCapitalField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -5577,6 +5878,11 @@ int ReqQryCapitalPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryCapital != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryCapitalField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryCapitalField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryCapital, sizeof(ReqQryCapitalField));
@@ -5648,52 +5954,56 @@ void RspQryCapitalPackage::Prepare(SessionIDType sessionID, int messageChain, in
 }
 int RspQryCapitalPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (Capital != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, CapitalField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, CapitalField::FieldID);
 		if (strlen(Capital->TradingDay) >= sizeof(Capital->TradingDay))
 		{
 			Capital->TradingDay[sizeof(Capital->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, Capital->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, Capital->TradingDay);
 		if (strlen(Capital->AccountID) >= sizeof(Capital->AccountID))
 		{
 			Capital->AccountID[sizeof(Capital->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, Capital->AccountID);
-		StepUtility::WriteString(ppos, Items::AccountType, (int)Capital->AccountType);
-		StepUtility::WriteString(ppos, Items::Balance, Capital->Balance);
-		StepUtility::WriteString(ppos, Items::PreBalance, Capital->PreBalance);
-		StepUtility::WriteString(ppos, Items::Available, Capital->Available);
-		StepUtility::WriteString(ppos, Items::MarketValue, Capital->MarketValue);
-		StepUtility::WriteString(ppos, Items::CashIn, Capital->CashIn);
-		StepUtility::WriteString(ppos, Items::CashOut, Capital->CashOut);
-		StepUtility::WriteString(ppos, Items::Margin, Capital->Margin);
-		StepUtility::WriteString(ppos, Items::Commission, Capital->Commission);
-		StepUtility::WriteString(ppos, Items::FrozenCash, Capital->FrozenCash);
-		StepUtility::WriteString(ppos, Items::FrozenMargin, Capital->FrozenMargin);
-		StepUtility::WriteString(ppos, Items::FrozenCommission, Capital->FrozenCommission);
-		StepUtility::WriteString(ppos, Items::CloseProfitByDate, Capital->CloseProfitByDate);
-		StepUtility::WriteString(ppos, Items::CloseProfitByTrade, Capital->CloseProfitByTrade);
-		StepUtility::WriteString(ppos, Items::PositionProfitByDate, Capital->PositionProfitByDate);
-		StepUtility::WriteString(ppos, Items::PositionProfitByTrade, Capital->PositionProfitByTrade);
-		StepUtility::WriteString(ppos, Items::Deposit, Capital->Deposit);
-		StepUtility::WriteString(ppos, Items::Withdraw, Capital->Withdraw);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, CapitalField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, Capital->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountType, (int)Capital->AccountType);
+		StepUtility::WriteString(cursor, Items::Balance, Capital->Balance);
+		StepUtility::WriteString(cursor, Items::PreBalance, Capital->PreBalance);
+		StepUtility::WriteString(cursor, Items::Available, Capital->Available);
+		StepUtility::WriteString(cursor, Items::MarketValue, Capital->MarketValue);
+		StepUtility::WriteString(cursor, Items::CashIn, Capital->CashIn);
+		StepUtility::WriteString(cursor, Items::CashOut, Capital->CashOut);
+		StepUtility::WriteString(cursor, Items::Margin, Capital->Margin);
+		StepUtility::WriteString(cursor, Items::Commission, Capital->Commission);
+		StepUtility::WriteString(cursor, Items::FrozenCash, Capital->FrozenCash);
+		StepUtility::WriteString(cursor, Items::FrozenMargin, Capital->FrozenMargin);
+		StepUtility::WriteString(cursor, Items::FrozenCommission, Capital->FrozenCommission);
+		StepUtility::WriteString(cursor, Items::CloseProfitByDate, Capital->CloseProfitByDate);
+		StepUtility::WriteString(cursor, Items::CloseProfitByTrade, Capital->CloseProfitByTrade);
+		StepUtility::WriteString(cursor, Items::PositionProfitByDate, Capital->PositionProfitByDate);
+		StepUtility::WriteString(cursor, Items::PositionProfitByTrade, Capital->PositionProfitByTrade);
+		StepUtility::WriteString(cursor, Items::Deposit, Capital->Deposit);
+		StepUtility::WriteString(cursor, Items::Withdraw, Capital->Withdraw);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, CapitalField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -5899,6 +6209,11 @@ int RspQryCapitalPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (Capital != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(CapitalField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &CapitalField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Capital, sizeof(CapitalField));
@@ -5906,6 +6221,11 @@ int RspQryCapitalPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -5983,18 +6303,22 @@ void ReqQryPositionPackage::Prepare(SessionIDType sessionID, int messageChain, i
 }
 int ReqQryPositionPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryPosition != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryPositionField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryPositionField::FieldID);
 		if (strlen(ReqQryPosition->AccountID) >= sizeof(ReqQryPosition->AccountID))
 		{
 			ReqQryPosition->AccountID[sizeof(ReqQryPosition->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqQryPosition->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryPositionField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqQryPosition->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryPositionField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -6063,6 +6387,11 @@ int ReqQryPositionPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryPosition != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryPositionField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryPositionField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryPosition, sizeof(ReqQryPositionField));
@@ -6134,62 +6463,66 @@ void RspQryPositionPackage::Prepare(SessionIDType sessionID, int messageChain, i
 }
 int RspQryPositionPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (Position != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, PositionField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, PositionField::FieldID);
 		if (strlen(Position->TradingDay) >= sizeof(Position->TradingDay))
 		{
 			Position->TradingDay[sizeof(Position->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, Position->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, Position->TradingDay);
 		if (strlen(Position->AccountID) >= sizeof(Position->AccountID))
 		{
 			Position->AccountID[sizeof(Position->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, Position->AccountID);
-		StepUtility::WriteString(ppos, Items::AccountType, (int)Position->AccountType);
+		StepUtility::WriteString(cursor, Items::AccountID, Position->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountType, (int)Position->AccountType);
 		if (strlen(Position->ExchangeID) >= sizeof(Position->ExchangeID))
 		{
 			Position->ExchangeID[sizeof(Position->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, Position->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, Position->ExchangeID);
 		if (strlen(Position->InstrumentID) >= sizeof(Position->InstrumentID))
 		{
 			Position->InstrumentID[sizeof(Position->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, Position->InstrumentID);
-		StepUtility::WriteString(ppos, Items::ProductClass, (int)Position->ProductClass);
-		StepUtility::WriteString(ppos, Items::PosiDirection, (int)Position->PosiDirection);
-		StepUtility::WriteString(ppos, Items::TotalPosition, Position->TotalPosition);
-		StepUtility::WriteString(ppos, Items::PositionFrozen, Position->PositionFrozen);
-		StepUtility::WriteString(ppos, Items::TodayPosition, Position->TodayPosition);
-		StepUtility::WriteString(ppos, Items::MarketValue, Position->MarketValue);
-		StepUtility::WriteString(ppos, Items::CashIn, Position->CashIn);
-		StepUtility::WriteString(ppos, Items::CashOut, Position->CashOut);
-		StepUtility::WriteString(ppos, Items::Margin, Position->Margin);
-		StepUtility::WriteString(ppos, Items::Commission, Position->Commission);
-		StepUtility::WriteString(ppos, Items::VolumeMultiple, Position->VolumeMultiple);
-		StepUtility::WriteString(ppos, Items::CloseProfitByDate, Position->CloseProfitByDate);
-		StepUtility::WriteString(ppos, Items::CloseProfitByTrade, Position->CloseProfitByTrade);
-		StepUtility::WriteString(ppos, Items::PositionProfitByDate, Position->PositionProfitByDate);
-		StepUtility::WriteString(ppos, Items::PositionProfitByTrade, Position->PositionProfitByTrade);
-		StepUtility::WriteString(ppos, Items::LastPrice, Position->LastPrice);
-		StepUtility::WriteString(ppos, Items::PreSettlementPrice, Position->PreSettlementPrice);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, PositionField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, Position->InstrumentID);
+		StepUtility::WriteString(cursor, Items::ProductClass, (int)Position->ProductClass);
+		StepUtility::WriteString(cursor, Items::PosiDirection, (int)Position->PosiDirection);
+		StepUtility::WriteString(cursor, Items::TotalPosition, Position->TotalPosition);
+		StepUtility::WriteString(cursor, Items::PositionFrozen, Position->PositionFrozen);
+		StepUtility::WriteString(cursor, Items::TodayPosition, Position->TodayPosition);
+		StepUtility::WriteString(cursor, Items::MarketValue, Position->MarketValue);
+		StepUtility::WriteString(cursor, Items::CashIn, Position->CashIn);
+		StepUtility::WriteString(cursor, Items::CashOut, Position->CashOut);
+		StepUtility::WriteString(cursor, Items::Margin, Position->Margin);
+		StepUtility::WriteString(cursor, Items::Commission, Position->Commission);
+		StepUtility::WriteString(cursor, Items::VolumeMultiple, Position->VolumeMultiple);
+		StepUtility::WriteString(cursor, Items::CloseProfitByDate, Position->CloseProfitByDate);
+		StepUtility::WriteString(cursor, Items::CloseProfitByTrade, Position->CloseProfitByTrade);
+		StepUtility::WriteString(cursor, Items::PositionProfitByDate, Position->PositionProfitByDate);
+		StepUtility::WriteString(cursor, Items::PositionProfitByTrade, Position->PositionProfitByTrade);
+		StepUtility::WriteString(cursor, Items::LastPrice, Position->LastPrice);
+		StepUtility::WriteString(cursor, Items::PreSettlementPrice, Position->PreSettlementPrice);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, PositionField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -6407,6 +6740,11 @@ int RspQryPositionPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (Position != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(PositionField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &PositionField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Position, sizeof(PositionField));
@@ -6414,6 +6752,11 @@ int RspQryPositionPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -6491,18 +6834,22 @@ void ReqQryOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int 
 }
 int ReqQryOrderPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryOrder != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryOrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryOrderField::FieldID);
 		if (strlen(ReqQryOrder->AccountID) >= sizeof(ReqQryOrder->AccountID))
 		{
 			ReqQryOrder->AccountID[sizeof(ReqQryOrder->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqQryOrder->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqQryOrder->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryOrderField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -6571,6 +6918,11 @@ int ReqQryOrderPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryOrder != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryOrderField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryOrderField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryOrder, sizeof(ReqQryOrderField));
@@ -6642,86 +6994,90 @@ void RspQryOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int 
 }
 int RspQryOrderPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (Order != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, OrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, OrderField::FieldID);
 		if (strlen(Order->TradingDay) >= sizeof(Order->TradingDay))
 		{
 			Order->TradingDay[sizeof(Order->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, Order->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, Order->TradingDay);
 		if (strlen(Order->AccountID) >= sizeof(Order->AccountID))
 		{
 			Order->AccountID[sizeof(Order->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, Order->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, Order->AccountID);
 		if (strlen(Order->ExchangeID) >= sizeof(Order->ExchangeID))
 		{
 			Order->ExchangeID[sizeof(Order->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, Order->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, Order->ExchangeID);
 		if (strlen(Order->InstrumentID) >= sizeof(Order->InstrumentID))
 		{
 			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, Order->InstrumentID);
-		StepUtility::WriteString(ppos, Items::ProductClass, (int)Order->ProductClass);
-		StepUtility::WriteString(ppos, Items::OrderID, Order->OrderID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, Order->InstrumentID);
+		StepUtility::WriteString(cursor, Items::ProductClass, (int)Order->ProductClass);
+		StepUtility::WriteString(cursor, Items::OrderID, Order->OrderID);
 		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
 		{
 			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderSysID, Order->OrderSysID);
-		StepUtility::WriteString(ppos, Items::Direction, (int)Order->Direction);
-		StepUtility::WriteString(ppos, Items::OffsetFlag, (int)Order->OffsetFlag);
-		StepUtility::WriteString(ppos, Items::OrderPriceType, (int)Order->OrderPriceType);
-		StepUtility::WriteString(ppos, Items::Price, Order->Price);
-		StepUtility::WriteString(ppos, Items::Volume, Order->Volume);
-		StepUtility::WriteString(ppos, Items::VolumeTotal, Order->VolumeTotal);
-		StepUtility::WriteString(ppos, Items::VolumeTraded, Order->VolumeTraded);
-		StepUtility::WriteString(ppos, Items::VolumeMultiple, Order->VolumeMultiple);
-		StepUtility::WriteString(ppos, Items::OrderStatus, (int)Order->OrderStatus);
+		StepUtility::WriteString(cursor, Items::OrderSysID, Order->OrderSysID);
+		StepUtility::WriteString(cursor, Items::Direction, (int)Order->Direction);
+		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)Order->OffsetFlag);
+		StepUtility::WriteString(cursor, Items::OrderPriceType, (int)Order->OrderPriceType);
+		StepUtility::WriteString(cursor, Items::Price, Order->Price);
+		StepUtility::WriteString(cursor, Items::Volume, Order->Volume);
+		StepUtility::WriteString(cursor, Items::VolumeTotal, Order->VolumeTotal);
+		StepUtility::WriteString(cursor, Items::VolumeTraded, Order->VolumeTraded);
+		StepUtility::WriteString(cursor, Items::VolumeMultiple, Order->VolumeMultiple);
+		StepUtility::WriteString(cursor, Items::OrderStatus, (int)Order->OrderStatus);
 		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
 		{
 			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderDate, Order->OrderDate);
+		StepUtility::WriteString(cursor, Items::OrderDate, Order->OrderDate);
 		if (strlen(Order->OrderTime) >= sizeof(Order->OrderTime))
 		{
 			Order->OrderTime[sizeof(Order->OrderTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderTime, Order->OrderTime);
+		StepUtility::WriteString(cursor, Items::OrderTime, Order->OrderTime);
 		if (strlen(Order->CancelDate) >= sizeof(Order->CancelDate))
 		{
 			Order->CancelDate[sizeof(Order->CancelDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::CancelDate, Order->CancelDate);
+		StepUtility::WriteString(cursor, Items::CancelDate, Order->CancelDate);
 		if (strlen(Order->CancelTime) >= sizeof(Order->CancelTime))
 		{
 			Order->CancelTime[sizeof(Order->CancelTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::CancelTime, Order->CancelTime);
-		StepUtility::WriteString(ppos, Items::SessionID, Order->SessionID);
-		StepUtility::WriteString(ppos, Items::ClientOrderID, Order->ClientOrderID);
-		StepUtility::WriteString(ppos, Items::RequestID, Order->RequestID);
-		StepUtility::WriteString(ppos, Items::FrozenCash, Order->FrozenCash);
-		StepUtility::WriteString(ppos, Items::FrozenMargin, Order->FrozenMargin);
-		StepUtility::WriteString(ppos, Items::FrozenCommission, Order->FrozenCommission);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, OrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::CancelTime, Order->CancelTime);
+		StepUtility::WriteString(cursor, Items::SessionID, Order->SessionID);
+		StepUtility::WriteString(cursor, Items::ClientOrderID, Order->ClientOrderID);
+		StepUtility::WriteString(cursor, Items::RequestID, Order->RequestID);
+		StepUtility::WriteString(cursor, Items::FrozenCash, Order->FrozenCash);
+		StepUtility::WriteString(cursor, Items::FrozenMargin, Order->FrozenMargin);
+		StepUtility::WriteString(cursor, Items::FrozenCommission, Order->FrozenCommission);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, OrderField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -6964,6 +7320,11 @@ int RspQryOrderPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (Order != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(OrderField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &OrderField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Order, sizeof(OrderField));
@@ -6971,6 +7332,11 @@ int RspQryOrderPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -7048,18 +7414,22 @@ void ReqQryTradePackage::Prepare(SessionIDType sessionID, int messageChain, int 
 }
 int ReqQryTradePackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryTrade != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryTradeField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryTradeField::FieldID);
 		if (strlen(ReqQryTrade->AccountID) >= sizeof(ReqQryTrade->AccountID))
 		{
 			ReqQryTrade->AccountID[sizeof(ReqQryTrade->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqQryTrade->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryTradeField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqQryTrade->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryTradeField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -7128,6 +7498,11 @@ int ReqQryTradePackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryTrade != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryTradeField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryTradeField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryTrade, sizeof(ReqQryTradeField));
@@ -7199,73 +7574,77 @@ void RspQryTradePackage::Prepare(SessionIDType sessionID, int messageChain, int 
 }
 int RspQryTradePackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (Trade != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, TradeField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, TradeField::FieldID);
 		if (strlen(Trade->TradingDay) >= sizeof(Trade->TradingDay))
 		{
 			Trade->TradingDay[sizeof(Trade->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, Trade->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, Trade->TradingDay);
 		if (strlen(Trade->AccountID) >= sizeof(Trade->AccountID))
 		{
 			Trade->AccountID[sizeof(Trade->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, Trade->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, Trade->AccountID);
 		if (strlen(Trade->ExchangeID) >= sizeof(Trade->ExchangeID))
 		{
 			Trade->ExchangeID[sizeof(Trade->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, Trade->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, Trade->ExchangeID);
 		if (strlen(Trade->InstrumentID) >= sizeof(Trade->InstrumentID))
 		{
 			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, Trade->InstrumentID);
-		StepUtility::WriteString(ppos, Items::ProductClass, (int)Trade->ProductClass);
-		StepUtility::WriteString(ppos, Items::OrderID, Trade->OrderID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, Trade->InstrumentID);
+		StepUtility::WriteString(cursor, Items::ProductClass, (int)Trade->ProductClass);
+		StepUtility::WriteString(cursor, Items::OrderID, Trade->OrderID);
 		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
 		{
 			Trade->OrderSysID[sizeof(Trade->OrderSysID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderSysID, Trade->OrderSysID);
+		StepUtility::WriteString(cursor, Items::OrderSysID, Trade->OrderSysID);
 		if (strlen(Trade->TradeID) >= sizeof(Trade->TradeID))
 		{
 			Trade->TradeID[sizeof(Trade->TradeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradeID, Trade->TradeID);
-		StepUtility::WriteString(ppos, Items::Direction, (int)Trade->Direction);
-		StepUtility::WriteString(ppos, Items::OffsetFlag, (int)Trade->OffsetFlag);
-		StepUtility::WriteString(ppos, Items::Price, Trade->Price);
-		StepUtility::WriteString(ppos, Items::Volume, Trade->Volume);
-		StepUtility::WriteString(ppos, Items::VolumeMultiple, Trade->VolumeMultiple);
-		StepUtility::WriteString(ppos, Items::TradeAmount, Trade->TradeAmount);
-		StepUtility::WriteString(ppos, Items::Commission, Trade->Commission);
+		StepUtility::WriteString(cursor, Items::TradeID, Trade->TradeID);
+		StepUtility::WriteString(cursor, Items::Direction, (int)Trade->Direction);
+		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)Trade->OffsetFlag);
+		StepUtility::WriteString(cursor, Items::Price, Trade->Price);
+		StepUtility::WriteString(cursor, Items::Volume, Trade->Volume);
+		StepUtility::WriteString(cursor, Items::VolumeMultiple, Trade->VolumeMultiple);
+		StepUtility::WriteString(cursor, Items::TradeAmount, Trade->TradeAmount);
+		StepUtility::WriteString(cursor, Items::Commission, Trade->Commission);
 		if (strlen(Trade->TradeDate) >= sizeof(Trade->TradeDate))
 		{
 			Trade->TradeDate[sizeof(Trade->TradeDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradeDate, Trade->TradeDate);
+		StepUtility::WriteString(cursor, Items::TradeDate, Trade->TradeDate);
 		if (strlen(Trade->TradeTime) >= sizeof(Trade->TradeTime))
 		{
 			Trade->TradeTime[sizeof(Trade->TradeTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradeTime, Trade->TradeTime);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, TradeField::FieldID);
+		StepUtility::WriteString(cursor, Items::TradeTime, Trade->TradeTime);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, TradeField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -7462,6 +7841,11 @@ int RspQryTradePackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (Trade != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(TradeField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &TradeField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Trade, sizeof(TradeField));
@@ -7469,6 +7853,11 @@ int RspQryTradePackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -7546,23 +7935,27 @@ void ReqQryInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int ReqQryInstrumentPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryInstrument != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryInstrumentField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryInstrumentField::FieldID);
 		if (strlen(ReqQryInstrument->ExchangeID) >= sizeof(ReqQryInstrument->ExchangeID))
 		{
 			ReqQryInstrument->ExchangeID[sizeof(ReqQryInstrument->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqQryInstrument->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqQryInstrument->ExchangeID);
 		if (strlen(ReqQryInstrument->InstrumentID) >= sizeof(ReqQryInstrument->InstrumentID))
 		{
 			ReqQryInstrument->InstrumentID[sizeof(ReqQryInstrument->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, ReqQryInstrument->InstrumentID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryInstrumentField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, ReqQryInstrument->InstrumentID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryInstrumentField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -7637,6 +8030,11 @@ int ReqQryInstrumentPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryInstrument != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryInstrumentField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryInstrumentField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryInstrument, sizeof(ReqQryInstrumentField));
@@ -7708,61 +8106,65 @@ void RspQryInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int RspQryInstrumentPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (Instrument != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, InstrumentField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, InstrumentField::FieldID);
 		if (strlen(Instrument->ExchangeID) >= sizeof(Instrument->ExchangeID))
 		{
 			Instrument->ExchangeID[sizeof(Instrument->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, Instrument->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, Instrument->ExchangeID);
 		if (strlen(Instrument->InstrumentID) >= sizeof(Instrument->InstrumentID))
 		{
 			Instrument->InstrumentID[sizeof(Instrument->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, Instrument->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, Instrument->InstrumentID);
 		if (strlen(Instrument->ExchangeInstID) >= sizeof(Instrument->ExchangeInstID))
 		{
 			Instrument->ExchangeInstID[sizeof(Instrument->ExchangeInstID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeInstID, Instrument->ExchangeInstID);
+		StepUtility::WriteString(cursor, Items::ExchangeInstID, Instrument->ExchangeInstID);
 		if (strlen(Instrument->InstrumentName) >= sizeof(Instrument->InstrumentName))
 		{
 			Instrument->InstrumentName[sizeof(Instrument->InstrumentName) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentName, Instrument->InstrumentName);
+		StepUtility::WriteString(cursor, Items::InstrumentName, Instrument->InstrumentName);
 		if (strlen(Instrument->ProductID) >= sizeof(Instrument->ProductID))
 		{
 			Instrument->ProductID[sizeof(Instrument->ProductID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ProductID, Instrument->ProductID);
-		StepUtility::WriteString(ppos, Items::ProductClass, (int)Instrument->ProductClass);
-		StepUtility::WriteString(ppos, Items::VolumeMultiple, Instrument->VolumeMultiple);
-		StepUtility::WriteString(ppos, Items::PriceTick, Instrument->PriceTick);
-		StepUtility::WriteString(ppos, Items::MaxMarketOrderVolume, Instrument->MaxMarketOrderVolume);
-		StepUtility::WriteString(ppos, Items::MinMarketOrderVolume, Instrument->MinMarketOrderVolume);
-		StepUtility::WriteString(ppos, Items::MaxLimitOrderVolume, Instrument->MaxLimitOrderVolume);
-		StepUtility::WriteString(ppos, Items::MinLimitOrderVolume, Instrument->MinLimitOrderVolume);
+		StepUtility::WriteString(cursor, Items::ProductID, Instrument->ProductID);
+		StepUtility::WriteString(cursor, Items::ProductClass, (int)Instrument->ProductClass);
+		StepUtility::WriteString(cursor, Items::VolumeMultiple, Instrument->VolumeMultiple);
+		StepUtility::WriteString(cursor, Items::PriceTick, Instrument->PriceTick);
+		StepUtility::WriteString(cursor, Items::MaxMarketOrderVolume, Instrument->MaxMarketOrderVolume);
+		StepUtility::WriteString(cursor, Items::MinMarketOrderVolume, Instrument->MinMarketOrderVolume);
+		StepUtility::WriteString(cursor, Items::MaxLimitOrderVolume, Instrument->MaxLimitOrderVolume);
+		StepUtility::WriteString(cursor, Items::MinLimitOrderVolume, Instrument->MinLimitOrderVolume);
 		if (strlen(Instrument->SessionName) >= sizeof(Instrument->SessionName))
 		{
 			Instrument->SessionName[sizeof(Instrument->SessionName) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::SessionName, Instrument->SessionName);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, InstrumentField::FieldID);
+		StepUtility::WriteString(cursor, Items::SessionName, Instrument->SessionName);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, InstrumentField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -7937,6 +8339,11 @@ int RspQryInstrumentPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (Instrument != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(InstrumentField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &InstrumentField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Instrument, sizeof(InstrumentField));
@@ -7944,6 +8351,11 @@ int RspQryInstrumentPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -8021,23 +8433,27 @@ void ReqQryOptionInstrumentPackage::Prepare(SessionIDType sessionID, int message
 }
 int ReqQryOptionInstrumentPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryOptionInstrument != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryOptionInstrumentField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryOptionInstrumentField::FieldID);
 		if (strlen(ReqQryOptionInstrument->ExchangeID) >= sizeof(ReqQryOptionInstrument->ExchangeID))
 		{
 			ReqQryOptionInstrument->ExchangeID[sizeof(ReqQryOptionInstrument->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqQryOptionInstrument->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqQryOptionInstrument->ExchangeID);
 		if (strlen(ReqQryOptionInstrument->InstrumentID) >= sizeof(ReqQryOptionInstrument->InstrumentID))
 		{
 			ReqQryOptionInstrument->InstrumentID[sizeof(ReqQryOptionInstrument->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, ReqQryOptionInstrument->InstrumentID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryOptionInstrumentField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, ReqQryOptionInstrument->InstrumentID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryOptionInstrumentField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -8112,6 +8528,11 @@ int ReqQryOptionInstrumentPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryOptionInstrument != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryOptionInstrumentField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryOptionInstrumentField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryOptionInstrument, sizeof(ReqQryOptionInstrumentField));
@@ -8183,61 +8604,65 @@ void RspQryOptionInstrumentPackage::Prepare(SessionIDType sessionID, int message
 }
 int RspQryOptionInstrumentPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (OptionInstrument != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, OptionInstrumentField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, OptionInstrumentField::FieldID);
 		if (strlen(OptionInstrument->ExchangeID) >= sizeof(OptionInstrument->ExchangeID))
 		{
 			OptionInstrument->ExchangeID[sizeof(OptionInstrument->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, OptionInstrument->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, OptionInstrument->ExchangeID);
 		if (strlen(OptionInstrument->InstrumentID) >= sizeof(OptionInstrument->InstrumentID))
 		{
 			OptionInstrument->InstrumentID[sizeof(OptionInstrument->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, OptionInstrument->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, OptionInstrument->InstrumentID);
 		if (strlen(OptionInstrument->ExchangeInstID) >= sizeof(OptionInstrument->ExchangeInstID))
 		{
 			OptionInstrument->ExchangeInstID[sizeof(OptionInstrument->ExchangeInstID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeInstID, OptionInstrument->ExchangeInstID);
+		StepUtility::WriteString(cursor, Items::ExchangeInstID, OptionInstrument->ExchangeInstID);
 		if (strlen(OptionInstrument->InstrumentName) >= sizeof(OptionInstrument->InstrumentName))
 		{
 			OptionInstrument->InstrumentName[sizeof(OptionInstrument->InstrumentName) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentName, OptionInstrument->InstrumentName);
-		StepUtility::WriteString(ppos, Items::VolumeMultiple, OptionInstrument->VolumeMultiple);
-		StepUtility::WriteString(ppos, Items::OptionType, (int)OptionInstrument->OptionType);
+		StepUtility::WriteString(cursor, Items::InstrumentName, OptionInstrument->InstrumentName);
+		StepUtility::WriteString(cursor, Items::VolumeMultiple, OptionInstrument->VolumeMultiple);
+		StepUtility::WriteString(cursor, Items::OptionType, (int)OptionInstrument->OptionType);
 		if (strlen(OptionInstrument->UnderlyingInstrumentID) >= sizeof(OptionInstrument->UnderlyingInstrumentID))
 		{
 			OptionInstrument->UnderlyingInstrumentID[sizeof(OptionInstrument->UnderlyingInstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::UnderlyingInstrumentID, OptionInstrument->UnderlyingInstrumentID);
-		StepUtility::WriteString(ppos, Items::ExecutePrice, OptionInstrument->ExecutePrice);
-		StepUtility::WriteString(ppos, Items::UnitMargin, OptionInstrument->UnitMargin);
-		StepUtility::WriteString(ppos, Items::PriceTick, OptionInstrument->PriceTick);
-		StepUtility::WriteString(ppos, Items::MaxLimitOrderVolume, OptionInstrument->MaxLimitOrderVolume);
-		StepUtility::WriteString(ppos, Items::MaxMarketOrderVolume, OptionInstrument->MaxMarketOrderVolume);
+		StepUtility::WriteString(cursor, Items::UnderlyingInstrumentID, OptionInstrument->UnderlyingInstrumentID);
+		StepUtility::WriteString(cursor, Items::ExecutePrice, OptionInstrument->ExecutePrice);
+		StepUtility::WriteString(cursor, Items::UnitMargin, OptionInstrument->UnitMargin);
+		StepUtility::WriteString(cursor, Items::PriceTick, OptionInstrument->PriceTick);
+		StepUtility::WriteString(cursor, Items::MaxLimitOrderVolume, OptionInstrument->MaxLimitOrderVolume);
+		StepUtility::WriteString(cursor, Items::MaxMarketOrderVolume, OptionInstrument->MaxMarketOrderVolume);
 		if (strlen(OptionInstrument->ExpiringDate) >= sizeof(OptionInstrument->ExpiringDate))
 		{
 			OptionInstrument->ExpiringDate[sizeof(OptionInstrument->ExpiringDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExpiringDate, OptionInstrument->ExpiringDate);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, OptionInstrumentField::FieldID);
+		StepUtility::WriteString(cursor, Items::ExpiringDate, OptionInstrument->ExpiringDate);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, OptionInstrumentField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -8412,6 +8837,11 @@ int RspQryOptionInstrumentPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (OptionInstrument != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(OptionInstrumentField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &OptionInstrumentField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, OptionInstrument, sizeof(OptionInstrumentField));
@@ -8419,6 +8849,11 @@ int RspQryOptionInstrumentPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -8496,24 +8931,28 @@ void ReqQryCommissionRatePackage::Prepare(SessionIDType sessionID, int messageCh
 }
 int ReqQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryCommissionRate != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryCommissionRateField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryCommissionRateField::FieldID);
 		if (strlen(ReqQryCommissionRate->AccountID) >= sizeof(ReqQryCommissionRate->AccountID))
 		{
 			ReqQryCommissionRate->AccountID[sizeof(ReqQryCommissionRate->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqQryCommissionRate->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqQryCommissionRate->AccountID);
 		if (strlen(ReqQryCommissionRate->ExchangeID) >= sizeof(ReqQryCommissionRate->ExchangeID))
 		{
 			ReqQryCommissionRate->ExchangeID[sizeof(ReqQryCommissionRate->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqQryCommissionRate->ExchangeID);
-		StepUtility::WriteString(ppos, Items::ProductClass, (int)ReqQryCommissionRate->ProductClass);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryCommissionRateField::FieldID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqQryCommissionRate->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ProductClass, (int)ReqQryCommissionRate->ProductClass);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryCommissionRateField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -8593,6 +9032,11 @@ int ReqQryCommissionRatePackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryCommissionRate != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryCommissionRateField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryCommissionRateField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryCommissionRate, sizeof(ReqQryCommissionRateField));
@@ -8664,45 +9108,49 @@ void RspQryCommissionRatePackage::Prepare(SessionIDType sessionID, int messageCh
 }
 int RspQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (CommissionRate != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, CommissionRateField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, CommissionRateField::FieldID);
 		if (strlen(CommissionRate->AccountID) >= sizeof(CommissionRate->AccountID))
 		{
 			CommissionRate->AccountID[sizeof(CommissionRate->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, CommissionRate->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, CommissionRate->AccountID);
 		if (strlen(CommissionRate->ExchangeID) >= sizeof(CommissionRate->ExchangeID))
 		{
 			CommissionRate->ExchangeID[sizeof(CommissionRate->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, CommissionRate->ExchangeID);
-		StepUtility::WriteString(ppos, Items::ProductClass, (int)CommissionRate->ProductClass);
-		StepUtility::WriteString(ppos, Items::OpenBuyByMoney, CommissionRate->OpenBuyByMoney);
-		StepUtility::WriteString(ppos, Items::OpenSellByMoney, CommissionRate->OpenSellByMoney);
-		StepUtility::WriteString(ppos, Items::CloseBuyByMoney, CommissionRate->CloseBuyByMoney);
-		StepUtility::WriteString(ppos, Items::CloseSellByMoney, CommissionRate->CloseSellByMoney);
-		StepUtility::WriteString(ppos, Items::OpenBuyByVolume, CommissionRate->OpenBuyByVolume);
-		StepUtility::WriteString(ppos, Items::OpenSellByVolume, CommissionRate->OpenSellByVolume);
-		StepUtility::WriteString(ppos, Items::CloseBuyByVolume, CommissionRate->CloseBuyByVolume);
-		StepUtility::WriteString(ppos, Items::CloseSellByVolume, CommissionRate->CloseSellByVolume);
-		StepUtility::WriteString(ppos, Items::MinCommission, CommissionRate->MinCommission);
-		StepUtility::WriteString(ppos, Items::MaxCommission, CommissionRate->MaxCommission);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, CommissionRateField::FieldID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, CommissionRate->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ProductClass, (int)CommissionRate->ProductClass);
+		StepUtility::WriteString(cursor, Items::OpenBuyByMoney, CommissionRate->OpenBuyByMoney);
+		StepUtility::WriteString(cursor, Items::OpenSellByMoney, CommissionRate->OpenSellByMoney);
+		StepUtility::WriteString(cursor, Items::CloseBuyByMoney, CommissionRate->CloseBuyByMoney);
+		StepUtility::WriteString(cursor, Items::CloseSellByMoney, CommissionRate->CloseSellByMoney);
+		StepUtility::WriteString(cursor, Items::OpenBuyByVolume, CommissionRate->OpenBuyByVolume);
+		StepUtility::WriteString(cursor, Items::OpenSellByVolume, CommissionRate->OpenSellByVolume);
+		StepUtility::WriteString(cursor, Items::CloseBuyByVolume, CommissionRate->CloseBuyByVolume);
+		StepUtility::WriteString(cursor, Items::CloseSellByVolume, CommissionRate->CloseSellByVolume);
+		StepUtility::WriteString(cursor, Items::MinCommission, CommissionRate->MinCommission);
+		StepUtility::WriteString(cursor, Items::MaxCommission, CommissionRate->MaxCommission);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, CommissionRateField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -8873,6 +9321,11 @@ int RspQryCommissionRatePackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (CommissionRate != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(CommissionRateField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &CommissionRateField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, CommissionRate, sizeof(CommissionRateField));
@@ -8880,6 +9333,11 @@ int RspQryCommissionRatePackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -8957,18 +9415,22 @@ void ReqQryMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageCha
 }
 int ReqQryMoneyTransferPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqQryMoneyTransfer != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqQryMoneyTransferField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryMoneyTransferField::FieldID);
 		if (strlen(ReqQryMoneyTransfer->AccountID) >= sizeof(ReqQryMoneyTransfer->AccountID))
 		{
 			ReqQryMoneyTransfer->AccountID[sizeof(ReqQryMoneyTransfer->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqQryMoneyTransfer->AccountID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqQryMoneyTransferField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqQryMoneyTransfer->AccountID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryMoneyTransferField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -9037,6 +9499,11 @@ int ReqQryMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqQryMoneyTransfer != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqQryMoneyTransferField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqQryMoneyTransferField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryMoneyTransfer, sizeof(ReqQryMoneyTransferField));
@@ -9108,58 +9575,62 @@ void RspQryMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageCha
 }
 int RspQryMoneyTransferPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (MoneyTransfer != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, MoneyTransferField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, MoneyTransferField::FieldID);
 		if (strlen(MoneyTransfer->TradingDay) >= sizeof(MoneyTransfer->TradingDay))
 		{
 			MoneyTransfer->TradingDay[sizeof(MoneyTransfer->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, MoneyTransfer->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, MoneyTransfer->TradingDay);
 		if (strlen(MoneyTransfer->AccountID) >= sizeof(MoneyTransfer->AccountID))
 		{
 			MoneyTransfer->AccountID[sizeof(MoneyTransfer->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, MoneyTransfer->AccountID);
-		StepUtility::WriteString(ppos, Items::MoneyTransferID, MoneyTransfer->MoneyTransferID);
-		StepUtility::WriteString(ppos, Items::AccountType, (int)MoneyTransfer->AccountType);
-		StepUtility::WriteString(ppos, Items::TransferDirection, (int)MoneyTransfer->TransferDirection);
-		StepUtility::WriteString(ppos, Items::TransferAmount, MoneyTransfer->TransferAmount);
+		StepUtility::WriteString(cursor, Items::AccountID, MoneyTransfer->AccountID);
+		StepUtility::WriteString(cursor, Items::MoneyTransferID, MoneyTransfer->MoneyTransferID);
+		StepUtility::WriteString(cursor, Items::AccountType, (int)MoneyTransfer->AccountType);
+		StepUtility::WriteString(cursor, Items::TransferDirection, (int)MoneyTransfer->TransferDirection);
+		StepUtility::WriteString(cursor, Items::TransferAmount, MoneyTransfer->TransferAmount);
 		if (strlen(MoneyTransfer->InfoMessage) >= sizeof(MoneyTransfer->InfoMessage))
 		{
 			MoneyTransfer->InfoMessage[sizeof(MoneyTransfer->InfoMessage) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InfoMessage, MoneyTransfer->InfoMessage);
+		StepUtility::WriteString(cursor, Items::InfoMessage, MoneyTransfer->InfoMessage);
 		if (strlen(MoneyTransfer->UserID) >= sizeof(MoneyTransfer->UserID))
 		{
 			MoneyTransfer->UserID[sizeof(MoneyTransfer->UserID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::UserID, MoneyTransfer->UserID);
+		StepUtility::WriteString(cursor, Items::UserID, MoneyTransfer->UserID);
 		if (strlen(MoneyTransfer->TransferDate) >= sizeof(MoneyTransfer->TransferDate))
 		{
 			MoneyTransfer->TransferDate[sizeof(MoneyTransfer->TransferDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TransferDate, MoneyTransfer->TransferDate);
+		StepUtility::WriteString(cursor, Items::TransferDate, MoneyTransfer->TransferDate);
 		if (strlen(MoneyTransfer->TransferTime) >= sizeof(MoneyTransfer->TransferTime))
 		{
 			MoneyTransfer->TransferTime[sizeof(MoneyTransfer->TransferTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TransferTime, MoneyTransfer->TransferTime);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, MoneyTransferField::FieldID);
+		StepUtility::WriteString(cursor, Items::TransferTime, MoneyTransfer->TransferTime);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, MoneyTransferField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -9319,6 +9790,11 @@ int RspQryMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (MoneyTransfer != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(MoneyTransferField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &MoneyTransferField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, MoneyTransfer, sizeof(MoneyTransferField));
@@ -9326,6 +9802,11 @@ int RspQryMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -9403,34 +9884,38 @@ void ReqInsertOrderPackage::Prepare(SessionIDType sessionID, int messageChain, i
 }
 int ReqInsertOrderPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqInsertOrder != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqInsertOrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqInsertOrderField::FieldID);
 		if (strlen(ReqInsertOrder->AccountID) >= sizeof(ReqInsertOrder->AccountID))
 		{
 			ReqInsertOrder->AccountID[sizeof(ReqInsertOrder->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqInsertOrder->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqInsertOrder->AccountID);
 		if (strlen(ReqInsertOrder->ExchangeID) >= sizeof(ReqInsertOrder->ExchangeID))
 		{
 			ReqInsertOrder->ExchangeID[sizeof(ReqInsertOrder->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqInsertOrder->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqInsertOrder->ExchangeID);
 		if (strlen(ReqInsertOrder->InstrumentID) >= sizeof(ReqInsertOrder->InstrumentID))
 		{
 			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, ReqInsertOrder->InstrumentID);
-		StepUtility::WriteString(ppos, Items::Direction, (int)ReqInsertOrder->Direction);
-		StepUtility::WriteString(ppos, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
-		StepUtility::WriteString(ppos, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
-		StepUtility::WriteString(ppos, Items::Price, ReqInsertOrder->Price);
-		StepUtility::WriteString(ppos, Items::Volume, ReqInsertOrder->Volume);
-		StepUtility::WriteString(ppos, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqInsertOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, ReqInsertOrder->InstrumentID);
+		StepUtility::WriteString(cursor, Items::Direction, (int)ReqInsertOrder->Direction);
+		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
+		StepUtility::WriteString(cursor, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
+		StepUtility::WriteString(cursor, Items::Price, ReqInsertOrder->Price);
+		StepUtility::WriteString(cursor, Items::Volume, ReqInsertOrder->Volume);
+		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqInsertOrderField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -9541,6 +10026,11 @@ int ReqInsertOrderPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqInsertOrder != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqInsertOrderField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqInsertOrderField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
@@ -9612,45 +10102,49 @@ void RspInsertOrderPackage::Prepare(SessionIDType sessionID, int messageChain, i
 }
 int RspInsertOrderPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqInsertOrder != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqInsertOrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqInsertOrderField::FieldID);
 		if (strlen(ReqInsertOrder->AccountID) >= sizeof(ReqInsertOrder->AccountID))
 		{
 			ReqInsertOrder->AccountID[sizeof(ReqInsertOrder->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqInsertOrder->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqInsertOrder->AccountID);
 		if (strlen(ReqInsertOrder->ExchangeID) >= sizeof(ReqInsertOrder->ExchangeID))
 		{
 			ReqInsertOrder->ExchangeID[sizeof(ReqInsertOrder->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqInsertOrder->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqInsertOrder->ExchangeID);
 		if (strlen(ReqInsertOrder->InstrumentID) >= sizeof(ReqInsertOrder->InstrumentID))
 		{
 			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, ReqInsertOrder->InstrumentID);
-		StepUtility::WriteString(ppos, Items::Direction, (int)ReqInsertOrder->Direction);
-		StepUtility::WriteString(ppos, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
-		StepUtility::WriteString(ppos, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
-		StepUtility::WriteString(ppos, Items::Price, ReqInsertOrder->Price);
-		StepUtility::WriteString(ppos, Items::Volume, ReqInsertOrder->Volume);
-		StepUtility::WriteString(ppos, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqInsertOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, ReqInsertOrder->InstrumentID);
+		StepUtility::WriteString(cursor, Items::Direction, (int)ReqInsertOrder->Direction);
+		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
+		StepUtility::WriteString(cursor, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
+		StepUtility::WriteString(cursor, Items::Price, ReqInsertOrder->Price);
+		StepUtility::WriteString(cursor, Items::Volume, ReqInsertOrder->Volume);
+		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqInsertOrderField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -9802,6 +10296,11 @@ int RspInsertOrderPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqInsertOrder != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqInsertOrderField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqInsertOrderField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
@@ -9809,6 +10308,11 @@ int RspInsertOrderPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -9886,37 +10390,41 @@ void ReqCancelOrderPackage::Prepare(SessionIDType sessionID, int messageChain, i
 }
 int ReqCancelOrderPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqCancelOrder != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqCancelOrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqCancelOrderField::FieldID);
 		if (strlen(ReqCancelOrder->AccountID) >= sizeof(ReqCancelOrder->AccountID))
 		{
 			ReqCancelOrder->AccountID[sizeof(ReqCancelOrder->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqCancelOrder->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqCancelOrder->AccountID);
 		if (strlen(ReqCancelOrder->ExchangeID) >= sizeof(ReqCancelOrder->ExchangeID))
 		{
 			ReqCancelOrder->ExchangeID[sizeof(ReqCancelOrder->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqCancelOrder->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqCancelOrder->ExchangeID);
 		if (strlen(ReqCancelOrder->InstrumentID) >= sizeof(ReqCancelOrder->InstrumentID))
 		{
 			ReqCancelOrder->InstrumentID[sizeof(ReqCancelOrder->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, ReqCancelOrder->InstrumentID);
-		StepUtility::WriteString(ppos, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
-		StepUtility::WriteString(ppos, Items::OrderID, ReqCancelOrder->OrderID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, ReqCancelOrder->InstrumentID);
+		StepUtility::WriteString(cursor, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
+		StepUtility::WriteString(cursor, Items::OrderID, ReqCancelOrder->OrderID);
 		if (strlen(ReqCancelOrder->OrderSysID) >= sizeof(ReqCancelOrder->OrderSysID))
 		{
 			ReqCancelOrder->OrderSysID[sizeof(ReqCancelOrder->OrderSysID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderSysID, ReqCancelOrder->OrderSysID);
-		StepUtility::WriteString(ppos, Items::SessionID, ReqCancelOrder->SessionID);
-		StepUtility::WriteString(ppos, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqCancelOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::OrderSysID, ReqCancelOrder->OrderSysID);
+		StepUtility::WriteString(cursor, Items::SessionID, ReqCancelOrder->SessionID);
+		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqCancelOrderField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -10023,6 +10531,11 @@ int ReqCancelOrderPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqCancelOrder != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqCancelOrderField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqCancelOrderField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
@@ -10094,48 +10607,52 @@ void RspCancelOrderPackage::Prepare(SessionIDType sessionID, int messageChain, i
 }
 int RspCancelOrderPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (ReqCancelOrder != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, ReqCancelOrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqCancelOrderField::FieldID);
 		if (strlen(ReqCancelOrder->AccountID) >= sizeof(ReqCancelOrder->AccountID))
 		{
 			ReqCancelOrder->AccountID[sizeof(ReqCancelOrder->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, ReqCancelOrder->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, ReqCancelOrder->AccountID);
 		if (strlen(ReqCancelOrder->ExchangeID) >= sizeof(ReqCancelOrder->ExchangeID))
 		{
 			ReqCancelOrder->ExchangeID[sizeof(ReqCancelOrder->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, ReqCancelOrder->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, ReqCancelOrder->ExchangeID);
 		if (strlen(ReqCancelOrder->InstrumentID) >= sizeof(ReqCancelOrder->InstrumentID))
 		{
 			ReqCancelOrder->InstrumentID[sizeof(ReqCancelOrder->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, ReqCancelOrder->InstrumentID);
-		StepUtility::WriteString(ppos, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
-		StepUtility::WriteString(ppos, Items::OrderID, ReqCancelOrder->OrderID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, ReqCancelOrder->InstrumentID);
+		StepUtility::WriteString(cursor, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
+		StepUtility::WriteString(cursor, Items::OrderID, ReqCancelOrder->OrderID);
 		if (strlen(ReqCancelOrder->OrderSysID) >= sizeof(ReqCancelOrder->OrderSysID))
 		{
 			ReqCancelOrder->OrderSysID[sizeof(ReqCancelOrder->OrderSysID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderSysID, ReqCancelOrder->OrderSysID);
-		StepUtility::WriteString(ppos, Items::SessionID, ReqCancelOrder->SessionID);
-		StepUtility::WriteString(ppos, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, ReqCancelOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::OrderSysID, ReqCancelOrder->OrderSysID);
+		StepUtility::WriteString(cursor, Items::SessionID, ReqCancelOrder->SessionID);
+		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqCancelOrderField::FieldID);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(ppos, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -10283,6 +10800,11 @@ int RspCancelOrderPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (ReqCancelOrder != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(ReqCancelOrderField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &ReqCancelOrderField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
@@ -10290,6 +10812,11 @@ int RspCancelOrderPackage::ToXtpStream(char* buff, int size) const
 	}
 	if (RspInfo != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(RspInfoField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
@@ -10367,75 +10894,79 @@ void RtnOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msg
 }
 int RtnOrderPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (Order != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, OrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, OrderField::FieldID);
 		if (strlen(Order->TradingDay) >= sizeof(Order->TradingDay))
 		{
 			Order->TradingDay[sizeof(Order->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, Order->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, Order->TradingDay);
 		if (strlen(Order->AccountID) >= sizeof(Order->AccountID))
 		{
 			Order->AccountID[sizeof(Order->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, Order->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, Order->AccountID);
 		if (strlen(Order->ExchangeID) >= sizeof(Order->ExchangeID))
 		{
 			Order->ExchangeID[sizeof(Order->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, Order->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, Order->ExchangeID);
 		if (strlen(Order->InstrumentID) >= sizeof(Order->InstrumentID))
 		{
 			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, Order->InstrumentID);
-		StepUtility::WriteString(ppos, Items::ProductClass, (int)Order->ProductClass);
-		StepUtility::WriteString(ppos, Items::OrderID, Order->OrderID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, Order->InstrumentID);
+		StepUtility::WriteString(cursor, Items::ProductClass, (int)Order->ProductClass);
+		StepUtility::WriteString(cursor, Items::OrderID, Order->OrderID);
 		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
 		{
 			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderSysID, Order->OrderSysID);
-		StepUtility::WriteString(ppos, Items::Direction, (int)Order->Direction);
-		StepUtility::WriteString(ppos, Items::OffsetFlag, (int)Order->OffsetFlag);
-		StepUtility::WriteString(ppos, Items::OrderPriceType, (int)Order->OrderPriceType);
-		StepUtility::WriteString(ppos, Items::Price, Order->Price);
-		StepUtility::WriteString(ppos, Items::Volume, Order->Volume);
-		StepUtility::WriteString(ppos, Items::VolumeTotal, Order->VolumeTotal);
-		StepUtility::WriteString(ppos, Items::VolumeTraded, Order->VolumeTraded);
-		StepUtility::WriteString(ppos, Items::VolumeMultiple, Order->VolumeMultiple);
-		StepUtility::WriteString(ppos, Items::OrderStatus, (int)Order->OrderStatus);
+		StepUtility::WriteString(cursor, Items::OrderSysID, Order->OrderSysID);
+		StepUtility::WriteString(cursor, Items::Direction, (int)Order->Direction);
+		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)Order->OffsetFlag);
+		StepUtility::WriteString(cursor, Items::OrderPriceType, (int)Order->OrderPriceType);
+		StepUtility::WriteString(cursor, Items::Price, Order->Price);
+		StepUtility::WriteString(cursor, Items::Volume, Order->Volume);
+		StepUtility::WriteString(cursor, Items::VolumeTotal, Order->VolumeTotal);
+		StepUtility::WriteString(cursor, Items::VolumeTraded, Order->VolumeTraded);
+		StepUtility::WriteString(cursor, Items::VolumeMultiple, Order->VolumeMultiple);
+		StepUtility::WriteString(cursor, Items::OrderStatus, (int)Order->OrderStatus);
 		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
 		{
 			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderDate, Order->OrderDate);
+		StepUtility::WriteString(cursor, Items::OrderDate, Order->OrderDate);
 		if (strlen(Order->OrderTime) >= sizeof(Order->OrderTime))
 		{
 			Order->OrderTime[sizeof(Order->OrderTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderTime, Order->OrderTime);
+		StepUtility::WriteString(cursor, Items::OrderTime, Order->OrderTime);
 		if (strlen(Order->CancelDate) >= sizeof(Order->CancelDate))
 		{
 			Order->CancelDate[sizeof(Order->CancelDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::CancelDate, Order->CancelDate);
+		StepUtility::WriteString(cursor, Items::CancelDate, Order->CancelDate);
 		if (strlen(Order->CancelTime) >= sizeof(Order->CancelTime))
 		{
 			Order->CancelTime[sizeof(Order->CancelTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::CancelTime, Order->CancelTime);
-		StepUtility::WriteString(ppos, Items::SessionID, Order->SessionID);
-		StepUtility::WriteString(ppos, Items::ClientOrderID, Order->ClientOrderID);
-		StepUtility::WriteString(ppos, Items::RequestID, Order->RequestID);
-		StepUtility::WriteString(ppos, Items::FrozenCash, Order->FrozenCash);
-		StepUtility::WriteString(ppos, Items::FrozenMargin, Order->FrozenMargin);
-		StepUtility::WriteString(ppos, Items::FrozenCommission, Order->FrozenCommission);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, OrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::CancelTime, Order->CancelTime);
+		StepUtility::WriteString(cursor, Items::SessionID, Order->SessionID);
+		StepUtility::WriteString(cursor, Items::ClientOrderID, Order->ClientOrderID);
+		StepUtility::WriteString(cursor, Items::RequestID, Order->RequestID);
+		StepUtility::WriteString(cursor, Items::FrozenCash, Order->FrozenCash);
+		StepUtility::WriteString(cursor, Items::FrozenMargin, Order->FrozenMargin);
+		StepUtility::WriteString(cursor, Items::FrozenCommission, Order->FrozenCommission);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, OrderField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -10637,6 +11168,11 @@ int RtnOrderPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (Order != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(OrderField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &OrderField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Order, sizeof(OrderField));
@@ -10703,62 +11239,66 @@ void RtnTradePackage::Prepare(SessionIDType sessionID, int messageChain, int msg
 }
 int RtnTradePackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (Trade != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, TradeField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, TradeField::FieldID);
 		if (strlen(Trade->TradingDay) >= sizeof(Trade->TradingDay))
 		{
 			Trade->TradingDay[sizeof(Trade->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, Trade->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, Trade->TradingDay);
 		if (strlen(Trade->AccountID) >= sizeof(Trade->AccountID))
 		{
 			Trade->AccountID[sizeof(Trade->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, Trade->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountID, Trade->AccountID);
 		if (strlen(Trade->ExchangeID) >= sizeof(Trade->ExchangeID))
 		{
 			Trade->ExchangeID[sizeof(Trade->ExchangeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ExchangeID, Trade->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeID, Trade->ExchangeID);
 		if (strlen(Trade->InstrumentID) >= sizeof(Trade->InstrumentID))
 		{
 			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InstrumentID, Trade->InstrumentID);
-		StepUtility::WriteString(ppos, Items::ProductClass, (int)Trade->ProductClass);
-		StepUtility::WriteString(ppos, Items::OrderID, Trade->OrderID);
+		StepUtility::WriteString(cursor, Items::InstrumentID, Trade->InstrumentID);
+		StepUtility::WriteString(cursor, Items::ProductClass, (int)Trade->ProductClass);
+		StepUtility::WriteString(cursor, Items::OrderID, Trade->OrderID);
 		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
 		{
 			Trade->OrderSysID[sizeof(Trade->OrderSysID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::OrderSysID, Trade->OrderSysID);
+		StepUtility::WriteString(cursor, Items::OrderSysID, Trade->OrderSysID);
 		if (strlen(Trade->TradeID) >= sizeof(Trade->TradeID))
 		{
 			Trade->TradeID[sizeof(Trade->TradeID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradeID, Trade->TradeID);
-		StepUtility::WriteString(ppos, Items::Direction, (int)Trade->Direction);
-		StepUtility::WriteString(ppos, Items::OffsetFlag, (int)Trade->OffsetFlag);
-		StepUtility::WriteString(ppos, Items::Price, Trade->Price);
-		StepUtility::WriteString(ppos, Items::Volume, Trade->Volume);
-		StepUtility::WriteString(ppos, Items::VolumeMultiple, Trade->VolumeMultiple);
-		StepUtility::WriteString(ppos, Items::TradeAmount, Trade->TradeAmount);
-		StepUtility::WriteString(ppos, Items::Commission, Trade->Commission);
+		StepUtility::WriteString(cursor, Items::TradeID, Trade->TradeID);
+		StepUtility::WriteString(cursor, Items::Direction, (int)Trade->Direction);
+		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)Trade->OffsetFlag);
+		StepUtility::WriteString(cursor, Items::Price, Trade->Price);
+		StepUtility::WriteString(cursor, Items::Volume, Trade->Volume);
+		StepUtility::WriteString(cursor, Items::VolumeMultiple, Trade->VolumeMultiple);
+		StepUtility::WriteString(cursor, Items::TradeAmount, Trade->TradeAmount);
+		StepUtility::WriteString(cursor, Items::Commission, Trade->Commission);
 		if (strlen(Trade->TradeDate) >= sizeof(Trade->TradeDate))
 		{
 			Trade->TradeDate[sizeof(Trade->TradeDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradeDate, Trade->TradeDate);
+		StepUtility::WriteString(cursor, Items::TradeDate, Trade->TradeDate);
 		if (strlen(Trade->TradeTime) >= sizeof(Trade->TradeTime))
 		{
 			Trade->TradeTime[sizeof(Trade->TradeTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradeTime, Trade->TradeTime);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, TradeField::FieldID);
+		StepUtility::WriteString(cursor, Items::TradeTime, Trade->TradeTime);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, TradeField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -10914,6 +11454,11 @@ int RtnTradePackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (Trade != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(TradeField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &TradeField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Trade, sizeof(TradeField));
@@ -10980,47 +11525,51 @@ void RtnMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int RtnMoneyTransferPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (MoneyTransfer != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, MoneyTransferField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, MoneyTransferField::FieldID);
 		if (strlen(MoneyTransfer->TradingDay) >= sizeof(MoneyTransfer->TradingDay))
 		{
 			MoneyTransfer->TradingDay[sizeof(MoneyTransfer->TradingDay) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TradingDay, MoneyTransfer->TradingDay);
+		StepUtility::WriteString(cursor, Items::TradingDay, MoneyTransfer->TradingDay);
 		if (strlen(MoneyTransfer->AccountID) >= sizeof(MoneyTransfer->AccountID))
 		{
 			MoneyTransfer->AccountID[sizeof(MoneyTransfer->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, MoneyTransfer->AccountID);
-		StepUtility::WriteString(ppos, Items::MoneyTransferID, MoneyTransfer->MoneyTransferID);
-		StepUtility::WriteString(ppos, Items::AccountType, (int)MoneyTransfer->AccountType);
-		StepUtility::WriteString(ppos, Items::TransferDirection, (int)MoneyTransfer->TransferDirection);
-		StepUtility::WriteString(ppos, Items::TransferAmount, MoneyTransfer->TransferAmount);
+		StepUtility::WriteString(cursor, Items::AccountID, MoneyTransfer->AccountID);
+		StepUtility::WriteString(cursor, Items::MoneyTransferID, MoneyTransfer->MoneyTransferID);
+		StepUtility::WriteString(cursor, Items::AccountType, (int)MoneyTransfer->AccountType);
+		StepUtility::WriteString(cursor, Items::TransferDirection, (int)MoneyTransfer->TransferDirection);
+		StepUtility::WriteString(cursor, Items::TransferAmount, MoneyTransfer->TransferAmount);
 		if (strlen(MoneyTransfer->InfoMessage) >= sizeof(MoneyTransfer->InfoMessage))
 		{
 			MoneyTransfer->InfoMessage[sizeof(MoneyTransfer->InfoMessage) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::InfoMessage, MoneyTransfer->InfoMessage);
+		StepUtility::WriteString(cursor, Items::InfoMessage, MoneyTransfer->InfoMessage);
 		if (strlen(MoneyTransfer->UserID) >= sizeof(MoneyTransfer->UserID))
 		{
 			MoneyTransfer->UserID[sizeof(MoneyTransfer->UserID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::UserID, MoneyTransfer->UserID);
+		StepUtility::WriteString(cursor, Items::UserID, MoneyTransfer->UserID);
 		if (strlen(MoneyTransfer->TransferDate) >= sizeof(MoneyTransfer->TransferDate))
 		{
 			MoneyTransfer->TransferDate[sizeof(MoneyTransfer->TransferDate) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TransferDate, MoneyTransfer->TransferDate);
+		StepUtility::WriteString(cursor, Items::TransferDate, MoneyTransfer->TransferDate);
 		if (strlen(MoneyTransfer->TransferTime) >= sizeof(MoneyTransfer->TransferTime))
 		{
 			MoneyTransfer->TransferTime[sizeof(MoneyTransfer->TransferTime) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::TransferTime, MoneyTransfer->TransferTime);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, MoneyTransferField::FieldID);
+		StepUtility::WriteString(cursor, Items::TransferTime, MoneyTransfer->TransferTime);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, MoneyTransferField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -11139,6 +11688,11 @@ int RtnMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (MoneyTransfer != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(MoneyTransferField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &MoneyTransferField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, MoneyTransfer, sizeof(MoneyTransferField));
@@ -11205,24 +11759,28 @@ void RtnAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain,
 }
 int RtnAccountLogoutPackage::ToStepStream(char* buff, int size) const
 {
-	char* ppos = buff;
+	StepWriteCursor cursor(buff, size);
 	if (AccountLogout != nullptr)
 	{
-		StepUtility::WriteHexString(ppos, Items::FieldStart, AccountLogoutField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, AccountLogoutField::FieldID);
 		if (strlen(AccountLogout->AccountID) >= sizeof(AccountLogout->AccountID))
 		{
 			AccountLogout->AccountID[sizeof(AccountLogout->AccountID) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::AccountID, AccountLogout->AccountID);
-		StepUtility::WriteString(ppos, Items::ErrorID, AccountLogout->ErrorID);
+		StepUtility::WriteString(cursor, Items::AccountID, AccountLogout->AccountID);
+		StepUtility::WriteString(cursor, Items::ErrorID, AccountLogout->ErrorID);
 		if (strlen(AccountLogout->ErrorMsg) >= sizeof(AccountLogout->ErrorMsg))
 		{
 			AccountLogout->ErrorMsg[sizeof(AccountLogout->ErrorMsg) - 1] = 0;
 		}
-		StepUtility::WriteString(ppos, Items::ErrorMsg, AccountLogout->ErrorMsg);
-		StepUtility::WriteHexString(ppos, Items::FieldEnd, AccountLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::ErrorMsg, AccountLogout->ErrorMsg);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, AccountLogoutField::FieldID);
 	}
-	return int(ppos - buff);
+	if (cursor.IsTruncated())
+	{
+		return -1;
+	}
+	return cursor.GetWrittenLength();
 }
 bool RtnAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
@@ -11302,6 +11860,11 @@ int RtnAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 	int offset = 0;
 	if (AccountLogout != nullptr)
 	{
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(AccountLogoutField));
+		if (offset + fieldSize > size)
+		{
+			return -1;
+		}
 		memcpy(buff + offset, &AccountLogoutField::FieldID, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, AccountLogout, sizeof(AccountLogoutField));
