@@ -153,7 +153,8 @@ bool NotifyConnectPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -320,7 +321,8 @@ bool NotifyDisConnectPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -475,7 +477,8 @@ bool NotifyDBConnectPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -630,7 +633,8 @@ bool NotifyDBDisConnectPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -796,7 +800,8 @@ bool ReqMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -1048,7 +1053,8 @@ bool RspMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -1214,7 +1220,8 @@ bool ReqMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -1438,7 +1445,8 @@ bool RspMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -1517,7 +1525,7 @@ int ReqSubMarketDataPackage::ToStepStream(char* buff, int size) const
 			ReqSubMarketData->InstrumentID[sizeof(ReqSubMarketData->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, ReqSubMarketData->InstrumentID);
-		StepUtility::WriteString(cursor, Items::BarPreces, (int)ReqSubMarketData->BarPreces);
+		StepUtility::WriteString(cursor, Items::BarPreces, static_cast<int>(ReqSubMarketData->BarPreces));
 		StepUtility::WriteString(cursor, Items::BarPeriod, ReqSubMarketData->BarPeriod);
 		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqSubMarketDataField::FieldID);
 	}
@@ -1569,7 +1577,7 @@ bool ReqSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::BarPreces:
 						{
-							ReqSubMarketData->BarPreces = (BarPrecesType)(atoi(value.c_str()));
+							ReqSubMarketData->BarPreces = static_cast<BarPrecesType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::BarPeriod:
@@ -1627,7 +1635,8 @@ bool ReqSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -1649,7 +1658,7 @@ const char* ReqSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqSubMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID, (int)ReqSubMarketData->BarPreces, ReqSubMarketData->BarPeriod);
+		offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID, static_cast<int>(ReqSubMarketData->BarPreces), ReqSubMarketData->BarPeriod);
 	}
 	return t_DataStringBuffer;
 }
@@ -1862,7 +1871,8 @@ bool RspSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -2039,7 +2049,8 @@ bool ReqUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -2274,7 +2285,8 @@ bool RspUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -2435,7 +2447,8 @@ bool ReqSubMarketDataFinishedPackage::FromXtpStream(char* buff, int startIndex, 
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -2960,7 +2973,8 @@ bool RtnDepthMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -3033,7 +3047,7 @@ int RtnBarMarketDataPackage::ToStepStream(char* buff, int size) const
 			BarMarketData->InstrumentID[sizeof(BarMarketData->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, BarMarketData->InstrumentID);
-		StepUtility::WriteString(cursor, Items::BarPreces, (int)BarMarketData->BarPreces);
+		StepUtility::WriteString(cursor, Items::BarPreces, static_cast<int>(BarMarketData->BarPreces));
 		StepUtility::WriteString(cursor, Items::BarPeriod, BarMarketData->BarPeriod);
 		StepUtility::WriteString(cursor, Items::BarTime, BarMarketData->BarTime);
 		StepUtility::WriteString(cursor, Items::UpdateTs, BarMarketData->UpdateTs);
@@ -3106,7 +3120,7 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::BarPreces:
 						{
-							BarMarketData->BarPreces = (BarPrecesType)(atoi(value.c_str()));
+							BarMarketData->BarPreces = static_cast<BarPrecesType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::BarPeriod:
@@ -3239,7 +3253,8 @@ bool RtnBarMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -3261,7 +3276,7 @@ const char* RtnBarMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (BarMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, (int)BarMarketData->BarPreces, BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->PreSettlementPrice, BarMarketData->PreClosePrice, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+		offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, static_cast<int>(BarMarketData->BarPreces), BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->PreSettlementPrice, BarMarketData->PreClosePrice, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
 	}
 	return t_DataStringBuffer;
 }
@@ -3394,7 +3409,8 @@ bool RtnSessionBeginPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -3549,7 +3565,8 @@ bool RtnSessionEndPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -3704,7 +3721,8 @@ bool RtnMarketDataEndPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -3859,7 +3877,8 @@ bool ReqRegisterAccountPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -4083,7 +4102,8 @@ bool RspRegisterAccountPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -4260,7 +4280,8 @@ bool ReqAccountLoginPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -4512,7 +4533,8 @@ bool RspAccountLoginPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -4678,7 +4700,8 @@ bool ReqAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -4902,7 +4925,8 @@ bool RspAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -5068,7 +5092,8 @@ bool ReqQryAccountPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -5136,8 +5161,8 @@ int RspQryAccountPackage::ToStepStream(char* buff, int size) const
 			Account->AccountID[sizeof(Account->AccountID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::AccountID, Account->AccountID);
-		StepUtility::WriteString(cursor, Items::AccountType, (int)Account->AccountType);
-		StepUtility::WriteString(cursor, Items::AccountStatus, (int)Account->AccountStatus);
+		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(Account->AccountType));
+		StepUtility::WriteString(cursor, Items::AccountStatus, static_cast<int>(Account->AccountStatus));
 		StepUtility::WriteString(cursor, Items::TradeGroupID, Account->TradeGroupID);
 		StepUtility::WriteString(cursor, Items::RiskGroupID, Account->RiskGroupID);
 		StepUtility::WriteString(cursor, Items::CommissionGroupID, Account->CommissionGroupID);
@@ -5196,12 +5221,12 @@ bool RspQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 						}
 						case Items::AccountType:
 						{
-							Account->AccountType = (AccountTypeType)(atoi(value.c_str()));
+							Account->AccountType = static_cast<AccountTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::AccountStatus:
 						{
-							Account->AccountStatus = (AccountStatusType)(atoi(value.c_str()));
+							Account->AccountStatus = static_cast<AccountStatusType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::TradeGroupID:
@@ -5322,7 +5347,8 @@ bool RspQryAccountPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -5351,7 +5377,7 @@ const char* RspQryAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (Account != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]", Account->AccountID, (int)Account->AccountType, (int)Account->AccountStatus, Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
+		offset += sprintf(t_DataStringBuffer + offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]", Account->AccountID, static_cast<int>(Account->AccountType), static_cast<int>(Account->AccountStatus), Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -5488,7 +5514,8 @@ bool ReqQryHolderAccountPackage::FromXtpStream(char* buff, int startIndex, int e
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -5729,7 +5756,8 @@ bool RspQryHolderAccountPackage::FromXtpStream(char* buff, int startIndex, int e
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -5895,7 +5923,8 @@ bool ReqQryCapitalPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -5968,7 +5997,7 @@ int RspQryCapitalPackage::ToStepStream(char* buff, int size) const
 			Capital->AccountID[sizeof(Capital->AccountID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::AccountID, Capital->AccountID);
-		StepUtility::WriteString(cursor, Items::AccountType, (int)Capital->AccountType);
+		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(Capital->AccountType));
 		StepUtility::WriteString(cursor, Items::Balance, Capital->Balance);
 		StepUtility::WriteString(cursor, Items::PreBalance, Capital->PreBalance);
 		StepUtility::WriteString(cursor, Items::Available, Capital->Available);
@@ -6047,7 +6076,7 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 						}
 						case Items::AccountType:
 						{
-							Capital->AccountType = (AccountTypeType)(atoi(value.c_str()));
+							Capital->AccountType = static_cast<AccountTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::Balance:
@@ -6238,7 +6267,8 @@ bool RspQryCapitalPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -6267,7 +6297,7 @@ const char* RspQryCapitalPackage::GetDebugString() const
 	int offset = 0;
 	if (Capital != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountID, (int)Capital->AccountType, Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
+		offset += sprintf(t_DataStringBuffer + offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountID, static_cast<int>(Capital->AccountType), Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -6404,7 +6434,8 @@ bool ReqQryPositionPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -6477,7 +6508,7 @@ int RspQryPositionPackage::ToStepStream(char* buff, int size) const
 			Position->AccountID[sizeof(Position->AccountID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::AccountID, Position->AccountID);
-		StepUtility::WriteString(cursor, Items::AccountType, (int)Position->AccountType);
+		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(Position->AccountType));
 		if (strlen(Position->ExchangeID) >= sizeof(Position->ExchangeID))
 		{
 			Position->ExchangeID[sizeof(Position->ExchangeID) - 1] = 0;
@@ -6488,8 +6519,8 @@ int RspQryPositionPackage::ToStepStream(char* buff, int size) const
 			Position->InstrumentID[sizeof(Position->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, Position->InstrumentID);
-		StepUtility::WriteString(cursor, Items::ProductClass, (int)Position->ProductClass);
-		StepUtility::WriteString(cursor, Items::PosiDirection, (int)Position->PosiDirection);
+		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Position->ProductClass));
+		StepUtility::WriteString(cursor, Items::PosiDirection, static_cast<int>(Position->PosiDirection));
 		StepUtility::WriteString(cursor, Items::TotalPosition, Position->TotalPosition);
 		StepUtility::WriteString(cursor, Items::PositionFrozen, Position->PositionFrozen);
 		StepUtility::WriteString(cursor, Items::TodayPosition, Position->TodayPosition);
@@ -6566,7 +6597,7 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::AccountType:
 						{
-							Position->AccountType = (AccountTypeType)(atoi(value.c_str()));
+							Position->AccountType = static_cast<AccountTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::ExchangeID:
@@ -6583,12 +6614,12 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::ProductClass:
 						{
-							Position->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							Position->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::PosiDirection:
 						{
-							Position->PosiDirection = (PosiDirectionType)(atoi(value.c_str()));
+							Position->PosiDirection = static_cast<PosiDirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::TotalPosition:
@@ -6769,7 +6800,8 @@ bool RspQryPositionPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -6798,7 +6830,7 @@ const char* RspQryPositionPackage::GetDebugString() const
 	int offset = 0;
 	if (Position != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountID, (int)Position->AccountType, Position->ExchangeID, Position->InstrumentID, (int)Position->ProductClass, (int)Position->PosiDirection, Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
+		offset += sprintf(t_DataStringBuffer + offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountID, static_cast<int>(Position->AccountType), Position->ExchangeID, Position->InstrumentID, static_cast<int>(Position->ProductClass), static_cast<int>(Position->PosiDirection), Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -6935,7 +6967,8 @@ bool ReqQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -7018,22 +7051,22 @@ int RspQryOrderPackage::ToStepStream(char* buff, int size) const
 			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, Order->InstrumentID);
-		StepUtility::WriteString(cursor, Items::ProductClass, (int)Order->ProductClass);
+		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Order->ProductClass));
 		StepUtility::WriteString(cursor, Items::OrderID, Order->OrderID);
 		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
 		{
 			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::OrderSysID, Order->OrderSysID);
-		StepUtility::WriteString(cursor, Items::Direction, (int)Order->Direction);
-		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)Order->OffsetFlag);
-		StepUtility::WriteString(cursor, Items::OrderPriceType, (int)Order->OrderPriceType);
+		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(Order->Direction));
+		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(Order->OffsetFlag));
+		StepUtility::WriteString(cursor, Items::OrderPriceType, static_cast<int>(Order->OrderPriceType));
 		StepUtility::WriteString(cursor, Items::Price, Order->Price);
 		StepUtility::WriteString(cursor, Items::Volume, Order->Volume);
 		StepUtility::WriteString(cursor, Items::VolumeTotal, Order->VolumeTotal);
 		StepUtility::WriteString(cursor, Items::VolumeTraded, Order->VolumeTraded);
 		StepUtility::WriteString(cursor, Items::VolumeMultiple, Order->VolumeMultiple);
-		StepUtility::WriteString(cursor, Items::OrderStatus, (int)Order->OrderStatus);
+		StepUtility::WriteString(cursor, Items::OrderStatus, static_cast<int>(Order->OrderStatus));
 		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
 		{
 			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
@@ -7133,7 +7166,7 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::ProductClass:
 						{
-							Order->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							Order->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
@@ -7149,17 +7182,17 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::Direction:
 						{
-							Order->Direction = (DirectionType)(atoi(value.c_str()));
+							Order->Direction = static_cast<DirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							Order->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							Order->OffsetFlag = static_cast<OffsetFlagType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderPriceType:
 						{
-							Order->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							Order->OrderPriceType = static_cast<OrderPriceTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
@@ -7189,7 +7222,7 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::OrderStatus:
 						{
-							Order->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
+							Order->OrderStatus = static_cast<OrderStatusType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderDate:
@@ -7349,7 +7382,8 @@ bool RspQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -7378,7 +7412,7 @@ const char* RspQryOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (Order != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+		offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, static_cast<int>(Order->ProductClass), Order->OrderID, Order->OrderSysID, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -7515,7 +7549,8 @@ bool ReqQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -7598,7 +7633,7 @@ int RspQryTradePackage::ToStepStream(char* buff, int size) const
 			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, Trade->InstrumentID);
-		StepUtility::WriteString(cursor, Items::ProductClass, (int)Trade->ProductClass);
+		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Trade->ProductClass));
 		StepUtility::WriteString(cursor, Items::OrderID, Trade->OrderID);
 		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
 		{
@@ -7610,8 +7645,8 @@ int RspQryTradePackage::ToStepStream(char* buff, int size) const
 			Trade->TradeID[sizeof(Trade->TradeID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradeID, Trade->TradeID);
-		StepUtility::WriteString(cursor, Items::Direction, (int)Trade->Direction);
-		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)Trade->OffsetFlag);
+		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(Trade->Direction));
+		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(Trade->OffsetFlag));
 		StepUtility::WriteString(cursor, Items::Price, Trade->Price);
 		StepUtility::WriteString(cursor, Items::Volume, Trade->Volume);
 		StepUtility::WriteString(cursor, Items::VolumeMultiple, Trade->VolumeMultiple);
@@ -7700,7 +7735,7 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::ProductClass:
 						{
-							Trade->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							Trade->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
@@ -7722,12 +7757,12 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::Direction:
 						{
-							Trade->Direction = (DirectionType)(atoi(value.c_str()));
+							Trade->Direction = static_cast<DirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							Trade->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							Trade->OffsetFlag = static_cast<OffsetFlagType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
@@ -7870,7 +7905,8 @@ bool RspQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -7899,7 +7935,7 @@ const char* RspQryTradePackage::GetDebugString() const
 	int offset = 0;
 	if (Trade != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+		offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, static_cast<int>(Trade->ProductClass), Trade->OrderID, Trade->OrderSysID, Trade->TradeID, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -8047,7 +8083,8 @@ bool ReqQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -8135,7 +8172,7 @@ int RspQryInstrumentPackage::ToStepStream(char* buff, int size) const
 			Instrument->ProductID[sizeof(Instrument->ProductID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ProductID, Instrument->ProductID);
-		StepUtility::WriteString(cursor, Items::ProductClass, (int)Instrument->ProductClass);
+		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Instrument->ProductClass));
 		StepUtility::WriteString(cursor, Items::VolumeMultiple, Instrument->VolumeMultiple);
 		StepUtility::WriteString(cursor, Items::PriceTick, Instrument->PriceTick);
 		StepUtility::WriteString(cursor, Items::MaxMarketOrderVolume, Instrument->MaxMarketOrderVolume);
@@ -8226,7 +8263,7 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::ProductClass:
 						{
-							Instrument->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							Instrument->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::VolumeMultiple:
@@ -8368,7 +8405,8 @@ bool RspQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -8397,7 +8435,7 @@ const char* RspQryInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (Instrument != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->ProductID, (int)Instrument->ProductClass, Instrument->VolumeMultiple, Instrument->PriceTick, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->SessionName);
+		offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->ProductID, static_cast<int>(Instrument->ProductClass), Instrument->VolumeMultiple, Instrument->PriceTick, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->SessionName);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -8545,7 +8583,8 @@ bool ReqQryOptionInstrumentPackage::FromXtpStream(char* buff, int startIndex, in
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -8629,7 +8668,7 @@ int RspQryOptionInstrumentPackage::ToStepStream(char* buff, int size) const
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentName, OptionInstrument->InstrumentName);
 		StepUtility::WriteString(cursor, Items::VolumeMultiple, OptionInstrument->VolumeMultiple);
-		StepUtility::WriteString(cursor, Items::OptionType, (int)OptionInstrument->OptionType);
+		StepUtility::WriteString(cursor, Items::OptionType, static_cast<int>(OptionInstrument->OptionType));
 		if (strlen(OptionInstrument->UnderlyingInstrumentID) >= sizeof(OptionInstrument->UnderlyingInstrumentID))
 		{
 			OptionInstrument->UnderlyingInstrumentID[sizeof(OptionInstrument->UnderlyingInstrumentID) - 1] = 0;
@@ -8723,7 +8762,7 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 						}
 						case Items::OptionType:
 						{
-							OptionInstrument->OptionType = (OptionTypeType)(atoi(value.c_str()));
+							OptionInstrument->OptionType = static_cast<OptionTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::UnderlyingInstrumentID:
@@ -8866,7 +8905,8 @@ bool RspQryOptionInstrumentPackage::FromXtpStream(char* buff, int startIndex, in
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -8895,7 +8935,7 @@ const char* RspQryOptionInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (OptionInstrument != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, (int)OptionInstrument->OptionType, OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
+		offset += sprintf(t_DataStringBuffer + offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, static_cast<int>(OptionInstrument->OptionType), OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -8945,7 +8985,7 @@ int ReqQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 			ReqQryCommissionRate->ExchangeID[sizeof(ReqQryCommissionRate->ExchangeID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ExchangeID, ReqQryCommissionRate->ExchangeID);
-		StepUtility::WriteString(cursor, Items::ProductClass, (int)ReqQryCommissionRate->ProductClass);
+		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(ReqQryCommissionRate->ProductClass));
 		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryCommissionRateField::FieldID);
 	}
 	if (cursor.IsTruncated())
@@ -8996,7 +9036,7 @@ bool ReqQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 						}
 						case Items::ProductClass:
 						{
-							ReqQryCommissionRate->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							ReqQryCommissionRate->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
 						default:
@@ -9049,7 +9089,8 @@ bool ReqQryCommissionRatePackage::FromXtpStream(char* buff, int startIndex, int 
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -9071,7 +9112,7 @@ const char* ReqQryCommissionRatePackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryCommissionRate != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, (int)ReqQryCommissionRate->ProductClass);
+		offset += sprintf(t_DataStringBuffer + offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, static_cast<int>(ReqQryCommissionRate->ProductClass));
 	}
 	return t_DataStringBuffer;
 }
@@ -9122,7 +9163,7 @@ int RspQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 			CommissionRate->ExchangeID[sizeof(CommissionRate->ExchangeID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ExchangeID, CommissionRate->ExchangeID);
-		StepUtility::WriteString(cursor, Items::ProductClass, (int)CommissionRate->ProductClass);
+		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(CommissionRate->ProductClass));
 		StepUtility::WriteString(cursor, Items::OpenBuyByMoney, CommissionRate->OpenBuyByMoney);
 		StepUtility::WriteString(cursor, Items::OpenSellByMoney, CommissionRate->OpenSellByMoney);
 		StepUtility::WriteString(cursor, Items::CloseBuyByMoney, CommissionRate->CloseBuyByMoney);
@@ -9194,7 +9235,7 @@ bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 						}
 						case Items::ProductClass:
 						{
-							CommissionRate->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							CommissionRate->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OpenBuyByMoney:
@@ -9350,7 +9391,8 @@ bool RspQryCommissionRatePackage::FromXtpStream(char* buff, int startIndex, int 
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -9379,7 +9421,7 @@ const char* RspQryCommissionRatePackage::GetDebugString() const
 	int offset = 0;
 	if (CommissionRate != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountID, CommissionRate->ExchangeID, (int)CommissionRate->ProductClass, CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
+		offset += sprintf(t_DataStringBuffer + offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountID, CommissionRate->ExchangeID, static_cast<int>(CommissionRate->ProductClass), CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -9516,7 +9558,8 @@ bool ReqQryMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int e
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -9590,8 +9633,8 @@ int RspQryMoneyTransferPackage::ToStepStream(char* buff, int size) const
 		}
 		StepUtility::WriteString(cursor, Items::AccountID, MoneyTransfer->AccountID);
 		StepUtility::WriteString(cursor, Items::MoneyTransferID, MoneyTransfer->MoneyTransferID);
-		StepUtility::WriteString(cursor, Items::AccountType, (int)MoneyTransfer->AccountType);
-		StepUtility::WriteString(cursor, Items::TransferDirection, (int)MoneyTransfer->TransferDirection);
+		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(MoneyTransfer->AccountType));
+		StepUtility::WriteString(cursor, Items::TransferDirection, static_cast<int>(MoneyTransfer->TransferDirection));
 		StepUtility::WriteString(cursor, Items::TransferAmount, MoneyTransfer->TransferAmount);
 		if (strlen(MoneyTransfer->InfoMessage) >= sizeof(MoneyTransfer->InfoMessage))
 		{
@@ -9679,12 +9722,12 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 						}
 						case Items::AccountType:
 						{
-							MoneyTransfer->AccountType = (AccountTypeType)(atoi(value.c_str()));
+							MoneyTransfer->AccountType = static_cast<AccountTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::TransferDirection:
 						{
-							MoneyTransfer->TransferDirection = (TransferDirectionType)(atoi(value.c_str()));
+							MoneyTransfer->TransferDirection = static_cast<TransferDirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::TransferAmount:
@@ -9819,7 +9862,8 @@ bool RspQryMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int e
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -9848,7 +9892,7 @@ const char* RspQryMoneyTransferPackage::GetDebugString() const
 	int offset = 0;
 	if (MoneyTransfer != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+		offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -9903,9 +9947,9 @@ int ReqInsertOrderPackage::ToStepStream(char* buff, int size) const
 			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, ReqInsertOrder->InstrumentID);
-		StepUtility::WriteString(cursor, Items::Direction, (int)ReqInsertOrder->Direction);
-		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
-		StepUtility::WriteString(cursor, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
+		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(ReqInsertOrder->Direction));
+		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(ReqInsertOrder->OffsetFlag));
+		StepUtility::WriteString(cursor, Items::OrderPriceType, static_cast<int>(ReqInsertOrder->OrderPriceType));
 		StepUtility::WriteString(cursor, Items::Price, ReqInsertOrder->Price);
 		StepUtility::WriteString(cursor, Items::Volume, ReqInsertOrder->Volume);
 		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
@@ -9965,17 +10009,17 @@ bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::Direction:
 						{
-							ReqInsertOrder->Direction = (DirectionType)(atoi(value.c_str()));
+							ReqInsertOrder->Direction = static_cast<DirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							ReqInsertOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							ReqInsertOrder->OffsetFlag = static_cast<OffsetFlagType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderPriceType:
 						{
-							ReqInsertOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							ReqInsertOrder->OrderPriceType = static_cast<OrderPriceTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
@@ -10043,7 +10087,8 @@ bool ReqInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -10065,7 +10110,7 @@ const char* ReqInsertOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqInsertOrder != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+		offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
 	}
 	return t_DataStringBuffer;
 }
@@ -10121,9 +10166,9 @@ int RspInsertOrderPackage::ToStepStream(char* buff, int size) const
 			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, ReqInsertOrder->InstrumentID);
-		StepUtility::WriteString(cursor, Items::Direction, (int)ReqInsertOrder->Direction);
-		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)ReqInsertOrder->OffsetFlag);
-		StepUtility::WriteString(cursor, Items::OrderPriceType, (int)ReqInsertOrder->OrderPriceType);
+		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(ReqInsertOrder->Direction));
+		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(ReqInsertOrder->OffsetFlag));
+		StepUtility::WriteString(cursor, Items::OrderPriceType, static_cast<int>(ReqInsertOrder->OrderPriceType));
 		StepUtility::WriteString(cursor, Items::Price, ReqInsertOrder->Price);
 		StepUtility::WriteString(cursor, Items::Volume, ReqInsertOrder->Volume);
 		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
@@ -10194,17 +10239,17 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::Direction:
 						{
-							ReqInsertOrder->Direction = (DirectionType)(atoi(value.c_str()));
+							ReqInsertOrder->Direction = static_cast<DirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							ReqInsertOrder->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							ReqInsertOrder->OffsetFlag = static_cast<OffsetFlagType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderPriceType:
 						{
-							ReqInsertOrder->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							ReqInsertOrder->OrderPriceType = static_cast<OrderPriceTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
@@ -10325,7 +10370,8 @@ bool RspInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -10354,7 +10400,7 @@ const char* RspInsertOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqInsertOrder != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, (int)ReqInsertOrder->Direction, (int)ReqInsertOrder->OffsetFlag, (int)ReqInsertOrder->OrderPriceType, ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+		offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -10548,7 +10594,8 @@ bool ReqCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -10829,7 +10876,8 @@ bool RspCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -10918,22 +10966,22 @@ int RtnOrderPackage::ToStepStream(char* buff, int size) const
 			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, Order->InstrumentID);
-		StepUtility::WriteString(cursor, Items::ProductClass, (int)Order->ProductClass);
+		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Order->ProductClass));
 		StepUtility::WriteString(cursor, Items::OrderID, Order->OrderID);
 		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
 		{
 			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::OrderSysID, Order->OrderSysID);
-		StepUtility::WriteString(cursor, Items::Direction, (int)Order->Direction);
-		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)Order->OffsetFlag);
-		StepUtility::WriteString(cursor, Items::OrderPriceType, (int)Order->OrderPriceType);
+		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(Order->Direction));
+		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(Order->OffsetFlag));
+		StepUtility::WriteString(cursor, Items::OrderPriceType, static_cast<int>(Order->OrderPriceType));
 		StepUtility::WriteString(cursor, Items::Price, Order->Price);
 		StepUtility::WriteString(cursor, Items::Volume, Order->Volume);
 		StepUtility::WriteString(cursor, Items::VolumeTotal, Order->VolumeTotal);
 		StepUtility::WriteString(cursor, Items::VolumeTraded, Order->VolumeTraded);
 		StepUtility::WriteString(cursor, Items::VolumeMultiple, Order->VolumeMultiple);
-		StepUtility::WriteString(cursor, Items::OrderStatus, (int)Order->OrderStatus);
+		StepUtility::WriteString(cursor, Items::OrderStatus, static_cast<int>(Order->OrderStatus));
 		if (strlen(Order->OrderDate) >= sizeof(Order->OrderDate))
 		{
 			Order->OrderDate[sizeof(Order->OrderDate) - 1] = 0;
@@ -11022,7 +11070,7 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::ProductClass:
 						{
-							Order->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							Order->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
@@ -11038,17 +11086,17 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::Direction:
 						{
-							Order->Direction = (DirectionType)(atoi(value.c_str()));
+							Order->Direction = static_cast<DirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							Order->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							Order->OffsetFlag = static_cast<OffsetFlagType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderPriceType:
 						{
-							Order->OrderPriceType = (OrderPriceTypeType)(atoi(value.c_str()));
+							Order->OrderPriceType = static_cast<OrderPriceTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
@@ -11078,7 +11126,7 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::OrderStatus:
 						{
-							Order->OrderStatus = (OrderStatusType)(atoi(value.c_str()));
+							Order->OrderStatus = static_cast<OrderStatusType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderDate:
@@ -11185,7 +11233,8 @@ bool RtnOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -11207,7 +11256,7 @@ const char* RtnOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (Order != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, (int)Order->ProductClass, Order->OrderID, Order->OrderSysID, (int)Order->Direction, (int)Order->OffsetFlag, (int)Order->OrderPriceType, Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, (int)Order->OrderStatus, Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+		offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, static_cast<int>(Order->ProductClass), Order->OrderID, Order->OrderSysID, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
 	}
 	return t_DataStringBuffer;
 }
@@ -11263,7 +11312,7 @@ int RtnTradePackage::ToStepStream(char* buff, int size) const
 			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentID, Trade->InstrumentID);
-		StepUtility::WriteString(cursor, Items::ProductClass, (int)Trade->ProductClass);
+		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Trade->ProductClass));
 		StepUtility::WriteString(cursor, Items::OrderID, Trade->OrderID);
 		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
 		{
@@ -11275,8 +11324,8 @@ int RtnTradePackage::ToStepStream(char* buff, int size) const
 			Trade->TradeID[sizeof(Trade->TradeID) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradeID, Trade->TradeID);
-		StepUtility::WriteString(cursor, Items::Direction, (int)Trade->Direction);
-		StepUtility::WriteString(cursor, Items::OffsetFlag, (int)Trade->OffsetFlag);
+		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(Trade->Direction));
+		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(Trade->OffsetFlag));
 		StepUtility::WriteString(cursor, Items::Price, Trade->Price);
 		StepUtility::WriteString(cursor, Items::Volume, Trade->Volume);
 		StepUtility::WriteString(cursor, Items::VolumeMultiple, Trade->VolumeMultiple);
@@ -11354,7 +11403,7 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::ProductClass:
 						{
-							Trade->ProductClass = (ProductClassType)(atoi(value.c_str()));
+							Trade->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OrderID:
@@ -11376,12 +11425,12 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::Direction:
 						{
-							Trade->Direction = (DirectionType)(atoi(value.c_str()));
+							Trade->Direction = static_cast<DirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::OffsetFlag:
 						{
-							Trade->OffsetFlag = (OffsetFlagType)(atoi(value.c_str()));
+							Trade->OffsetFlag = static_cast<OffsetFlagType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::Price:
@@ -11471,7 +11520,8 @@ bool RtnTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -11493,7 +11543,7 @@ const char* RtnTradePackage::GetDebugString() const
 	int offset = 0;
 	if (Trade != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, (int)Trade->ProductClass, Trade->OrderID, Trade->OrderSysID, Trade->TradeID, (int)Trade->Direction, (int)Trade->OffsetFlag, Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+		offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, static_cast<int>(Trade->ProductClass), Trade->OrderID, Trade->OrderSysID, Trade->TradeID, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
 	}
 	return t_DataStringBuffer;
 }
@@ -11540,8 +11590,8 @@ int RtnMoneyTransferPackage::ToStepStream(char* buff, int size) const
 		}
 		StepUtility::WriteString(cursor, Items::AccountID, MoneyTransfer->AccountID);
 		StepUtility::WriteString(cursor, Items::MoneyTransferID, MoneyTransfer->MoneyTransferID);
-		StepUtility::WriteString(cursor, Items::AccountType, (int)MoneyTransfer->AccountType);
-		StepUtility::WriteString(cursor, Items::TransferDirection, (int)MoneyTransfer->TransferDirection);
+		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(MoneyTransfer->AccountType));
+		StepUtility::WriteString(cursor, Items::TransferDirection, static_cast<int>(MoneyTransfer->TransferDirection));
 		StepUtility::WriteString(cursor, Items::TransferAmount, MoneyTransfer->TransferAmount);
 		if (strlen(MoneyTransfer->InfoMessage) >= sizeof(MoneyTransfer->InfoMessage))
 		{
@@ -11618,12 +11668,12 @@ bool RtnMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::AccountType:
 						{
-							MoneyTransfer->AccountType = (AccountTypeType)(atoi(value.c_str()));
+							MoneyTransfer->AccountType = static_cast<AccountTypeType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::TransferDirection:
 						{
-							MoneyTransfer->TransferDirection = (TransferDirectionType)(atoi(value.c_str()));
+							MoneyTransfer->TransferDirection = static_cast<TransferDirectionType>(atoi(value.c_str()));
 							break;
 						}
 						case Items::TransferAmount:
@@ -11705,7 +11755,8 @@ bool RtnMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
@@ -11727,7 +11778,7 @@ const char* RtnMoneyTransferPackage::GetDebugString() const
 	int offset = 0;
 	if (MoneyTransfer != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, (int)MoneyTransfer->AccountType, (int)MoneyTransfer->TransferDirection, MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+		offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
 	}
 	return t_DataStringBuffer;
 }
@@ -11877,7 +11928,8 @@ bool RtnAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		auto fieldID = *(UInt16Type*)(buff + offset);
+		UInt16Type fieldID = 0;
+		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		switch (fieldID)
 		{
