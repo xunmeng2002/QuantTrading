@@ -36,6 +36,7 @@
 **/.vs
 **/out
 pumptemp.py
+*.pumptmp
 *.zip
 *.duckdb*
 *.sqlitedb*
@@ -43,3 +44,4 @@ pumptemp.py
 /lib
 /build
 *.bat
+__pycache__/
