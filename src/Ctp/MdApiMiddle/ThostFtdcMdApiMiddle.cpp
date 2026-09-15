@@ -1,4 +1,5 @@
-﻿#include "ThostFtdcMdApiMiddle.h"
+﻿// 本文件由 ../Templates/Cpp/LibTest/CtpWrapper/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "ThostFtdcMdApiMiddle.h"
 #include "StructLogFunc.h"
 #include <Spark/Core/Logger/Logger.h>
 
@@ -11,7 +12,7 @@ CThostFtdcMdApi *CThostFtdcMdApiMiddle::CreateFtdcMdApi(const char *pszFlowPath)
 	
 	auto api = CThostFtdcMdApi::CreateFtdcMdApi(pszFlowPath);
 	auto apiMiddle = new CThostFtdcMdApiMiddle();
-	apiMiddle->m_MdApi = api;
+	apiMiddle->mdApi = api;
 	
 	return apiMiddle;
 }
@@ -27,50 +28,50 @@ void CThostFtdcMdApiMiddle::Release()
 {
 	WriteLog(LogLevel::Info, "Release:");
 
-	return m_MdApi->Release();
+	return mdApi->Release();
 }
 void CThostFtdcMdApiMiddle::Init()
 {
 	WriteLog(LogLevel::Info, "Init:");
 
-	return m_MdApi->Init();
+	return mdApi->Init();
 }
 int CThostFtdcMdApiMiddle::Join()
 {
 	WriteLog(LogLevel::Info, "Join:");
 
-	return m_MdApi->Join();
+	return mdApi->Join();
 }
 const char * CThostFtdcMdApiMiddle::GetTradingDay()
 {
 	WriteLog(LogLevel::Info, "GetTradingDay:");
 
-	return m_MdApi->GetTradingDay();
+	return mdApi->GetTradingDay();
 }
 void CThostFtdcMdApiMiddle::RegisterFront(char * pszFrontAddress)
 {
 	WriteLog(LogLevel::Info, "RegisterFront: pszFrontAddress[%s]", pszFrontAddress);
 
-	return m_MdApi->RegisterFront(pszFrontAddress);
+	return mdApi->RegisterFront(pszFrontAddress);
 }
 void CThostFtdcMdApiMiddle::RegisterNameServer(char * pszNsAddress)
 {
 	WriteLog(LogLevel::Info, "RegisterNameServer: pszNsAddress[%s]", pszNsAddress);
 
-	return m_MdApi->RegisterNameServer(pszNsAddress);
+	return mdApi->RegisterNameServer(pszNsAddress);
 }
 void CThostFtdcMdApiMiddle::RegisterFensUserInfo(CThostFtdcFensUserInfoField *pFensUserInfo)
 {
 	WriteLog(LogLevel::Info, "RegisterFensUserInfo:");
 	WriteFensUserInfo(pFensUserInfo);
 
-	return m_MdApi->RegisterFensUserInfo(pFensUserInfo);
+	return mdApi->RegisterFensUserInfo(pFensUserInfo);
 }
 void CThostFtdcMdApiMiddle::RegisterSpi(CThostFtdcMdSpi *pMdSpi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi:");
 
-	return m_MdApi->RegisterSpi(pMdSpi);
+	return mdApi->RegisterSpi(pMdSpi);
 }
 int CThostFtdcMdApiMiddle::SubscribeMarketData(char * ppInstrumentID[], int nCount)
 {
@@ -80,7 +81,7 @@ int CThostFtdcMdApiMiddle::SubscribeMarketData(char * ppInstrumentID[], int nCou
 		WriteLog(LogLevel::Info, "ppInstrumentID:%s", ppInstrumentID[i]);
 	}
 
-	return m_MdApi->SubscribeMarketData(ppInstrumentID, nCount);
+	return mdApi->SubscribeMarketData(ppInstrumentID, nCount);
 }
 int CThostFtdcMdApiMiddle::UnSubscribeMarketData(char * ppInstrumentID[], int nCount)
 {
@@ -90,7 +91,7 @@ int CThostFtdcMdApiMiddle::UnSubscribeMarketData(char * ppInstrumentID[], int nC
 		WriteLog(LogLevel::Info, "ppInstrumentID:%s", ppInstrumentID[i]);
 	}
 
-	return m_MdApi->UnSubscribeMarketData(ppInstrumentID, nCount);
+	return mdApi->UnSubscribeMarketData(ppInstrumentID, nCount);
 }
 int CThostFtdcMdApiMiddle::SubscribeForQuoteRsp(char * ppInstrumentID[], int nCount)
 {
@@ -100,7 +101,7 @@ int CThostFtdcMdApiMiddle::SubscribeForQuoteRsp(char * ppInstrumentID[], int nCo
 		WriteLog(LogLevel::Info, "ppInstrumentID:%s", ppInstrumentID[i]);
 	}
 
-	return m_MdApi->SubscribeForQuoteRsp(ppInstrumentID, nCount);
+	return mdApi->SubscribeForQuoteRsp(ppInstrumentID, nCount);
 }
 int CThostFtdcMdApiMiddle::UnSubscribeForQuoteRsp(char * ppInstrumentID[], int nCount)
 {
@@ -110,26 +111,26 @@ int CThostFtdcMdApiMiddle::UnSubscribeForQuoteRsp(char * ppInstrumentID[], int n
 		WriteLog(LogLevel::Info, "ppInstrumentID:%s", ppInstrumentID[i]);
 	}
 
-	return m_MdApi->UnSubscribeForQuoteRsp(ppInstrumentID, nCount);
+	return mdApi->UnSubscribeForQuoteRsp(ppInstrumentID, nCount);
 }
 int CThostFtdcMdApiMiddle::ReqUserLogin(CThostFtdcReqUserLoginField *pReqUserLogin, int nRequestID)
 {
 	WriteLog(LogLevel::Info, "ReqUserLogin: nRequestID[%d]", nRequestID);
 	WriteReqUserLogin(pReqUserLogin);
 
-	return m_MdApi->ReqUserLogin(pReqUserLogin, nRequestID);
+	return mdApi->ReqUserLogin(pReqUserLogin, nRequestID);
 }
 int CThostFtdcMdApiMiddle::ReqUserLogout(CThostFtdcUserLogoutField *pUserLogout, int nRequestID)
 {
 	WriteLog(LogLevel::Info, "ReqUserLogout: nRequestID[%d]", nRequestID);
 	WriteUserLogout(pUserLogout);
 
-	return m_MdApi->ReqUserLogout(pUserLogout, nRequestID);
+	return mdApi->ReqUserLogout(pUserLogout, nRequestID);
 }
 int CThostFtdcMdApiMiddle::ReqQryMulticastInstrument(CThostFtdcQryMulticastInstrumentField *pQryMulticastInstrument, int nRequestID)
 {
 	WriteLog(LogLevel::Info, "ReqQryMulticastInstrument: nRequestID[%d]", nRequestID);
 	WriteQryMulticastInstrument(pQryMulticastInstrument);
 
-	return m_MdApi->ReqQryMulticastInstrument(pQryMulticastInstrument, nRequestID);
+	return mdApi->ReqQryMulticastInstrument(pQryMulticastInstrument, nRequestID);
 }

@@ -105,23 +105,23 @@ TEST_CASE("RollToNextDay结转未平记录并过滤已平与零持仓")
 
     RollDay(settlement, "20240301", "20240302");
 
-    CHECK(CountByTradingDay(settlementMdb.t_Position, "20240302") == 1);
-    auto* nextPosition = FirstByTradingDay(settlementMdb.t_Position, "20240302");
+    CHECK(CountByTradingDay(settlementMdb.position, "20240302") == 1);
+    auto* nextPosition = FirstByTradingDay(settlementMdb.position, "20240302");
     REQUIRE(nextPosition != nullptr);
     CHECK(nextPosition->TotalPosition == 2);
     CHECK(nextPosition->TodayPosition == 0);
     CHECK(nextPosition->PreSettlementPrice == doctest::Approx(3100.0));
 
-    CHECK(CountByTradingDay(settlementMdb.t_PositionDetail, "20240302") == 1);
-    auto* nextDetail = FirstByTradingDay(settlementMdb.t_PositionDetail, "20240302");
+    CHECK(CountByTradingDay(settlementMdb.positionDetail, "20240302") == 1);
+    auto* nextDetail = FirstByTradingDay(settlementMdb.positionDetail, "20240302");
     REQUIRE(nextDetail != nullptr);
     CHECK(std::string(nextDetail->OpenDate) == "20240301");
     CHECK(nextDetail->Volume == 2);
     CHECK(nextDetail->CloseVolume == 1);
     CHECK(nextDetail->PreSettlementPrice == doctest::Approx(3100.0));
 
-    CHECK(CountByTradingDay(settlementMdb.t_Capital, "20240302") == 1);
-    auto* nextCapital = FirstByTradingDay(settlementMdb.t_Capital, "20240302");
+    CHECK(CountByTradingDay(settlementMdb.capital, "20240302") == 1);
+    auto* nextCapital = FirstByTradingDay(settlementMdb.capital, "20240302");
     REQUIRE(nextCapital != nullptr);
     CHECK(nextCapital->PreBalance == doctest::Approx(1100000.0));
     CHECK(nextCapital->MarketValue == doctest::Approx(0.0));
@@ -142,7 +142,7 @@ TEST_CASE("MdbTickSettlementPriceSource异常值逐级回退")
         CopyString(tick->InstrumentID, instrumentID);
         tick->LastPrice = lastPrice;
         tick->PreSettlementPrice = preSettlementPrice;
-        REQUIRE(settlementMdb.t_DepthMarketData->Insert(tick));
+        REQUIRE(settlementMdb.depthMarketData->Insert(tick));
     };
 
     auto* validDetail = InsertSettlementPositionDetail(&settlementMdb, "20240308", "20240308", "T1", PosiDirectionType::Long, 3000.0, 3000.0, 1);

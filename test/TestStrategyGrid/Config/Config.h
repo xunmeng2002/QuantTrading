@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/Config/Config.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include <Spark/Core/ConfigStructs/ConfigStructs.h>
 #include <string>
 #include <list>
@@ -27,6 +28,6 @@ public:
 	int VolumePerGrid;
 	
 private:
-	static Config m_Instance;
+	static Config instance;
 };
 }

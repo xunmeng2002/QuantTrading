@@ -11,7 +11,7 @@ namespace quanttrading::settlement
 
 	PriceType MdbTickSettlementPriceSource::GetSettlementPrice(const mdb::PositionDetail* positionDetail)
 	{
-		auto mdTick = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(positionDetail->TradingDay, positionDetail->ExchangeID, positionDetail->InstrumentID);
+		auto mdTick = m_Mdb->depthMarketData->primaryKey->Select(positionDetail->TradingDay, positionDetail->ExchangeID, positionDetail->InstrumentID);
 		if (mdTick == nullptr)
 		{
 			return positionDetail->PreSettlementPrice;

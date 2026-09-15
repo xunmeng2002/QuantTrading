@@ -1,4 +1,5 @@
-﻿#include "StructLogFunc.h"
+﻿// 本文件由 ../Templates/Cpp/LibTest/CtpWrapper/StructLogFunc.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "StructLogFunc.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <limits>
 

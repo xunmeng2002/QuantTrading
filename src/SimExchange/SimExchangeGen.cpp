@@ -1,4 +1,5 @@
-﻿#include "SimExchange.h"
+﻿// 本文件由 ../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "SimExchange.h"
 
 #include "Error.h"
 #include "PackageReply.h"
@@ -15,32 +16,32 @@ bool SimExchange::DispatchPackage(Package* package)
 	{
 	case RspMdUserLoginPackage::PackageID:
 	{
-		HandleRspMdUserLogin((RspMdUserLoginPackage*)package);
+		HandleRspMdUserLogin(static_cast<RspMdUserLoginPackage*>(package));
 		return true;
 	}
 	case RspMdUserLogoutPackage::PackageID:
 	{
-		HandleRspMdUserLogout((RspMdUserLogoutPackage*)package);
+		HandleRspMdUserLogout(static_cast<RspMdUserLogoutPackage*>(package));
 		return true;
 	}
 	case RtnDepthMarketDataPackage::PackageID:
 	{
-		HandleRtnDepthMarketData((RtnDepthMarketDataPackage*)package);
+		HandleRtnDepthMarketData(static_cast<RtnDepthMarketDataPackage*>(package));
 		return true;
 	}
 	case RtnBarMarketDataPackage::PackageID:
 	{
-		HandleRtnBarMarketData((RtnBarMarketDataPackage*)package);
+		HandleRtnBarMarketData(static_cast<RtnBarMarketDataPackage*>(package));
 		return true;
 	}
 	case NotifyDisConnectPackage::PackageID:
 	{
-		HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
+		HandleNotifyDisConnect(static_cast<NotifyDisConnectPackage*>(package));
 		return true;
 	}
 	case ReqAccountLoginPackage::PackageID:
 	{
-		auto reqPackage = (ReqAccountLoginPackage*)package;
+		auto reqPackage = static_cast<ReqAccountLoginPackage*>(package);
 		if (reqPackage->ReqAccountLogin == nullptr)
 		{
 			ReplyPackageParseFailed<RspAccountLoginPackage>(m_TradeFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -51,7 +52,7 @@ bool SimExchange::DispatchPackage(Package* package)
 	}
 	case ReqAccountLogoutPackage::PackageID:
 	{
-		auto reqPackage = (ReqAccountLogoutPackage*)package;
+		auto reqPackage = static_cast<ReqAccountLogoutPackage*>(package);
 		if (reqPackage->ReqAccountLogout == nullptr)
 		{
 			ReplyPackageParseFailed<RspAccountLogoutPackage>(m_TradeFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -62,7 +63,7 @@ bool SimExchange::DispatchPackage(Package* package)
 	}
 	case ReqInsertOrderPackage::PackageID:
 	{
-		auto reqPackage = (ReqInsertOrderPackage*)package;
+		auto reqPackage = static_cast<ReqInsertOrderPackage*>(package);
 		if (reqPackage->ReqInsertOrder == nullptr)
 		{
 			ReplyPackageParseFailed<RspInsertOrderPackage>(m_TradeFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -73,7 +74,7 @@ bool SimExchange::DispatchPackage(Package* package)
 	}
 	case ReqCancelOrderPackage::PackageID:
 	{
-		auto reqPackage = (ReqCancelOrderPackage*)package;
+		auto reqPackage = static_cast<ReqCancelOrderPackage*>(package);
 		if (reqPackage->ReqCancelOrder == nullptr)
 		{
 			ReplyPackageParseFailed<RspCancelOrderPackage>(m_TradeFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -84,7 +85,7 @@ bool SimExchange::DispatchPackage(Package* package)
 	}
 	case ReqQryOrderPackage::PackageID:
 	{
-		auto reqPackage = (ReqQryOrderPackage*)package;
+		auto reqPackage = static_cast<ReqQryOrderPackage*>(package);
 		if (reqPackage->ReqQryOrder == nullptr)
 		{
 			ReplyPackageParseFailed<RspQryOrderPackage>(m_TradeFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -95,7 +96,7 @@ bool SimExchange::DispatchPackage(Package* package)
 	}
 	case ReqQryTradePackage::PackageID:
 	{
-		auto reqPackage = (ReqQryTradePackage*)package;
+		auto reqPackage = static_cast<ReqQryTradePackage*>(package);
 		if (reqPackage->ReqQryTrade == nullptr)
 		{
 			ReplyPackageParseFailed<RspQryTradePackage>(m_TradeFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -106,7 +107,7 @@ bool SimExchange::DispatchPackage(Package* package)
 	}
 	case ReqQryInstrumentPackage::PackageID:
 	{
-		auto reqPackage = (ReqQryInstrumentPackage*)package;
+		auto reqPackage = static_cast<ReqQryInstrumentPackage*>(package);
 		if (reqPackage->ReqQryInstrument == nullptr)
 		{
 			ReplyPackageParseFailed<RspQryInstrumentPackage>(m_TradeFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);

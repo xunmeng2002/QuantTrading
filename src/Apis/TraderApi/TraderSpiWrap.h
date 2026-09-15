@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/Api/SpiWrap.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include <QuantTrading/TraderCApi.h>
 #include <QuantTrading/TraderApi.h>
 
@@ -31,6 +32,6 @@ public:
 	virtual void OnRtnAccountLogout(const AccountLogoutField* accountLogout) override;
 
 private:
-	TraderCSpi* m_TraderCSpi = nullptr;
+	TraderCSpi* traderCSpi = nullptr;
 };
 }

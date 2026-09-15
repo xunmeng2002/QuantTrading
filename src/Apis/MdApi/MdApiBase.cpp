@@ -1,4 +1,5 @@
-﻿#include "MdApiBase.h"
+﻿// 本文件由 ../Templates/Cpp/Api/ApiBase.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "MdApiBase.h"
 #include "QuantTrading/Version.h"
 
 namespace quanttrading
@@ -9,27 +10,27 @@ const char* MdApi::GetApiVersion()
 }
 
 MdApiBase::MdApiBase()
-	:ApiBase("MdApi"), m_MdSpi(nullptr), m_SessionID(0)
+	:ApiBase("MdApi"), mdSpi(nullptr), sessionID(0)
 {
 }
 MdApiBase::~MdApiBase()
 {
 }
 
-void MdApiBase::OnProtocolConnect(SessionIDType sessionID, const char* ip, int port)
+void MdApiBase::OnProtocolConnect(SessionIDType newSessionID, const char* ip, int port)
 {
-	m_SessionID = sessionID;
-	if (m_MdSpi != nullptr)
+	sessionID = newSessionID;
+	if (mdSpi != nullptr)
 	{
-		m_MdSpi->OnConnected();
+		mdSpi->OnConnected();
 	}
 }
-void MdApiBase::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port)
+void MdApiBase::OnProtocolDisConnect(SessionIDType newSessionID, const char* ip, int port)
 {
-	m_SessionID = -1;
-	if (m_MdSpi != nullptr)
+	sessionID = -1;
+	if (mdSpi != nullptr)
 	{
-		m_MdSpi->OnDisConnected();
+		mdSpi->OnDisConnected();
 	}
 }
 
@@ -53,6 +54,6 @@ void MdApiBase::RegisterFront(const char* address)
 }
 void MdApiBase::RegisterSpi(MdSpi* spi)
 {
-	m_MdSpi = spi;
+	mdSpi = spi;
 }
 }

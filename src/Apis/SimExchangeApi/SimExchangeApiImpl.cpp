@@ -1,4 +1,5 @@
-﻿#include "SimExchangeApiImpl.h"
+﻿// 本文件由 ../Templates/Cpp/Api/ApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "SimExchangeApiImpl.h"
 #include "Error.h"
 #include "Packages.h"
 #include <Spark/Network/Protocol/Items.h>
@@ -22,47 +23,47 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 	{
 	case RspAccountLoginPackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRspAccountLogin(((RspAccountLoginPackage*)package)->RspAccountLogin, ((RspAccountLoginPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi->OnRspAccountLogin(static_cast<RspAccountLoginPackage*>(package)->RspAccountLogin, static_cast<RspAccountLoginPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspAccountLogoutPackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRspAccountLogout(((RspAccountLogoutPackage*)package)->RspAccountLogout, ((RspAccountLogoutPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi->OnRspAccountLogout(static_cast<RspAccountLogoutPackage*>(package)->RspAccountLogout, static_cast<RspAccountLogoutPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryOrderPackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRspQryOrder(((RspQryOrderPackage*)package)->Order, ((RspQryOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi->OnRspQryOrder(static_cast<RspQryOrderPackage*>(package)->Order, static_cast<RspQryOrderPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryTradePackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRspQryTrade(((RspQryTradePackage*)package)->Trade, ((RspQryTradePackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi->OnRspQryTrade(static_cast<RspQryTradePackage*>(package)->Trade, static_cast<RspQryTradePackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryInstrumentPackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRspQryInstrument(((RspQryInstrumentPackage*)package)->Instrument, ((RspQryInstrumentPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi->OnRspQryInstrument(static_cast<RspQryInstrumentPackage*>(package)->Instrument, static_cast<RspQryInstrumentPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspInsertOrderPackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRspInsertOrder(((RspInsertOrderPackage*)package)->ReqInsertOrder, ((RspInsertOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi->OnRspInsertOrder(static_cast<RspInsertOrderPackage*>(package)->ReqInsertOrder, static_cast<RspInsertOrderPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspCancelOrderPackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRspCancelOrder(((RspCancelOrderPackage*)package)->ReqCancelOrder, ((RspCancelOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi->OnRspCancelOrder(static_cast<RspCancelOrderPackage*>(package)->ReqCancelOrder, static_cast<RspCancelOrderPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RtnOrderPackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRtnOrder(((RtnOrderPackage*)package)->Order);
+		simExchangeSpi->OnRtnOrder(static_cast<RtnOrderPackage*>(package)->Order);
 		break;
 	}
 	case RtnTradePackage::PackageID:
 	{
-		m_SimExchangeSpi->OnRtnTrade(((RtnTradePackage*)package)->Trade);
+		simExchangeSpi->OnRtnTrade(static_cast<RtnTradePackage*>(package)->Trade);
 		break;
 	}
 	default:
@@ -75,7 +76,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 int SimExchangeApiImpl::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
 {
 	ReqAccountLoginPackage* reqPackage = ReqAccountLoginPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqAccountLogin = Allocate<ReqAccountLoginField>();
 	memcpy(reqPackage->ReqAccountLogin, reqAccountLogin, sizeof(ReqAccountLoginField));
 	
@@ -86,7 +87,7 @@ int SimExchangeApiImpl::ReqAccountLogin(const ReqAccountLoginField* reqAccountLo
 int SimExchangeApiImpl::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
 {
 	ReqAccountLogoutPackage* reqPackage = ReqAccountLogoutPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqAccountLogout = Allocate<ReqAccountLogoutField>();
 	memcpy(reqPackage->ReqAccountLogout, reqAccountLogout, sizeof(ReqAccountLogoutField));
 	
@@ -97,7 +98,7 @@ int SimExchangeApiImpl::ReqAccountLogout(const ReqAccountLogoutField* reqAccount
 int SimExchangeApiImpl::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
 {
 	ReqQryOrderPackage* reqPackage = ReqQryOrderPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryOrder = Allocate<ReqQryOrderField>();
 	memcpy(reqPackage->ReqQryOrder, reqQryOrder, sizeof(ReqQryOrderField));
 	
@@ -108,7 +109,7 @@ int SimExchangeApiImpl::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int req
 int SimExchangeApiImpl::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
 {
 	ReqQryTradePackage* reqPackage = ReqQryTradePackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryTrade = Allocate<ReqQryTradeField>();
 	memcpy(reqPackage->ReqQryTrade, reqQryTrade, sizeof(ReqQryTradeField));
 	
@@ -119,7 +120,7 @@ int SimExchangeApiImpl::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int req
 int SimExchangeApiImpl::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
 {
 	ReqQryInstrumentPackage* reqPackage = ReqQryInstrumentPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryInstrument = Allocate<ReqQryInstrumentField>();
 	memcpy(reqPackage->ReqQryInstrument, reqQryInstrument, sizeof(ReqQryInstrumentField));
 	
@@ -130,7 +131,7 @@ int SimExchangeApiImpl::ReqQryInstrument(const ReqQryInstrumentField* reqQryInst
 int SimExchangeApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	ReqInsertOrderPackage* reqPackage = ReqInsertOrderPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqInsertOrder = Allocate<ReqInsertOrderField>();
 	memcpy(reqPackage->ReqInsertOrder, reqInsertOrder, sizeof(ReqInsertOrderField));
 	
@@ -141,7 +142,7 @@ int SimExchangeApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder
 int SimExchangeApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	ReqCancelOrderPackage* reqPackage = ReqCancelOrderPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqCancelOrder = Allocate<ReqCancelOrderField>();
 	memcpy(reqPackage->ReqCancelOrder, reqCancelOrder, sizeof(ReqCancelOrderField));
 	

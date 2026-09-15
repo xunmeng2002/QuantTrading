@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/Api/ApiBase.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include "ApiBase.h"
 #include <QuantTrading/TraderApi.h>
 #include <Spark/Network/Protocol/Protocol.h>
@@ -13,8 +14,8 @@ public:
 	virtual ~TraderApiBase();
 
 	//override for ProtocolSubscriber
-	virtual void OnProtocolConnect(SessionIDType sessionID, const char* ip, int port) override;
-	virtual void OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port) override;
+	virtual void OnProtocolConnect(SessionIDType newSessionID, const char* ip, int port) override;
+	virtual void OnProtocolDisConnect(SessionIDType newSessionID, const char* ip, int port) override;
 
 	//override for TraderApi
 	virtual bool Init() override;
@@ -25,8 +26,8 @@ public:
 
 
 protected:
-	TraderSpi* m_TraderSpi;
-	SessionIDType m_SessionID;
+	TraderSpi* traderSpi;
+	SessionIDType sessionID;
 };
 }
 

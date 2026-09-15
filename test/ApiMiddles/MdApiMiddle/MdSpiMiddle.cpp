@@ -1,4 +1,5 @@
-﻿#include "MdSpiMiddle.h"
+﻿// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "MdSpiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
 using namespace spark::core;
@@ -131,7 +132,7 @@ void MdSpiMiddle::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 	if (barMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "BarMarketDataField:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]",
-			barMarketData->TradingDay, barMarketData->ExchangeID, barMarketData->InstrumentID, (int)barMarketData->BarPreces, barMarketData->BarPeriod, barMarketData->BarTime, barMarketData->UpdateTs, GetDoubleValue(barMarketData->PreSettlementPrice), GetDoubleValue(barMarketData->PreClosePrice), GetDoubleValue(barMarketData->HighestPrice), GetDoubleValue(barMarketData->LowestPrice), GetDoubleValue(barMarketData->Open), GetDoubleValue(barMarketData->High), GetDoubleValue(barMarketData->Low), GetDoubleValue(barMarketData->Close), barMarketData->CurrVolume, barMarketData->Volume, GetDoubleValue(barMarketData->CurrTurnover), GetDoubleValue(barMarketData->Turnover), GetDoubleValue(barMarketData->OpenInterest));
+			barMarketData->TradingDay, barMarketData->ExchangeID, barMarketData->InstrumentID, static_cast<int>(barMarketData->BarPreces), barMarketData->BarPeriod, barMarketData->BarTime, barMarketData->UpdateTs, GetDoubleValue(barMarketData->PreSettlementPrice), GetDoubleValue(barMarketData->PreClosePrice), GetDoubleValue(barMarketData->HighestPrice), GetDoubleValue(barMarketData->LowestPrice), GetDoubleValue(barMarketData->Open), GetDoubleValue(barMarketData->High), GetDoubleValue(barMarketData->Low), GetDoubleValue(barMarketData->Close), barMarketData->CurrVolume, barMarketData->Volume, GetDoubleValue(barMarketData->CurrTurnover), GetDoubleValue(barMarketData->Turnover), GetDoubleValue(barMarketData->OpenInterest));
 	}
 	else
 	{

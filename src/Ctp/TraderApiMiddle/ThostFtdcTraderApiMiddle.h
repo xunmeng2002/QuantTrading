@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/LibTest/CtpWrapper/ApiMiddle.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include <ThostFtdcTraderApi.h>
 
 
@@ -139,5 +140,5 @@ public:
 	virtual int ReqQryOffsetSetting(CThostFtdcQryOffsetSettingField *pQryOffsetSetting, int nRequestID) override;
 
 private:
-	CThostFtdcTraderApi* m_TraderApi;
+	CThostFtdcTraderApi* traderApi;
 };

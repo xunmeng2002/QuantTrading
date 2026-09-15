@@ -1,8 +1,11 @@
-﻿#include "Packages.h"
+﻿// 本文件由 ../Templates/Cpp/Protocol/Packages/Packages.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "Packages.h"
 #include <Spark/Network/Protocol/Items.h>
 #include <Spark/Network/Protocol/StepUtility.h>
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
+#include <cstdarg>
+#include <cstdio>
 #include <cstring>
 
 using namespace spark;
@@ -11,7 +14,31 @@ using namespace spark::network;
 
 namespace quanttrading::packages
 {
-thread_local char t_DataStringBuffer[10240];
+thread_local char DataStringBuffer[10240];
+
+[[maybe_unused]] static int AppendDebugString(int offset, const char* format, ...)
+{
+	const int bufferSize = static_cast<int>(sizeof(DataStringBuffer));
+	if (offset < 0)
+	{
+		offset = 0;
+	}
+	if (offset >= bufferSize - 1)
+	{
+		return bufferSize - 1;
+	}
+	va_list args;
+	va_start(args, format);
+	const int written = vsnprintf(DataStringBuffer + offset,
+		static_cast<size_t>(bufferSize - offset), format, args);
+	va_end(args);
+	if (written < 0)
+	{
+		return offset;
+	}
+	const int next = offset + written;
+	return next < bufferSize ? next : bufferSize - 1;
+}
  
 NotifyConnectPackage::NotifyConnectPackage()
 	:NotifyConnect(nullptr)
@@ -176,9 +203,9 @@ const char* NotifyConnectPackage::GetDebugString() const
 	int offset = 0;
 	if (NotifyConnect != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "NotifyConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyConnect->SessionID, NotifyConnect->IPAddress, NotifyConnect->Port);
+		offset = AppendDebugString(offset, "NotifyConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyConnect->SessionID, NotifyConnect->IPAddress, NotifyConnect->Port);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 NotifyDisConnectPackage::NotifyDisConnectPackage()
@@ -344,9 +371,9 @@ const char* NotifyDisConnectPackage::GetDebugString() const
 	int offset = 0;
 	if (NotifyDisConnect != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "NotifyDisConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyDisConnect->SessionID, NotifyDisConnect->IPAddress, NotifyDisConnect->Port);
+		offset = AppendDebugString(offset, "NotifyDisConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyDisConnect->SessionID, NotifyDisConnect->IPAddress, NotifyDisConnect->Port);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 NotifyDBConnectPackage::NotifyDBConnectPackage()
@@ -500,9 +527,9 @@ const char* NotifyDBConnectPackage::GetDebugString() const
 	int offset = 0;
 	if (NotifyDBConnect != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "NotifyDBConnect:DBName:[%s]", NotifyDBConnect->DBName);
+		offset = AppendDebugString(offset, "NotifyDBConnect:DBName:[%s]", NotifyDBConnect->DBName);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 NotifyDBDisConnectPackage::NotifyDBDisConnectPackage()
@@ -656,9 +683,9 @@ const char* NotifyDBDisConnectPackage::GetDebugString() const
 	int offset = 0;
 	if (NotifyDBDisConnect != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "NotifyDBDisConnect:DBName:[%s]", NotifyDBDisConnect->DBName);
+		offset = AppendDebugString(offset, "NotifyDBDisConnect:DBName:[%s]", NotifyDBDisConnect->DBName);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqMdUserLoginPackage::ReqMdUserLoginPackage()
@@ -823,9 +850,9 @@ const char* ReqMdUserLoginPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqMdUserLogin != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]", ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
+		offset = AppendDebugString(offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]", ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspMdUserLoginPackage::RspMdUserLoginPackage()
@@ -1083,13 +1110,13 @@ const char* RspMdUserLoginPackage::GetDebugString() const
 	int offset = 0;
 	if (RspMdUserLogin != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
+		offset = AppendDebugString(offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqMdUserLogoutPackage::ReqMdUserLogoutPackage()
@@ -1243,9 +1270,9 @@ const char* ReqMdUserLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqMdUserLogout != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqMdUserLogout:UserID:[%s]", ReqMdUserLogout->UserID);
+		offset = AppendDebugString(offset, "ReqMdUserLogout:UserID:[%s]", ReqMdUserLogout->UserID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspMdUserLogoutPackage::RspMdUserLogoutPackage()
@@ -1475,13 +1502,13 @@ const char* RspMdUserLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (RspMdUserLogout != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspMdUserLogout:UserID:[%s]", RspMdUserLogout->UserID);
+		offset = AppendDebugString(offset, "RspMdUserLogout:UserID:[%s]", RspMdUserLogout->UserID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqSubMarketDataPackage::ReqSubMarketDataPackage()
@@ -1658,9 +1685,9 @@ const char* ReqSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqSubMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID, static_cast<int>(ReqSubMarketData->BarPreces), ReqSubMarketData->BarPeriod);
+		offset = AppendDebugString(offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID, static_cast<int>(ReqSubMarketData->BarPreces), ReqSubMarketData->BarPeriod);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspSubMarketDataPackage::RspSubMarketDataPackage()
@@ -1901,13 +1928,13 @@ const char* RspSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (RspSubMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
+		offset = AppendDebugString(offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqUnSubMarketDataPackage::ReqUnSubMarketDataPackage()
@@ -2072,9 +2099,9 @@ const char* ReqUnSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqUnSubMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
+		offset = AppendDebugString(offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspUnSubMarketDataPackage::RspUnSubMarketDataPackage()
@@ -2315,13 +2342,13 @@ const char* RspUnSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (RspUnSubMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
+		offset = AppendDebugString(offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqSubMarketDataFinishedPackage::ReqSubMarketDataFinishedPackage()
@@ -2470,9 +2497,9 @@ const char* ReqSubMarketDataFinishedPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqSubMarketDataFinished != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqSubMarketDataFinished:SessionID:[%lld]", ReqSubMarketDataFinished->SessionID);
+		offset = AppendDebugString(offset, "ReqSubMarketDataFinished:SessionID:[%lld]", ReqSubMarketDataFinished->SessionID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnDepthMarketDataPackage::RtnDepthMarketDataPackage()
@@ -2996,9 +3023,9 @@ const char* RtnDepthMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (DepthMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], UpdateTs:[%lld], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%f], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]", DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->UpdateTs, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
+		offset = AppendDebugString(offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], UpdateTs:[%lld], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%f], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]", DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->UpdateTs, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnBarMarketDataPackage::RtnBarMarketDataPackage()
@@ -3276,9 +3303,9 @@ const char* RtnBarMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (BarMarketData != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, static_cast<int>(BarMarketData->BarPreces), BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->PreSettlementPrice, BarMarketData->PreClosePrice, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+		offset = AppendDebugString(offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, static_cast<int>(BarMarketData->BarPreces), BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->PreSettlementPrice, BarMarketData->PreClosePrice, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnSessionBeginPackage::RtnSessionBeginPackage()
@@ -3432,9 +3459,9 @@ const char* RtnSessionBeginPackage::GetDebugString() const
 	int offset = 0;
 	if (SessionBegin != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "SessionBegin:TradingDay:[%s]", SessionBegin->TradingDay);
+		offset = AppendDebugString(offset, "SessionBegin:TradingDay:[%s]", SessionBegin->TradingDay);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnSessionEndPackage::RtnSessionEndPackage()
@@ -3588,9 +3615,9 @@ const char* RtnSessionEndPackage::GetDebugString() const
 	int offset = 0;
 	if (SessionEnd != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "SessionEnd:TradingDay:[%s]", SessionEnd->TradingDay);
+		offset = AppendDebugString(offset, "SessionEnd:TradingDay:[%s]", SessionEnd->TradingDay);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnMarketDataEndPackage::RtnMarketDataEndPackage()
@@ -3744,9 +3771,9 @@ const char* RtnMarketDataEndPackage::GetDebugString() const
 	int offset = 0;
 	if (MarketDataEnd != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "MarketDataEnd:TradingDay:[%s]", MarketDataEnd->TradingDay);
+		offset = AppendDebugString(offset, "MarketDataEnd:TradingDay:[%s]", MarketDataEnd->TradingDay);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqRegisterAccountPackage::ReqRegisterAccountPackage()
@@ -3900,9 +3927,9 @@ const char* ReqRegisterAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqRegisterAccount != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqRegisterAccount:AccountID:[%s]", ReqRegisterAccount->AccountID);
+		offset = AppendDebugString(offset, "ReqRegisterAccount:AccountID:[%s]", ReqRegisterAccount->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspRegisterAccountPackage::RspRegisterAccountPackage()
@@ -4132,13 +4159,13 @@ const char* RspRegisterAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (RspRegisterAccount != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspRegisterAccount:AccountID:[%s]", RspRegisterAccount->AccountID);
+		offset = AppendDebugString(offset, "RspRegisterAccount:AccountID:[%s]", RspRegisterAccount->AccountID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqAccountLoginPackage::ReqAccountLoginPackage()
@@ -4303,9 +4330,9 @@ const char* ReqAccountLoginPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqAccountLogin != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogin:AccountID:[%s], Password:[%s]", ReqAccountLogin->AccountID, ReqAccountLogin->Password);
+		offset = AppendDebugString(offset, "ReqAccountLogin:AccountID:[%s], Password:[%s]", ReqAccountLogin->AccountID, ReqAccountLogin->Password);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspAccountLoginPackage::RspAccountLoginPackage()
@@ -4563,13 +4590,13 @@ const char* RspAccountLoginPackage::GetDebugString() const
 	int offset = 0;
 	if (RspAccountLogin != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogin:AccountID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspAccountLogin->AccountID, RspAccountLogin->LoginDate, RspAccountLogin->LoginTime, RspAccountLogin->SessionID);
+		offset = AppendDebugString(offset, "RspAccountLogin:AccountID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspAccountLogin->AccountID, RspAccountLogin->LoginDate, RspAccountLogin->LoginTime, RspAccountLogin->SessionID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqAccountLogoutPackage::ReqAccountLogoutPackage()
@@ -4723,9 +4750,9 @@ const char* ReqAccountLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqAccountLogout != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqAccountLogout:AccountID:[%s]", ReqAccountLogout->AccountID);
+		offset = AppendDebugString(offset, "ReqAccountLogout:AccountID:[%s]", ReqAccountLogout->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspAccountLogoutPackage::RspAccountLogoutPackage()
@@ -4955,13 +4982,13 @@ const char* RspAccountLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (RspAccountLogout != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspAccountLogout:AccountID:[%s]", RspAccountLogout->AccountID);
+		offset = AppendDebugString(offset, "RspAccountLogout:AccountID:[%s]", RspAccountLogout->AccountID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryAccountPackage::ReqQryAccountPackage()
@@ -5115,9 +5142,9 @@ const char* ReqQryAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryAccount != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryAccount:AccountID:[%s]", ReqQryAccount->AccountID);
+		offset = AppendDebugString(offset, "ReqQryAccount:AccountID:[%s]", ReqQryAccount->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryAccountPackage::RspQryAccountPackage()
@@ -5377,13 +5404,13 @@ const char* RspQryAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (Account != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]", Account->AccountID, static_cast<int>(Account->AccountType), static_cast<int>(Account->AccountStatus), Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
+		offset = AppendDebugString(offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]", Account->AccountID, static_cast<int>(Account->AccountType), static_cast<int>(Account->AccountStatus), Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryHolderAccountPackage::ReqQryHolderAccountPackage()
@@ -5537,9 +5564,9 @@ const char* ReqQryHolderAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryHolderAccount != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryHolderAccount:AccountID:[%s]", ReqQryHolderAccount->AccountID);
+		offset = AppendDebugString(offset, "ReqQryHolderAccount:AccountID:[%s]", ReqQryHolderAccount->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryHolderAccountPackage::RspQryHolderAccountPackage()
@@ -5786,13 +5813,13 @@ const char* RspQryHolderAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (HolderAccount != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "HolderAccount:ExchangeID:[%s], HolderAccountID:[%s], PrimaryFlag:[%d]", HolderAccount->ExchangeID, HolderAccount->HolderAccountID, HolderAccount->PrimaryFlag);
+		offset = AppendDebugString(offset, "HolderAccount:ExchangeID:[%s], HolderAccountID:[%s], PrimaryFlag:[%d]", HolderAccount->ExchangeID, HolderAccount->HolderAccountID, HolderAccount->PrimaryFlag);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryCapitalPackage::ReqQryCapitalPackage()
@@ -5946,9 +5973,9 @@ const char* ReqQryCapitalPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryCapital != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryCapital:AccountID:[%s]", ReqQryCapital->AccountID);
+		offset = AppendDebugString(offset, "ReqQryCapital:AccountID:[%s]", ReqQryCapital->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryCapitalPackage::RspQryCapitalPackage()
@@ -6297,13 +6324,13 @@ const char* RspQryCapitalPackage::GetDebugString() const
 	int offset = 0;
 	if (Capital != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountID, static_cast<int>(Capital->AccountType), Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
+		offset = AppendDebugString(offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountID, static_cast<int>(Capital->AccountType), Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryPositionPackage::ReqQryPositionPackage()
@@ -6457,9 +6484,9 @@ const char* ReqQryPositionPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryPosition != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryPosition:AccountID:[%s]", ReqQryPosition->AccountID);
+		offset = AppendDebugString(offset, "ReqQryPosition:AccountID:[%s]", ReqQryPosition->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryPositionPackage::RspQryPositionPackage()
@@ -6830,13 +6857,13 @@ const char* RspQryPositionPackage::GetDebugString() const
 	int offset = 0;
 	if (Position != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountID, static_cast<int>(Position->AccountType), Position->ExchangeID, Position->InstrumentID, static_cast<int>(Position->ProductClass), static_cast<int>(Position->PosiDirection), Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
+		offset = AppendDebugString(offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountID, static_cast<int>(Position->AccountType), Position->ExchangeID, Position->InstrumentID, static_cast<int>(Position->ProductClass), static_cast<int>(Position->PosiDirection), Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryOrderPackage::ReqQryOrderPackage()
@@ -6990,9 +7017,9 @@ const char* ReqQryOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryOrder != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryOrder:AccountID:[%s]", ReqQryOrder->AccountID);
+		offset = AppendDebugString(offset, "ReqQryOrder:AccountID:[%s]", ReqQryOrder->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryOrderPackage::RspQryOrderPackage()
@@ -7412,13 +7439,13 @@ const char* RspQryOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (Order != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, static_cast<int>(Order->ProductClass), Order->OrderID, Order->OrderSysID, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+		offset = AppendDebugString(offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, static_cast<int>(Order->ProductClass), Order->OrderID, Order->OrderSysID, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryTradePackage::ReqQryTradePackage()
@@ -7572,9 +7599,9 @@ const char* ReqQryTradePackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryTrade != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryTrade:AccountID:[%s]", ReqQryTrade->AccountID);
+		offset = AppendDebugString(offset, "ReqQryTrade:AccountID:[%s]", ReqQryTrade->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryTradePackage::RspQryTradePackage()
@@ -7935,13 +7962,13 @@ const char* RspQryTradePackage::GetDebugString() const
 	int offset = 0;
 	if (Trade != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, static_cast<int>(Trade->ProductClass), Trade->OrderID, Trade->OrderSysID, Trade->TradeID, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+		offset = AppendDebugString(offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, static_cast<int>(Trade->ProductClass), Trade->OrderID, Trade->OrderSysID, Trade->TradeID, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryInstrumentPackage::ReqQryInstrumentPackage()
@@ -8106,9 +8133,9 @@ const char* ReqQryInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryInstrument != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryInstrument->ExchangeID, ReqQryInstrument->InstrumentID);
+		offset = AppendDebugString(offset, "ReqQryInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryInstrument->ExchangeID, ReqQryInstrument->InstrumentID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryInstrumentPackage::RspQryInstrumentPackage()
@@ -8435,13 +8462,13 @@ const char* RspQryInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (Instrument != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->ProductID, static_cast<int>(Instrument->ProductClass), Instrument->VolumeMultiple, Instrument->PriceTick, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->SessionName);
+		offset = AppendDebugString(offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->ProductID, static_cast<int>(Instrument->ProductClass), Instrument->VolumeMultiple, Instrument->PriceTick, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->SessionName);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryOptionInstrumentPackage::ReqQryOptionInstrumentPackage()
@@ -8606,9 +8633,9 @@ const char* ReqQryOptionInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryOptionInstrument != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryOptionInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryOptionInstrument->ExchangeID, ReqQryOptionInstrument->InstrumentID);
+		offset = AppendDebugString(offset, "ReqQryOptionInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryOptionInstrument->ExchangeID, ReqQryOptionInstrument->InstrumentID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryOptionInstrumentPackage::RspQryOptionInstrumentPackage()
@@ -8935,13 +8962,13 @@ const char* RspQryOptionInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (OptionInstrument != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, static_cast<int>(OptionInstrument->OptionType), OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
+		offset = AppendDebugString(offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, static_cast<int>(OptionInstrument->OptionType), OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryCommissionRatePackage::ReqQryCommissionRatePackage()
@@ -9112,9 +9139,9 @@ const char* ReqQryCommissionRatePackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryCommissionRate != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, static_cast<int>(ReqQryCommissionRate->ProductClass));
+		offset = AppendDebugString(offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, static_cast<int>(ReqQryCommissionRate->ProductClass));
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryCommissionRatePackage::RspQryCommissionRatePackage()
@@ -9421,13 +9448,13 @@ const char* RspQryCommissionRatePackage::GetDebugString() const
 	int offset = 0;
 	if (CommissionRate != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountID, CommissionRate->ExchangeID, static_cast<int>(CommissionRate->ProductClass), CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
+		offset = AppendDebugString(offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountID, CommissionRate->ExchangeID, static_cast<int>(CommissionRate->ProductClass), CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqQryMoneyTransferPackage::ReqQryMoneyTransferPackage()
@@ -9581,9 +9608,9 @@ const char* ReqQryMoneyTransferPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryMoneyTransfer != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqQryMoneyTransfer:AccountID:[%s]", ReqQryMoneyTransfer->AccountID);
+		offset = AppendDebugString(offset, "ReqQryMoneyTransfer:AccountID:[%s]", ReqQryMoneyTransfer->AccountID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspQryMoneyTransferPackage::RspQryMoneyTransferPackage()
@@ -9892,13 +9919,13 @@ const char* RspQryMoneyTransferPackage::GetDebugString() const
 	int offset = 0;
 	if (MoneyTransfer != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+		offset = AppendDebugString(offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqInsertOrderPackage::ReqInsertOrderPackage()
@@ -10110,9 +10137,9 @@ const char* ReqInsertOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqInsertOrder != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+		offset = AppendDebugString(offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspInsertOrderPackage::RspInsertOrderPackage()
@@ -10400,13 +10427,13 @@ const char* RspInsertOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqInsertOrder != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+		offset = AppendDebugString(offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 ReqCancelOrderPackage::ReqCancelOrderPackage()
@@ -10617,9 +10644,9 @@ const char* ReqCancelOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqCancelOrder != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+		offset = AppendDebugString(offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RspCancelOrderPackage::RspCancelOrderPackage()
@@ -10906,13 +10933,13 @@ const char* RspCancelOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqCancelOrder != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+		offset = AppendDebugString(offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnOrderPackage::RtnOrderPackage()
@@ -11256,9 +11283,9 @@ const char* RtnOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (Order != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, static_cast<int>(Order->ProductClass), Order->OrderID, Order->OrderSysID, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+		offset = AppendDebugString(offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, static_cast<int>(Order->ProductClass), Order->OrderID, Order->OrderSysID, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnTradePackage::RtnTradePackage()
@@ -11543,9 +11570,9 @@ const char* RtnTradePackage::GetDebugString() const
 	int offset = 0;
 	if (Trade != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, static_cast<int>(Trade->ProductClass), Trade->OrderID, Trade->OrderSysID, Trade->TradeID, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+		offset = AppendDebugString(offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, static_cast<int>(Trade->ProductClass), Trade->OrderID, Trade->OrderSysID, Trade->TradeID, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnMoneyTransferPackage::RtnMoneyTransferPackage()
@@ -11778,9 +11805,9 @@ const char* RtnMoneyTransferPackage::GetDebugString() const
 	int offset = 0;
 	if (MoneyTransfer != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+		offset = AppendDebugString(offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
  
 RtnAccountLogoutPackage::RtnAccountLogoutPackage()
@@ -11951,8 +11978,8 @@ const char* RtnAccountLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (AccountLogout != nullptr)
 	{
-		offset += sprintf(t_DataStringBuffer + offset, "AccountLogout:AccountID:[%s], ErrorID:[%d], ErrorMsg:[%s]", AccountLogout->AccountID, AccountLogout->ErrorID, AccountLogout->ErrorMsg);
+		offset = AppendDebugString(offset, "AccountLogout:AccountID:[%s], ErrorID:[%d], ErrorMsg:[%s]", AccountLogout->AccountID, AccountLogout->ErrorID, AccountLogout->ErrorMsg);
 	}
-	return t_DataStringBuffer;
+	return DataStringBuffer;
 }
 }

@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include <QuantTrading/TraderApi.h>
 
 
@@ -30,6 +31,6 @@ public:
 	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) override;
 
 private:
-	TraderApi* m_TraderApi;
+	TraderApi* traderApi;
 };
 }

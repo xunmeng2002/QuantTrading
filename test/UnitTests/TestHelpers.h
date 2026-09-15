@@ -52,7 +52,7 @@ namespace quanttrading::unittest
         std::vector<Record*> records_;
     };
 
-    // 撮合订阅者：记录回调并按引擎契约把 newOrder 状态写回原 order（与 t_Order->Update 的 memcpy 语义一致）
+    // 撮合订阅者：记录回调并按引擎契约把 newOrder 状态写回原 order（与 order->Update 的 memcpy 语义一致）
     class RecordingOrderMatchSubscriber : public quanttrading::ordermatch::OrderMatchSubscriber
     {
     public:

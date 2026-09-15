@@ -1,4 +1,5 @@
-﻿#include "TraderApiImpl.h"
+﻿// 本文件由 ../Templates/Cpp/Api/ApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "TraderApiImpl.h"
 #include "Error.h"
 #include "Packages.h"
 #include <Spark/Network/Protocol/Items.h>
@@ -22,87 +23,87 @@ void TraderApiImpl::OnMessage(Package* package)
 	{
 	case RspAccountLoginPackage::PackageID:
 	{
-		m_TraderSpi->OnRspAccountLogin(((RspAccountLoginPackage*)package)->RspAccountLogin, ((RspAccountLoginPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspAccountLogin(static_cast<RspAccountLoginPackage*>(package)->RspAccountLogin, static_cast<RspAccountLoginPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspAccountLogoutPackage::PackageID:
 	{
-		m_TraderSpi->OnRspAccountLogout(((RspAccountLogoutPackage*)package)->RspAccountLogout, ((RspAccountLogoutPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspAccountLogout(static_cast<RspAccountLogoutPackage*>(package)->RspAccountLogout, static_cast<RspAccountLogoutPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryHolderAccountPackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryHolderAccount(((RspQryHolderAccountPackage*)package)->HolderAccount, ((RspQryHolderAccountPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryHolderAccount(static_cast<RspQryHolderAccountPackage*>(package)->HolderAccount, static_cast<RspQryHolderAccountPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryCapitalPackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryCapital(((RspQryCapitalPackage*)package)->Capital, ((RspQryCapitalPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryCapital(static_cast<RspQryCapitalPackage*>(package)->Capital, static_cast<RspQryCapitalPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryPositionPackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryPosition(((RspQryPositionPackage*)package)->Position, ((RspQryPositionPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryPosition(static_cast<RspQryPositionPackage*>(package)->Position, static_cast<RspQryPositionPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryOrderPackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryOrder(((RspQryOrderPackage*)package)->Order, ((RspQryOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryOrder(static_cast<RspQryOrderPackage*>(package)->Order, static_cast<RspQryOrderPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryTradePackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryTrade(((RspQryTradePackage*)package)->Trade, ((RspQryTradePackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryTrade(static_cast<RspQryTradePackage*>(package)->Trade, static_cast<RspQryTradePackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryInstrumentPackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryInstrument(((RspQryInstrumentPackage*)package)->Instrument, ((RspQryInstrumentPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryInstrument(static_cast<RspQryInstrumentPackage*>(package)->Instrument, static_cast<RspQryInstrumentPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryOptionInstrumentPackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryOptionInstrument(((RspQryOptionInstrumentPackage*)package)->OptionInstrument, ((RspQryOptionInstrumentPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryOptionInstrument(static_cast<RspQryOptionInstrumentPackage*>(package)->OptionInstrument, static_cast<RspQryOptionInstrumentPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryCommissionRatePackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryCommissionRate(((RspQryCommissionRatePackage*)package)->CommissionRate, ((RspQryCommissionRatePackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryCommissionRate(static_cast<RspQryCommissionRatePackage*>(package)->CommissionRate, static_cast<RspQryCommissionRatePackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryMoneyTransferPackage::PackageID:
 	{
-		m_TraderSpi->OnRspQryMoneyTransfer(((RspQryMoneyTransferPackage*)package)->MoneyTransfer, ((RspQryMoneyTransferPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspQryMoneyTransfer(static_cast<RspQryMoneyTransferPackage*>(package)->MoneyTransfer, static_cast<RspQryMoneyTransferPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspInsertOrderPackage::PackageID:
 	{
-		m_TraderSpi->OnRspInsertOrder(((RspInsertOrderPackage*)package)->ReqInsertOrder, ((RspInsertOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspInsertOrder(static_cast<RspInsertOrderPackage*>(package)->ReqInsertOrder, static_cast<RspInsertOrderPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspCancelOrderPackage::PackageID:
 	{
-		m_TraderSpi->OnRspCancelOrder(((RspCancelOrderPackage*)package)->ReqCancelOrder, ((RspCancelOrderPackage*)package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		traderSpi->OnRspCancelOrder(static_cast<RspCancelOrderPackage*>(package)->ReqCancelOrder, static_cast<RspCancelOrderPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RtnOrderPackage::PackageID:
 	{
-		m_TraderSpi->OnRtnOrder(((RtnOrderPackage*)package)->Order);
+		traderSpi->OnRtnOrder(static_cast<RtnOrderPackage*>(package)->Order);
 		break;
 	}
 	case RtnTradePackage::PackageID:
 	{
-		m_TraderSpi->OnRtnTrade(((RtnTradePackage*)package)->Trade);
+		traderSpi->OnRtnTrade(static_cast<RtnTradePackage*>(package)->Trade);
 		break;
 	}
 	case RtnMoneyTransferPackage::PackageID:
 	{
-		m_TraderSpi->OnRtnMoneyTransfer(((RtnMoneyTransferPackage*)package)->MoneyTransfer);
+		traderSpi->OnRtnMoneyTransfer(static_cast<RtnMoneyTransferPackage*>(package)->MoneyTransfer);
 		break;
 	}
 	case RtnAccountLogoutPackage::PackageID:
 	{
-		m_TraderSpi->OnRtnAccountLogout(((RtnAccountLogoutPackage*)package)->AccountLogout);
+		traderSpi->OnRtnAccountLogout(static_cast<RtnAccountLogoutPackage*>(package)->AccountLogout);
 		break;
 	}
 	default:
@@ -115,7 +116,7 @@ void TraderApiImpl::OnMessage(Package* package)
 int TraderApiImpl::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
 {
 	ReqAccountLoginPackage* reqPackage = ReqAccountLoginPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqAccountLogin = Allocate<ReqAccountLoginField>();
 	memcpy(reqPackage->ReqAccountLogin, reqAccountLogin, sizeof(ReqAccountLoginField));
 	
@@ -126,7 +127,7 @@ int TraderApiImpl::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, 
 int TraderApiImpl::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
 {
 	ReqAccountLogoutPackage* reqPackage = ReqAccountLogoutPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqAccountLogout = Allocate<ReqAccountLogoutField>();
 	memcpy(reqPackage->ReqAccountLogout, reqAccountLogout, sizeof(ReqAccountLogoutField));
 	
@@ -137,7 +138,7 @@ int TraderApiImpl::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogou
 int TraderApiImpl::ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryHolderAccount, int requestID)
 {
 	ReqQryHolderAccountPackage* reqPackage = ReqQryHolderAccountPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryHolderAccount = Allocate<ReqQryHolderAccountField>();
 	memcpy(reqPackage->ReqQryHolderAccount, reqQryHolderAccount, sizeof(ReqQryHolderAccountField));
 	
@@ -148,7 +149,7 @@ int TraderApiImpl::ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryHol
 int TraderApiImpl::ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int requestID)
 {
 	ReqQryCapitalPackage* reqPackage = ReqQryCapitalPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryCapital = Allocate<ReqQryCapitalField>();
 	memcpy(reqPackage->ReqQryCapital, reqQryCapital, sizeof(ReqQryCapitalField));
 	
@@ -159,7 +160,7 @@ int TraderApiImpl::ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int re
 int TraderApiImpl::ReqQryPosition(const ReqQryPositionField* reqQryPosition, int requestID)
 {
 	ReqQryPositionPackage* reqPackage = ReqQryPositionPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryPosition = Allocate<ReqQryPositionField>();
 	memcpy(reqPackage->ReqQryPosition, reqQryPosition, sizeof(ReqQryPositionField));
 	
@@ -170,7 +171,7 @@ int TraderApiImpl::ReqQryPosition(const ReqQryPositionField* reqQryPosition, int
 int TraderApiImpl::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
 {
 	ReqQryOrderPackage* reqPackage = ReqQryOrderPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryOrder = Allocate<ReqQryOrderField>();
 	memcpy(reqPackage->ReqQryOrder, reqQryOrder, sizeof(ReqQryOrderField));
 	
@@ -181,7 +182,7 @@ int TraderApiImpl::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestI
 int TraderApiImpl::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
 {
 	ReqQryTradePackage* reqPackage = ReqQryTradePackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryTrade = Allocate<ReqQryTradeField>();
 	memcpy(reqPackage->ReqQryTrade, reqQryTrade, sizeof(ReqQryTradeField));
 	
@@ -192,7 +193,7 @@ int TraderApiImpl::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestI
 int TraderApiImpl::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
 {
 	ReqQryInstrumentPackage* reqPackage = ReqQryInstrumentPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryInstrument = Allocate<ReqQryInstrumentField>();
 	memcpy(reqPackage->ReqQryInstrument, reqQryInstrument, sizeof(ReqQryInstrumentField));
 	
@@ -203,7 +204,7 @@ int TraderApiImpl::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrumen
 int TraderApiImpl::ReqQryOptionInstrument(const ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestID)
 {
 	ReqQryOptionInstrumentPackage* reqPackage = ReqQryOptionInstrumentPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryOptionInstrument = Allocate<ReqQryOptionInstrumentField>();
 	memcpy(reqPackage->ReqQryOptionInstrument, reqQryOptionInstrument, sizeof(ReqQryOptionInstrumentField));
 	
@@ -214,7 +215,7 @@ int TraderApiImpl::ReqQryOptionInstrument(const ReqQryOptionInstrumentField* req
 int TraderApiImpl::ReqQryCommissionRate(const ReqQryCommissionRateField* reqQryCommissionRate, int requestID)
 {
 	ReqQryCommissionRatePackage* reqPackage = ReqQryCommissionRatePackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryCommissionRate = Allocate<ReqQryCommissionRateField>();
 	memcpy(reqPackage->ReqQryCommissionRate, reqQryCommissionRate, sizeof(ReqQryCommissionRateField));
 	
@@ -225,7 +226,7 @@ int TraderApiImpl::ReqQryCommissionRate(const ReqQryCommissionRateField* reqQryC
 int TraderApiImpl::ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestID)
 {
 	ReqQryMoneyTransferPackage* reqPackage = ReqQryMoneyTransferPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqQryMoneyTransfer = Allocate<ReqQryMoneyTransferField>();
 	memcpy(reqPackage->ReqQryMoneyTransfer, reqQryMoneyTransfer, sizeof(ReqQryMoneyTransferField));
 	
@@ -236,7 +237,7 @@ int TraderApiImpl::ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryMon
 int TraderApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
 	ReqInsertOrderPackage* reqPackage = ReqInsertOrderPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqInsertOrder = Allocate<ReqInsertOrderField>();
 	memcpy(reqPackage->ReqInsertOrder, reqInsertOrder, sizeof(ReqInsertOrderField));
 	
@@ -247,7 +248,7 @@ int TraderApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int
 int TraderApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
 	ReqCancelOrderPackage* reqPackage = ReqCancelOrderPackage::Allocate();
-	reqPackage->Prepare(m_SessionID, false, requestID);
+	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqCancelOrder = Allocate<ReqCancelOrderField>();
 	memcpy(reqPackage->ReqCancelOrder, reqCancelOrder, sizeof(ReqCancelOrderField));
 	

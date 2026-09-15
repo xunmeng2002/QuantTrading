@@ -1,4 +1,5 @@
-﻿#include "BackTestApiMiddle.h"
+﻿// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "BackTestApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
 using namespace spark::core;
@@ -12,7 +13,7 @@ BackTestApiMiddle* BackTestApiMiddle::CreateBackTestApiMiddle()
 	
 	auto api = BackTestApi::CreateBackTestApi();
 	auto apiMiddle = new BackTestApiMiddle();
-	apiMiddle->m_BackTestApi = api;
+	apiMiddle->backTestApi = api;
 	
 	return apiMiddle;
 }
@@ -24,27 +25,27 @@ const char* BackTestApiMiddle::GetApiVersion()
 bool BackTestApiMiddle::Init()
 {
 	WriteLog(LogLevel::Info, "Init");
-	return m_BackTestApi->Init();
+	return backTestApi->Init();
 }
 void BackTestApiMiddle::Join()
 {
 	WriteLog(LogLevel::Info, "Join");
-	m_BackTestApi->Join();
+	backTestApi->Join();
 }
 void BackTestApiMiddle::Release()
 {
 	WriteLog(LogLevel::Info, "Release");
-	m_BackTestApi->Release();
+	backTestApi->Release();
 }
 void BackTestApiMiddle::RegisterFront(const char* address)
 {
 	WriteLog(LogLevel::Info, "RegisterFront:%s", address);
-	m_BackTestApi->RegisterFront(address);
+	backTestApi->RegisterFront(address);
 }
 void BackTestApiMiddle::RegisterSpi(BackTestSpi* pSpi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi");
-	m_BackTestApi->RegisterSpi(pSpi);
+	backTestApi->RegisterSpi(pSpi);
 }
 
 int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
@@ -53,13 +54,13 @@ int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarke
 	if (reqSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]",
-			reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID, (int)reqSubMarketData->BarPreces, reqSubMarketData->BarPeriod);
+			reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID, static_cast<int>(reqSubMarketData->BarPreces), reqSubMarketData->BarPeriod);
 	}
 	else
 	{
 		WriteLog(LogLevel::Info, "reqSubMarketData is nullptr");
 	}
-	return m_BackTestApi->ReqSubMarketData(reqSubMarketData, requestID);
+	return backTestApi->ReqSubMarketData(reqSubMarketData, requestID);
 }
 int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
 {
@@ -73,7 +74,7 @@ int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedFi
 	{
 		WriteLog(LogLevel::Info, "reqSubMarketDataFinished is nullptr");
 	}
-	return m_BackTestApi->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
+	return backTestApi->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
 }
 int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
 {
@@ -87,7 +88,7 @@ int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegi
 	{
 		WriteLog(LogLevel::Info, "reqRegisterAccount is nullptr");
 	}
-	return m_BackTestApi->ReqRegisterAccount(reqRegisterAccount, requestID);
+	return backTestApi->ReqRegisterAccount(reqRegisterAccount, requestID);
 }
 int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
@@ -95,13 +96,13 @@ int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder,
 	if (reqInsertOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]",
-			reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, (int)reqInsertOrder->Direction, (int)reqInsertOrder->OffsetFlag, (int)reqInsertOrder->OrderPriceType, reqInsertOrder->Price, reqInsertOrder->Volume, reqInsertOrder->ClientOrderID);
+			reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, static_cast<int>(reqInsertOrder->Direction), static_cast<int>(reqInsertOrder->OffsetFlag), static_cast<int>(reqInsertOrder->OrderPriceType), reqInsertOrder->Price, reqInsertOrder->Volume, reqInsertOrder->ClientOrderID);
 	}
 	else
 	{
 		WriteLog(LogLevel::Info, "reqInsertOrder is nullptr");
 	}
-	return m_BackTestApi->ReqInsertOrder(reqInsertOrder, requestID);
+	return backTestApi->ReqInsertOrder(reqInsertOrder, requestID);
 }
 int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
@@ -115,6 +116,6 @@ int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder,
 	{
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
-	return m_BackTestApi->ReqCancelOrder(reqCancelOrder, requestID);
+	return backTestApi->ReqCancelOrder(reqCancelOrder, requestID);
 }
 }

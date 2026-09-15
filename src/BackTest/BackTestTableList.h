@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/Mdb/ModuleTableList.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include "TableList.h"
 #include "MdbStructs.h"
 
@@ -23,5 +24,5 @@ namespace quanttrading::backtest
 		BarMarketData::TableID,
 		MdSubscribe::TableID,
 	};
-	inline const TableList backtestTableList = { "backtest", kbacktestTableIDs, (int)(sizeof(kbacktestTableIDs) / sizeof(kbacktestTableIDs[0])) };
+	inline const TableList backtestTableList = { "backtest", kbacktestTableIDs, static_cast<int>(sizeof(kbacktestTableIDs) / sizeof(kbacktestTableIDs[0])) };
 }

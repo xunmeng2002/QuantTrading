@@ -1,4 +1,5 @@
-﻿#include "MdKernel.h"
+﻿// 本文件由 ../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "MdKernel.h"
 
 #include "Error.h"
 #include "PackageReply.h"
@@ -15,22 +16,22 @@ bool MdKernel::DispatchPackage(Package* package)
 	{
 	case NotifyDisConnectPackage::PackageID:
 	{
-		HandleNotifyDisConnect((NotifyDisConnectPackage*)package);
+		HandleNotifyDisConnect(static_cast<NotifyDisConnectPackage*>(package));
 		return true;
 	}
 	case NotifyDBConnectPackage::PackageID:
 	{
-		HandleNotifyDBConnect((NotifyDBConnectPackage*)package);
+		HandleNotifyDBConnect(static_cast<NotifyDBConnectPackage*>(package));
 		return true;
 	}
 	case NotifyDBDisConnectPackage::PackageID:
 	{
-		HandleNotifyDBDisConnect((NotifyDBDisConnectPackage*)package);
+		HandleNotifyDBDisConnect(static_cast<NotifyDBDisConnectPackage*>(package));
 		return true;
 	}
 	case ReqMdUserLoginPackage::PackageID:
 	{
-		auto reqPackage = (ReqMdUserLoginPackage*)package;
+		auto reqPackage = static_cast<ReqMdUserLoginPackage*>(package);
 		if (reqPackage->ReqMdUserLogin == nullptr)
 		{
 			ReplyPackageParseFailed<RspMdUserLoginPackage>(m_MdFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -41,7 +42,7 @@ bool MdKernel::DispatchPackage(Package* package)
 	}
 	case ReqMdUserLogoutPackage::PackageID:
 	{
-		auto reqPackage = (ReqMdUserLogoutPackage*)package;
+		auto reqPackage = static_cast<ReqMdUserLogoutPackage*>(package);
 		if (reqPackage->ReqMdUserLogout == nullptr)
 		{
 			ReplyPackageParseFailed<RspMdUserLogoutPackage>(m_MdFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -52,7 +53,7 @@ bool MdKernel::DispatchPackage(Package* package)
 	}
 	case ReqSubMarketDataPackage::PackageID:
 	{
-		auto reqPackage = (ReqSubMarketDataPackage*)package;
+		auto reqPackage = static_cast<ReqSubMarketDataPackage*>(package);
 		if (reqPackage->ReqSubMarketData == nullptr)
 		{
 			ReplyPackageParseFailed<RspSubMarketDataPackage>(m_MdFront, reqPackage->SessionID, reqPackage->Head.MsgSeqNum);
@@ -63,7 +64,7 @@ bool MdKernel::DispatchPackage(Package* package)
 	}
 	case RtnDepthMarketDataPackage::PackageID:
 	{
-		HandleRtnDepthMarketData((RtnDepthMarketDataPackage*)package);
+		HandleRtnDepthMarketData(static_cast<RtnDepthMarketDataPackage*>(package));
 		return false;
 	}
 	default:

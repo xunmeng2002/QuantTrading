@@ -49,7 +49,7 @@ namespace quanttrading::ordermatch
     void SeedNextOrderIDFromOrders(mdb::OrderTable* orderTable)
     {
         OrderIDType maxOrderID = 0;
-        auto orderPair = orderTable->m_PrimaryKey->SelectAll();
+        auto orderPair = orderTable->primaryKey->SelectAll();
         for (auto& it = orderPair.first; it != orderPair.second; ++it)
         {
             if ((*it)->OrderID > maxOrderID)

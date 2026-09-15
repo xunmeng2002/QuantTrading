@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/Api/SpiWrap.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include <QuantTrading/MdCApi.h>
 #include <QuantTrading/MdApi.h>
 
@@ -20,6 +21,6 @@ public:
 	virtual void OnRtnBarMarketData(const BarMarketDataField* barMarketData) override;
 
 private:
-	MdCSpi* m_MdCSpi = nullptr;
+	MdCSpi* mdCSpi = nullptr;
 };
 }

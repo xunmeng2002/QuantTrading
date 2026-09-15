@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/Api/SpiWrap.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include <QuantTrading/SimExchangeCApi.h>
 #include <QuantTrading/SimExchangeApi.h>
 
@@ -23,6 +24,6 @@ public:
 	virtual void OnRtnTrade(const TradeField* trade) override;
 
 private:
-	SimExchangeCSpi* m_SimExchangeCSpi = nullptr;
+	SimExchangeCSpi* simExchangeCSpi = nullptr;
 };
 }

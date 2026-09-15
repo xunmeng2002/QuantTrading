@@ -1,48 +1,49 @@
-﻿#include "Mdb.h"
+﻿// 本文件由 ../Templates/Cpp/Mdb/Mdb.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "Mdb.h"
 
 
 namespace mdb
 {
-	Mdb::Mdb(const TableList& tableList): m_MdbSubscriber(nullptr)
+	Mdb::Mdb(const TableList& tableList): mdbSubscriber(nullptr)
 	{
 		for (int i = 0; i < tableList.Count; ++i)
 		{
 			switch (tableList.TableIDs[i])
 			{
-			case TradingDay::TableID:  t_TradingDay = new TradingDayTable(); m_Tables.push_back(t_TradingDay); break;
-			case Exchange::TableID:  t_Exchange = new ExchangeTable(); m_Tables.push_back(t_Exchange); break;
-			case Product::TableID:  t_Product = new ProductTable(); m_Tables.push_back(t_Product); break;
-			case HotInstrument::TableID:  t_HotInstrument = new HotInstrumentTable(); m_Tables.push_back(t_HotInstrument); break;
-			case Instrument::TableID:  t_Instrument = new InstrumentTable(); m_Tables.push_back(t_Instrument); break;
-			case DepthMarketData::TableID:  t_DepthMarketData = new DepthMarketDataTable(); m_Tables.push_back(t_DepthMarketData); break;
-			case BarMarketData::TableID:  t_BarMarketData = new BarMarketDataTable(); m_Tables.push_back(t_BarMarketData); break;
-			case MdSubscribe::TableID:  t_MdSubscribe = new MdSubscribeTable(); m_Tables.push_back(t_MdSubscribe); break;
-			case MdUser::TableID:  t_MdUser = new MdUserTable(); m_Tables.push_back(t_MdUser); break;
-			case MdUserLoginSession::TableID:  t_MdUserLoginSession = new MdUserLoginSessionTable(); m_Tables.push_back(t_MdUserLoginSession); break;
-			case PrimaryAccount::TableID:  t_PrimaryAccount = new PrimaryAccountTable(); m_Tables.push_back(t_PrimaryAccount); break;
-			case Account::TableID:  t_Account = new AccountTable(); m_Tables.push_back(t_Account); break;
-			case Capital::TableID:  t_Capital = new CapitalTable(); m_Tables.push_back(t_Capital); break;
-			case Position::TableID:  t_Position = new PositionTable(); m_Tables.push_back(t_Position); break;
-			case PositionDetail::TableID:  t_PositionDetail = new PositionDetailTable(); m_Tables.push_back(t_PositionDetail); break;
-			case Order::TableID:  t_Order = new OrderTable(); m_Tables.push_back(t_Order); break;
-			case Trade::TableID:  t_Trade = new TradeTable(); m_Tables.push_back(t_Trade); break;
-			case AccountLoginSession::TableID:  t_AccountLoginSession = new AccountLoginSessionTable(); m_Tables.push_back(t_AccountLoginSession); break;
-			case PrimaryAccountLoginSession::TableID:  t_PrimaryAccountLoginSession = new PrimaryAccountLoginSessionTable(); m_Tables.push_back(t_PrimaryAccountLoginSession); break;
+			case TradingDay::TableID:  tradingDay = new TradingDayTable(); tables.push_back(tradingDay); break;
+			case Exchange::TableID:  exchange = new ExchangeTable(); tables.push_back(exchange); break;
+			case Product::TableID:  product = new ProductTable(); tables.push_back(product); break;
+			case HotInstrument::TableID:  hotInstrument = new HotInstrumentTable(); tables.push_back(hotInstrument); break;
+			case Instrument::TableID:  instrument = new InstrumentTable(); tables.push_back(instrument); break;
+			case DepthMarketData::TableID:  depthMarketData = new DepthMarketDataTable(); tables.push_back(depthMarketData); break;
+			case BarMarketData::TableID:  barMarketData = new BarMarketDataTable(); tables.push_back(barMarketData); break;
+			case MdSubscribe::TableID:  mdSubscribe = new MdSubscribeTable(); tables.push_back(mdSubscribe); break;
+			case MdUser::TableID:  mdUser = new MdUserTable(); tables.push_back(mdUser); break;
+			case MdUserLoginSession::TableID:  mdUserLoginSession = new MdUserLoginSessionTable(); tables.push_back(mdUserLoginSession); break;
+			case PrimaryAccount::TableID:  primaryAccount = new PrimaryAccountTable(); tables.push_back(primaryAccount); break;
+			case Account::TableID:  account = new AccountTable(); tables.push_back(account); break;
+			case Capital::TableID:  capital = new CapitalTable(); tables.push_back(capital); break;
+			case Position::TableID:  position = new PositionTable(); tables.push_back(position); break;
+			case PositionDetail::TableID:  positionDetail = new PositionDetailTable(); tables.push_back(positionDetail); break;
+			case Order::TableID:  order = new OrderTable(); tables.push_back(order); break;
+			case Trade::TableID:  trade = new TradeTable(); tables.push_back(trade); break;
+			case AccountLoginSession::TableID:  accountLoginSession = new AccountLoginSessionTable(); tables.push_back(accountLoginSession); break;
+			case PrimaryAccountLoginSession::TableID:  primaryAccountLoginSession = new PrimaryAccountLoginSessionTable(); tables.push_back(primaryAccountLoginSession); break;
 			default: break;
 			}
 		}
 	}
-	void Mdb::Subscribe(MdbSubscriber* mdbSubscriber)
+	void Mdb::Subscribe(MdbSubscriber* subscriber)
 	{
-		m_MdbSubscriber = mdbSubscriber;
-		for (auto table : m_Tables)
+		mdbSubscriber = subscriber;
+		for (auto table : tables)
 		{
-			table->Subscribe(mdbSubscriber);
+			table->Subscribe(subscriber);
 		}
 	}
 	void Mdb::UnSubscribe()
 	{
-		for (auto table : m_Tables)
+		for (auto table : tables)
 		{
 			table->UnSubscribe();
 		}
@@ -50,46 +51,46 @@ namespace mdb
 	void Mdb::InitDB()
 	{
 		CreateTables();
-		for (auto table : m_Tables)
+		for (auto table : tables)
 		{
 			table->InitDB();
 		}
 	}
 	void Mdb::SetInitStatus(bool initStatus)
 	{
-		for (auto table : m_Tables)
+		for (auto table : tables)
 		{
-			table->m_DBInited = initStatus;
+			table->dbInited = initStatus;
 		}
 	}
 	void Mdb::Dump(const char* dir)
 	{
-		for (auto table : m_Tables)
+		for (auto table : tables)
 		{
 			table->Dump(dir);
 		}
 	}
 	void Mdb::CreateTables()
 	{
-		if (m_MdbSubscriber != nullptr)
+		if (mdbSubscriber != nullptr)
 		{
-			m_MdbSubscriber->OnTableOp(DBOperateType::CreateTables);
+			mdbSubscriber->OnTableOp(DBOperateType::CreateTables);
 		}
 	}
 	void Mdb::DropTables()
 	{
-		if (m_MdbSubscriber != nullptr)
+		if (mdbSubscriber != nullptr)
 		{
-			m_MdbSubscriber->OnTableOp(DBOperateType::DropTables);
+			mdbSubscriber->OnTableOp(DBOperateType::DropTables);
 		}
 	}
 	void Mdb::TruncateTables()
 	{
-		if (m_MdbSubscriber != nullptr)
+		if (mdbSubscriber != nullptr)
 		{
-			m_MdbSubscriber->OnTableOp(DBOperateType::TruncateTables);
+			mdbSubscriber->OnTableOp(DBOperateType::TruncateTables);
 		}
-		for (auto table : m_Tables)
+		for (auto table : tables)
 		{
 			table->TruncateTables();
 		}
@@ -101,9 +102,9 @@ namespace mdb
 	}
 	void Mdb::OnDBDisConnected()
 	{
-		for (auto table : m_Tables)
+		for (auto table : tables)
 		{
-			table->m_DBInited = false;
+			table->dbInited = false;
 		}
 	}
 }

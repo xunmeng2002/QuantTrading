@@ -1,4 +1,5 @@
-﻿#include <QuantTrading/SimExchangeCApi.h>
+﻿// 本文件由 ../Templates/Cpp/Api/CApi.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include <QuantTrading/SimExchangeCApi.h>
 #include <QuantTrading/SimExchangeApi.h>
 #include "SimExchangeSpiWrap.h"
 

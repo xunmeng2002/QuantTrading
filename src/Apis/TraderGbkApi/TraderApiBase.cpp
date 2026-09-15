@@ -1,4 +1,5 @@
-﻿#include "TraderApiBase.h"
+﻿// 本文件由 ../Templates/Cpp/Api/ApiBase.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "TraderApiBase.h"
 #include "QuantTrading/Version.h"
 
 namespace quanttrading
@@ -9,27 +10,27 @@ const char* TraderApi::GetApiVersion()
 }
 
 TraderApiBase::TraderApiBase()
-	:ApiBase("TraderApi"), m_TraderSpi(nullptr), m_SessionID(0)
+	:ApiBase("TraderApi"), traderSpi(nullptr), sessionID(0)
 {
 }
 TraderApiBase::~TraderApiBase()
 {
 }
 
-void TraderApiBase::OnProtocolConnect(SessionIDType sessionID, const char* ip, int port)
+void TraderApiBase::OnProtocolConnect(SessionIDType newSessionID, const char* ip, int port)
 {
-	m_SessionID = sessionID;
-	if (m_TraderSpi != nullptr)
+	sessionID = newSessionID;
+	if (traderSpi != nullptr)
 	{
-		m_TraderSpi->OnConnected();
+		traderSpi->OnConnected();
 	}
 }
-void TraderApiBase::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port)
+void TraderApiBase::OnProtocolDisConnect(SessionIDType newSessionID, const char* ip, int port)
 {
-	m_SessionID = -1;
-	if (m_TraderSpi != nullptr)
+	sessionID = -1;
+	if (traderSpi != nullptr)
 	{
-		m_TraderSpi->OnDisConnected();
+		traderSpi->OnDisConnected();
 	}
 }
 
@@ -53,6 +54,6 @@ void TraderApiBase::RegisterFront(const char* address)
 }
 void TraderApiBase::RegisterSpi(TraderSpi* spi)
 {
-	m_TraderSpi = spi;
+	traderSpi = spi;
 }
 }

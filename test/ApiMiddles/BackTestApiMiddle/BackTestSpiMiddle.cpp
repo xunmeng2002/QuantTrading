@@ -1,4 +1,5 @@
-﻿#include "BackTestSpiMiddle.h"
+﻿// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "BackTestSpiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
 using namespace spark::core;
@@ -65,7 +66,7 @@ void BackTestSpiMiddle::OnRtnBarMarketData(const BarMarketDataField* barMarketDa
 	if (barMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "BarMarketDataField:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]",
-			barMarketData->TradingDay, barMarketData->ExchangeID, barMarketData->InstrumentID, (int)barMarketData->BarPreces, barMarketData->BarPeriod, barMarketData->BarTime, barMarketData->UpdateTs, GetDoubleValue(barMarketData->PreSettlementPrice), GetDoubleValue(barMarketData->PreClosePrice), GetDoubleValue(barMarketData->HighestPrice), GetDoubleValue(barMarketData->LowestPrice), GetDoubleValue(barMarketData->Open), GetDoubleValue(barMarketData->High), GetDoubleValue(barMarketData->Low), GetDoubleValue(barMarketData->Close), barMarketData->CurrVolume, barMarketData->Volume, GetDoubleValue(barMarketData->CurrTurnover), GetDoubleValue(barMarketData->Turnover), GetDoubleValue(barMarketData->OpenInterest));
+			barMarketData->TradingDay, barMarketData->ExchangeID, barMarketData->InstrumentID, static_cast<int>(barMarketData->BarPreces), barMarketData->BarPeriod, barMarketData->BarTime, barMarketData->UpdateTs, GetDoubleValue(barMarketData->PreSettlementPrice), GetDoubleValue(barMarketData->PreClosePrice), GetDoubleValue(barMarketData->HighestPrice), GetDoubleValue(barMarketData->LowestPrice), GetDoubleValue(barMarketData->Open), GetDoubleValue(barMarketData->High), GetDoubleValue(barMarketData->Low), GetDoubleValue(barMarketData->Close), barMarketData->CurrVolume, barMarketData->Volume, GetDoubleValue(barMarketData->CurrTurnover), GetDoubleValue(barMarketData->Turnover), GetDoubleValue(barMarketData->OpenInterest));
 	}
 	else
 	{
@@ -139,7 +140,7 @@ void BackTestSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrd
 	if (reqInsertOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]",
-			reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, (int)reqInsertOrder->Direction, (int)reqInsertOrder->OffsetFlag, (int)reqInsertOrder->OrderPriceType, GetDoubleValue(reqInsertOrder->Price), reqInsertOrder->Volume, reqInsertOrder->ClientOrderID);
+			reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, static_cast<int>(reqInsertOrder->Direction), static_cast<int>(reqInsertOrder->OffsetFlag), static_cast<int>(reqInsertOrder->OrderPriceType), GetDoubleValue(reqInsertOrder->Price), reqInsertOrder->Volume, reqInsertOrder->ClientOrderID);
 	}
 	else
 	{
@@ -183,7 +184,7 @@ void BackTestSpiMiddle::OnRtnOrder(const OrderField* order)
 	if (order != nullptr)
 	{
 		WriteLog(LogLevel::Info, "OrderField:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]",
-			order->TradingDay, order->AccountID, order->ExchangeID, order->InstrumentID, (int)order->ProductClass, order->OrderID, order->OrderSysID, (int)order->Direction, (int)order->OffsetFlag, (int)order->OrderPriceType, GetDoubleValue(order->Price), order->Volume, order->VolumeTotal, order->VolumeTraded, order->VolumeMultiple, (int)order->OrderStatus, order->OrderDate, order->OrderTime, order->CancelDate, order->CancelTime, order->SessionID, order->ClientOrderID, order->RequestID, GetDoubleValue(order->FrozenCash), GetDoubleValue(order->FrozenMargin), GetDoubleValue(order->FrozenCommission));
+			order->TradingDay, order->AccountID, order->ExchangeID, order->InstrumentID, static_cast<int>(order->ProductClass), order->OrderID, order->OrderSysID, static_cast<int>(order->Direction), static_cast<int>(order->OffsetFlag), static_cast<int>(order->OrderPriceType), GetDoubleValue(order->Price), order->Volume, order->VolumeTotal, order->VolumeTraded, order->VolumeMultiple, static_cast<int>(order->OrderStatus), order->OrderDate, order->OrderTime, order->CancelDate, order->CancelTime, order->SessionID, order->ClientOrderID, order->RequestID, GetDoubleValue(order->FrozenCash), GetDoubleValue(order->FrozenMargin), GetDoubleValue(order->FrozenCommission));
 	}
 	else
 	{
@@ -196,7 +197,7 @@ void BackTestSpiMiddle::OnRtnTrade(const TradeField* trade)
 	if (trade != nullptr)
 	{
 		WriteLog(LogLevel::Info, "TradeField:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
-			trade->TradingDay, trade->AccountID, trade->ExchangeID, trade->InstrumentID, (int)trade->ProductClass, trade->OrderID, trade->OrderSysID, trade->TradeID, (int)trade->Direction, (int)trade->OffsetFlag, GetDoubleValue(trade->Price), trade->Volume, trade->VolumeMultiple, GetDoubleValue(trade->TradeAmount), GetDoubleValue(trade->Commission), trade->TradeDate, trade->TradeTime);
+			trade->TradingDay, trade->AccountID, trade->ExchangeID, trade->InstrumentID, static_cast<int>(trade->ProductClass), trade->OrderID, trade->OrderSysID, trade->TradeID, static_cast<int>(trade->Direction), static_cast<int>(trade->OffsetFlag), GetDoubleValue(trade->Price), trade->Volume, trade->VolumeMultiple, GetDoubleValue(trade->TradeAmount), GetDoubleValue(trade->Commission), trade->TradeDate, trade->TradeTime);
 	}
 	else
 	{

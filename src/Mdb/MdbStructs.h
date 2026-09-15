@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// 本文件由 ../Templates/Cpp/Mdb/MdbStructs.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma once
 #include <DBAdapters/DBInterface/Schema.h>
 #include <Spark/Types.h>
 
@@ -20,7 +21,6 @@ namespace mdb
 		static TradingDay* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -36,7 +36,6 @@ namespace mdb
 		static Exchange* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -70,7 +69,6 @@ namespace mdb
 		static Product* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -106,7 +104,6 @@ namespace mdb
 		static HotInstrument* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -148,7 +145,6 @@ namespace mdb
 		static Instrument* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -282,7 +278,6 @@ namespace mdb
 		static DepthMarketData* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -334,7 +329,6 @@ namespace mdb
 		static BarMarketData* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -360,7 +354,6 @@ namespace mdb
 		static MdSubscribe* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -378,7 +371,6 @@ namespace mdb
 		static MdUser* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -396,7 +388,6 @@ namespace mdb
 		static MdUserLoginSession* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -426,7 +417,6 @@ namespace mdb
 		static PrimaryAccount* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -454,7 +444,6 @@ namespace mdb
 		static Account* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -506,7 +495,6 @@ namespace mdb
 		static Capital* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -568,7 +556,6 @@ namespace mdb
 		static Position* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -630,7 +617,6 @@ namespace mdb
 		static PositionDetail* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -708,7 +694,6 @@ namespace mdb
 		static Order* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -756,7 +741,6 @@ namespace mdb
 		static Trade* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -774,7 +758,6 @@ namespace mdb
 		static AccountLoginSession* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
@@ -792,30 +775,29 @@ namespace mdb
 		static PrimaryAccountLoginSession* Allocate();
 		void Deallocate();
 		const char* GetString() const;
-		int GetSqlString(char* buff) const;
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
 
-	extern thread_local TradingDay t_CompareTradingDay;
-	extern thread_local Exchange t_CompareExchange;
-	extern thread_local Product t_CompareProduct;
-	extern thread_local HotInstrument t_CompareHotInstrument;
-	extern thread_local Instrument t_CompareInstrument;
-	extern thread_local DepthMarketData t_CompareDepthMarketData;
-	extern thread_local BarMarketData t_CompareBarMarketData;
-	extern thread_local MdSubscribe t_CompareMdSubscribe;
-	extern thread_local MdUser t_CompareMdUser;
-	extern thread_local MdUserLoginSession t_CompareMdUserLoginSession;
-	extern thread_local PrimaryAccount t_ComparePrimaryAccount;
-	extern thread_local Account t_CompareAccount;
-	extern thread_local Capital t_CompareCapital;
-	extern thread_local Position t_ComparePosition;
-	extern thread_local PositionDetail t_ComparePositionDetail;
-	extern thread_local Order t_CompareOrder;
-	extern thread_local Trade t_CompareTrade;
-	extern thread_local AccountLoginSession t_CompareAccountLoginSession;
-	extern thread_local PrimaryAccountLoginSession t_ComparePrimaryAccountLoginSession;
+	extern thread_local TradingDay CompareTradingDay;
+	extern thread_local Exchange CompareExchange;
+	extern thread_local Product CompareProduct;
+	extern thread_local HotInstrument CompareHotInstrument;
+	extern thread_local Instrument CompareInstrument;
+	extern thread_local DepthMarketData CompareDepthMarketData;
+	extern thread_local BarMarketData CompareBarMarketData;
+	extern thread_local MdSubscribe CompareMdSubscribe;
+	extern thread_local MdUser CompareMdUser;
+	extern thread_local MdUserLoginSession CompareMdUserLoginSession;
+	extern thread_local PrimaryAccount ComparePrimaryAccount;
+	extern thread_local Account CompareAccount;
+	extern thread_local Capital CompareCapital;
+	extern thread_local Position ComparePosition;
+	extern thread_local PositionDetail ComparePositionDetail;
+	extern thread_local Order CompareOrder;
+	extern thread_local Trade CompareTrade;
+	extern thread_local AccountLoginSession CompareAccountLoginSession;
+	extern thread_local PrimaryAccountLoginSession ComparePrimaryAccountLoginSession;
 
 }
 

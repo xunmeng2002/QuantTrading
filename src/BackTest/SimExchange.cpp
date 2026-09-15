@@ -73,7 +73,7 @@ static std::string DeriveRunDbHost(const std::string& dbHost, const std::string&
 // 不能写成「先 Insert，失败再 Update」——Insert 失败路径已把记录回池，再拿它去 Select/Update 会读已释放对象并二次回池
 static void InsertInstrumentOrUpdate(InstrumentTable* instrumentTable, Instrument* instrument)
 {
-    auto oldInstrument = instrumentTable->m_PrimaryKey->Select(instrument->ExchangeID, instrument->InstrumentID);
+    auto oldInstrument = instrumentTable->primaryKey->Select(instrument->ExchangeID, instrument->InstrumentID);
     if (oldInstrument == nullptr)
     {
         instrumentTable->Insert(instrument);
@@ -182,12 +182,12 @@ void SimExchange::OnOrder(mdb::Order* order)
 }
 void SimExchange::OnOrderUpdate(mdb::Order* order, mdb::Order* newOrder)
 {
-    m_Mdb->t_Order->Update(order, newOrder);
+    m_Mdb->order->Update(order, newOrder);
     SendRtnOrder(order);
 }
 void SimExchange::OnTrade(mdb::Trade* trade)
 {
-    m_Mdb->t_Trade->Insert(trade);
+    m_Mdb->trade->Insert(trade);
 	SendRtnTrade(trade);
 	m_PositionMaintenance->UpdateOnTrade(trade);
 }
@@ -362,14 +362,14 @@ void SimExchange::PushNextTick(mdb::DepthMarketData* mdTick)
 	TimeUtility::GetDateTimeFromTimeStamp(mdTick->UpdateTs, m_CurrDate, m_CurrTime);
 	m_OrderMatch->OnTick(mdTick);
 	SendRtnDepthMarketData(mdTick);
-	auto oldMdTick = m_Mdb->t_DepthMarketData->m_PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeID, mdTick->InstrumentID);
+	auto oldMdTick = m_Mdb->depthMarketData->primaryKey->Select(mdTick->TradingDay, mdTick->ExchangeID, mdTick->InstrumentID);
 	if (oldMdTick == nullptr)
 	{
-		m_Mdb->t_DepthMarketData->Insert(mdTick);
+		m_Mdb->depthMarketData->Insert(mdTick);
 	}
 	else
 	{
-		m_Mdb->t_DepthMarketData->Update(oldMdTick, mdTick);
+		m_Mdb->depthMarketData->Update(oldMdTick, mdTick);
 	}
 }
 void SimExchange::PushNextBar(mdb::BarMarketData* mdBar)
@@ -389,7 +389,7 @@ void SimExchange::PushNextBar(mdb::BarMarketData* mdBar)
 	PushBarMarketData(mdBar);
 	// Insert 失败即回池（记录已被表释放，失败原因由表内日志给出）：末根 bar 只在入库成功时登记，
 	// 否则结算价来源会取到悬空指针，且失败后读取 mdBar->InstrumentID 已是释放后访问
-	if (m_Mdb->t_BarMarketData->Insert(mdBar))
+	if (m_Mdb->barMarketData->Insert(mdBar))
 	{
 		m_LastMdBars[mdBar->InstrumentID] = mdBar;
 	}
@@ -468,7 +468,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		}
 		instrumentBarPeriods[reqSubMd->InstrumentID] = *reqSubMd;
 		auto& mdSubscribes = instrumentMdSubscribes[reqSubMd->InstrumentID];
-		auto instrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(reqSubMd->ExchangeID, reqSubMd->InstrumentID);
+		auto instrument = m_Mdb->instrument->primaryKey->Select(reqSubMd->ExchangeID, reqSubMd->InstrumentID);
 		if (instrument == nullptr)
 		{
 			WriteLog(LogLevel::Error, "Cannot Find Instrument While SubMarketData. ExchangeID:%s, InstrumentID:%s", reqSubMd->ExchangeID, reqSubMd->InstrumentID);
@@ -491,8 +491,8 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		}
 		else
 		{
-			auto startIt = m_Mdb->t_HotInstrument->m_TradingDayIndex->LowerBound(instrument->ExchangeID, instrument->ProductID, instrument->Rank, m_StartTradingDay);
-			auto endIt = m_Mdb->t_HotInstrument->m_TradingDayIndex->UpperBound(instrument->ExchangeID, instrument->ProductID, instrument->Rank, m_EndTradingDay);
+			auto startIt = m_Mdb->hotInstrument->tradingDayIndex->LowerBound(instrument->ExchangeID, instrument->ProductID, instrument->Rank, m_StartTradingDay);
+			auto endIt = m_Mdb->hotInstrument->tradingDayIndex->UpperBound(instrument->ExchangeID, instrument->ProductID, instrument->Rank, m_EndTradingDay);
 			if (startIt == endIt)
 			{
 				WriteLog(LogLevel::Warning, "Cannot Find HotInstrument While SubMarketData. ExchangeID:%s, ProductID:%s, Rank:%d, StartTradingDay:%s, EndTradingDay:%s",
@@ -589,7 +589,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			int year = int(atoi(mdSubscribe->StartTradingDay) / 10000);
 			// 先入库再入年份队列：Insert 失败即回池，此指针不可再读取（明细由表内日志给出），
 			// 也不得进年份队列——否则行情读取线程会拿着已释放的订阅去取数
-			if (!m_Mdb->t_MdSubscribe->Insert(mdSubscribe))
+			if (!m_Mdb->mdSubscribe->Insert(mdSubscribe))
 			{
 				WriteLog(LogLevel::Warning, "MdSubscribe dropped, its market data will not be read. InstrumentID:%s, Year:%d", it.first.c_str(), year);
 				continue;
@@ -629,7 +629,7 @@ void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleRegisterAccount %s", reqPackage->GetDebugString());
 	auto reqRegisterAccount = reqPackage->ReqRegisterAccount;
-	auto account = m_Mdb->t_Account->m_PrimaryKey->Select(reqRegisterAccount->AccountID);
+	auto account = m_Mdb->account->primaryKey->Select(reqRegisterAccount->AccountID);
 	if (account == nullptr)
 	{
 		// 回测账户按需自建（同 BackTestInit 种子语义）：Balance=0，资金账目由日终结算按日滚动
@@ -642,14 +642,14 @@ void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 		account->TradeGroupID = 1;
 		account->RiskGroupID = 1;
 		account->CommissionGroupID = 1;
-		m_Mdb->t_Account->Insert(account);
+		m_Mdb->account->Insert(account);
 
 		auto capital = mdb::Capital::Allocate();
 		memset(capital, 0, sizeof(mdb::Capital));
 		strcpy(capital->TradingDay, m_TradingDay);
 		strcpy(capital->AccountID, account->AccountID);
 		capital->AccountType = AccountTypeType::Primary;
-		m_Mdb->t_Capital->Insert(capital);
+		m_Mdb->capital->Insert(capital);
 		WriteLog(LogLevel::Info, "Account registered, AccountID:%s, TradingDay:%s", account->AccountID, m_TradingDay);
 	}
 	else
@@ -663,13 +663,13 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	WriteLog(LogLevel::Info, "HandleInsertOrder %s", reqPackage->GetDebugString());
 	auto reqInsertOrder = reqPackage->ReqInsertOrder;
 	int errorID = ErrorNone;
-	auto instrument = m_Mdb->t_Instrument->m_PrimaryKey->Select(reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID);
+	auto instrument = m_Mdb->instrument->primaryKey->Select(reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID);
 	if (instrument == nullptr)
 	{
 		SendRspOrderInsert(reqPackage, ErrorInstrumentNotExist);
 		return;
 	}
-	auto account = m_Mdb->t_Account->m_PrimaryKey->Select(reqInsertOrder->AccountID);
+	auto account = m_Mdb->account->primaryKey->Select(reqInsertOrder->AccountID);
 	if (account == nullptr)
 	{
 		SendRspOrderInsert(reqPackage, ErrorAccountNotExist);
@@ -683,18 +683,18 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	}
 	
 	auto order = CreateOrder(reqPackage, account, instrument, m_TradingDay, m_CurrDate, m_CurrTime);
-	m_Mdb->t_Order->Insert(order);
+	m_Mdb->order->Insert(order);
 	m_OrderMatch->InsertOrder(order);
 }
 void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleCancelOrder %s", reqPackage->GetDebugString());
 	int errorID = ErrorNone;
-	auto order = m_Mdb->t_Order->m_PrimaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID, 
+	auto order = m_Mdb->order->primaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID, 
 		reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->OrderID);
 	if (order == nullptr)
 	{
-		order = m_Mdb->t_Order->m_ClientOrderIDUniqueKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID,
+		order = m_Mdb->order->clientOrderIDUniqueKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountID, reqPackage->ReqCancelOrder->ExchangeID,
 			reqPackage->ReqCancelOrder->InstrumentID, reqPackage->ReqCancelOrder->SessionID, reqPackage->ReqCancelOrder->ClientOrderID);
 		if (order == nullptr)
 		{
@@ -730,7 +730,7 @@ void SimExchange::InitMdInstrument()
 		auto& exchangeID = it.second.front()->ExchangeID;
 		ProductIDType productID;
 		strcpy(productID, it.first.c_str());
-		auto product = m_Mdb->t_Product->m_PrimaryKey->Select(exchangeID, productID);
+		auto product = m_Mdb->product->primaryKey->Select(exchangeID, productID);
 		if (product != nullptr)
 		{
 			for (auto instrument : it.second)
@@ -747,7 +747,7 @@ void SimExchange::InitMdInstrument()
 				instrument->MaxLimitOrderVolume = product->MaxLimitOrderVolume;
 				instrument->MinLimitOrderVolume = product->MinLimitOrderVolume;
 				strcpy(instrument->SessionName, product->SessionName);
-				InsertInstrumentOrUpdate(m_Mdb->t_Instrument, instrument);
+				InsertInstrumentOrUpdate(m_Mdb->instrument, instrument);
 			}
 		}
 		else
@@ -765,14 +765,14 @@ void SimExchange::InitMdInstrument()
 				instrument->MinLimitOrderVolume = 0;
 				strcpy(instrument->SessionName, "FD0900");
 
-				InsertInstrumentOrUpdate(m_Mdb->t_Instrument, instrument);
+				InsertInstrumentOrUpdate(m_Mdb->instrument, instrument);
 			}
 		}
 	}
 }
 void SimExchange::InitMainInstrument()
 {
-	auto productPair = m_Mdb->t_Product->m_PrimaryKey->SelectAll();
+	auto productPair = m_Mdb->product->primaryKey->SelectAll();
 	for (auto& it = productPair.first; it != productPair.second; ++it)
 	{
 		auto product = *it;
@@ -829,9 +829,9 @@ void SimExchange::InitMainInstrument()
 		instrument3->MinLimitOrderVolume = product->MinLimitOrderVolume;
 		strcpy(instrument3->SessionName, product->SessionName);
 
-		m_Mdb->t_Instrument->Insert(instrument1);
-		m_Mdb->t_Instrument->Insert(instrument2);
-		m_Mdb->t_Instrument->Insert(instrument3);
+		m_Mdb->instrument->Insert(instrument1);
+		m_Mdb->instrument->Insert(instrument2);
+		m_Mdb->instrument->Insert(instrument3);
 	}
 }
 void SimExchange::ChangeTradingDay(const DateType& nextTradingDay)

@@ -1,10 +1,10 @@
-﻿#include "BackTestApiImpl.h"
+﻿// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "BackTestApiImpl.h"
 #include "SimExchange.h"
 #include "Config/Config.h"
 #include "QuantTrading/Version.h"
 
 
-using namespace std;
 using namespace quanttrading;
 
 static const char* ConfigName = "BackTest.json";
@@ -24,57 +24,57 @@ BackTestApiImpl::BackTestApiImpl()
 {
 	auto& config = Config::GetInstance();
 	config.Load(ConfigName);
-	m_SimExchange = new SimExchange(config);
+	simExchange = new SimExchange(config);
 }
 BackTestApiImpl::~BackTestApiImpl()
 {
-	if (m_SimExchange != nullptr)
+	if (simExchange != nullptr)
 	{
-		delete m_SimExchange;
-		m_SimExchange = nullptr;
+		delete simExchange;
+		simExchange = nullptr;
 	}
 }
 bool BackTestApiImpl::Init()
 {
-	return m_SimExchange->Init() && m_SimExchange->Start();
+	return simExchange->Init() && simExchange->Start();
 }
 void BackTestApiImpl::Join()
 {
-	if (m_SimExchange != nullptr)
+	if (simExchange != nullptr)
 	{
-		m_SimExchange->Join();
+		simExchange->Join();
 	}
 }
 void BackTestApiImpl::Release()
 {
-	m_SimExchange->Stop();
+	simExchange->Stop();
 }
 void BackTestApiImpl::RegisterFront(const char* address)
 {
 }
 void BackTestApiImpl::RegisterSpi(BackTestSpi* pSpi)
 {
-	m_SimExchange->RegisterSpi(pSpi);
+	simExchange->RegisterSpi(pSpi);
 }
 
 int BackTestApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
-	return m_SimExchange->ReqSubMarketData(reqSubMarketData, requestID);
+	return simExchange->ReqSubMarketData(reqSubMarketData, requestID);
 }
 int BackTestApiImpl::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
 {
-	return m_SimExchange->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
+	return simExchange->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
 }
 int BackTestApiImpl::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
 {
-	return m_SimExchange->ReqRegisterAccount(reqRegisterAccount, requestID);
+	return simExchange->ReqRegisterAccount(reqRegisterAccount, requestID);
 }
 int BackTestApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
-	return m_SimExchange->ReqInsertOrder(reqInsertOrder, requestID);
+	return simExchange->ReqInsertOrder(reqInsertOrder, requestID);
 }
 int BackTestApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
-	return m_SimExchange->ReqCancelOrder(reqCancelOrder, requestID);
+	return simExchange->ReqCancelOrder(reqCancelOrder, requestID);
 }
 }

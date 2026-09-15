@@ -185,7 +185,7 @@ std::string MdReader::GetInstrumentSqlString() const
 {
     // Bar parquet 不含合约元数据列；仅 ExchangeID/InstrumentID/ProductID 来自数据，
     // 其余 12 列以 NULL 占位（向量化读 NULL→Int=0/Char=空串/Double=+inf），
-    // 由 SimExchange::InitMdInstrument 依据 t_Product 重填。
+    // 由 SimExchange::InitMdInstrument 依据 product 重填。
     // 扫描全部数据目录（Identity=*）且不按精度过滤：任意一行即可标识合约，
     // 兼容既有 1m/1h/1d 混存的 CFFEX 文件，也支持其他交易所目录（如 SSE.Stock 的 5m 文件）。
     static const char* sqlTemplate =

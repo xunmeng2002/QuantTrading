@@ -1,144 +1,145 @@
-﻿#include "TraderSpiWrap.h"
+﻿// 本文件由 ../Templates/Cpp/Api/SpiWrap.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "TraderSpiWrap.h"
 
 
 namespace quanttrading
 {
 void TraderSpiWrap::RegisterSpi(TraderCSpi* spi)
 {
-	m_TraderCSpi = spi;
+	traderCSpi = spi;
 }
 void TraderSpiWrap::OnConnected()
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnConnected();
+		traderCSpi->OnConnected();
 	}
 }
 void TraderSpiWrap::OnDisConnected()
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnDisConnected();
+		traderCSpi->OnDisConnected();
 	}
 }
 
 void TraderSpiWrap::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspAccountLogin(rspAccountLogin, rspInfo, requestID, isLast);
+		traderCSpi->OnRspAccountLogin(rspAccountLogin, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspAccountLogout(rspAccountLogout, rspInfo, requestID, isLast);
+		traderCSpi->OnRspAccountLogout(rspAccountLogout, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryHolderAccount(const HolderAccountField* holderAccount, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryHolderAccount(holderAccount, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryHolderAccount(holderAccount, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryCapital(const CapitalField* capital, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryCapital(capital, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryCapital(capital, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryPosition(const PositionField* position, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryPosition(position, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryPosition(position, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryOrder(order, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryOrder(order, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryTrade(trade, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryTrade(trade, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryInstrument(instrument, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryInstrument(instrument, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryOptionInstrument(const OptionInstrumentField* optionInstrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryOptionInstrument(optionInstrument, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryOptionInstrument(optionInstrument, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryCommissionRate(const CommissionRateField* commissionRate, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryCommissionRate(commissionRate, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryCommissionRate(commissionRate, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspQryMoneyTransfer(const MoneyTransferField* moneyTransfer, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspQryMoneyTransfer(moneyTransfer, rspInfo, requestID, isLast);
+		traderCSpi->OnRspQryMoneyTransfer(moneyTransfer, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspInsertOrder(reqInsertOrder, rspInfo, requestID, isLast);
+		traderCSpi->OnRspInsertOrder(reqInsertOrder, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRspCancelOrder(reqCancelOrder, rspInfo, requestID, isLast);
+		traderCSpi->OnRspCancelOrder(reqCancelOrder, rspInfo, requestID, isLast);
 	}
 }
 void TraderSpiWrap::OnRtnOrder(const OrderField* order)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRtnOrder(order);
+		traderCSpi->OnRtnOrder(order);
 	}
 }
 void TraderSpiWrap::OnRtnTrade(const TradeField* trade)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRtnTrade(trade);
+		traderCSpi->OnRtnTrade(trade);
 	}
 }
 void TraderSpiWrap::OnRtnMoneyTransfer(const MoneyTransferField* moneyTransfer)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRtnMoneyTransfer(moneyTransfer);
+		traderCSpi->OnRtnMoneyTransfer(moneyTransfer);
 	}
 }
 void TraderSpiWrap::OnRtnAccountLogout(const AccountLogoutField* accountLogout)
 {
-	if (m_TraderCSpi != nullptr)
+	if (traderCSpi != nullptr)
 	{
-		m_TraderCSpi->OnRtnAccountLogout(accountLogout);
+		traderCSpi->OnRtnAccountLogout(accountLogout);
 	}
 }
 }

@@ -1,67 +1,68 @@
-﻿#include "MdSpiWrap.h"
+﻿// 本文件由 ../Templates/Cpp/Api/SpiWrap.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#include "MdSpiWrap.h"
 
 
 namespace quanttrading
 {
 void MdSpiWrap::RegisterSpi(MdCSpi* spi)
 {
-	m_MdCSpi = spi;
+	mdCSpi = spi;
 }
 void MdSpiWrap::OnConnected()
 {
-	if (m_MdCSpi != nullptr)
+	if (mdCSpi != nullptr)
 	{
-		m_MdCSpi->OnConnected();
+		mdCSpi->OnConnected();
 	}
 }
 void MdSpiWrap::OnDisConnected()
 {
-	if (m_MdCSpi != nullptr)
+	if (mdCSpi != nullptr)
 	{
-		m_MdCSpi->OnDisConnected();
+		mdCSpi->OnDisConnected();
 	}
 }
 
 void MdSpiWrap::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_MdCSpi != nullptr)
+	if (mdCSpi != nullptr)
 	{
-		m_MdCSpi->OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
+		mdCSpi->OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_MdCSpi != nullptr)
+	if (mdCSpi != nullptr)
 	{
-		m_MdCSpi->OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
+		mdCSpi->OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_MdCSpi != nullptr)
+	if (mdCSpi != nullptr)
 	{
-		m_MdCSpi->OnRspSubMarketData(rspSubMarketData, rspInfo, requestID, isLast);
+		mdCSpi->OnRspSubMarketData(rspSubMarketData, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (m_MdCSpi != nullptr)
+	if (mdCSpi != nullptr)
 	{
-		m_MdCSpi->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, requestID, isLast);
+		mdCSpi->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
-	if (m_MdCSpi != nullptr)
+	if (mdCSpi != nullptr)
 	{
-		m_MdCSpi->OnRtnDepthMarketData(depthMarketData);
+		mdCSpi->OnRtnDepthMarketData(depthMarketData);
 	}
 }
 void MdSpiWrap::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
-	if (m_MdCSpi != nullptr)
+	if (mdCSpi != nullptr)
 	{
-		m_MdCSpi->OnRtnBarMarketData(barMarketData);
+		mdCSpi->OnRtnBarMarketData(barMarketData);
 	}
 }
 }

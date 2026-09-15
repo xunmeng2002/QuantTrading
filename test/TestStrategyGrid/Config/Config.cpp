@@ -1,23 +1,23 @@
-﻿#pragma warning(disable: 4311)
+﻿// 本文件由 ../Templates/Cpp/Config/Config.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+#pragma warning(disable: 4311)
 #include "Config.h"
 #include <Spark/Serialization/json/json.h>
 #include <iostream>
 #include <fstream>
+#include <cstdio>
 #include <stdexcept>
-
-using namespace std;
 
 
 namespace quanttrading::teststrategygrid
 {
-Config Config::m_Instance;
+Config Config::instance;
 Config::Config()
 {
 
 }
 Config& Config::GetInstance()
 {
-	return m_Instance;
+	return instance;
 }
 void Config::Load(const char* fileName)
 {
