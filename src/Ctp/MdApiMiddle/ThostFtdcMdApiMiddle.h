@@ -25,5 +25,5 @@ public:
 	virtual int ReqQryMulticastInstrument(CThostFtdcQryMulticastInstrumentField *pQryMulticastInstrument, int nRequestID) override;
 
 private:
-	CThostFtdcMdApi* mdApi;
+	CThostFtdcMdApi* mdApi_;
 };

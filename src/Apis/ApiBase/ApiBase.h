@@ -16,8 +16,8 @@ public:
 protected:
 	ProtocolTypeType m_ProtocolType;
 
-    Spark::Network::IoThread* m_IOThread;
-    Spark::Network::Protocol* m_Protocol;
+    Spark::Network::IoThread* ioThread_;
+    Spark::Network::Protocol* protocol_;
 };
 }
 

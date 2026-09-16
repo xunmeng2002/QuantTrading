@@ -32,6 +32,6 @@ public:
 	virtual void OnRtnAccountLogout(const AccountLogoutField* accountLogout) override;
 
 private:
-	TraderCSpi* traderCSpi = nullptr;
+	TraderCSpi* traderCSpi_ = nullptr;
 };
 }

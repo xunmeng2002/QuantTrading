@@ -24,6 +24,6 @@ public:
 	virtual void OnRtnTrade(const TradeField* trade) override;
 
 private:
-	SimExchangeCSpi* simExchangeCSpi = nullptr;
+	SimExchangeCSpi* simExchangeCSpi_ = nullptr;
 };
 }

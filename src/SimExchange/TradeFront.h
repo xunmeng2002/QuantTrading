@@ -10,6 +10,6 @@ public:
 	TradeFront(const char* address, int milliSecond = 100);
 
 private:
-    Spark::Network::IoThread* m_IOThread;
+    Spark::Network::IoThread* ioThread_;
 };
 }

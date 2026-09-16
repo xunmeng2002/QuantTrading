@@ -11,8 +11,8 @@ MdFront::MdFront(const char* address, int milliSecond)
 	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IoModelType::Select,  milliSecond, new PackageFactory())
 {
 	RegisterFront(address);
-	m_IOThread = new IoThread("MdFront");
-	SetIoThread(m_IOThread);
+	ioThread_ = new IoThread("MdFront");
+	SetIoThread(ioThread_);
 }
 void MdFront::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
 {

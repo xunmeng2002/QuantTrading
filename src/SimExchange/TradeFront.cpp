@@ -10,8 +10,8 @@ namespace QuantTrading::SimExchange
         :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IoModelType::Select, milliSecond, new QuantTrading::Packages::PackageFactory())
     {
         RegisterFront(address);
-        m_IOThread = new IoThread("TradeFront");
-        SetIoThread(m_IOThread);
+        ioThread_ = new IoThread("TradeFront");
+        SetIoThread(ioThread_);
     }
 }
 

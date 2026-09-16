@@ -25,6 +25,6 @@ public:
 	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) override;
 
 private:
-	SimExchangeApi* simExchangeApi;
+	SimExchangeApi* simExchangeApi_;
 };
 }

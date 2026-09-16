@@ -22,6 +22,6 @@ public:
 	virtual int ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID) override;
 
 private:
-	MdApi* mdApi;
+	MdApi* mdApi_;
 };
 }

@@ -23,32 +23,32 @@ void MdApiImpl::OnMessage(Package* package)
 	{
 	case RspMdUserLoginPackage::PackageId:
 	{
-		mdSpi->OnRspMdUserLogin(static_cast<RspMdUserLoginPackage*>(package)->RspMdUserLogin, static_cast<RspMdUserLoginPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		mdSpi_->OnRspMdUserLogin(static_cast<RspMdUserLoginPackage*>(package)->RspMdUserLogin, static_cast<RspMdUserLoginPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspMdUserLogoutPackage::PackageId:
 	{
-		mdSpi->OnRspMdUserLogout(static_cast<RspMdUserLogoutPackage*>(package)->RspMdUserLogout, static_cast<RspMdUserLogoutPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		mdSpi_->OnRspMdUserLogout(static_cast<RspMdUserLogoutPackage*>(package)->RspMdUserLogout, static_cast<RspMdUserLogoutPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspSubMarketDataPackage::PackageId:
 	{
-		mdSpi->OnRspSubMarketData(static_cast<RspSubMarketDataPackage*>(package)->RspSubMarketData, static_cast<RspSubMarketDataPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		mdSpi_->OnRspSubMarketData(static_cast<RspSubMarketDataPackage*>(package)->RspSubMarketData, static_cast<RspSubMarketDataPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspUnSubMarketDataPackage::PackageId:
 	{
-		mdSpi->OnRspUnSubMarketData(static_cast<RspUnSubMarketDataPackage*>(package)->RspUnSubMarketData, static_cast<RspUnSubMarketDataPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		mdSpi_->OnRspUnSubMarketData(static_cast<RspUnSubMarketDataPackage*>(package)->RspUnSubMarketData, static_cast<RspUnSubMarketDataPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RtnDepthMarketDataPackage::PackageId:
 	{
-		mdSpi->OnRtnDepthMarketData(static_cast<RtnDepthMarketDataPackage*>(package)->DepthMarketData);
+		mdSpi_->OnRtnDepthMarketData(static_cast<RtnDepthMarketDataPackage*>(package)->DepthMarketData);
 		break;
 	}
 	case RtnBarMarketDataPackage::PackageId:
 	{
-		mdSpi->OnRtnBarMarketData(static_cast<RtnBarMarketDataPackage*>(package)->BarMarketData);
+		mdSpi_->OnRtnBarMarketData(static_cast<RtnBarMarketDataPackage*>(package)->BarMarketData);
 		break;
 	}
 	default:
@@ -65,7 +65,7 @@ int MdApiImpl::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int req
 	reqPackage->ReqMdUserLogin = Allocate<ReqMdUserLoginField>();
 	memcpy(reqPackage->ReqMdUserLogin, reqMdUserLogin, sizeof(ReqMdUserLoginField));
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -76,7 +76,7 @@ int MdApiImpl::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int 
 	reqPackage->ReqMdUserLogout = Allocate<ReqMdUserLogoutField>();
 	memcpy(reqPackage->ReqMdUserLogout, reqMdUserLogout, sizeof(ReqMdUserLogoutField));
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -87,7 +87,7 @@ int MdApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, i
 	reqPackage->ReqSubMarketData = Allocate<ReqSubMarketDataField>();
 	memcpy(reqPackage->ReqSubMarketData, reqSubMarketData, sizeof(ReqSubMarketDataField));
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -98,7 +98,7 @@ int MdApiImpl::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketD
 	reqPackage->ReqUnSubMarketData = Allocate<ReqUnSubMarketDataField>();
 	memcpy(reqPackage->ReqUnSubMarketData, reqUnSubMarketData, sizeof(ReqUnSubMarketDataField));
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }

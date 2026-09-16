@@ -10,7 +10,7 @@ const char* TraderApi::GetApiVersion()
 }
 
 TraderApiBase::TraderApiBase()
-	:ApiBase("TraderApi"), traderSpi(nullptr), sessionId_(0)
+	:ApiBase("TraderApi"), traderSpi_(nullptr), sessionId_(0)
 {
 }
 TraderApiBase::~TraderApiBase()
@@ -20,40 +20,40 @@ TraderApiBase::~TraderApiBase()
 void TraderApiBase::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
 {
 	sessionId_ = sessionId;
-	if (traderSpi != nullptr)
+	if (traderSpi_ != nullptr)
 	{
-		traderSpi->OnConnected();
+		traderSpi_->OnConnected();
 	}
 }
 void TraderApiBase::OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port)
 {
 	sessionId_ = -1;
-	if (traderSpi != nullptr)
+	if (traderSpi_ != nullptr)
 	{
-		traderSpi->OnDisConnected();
+		traderSpi_->OnDisConnected();
 	}
 }
 
 bool TraderApiBase::Init()
 {
-	return m_Protocol->Init() && m_Protocol->Start();
+	return protocol_->Init() && protocol_->Start();
 }
 void TraderApiBase::Join()
 {
-	m_Protocol->Join();
+	protocol_->Join();
 }
 void TraderApiBase::Release()
 {
-	m_Protocol->Stop();
-	m_Protocol->Join();
+	protocol_->Stop();
+	protocol_->Join();
 	delete this;
 }
 void TraderApiBase::RegisterFront(const char* address)
 {
-	m_Protocol->RegisterFront(address);
+	protocol_->RegisterFront(address);
 }
 void TraderApiBase::RegisterSpi(TraderSpi* spi)
 {
-	traderSpi = spi;
+	traderSpi_ = spi;
 }
 }

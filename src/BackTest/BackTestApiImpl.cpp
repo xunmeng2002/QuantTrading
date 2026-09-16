@@ -24,57 +24,57 @@ BackTestApiImpl::BackTestApiImpl()
 {
 	auto& config = Config::GetInstance();
 	config.Load(ConfigName);
-	simExchange = new SimExchange(config);
+	simExchange_ = new SimExchange(config);
 }
 BackTestApiImpl::~BackTestApiImpl()
 {
-	if (simExchange != nullptr)
+	if (simExchange_ != nullptr)
 	{
-		delete simExchange;
-		simExchange = nullptr;
+		delete simExchange_;
+		simExchange_ = nullptr;
 	}
 }
 bool BackTestApiImpl::Init()
 {
-	return simExchange->Init() && simExchange->Start();
+	return simExchange_->Init() && simExchange_->Start();
 }
 void BackTestApiImpl::Join()
 {
-	if (simExchange != nullptr)
+	if (simExchange_ != nullptr)
 	{
-		simExchange->Join();
+		simExchange_->Join();
 	}
 }
 void BackTestApiImpl::Release()
 {
-	simExchange->Stop();
+	simExchange_->Stop();
 }
 void BackTestApiImpl::RegisterFront(const char* address)
 {
 }
 void BackTestApiImpl::RegisterSpi(BackTestSpi* pSpi)
 {
-	simExchange->RegisterSpi(pSpi);
+	simExchange_->RegisterSpi(pSpi);
 }
 
 int BackTestApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
-	return simExchange->ReqSubMarketData(reqSubMarketData, requestID);
+	return simExchange_->ReqSubMarketData(reqSubMarketData, requestID);
 }
 int BackTestApiImpl::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
 {
-	return simExchange->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
+	return simExchange_->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
 }
 int BackTestApiImpl::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
 {
-	return simExchange->ReqRegisterAccount(reqRegisterAccount, requestID);
+	return simExchange_->ReqRegisterAccount(reqRegisterAccount, requestID);
 }
 int BackTestApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
-	return simExchange->ReqInsertOrder(reqInsertOrder, requestID);
+	return simExchange_->ReqInsertOrder(reqInsertOrder, requestID);
 }
 int BackTestApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
-	return simExchange->ReqCancelOrder(reqCancelOrder, requestID);
+	return simExchange_->ReqCancelOrder(reqCancelOrder, requestID);
 }
 }

@@ -37,7 +37,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		simExchangeSpi->OnRspAccountLogin(rspAccountLogin, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi_->OnRspAccountLogin(rspAccountLogin, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspAccountLogoutPackage::PackageId:
@@ -52,7 +52,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		simExchangeSpi->OnRspAccountLogout(rspAccountLogout, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi_->OnRspAccountLogout(rspAccountLogout, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryOrderPackage::PackageId:
@@ -75,7 +75,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		simExchangeSpi->OnRspQryOrder(order, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi_->OnRspQryOrder(order, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryTradePackage::PackageId:
@@ -97,7 +97,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		simExchangeSpi->OnRspQryTrade(trade, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi_->OnRspQryTrade(trade, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspQryInstrumentPackage::PackageId:
@@ -117,7 +117,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		simExchangeSpi->OnRspQryInstrument(instrument, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi_->OnRspQryInstrument(instrument, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspInsertOrderPackage::PackageId:
@@ -134,7 +134,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		simExchangeSpi->OnRspInsertOrder(reqInsertOrder, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi_->OnRspInsertOrder(reqInsertOrder, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspCancelOrderPackage::PackageId:
@@ -152,7 +152,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		simExchangeSpi->OnRspCancelOrder(reqCancelOrder, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		simExchangeSpi_->OnRspCancelOrder(reqCancelOrder, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RtnOrderPackage::PackageId:
@@ -170,7 +170,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 			TrunsferUtf8ToGbk(order->CancelDate);
 			TrunsferUtf8ToGbk(order->CancelTime);
 		}
-		simExchangeSpi->OnRtnOrder(order);
+		simExchangeSpi_->OnRtnOrder(order);
 		break;
 	}
 	case RtnTradePackage::PackageId:
@@ -187,7 +187,7 @@ void SimExchangeApiImpl::OnMessage(Package* package)
 			TrunsferUtf8ToGbk(trade->TradeDate);
 			TrunsferUtf8ToGbk(trade->TradeTime);
 		}
-		simExchangeSpi->OnRtnTrade(trade);
+		simExchangeSpi_->OnRtnTrade(trade);
 		break;
 	}
 	default:
@@ -207,7 +207,7 @@ int SimExchangeApiImpl::ReqAccountLogin(const ReqAccountLoginField* reqAccountLo
 	TrunsferGbkToUtf8(reqPackage->ReqAccountLogin->Password);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -220,7 +220,7 @@ int SimExchangeApiImpl::ReqAccountLogout(const ReqAccountLogoutField* reqAccount
 	TrunsferGbkToUtf8(reqPackage->ReqAccountLogout->AccountId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -233,7 +233,7 @@ int SimExchangeApiImpl::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int req
 	TrunsferGbkToUtf8(reqPackage->ReqQryOrder->AccountId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -246,7 +246,7 @@ int SimExchangeApiImpl::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int req
 	TrunsferGbkToUtf8(reqPackage->ReqQryTrade->AccountId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -260,7 +260,7 @@ int SimExchangeApiImpl::ReqQryInstrument(const ReqQryInstrumentField* reqQryInst
 	TrunsferGbkToUtf8(reqPackage->ReqQryInstrument->InstrumentId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -275,7 +275,7 @@ int SimExchangeApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder
 	TrunsferGbkToUtf8(reqPackage->ReqInsertOrder->InstrumentId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -291,7 +291,7 @@ int SimExchangeApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder
 	TrunsferGbkToUtf8(reqPackage->ReqCancelOrder->OrderSysId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }

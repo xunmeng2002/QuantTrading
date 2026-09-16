@@ -13,7 +13,7 @@ BackTestApiMiddle* BackTestApiMiddle::CreateBackTestApiMiddle()
 	
 	auto api = BackTestApi::CreateBackTestApi();
 	auto apiMiddle = new BackTestApiMiddle();
-	apiMiddle->backTestApi = api;
+	apiMiddle->backTestApi_ = api;
 	
 	return apiMiddle;
 }
@@ -25,27 +25,27 @@ const char* BackTestApiMiddle::GetApiVersion()
 bool BackTestApiMiddle::Init()
 {
 	WriteLog(LogLevel::Info, "Init");
-	return backTestApi->Init();
+	return backTestApi_->Init();
 }
 void BackTestApiMiddle::Join()
 {
 	WriteLog(LogLevel::Info, "Join");
-	backTestApi->Join();
+	backTestApi_->Join();
 }
 void BackTestApiMiddle::Release()
 {
 	WriteLog(LogLevel::Info, "Release");
-	backTestApi->Release();
+	backTestApi_->Release();
 }
 void BackTestApiMiddle::RegisterFront(const char* address)
 {
 	WriteLog(LogLevel::Info, "RegisterFront:%s", address);
-	backTestApi->RegisterFront(address);
+	backTestApi_->RegisterFront(address);
 }
 void BackTestApiMiddle::RegisterSpi(BackTestSpi* spi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi");
-	backTestApi->RegisterSpi(spi);
+	backTestApi_->RegisterSpi(spi);
 }
 
 int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId)
@@ -60,7 +60,7 @@ int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarke
 	{
 		WriteLog(LogLevel::Info, "reqSubMarketData is nullptr");
 	}
-	return backTestApi->ReqSubMarketData(reqSubMarketData, requestId);
+	return backTestApi_->ReqSubMarketData(reqSubMarketData, requestId);
 }
 int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestId)
 {
@@ -74,7 +74,7 @@ int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedFi
 	{
 		WriteLog(LogLevel::Info, "reqSubMarketDataFinished is nullptr");
 	}
-	return backTestApi->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestId);
+	return backTestApi_->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestId);
 }
 int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestId)
 {
@@ -88,7 +88,7 @@ int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegi
 	{
 		WriteLog(LogLevel::Info, "reqRegisterAccount is nullptr");
 	}
-	return backTestApi->ReqRegisterAccount(reqRegisterAccount, requestId);
+	return backTestApi_->ReqRegisterAccount(reqRegisterAccount, requestId);
 }
 int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId)
 {
@@ -102,7 +102,7 @@ int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder,
 	{
 		WriteLog(LogLevel::Info, "reqInsertOrder is nullptr");
 	}
-	return backTestApi->ReqInsertOrder(reqInsertOrder, requestId);
+	return backTestApi_->ReqInsertOrder(reqInsertOrder, requestId);
 }
 int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId)
 {
@@ -116,6 +116,6 @@ int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder,
 	{
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
-	return backTestApi->ReqCancelOrder(reqCancelOrder, requestId);
+	return backTestApi_->ReqCancelOrder(reqCancelOrder, requestId);
 }
 }

@@ -140,5 +140,5 @@ public:
 	virtual int ReqQryOffsetSetting(CThostFtdcQryOffsetSettingField *pQryOffsetSetting, int nRequestID) override;
 
 private:
-	CThostFtdcTraderApi* traderApi;
+	CThostFtdcTraderApi* traderApi_;
 };

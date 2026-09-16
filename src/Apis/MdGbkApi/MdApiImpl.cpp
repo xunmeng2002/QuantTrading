@@ -37,7 +37,7 @@ void MdApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		mdSpi->OnRspMdUserLogin(rspMdUserLogin, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		mdSpi_->OnRspMdUserLogin(rspMdUserLogin, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspMdUserLogoutPackage::PackageId:
@@ -52,7 +52,7 @@ void MdApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		mdSpi->OnRspMdUserLogout(rspMdUserLogout, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		mdSpi_->OnRspMdUserLogout(rspMdUserLogout, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspSubMarketDataPackage::PackageId:
@@ -68,7 +68,7 @@ void MdApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		mdSpi->OnRspSubMarketData(rspSubMarketData, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		mdSpi_->OnRspSubMarketData(rspSubMarketData, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RspUnSubMarketDataPackage::PackageId:
@@ -84,7 +84,7 @@ void MdApiImpl::OnMessage(Package* package)
 		{
 			TrunsferUtf8ToGbk(rspInfo->ErrorMsg);
 		}
-		mdSpi->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
+		mdSpi_->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
 	case RtnDepthMarketDataPackage::PackageId:
@@ -96,7 +96,7 @@ void MdApiImpl::OnMessage(Package* package)
 			TrunsferUtf8ToGbk(depthMarketData->ExchangeId);
 			TrunsferUtf8ToGbk(depthMarketData->InstrumentId);
 		}
-		mdSpi->OnRtnDepthMarketData(depthMarketData);
+		mdSpi_->OnRtnDepthMarketData(depthMarketData);
 		break;
 	}
 	case RtnBarMarketDataPackage::PackageId:
@@ -108,7 +108,7 @@ void MdApiImpl::OnMessage(Package* package)
 			TrunsferUtf8ToGbk(barMarketData->ExchangeId);
 			TrunsferUtf8ToGbk(barMarketData->InstrumentId);
 		}
-		mdSpi->OnRtnBarMarketData(barMarketData);
+		mdSpi_->OnRtnBarMarketData(barMarketData);
 		break;
 	}
 	default:
@@ -128,7 +128,7 @@ int MdApiImpl::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int req
 	TrunsferGbkToUtf8(reqPackage->ReqMdUserLogin->Password);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -141,7 +141,7 @@ int MdApiImpl::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int 
 	TrunsferGbkToUtf8(reqPackage->ReqMdUserLogout->UserId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -155,7 +155,7 @@ int MdApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, i
 	TrunsferGbkToUtf8(reqPackage->ReqSubMarketData->InstrumentId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }
@@ -169,7 +169,7 @@ int MdApiImpl::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketD
 	TrunsferGbkToUtf8(reqPackage->ReqUnSubMarketData->InstrumentId);
 	
 	
-	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
+	int result = (protocol_->Send(reqPackage))? ErrorNone : ErrorNetwork;
 	reqPackage->Deallocate();
 	return result;
 }

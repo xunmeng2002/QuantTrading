@@ -10,7 +10,7 @@ const char* SimExchangeApi::GetApiVersion()
 }
 
 SimExchangeApiBase::SimExchangeApiBase()
-	:ApiBase("SimExchangeApi"), simExchangeSpi(nullptr), sessionId_(0)
+	:ApiBase("SimExchangeApi"), simExchangeSpi_(nullptr), sessionId_(0)
 {
 }
 SimExchangeApiBase::~SimExchangeApiBase()
@@ -20,40 +20,40 @@ SimExchangeApiBase::~SimExchangeApiBase()
 void SimExchangeApiBase::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
 {
 	sessionId_ = sessionId;
-	if (simExchangeSpi != nullptr)
+	if (simExchangeSpi_ != nullptr)
 	{
-		simExchangeSpi->OnConnected();
+		simExchangeSpi_->OnConnected();
 	}
 }
 void SimExchangeApiBase::OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port)
 {
 	sessionId_ = -1;
-	if (simExchangeSpi != nullptr)
+	if (simExchangeSpi_ != nullptr)
 	{
-		simExchangeSpi->OnDisConnected();
+		simExchangeSpi_->OnDisConnected();
 	}
 }
 
 bool SimExchangeApiBase::Init()
 {
-	return m_Protocol->Init() && m_Protocol->Start();
+	return protocol_->Init() && protocol_->Start();
 }
 void SimExchangeApiBase::Join()
 {
-	m_Protocol->Join();
+	protocol_->Join();
 }
 void SimExchangeApiBase::Release()
 {
-	m_Protocol->Stop();
-	m_Protocol->Join();
+	protocol_->Stop();
+	protocol_->Join();
 	delete this;
 }
 void SimExchangeApiBase::RegisterFront(const char* address)
 {
-	m_Protocol->RegisterFront(address);
+	protocol_->RegisterFront(address);
 }
 void SimExchangeApiBase::RegisterSpi(SimExchangeSpi* spi)
 {
-	simExchangeSpi = spi;
+	simExchangeSpi_ = spi;
 }
 }

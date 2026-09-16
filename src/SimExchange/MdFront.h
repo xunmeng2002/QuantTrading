@@ -16,7 +16,7 @@ public:
 	virtual void OnMessage(Spark::Network::Package* package) override;
 
 private:
-    Spark::Network::IoThread* m_IOThread;
+    Spark::Network::IoThread* ioThread_;
 };
 }
 

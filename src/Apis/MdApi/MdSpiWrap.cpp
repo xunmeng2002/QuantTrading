@@ -6,63 +6,63 @@ namespace QuantTrading
 {
 void MdSpiWrap::RegisterSpi(MdCSpi* spi)
 {
-	mdCSpi = spi;
+	mdCSpi_ = spi;
 }
 void MdSpiWrap::OnConnected()
 {
-	if (mdCSpi != nullptr)
+	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi->OnConnected();
+		mdCSpi_->OnConnected();
 	}
 }
 void MdSpiWrap::OnDisConnected()
 {
-	if (mdCSpi != nullptr)
+	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi->OnDisConnected();
+		mdCSpi_->OnDisConnected();
 	}
 }
 
 void MdSpiWrap::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (mdCSpi != nullptr)
+	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi->OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
+		mdCSpi_->OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (mdCSpi != nullptr)
+	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi->OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
+		mdCSpi_->OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (mdCSpi != nullptr)
+	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi->OnRspSubMarketData(rspSubMarketData, rspInfo, requestID, isLast);
+		mdCSpi_->OnRspSubMarketData(rspSubMarketData, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (mdCSpi != nullptr)
+	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, requestID, isLast);
+		mdCSpi_->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, requestID, isLast);
 	}
 }
 void MdSpiWrap::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
-	if (mdCSpi != nullptr)
+	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi->OnRtnDepthMarketData(depthMarketData);
+		mdCSpi_->OnRtnDepthMarketData(depthMarketData);
 	}
 }
 void MdSpiWrap::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
-	if (mdCSpi != nullptr)
+	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi->OnRtnBarMarketData(barMarketData);
+		mdCSpi_->OnRtnBarMarketData(barMarketData);
 	}
 }
 }

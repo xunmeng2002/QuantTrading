@@ -10,7 +10,7 @@ const char* MdApi::GetApiVersion()
 }
 
 MdApiBase::MdApiBase()
-	:ApiBase("MdApi"), mdSpi(nullptr), sessionId_(0)
+	:ApiBase("MdApi"), mdSpi_(nullptr), sessionId_(0)
 {
 }
 MdApiBase::~MdApiBase()
@@ -20,40 +20,40 @@ MdApiBase::~MdApiBase()
 void MdApiBase::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
 {
 	sessionId_ = sessionId;
-	if (mdSpi != nullptr)
+	if (mdSpi_ != nullptr)
 	{
-		mdSpi->OnConnected();
+		mdSpi_->OnConnected();
 	}
 }
 void MdApiBase::OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port)
 {
 	sessionId_ = -1;
-	if (mdSpi != nullptr)
+	if (mdSpi_ != nullptr)
 	{
-		mdSpi->OnDisConnected();
+		mdSpi_->OnDisConnected();
 	}
 }
 
 bool MdApiBase::Init()
 {
-	return m_Protocol->Init() && m_Protocol->Start();
+	return protocol_->Init() && protocol_->Start();
 }
 void MdApiBase::Join()
 {
-	m_Protocol->Join();
+	protocol_->Join();
 }
 void MdApiBase::Release()
 {
-	m_Protocol->Stop();
-	m_Protocol->Join();
+	protocol_->Stop();
+	protocol_->Join();
 	delete this;
 }
 void MdApiBase::RegisterFront(const char* address)
 {
-	m_Protocol->RegisterFront(address);
+	protocol_->RegisterFront(address);
 }
 void MdApiBase::RegisterSpi(MdSpi* spi)
 {
-	mdSpi = spi;
+	mdSpi_ = spi;
 }
 }

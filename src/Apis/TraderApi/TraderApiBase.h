@@ -26,7 +26,7 @@ public:
 
 
 protected:
-	TraderSpi* traderSpi;
+	TraderSpi* traderSpi_;
 	SessionIdType sessionId_;
 };
 }

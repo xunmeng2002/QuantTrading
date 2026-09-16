@@ -31,6 +31,6 @@ public:
 	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) override;
 
 private:
-	TraderApi* traderApi;
+	TraderApi* traderApi_;
 };
 }

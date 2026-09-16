@@ -7,19 +7,19 @@ using namespace Spark::Network;
 namespace QuantTrading
 {
 ApiBase::ApiBase(const char* name)
-	:m_Protocol(nullptr), m_ProtocolType(ProtocolTypeType::Xtp)
+	:protocol_(nullptr), m_ProtocolType(ProtocolTypeType::Xtp)
 {
-	m_IOThread = new IoThread(name);
-	m_Protocol = new Protocol(m_ProtocolType, ServerTypeType::Client, IoModelType::Select, 100, new QuantTrading::Packages::PackageFactory());
-	m_Protocol->Subscribe(this);
-	m_Protocol->SetIoThread(m_IOThread);
+	ioThread_ = new IoThread(name);
+	protocol_ = new Protocol(m_ProtocolType, ServerTypeType::Client, IoModelType::Select, 100, new QuantTrading::Packages::PackageFactory());
+	protocol_->Subscribe(this);
+	protocol_->SetIoThread(ioThread_);
 }
 ApiBase::~ApiBase()
 {
-	if (m_Protocol != nullptr)
+	if (protocol_ != nullptr)
 	{
-		delete m_Protocol;
-		m_Protocol = nullptr;
+		delete protocol_;
+		protocol_ = nullptr;
 	}
 }
 }

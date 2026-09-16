@@ -13,7 +13,7 @@ SimExchangeApiMiddle* SimExchangeApiMiddle::CreateSimExchangeApiMiddle()
 	
 	auto api = SimExchangeApi::CreateSimExchangeApi();
 	auto apiMiddle = new SimExchangeApiMiddle();
-	apiMiddle->simExchangeApi = api;
+	apiMiddle->simExchangeApi_ = api;
 	
 	return apiMiddle;
 }
@@ -25,27 +25,27 @@ const char* SimExchangeApiMiddle::GetApiVersion()
 bool SimExchangeApiMiddle::Init()
 {
 	WriteLog(LogLevel::Info, "Init");
-	return simExchangeApi->Init();
+	return simExchangeApi_->Init();
 }
 void SimExchangeApiMiddle::Join()
 {
 	WriteLog(LogLevel::Info, "Join");
-	simExchangeApi->Join();
+	simExchangeApi_->Join();
 }
 void SimExchangeApiMiddle::Release()
 {
 	WriteLog(LogLevel::Info, "Release");
-	simExchangeApi->Release();
+	simExchangeApi_->Release();
 }
 void SimExchangeApiMiddle::RegisterFront(const char* address)
 {
 	WriteLog(LogLevel::Info, "RegisterFront:%s", address);
-	simExchangeApi->RegisterFront(address);
+	simExchangeApi_->RegisterFront(address);
 }
 void SimExchangeApiMiddle::RegisterSpi(SimExchangeSpi* spi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi");
-	simExchangeApi->RegisterSpi(spi);
+	simExchangeApi_->RegisterSpi(spi);
 }
 
 int SimExchangeApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestId)
@@ -60,7 +60,7 @@ int SimExchangeApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccount
 	{
 		WriteLog(LogLevel::Info, "reqAccountLogin is nullptr");
 	}
-	return simExchangeApi->ReqAccountLogin(reqAccountLogin, requestId);
+	return simExchangeApi_->ReqAccountLogin(reqAccountLogin, requestId);
 }
 int SimExchangeApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestId)
 {
@@ -74,7 +74,7 @@ int SimExchangeApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccou
 	{
 		WriteLog(LogLevel::Info, "reqAccountLogout is nullptr");
 	}
-	return simExchangeApi->ReqAccountLogout(reqAccountLogout, requestId);
+	return simExchangeApi_->ReqAccountLogout(reqAccountLogout, requestId);
 }
 int SimExchangeApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestId)
 {
@@ -88,7 +88,7 @@ int SimExchangeApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int r
 	{
 		WriteLog(LogLevel::Info, "reqQryOrder is nullptr");
 	}
-	return simExchangeApi->ReqQryOrder(reqQryOrder, requestId);
+	return simExchangeApi_->ReqQryOrder(reqQryOrder, requestId);
 }
 int SimExchangeApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestId)
 {
@@ -102,7 +102,7 @@ int SimExchangeApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int r
 	{
 		WriteLog(LogLevel::Info, "reqQryTrade is nullptr");
 	}
-	return simExchangeApi->ReqQryTrade(reqQryTrade, requestId);
+	return simExchangeApi_->ReqQryTrade(reqQryTrade, requestId);
 }
 int SimExchangeApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestId)
 {
@@ -116,7 +116,7 @@ int SimExchangeApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryIn
 	{
 		WriteLog(LogLevel::Info, "reqQryInstrument is nullptr");
 	}
-	return simExchangeApi->ReqQryInstrument(reqQryInstrument, requestId);
+	return simExchangeApi_->ReqQryInstrument(reqQryInstrument, requestId);
 }
 int SimExchangeApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId)
 {
@@ -130,7 +130,7 @@ int SimExchangeApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrd
 	{
 		WriteLog(LogLevel::Info, "reqInsertOrder is nullptr");
 	}
-	return simExchangeApi->ReqInsertOrder(reqInsertOrder, requestId);
+	return simExchangeApi_->ReqInsertOrder(reqInsertOrder, requestId);
 }
 int SimExchangeApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId)
 {
@@ -144,6 +144,6 @@ int SimExchangeApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrd
 	{
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
-	return simExchangeApi->ReqCancelOrder(reqCancelOrder, requestId);
+	return simExchangeApi_->ReqCancelOrder(reqCancelOrder, requestId);
 }
 }

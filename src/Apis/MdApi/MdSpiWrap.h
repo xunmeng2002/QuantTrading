@@ -21,6 +21,6 @@ public:
 	virtual void OnRtnBarMarketData(const BarMarketDataField* barMarketData) override;
 
 private:
-	MdCSpi* mdCSpi = nullptr;
+	MdCSpi* mdCSpi_ = nullptr;
 };
 }

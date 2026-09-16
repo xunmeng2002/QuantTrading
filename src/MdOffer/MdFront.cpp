@@ -9,7 +9,7 @@ namespace QuantTrading::MdOffer
         :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new QuantTrading::Packages::PackageFactory()), m_Address(address)
     {
         RegisterFront(address);
-        m_IOThread = new IoThread("MdFront");
-        SetIoThread(m_IOThread);
+        ioThread_ = new IoThread("MdFront");
+        SetIoThread(ioThread_);
     }
 }

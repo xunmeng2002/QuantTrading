@@ -5,69 +5,69 @@
 
 using namespace QuantTrading;
 
-static MdApi* s_MdApi = nullptr;
-static MdSpiWrap* s_MdSpiWrap = nullptr;
+static MdApi* MdApiInstance = nullptr;
+static MdSpiWrap* MdSpiWrapInstance = nullptr;
 
 MDAPI_EXPORTS void MDAPI_CALL  CreateMdCApi()
 {
-	if (s_MdApi == nullptr)
+	if (MdApiInstance == nullptr)
 	{
-		s_MdApi = MdApi::CreateMdApi();
+		MdApiInstance = MdApi::CreateMdApi();
 	}
-	if (s_MdSpiWrap == nullptr)
+	if (MdSpiWrapInstance == nullptr)
 	{
-		s_MdSpiWrap = new MdSpiWrap();
+		MdSpiWrapInstance = new MdSpiWrap();
 	}
 }
 MDAPI_EXPORTS const char* MDAPI_CALL GetApiVersion()
 {
-	return s_MdApi->GetApiVersion();
+	return MdApiInstance->GetApiVersion();
 }
 MDAPI_EXPORTS bool MDAPI_CALL Init()
 {
-	return s_MdApi->Init();
+	return MdApiInstance->Init();
 }
 MDAPI_EXPORTS void MDAPI_CALL Join()
 {
-	s_MdApi->Join();
+	MdApiInstance->Join();
 }
 MDAPI_EXPORTS void MDAPI_CALL Release()
 {
-	if (s_MdApi != nullptr)
+	if (MdApiInstance != nullptr)
 	{
-		s_MdApi->Release();
+		MdApiInstance->Release();
 	}
-	s_MdApi = nullptr;
-	if (s_MdSpiWrap != nullptr)
+	MdApiInstance = nullptr;
+	if (MdSpiWrapInstance != nullptr)
 	{
-		delete s_MdSpiWrap;
+		delete MdSpiWrapInstance;
 	}
-	s_MdSpiWrap = nullptr;
+	MdSpiWrapInstance = nullptr;
 }
 MDAPI_EXPORTS void MDAPI_CALL RegisterFront(const char* address)
 {
-	s_MdApi->RegisterFront(address);
+	MdApiInstance->RegisterFront(address);
 }
 MDAPI_EXPORTS void MDAPI_CALL RegisterSpi(MdCSpi* spi)
 {
-	s_MdApi->RegisterSpi(s_MdSpiWrap);
-	s_MdSpiWrap->RegisterSpi(spi);
+	MdApiInstance->RegisterSpi(MdSpiWrapInstance);
+	MdSpiWrapInstance->RegisterSpi(spi);
 }
 
 MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID)
 {
-	return s_MdApi->ReqMdUserLogin(reqMdUserLogin, requestID);
+	return MdApiInstance->ReqMdUserLogin(reqMdUserLogin, requestID);
 }
 MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID)
 {
-	return s_MdApi->ReqMdUserLogout(reqMdUserLogout, requestID);
+	return MdApiInstance->ReqMdUserLogout(reqMdUserLogout, requestID);
 }
 MDAPI_EXPORTS int MDAPI_CALL ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
-	return s_MdApi->ReqSubMarketData(reqSubMarketData, requestID);
+	return MdApiInstance->ReqSubMarketData(reqSubMarketData, requestID);
 }
 MDAPI_EXPORTS int MDAPI_CALL ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
 {
-	return s_MdApi->ReqUnSubMarketData(reqUnSubMarketData, requestID);
+	return MdApiInstance->ReqUnSubMarketData(reqUnSubMarketData, requestID);
 }
 

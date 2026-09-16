@@ -23,6 +23,6 @@ public:
 	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) override;
 
 private:
-	BackTestApi* backTestApi;
+	BackTestApi* backTestApi_;
 };
 }

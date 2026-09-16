@@ -26,7 +26,7 @@ public:
 
 
 protected:
-	MdSpi* mdSpi;
+	MdSpi* mdSpi_;
 	SessionIdType sessionId_;
 };
 }

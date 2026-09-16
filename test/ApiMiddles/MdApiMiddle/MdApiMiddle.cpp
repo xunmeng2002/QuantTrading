@@ -13,7 +13,7 @@ MdApiMiddle* MdApiMiddle::CreateMdApiMiddle()
 	
 	auto api = MdApi::CreateMdApi();
 	auto apiMiddle = new MdApiMiddle();
-	apiMiddle->mdApi = api;
+	apiMiddle->mdApi_ = api;
 	
 	return apiMiddle;
 }
@@ -25,27 +25,27 @@ const char* MdApiMiddle::GetApiVersion()
 bool MdApiMiddle::Init()
 {
 	WriteLog(LogLevel::Info, "Init");
-	return mdApi->Init();
+	return mdApi_->Init();
 }
 void MdApiMiddle::Join()
 {
 	WriteLog(LogLevel::Info, "Join");
-	mdApi->Join();
+	mdApi_->Join();
 }
 void MdApiMiddle::Release()
 {
 	WriteLog(LogLevel::Info, "Release");
-	mdApi->Release();
+	mdApi_->Release();
 }
 void MdApiMiddle::RegisterFront(const char* address)
 {
 	WriteLog(LogLevel::Info, "RegisterFront:%s", address);
-	mdApi->RegisterFront(address);
+	mdApi_->RegisterFront(address);
 }
 void MdApiMiddle::RegisterSpi(MdSpi* spi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi");
-	mdApi->RegisterSpi(spi);
+	mdApi_->RegisterSpi(spi);
 }
 
 int MdApiMiddle::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestId)
@@ -60,7 +60,7 @@ int MdApiMiddle::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int r
 	{
 		WriteLog(LogLevel::Info, "reqMdUserLogin is nullptr");
 	}
-	return mdApi->ReqMdUserLogin(reqMdUserLogin, requestId);
+	return mdApi_->ReqMdUserLogin(reqMdUserLogin, requestId);
 }
 int MdApiMiddle::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestId)
 {
@@ -74,7 +74,7 @@ int MdApiMiddle::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, in
 	{
 		WriteLog(LogLevel::Info, "reqMdUserLogout is nullptr");
 	}
-	return mdApi->ReqMdUserLogout(reqMdUserLogout, requestId);
+	return mdApi_->ReqMdUserLogout(reqMdUserLogout, requestId);
 }
 int MdApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId)
 {
@@ -88,7 +88,7 @@ int MdApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData,
 	{
 		WriteLog(LogLevel::Info, "reqSubMarketData is nullptr");
 	}
-	return mdApi->ReqSubMarketData(reqSubMarketData, requestId);
+	return mdApi_->ReqSubMarketData(reqSubMarketData, requestId);
 }
 int MdApiMiddle::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestId)
 {
@@ -102,6 +102,6 @@ int MdApiMiddle::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarke
 	{
 		WriteLog(LogLevel::Info, "reqUnSubMarketData is nullptr");
 	}
-	return mdApi->ReqUnSubMarketData(reqUnSubMarketData, requestId);
+	return mdApi_->ReqUnSubMarketData(reqUnSubMarketData, requestId);
 }
 }

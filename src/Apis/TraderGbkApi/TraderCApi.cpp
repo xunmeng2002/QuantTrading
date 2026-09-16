@@ -5,105 +5,105 @@
 
 using namespace QuantTrading;
 
-static TraderApi* s_TraderApi = nullptr;
-static TraderSpiWrap* s_TraderSpiWrap = nullptr;
+static TraderApi* TraderApiInstance = nullptr;
+static TraderSpiWrap* TraderSpiWrapInstance = nullptr;
 
 TRADERAPI_EXPORTS void TRADERAPI_CALL  CreateTraderCApi()
 {
-	if (s_TraderApi == nullptr)
+	if (TraderApiInstance == nullptr)
 	{
-		s_TraderApi = TraderApi::CreateTraderApi();
+		TraderApiInstance = TraderApi::CreateTraderApi();
 	}
-	if (s_TraderSpiWrap == nullptr)
+	if (TraderSpiWrapInstance == nullptr)
 	{
-		s_TraderSpiWrap = new TraderSpiWrap();
+		TraderSpiWrapInstance = new TraderSpiWrap();
 	}
 }
 TRADERAPI_EXPORTS const char* TRADERAPI_CALL GetApiVersion()
 {
-	return s_TraderApi->GetApiVersion();
+	return TraderApiInstance->GetApiVersion();
 }
 TRADERAPI_EXPORTS bool TRADERAPI_CALL Init()
 {
-	return s_TraderApi->Init();
+	return TraderApiInstance->Init();
 }
 TRADERAPI_EXPORTS void TRADERAPI_CALL Join()
 {
-	s_TraderApi->Join();
+	TraderApiInstance->Join();
 }
 TRADERAPI_EXPORTS void TRADERAPI_CALL Release()
 {
-	if (s_TraderApi != nullptr)
+	if (TraderApiInstance != nullptr)
 	{
-		s_TraderApi->Release();
+		TraderApiInstance->Release();
 	}
-	s_TraderApi = nullptr;
-	if (s_TraderSpiWrap != nullptr)
+	TraderApiInstance = nullptr;
+	if (TraderSpiWrapInstance != nullptr)
 	{
-		delete s_TraderSpiWrap;
+		delete TraderSpiWrapInstance;
 	}
-	s_TraderSpiWrap = nullptr;
+	TraderSpiWrapInstance = nullptr;
 }
 TRADERAPI_EXPORTS void TRADERAPI_CALL RegisterFront(const char* address)
 {
-	s_TraderApi->RegisterFront(address);
+	TraderApiInstance->RegisterFront(address);
 }
 TRADERAPI_EXPORTS void TRADERAPI_CALL RegisterSpi(TraderCSpi* spi)
 {
-	s_TraderApi->RegisterSpi(s_TraderSpiWrap);
-	s_TraderSpiWrap->RegisterSpi(spi);
+	TraderApiInstance->RegisterSpi(TraderSpiWrapInstance);
+	TraderSpiWrapInstance->RegisterSpi(spi);
 }
 
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
 {
-	return s_TraderApi->ReqAccountLogin(reqAccountLogin, requestID);
+	return TraderApiInstance->ReqAccountLogin(reqAccountLogin, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
 {
-	return s_TraderApi->ReqAccountLogout(reqAccountLogout, requestID);
+	return TraderApiInstance->ReqAccountLogout(reqAccountLogout, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryHolderAccount, int requestID)
 {
-	return s_TraderApi->ReqQryHolderAccount(reqQryHolderAccount, requestID);
+	return TraderApiInstance->ReqQryHolderAccount(reqQryHolderAccount, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int requestID)
 {
-	return s_TraderApi->ReqQryCapital(reqQryCapital, requestID);
+	return TraderApiInstance->ReqQryCapital(reqQryCapital, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryPosition(const ReqQryPositionField* reqQryPosition, int requestID)
 {
-	return s_TraderApi->ReqQryPosition(reqQryPosition, requestID);
+	return TraderApiInstance->ReqQryPosition(reqQryPosition, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
 {
-	return s_TraderApi->ReqQryOrder(reqQryOrder, requestID);
+	return TraderApiInstance->ReqQryOrder(reqQryOrder, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
 {
-	return s_TraderApi->ReqQryTrade(reqQryTrade, requestID);
+	return TraderApiInstance->ReqQryTrade(reqQryTrade, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
 {
-	return s_TraderApi->ReqQryInstrument(reqQryInstrument, requestID);
+	return TraderApiInstance->ReqQryInstrument(reqQryInstrument, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryOptionInstrument(const ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestID)
 {
-	return s_TraderApi->ReqQryOptionInstrument(reqQryOptionInstrument, requestID);
+	return TraderApiInstance->ReqQryOptionInstrument(reqQryOptionInstrument, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryCommissionRate(const ReqQryCommissionRateField* reqQryCommissionRate, int requestID)
 {
-	return s_TraderApi->ReqQryCommissionRate(reqQryCommissionRate, requestID);
+	return TraderApiInstance->ReqQryCommissionRate(reqQryCommissionRate, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestID)
 {
-	return s_TraderApi->ReqQryMoneyTransfer(reqQryMoneyTransfer, requestID);
+	return TraderApiInstance->ReqQryMoneyTransfer(reqQryMoneyTransfer, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
 {
-	return s_TraderApi->ReqInsertOrder(reqInsertOrder, requestID);
+	return TraderApiInstance->ReqInsertOrder(reqInsertOrder, requestID);
 }
 TRADERAPI_EXPORTS int TRADERAPI_CALL ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
 {
-	return s_TraderApi->ReqCancelOrder(reqCancelOrder, requestID);
+	return TraderApiInstance->ReqCancelOrder(reqCancelOrder, requestID);
 }
 

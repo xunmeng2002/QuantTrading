@@ -26,7 +26,7 @@ public:
 
 
 protected:
-	SimExchangeSpi* simExchangeSpi;
+	SimExchangeSpi* simExchangeSpi_;
 	SessionIdType sessionId_;
 };
 }
