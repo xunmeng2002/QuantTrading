@@ -17,6 +17,6 @@ namespace QuantTrading::Settlement
 		PriceType GetSettlementPrice(const QuantTrading::PositionDetail* positionDetail) override;
 
 	private:
-		QuantTrading::Mdb* m_Mdb;
+		QuantTrading::Mdb* mdb_;
 	};
 }

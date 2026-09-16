@@ -153,7 +153,7 @@ namespace QuantTrading::Bar
 
     bool TradeSessions::RejectIfAlreadyLoaded(const char* sessionSource) const
     {
-        if (!m_IsLoaded)
+        if (!isLoaded_)
         {
             return false;
         }
@@ -181,7 +181,7 @@ namespace QuantTrading::Bar
             return false;
         }
         WriteLog(LogLevel::Info, "TradeSessions: Trade sessions loaded. SessionCount:%d, SessionFile:%s",
-            static_cast<int>(m_TradeSessions.size()), sessionFile.c_str());
+            static_cast<int>(tradeSessions_.size()), sessionFile.c_str());
         return true;
     }
     bool TradeSessions::ParseFromJsonString(const std::string& sessionJsonString)
@@ -232,19 +232,19 @@ namespace QuantTrading::Bar
                 tradeSession->TradeSections.push_back(std::move(tradeSection));
             }
 
-            m_TradeSessions.push_back(std::move(tradeSession));
+            tradeSessions_.push_back(std::move(tradeSession));
         }
 
-        for (auto& tradeSession : m_TradeSessions)
+        for (auto& tradeSession : tradeSessions_)
         {
             WriteLog(LogLevel::Info, "TradeSessions: TradeSession:%s", tradeSession->ToString().c_str());
         }
-        m_IsLoaded = true;
+        isLoaded_ = true;
         return true;
     }
     const TradeSession* TradeSessions::GetTradeSession(const char* exchangeId, const char* productId) const
     {
-        for (auto& tradeSession : m_TradeSessions)
+        for (auto& tradeSession : tradeSessions_)
         {
             if (tradeSession->Check(exchangeId, productId))
             {

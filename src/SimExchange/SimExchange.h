@@ -82,20 +82,20 @@ protected:
 	MdFront* m_MdFront;
 	TradeFront* m_TradeFront;
 	MdSpiImpl* m_MdSpi;
-	QuantTrading::Mdb* m_Mdb;
-    QuantTrading::ordermatch::OrderMatch* m_OrderMatch;
-	QuantTrading::Settlement::PositionMaintenance* m_PositionMaintenance;
+	QuantTrading::Mdb* mdb_;
+    QuantTrading::ordermatch::OrderMatch* orderMatch_;
+	QuantTrading::Settlement::PositionMaintenance* positionMaintenance_;
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
 
-	DateType m_TradingDay;
-	DateType m_CurrDate;
-	TimeType m_CurrTime;
+	DateType tradingDay_;
+	DateType currDate_;
+	TimeType currTime_;
 
 	std::set<ReqSubMarketDataField> m_SubscribeInstruments;
 	std::atomic<bool> m_IsMdLogged;
 
-	std::list<Package*> m_Packages;
+	std::list<Package*> packages_;
 	RspAccountLoginPackage* m_RspAccountLoginPackage;
 	RspAccountLogoutPackage* m_RspAccountLogoutPackage;
 	RspInsertOrderPackage* m_RspInsertOrderPackage;

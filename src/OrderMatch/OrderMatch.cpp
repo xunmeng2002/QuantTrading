@@ -49,9 +49,9 @@ namespace QuantTrading::ordermatch
         return nullptr;
     }
     OrderMatch::OrderMatch(const DateType& tradingDay, int maxTradeID)
-        :m_OrderMatchSubscriber(nullptr), m_MaxTradeID(maxTradeID), m_TradeID(""), m_CurrDate(""), m_CurrTime("")
+        :m_OrderMatchSubscriber(nullptr), m_MaxTradeID(maxTradeID), m_TradeID(""), currDate_(""), currTime_("")
     {
-        memcpy(m_TradingDay, tradingDay, sizeof(DateType));
+        memcpy(tradingDay_, tradingDay, sizeof(DateType));
     }
     OrderMatch::~OrderMatch()
     {
@@ -86,7 +86,7 @@ namespace QuantTrading::ordermatch
     void OrderMatch::OnTradingDayChange(const DateType& nextTradingDay)
     {
         CancelOrders();
-        memcpy(m_TradingDay, nextTradingDay, sizeof(DateType));
+        memcpy(tradingDay_, nextTradingDay, sizeof(DateType));
         m_MaxTradeID = 0;
         m_BuyOrders.clear();
         m_SellOrders.clear();
@@ -99,8 +99,8 @@ namespace QuantTrading::ordermatch
         memcpy(newOrder, order, sizeof(Order));
         newOrder->VolumeTotal = 0;
         newOrder->OrderStatus = order->VolumeTraded > 0 ? OrderStatusType::PartTradedCanceled : OrderStatusType::Canceled;
-        strcpy(newOrder->CancelDate, m_CurrDate);
-        strcpy(newOrder->CancelTime, m_CurrTime);
+        strcpy(newOrder->CancelDate, currDate_);
+        strcpy(newOrder->CancelTime, currTime_);
         m_OrderMatchSubscriber->OnOrderUpdate(order, newOrder);
     }
     void OrderMatch::CancelOrderOnInsert(QuantTrading::Order* order)
@@ -139,8 +139,8 @@ namespace QuantTrading::ordermatch
         trade->VolumeMultiple = order->VolumeMultiple;
         trade->TradeAmount = price * volume * order->VolumeMultiple;;
         trade->Commission = 0;
-        strcpy(trade->TradeDate, m_CurrDate);
-        strcpy(trade->TradeTime, m_CurrTime);
+        strcpy(trade->TradeDate, currDate_);
+        strcpy(trade->TradeTime, currTime_);
 
         m_OrderMatchSubscriber->OnTrade(trade);
     }
@@ -292,7 +292,7 @@ namespace QuantTrading::ordermatch
     }
     void OrderMatch::GetNextTradeID(TradeIdType& tradeID)
     {
-        sprintf(tradeID, "%s%08d", m_TradingDay, ++m_MaxTradeID);
+        sprintf(tradeID, "%s%08d", tradingDay_, ++m_MaxTradeID);
     }
     void OrderMatch::MatchMarketOrderAtPrice(QuantTrading::Order* order, PriceType marketPrice, PriceType opponentPrice)
     {
@@ -312,10 +312,10 @@ namespace QuantTrading::ordermatch
     }
     void OrderMatch::UpdateDateTime()
     {
-        TimeUtility::GetLocalDateTime(m_CurrDate, m_CurrTime);
+        TimeUtility::GetLocalDateTime(currDate_, currTime_);
     }
     void OrderMatch::UpdateDateTime(const Int64Type& updateTs)
     {
-        TimeUtility::GetDateTimeFromTimeStamp(updateTs, m_CurrDate, m_CurrTime);
+        TimeUtility::GetDateTimeFromTimeStamp(updateTs, currDate_, currTime_);
     }
 }

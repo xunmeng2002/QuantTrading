@@ -44,10 +44,10 @@ namespace QuantTrading::Bar
     }
 
     BarAggregator::BarAggregator(const TradeSessions& tradeSessions, BarPrecesType targetPreces, int targetPeriod)
-        :m_TradeSessions(tradeSessions)
-        ,m_TargetPreces(targetPreces)
-        ,m_TargetPeriod(targetPeriod)
-        ,m_BarSubscriber(nullptr)
+        :tradeSessions_(tradeSessions)
+        ,targetPreces_(targetPreces)
+        ,targetPeriod_(targetPeriod)
+        ,barSubscriber_(nullptr)
     {
         if (!QuantTrading::IsValidBarPrecesTarget(targetPreces, targetPeriod))
         {
@@ -58,24 +58,24 @@ namespace QuantTrading::Bar
 
     void BarAggregator::Subscribe(BarSubscriber* barSubscriber)
     {
-        m_BarSubscriber = barSubscriber;
+        barSubscriber_ = barSubscriber;
     }
 
     void BarAggregator::OnBarMarketData(const BarMarketDataField* bar)
     {
-        if (bar->BarPreces == m_TargetPreces && bar->BarPeriod == m_TargetPeriod)
+        if (bar->BarPreces == targetPreces_ && bar->BarPeriod == targetPeriod_)
         {
-            if (m_BarSubscriber != nullptr)
-                m_BarSubscriber->OnBarMarketData(const_cast<BarMarketDataField*>(bar));
+            if (barSubscriber_ != nullptr)
+                barSubscriber_->OnBarMarketData(const_cast<BarMarketDataField*>(bar));
             return;
         }
-        if (!m_Validated)
+        if (!validated_)
         {
             ValidateInputBar(*bar);
-            m_Validated = true;
+            validated_ = true;
         }
         const long long barMinute = bar->BarTime / 100000LL;
-        Bucket& bucket = m_Buckets[bar->InstrumentId];
+        Bucket& bucket = buckets_[bar->InstrumentId];
         if (bucket.HasBar && strcmp(bucket.Bar.TradingDay, bar->TradingDay) != 0)
             CloseBucket(bucket);
         if (bucket.HasBar && barMinute > bucket.EndMinute)
@@ -106,7 +106,7 @@ namespace QuantTrading::Bar
 
     void BarAggregator::Flush()
     {
-        for (auto& bucketEntry : m_Buckets)
+        for (auto& bucketEntry : buckets_)
         {
             if (bucketEntry.second.HasBar)
                 CloseBucket(bucketEntry.second);
@@ -160,34 +160,34 @@ namespace QuantTrading::Bar
 
     void BarAggregator::ValidateInputBar(const BarMarketDataField& bar)
     {
-        ValidatePrecesRelation(bar.BarPreces, bar.BarPeriod, m_TargetPreces, m_TargetPeriod, bar.InstrumentId);
+        ValidatePrecesRelation(bar.BarPreces, bar.BarPeriod, targetPreces_, targetPeriod_, bar.InstrumentId);
     }
 
     void BarAggregator::CloseBucket(Bucket& bucket)
     {
-        bucket.Bar.BarPreces = m_TargetPreces;
-        bucket.Bar.BarPeriod = m_TargetPeriod;
+        bucket.Bar.BarPreces = targetPreces_;
+        bucket.Bar.BarPeriod = targetPeriod_;
         // 名义桶尾：断档/段末尾桶同样取名义桶尾，保证多合约跨品种时间对齐
         bucket.Bar.BarTime = bucket.EndMinute * 100000LL;
         bucket.Bar.UpdateTs = bucket.Bar.BarTime;
-        if (m_BarSubscriber != nullptr)
-            m_BarSubscriber->OnBarMarketData(&bucket.Bar);
+        if (barSubscriber_ != nullptr)
+            barSubscriber_->OnBarMarketData(&bucket.Bar);
         bucket.HasBar = false;
     }
 
     const TradeSession* BarAggregator::ResolveTradeSession(const BarMarketDataField& bar)
     {
-        auto cachedIt = m_InstrumentTradeSessions.find(bar.InstrumentId);
-        if (cachedIt != m_InstrumentTradeSessions.end())
+        auto cachedIt = instrumentTradeSessions_.find(bar.InstrumentId);
+        if (cachedIt != instrumentTradeSessions_.end())
             return cachedIt->second;
 
-        const TradeSession* tradeSession = m_TradeSessions.GetTradeSessionForInstrument(bar.ExchangeId, bar.InstrumentId);
+        const TradeSession* tradeSession = tradeSessions_.GetTradeSessionForInstrument(bar.ExchangeId, bar.InstrumentId);
         if (tradeSession == nullptr)
         {
             WriteLog(LogLevel::Warning, "BarAggregator: Trade session not found, fall back to wall-clock alignment. ExchangeId:%s, InstrumentId:%s",
                 bar.ExchangeId, bar.InstrumentId);
         }
-        m_InstrumentTradeSessions[bar.InstrumentId] = tradeSession;
+        instrumentTradeSessions_[bar.InstrumentId] = tradeSession;
         return tradeSession;
     }
 
@@ -200,7 +200,7 @@ namespace QuantTrading::Bar
             if (sectionEndMinute > 0LL)
                 return sectionEndMinute;
         }
-        return AlignBucketEndMinuteByWallClock(barMinute, m_TargetPeriod);
+        return AlignBucketEndMinuteByWallClock(barMinute, targetPeriod_);
     }
 
     long long BarAggregator::AlignBucketEndMinuteByTradeSection(const BarMarketDataField& bar, long long barMinute, const TradeSession* tradeSession)
@@ -233,12 +233,12 @@ namespace QuantTrading::Bar
         if (barMinute < sectionFromMinute || barMinute > sectionLastBarMinute)
             return 0LL;
         // 段内按目标周期自段首逐桶推进：断档（bar 迟到/缺失）时也能定位到正确的名义桶，段末不满一桶的尾桶按段末收口
-        long long bucketEndMinute = TimeUtility::MinuteAdd(sectionBeginBarTime, m_TargetPeriod - 1);
+        long long bucketEndMinute = TimeUtility::MinuteAdd(sectionBeginBarTime, targetPeriod_ - 1);
         if (bucketEndMinute > sectionLastBarMinute)
             bucketEndMinute = sectionLastBarMinute;
         while (bucketEndMinute < barMinute)
         {
-            bucketEndMinute = TimeUtility::MinuteAdd(bucketEndMinute, m_TargetPeriod);
+            bucketEndMinute = TimeUtility::MinuteAdd(bucketEndMinute, targetPeriod_);
             if (bucketEndMinute >= sectionLastBarMinute)
             {
                 bucketEndMinute = sectionLastBarMinute;

@@ -61,7 +61,7 @@ namespace QuantTrading::MdOffer
         bool IsSessionLoggedIn(const SessionIdType& sessionId);
 
     private:
-        QuantTrading::Mdb* m_Mdb;
+        QuantTrading::Mdb* mdb_;
         MdFront* m_MdFront;
         CThostFtdcMdSpiImpl* m_MdSpi;
         MinuteBar* m_MinuteBar;

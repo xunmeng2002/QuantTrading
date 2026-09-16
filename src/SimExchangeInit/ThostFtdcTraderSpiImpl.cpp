@@ -14,7 +14,7 @@ using namespace Spark::Serialization;
 namespace QuantTrading::SimExchangeInit
 {
 CThostFtdcTraderSpiImpl::CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, QuantTrading::Mdb* mdb)
-	:m_TraderApi(traderApi), m_Mdb(mdb), m_RequestID(0), m_AccountInfo(nullptr), m_QryFinished(false)
+	:m_TraderApi(traderApi), mdb_(mdb), m_RequestID(0), m_AccountInfo(nullptr), m_QryFinished(false)
 {
 	m_Exchanges = new vector<Exchange*>();
 	m_Products = new vector< Product*>();
@@ -59,7 +59,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryExchange(CThostFtdcExchangeField* pExchang
 	m_Exchanges->push_back(exchange);
 	if (bIsLast)
 	{
-		m_Mdb->Exchange->BatchInsert(m_Exchanges);
+		mdb_->Exchange->BatchInsert(m_Exchanges);
 		ReqQryProduct();
 	}
 }
@@ -110,7 +110,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryProduct(CThostFtdcProductField* pProduct, 
 	m_Products->push_back(product);
 	if (bIsLast)
 	{
-		m_Mdb->Product->BatchInsert(m_Products);
+		mdb_->Product->BatchInsert(m_Products);
 		ReqQryInstrument();
 	}
 }
@@ -166,7 +166,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryInstrument(CThostFtdcInstrumentField* pIns
 	m_Instruments->push_back(instrument);
 	if (bIsLast)
 	{
-		m_Mdb->Instrument->BatchInsert(m_Instruments);
+		mdb_->Instrument->BatchInsert(m_Instruments);
 		ReqQryTradingAccount();
 	}
 }

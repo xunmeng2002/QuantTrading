@@ -61,11 +61,11 @@ namespace QuantTrading::ordermatch
     protected:
         OrderMatchSubscriber* m_OrderMatchSubscriber;
 
-        DateType m_TradingDay;
+        DateType tradingDay_;
         int m_MaxTradeID;
         TradeIdType m_TradeID;
-        DateType m_CurrDate;
-        TimeType m_CurrTime;
+        DateType currDate_;
+        TimeType currTime_;
         std::map<std::string, std::set<QuantTrading::Order*, OrderLessForPriceOpposite>> m_BuyOrders;
         std::map<std::string, std::set<QuantTrading::Order*, OrderLessForPrice>> m_SellOrders;
         std::map<std::string, std::set<QuantTrading::Order*, OrderLessForOrderID>> m_MarketBuyOrders;

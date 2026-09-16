@@ -74,8 +74,8 @@ namespace QuantTrading::MdOffer
         else
         {
             std::lock_guard<std::mutex> guard(m_Mutex);
-            auto reqSubMdIt = m_ReqSubMds.find(package->DepthMarketData->InstrumentId);
-            if (reqSubMdIt != m_ReqSubMds.end())
+            auto reqSubMdIt = reqSubMds_.find(package->DepthMarketData->InstrumentId);
+            if (reqSubMdIt != reqSubMds_.end())
             {
                 Utility::Strcpy(package->DepthMarketData->ExchangeId, reqSubMdIt->second->ExchangeId);
             }
@@ -132,7 +132,7 @@ namespace QuantTrading::MdOffer
     {
         WriteLog(LogLevel::Info, "SubscribeMd: ExchangeID:%s, InstrumentID:%s", reqSubMd->ExchangeId, reqSubMd->InstrumentId);
         lock_guard<mutex> gurad(m_Mutex);
-        if (!m_ReqSubMds.try_emplace(reqSubMd->InstrumentId, reqSubMd).second)
+        if (!reqSubMds_.try_emplace(reqSubMd->InstrumentId, reqSubMd).second)
         {
             return;
         }
@@ -151,7 +151,7 @@ namespace QuantTrading::MdOffer
         std::vector<const char*> newInstruments;
         for (auto reqSubMd : reqSubMds)
         {
-            if (!m_ReqSubMds.try_emplace(reqSubMd->InstrumentId, reqSubMd).second)
+            if (!reqSubMds_.try_emplace(reqSubMd->InstrumentId, reqSubMd).second)
             {
                 continue;
             }

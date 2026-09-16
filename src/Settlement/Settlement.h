@@ -28,7 +28,7 @@ namespace QuantTrading::Settlement
 		void InitPositionDetail(const DateType& tradingDay, const DateType& nextTradingDay);
 		void CalcCapital(QuantTrading::Capital* capital);
 
-		QuantTrading::Mdb* m_Mdb;
-		SettlementPriceSource* m_SettlementPriceSource;
+		QuantTrading::Mdb* mdb_;
+		SettlementPriceSource* settlementPriceSource_;
 	};
 }

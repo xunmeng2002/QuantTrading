@@ -8,7 +8,7 @@
 
 namespace QuantTrading::Bar
 {
-    class TradeSection
+    struct TradeSection
     {
     public:
         int From;
@@ -52,7 +52,7 @@ namespace QuantTrading::Bar
         // 已装载则 WriteLog 并返回 true（调用方据此拒绝重复装载，避免他方缓存的裸指针失效）
         bool RejectIfAlreadyLoaded(const char* sessionSource) const;
 
-        bool m_IsLoaded = false;
-        std::vector<std::unique_ptr<TradeSession>> m_TradeSessions;
+        bool isLoaded_ = false;
+        std::vector<std::unique_ptr<TradeSession>> tradeSessions_;
     };
 }

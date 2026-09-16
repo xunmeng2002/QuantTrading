@@ -86,84 +86,84 @@ static void InsertInstrumentOrUpdate(InstrumentTable* instrumentTable, Instrumen
 namespace QuantTrading::BackTest
 {
 SimExchange::SimExchange(const Config& config)
-	:ThreadBase("SimExchange"), m_BackTestSpi(nullptr), m_HasSubMd(false), m_IsMdEnd(false),
-	m_Registry(BackTestTableList), m_CurrDate(""), m_CurrTime(""), m_SessionFile(config.SessionFile)
+	:ThreadBase("SimExchange"), backTestSpi_(nullptr), hasSubMd_(false), isMdEnd_(false),
+	registry_(BackTestTableList), currDate_(""), currTime_(""), sessionFile_(config.SessionFile)
 {
 	auto matchMode = (MatchModeType)config.MatchMode;
-	strcpy(m_TradingDay, config.StartTradingDay.c_str());
+	strcpy(tradingDay_, config.StartTradingDay.c_str());
 	strcpy(startTradingDay_, config.StartTradingDay.c_str());
 	strcpy(endTradingDay_, config.EndTradingDay.c_str());
-	m_MarketDataType = matchMode == MatchModeType::Bar ? MarketDataTypeType::Bar : MarketDataTypeType::Tick;
-	memset(&m_PushMdTick, 0, sizeof(DepthMarketDataField));
-	memset(&m_PushMdBar, 0, sizeof(BarMarketDataField));
-	m_MdReader = new MdReader(config);
-	m_RunID = MakeRunID();
+	marketDataType_ = matchMode == MatchModeType::Bar ? MarketDataTypeType::Bar : MarketDataTypeType::Tick;
+	memset(&pushMdTick_, 0, sizeof(DepthMarketDataField));
+	memset(&pushMdBar_, 0, sizeof(BarMarketDataField));
+	mdReader_ = new MdReader(config);
+	runId_ = MakeRunID();
 	// Dump 以 fopen(dir//t_Xxx.csv) 落盘，目录缺失时静默失败，按 RunID 隔离前须先建目录
-	m_DumpPath = config.DumpPath + "/" + m_RunID;
+	dumpPath_ = config.DumpPath + "/" + runId_;
 	std::error_code dumpDirError;
-	std::filesystem::create_directories(m_DumpPath, dumpDirError);
-	auto runDbHost = DeriveRunDbHost(config.DbHost, m_RunID);
-	m_Db = CreateDataDb(config.DbType, runDbHost, config.DbUser, config.DbPassword);
-	WriteLog(LogLevel::Info, "RunID:%s, DbHost:%s, DumpPath:%s", m_RunID.c_str(), runDbHost.c_str(), m_DumpPath.c_str());
-    m_DbWriter = new AsyncDbWriter(m_Db, &m_Registry);
-	m_DbWriter->Subscribe(this);
-	m_Mdb = new Mdb(BackTestTableList);
-	m_OrderMatch = OrderMatch::CreateOrderMatch(matchMode, m_TradingDay);
-	m_OrderMatch->Subscribe(this);
-	m_PositionMaintenance = new QuantTrading::Settlement::PositionMaintenance(m_Mdb);
-	m_BarSettlementPriceSource.m_LastMdBars = &m_LastMdBars;
-	if (m_MarketDataType == MarketDataTypeType::Tick)
+	std::filesystem::create_directories(dumpPath_, dumpDirError);
+	auto runDbHost = DeriveRunDbHost(config.DbHost, runId_);
+	db_ = CreateDataDb(config.DbType, runDbHost, config.DbUser, config.DbPassword);
+	WriteLog(LogLevel::Info, "RunID:%s, DbHost:%s, DumpPath:%s", runId_.c_str(), runDbHost.c_str(), dumpPath_.c_str());
+    dbWriter_ = new AsyncDbWriter(db_, &registry_);
+	dbWriter_->Subscribe(this);
+	mdb_ = new Mdb(BackTestTableList);
+	orderMatch_ = OrderMatch::CreateOrderMatch(matchMode, tradingDay_);
+	orderMatch_->Subscribe(this);
+	positionMaintenance_ = new QuantTrading::Settlement::PositionMaintenance(mdb_);
+	barSettlementPriceSource_.lastMdBars_ = &lastMdBars_;
+	if (marketDataType_ == MarketDataTypeType::Tick)
 	{
-		m_SettlementPriceSource = new QuantTrading::Settlement::MdbTickSettlementPriceSource(m_Mdb);
+		settlementPriceSource_ = new QuantTrading::Settlement::MdbTickSettlementPriceSource(mdb_);
 	}
 	else
 	{
-		m_SettlementPriceSource = &m_BarSettlementPriceSource;
+		settlementPriceSource_ = &barSettlementPriceSource_;
 	}
-	m_Settlement = new QuantTrading::Settlement::Settlement(m_Mdb, m_SettlementPriceSource);
+	settlement_ = new QuantTrading::Settlement::Settlement(mdb_, settlementPriceSource_);
 }
 SimExchange::~SimExchange()
 {
-	delete m_MdReader;
-	m_MdReader = nullptr;
-	delete m_Mdb;
-	m_Mdb = nullptr;
+	delete mdReader_;
+	mdReader_ = nullptr;
+	delete mdb_;
+	mdb_ = nullptr;
 }
 bool SimExchange::Init()
 {
-	if (m_Db == nullptr)
+	if (db_ == nullptr)
 	{
 		WriteLog(LogLevel::Error, "Create Db Failed.");
 		return false;
 	}
 	// 交易节在首个订阅到达前装载：聚合器按交易节段首锚定桶边界，缺了它会静默回落墙钟对齐而不报错
-	if (!m_TradeSessions.LoadFromFile(m_SessionFile))
+	if (!tradeSessions_.LoadFromFile(sessionFile_))
 	{
-		WriteLog(LogLevel::Error, "Load trade sessions failed. SessionFile:%s", m_SessionFile.c_str());
+		WriteLog(LogLevel::Error, "Load trade sessions failed. SessionFile:%s", sessionFile_.c_str());
 		return false;
 	}
-	m_Mdb->Subscribe(m_DbWriter);
+	mdb_->Subscribe(dbWriter_);
 
-	m_MdReader->Init();
+	mdReader_->Init();
 	InitMdInstrument();
 	InitMainInstrument();
-	SendRtnSessionBegin(m_TradingDay);
+	SendRtnSessionBegin(tradingDay_);
 	return true;
 }
 bool SimExchange::Start()
 {
-	m_DbWriter->Start();
+	dbWriter_->Start();
 	ThreadBase::Start();
 	return true;
 }
 void SimExchange::Stop()
 {
-	m_DbWriter->Stop();
+	dbWriter_->Stop();
 	ThreadBase::Stop();
 }
 void SimExchange::Join()
 {
-	m_DbWriter->Join();
+	dbWriter_->Join();
 	ThreadBase::Join();
 }
 
@@ -182,28 +182,28 @@ void SimExchange::OnOrder(QuantTrading::Order* order)
 }
 void SimExchange::OnOrderUpdate(QuantTrading::Order* order, QuantTrading::Order* newOrder)
 {
-    m_Mdb->Order->Update(order, newOrder);
+    mdb_->Order->Update(order, newOrder);
     SendRtnOrder(order);
 }
 void SimExchange::OnTrade(QuantTrading::Trade* trade)
 {
-    m_Mdb->Trade->Insert(trade);
+    mdb_->Trade->Insert(trade);
 	SendRtnTrade(trade);
-	m_PositionMaintenance->UpdateOnTrade(trade);
+	positionMaintenance_->UpdateOnTrade(trade);
 }
 
 
 void SimExchange::RegisterSpi(BackTestSpi* pSpi)
 {
-	m_BackTestSpi = pSpi;
+	backTestSpi_ = pSpi;
 }
 int SimExchange::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
 {
 	ReqSubMarketDataField* reqSubMd = ::Allocate<ReqSubMarketDataField>();
 	memcpy(reqSubMd, reqSubMarketData, sizeof(ReqSubMarketDataField));
 	{
-		lock_guard<mutex> guard(m_QueueMutex);
-		m_ReqSubMds.push_back(reqSubMd);
+		lock_guard<mutex> guard(queueMutex_);
+		reqSubMds_.push_back(reqSubMd);
 	}
 	return 0;
 }
@@ -215,8 +215,8 @@ int SimExchange::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* r
 	memcpy(reqPackage->ReqSubMarketDataFinished, reqSubMarketDataFinished, sizeof(ReqSubMarketDataFinishedField));
 
 	{
-		lock_guard<mutex> guard(m_QueueMutex);
-		m_Packages.push_back(reqPackage);
+		lock_guard<mutex> guard(queueMutex_);
+		packages_.push_back(reqPackage);
 	}
 	return 0;
 }
@@ -228,8 +228,8 @@ int SimExchange::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAc
 	memcpy(reqPackage->ReqRegisterAccount, reqRegisterAccount, sizeof(ReqRegisterAccountField));
 
 	{
-		lock_guard<mutex> guard(m_QueueMutex);
-		m_Packages.push_back(reqPackage);
+		lock_guard<mutex> guard(queueMutex_);
+		packages_.push_back(reqPackage);
 	}
 	return 0;
 }
@@ -241,8 +241,8 @@ int SimExchange::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int r
 	memcpy(reqPackage->ReqInsertOrder, reqInsertOrder, sizeof(ReqInsertOrderField));
 
 	{
-		lock_guard<mutex> guard(m_QueueMutex);
-		m_Packages.push_back(reqPackage);
+		lock_guard<mutex> guard(queueMutex_);
+		packages_.push_back(reqPackage);
 	}
 	return 0;
 }
@@ -254,15 +254,15 @@ int SimExchange::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int r
 	memcpy(reqPackage->ReqCancelOrder, reqCancelOrder, sizeof(ReqCancelOrderField));
 
 	{
-		lock_guard<mutex> guard(m_QueueMutex);
-		m_Packages.push_back(reqPackage);
+		lock_guard<mutex> guard(queueMutex_);
+		packages_.push_back(reqPackage);
 	}
 	return 0;
 }
 void SimExchange::Run()
 {
 	HandlePackages();
-	if (m_HasSubMd)
+	if (hasSubMd_)
 	{
 		PushNextMd();
 	}
@@ -276,8 +276,8 @@ void SimExchange::HandlePackages()
 {
 	std::list<Package*> packages;
 	{
-		lock_guard<mutex> guard(m_QueueMutex);
-		packages.swap(m_Packages);
+		lock_guard<mutex> guard(queueMutex_);
+		packages.swap(packages_);
 	}
 	for (auto package : packages)
 	{
@@ -303,114 +303,114 @@ void SimExchange::HandlePackages()
 }
 void SimExchange::PushNextMd()
 {
-	if (m_MarketDataType == MarketDataTypeType::Tick)
+	if (marketDataType_ == MarketDataTypeType::Tick)
 	{
-		if (m_MdTicks.empty())
+		if (mdTicks_.empty())
 		{
 			OnMdEnd();
 		}
 		else
 		{
-			auto mdTick = m_MdTicks.front();
-			m_MdTicks.pop_front();
+			auto mdTick = mdTicks_.front();
+			mdTicks_.pop_front();
 			PushNextTick(mdTick);
 		}
 	}
-	else if (m_MarketDataType == MarketDataTypeType::Bar)
+	else if (marketDataType_ == MarketDataTypeType::Bar)
 	{
-		if (m_MdBars.empty())
+		if (mdBars_.empty())
 		{
 			OnMdEnd();
 		}
 		else
 		{
-			auto mdBar = m_MdBars.front();
-			m_MdBars.pop_front();
+			auto mdBar = mdBars_.front();
+			mdBars_.pop_front();
 			PushNextBar(mdBar);
 		}
 	}
 }
 void SimExchange::OnMdEnd()
 {
-	if (m_IsMdEnd)
+	if (isMdEnd_)
 	{
 		return;
 	}
-	m_IsMdEnd = true;
+	isMdEnd_ = true;
 	WriteLog(LogLevel::Info, "OnMdEnd");
 	FlushBarAggregators();
-    m_OrderMatch->OnTradingDayChange(m_TradingDay);
+    orderMatch_->OnTradingDayChange(tradingDay_);
 	Settlement();
-	m_Mdb->Dump(m_DumpPath.c_str());
+	mdb_->Dump(dumpPath_.c_str());
 	WriteLog(LogLevel::Info, "Dump Completed\n");
 	
-	m_Mdb->InitDb();
+	mdb_->InitDb();
     SendRtnMarketDataEnd();
 }
 
 void SimExchange::PushNextTick(QuantTrading::DepthMarketData* mdTick)
 {
-	if (strcmp(mdTick->TradingDay, m_TradingDay) < 0)
+	if (strcmp(mdTick->TradingDay, tradingDay_) < 0)
 	{
-		WriteLog(LogLevel::Warning, "UnExpected Md, While MdTick TradingDay:%s less than CurrTradingDay:%s, DepthMarketData:%s", mdTick->TradingDay, m_TradingDay, mdTick->GetDebugString());
+		WriteLog(LogLevel::Warning, "UnExpected Md, While MdTick TradingDay:%s less than CurrTradingDay:%s, DepthMarketData:%s", mdTick->TradingDay, tradingDay_, mdTick->GetDebugString());
 		return;
 	}
-	else if (strcmp(mdTick->TradingDay, m_TradingDay) > 0)
+	else if (strcmp(mdTick->TradingDay, tradingDay_) > 0)
 	{
 		ChangeTradingDay(mdTick->TradingDay);
 	}
-	TimeUtility::GetDateTimeFromTimeStamp(mdTick->UpdateTs, m_CurrDate, m_CurrTime);
-	m_OrderMatch->OnTick(mdTick);
+	TimeUtility::GetDateTimeFromTimeStamp(mdTick->UpdateTs, currDate_, currTime_);
+	orderMatch_->OnTick(mdTick);
 	SendRtnDepthMarketData(mdTick);
-	auto oldMdTick = m_Mdb->DepthMarketData->PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeId, mdTick->InstrumentId);
+	auto oldMdTick = mdb_->DepthMarketData->PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeId, mdTick->InstrumentId);
 	if (oldMdTick == nullptr)
 	{
-		m_Mdb->DepthMarketData->Insert(mdTick);
+		mdb_->DepthMarketData->Insert(mdTick);
 	}
 	else
 	{
-		m_Mdb->DepthMarketData->Update(oldMdTick, mdTick);
+		mdb_->DepthMarketData->Update(oldMdTick, mdTick);
 	}
 }
 void SimExchange::PushNextBar(QuantTrading::BarMarketData* mdBar)
 {
-	if (strcmp(mdBar->TradingDay, m_TradingDay) < 0)
+	if (strcmp(mdBar->TradingDay, tradingDay_) < 0)
 	{
-		WriteLog(LogLevel::Warning, "UnExpected Md, While MdBar TradingDay:%s less than CurrTradingDay:%s, BarMarketData:%s", mdBar->TradingDay, m_TradingDay, mdBar->GetDebugString());
+		WriteLog(LogLevel::Warning, "UnExpected Md, While MdBar TradingDay:%s less than CurrTradingDay:%s, BarMarketData:%s", mdBar->TradingDay, tradingDay_, mdBar->GetDebugString());
 		return;
 	}
-	else if (strcmp(mdBar->TradingDay, m_TradingDay) > 0)
+	else if (strcmp(mdBar->TradingDay, tradingDay_) > 0)
 	{
 		ChangeTradingDay(mdBar->TradingDay);
 	}
-    TimeUtility::GetDateTimeFromTimeStamp(mdBar->UpdateTs, m_CurrDate, m_CurrTime);
+    TimeUtility::GetDateTimeFromTimeStamp(mdBar->UpdateTs, currDate_, currTime_);
 	// 撮合始终用数据集精度的原始 bar（聚合只改变推送给策略的粒度，不降低撮合精度）
-	m_OrderMatch->OnBar(mdBar);
+	orderMatch_->OnBar(mdBar);
 	PushBarMarketData(mdBar);
 	// Insert 失败即回池（记录已被表释放，失败原因由表内日志给出）：末根 bar 只在入库成功时登记，
 	// 否则结算价来源会取到悬空指针，且失败后读取 mdBar->InstrumentId 已是释放后访问
-	if (m_Mdb->BarMarketData->Insert(mdBar))
+	if (mdb_->BarMarketData->Insert(mdBar))
 	{
-		m_LastMdBars[mdBar->InstrumentId] = mdBar;
+		lastMdBars_[mdBar->InstrumentId] = mdBar;
 	}
 }
 void SimExchange::PushBarMarketData(QuantTrading::BarMarketData* mdBar)
 {
-	// 输入字段就地读进 m_PushMdBar：未声明周期的合约直接把这份字段推给策略，不额外占缓冲
-	MdbToField(mdBar, &m_PushMdBar);
-	auto barAggregatorIt = m_InstrumentBarAggregators.find(mdBar->InstrumentId);
-	if (barAggregatorIt == m_InstrumentBarAggregators.end())
+	// 输入字段就地读进 pushMdBar_：未声明周期的合约直接把这份字段推给策略，不额外占缓冲
+	MdbToField(mdBar, &pushMdBar_);
+	auto barAggregatorIt = instrumentBarAggregators_.find(mdBar->InstrumentId);
+	if (barAggregatorIt == instrumentBarAggregators_.end())
 	{
-		OnBarMarketData(&m_PushMdBar);
+		OnBarMarketData(&pushMdBar_);
 		return;
 	}
 	// 声明了周期的合约交聚合器：闭桶时经 OnBarMarketData 推送桶内 bar，未闭桶则不推送
-	barAggregatorIt->second->OnBarMarketData(&m_PushMdBar);
+	barAggregatorIt->second->OnBarMarketData(&pushMdBar_);
 }
 void SimExchange::OnBarMarketData(BarMarketDataField* bar)
 {
 	// 桶内 bar 与透传 bar 都是本次回调内有效的字段，订阅方复制后即弃
-	m_BackTestSpi->OnRtnBarMarketData(bar);
+	backTestSpi_->OnRtnBarMarketData(bar);
 }
 bool SimExchange::BindBarAggregator(const char* exchangeId, const char* instrumentId, BarPrecesType barPreces, int barPeriod)
 {
@@ -421,7 +421,7 @@ bool SimExchange::BindBarAggregator(const char* exchangeId, const char* instrume
 	try
 	{
 		// 装载期预校验：数据集精度本就在手，不必等首根 bar 才发现不可聚合（那时已是引擎线程内抛异常）
-		Bar::BarAggregator::ValidatePrecesRelation(m_MdReader->GetBarPrecesType(), m_MdReader->GetBarPeriod(), barPreces, barPeriod, instrumentId);
+		Bar::BarAggregator::ValidatePrecesRelation(mdReader_->GetBarPrecesType(), mdReader_->GetBarPeriod(), barPreces, barPeriod, instrumentId);
 	}
 	catch (const std::logic_error& e)
 	{
@@ -430,19 +430,19 @@ bool SimExchange::BindBarAggregator(const char* exchangeId, const char* instrume
 		return false;
 	}
 	const std::pair<BarPrecesType, int> targetPeriod(barPreces, barPeriod);
-	auto barAggregatorIt = m_BarAggregators.find(targetPeriod);
-	if (barAggregatorIt == m_BarAggregators.end())
+	auto barAggregatorIt = barAggregators_.find(targetPeriod);
+	if (barAggregatorIt == barAggregators_.end())
 	{
-		auto barAggregator = std::make_unique<Bar::BarAggregator>(m_TradeSessions, barPreces, barPeriod);
+		auto barAggregator = std::make_unique<Bar::BarAggregator>(tradeSessions_, barPreces, barPeriod);
 		barAggregator->Subscribe(this);
-		barAggregatorIt = m_BarAggregators.emplace(targetPeriod, std::move(barAggregator)).first;
+		barAggregatorIt = barAggregators_.emplace(targetPeriod, std::move(barAggregator)).first;
 	}
-	m_InstrumentBarAggregators[instrumentId] = barAggregatorIt->second.get();
+	instrumentBarAggregators_[instrumentId] = barAggregatorIt->second.get();
 	return true;
 }
 void SimExchange::FlushBarAggregators()
 {
-	for (auto& barAggregatorEntry : m_BarAggregators)
+	for (auto& barAggregatorEntry : barAggregators_)
 	{
 		barAggregatorEntry.second->Flush();
 	}
@@ -452,8 +452,8 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 {
 	std::list<ReqSubMarketDataField*> reqSubMds;
 	{
-		lock_guard<mutex> guard(m_QueueMutex);
-		reqSubMds.swap(m_ReqSubMds);
+		lock_guard<mutex> guard(queueMutex_);
+		reqSubMds.swap(reqSubMds_);
 	}
 	map<std::string, list<MdSubscribe*>> instrumentMdSubscribes;
 	// 订阅声明的目标周期按合约代码暂存：实际登记要等 MdSubscribe 展开出 RealInstrumentId（热门合约滚动时二者不同）
@@ -468,7 +468,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		}
 		instrumentBarPeriods[reqSubMd->InstrumentId] = *reqSubMd;
 		auto& mdSubscribes = instrumentMdSubscribes[reqSubMd->InstrumentId];
-		auto instrument = m_Mdb->Instrument->PrimaryKey->Select(reqSubMd->ExchangeId, reqSubMd->InstrumentId);
+		auto instrument = mdb_->Instrument->PrimaryKey->Select(reqSubMd->ExchangeId, reqSubMd->InstrumentId);
 		if (instrument == nullptr)
 		{
 			WriteLog(LogLevel::Error, "Cannot Find Instrument While SubMarketData. ExchangeId:%s, InstrumentId:%s", reqSubMd->ExchangeId, reqSubMd->InstrumentId);
@@ -491,8 +491,8 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		}
 		else
 		{
-			auto startIt = m_Mdb->HotInstrument->TradingDayIndex->LowerBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, startTradingDay_);
-			auto endIt = m_Mdb->HotInstrument->TradingDayIndex->UpperBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, endTradingDay_);
+			auto startIt = mdb_->HotInstrument->TradingDayIndex->LowerBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, startTradingDay_);
+			auto endIt = mdb_->HotInstrument->TradingDayIndex->UpperBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, endTradingDay_);
 			if (startIt == endIt)
 			{
 				WriteLog(LogLevel::Warning, "Cannot Find HotInstrument While SubMarketData. ExchangeId:%s, ProductId:%s, Rank:%d, StartTradingDay:%s, EndTradingDay:%s",
@@ -589,7 +589,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			int year = int(atoi(mdSubscribe->StartTradingDay) / 10000);
 			// 先入库再入年份队列：Insert 失败即回池，此指针不可再读取（明细由表内日志给出），
 			// 也不得进年份队列——否则行情读取线程会拿着已释放的订阅去取数
-			if (!m_Mdb->MdSubscribe->Insert(mdSubscribe))
+			if (!mdb_->MdSubscribe->Insert(mdSubscribe))
 			{
 				WriteLog(LogLevel::Warning, "MdSubscribe dropped, its market data will not be read. InstrumentId:%s, Year:%d", it.first.c_str(), year);
 				continue;
@@ -603,14 +603,14 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		OnMdEnd();
 		return;
 	}
-	if (m_MarketDataType == MarketDataTypeType::Tick)
+	if (marketDataType_ == MarketDataTypeType::Tick)
 	{
 		std::list<DepthMarketData*> mdTicks;
 		for (auto& it : yearMdSubscribes)
 		{
 			auto& mdSubscribes = it.second;
-			m_MdReader->ReadMdTick(mdSubscribes, mdTicks);
-			m_MdTicks.splice(m_MdTicks.end(), mdTicks);
+			mdReader_->ReadMdTick(mdSubscribes, mdTicks);
+			mdTicks_.splice(mdTicks_.end(), mdTicks);
 		}
 	}
 	else
@@ -619,17 +619,17 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		for (auto& it : yearMdSubscribes)
 		{
 			auto& mdSubscribes = it.second;
-			m_MdReader->ReadMdBar(mdSubscribes, mdBars);
-			m_MdBars.splice(m_MdBars.end(), mdBars);
+			mdReader_->ReadMdBar(mdSubscribes, mdBars);
+			mdBars_.splice(mdBars_.end(), mdBars);
 		}
 	}
-	m_HasSubMd = true;
+	hasSubMd_ = true;
 }
 void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleRegisterAccount %s", reqPackage->GetDebugString());
 	auto reqRegisterAccount = reqPackage->ReqRegisterAccount;
-	auto account = m_Mdb->Account->PrimaryKey->Select(reqRegisterAccount->AccountId);
+	auto account = mdb_->Account->PrimaryKey->Select(reqRegisterAccount->AccountId);
 	if (account == nullptr)
 	{
 		// 回测账户按需自建（同 BackTestInit 种子语义）：Balance=0，资金账目由日终结算按日滚动
@@ -642,15 +642,15 @@ void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 		account->TradeGroupId = 1;
 		account->RiskGroupId = 1;
 		account->CommissionGroupId = 1;
-		m_Mdb->Account->Insert(account);
+		mdb_->Account->Insert(account);
 
 		auto capital = QuantTrading::Capital::Allocate();
 		memset(capital, 0, sizeof(QuantTrading::Capital));
-		strcpy(capital->TradingDay, m_TradingDay);
+		strcpy(capital->TradingDay, tradingDay_);
 		strcpy(capital->AccountId, account->AccountId);
 		capital->AccountType = AccountTypeType::Primary;
-		m_Mdb->Capital->Insert(capital);
-		WriteLog(LogLevel::Info, "Account registered, AccountId:%s, TradingDay:%s", account->AccountId, m_TradingDay);
+		mdb_->Capital->Insert(capital);
+		WriteLog(LogLevel::Info, "Account registered, AccountId:%s, TradingDay:%s", account->AccountId, tradingDay_);
 	}
 	else
 	{
@@ -663,13 +663,13 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	WriteLog(LogLevel::Info, "HandleInsertOrder %s", reqPackage->GetDebugString());
 	auto reqInsertOrder = reqPackage->ReqInsertOrder;
 	int errorId = ErrorNone;
-	auto instrument = m_Mdb->Instrument->PrimaryKey->Select(reqInsertOrder->ExchangeId, reqInsertOrder->InstrumentId);
+	auto instrument = mdb_->Instrument->PrimaryKey->Select(reqInsertOrder->ExchangeId, reqInsertOrder->InstrumentId);
 	if (instrument == nullptr)
 	{
 		SendRspOrderInsert(reqPackage, ErrorInstrumentNotExist);
 		return;
 	}
-	auto account = m_Mdb->Account->PrimaryKey->Select(reqInsertOrder->AccountId);
+	auto account = mdb_->Account->PrimaryKey->Select(reqInsertOrder->AccountId);
 	if (account == nullptr)
 	{
 		SendRspOrderInsert(reqPackage, ErrorAccountNotExist);
@@ -682,19 +682,19 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 		return;
 	}
 	
-	auto order = CreateOrder(reqPackage, account, instrument, m_TradingDay, m_CurrDate, m_CurrTime);
-	m_Mdb->Order->Insert(order);
-	m_OrderMatch->InsertOrder(order);
+	auto order = CreateOrder(reqPackage, account, instrument, tradingDay_, currDate_, currTime_);
+	mdb_->Order->Insert(order);
+	orderMatch_->InsertOrder(order);
 }
 void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleCancelOrder %s", reqPackage->GetDebugString());
 	int errorId = ErrorNone;
-	auto order = m_Mdb->Order->PrimaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId, 
+	auto order = mdb_->Order->PrimaryKey->Select(tradingDay_, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId, 
 		reqPackage->ReqCancelOrder->InstrumentId, reqPackage->ReqCancelOrder->OrderId);
 	if (order == nullptr)
 	{
-		order = m_Mdb->Order->ClientOrderIdUniqueKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId,
+		order = mdb_->Order->ClientOrderIdUniqueKey->Select(tradingDay_, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId,
 			reqPackage->ReqCancelOrder->InstrumentId, reqPackage->ReqCancelOrder->SessionId, reqPackage->ReqCancelOrder->ClientOrderId);
 		if (order == nullptr)
 		{
@@ -710,13 +710,13 @@ void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 	{
 		return;
 	}
-	m_OrderMatch->CancelOrder(order);
+	orderMatch_->CancelOrder(order);
 }
 
 void SimExchange::InitMdInstrument()
 {
 	std::list<QuantTrading::Instrument*> instruments;
-	m_MdReader->ReadMdInstrument(instruments);
+	mdReader_->ReadMdInstrument(instruments);
 	std::map<std::string, std::list<QuantTrading::Instrument*>> productInstruments;
 	for (auto instrument : instruments)
 	{
@@ -730,7 +730,7 @@ void SimExchange::InitMdInstrument()
 		auto& exchangeId = it.second.front()->ExchangeId;
 		ProductIdType productId;
 		strcpy(productId, it.first.c_str());
-		auto product = m_Mdb->Product->PrimaryKey->Select(exchangeId, productId);
+		auto product = mdb_->Product->PrimaryKey->Select(exchangeId, productId);
 		if (product != nullptr)
 		{
 			for (auto instrument : it.second)
@@ -747,7 +747,7 @@ void SimExchange::InitMdInstrument()
 				instrument->MaxLimitOrderVolume = product->MaxLimitOrderVolume;
 				instrument->MinLimitOrderVolume = product->MinLimitOrderVolume;
 				strcpy(instrument->SessionName, product->SessionName);
-				InsertInstrumentOrUpdate(m_Mdb->Instrument, instrument);
+				InsertInstrumentOrUpdate(mdb_->Instrument, instrument);
 			}
 		}
 		else
@@ -765,14 +765,14 @@ void SimExchange::InitMdInstrument()
 				instrument->MinLimitOrderVolume = 0;
 				strcpy(instrument->SessionName, "FD0900");
 
-				InsertInstrumentOrUpdate(m_Mdb->Instrument, instrument);
+				InsertInstrumentOrUpdate(mdb_->Instrument, instrument);
 			}
 		}
 	}
 }
 void SimExchange::InitMainInstrument()
 {
-	auto productPair = m_Mdb->Product->PrimaryKey->SelectAll();
+	auto productPair = mdb_->Product->PrimaryKey->SelectAll();
 	for (auto& it = productPair.first; it != productPair.second; ++it)
 	{
 		auto product = *it;
@@ -829,35 +829,35 @@ void SimExchange::InitMainInstrument()
 		instrument3->MinLimitOrderVolume = product->MinLimitOrderVolume;
 		strcpy(instrument3->SessionName, product->SessionName);
 
-		m_Mdb->Instrument->Insert(instrument1);
-		m_Mdb->Instrument->Insert(instrument2);
-		m_Mdb->Instrument->Insert(instrument3);
+		mdb_->Instrument->Insert(instrument1);
+		mdb_->Instrument->Insert(instrument2);
+		mdb_->Instrument->Insert(instrument3);
 	}
 }
 void SimExchange::ChangeTradingDay(const DateType& nextTradingDay)
 {
 	// 先闭合本日残桶：尾桶的 BarTime 属上一交易日，晚一交易日的首根 bar 才收口会把它推到次日推送
 	FlushBarAggregators();
-    m_OrderMatch->OnTradingDayChange(nextTradingDay);
+    orderMatch_->OnTradingDayChange(nextTradingDay);
 	Settlement();
 	Init(nextTradingDay);
 }
 void SimExchange::Settlement()
 {
-	m_Settlement->Settle(m_TradingDay);
-	SendRtnSessionEnd(m_TradingDay);
+	settlement_->Settle(tradingDay_);
+	SendRtnSessionEnd(tradingDay_);
 }
 void SimExchange::Init(const DateType& nextTradingDay)
 {
-	m_Settlement->RollToNextDay(m_TradingDay, nextTradingDay);
-	strcpy(m_TradingDay, nextTradingDay);
+	settlement_->RollToNextDay(tradingDay_, nextTradingDay);
+	strcpy(tradingDay_, nextTradingDay);
 	SendRtnSessionBegin(nextTradingDay);
 }
 
 PriceType SimExchange::BarSettlementPriceSource::GetSettlementPrice(const QuantTrading::PositionDetail* positionDetail)
 {
-	auto it = m_LastMdBars->find(positionDetail->InstrumentId);
-	if (it != m_LastMdBars->end() && it->second != nullptr)
+	auto it = lastMdBars_->find(positionDetail->InstrumentId);
+	if (it != lastMdBars_->end() && it->second != nullptr)
 	{
 		return it->second->Close;
 	}
@@ -872,7 +872,7 @@ void SimExchange::SendRspRegisterAccount(ReqRegisterAccountPackage* reqPackage, 
 	RspRegisterAccountField rspRegisterAccount;
 	memset(&rspRegisterAccount, 0, sizeof(RspRegisterAccountField));
 	strcpy(rspRegisterAccount.AccountId, reqPackage->ReqRegisterAccount->AccountId);
-	m_BackTestSpi->OnRspRegisterAccount(&rspRegisterAccount, &rspInfo, reqPackage->Head.MsgSeqNum, true);
+	backTestSpi_->OnRspRegisterAccount(&rspRegisterAccount, &rspInfo, reqPackage->Head.MsgSeqNum, true);
 	WriteLog(LogLevel::Info, "SendRspRegisterAccount: AccountId:%s, ErrorId:%d, ErrorMsg:%s", rspRegisterAccount.AccountId, rspInfo.ErrorId, rspInfo.ErrorMsg);
 }
 void SimExchange::SendRspOrderInsert(ReqInsertOrderPackage* reqPackage, int errorId)
@@ -881,7 +881,7 @@ void SimExchange::SendRspOrderInsert(ReqInsertOrderPackage* reqPackage, int erro
 	rspInfo.ErrorId = errorId;
 	strcpy(rspInfo.ErrorMsg, GetErrorMessage(errorId));
 
-	m_BackTestSpi->OnRspInsertOrder(reqPackage->ReqInsertOrder, &rspInfo, reqPackage->Head.MsgSeqNum, true);
+	backTestSpi_->OnRspInsertOrder(reqPackage->ReqInsertOrder, &rspInfo, reqPackage->Head.MsgSeqNum, true);
 	WriteLog(LogLevel::Info, "SendRspOrderInsert: ErrorId:%d, ErrorMsg:%s", rspInfo.ErrorId, rspInfo.ErrorMsg);
 }
 void SimExchange::SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorId)
@@ -890,44 +890,44 @@ void SimExchange::SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int erro
 	rspInfo.ErrorId = errorId;
 	strcpy(rspInfo.ErrorMsg, GetErrorMessage(errorId));
 
-	m_BackTestSpi->OnRspCancelOrder(reqPackage->ReqCancelOrder, &rspInfo, reqPackage->Head.MsgSeqNum, true);
+	backTestSpi_->OnRspCancelOrder(reqPackage->ReqCancelOrder, &rspInfo, reqPackage->Head.MsgSeqNum, true);
 	WriteLog(LogLevel::Info, "SendRspCancelOrder: ErrorId:%d, ErrorMsg:%s", rspInfo.ErrorId, rspInfo.ErrorMsg);
 }
 void SimExchange::SendRtnOrder(QuantTrading::Order* order)
 {
 	auto orderField = ::Allocate<OrderField>();
 	MdbToField(order, orderField);
-	m_BackTestSpi->OnRtnOrder(orderField);
+	backTestSpi_->OnRtnOrder(orderField);
 	::Deallocate(orderField);
 }
 void SimExchange::SendRtnTrade(QuantTrading::Trade* trade)
 {
 	auto tradeField = ::Allocate<TradeField>();
 	MdbToField(trade, tradeField);
-	m_BackTestSpi->OnRtnTrade(tradeField);
+	backTestSpi_->OnRtnTrade(tradeField);
 	::Deallocate(tradeField);
 }
 void SimExchange::SendRtnDepthMarketData(QuantTrading::DepthMarketData* mdTick)
 {
-    MdbToField(mdTick, &m_PushMdTick);
-	m_BackTestSpi->OnRtnDepthMarketData(&m_PushMdTick);
+    MdbToField(mdTick, &pushMdTick_);
+	backTestSpi_->OnRtnDepthMarketData(&pushMdTick_);
 }
 void SimExchange::SendRtnMarketDataEnd()
 {
     MarketDataEndField marketDataEnd;
-    memcpy(marketDataEnd.TradingDay, m_TradingDay, sizeof(DateType));
-    m_BackTestSpi->OnRtnMarketDataEnd(&marketDataEnd);
+    memcpy(marketDataEnd.TradingDay, tradingDay_, sizeof(DateType));
+    backTestSpi_->OnRtnMarketDataEnd(&marketDataEnd);
 }
 void SimExchange::SendRtnSessionBegin(const DateType& tradingDay)
 {
 	SessionBeginField sessionBegin;
 	strcpy(sessionBegin.TradingDay, tradingDay);
-	m_BackTestSpi->OnRtnSessionBegin(&sessionBegin);
+	backTestSpi_->OnRtnSessionBegin(&sessionBegin);
 }
 void SimExchange::SendRtnSessionEnd(const DateType& tradingDay)
 {
 	SessionEndField sessionEnd;
 	strcpy(sessionEnd.TradingDay, tradingDay);
-	m_BackTestSpi->OnRtnSessionEnd(&sessionEnd);
+	backTestSpi_->OnRtnSessionEnd(&sessionEnd);
 }
 }

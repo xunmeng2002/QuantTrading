@@ -37,7 +37,7 @@ namespace QuantTrading::MdOffer
         std::atomic<bool> m_IsLogged;
         int m_RequestID;
         AccountInfo* m_AccountInfo;
-        std::map<std::string, const ReqSubMarketDataField*> m_ReqSubMds;
+        std::map<std::string, const ReqSubMarketDataField*> reqSubMds_;
         std::vector<const char*> m_ReqSubInstruments;
         std::mutex m_Mutex;
     };

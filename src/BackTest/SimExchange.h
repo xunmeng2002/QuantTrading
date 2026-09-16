@@ -84,7 +84,7 @@ private:
 	// Bar 撮合模式无逐笔行情表，结算价取各合约当日末根 bar 收盘价（嵌套类不持有外围实例，经指针访问引擎末根 bar 表）
 	struct BarSettlementPriceSource : QuantTrading::Settlement::SettlementPriceSource
 	{
-		std::map<std::string, QuantTrading::BarMarketData*>* m_LastMdBars;
+		std::map<std::string, QuantTrading::BarMarketData*>* lastMdBars_;
 		PriceType GetSettlementPrice(const QuantTrading::PositionDetail* positionDetail) override;
 	};
 
@@ -99,45 +99,45 @@ private:
 	void SendRtnSessionEnd(const DateType& tradingDay);
 
 private:
-	std::mutex m_QueueMutex;
-	std::list<ReqSubMarketDataField*> m_ReqSubMds;
-	std::list<Package*> m_Packages;
-	BackTestSpi* m_BackTestSpi;
-    QuantTrading::ordermatch::OrderMatch* m_OrderMatch;
-	QuantTrading::Settlement::PositionMaintenance* m_PositionMaintenance;
-	QuantTrading::Settlement::Settlement* m_Settlement;
-	QuantTrading::Settlement::SettlementPriceSource* m_SettlementPriceSource;
-	BarSettlementPriceSource m_BarSettlementPriceSource;
-	QuantTrading::Mdb* m_Mdb;
-    DbAdapters::Db* m_Db;
-	QuantTrading::MdbTableRegistry m_Registry;
-    DbAdapters::AsyncDbWriter* m_DbWriter;
-	bool m_HasSubMd;
-	DateType m_TradingDay;
+	std::mutex queueMutex_;
+	std::list<ReqSubMarketDataField*> reqSubMds_;
+	std::list<Package*> packages_;
+	BackTestSpi* backTestSpi_;
+    QuantTrading::ordermatch::OrderMatch* orderMatch_;
+	QuantTrading::Settlement::PositionMaintenance* positionMaintenance_;
+	QuantTrading::Settlement::Settlement* settlement_;
+	QuantTrading::Settlement::SettlementPriceSource* settlementPriceSource_;
+	BarSettlementPriceSource barSettlementPriceSource_;
+	QuantTrading::Mdb* mdb_;
+    DbAdapters::Db* db_;
+	QuantTrading::MdbTableRegistry registry_;
+    DbAdapters::AsyncDbWriter* dbWriter_;
+	bool hasSubMd_;
+	DateType tradingDay_;
 	DateType startTradingDay_;
 	DateType endTradingDay_;
-	bool m_IsMdEnd;
-	DateType m_CurrDate;
-	TimeType m_CurrTime;
+	bool isMdEnd_;
+	DateType currDate_;
+	TimeType currTime_;
 	
-	MarketDataTypeType m_MarketDataType;
-	std::string m_RunID;
-	std::string m_DumpPath;
+	MarketDataTypeType marketDataType_;
+	std::string runId_;
+	std::string dumpPath_;
 
-	MdReader* m_MdReader;
-	std::list<QuantTrading::DepthMarketData*> m_MdTicks;
-	std::list<QuantTrading::BarMarketData*> m_MdBars;
-	std::map<std::string, QuantTrading::BarMarketData*> m_LastMdBars;
-	DepthMarketDataField m_PushMdTick;
-	BarMarketDataField m_PushMdBar;
+	MdReader* mdReader_;
+	std::list<QuantTrading::DepthMarketData*> mdTicks_;
+	std::list<QuantTrading::BarMarketData*> mdBars_;
+	std::map<std::string, QuantTrading::BarMarketData*> lastMdBars_;
+	DepthMarketDataField pushMdTick_;
+	BarMarketDataField pushMdBar_;
 
 	// 交易节由引擎自己持有并装载（BackTest.json 的 SessionFile）：聚合器的桶边界锚定在交易节段首。
 	// 持有期长于全部聚合器，装载完成后内容不再变化，聚合器缓存的 TradeSession* 因此长期有效。
-	std::string m_SessionFile;
-	QuantTrading::Bar::TradeSessions m_TradeSessions;
+	std::string sessionFile_;
+	QuantTrading::Bar::TradeSessions tradeSessions_;
 	// 目标周期 → 聚合器（同周期合约共用一个实例，实例内部按合约分桶）；唯一持有者
-	std::map<std::pair<BarPrecesType, int>, std::unique_ptr<QuantTrading::Bar::BarAggregator>> m_BarAggregators;
-	// 合约 → 其目标周期聚合器；未声明周期的合约不在表中，走透传。裸指针指向 m_BarAggregators 的 value
-	std::map<std::string, QuantTrading::Bar::BarAggregator*> m_InstrumentBarAggregators;
+	std::map<std::pair<BarPrecesType, int>, std::unique_ptr<QuantTrading::Bar::BarAggregator>> barAggregators_;
+	// 合约 → 其目标周期聚合器；未声明周期的合约不在表中，走透传。裸指针指向 barAggregators_ 的 value
+	std::map<std::string, QuantTrading::Bar::BarAggregator*> instrumentBarAggregators_;
 };
 }

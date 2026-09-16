@@ -31,15 +31,15 @@ namespace QuantTrading::Bar
         void EndBar(BarMarketDataField* preBar, BarMarketDataField* bar);
 
     private:
-        const TradeSessions& m_TradeSessions;
-        BarSubscriber* m_BarSubscriber;
-        std::map<std::string, const TradeSession*> m_InstrumentTradeSessions;
+        const TradeSessions& tradeSessions_;
+        BarSubscriber* barSubscriber_;
+        std::map<std::string, const TradeSession*> instrumentTradeSessions_;
 
-        std::map<std::string, BarMarketDataField*> m_AggregationBars;
-        std::map<std::string, BarMarketDataField*> m_PreAggregationBars;
-        std::map<std::string, std::list<BarMarketDataField*>> m_TodayBars;
-        std::mutex m_TodayBarsMutex;
+        std::map<std::string, BarMarketDataField*> aggregationBars_;
+        std::map<std::string, BarMarketDataField*> preAggregationBars_;
+        std::map<std::string, std::list<BarMarketDataField*>> todayBars_;
+        std::mutex todayBarsMutex_;
 
-        std::list<BarMarketDataField*> m_LostBars;
+        std::list<BarMarketDataField*> lostBars_;
     };
 }

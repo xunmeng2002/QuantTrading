@@ -48,7 +48,7 @@ public:
 	std::atomic<bool> m_QryFinished;
 private:
 	CThostFtdcTraderApi* m_TraderApi;
-	QuantTrading::Mdb* m_Mdb;
+	QuantTrading::Mdb* mdb_;
 	int m_RequestID;
 
 	AccountInfo* m_AccountInfo;

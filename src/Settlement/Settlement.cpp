@@ -7,7 +7,7 @@
 namespace QuantTrading::Settlement
 {
 	Settlement::Settlement(QuantTrading::Mdb* mdb, SettlementPriceSource* settlementPriceSource)
-		:m_Mdb(mdb), m_SettlementPriceSource(settlementPriceSource)
+		:mdb_(mdb), settlementPriceSource_(settlementPriceSource)
 	{
 	}
 
@@ -21,7 +21,7 @@ namespace QuantTrading::Settlement
 	void Settlement::SettlementAccount(const DateType& tradingDay)
 	{
 		std::vector<QuantTrading::Capital*> capitals;
-		auto capitalItPair = m_Mdb->Capital->TradingDayIndex->EqualRange(tradingDay);
+		auto capitalItPair = mdb_->Capital->TradingDayIndex->EqualRange(tradingDay);
 		for (auto& capitalIt = capitalItPair.first; capitalIt != capitalItPair.second; ++capitalIt)
 		{
 			capitals.push_back(*capitalIt);
@@ -37,7 +37,7 @@ namespace QuantTrading::Settlement
 			capital->CloseProfitByTrade = 0;
 			capital->PositionProfitByDate = 0;
 			capital->PositionProfitByTrade = 0;
-			auto positionItPair = m_Mdb->Position->AccountIndex->EqualRange(capital->TradingDay, capital->AccountId);
+			auto positionItPair = mdb_->Position->AccountIndex->EqualRange(capital->TradingDay, capital->AccountId);
 			for (auto& positionIt = positionItPair.first; positionIt != positionItPair.second; ++positionIt)
 			{
 				auto position = *positionIt;
@@ -58,7 +58,7 @@ namespace QuantTrading::Settlement
 	void Settlement::SettlementPosition(const DateType& tradingDay)
 	{
 		std::vector<QuantTrading::Position*> positions;
-		auto positionItPair = m_Mdb->Position->TradingDayIndex->EqualRange(tradingDay);
+		auto positionItPair = mdb_->Position->TradingDayIndex->EqualRange(tradingDay);
 		for (auto& positionIt = positionItPair.first; positionIt != positionItPair.second; ++positionIt)
 		{
 			positions.push_back(*positionIt);
@@ -76,7 +76,7 @@ namespace QuantTrading::Settlement
 			position->PositionProfitByDate = 0;
 			position->PositionProfitByTrade = 0;
 
-			auto positionDetailItPair = m_Mdb->PositionDetail->TradeMatchIndex->EqualRange(tradingDay, position->AccountId, position->ExchangeId, position->InstrumentId, position->PosiDirection);
+			auto positionDetailItPair = mdb_->PositionDetail->TradeMatchIndex->EqualRange(tradingDay, position->AccountId, position->ExchangeId, position->InstrumentId, position->PosiDirection);
 			for (auto& positionDetailIt = positionDetailItPair.first; positionDetailIt != positionDetailItPair.second; ++positionDetailIt)
 			{
 				auto positionDetail = *positionDetailIt;
@@ -97,7 +97,7 @@ namespace QuantTrading::Settlement
 	void Settlement::SettlementPositionDetail(const DateType& tradingDay)
 	{
 		std::vector<QuantTrading::PositionDetail*> positionDetails;
-		auto positionDetailItPair = m_Mdb->PositionDetail->TradingDayIndex->EqualRange(tradingDay);
+		auto positionDetailItPair = mdb_->PositionDetail->TradingDayIndex->EqualRange(tradingDay);
 		for (auto& positionDetailIt = positionDetailItPair.first; positionDetailIt != positionDetailItPair.second; ++positionDetailIt)
 		{
 			positionDetails.push_back(*positionDetailIt);
@@ -105,7 +105,7 @@ namespace QuantTrading::Settlement
 		for (auto positionDetail : positionDetails)
 		{
 			auto flag = positionDetail->PosiDirection == PosiDirectionType::Long ? 1 : -1;
-			positionDetail->SettlementPrice = m_SettlementPriceSource->GetSettlementPrice(positionDetail);
+			positionDetail->SettlementPrice = settlementPriceSource_->GetSettlementPrice(positionDetail);
 			if (strcmp(positionDetail->OpenDate, tradingDay) == 0)
 			{
 				positionDetail->PositionProfitByDate = flag * (positionDetail->SettlementPrice - positionDetail->OpenPrice) * (positionDetail->Volume - positionDetail->CloseVolume) * positionDetail->VolumeMultiple;

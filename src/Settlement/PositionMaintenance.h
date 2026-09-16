@@ -24,6 +24,6 @@ namespace QuantTrading::Settlement
 		void UpdateOnTrade(QuantTrading::Trade* trade);
 
 	private:
-		QuantTrading::Mdb* m_Mdb;
+		QuantTrading::Mdb* mdb_;
 	};
 }

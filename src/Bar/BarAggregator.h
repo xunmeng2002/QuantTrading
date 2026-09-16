@@ -32,12 +32,12 @@ namespace QuantTrading::Bar
         long long AlignBucketEndMinuteByTradeSection(const BarMarketDataField& bar, long long barMinute, const TradeSession* tradeSession);
         static long long AlignBucketEndMinuteByWallClock(long long barMinute, int targetPeriod);
 
-        const TradeSessions& m_TradeSessions;
-        BarPrecesType m_TargetPreces;
-        int m_TargetPeriod;
-        bool m_Validated = false;
-        BarSubscriber* m_BarSubscriber;
-        std::map<std::string, Bucket> m_Buckets;
-        std::map<std::string, const TradeSession*> m_InstrumentTradeSessions;
+        const TradeSessions& tradeSessions_;
+        BarPrecesType targetPreces_;
+        int targetPeriod_;
+        bool validated_ = false;
+        BarSubscriber* barSubscriber_;
+        std::map<std::string, Bucket> buckets_;
+        std::map<std::string, const TradeSession*> instrumentTradeSessions_;
     };
 }

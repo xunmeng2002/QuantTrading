@@ -19,17 +19,17 @@ using namespace QuantTrading::ordermatch;
 namespace QuantTrading::SimExchange
 {
 SimExchange::SimExchange(QuantTrading::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* mdSpi, MatchModeType matchMode)
-	:ThreadBase("SimExchange"), m_Mdb(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_MdSpi(mdSpi), m_TradingDay(""), m_CurrDate(""), m_CurrTime(""), m_IsMdLogged(false)
+	:ThreadBase("SimExchange"), mdb_(mdb), m_TradeFront(tradeFront), m_MdFront(mdFront), m_MdSpi(mdSpi), tradingDay_(""), currDate_(""), currTime_(""), m_IsMdLogged(false)
 {
-	auto tradingDay = m_Mdb->TradingDay->PrimaryKey->Select(1);
+	auto tradingDay = mdb_->TradingDay->PrimaryKey->Select(1);
 	if (tradingDay != nullptr)
 	{
-		strcpy(m_TradingDay, tradingDay->CurrTradingDay);
+		strcpy(tradingDay_, tradingDay->CurrTradingDay);
 	}
 
-	m_OrderMatch = OrderMatch::CreateOrderMatch(matchMode, m_TradingDay);
-	m_OrderMatch->Subscribe(this);
-	m_PositionMaintenance = new QuantTrading::Settlement::PositionMaintenance(m_Mdb);
+	orderMatch_ = OrderMatch::CreateOrderMatch(matchMode, tradingDay_);
+	orderMatch_->Subscribe(this);
+	positionMaintenance_ = new QuantTrading::Settlement::PositionMaintenance(mdb_);
 
 	m_RspAccountLoginPackage = Allocate<RspAccountLoginPackage>();
 	m_RspAccountLoginPackage->RspInfo = Allocate<RspInfoField>();
@@ -63,8 +63,8 @@ SimExchange::~SimExchange()
 }
 void SimExchange::Init()
 {
-	SeedNextOrderIDFromOrders(m_Mdb->Order);
-	auto positionItPair = m_Mdb->Position->PrimaryKey->SelectAll();
+	SeedNextOrderIDFromOrders(mdb_->Order);
+	auto positionItPair = mdb_->Position->PrimaryKey->SelectAll();
 	for (auto& it = positionItPair.first; it != positionItPair.second; ++it)
 	{
 		auto position = *it;
@@ -96,7 +96,7 @@ void SimExchange::OnMessage(Package* package)
 {
 	{
 		lock_guard<mutex> guard(m_Mutex);
-		m_Packages.push_back(package);
+		packages_.push_back(package);
 	}
 	m_ConditionVariable.notify_one();
 }
@@ -107,14 +107,14 @@ void SimExchange::OnOrder(QuantTrading::Order* order)
 }
 void SimExchange::OnOrderUpdate(QuantTrading::Order* order, QuantTrading::Order* newOrder)
 {
-    m_Mdb->Order->Update(order, newOrder);
+    mdb_->Order->Update(order, newOrder);
     SendRtnOrder(order);
 }
 void SimExchange::OnTrade(QuantTrading::Trade* trade)
 {
-    m_Mdb->Trade->Insert(trade);
+    mdb_->Trade->Insert(trade);
 	SendRtnTrade(trade);
-	m_PositionMaintenance->UpdateOnTrade(trade);
+	positionMaintenance_->UpdateOnTrade(trade);
 }
 
 void SimExchange::Run()
@@ -126,7 +126,7 @@ void SimExchange::CheckPackages()
 {
 	std::unique_lock<std::mutex> guard(m_Mutex);
 	m_ConditionVariable.wait_for(guard, timeOut_, [this]() {
-		return !m_Packages.empty();
+		return !packages_.empty();
 		});
 }
 void SimExchange::HandlePackages()
@@ -161,15 +161,15 @@ void SimExchange::HandleRtnDepthMarketData(RtnDepthMarketDataPackage* rtnPackage
 	WriteLog(LogLevel::Info, "HandleRtnDepthMarketData %s", rtnPackage->GetDebugString());
 	auto mdTick = QuantTrading::DepthMarketData::Allocate();
     FieldToMdb(rtnPackage->DepthMarketData, mdTick);
-	m_OrderMatch->OnTick(mdTick);
-	auto oldMdTick = m_Mdb->DepthMarketData->PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeId, mdTick->InstrumentId);
+	orderMatch_->OnTick(mdTick);
+	auto oldMdTick = mdb_->DepthMarketData->PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeId, mdTick->InstrumentId);
 	if (oldMdTick == nullptr)
 	{
-		m_Mdb->DepthMarketData->Insert(mdTick);
+		mdb_->DepthMarketData->Insert(mdTick);
 	}
 	else
 	{
-		m_Mdb->DepthMarketData->Update(oldMdTick, mdTick);
+		mdb_->DepthMarketData->Update(oldMdTick, mdTick);
 	}
 }
 void SimExchange::HandleRtnBarMarketData(RtnBarMarketDataPackage* rtnPackage)
@@ -177,20 +177,20 @@ void SimExchange::HandleRtnBarMarketData(RtnBarMarketDataPackage* rtnPackage)
 	WriteLog(LogLevel::Info, "HandleRtnBarMarketData %s", rtnPackage->GetDebugString());
 	auto mdBar = QuantTrading::BarMarketData::Allocate();
     FieldToMdb(rtnPackage->BarMarketData, mdBar);
-	m_OrderMatch->OnBar(mdBar);
-	m_Mdb->BarMarketData->Insert(mdBar);
+	orderMatch_->OnBar(mdBar);
+	mdb_->BarMarketData->Insert(mdBar);
 }
 
 void SimExchange::HandleNotifyDisConnect(NotifyDisConnectPackage* notifyPackage)
 {
 	WriteLog(LogLevel::Info, "HandleNotifyDisConnect %s", notifyPackage->GetDebugString());
-	m_Mdb->PrimaryAccountLoginSession->EraseBySessionIdIndex(notifyPackage->NotifyDisConnect->SessionId);
+	mdb_->PrimaryAccountLoginSession->EraseBySessionIdIndex(notifyPackage->NotifyDisConnect->SessionId);
 }
 void SimExchange::HandleReqAccountLogin(ReqAccountLoginPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleReqAccountLogin %s", reqPackage->GetDebugString());
 	auto errorId = ErrorNone;
-	auto primaryAccount = m_Mdb->PrimaryAccount->PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountId);
+	auto primaryAccount = mdb_->PrimaryAccount->PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountId);
 	if (primaryAccount == nullptr)
 	{
 		errorId = ErrorPrimaryAccountNotExist;
@@ -201,7 +201,7 @@ void SimExchange::HandleReqAccountLogin(ReqAccountLoginPackage* reqPackage)
 	}
 	else
 	{
-		auto primaryAccountLoginSession = m_Mdb->PrimaryAccountLoginSession->PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountId, reqPackage->SessionId);
+		auto primaryAccountLoginSession = mdb_->PrimaryAccountLoginSession->PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountId, reqPackage->SessionId);
 		if (primaryAccountLoginSession != nullptr)
 		{
 			errorId = ErrorAccountAlreadyLogin;
@@ -213,7 +213,7 @@ void SimExchange::HandleReqAccountLogin(ReqAccountLoginPackage* reqPackage)
 			strcpy(primaryAccountLoginSession->PrimaryAccountId, reqPackage->ReqAccountLogin->AccountId);
 			primaryAccountLoginSession->SessionId = reqPackage->SessionId;
 			strcpy(primaryAccountLoginSession->IpAddress, reqPackage->IpAddress);
-			m_Mdb->PrimaryAccountLoginSession->Insert(primaryAccountLoginSession);
+			mdb_->PrimaryAccountLoginSession->Insert(primaryAccountLoginSession);
 		}
 	}
 	SendRspAccountLogin(reqPackage, primaryAccount, errorId);
@@ -225,10 +225,10 @@ void SimExchange::HandleReqAccountLogout(ReqAccountLogoutPackage* reqPackage)
 	m_RspAccountLogoutPackage->Prepare(reqPackage->SessionId, false, reqPackage->Head.MsgSeqNum);
 
 	strcpy(m_RspAccountLogoutPackage->RspAccountLogout->AccountId, reqPackage->ReqAccountLogout->AccountId);
-	auto primaryAccountLoginSession = m_Mdb->PrimaryAccountLoginSession->PrimaryKey->Select(reqPackage->ReqAccountLogout->AccountId, reqPackage->SessionId);
+	auto primaryAccountLoginSession = mdb_->PrimaryAccountLoginSession->PrimaryKey->Select(reqPackage->ReqAccountLogout->AccountId, reqPackage->SessionId);
 	if (primaryAccountLoginSession != nullptr)
 	{
-		m_Mdb->PrimaryAccountLoginSession->Erase(primaryAccountLoginSession);
+		mdb_->PrimaryAccountLoginSession->Erase(primaryAccountLoginSession);
 
 		m_RspAccountLogoutPackage->RspInfo->ErrorId = ErrorNone;
 		strcpy(m_RspAccountLogoutPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorNone));
@@ -251,13 +251,13 @@ void SimExchange::HandleReqInsertOrder(ReqInsertOrderPackage* reqPackage)
 		SendRspInsertOrder(reqPackage, errorId);
 		return;
 	}
-	auto instrument = m_Mdb->Instrument->PrimaryKey->Select(reqPackage->ReqInsertOrder->ExchangeId, reqPackage->ReqInsertOrder->InstrumentId);
+	auto instrument = mdb_->Instrument->PrimaryKey->Select(reqPackage->ReqInsertOrder->ExchangeId, reqPackage->ReqInsertOrder->InstrumentId);
 	if (instrument == nullptr)
 	{
 		SendRspInsertOrder(reqPackage, ErrorInstrumentNotExist);
 		return;
 	}
-	auto account = m_Mdb->Account->PrimaryKey->Select(reqPackage->ReqInsertOrder->AccountId);
+	auto account = mdb_->Account->PrimaryKey->Select(reqPackage->ReqInsertOrder->AccountId);
 	if (account == nullptr)
 	{
 		SendRspInsertOrder(reqPackage, ErrorAccountNotExist);
@@ -270,10 +270,10 @@ void SimExchange::HandleReqInsertOrder(ReqInsertOrderPackage* reqPackage)
 	{
 		return;
 	}
-	TimeUtility::GetLocalDateTime(m_CurrDate, m_CurrTime);
-	auto order = CreateOrder(reqPackage, account, instrument, m_TradingDay, m_CurrDate, m_CurrTime);
-	m_Mdb->Order->Insert(order);
-	m_OrderMatch->InsertOrder(order);
+	TimeUtility::GetLocalDateTime(currDate_, currTime_);
+	auto order = CreateOrder(reqPackage, account, instrument, tradingDay_, currDate_, currTime_);
+	mdb_->Order->Insert(order);
+	orderMatch_->InsertOrder(order);
 }
 void SimExchange::HandleReqCancelOrder(ReqCancelOrderPackage* reqPackage)
 {
@@ -284,11 +284,11 @@ void SimExchange::HandleReqCancelOrder(ReqCancelOrderPackage* reqPackage)
 		SendRspCancelOrder(reqPackage, errorId);
 		return;
 	}
-	auto order = m_Mdb->Order->PrimaryKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId,
+	auto order = mdb_->Order->PrimaryKey->Select(tradingDay_, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId,
 		reqPackage->ReqCancelOrder->InstrumentId, reqPackage->ReqCancelOrder->OrderId);
 	if (order == nullptr)
 	{
-		order = m_Mdb->Order->ClientOrderIdUniqueKey->Select(m_TradingDay, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId,
+		order = mdb_->Order->ClientOrderIdUniqueKey->Select(tradingDay_, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId,
 			reqPackage->ReqCancelOrder->InstrumentId, reqPackage->ReqCancelOrder->SessionId, reqPackage->ReqCancelOrder->ClientOrderId);
 		if (order == nullptr)
 		{
@@ -304,7 +304,7 @@ void SimExchange::HandleReqCancelOrder(ReqCancelOrderPackage* reqPackage)
 	{
 		return;
 	}
-	m_OrderMatch->CancelOrder(order);
+	orderMatch_->CancelOrder(order);
 }
 void SimExchange::HandleReqQryOrder(ReqQryOrderPackage* reqPackage)
 {
@@ -315,7 +315,7 @@ void SimExchange::HandleReqQryOrder(ReqQryOrderPackage* reqPackage)
 		SendRspQryOrder(reqPackage, errorId, true);
 		return;
 	}
-	auto orderRange = m_Mdb->Order->AccountIdIndex->EqualRange(m_TradingDay, reqPackage->ReqQryOrder->AccountId);
+	auto orderRange = mdb_->Order->AccountIdIndex->EqualRange(tradingDay_, reqPackage->ReqQryOrder->AccountId);
 	if (orderRange.first == orderRange.second)
 	{
 		SendRspQryOrder(reqPackage, ErrorNone, true);
@@ -341,7 +341,7 @@ void SimExchange::HandleReqQryTrade(ReqQryTradePackage* reqPackage)
 		SendRspQryTrade(reqPackage, errorId, true);
 		return;
 	}
-	auto tradeRange = m_Mdb->Trade->AccountIdIndex->EqualRange(m_TradingDay, reqPackage->ReqQryTrade->AccountId);
+	auto tradeRange = mdb_->Trade->AccountIdIndex->EqualRange(tradingDay_, reqPackage->ReqQryTrade->AccountId);
 	if (tradeRange.first == tradeRange.second)
 	{
 		SendRspQryTrade(reqPackage, ErrorNone, true);
@@ -370,12 +370,12 @@ void SimExchange::HandleReqQryInstrument(ReqQryInstrumentPackage* reqPackage)
 	m_RspQryInstrumentPackage->Instrument = Allocate<InstrumentField>();
 	if (strlen(reqPackage->ReqQryInstrument->ExchangeId) != 0 && strlen(reqPackage->ReqQryInstrument->InstrumentId) != 0)
 	{
-		auto instrument = m_Mdb->Instrument->PrimaryKey->Select(reqPackage->ReqQryInstrument->ExchangeId, reqPackage->ReqQryInstrument->InstrumentId);
+		auto instrument = mdb_->Instrument->PrimaryKey->Select(reqPackage->ReqQryInstrument->ExchangeId, reqPackage->ReqQryInstrument->InstrumentId);
 		SendRspQryInstrument(reqPackage, ErrorNone, true, instrument);
 	}
 	else if (strlen(reqPackage->ReqQryInstrument->ExchangeId) != 0)
 	{
-		auto range = m_Mdb->Instrument->ExchangeIdIndex->EqualRange(reqPackage->ReqQryInstrument->ExchangeId);
+		auto range = mdb_->Instrument->ExchangeIdIndex->EqualRange(reqPackage->ReqQryInstrument->ExchangeId);
 		for (auto& it = range.first; it != range.second; )
 		{
 			auto record = *it;
@@ -384,7 +384,7 @@ void SimExchange::HandleReqQryInstrument(ReqQryInstrumentPackage* reqPackage)
 	}
 	else
 	{
-		auto range = m_Mdb->Instrument->PrimaryKey->SelectAll();
+		auto range = mdb_->Instrument->PrimaryKey->SelectAll();
 		for (auto& it = range.first; it != range.second; )
 		{
 			auto record = *it;
@@ -397,13 +397,13 @@ void SimExchange::HandleReqQryInstrument(ReqQryInstrumentPackage* reqPackage)
 
 int SimExchange::CheckSessionLogin(const SessionIdType& sessionId)
 {
-	auto sessionIDRange = m_Mdb->PrimaryAccountLoginSession->SessionIdIndex->EqualRange(sessionId);
+	auto sessionIDRange = mdb_->PrimaryAccountLoginSession->SessionIdIndex->EqualRange(sessionId);
 	return sessionIDRange.first != sessionIDRange.second ? ErrorNone : ErrorSessionNotLogin;
 }
 
 int SimExchange::CheckSessionLogin(const AccountIdType& primaryAccountID, const SessionIdType& sessionId)
 {
-	auto primaryAccountLoginSession = m_Mdb->PrimaryAccountLoginSession->PrimaryKey->Select(primaryAccountID, sessionId);
+	auto primaryAccountLoginSession = mdb_->PrimaryAccountLoginSession->PrimaryKey->Select(primaryAccountID, sessionId);
 	if (primaryAccountLoginSession != nullptr)
 	{
 		return ErrorNone;
@@ -489,7 +489,7 @@ void SimExchange::SendRtnOrder(QuantTrading::Order* order)
 {
 	MdbToField(order, m_RtnOrderPackage->Order);
 
-	auto primaryAccountLoginSessionRange = m_Mdb->PrimaryAccountLoginSession->PrimaryAccountIdIndex->EqualRange(order->AccountId);
+	auto primaryAccountLoginSessionRange = mdb_->PrimaryAccountLoginSession->PrimaryAccountIdIndex->EqualRange(order->AccountId);
 	for (auto& it = primaryAccountLoginSessionRange.first; it != primaryAccountLoginSessionRange.second; ++it)
 	{
 		m_RtnOrderPackage->Prepare((*it)->SessionId, false, 0);
@@ -500,7 +500,7 @@ void SimExchange::SendRtnTrade(QuantTrading::Trade* trade)
 {
 	MdbToField(trade, m_RtnTradePackage->Trade);
 
-	auto primaryAccountLoginSessionRange = m_Mdb->PrimaryAccountLoginSession->PrimaryAccountIdIndex->EqualRange(trade->AccountId);
+	auto primaryAccountLoginSessionRange = mdb_->PrimaryAccountLoginSession->PrimaryAccountIdIndex->EqualRange(trade->AccountId);
 	for (auto& it = primaryAccountLoginSessionRange.first; it != primaryAccountLoginSessionRange.second; ++it)
 	{
 		m_RtnTradePackage->Prepare((*it)->SessionId, false, 0);
@@ -511,10 +511,10 @@ void SimExchange::SendRtnTrade(QuantTrading::Trade* trade)
 Package* SimExchange::GetNextPackage()
 {
 	lock_guard<mutex> guard(m_Mutex);
-	if (m_Packages.empty())
+	if (packages_.empty())
 		return nullptr;
-	auto package = m_Packages.front();
-	m_Packages.pop_front();
+	auto package = packages_.front();
+	packages_.pop_front();
 	return package;
 }
 void SimExchange::ReqSubMarketData(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId)
