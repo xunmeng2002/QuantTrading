@@ -67,14 +67,14 @@ namespace
 namespace QuantTrading::BackTest
 {
 MdReader::MdReader(const Config& config)
-    : m_MdDataPath(config.MdDataPath)
-    , m_BarPreces(config.BarPreces)
+    : mdDataPath_(config.MdDataPath)
+    , barPreces_(config.BarPreces)
 {
-    strcpy(m_StartTradingDay, config.StartTradingDay.c_str());
-    strcpy(m_EndTradingDay, config.EndTradingDay.c_str());
-    if (!QuantTrading::ParseBarPreces(m_BarPreces, m_BarPrecesType, m_BarPeriod))
+    strcpy(startTradingDay_, config.StartTradingDay.c_str());
+    strcpy(endTradingDay_, config.EndTradingDay.c_str());
+    if (!QuantTrading::ParseBarPreces(barPreces_, barPrecesType_, barPeriod_))
     {
-        const std::string errorMsg = "Invalid BarPreces, expect <n><s|m|h|d> e.g. 1m/5m/1h/1d. BarPreces:" + m_BarPreces;
+        const std::string errorMsg = "Invalid BarPreces, expect <n><s|m|h|d> e.g. 1m/5m/1h/1d. BarPreces:" + barPreces_;
         WriteLog(LogLevel::Error, "%s", errorMsg.c_str());
         throw std::logic_error(errorMsg);
     }
@@ -85,8 +85,8 @@ MdReader::~MdReader()
 
 bool MdReader::Init()
 {
-    m_DuckdbWrapper = std::make_unique<DuckdbWrapper>(":memory:");
-    if (!m_DuckdbWrapper->Connect())
+    duckdbWrapper_ = std::make_unique<DuckdbWrapper>(":memory:");
+    if (!duckdbWrapper_->Connect())
     {
         WriteLog(LogLevel::Error, "duckdb_open Error.");
         return false;
@@ -100,7 +100,7 @@ void MdReader::ReadMdInstrument(std::list<QuantTrading::Instrument*>& instrument
     std::string sql = GetInstrumentSqlString();
     WriteLog(LogLevel::Info, "duckdb_query: Sql:%s", sql.c_str());
 
-    ThrowIfQueryFailed(m_DuckdbWrapper->SelectWithSqlVectorized(
+    ThrowIfQueryFailed(duckdbWrapper_->SelectWithSqlVectorized(
         sql.c_str(), &Instrument::GetSchema(), &instruments, MakeVectorizedRecordFactory<Instrument>()));
 
     auto endQueryTime = chrono::high_resolution_clock::now();
@@ -144,7 +144,7 @@ void MdReader::ReadMdTickForOneSub(QuantTrading::MdSubscribe* mdSubscribe, std::
     WriteLog(LogLevel::Info, "duckdb_query: Sql:%s", sql.c_str());
 
     std::list<QuantTrading::DepthMarketData*> tempMdTicks;
-    ThrowIfQueryFailed(m_DuckdbWrapper->SelectWithSqlVectorized(
+    ThrowIfQueryFailed(duckdbWrapper_->SelectWithSqlVectorized(
         sql.c_str(), &DepthMarketData::GetSchema(), &tempMdTicks, MakeVectorizedRecordFactory<DepthMarketData>()));
     UpdateMdTicks(mdSubscribe, tempMdTicks);
     mdTicks.splice(mdTicks.end(), tempMdTicks);
@@ -156,7 +156,7 @@ void MdReader::ReadMdBarForOneSub(QuantTrading::MdSubscribe* mdSubscribe, std::l
     WriteLog(LogLevel::Info, "duckdb_query: Sql:%s", sql.c_str());
 
     std::list<QuantTrading::BarMarketData*> tempMdBars;
-    ThrowIfQueryFailed(m_DuckdbWrapper->SelectWithSqlVectorized(
+    ThrowIfQueryFailed(duckdbWrapper_->SelectWithSqlVectorized(
         sql.c_str(), &BarMarketData::GetSchema(), &tempMdBars, MakeVectorizedRecordFactory<BarMarketData>()));
     UpdateMdBars(mdSubscribe, tempMdBars);
     mdBars.splice(mdBars.end(), tempMdBars);
@@ -193,7 +193,7 @@ std::string MdReader::GetInstrumentSqlString() const
         "from read_parquet('%s/Bar/Identity=*/Year=*/*.parquet', union_by_name=true) "
         "where TradingDay >= '%s' and TradingDay <= '%s' "
         "Group by ExchangeId, InstrumentId, ProductId;";
-    return FormatSql(sqlTemplate, m_MdDataPath.c_str(), m_StartTradingDay, m_EndTradingDay);
+    return FormatSql(sqlTemplate, mdDataPath_.c_str(), startTradingDay_, endTradingDay_);
 }
 
 std::string MdReader::GetTickSqlString(QuantTrading::MdSubscribe* mdSubscribe) const
@@ -210,7 +210,7 @@ std::string MdReader::GetTickSqlString(QuantTrading::MdSubscribe* mdSubscribe) c
         "BidVolumes[1], BidVolumes[2], BidVolumes[3], BidVolumes[4], BidVolumes[5], BidVolumes[6], BidVolumes[7], BidVolumes[8], BidVolumes[9], BidVolumes[10] "
         "from read_parquet('%s/Tick/Identity=%s.*/Year=*/Month=*/*.parquet', union_by_name=true) "
         "where TradingDay >= '%s' and TradingDay <= '%s' and InstrumentId = '%s';";
-    return FormatSql(sqlTemplate, m_MdDataPath.c_str(),
+    return FormatSql(sqlTemplate, mdDataPath_.c_str(),
         mdSubscribe->ExchangeId, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, mdSubscribe->RealInstrumentId);
 }
 
@@ -223,7 +223,7 @@ std::string MdReader::GetBarSqlString(QuantTrading::MdSubscribe* mdSubscribe) co
         "PreSettlementPrice, PreClosePrice, HighestPrice, LowestPrice, Open, High, Low, Close, LastTraded, Volume, LastTurnover, Turnover, OpenInterest "
         "from read_parquet('%s/Bar/Identity=%s.*/Year=*/*.parquet', union_by_name=true) "
         "where TradingDay >= '%s' and TradingDay <= '%s' and Preces = '%s' and InstrumentId = '%s';";
-    return FormatSql(sqlTemplate, static_cast<int>(m_BarPrecesType), m_BarPeriod,
-        m_MdDataPath.c_str(), mdSubscribe->ExchangeId, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, m_BarPreces.c_str(), mdSubscribe->RealInstrumentId);
+    return FormatSql(sqlTemplate, static_cast<int>(barPrecesType_), barPeriod_,
+        mdDataPath_.c_str(), mdSubscribe->ExchangeId, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, barPreces_.c_str(), mdSubscribe->RealInstrumentId);
 }
 }

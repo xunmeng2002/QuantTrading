@@ -114,8 +114,8 @@ private:
     DbAdapters::AsyncDbWriter* m_DbWriter;
 	bool m_HasSubMd;
 	DateType m_TradingDay;
-	DateType m_StartTradingDay;
-	DateType m_EndTradingDay;
+	DateType startTradingDay_;
+	DateType endTradingDay_;
 	bool m_IsMdEnd;
 	DateType m_CurrDate;
 	TimeType m_CurrTime;

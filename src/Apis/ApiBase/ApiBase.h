@@ -14,7 +14,7 @@ public:
 	virtual ~ApiBase();
 
 protected:
-	ProtocolTypeType m_ProtocolType;
+	ProtocolTypeType protocolType_;
 
     Spark::Network::IoThread* ioThread_;
     Spark::Network::Protocol* protocol_;

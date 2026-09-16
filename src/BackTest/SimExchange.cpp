@@ -91,8 +91,8 @@ SimExchange::SimExchange(const Config& config)
 {
 	auto matchMode = (MatchModeType)config.MatchMode;
 	strcpy(m_TradingDay, config.StartTradingDay.c_str());
-	strcpy(m_StartTradingDay, config.StartTradingDay.c_str());
-	strcpy(m_EndTradingDay, config.EndTradingDay.c_str());
+	strcpy(startTradingDay_, config.StartTradingDay.c_str());
+	strcpy(endTradingDay_, config.EndTradingDay.c_str());
 	m_MarketDataType = matchMode == MatchModeType::Bar ? MarketDataTypeType::Bar : MarketDataTypeType::Tick;
 	memset(&m_PushMdTick, 0, sizeof(DepthMarketDataField));
 	memset(&m_PushMdBar, 0, sizeof(BarMarketDataField));
@@ -484,19 +484,19 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			strcpy(mdSubscribe->RealInstrumentId, instrument->InstrumentId);
 			strcpy(mdSubscribe->ProductId, instrument->ProductId);
 			mdSubscribe->ProductClass = instrument->ProductClass;
-			strcpy(mdSubscribe->StartTradingDay, m_StartTradingDay);
-			strcpy(mdSubscribe->EndTradingDay, m_EndTradingDay);
+			strcpy(mdSubscribe->StartTradingDay, startTradingDay_);
+			strcpy(mdSubscribe->EndTradingDay, endTradingDay_);
 			
 			mdSubscribes.push_back(mdSubscribe);
 		}
 		else
 		{
-			auto startIt = m_Mdb->HotInstrument->TradingDayIndex->LowerBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, m_StartTradingDay);
-			auto endIt = m_Mdb->HotInstrument->TradingDayIndex->UpperBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, m_EndTradingDay);
+			auto startIt = m_Mdb->HotInstrument->TradingDayIndex->LowerBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, startTradingDay_);
+			auto endIt = m_Mdb->HotInstrument->TradingDayIndex->UpperBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, endTradingDay_);
 			if (startIt == endIt)
 			{
 				WriteLog(LogLevel::Warning, "Cannot Find HotInstrument While SubMarketData. ExchangeId:%s, ProductId:%s, Rank:%d, StartTradingDay:%s, EndTradingDay:%s",
-					instrument->ExchangeId, instrument->ProductId, instrument->Rank, m_StartTradingDay, m_EndTradingDay);
+					instrument->ExchangeId, instrument->ProductId, instrument->Rank, startTradingDay_, endTradingDay_);
 				continue;
 			}
 			MdSubscribe* mdSubscribe = MdSubscribe::Allocate();
