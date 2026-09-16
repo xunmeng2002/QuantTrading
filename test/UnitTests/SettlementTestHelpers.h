@@ -7,10 +7,10 @@
 #include <map>
 #include <string>
 
-namespace QuantTrading::unittest
+namespace QuantTrading::UnitTest
 {
     // 固定结算价来源：按合约映射预设结算价，未配置的合约回退持仓明细 PreSettlementPrice
-    class FixedSettlementPriceSource : public QuantTrading::settlement::SettlementPriceSource
+    class FixedSettlementPriceSource : public QuantTrading::Settlement::SettlementPriceSource
     {
     public:
         PriceType GetSettlementPrice(const QuantTrading::PositionDetail* positionDetail) override
@@ -57,7 +57,7 @@ namespace QuantTrading::unittest
         position->TotalPosition = totalPosition;
         position->VolumeMultiple = 300;
         position->SettlementPrice = settlementPrice;
-        if (!settlementMdb->position->Insert(position))
+        if (!settlementMdb->Position->Insert(position))
         {
             return nullptr;
         }
@@ -84,7 +84,7 @@ namespace QuantTrading::unittest
         detail->OpenPrice = openPrice;
         detail->PreSettlementPrice = preSettlementPrice;
         detail->VolumeMultiple = 300;
-        if (!settlementMdb->positionDetail->Insert(detail))
+        if (!settlementMdb->PositionDetail->Insert(detail))
         {
             return nullptr;
         }
@@ -100,7 +100,7 @@ namespace QuantTrading::unittest
         CopyString(capital->AccountId, "test");
         capital->PreBalance = preBalance;
         capital->Balance = balance;
-        if (!settlementMdb->capital->Insert(capital))
+        if (!settlementMdb->Capital->Insert(capital))
         {
             return nullptr;
         }
@@ -119,7 +119,7 @@ namespace QuantTrading::unittest
         CopyString(exchangeIDBuffer, "CFFEX");
         InstrumentIdType instrumentIDBuffer;
         CopyString(instrumentIDBuffer, instrumentId);
-        return settlementMdb->position->primaryKey->Select(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer, instrumentIDBuffer, posiDirection);
+        return settlementMdb->Position->PrimaryKey->Select(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer, instrumentIDBuffer, posiDirection);
     }
 
     // 主键查持仓明细（键含开仓日期与成交编号）
@@ -138,7 +138,7 @@ namespace QuantTrading::unittest
         CopyString(openDateBuffer, openDate);
         TradeIdType tradeIDBuffer;
         CopyString(tradeIDBuffer, tradeID);
-        return settlementMdb->positionDetail->primaryKey->Select(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer, instrumentIDBuffer,
+        return settlementMdb->PositionDetail->PrimaryKey->Select(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer, instrumentIDBuffer,
             posiDirection, openDateBuffer, tradeIDBuffer);
     }
 
@@ -153,7 +153,7 @@ namespace QuantTrading::unittest
         CopyString(exchangeIDBuffer, "CFFEX");
         InstrumentIdType instrumentIDBuffer;
         CopyString(instrumentIDBuffer, "IF2503");
-        auto itPair = settlementMdb->positionDetail->tradeMatchIndex->EqualRange(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer,
+        auto itPair = settlementMdb->PositionDetail->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer,
             instrumentIDBuffer, posiDirection);
         return static_cast<long long>(std::distance(itPair.first, itPair.second));
     }
@@ -164,7 +164,7 @@ namespace QuantTrading::unittest
     {
         DateType tradingDayBuffer;
         CopyString(tradingDayBuffer, tradingDay);
-        auto itPair = table->tradingDayIndex->EqualRange(tradingDayBuffer);
+        auto itPair = table->TradingDayIndex->EqualRange(tradingDayBuffer);
         return static_cast<long long>(std::distance(itPair.first, itPair.second));
     }
 
@@ -173,19 +173,19 @@ namespace QuantTrading::unittest
     {
         DateType tradingDayBuffer;
         CopyString(tradingDayBuffer, tradingDay);
-        auto itPair = table->tradingDayIndex->EqualRange(tradingDayBuffer);
+        auto itPair = table->TradingDayIndex->EqualRange(tradingDayBuffer);
         return itPair.first != itPair.second ? *itPair.first : nullptr;
     }
 
     // 结算入口包装（Settle/RollToNextDay 以 DateType 引用收参）
-    inline void SettleDay(QuantTrading::settlement::Settlement& settlement, const char* tradingDay)
+    inline void SettleDay(QuantTrading::Settlement::Settlement& settlement, const char* tradingDay)
     {
         DateType tradingDayBuffer;
         CopyString(tradingDayBuffer, tradingDay);
         settlement.Settle(tradingDayBuffer);
     }
 
-    inline void RollDay(QuantTrading::settlement::Settlement& settlement, const char* tradingDay, const char* nextTradingDay)
+    inline void RollDay(QuantTrading::Settlement::Settlement& settlement, const char* tradingDay, const char* nextTradingDay)
     {
         DateType tradingDayBuffer;
         CopyString(tradingDayBuffer, tradingDay);

@@ -4,7 +4,7 @@
 #include <Spark/Core/Logger/Logger.h>
 
 using namespace QuantTrading;
-using namespace QuantTrading::teststrategygrid;
+using namespace QuantTrading::TestStrategyGrid;
 
 const char* ConfigName = "TestStrategyGrid.json";
 

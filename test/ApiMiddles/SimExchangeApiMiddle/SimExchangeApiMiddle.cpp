@@ -1,8 +1,8 @@
-// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "SimExchangeApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
-using namespace Spark::core;
+using namespace Spark::Core;
 
 
 namespace QuantTrading
@@ -42,15 +42,15 @@ void SimExchangeApiMiddle::RegisterFront(const char* address)
 	WriteLog(LogLevel::Info, "RegisterFront:%s", address);
 	simExchangeApi->RegisterFront(address);
 }
-void SimExchangeApiMiddle::RegisterSpi(SimExchangeSpi* pSpi)
+void SimExchangeApiMiddle::RegisterSpi(SimExchangeSpi* spi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi");
-	simExchangeApi->RegisterSpi(pSpi);
+	simExchangeApi->RegisterSpi(spi);
 }
 
-int SimExchangeApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
+int SimExchangeApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqAccountLogin: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqAccountLogin: RequestID:%d", requestId);
 	if (reqAccountLogin != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqAccountLoginField:AccountId:[%s]",
@@ -60,11 +60,11 @@ int SimExchangeApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccount
 	{
 		WriteLog(LogLevel::Info, "reqAccountLogin is nullptr");
 	}
-	return simExchangeApi->ReqAccountLogin(reqAccountLogin, requestID);
+	return simExchangeApi->ReqAccountLogin(reqAccountLogin, requestId);
 }
-int SimExchangeApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
+int SimExchangeApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqAccountLogout: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqAccountLogout: RequestID:%d", requestId);
 	if (reqAccountLogout != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqAccountLogoutField:AccountId:[%s]",
@@ -74,11 +74,11 @@ int SimExchangeApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccou
 	{
 		WriteLog(LogLevel::Info, "reqAccountLogout is nullptr");
 	}
-	return simExchangeApi->ReqAccountLogout(reqAccountLogout, requestID);
+	return simExchangeApi->ReqAccountLogout(reqAccountLogout, requestId);
 }
-int SimExchangeApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
+int SimExchangeApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryOrder: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryOrder: RequestID:%d", requestId);
 	if (reqQryOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryOrderField:AccountId:[%s]",
@@ -88,11 +88,11 @@ int SimExchangeApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int r
 	{
 		WriteLog(LogLevel::Info, "reqQryOrder is nullptr");
 	}
-	return simExchangeApi->ReqQryOrder(reqQryOrder, requestID);
+	return simExchangeApi->ReqQryOrder(reqQryOrder, requestId);
 }
-int SimExchangeApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
+int SimExchangeApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryTrade: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryTrade: RequestID:%d", requestId);
 	if (reqQryTrade != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryTradeField:AccountId:[%s]",
@@ -102,11 +102,11 @@ int SimExchangeApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int r
 	{
 		WriteLog(LogLevel::Info, "reqQryTrade is nullptr");
 	}
-	return simExchangeApi->ReqQryTrade(reqQryTrade, requestID);
+	return simExchangeApi->ReqQryTrade(reqQryTrade, requestId);
 }
-int SimExchangeApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
+int SimExchangeApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryInstrument: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryInstrument: RequestID:%d", requestId);
 	if (reqQryInstrument != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryInstrumentField:ExchangeId:[%s], InstrumentId:[%s]",
@@ -116,11 +116,11 @@ int SimExchangeApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryIn
 	{
 		WriteLog(LogLevel::Info, "reqQryInstrument is nullptr");
 	}
-	return simExchangeApi->ReqQryInstrument(reqQryInstrument, requestID);
+	return simExchangeApi->ReqQryInstrument(reqQryInstrument, requestId);
 }
-int SimExchangeApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
+int SimExchangeApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestId);
 	if (reqInsertOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
@@ -130,11 +130,11 @@ int SimExchangeApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrd
 	{
 		WriteLog(LogLevel::Info, "reqInsertOrder is nullptr");
 	}
-	return simExchangeApi->ReqInsertOrder(reqInsertOrder, requestID);
+	return simExchangeApi->ReqInsertOrder(reqInsertOrder, requestId);
 }
-int SimExchangeApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
+int SimExchangeApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestId);
 	if (reqCancelOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",
@@ -144,6 +144,6 @@ int SimExchangeApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrd
 	{
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
-	return simExchangeApi->ReqCancelOrder(reqCancelOrder, requestID);
+	return simExchangeApi->ReqCancelOrder(reqCancelOrder, requestId);
 }
 }

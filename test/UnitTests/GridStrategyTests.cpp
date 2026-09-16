@@ -2,7 +2,7 @@
 
 #include "doctest/doctest.h"
 
-using namespace QuantTrading::unittest;
+using namespace QuantTrading::UnitTest;
 
 TEST_CASE("GridStrategy places ladder around first tick anchor")
 {
@@ -96,7 +96,7 @@ TEST_CASE("GridStrategy re-places rejected level at next session anchor")
     std::memset(&rejected_request, 0, sizeof(rejected_request));
     rejected_request.ClientOrderId = 2;
     RspInfoField reject_info;
-    reject_info.ErrorID = 27;
+    reject_info.ErrorId = 27;
     fake_api.registered_spi->OnRspInsertOrder(&rejected_request, &reject_info, 0, true);
 
     // 策略自身不发起撤单（日终挂单由引擎统一清算并推送撤单回报，本用例未回放撤单事件）

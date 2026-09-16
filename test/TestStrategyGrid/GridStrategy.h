@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace QuantTrading::teststrategygrid
+namespace QuantTrading::TestStrategyGrid
 {
 struct GridParams
 {
@@ -31,7 +31,7 @@ protected:
 	void OnStart() override;
 	void OnTick(const DepthMarketDataField* depthMarketData) override;
 	void OnBar(const BarMarketDataField* barMarketData) override;
-	void OnTrade(const TradeField* trade, ClientOrderIDType clientOrderID) override;
+	void OnTrade(const TradeField* trade, ClientOrderIdType clientOrderID) override;
 	void OnOrder(const OrderField* order) override;
 	void OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo) override;
 	// 日切后等待首笔有效 tick 重锚
@@ -55,8 +55,8 @@ private:
 		PriceType OpenPrice = 0.0;
 		PriceType OpenFillPrice = 0.0;
 		PriceType ClosePrice = 0.0;
-		ClientOrderIDType OpenClientOrderID = 0;
-		ClientOrderIDType CloseClientOrderID = 0;
+		ClientOrderIdType OpenClientOrderID = 0;
+		ClientOrderIdType CloseClientOrderID = 0;
 		VolumeType OpenFilledVolume = 0;
 		VolumeType CloseFilledVolume = 0;
 	};
@@ -70,8 +70,8 @@ private:
 	void ResetSlotToEmpty(GridSlot& gridSlot);
 	void HandleOpenOrderCanceled(GridSlot* gridSlot);
 	void HandleCloseOrderCanceled(GridSlot* gridSlot);
-	GridSlot* FindSlotByOpenOrder(ClientOrderIDType clientOrderID);
-	GridSlot* FindSlotByCloseOrder(ClientOrderIDType clientOrderID);
+	GridSlot* FindSlotByOpenOrder(ClientOrderIdType clientOrderID);
+	GridSlot* FindSlotByCloseOrder(ClientOrderIdType clientOrderID);
 
 	GridParams m_Params;
 	std::vector<GridSlot> m_Slots;   // [0, GridCount) 买开格；[GridCount, 2×GridCount) 卖开格

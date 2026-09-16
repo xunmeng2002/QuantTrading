@@ -18,12 +18,12 @@ namespace QuantTrading
 		RspPackageType* rspPackage = RspPackageType::Allocate();
 		rspPackage->Prepare(sessionId, false, msgSeqNum);
 		rspPackage->RspInfo = Spark::Allocate<RspInfoField>();
-		rspPackage->RspInfo->ErrorID = ErrorReqPackageParseFailed;
-		Spark::core::Utility::Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorReqPackageParseFailed));
+		rspPackage->RspInfo->ErrorId = ErrorReqPackageParseFailed;
+		Spark::Core::Utility::Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorReqPackageParseFailed));
 		bool isSent = front->Send(rspPackage);
 		if (!isSent)
 		{
-			WriteLog(Spark::core::LogLevel::Error, "ReplyPackageParseFailed: Send failed. SessionId:%lld", sessionId);
+			WriteLog(Spark::Core::LogLevel::Error, "ReplyPackageParseFailed: Send failed. SessionId:%lld", sessionId);
 		}
 		rspPackage->Deallocate();
 		return isSent;

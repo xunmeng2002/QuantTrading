@@ -2,7 +2,7 @@
 #include "BackTestSpiMiddle.h"
 #include "Config/Config.h"
 
-namespace QuantTrading::testbacktest
+namespace QuantTrading::TestBackTest
 {
 class BackTestSpiImpl : public BackTestSpiMiddle
 {

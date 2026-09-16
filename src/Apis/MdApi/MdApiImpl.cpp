@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/Api/ApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/Api/ApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdApiImpl.h"
 #include "Error.h"
 #include "Packages.h"
@@ -19,34 +19,34 @@ MdApiImpl::MdApiImpl()
 
 void MdApiImpl::OnMessage(Package* package)
 {
-	switch (package->Head.PackageID)
+	switch (package->Head.PackageId)
 	{
-	case RspMdUserLoginPackage::PackageID:
+	case RspMdUserLoginPackage::PackageId:
 	{
 		mdSpi->OnRspMdUserLogin(static_cast<RspMdUserLoginPackage*>(package)->RspMdUserLogin, static_cast<RspMdUserLoginPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
-	case RspMdUserLogoutPackage::PackageID:
+	case RspMdUserLogoutPackage::PackageId:
 	{
 		mdSpi->OnRspMdUserLogout(static_cast<RspMdUserLogoutPackage*>(package)->RspMdUserLogout, static_cast<RspMdUserLogoutPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
-	case RspSubMarketDataPackage::PackageID:
+	case RspSubMarketDataPackage::PackageId:
 	{
 		mdSpi->OnRspSubMarketData(static_cast<RspSubMarketDataPackage*>(package)->RspSubMarketData, static_cast<RspSubMarketDataPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
-	case RspUnSubMarketDataPackage::PackageID:
+	case RspUnSubMarketDataPackage::PackageId:
 	{
 		mdSpi->OnRspUnSubMarketData(static_cast<RspUnSubMarketDataPackage*>(package)->RspUnSubMarketData, static_cast<RspUnSubMarketDataPackage*>(package)->RspInfo, package->Head.MsgSeqNum, !package->Head.MessageChain);
 		break;
 	}
-	case RtnDepthMarketDataPackage::PackageID:
+	case RtnDepthMarketDataPackage::PackageId:
 	{
 		mdSpi->OnRtnDepthMarketData(static_cast<RtnDepthMarketDataPackage*>(package)->DepthMarketData);
 		break;
 	}
-	case RtnBarMarketDataPackage::PackageID:
+	case RtnBarMarketDataPackage::PackageId:
 	{
 		mdSpi->OnRtnBarMarketData(static_cast<RtnBarMarketDataPackage*>(package)->BarMarketData);
 		break;
@@ -58,10 +58,10 @@ void MdApiImpl::OnMessage(Package* package)
 }
 
 
-int MdApiImpl::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID)
+int MdApiImpl::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestId)
 {
 	ReqMdUserLoginPackage* reqPackage = ReqMdUserLoginPackage::Allocate();
-	reqPackage->Prepare(sessionID, false, requestID);
+	reqPackage->Prepare(sessionId_, false, requestId);
 	reqPackage->ReqMdUserLogin = Allocate<ReqMdUserLoginField>();
 	memcpy(reqPackage->ReqMdUserLogin, reqMdUserLogin, sizeof(ReqMdUserLoginField));
 	
@@ -69,10 +69,10 @@ int MdApiImpl::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int req
 	reqPackage->Deallocate();
 	return result;
 }
-int MdApiImpl::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID)
+int MdApiImpl::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestId)
 {
 	ReqMdUserLogoutPackage* reqPackage = ReqMdUserLogoutPackage::Allocate();
-	reqPackage->Prepare(sessionID, false, requestID);
+	reqPackage->Prepare(sessionId_, false, requestId);
 	reqPackage->ReqMdUserLogout = Allocate<ReqMdUserLogoutField>();
 	memcpy(reqPackage->ReqMdUserLogout, reqMdUserLogout, sizeof(ReqMdUserLogoutField));
 	
@@ -80,10 +80,10 @@ int MdApiImpl::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int 
 	reqPackage->Deallocate();
 	return result;
 }
-int MdApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
+int MdApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId)
 {
 	ReqSubMarketDataPackage* reqPackage = ReqSubMarketDataPackage::Allocate();
-	reqPackage->Prepare(sessionID, false, requestID);
+	reqPackage->Prepare(sessionId_, false, requestId);
 	reqPackage->ReqSubMarketData = Allocate<ReqSubMarketDataField>();
 	memcpy(reqPackage->ReqSubMarketData, reqSubMarketData, sizeof(ReqSubMarketDataField));
 	
@@ -91,10 +91,10 @@ int MdApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, i
 	reqPackage->Deallocate();
 	return result;
 }
-int MdApiImpl::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
+int MdApiImpl::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestId)
 {
 	ReqUnSubMarketDataPackage* reqPackage = ReqUnSubMarketDataPackage::Allocate();
-	reqPackage->Prepare(sessionID, false, requestID);
+	reqPackage->Prepare(sessionId_, false, requestId);
 	reqPackage->ReqUnSubMarketData = Allocate<ReqUnSubMarketDataField>();
 	memcpy(reqPackage->ReqUnSubMarketData, reqUnSubMarketData, sizeof(ReqUnSubMarketDataField));
 	

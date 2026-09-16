@@ -9,11 +9,11 @@
 #include <stdexcept>
 #include <string>
 
-using namespace mdb;
+using namespace QuantTrading;
 using namespace std;
 using namespace std::chrono;
 using namespace Spark::Core;
-using namespace dbadapters;
+using namespace DbAdapters;
 
 namespace
 {
@@ -64,7 +64,7 @@ namespace
     }
 }
 
-namespace QuantTrading::backtest
+namespace QuantTrading::BackTest
 {
 MdReader::MdReader(const Config& config)
     : m_MdDataPath(config.MdDataPath)
@@ -211,7 +211,7 @@ std::string MdReader::GetTickSqlString(QuantTrading::MdSubscribe* mdSubscribe) c
         "from read_parquet('%s/Tick/Identity=%s.*/Year=*/Month=*/*.parquet', union_by_name=true) "
         "where TradingDay >= '%s' and TradingDay <= '%s' and InstrumentId = '%s';";
     return FormatSql(sqlTemplate, m_MdDataPath.c_str(),
-        mdSubscribe->ExchangeId, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, mdSubscribe->RealInstrumentID);
+        mdSubscribe->ExchangeId, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, mdSubscribe->RealInstrumentId);
 }
 
 std::string MdReader::GetBarSqlString(QuantTrading::MdSubscribe* mdSubscribe) const
@@ -224,6 +224,6 @@ std::string MdReader::GetBarSqlString(QuantTrading::MdSubscribe* mdSubscribe) co
         "from read_parquet('%s/Bar/Identity=%s.*/Year=*/*.parquet', union_by_name=true) "
         "where TradingDay >= '%s' and TradingDay <= '%s' and Preces = '%s' and InstrumentId = '%s';";
     return FormatSql(sqlTemplate, static_cast<int>(m_BarPrecesType), m_BarPeriod,
-        m_MdDataPath.c_str(), mdSubscribe->ExchangeId, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, m_BarPreces.c_str(), mdSubscribe->RealInstrumentID);
+        m_MdDataPath.c_str(), mdSubscribe->ExchangeId, mdSubscribe->StartTradingDay, mdSubscribe->EndTradingDay, m_BarPreces.c_str(), mdSubscribe->RealInstrumentId);
 }
 }

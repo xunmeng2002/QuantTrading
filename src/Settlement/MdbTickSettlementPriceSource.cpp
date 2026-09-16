@@ -2,7 +2,7 @@
 #include "Mdb.h"
 #include <cmath>
 
-namespace QuantTrading::settlement
+namespace QuantTrading::Settlement
 {
 	MdbTickSettlementPriceSource::MdbTickSettlementPriceSource(QuantTrading::Mdb* mdb)
 		:m_Mdb(mdb)

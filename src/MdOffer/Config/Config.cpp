@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Config/Config.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Config/Config.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma warning(disable: 4311)
 #include "Config.h"
 #include <Spark/Serialization/json/json.h>
@@ -46,7 +46,7 @@ void Config::Load(const char* fileName)
 	DbUser = root["DbUser"].asString();
 	DbPassword = root["DbPassword"].asString();
 	DbHost = root["DbHost"].asString();
-	MdUserID = root["MdUserID"].asString();
+	MdUserId = root["MdUserId"].asString();
 	MdPassword = root["MdPassword"].asString();
 	for (auto& subValue : root["SubscribeInstruments"])
 	{
@@ -71,7 +71,7 @@ void Config::Print()
 	printf("DbType:%s\n", DbType.c_str());
 	printf("DbUser:%s\n", DbUser.c_str());
 	printf("DbHost:%s\n", DbHost.c_str());
-	printf("MdUserID:%s\n", MdUserID.c_str());
+	printf("MdUserId:%s\n", MdUserId.c_str());
 	printf("SubscribeInstruments:[\n");
 	for (auto record : SubscribeInstruments)
 	{

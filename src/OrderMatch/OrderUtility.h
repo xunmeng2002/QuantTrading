@@ -4,7 +4,7 @@
 #include "Packages.h"
 
 
-namespace mdb
+namespace QuantTrading
 {
     class OrderTable;
 }
@@ -27,7 +27,7 @@ namespace QuantTrading::ordermatch
     int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, QuantTrading::Instrument* instrument);
     int CheckForCancelOrder(QuantTrading::Order* order);
     QuantTrading::Order* CreateOrder(QuantTrading::Packages::ReqInsertOrderPackage* reqPackage, QuantTrading::Account* account, QuantTrading::Instrument* instrument,
-        const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIdType& offerID = 0);
+        const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIdType& offerId = 0);
     QuantTrading::Position* CreatePosition(QuantTrading::Trade* trade, const PosiDirectionType& posiDirection);
     QuantTrading::PositionDetail* CreatePositionDetail(QuantTrading::Trade* trade, const PosiDirectionType& posiDirection);
 

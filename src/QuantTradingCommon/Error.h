@@ -4,7 +4,7 @@
 
 namespace QuantTrading
 {
-	const char* GetErrorMessage(unsigned int errorID);
+	const char* GetErrorMessage(unsigned int errorId);
 
 	constexpr unsigned int ErrorNone = 0x0000;
 	constexpr unsigned int ErrorNetwork = 0x0001;

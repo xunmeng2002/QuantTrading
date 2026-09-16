@@ -18,9 +18,9 @@
 
 using namespace QuantTrading::Packages;
 
-namespace QuantTrading::simexchange
+namespace QuantTrading::SimExchange
 {
-class SimExchange : public Spark::core::ThreadBase, public Spark::Network::ProtocolSubscriber, public QuantTrading::ordermatch::OrderMatchSubscriber
+class SimExchange : public Spark::Core::ThreadBase, public Spark::Network::ProtocolSubscriber, public QuantTrading::ordermatch::OrderMatchSubscriber
 {
 public:
 	SimExchange(QuantTrading::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* mdSpi, MatchModeType matchMode);
@@ -65,12 +65,12 @@ private:
 	int CheckSessionLogin(const SessionIdType& sessionId);
 	int CheckSessionLogin(const AccountIdType& primaryAccountID, const SessionIdType& sessionId);
 	
-	void SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, QuantTrading::PrimaryAccount* primaryAccount, int errorID);
-	void SendRspInsertOrder(ReqInsertOrderPackage* reqPackage, int errorID);
-	void SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorID);
-	void SendRspQryOrder(ReqQryOrderPackage* reqPackage, int errorID, bool isLast, QuantTrading::Order* order = nullptr);
-	void SendRspQryTrade(ReqQryTradePackage* reqPackage, int errorID, bool isLast, QuantTrading::Trade* trade = nullptr);
-	void SendRspQryInstrument(ReqQryInstrumentPackage* reqPackage, int errorID, bool isLast, QuantTrading::Instrument* instrument = nullptr);
+	void SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, QuantTrading::PrimaryAccount* primaryAccount, int errorId);
+	void SendRspInsertOrder(ReqInsertOrderPackage* reqPackage, int errorId);
+	void SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorId);
+	void SendRspQryOrder(ReqQryOrderPackage* reqPackage, int errorId, bool isLast, QuantTrading::Order* order = nullptr);
+	void SendRspQryTrade(ReqQryTradePackage* reqPackage, int errorId, bool isLast, QuantTrading::Trade* trade = nullptr);
+	void SendRspQryInstrument(ReqQryInstrumentPackage* reqPackage, int errorId, bool isLast, QuantTrading::Instrument* instrument = nullptr);
 	
 	void SendRtnOrder(QuantTrading::Order* order);
 	void SendRtnTrade(QuantTrading::Trade* trade);
@@ -84,7 +84,7 @@ protected:
 	MdSpiImpl* m_MdSpi;
 	QuantTrading::Mdb* m_Mdb;
     QuantTrading::ordermatch::OrderMatch* m_OrderMatch;
-	QuantTrading::settlement::PositionMaintenance* m_PositionMaintenance;
+	QuantTrading::Settlement::PositionMaintenance* m_PositionMaintenance;
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
 

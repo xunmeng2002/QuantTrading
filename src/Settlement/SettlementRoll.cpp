@@ -3,7 +3,7 @@
 #include <cstring>
 #include <vector>
 
-namespace QuantTrading::settlement
+namespace QuantTrading::Settlement
 {
 	// 结转次序对齐原回测实现：资金层先触发，逐层向下复制（资金→持仓→明细），源行均取 tradingDay 当日数据
 	void Settlement::RollToNextDay(const DateType& tradingDay, const DateType& nextTradingDay)

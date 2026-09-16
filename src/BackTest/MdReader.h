@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-namespace QuantTrading::backtest
+namespace QuantTrading::BackTest
 {
 class MdReader
 {
@@ -42,6 +42,6 @@ private:
 	int m_BarPeriod = 1;
 	DateType m_StartTradingDay;
 	DateType m_EndTradingDay;
-	std::unique_ptr<dbadapters::DuckdbWrapper> m_DuckdbWrapper;
+	std::unique_ptr<DbAdapters::DuckdbWrapper> m_DuckdbWrapper;
 };
 }

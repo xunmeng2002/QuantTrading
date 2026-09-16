@@ -3,7 +3,7 @@
 #include <string>
 
 using namespace std;
-using namespace mdb;
+using namespace QuantTrading;
 using namespace Spark::Core;
 
 namespace QuantTrading::ordermatch

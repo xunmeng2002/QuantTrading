@@ -29,7 +29,7 @@ protected:
 	virtual void OnTick(const DepthMarketDataField* depthMarketData) {}
 	virtual void OnBar(const BarMarketDataField* barMarketData) {}
 	// clientOrderID：本策略下单时分配的编号；成交回报不含该字段，由订单缓存经引擎 OrderId 反查补齐，查不到为 0
-	virtual void OnTrade(const TradeField* trade, ClientOrderIDType clientOrderID) {}
+	virtual void OnTrade(const TradeField* trade, ClientOrderIdType clientOrderID) {}
 	virtual void OnOrder(const OrderField* order) {}
 	virtual void OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo) {}
 	virtual void OnCancelOrderRsp(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo) {}
@@ -47,14 +47,14 @@ protected:
 	// 应在构造或 OnStart 内、订阅之前调用一次。
 	void DeclareBarPeriod(const char* barPreces);
 
-	ClientOrderIDType BuyOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume);
-	ClientOrderIDType SellOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume);
-	ClientOrderIDType BuyClose(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume);
-	ClientOrderIDType SellClose(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume);
+	ClientOrderIdType BuyOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume);
+	ClientOrderIdType SellOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume);
+	ClientOrderIdType BuyClose(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume);
+	ClientOrderIdType SellClose(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume);
 
 	// 缓存有引擎 OrderId（已收到过该单回报）时按 OrderId 主路径撤单；未收到过回报（如 OppositePrice
 	// 模式下未成交挂单）时走引擎的 ClientOrderId 唯一键回退路径
-	bool CancelOrder(ClientOrderIDType clientOrderID);
+	bool CancelOrder(ClientOrderIdType clientOrderID);
 
 	VolumeType GetLongPosition(const char* instrumentId) const;
 	VolumeType GetShortPosition(const char* instrumentId) const;
@@ -76,7 +76,7 @@ private:
 	void OnRtnTrade(const TradeField* trade) override;
 
 	void SubscribeMarketData(const char* exchangeId, const char* instrumentId);
-	ClientOrderIDType InsertLimitOrder(const char* exchangeId, const char* instrumentId, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume);
+	ClientOrderIdType InsertLimitOrder(const char* exchangeId, const char* instrumentId, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume);
 
 	struct InstrumentState
 	{
@@ -91,9 +91,9 @@ private:
 	};
 
 	std::map<std::string, InstrumentState> m_InstrumentStates;
-	std::map<ClientOrderIDType, OrderContext> m_OrderContexts;   // 下单时记录，撤单时取 ExchangeId/InstrumentId
-	std::map<ClientOrderIDType, OrderField> m_Orders;            // 回报快照，兼作撤单主路径的 OrderId 来源
-	std::map<OrderIdType, ClientOrderIDType> m_EngineOrderIDs;   // 引擎 OrderId → ClientOrderId，供 OnTrade 路由
+	std::map<ClientOrderIdType, OrderContext> m_OrderContexts;   // 下单时记录，撤单时取 ExchangeId/InstrumentId
+	std::map<ClientOrderIdType, OrderField> m_Orders;            // 回报快照，兼作撤单主路径的 OrderId 来源
+	std::map<OrderIdType, ClientOrderIdType> m_EngineOrderIDs;   // 引擎 OrderId → ClientOrderId，供 OnTrade 路由
 
 	QuantTrading::BackTestApi* m_BackTestApi;
 	std::string m_AccountID;
@@ -101,8 +101,8 @@ private:
 	BarPrecesType m_DeclaredBarPreces = BarPrecesType::Minute;
 	int m_DeclaredBarPeriod = 0;
 	int m_NextRequestID = 0;
-	ClientOrderIDType m_NextClientOrderID = 0;
-    ClientOrderIDType m_NextClientCancelOrderID = 0;
+	ClientOrderIdType m_NextClientOrderID = 0;
+    ClientOrderIdType m_NextClientCancelOrderID = 0;
 	bool m_IsMdEnded = false;
 };
 }

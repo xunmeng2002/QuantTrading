@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace QuantTrading::unittest
+namespace QuantTrading::UnitTest
 {
     // 将字符串拷入固定长度字符数组（截断安全）
     template <std::size_t DestSize>
@@ -23,7 +23,7 @@ namespace QuantTrading::unittest
     }
 
     // 用 JSON 字符串装载交易时段（绕开文件读取）；实例由持有方管理生命周期，析构即回收，无需手动清理
-    inline bool LoadTradeSessionJson(QuantTrading::bar::TradeSessions& tradeSessions, const char* sessionJson)
+    inline bool LoadTradeSessionJson(QuantTrading::Bar::TradeSessions& tradeSessions, const char* sessionJson)
     {
         return tradeSessions.ParseFromJsonString(sessionJson);
     }

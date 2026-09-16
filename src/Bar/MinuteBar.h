@@ -7,7 +7,7 @@
 #include <list>
 #include <string>
 
-namespace QuantTrading::bar
+namespace QuantTrading::Bar
 {
     class MinuteBar
     {

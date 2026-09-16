@@ -7,7 +7,7 @@
 #include <map>
 
 using QuantTrading::AccountInfo;
-namespace QuantTrading::testtraderapi
+namespace QuantTrading::TestTraderApi
 {
 class TraderSpiImpl : public TraderSpiMiddle
 {

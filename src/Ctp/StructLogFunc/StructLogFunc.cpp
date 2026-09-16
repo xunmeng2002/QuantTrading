@@ -1,9 +1,9 @@
-// 本文件由 ../Templates/Cpp/LibTest/CtpWrapper/StructLogFunc.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/LibTest/CtpWrapper/StructLogFunc.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "StructLogFunc.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <limits>
 
-using namespace Spark::core;
+using namespace Spark::Core;
 
 double GetDoubleValue(double& value)
 {
@@ -179,16 +179,16 @@ void WriteProduct(CThostFtdcProductField* Product)
 {
 	if(Product)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcProductField: reserve1[%s], ProductName[%s], ExchangeID[%s], ProductClass[%c], VolumeMultiple[%d], PriceTick[%f], MaxMarketOrderVolume[%d], MinMarketOrderVolume[%d], MaxLimitOrderVolume[%d], MinLimitOrderVolume[%d], PositionType[%c], PositionDateType[%c], CloseDealType[%c], TradeCurrencyID[%s], MortgageFundUseRange[%c], reserve2[%s], UnderlyingMultiple[%f], ProductId[%s], ExchangeProductID[%s], OpenLimitControlLevel[%c], OrderFreqControlLevel[%c]",
-			Product->reserve1, Product->ProductName, Product->ExchangeID, Product->ProductClass, Product->VolumeMultiple, GetDoubleValue(Product->PriceTick), Product->MaxMarketOrderVolume, Product->MinMarketOrderVolume, Product->MaxLimitOrderVolume, Product->MinLimitOrderVolume, Product->PositionType, Product->PositionDateType, Product->CloseDealType, Product->TradeCurrencyID, Product->MortgageFundUseRange, Product->reserve2, GetDoubleValue(Product->UnderlyingMultiple), Product->ProductId, Product->ExchangeProductID, Product->OpenLimitControlLevel, Product->OrderFreqControlLevel);
+		WriteLog(LogLevel::Info, "CThostFtdcProductField: reserve1[%s], ProductName[%s], ExchangeID[%s], ProductClass[%c], VolumeMultiple[%d], PriceTick[%f], MaxMarketOrderVolume[%d], MinMarketOrderVolume[%d], MaxLimitOrderVolume[%d], MinLimitOrderVolume[%d], PositionType[%c], PositionDateType[%c], CloseDealType[%c], TradeCurrencyID[%s], MortgageFundUseRange[%c], reserve2[%s], UnderlyingMultiple[%f], ProductID[%s], ExchangeProductID[%s], OpenLimitControlLevel[%c], OrderFreqControlLevel[%c]",
+			Product->reserve1, Product->ProductName, Product->ExchangeID, Product->ProductClass, Product->VolumeMultiple, GetDoubleValue(Product->PriceTick), Product->MaxMarketOrderVolume, Product->MinMarketOrderVolume, Product->MaxLimitOrderVolume, Product->MinLimitOrderVolume, Product->PositionType, Product->PositionDateType, Product->CloseDealType, Product->TradeCurrencyID, Product->MortgageFundUseRange, Product->reserve2, GetDoubleValue(Product->UnderlyingMultiple), Product->ProductID, Product->ExchangeProductID, Product->OpenLimitControlLevel, Product->OrderFreqControlLevel);
 	}
 }
 void WriteInstrument(CThostFtdcInstrumentField* Instrument)
 {
 	if(Instrument)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcInstrumentField: reserve1[%s], ExchangeID[%s], InstrumentName[%s], reserve2[%s], reserve3[%s], ProductClass[%c], DeliveryYear[%d], DeliveryMonth[%d], MaxMarketOrderVolume[%d], MinMarketOrderVolume[%d], MaxLimitOrderVolume[%d], MinLimitOrderVolume[%d], VolumeMultiple[%d], PriceTick[%f], CreateDate[%s], OpenDate[%s], ExpireDate[%s], StartDelivDate[%s], EndDelivDate[%s], InstLifePhase[%c], IsTrading[%d], PositionType[%c], PositionDateType[%c], LongMarginRatio[%f], ShortMarginRatio[%f], MaxMarginSideAlgorithm[%c], reserve4[%s], StrikePrice[%f], OptionsType[%c], UnderlyingMultiple[%f], CombinationType[%c], InstrumentID[%s], ExchangeInstID[%s], ProductId[%s], UnderlyingInstrID[%s]",
-			Instrument->reserve1, Instrument->ExchangeID, Instrument->InstrumentName, Instrument->reserve2, Instrument->reserve3, Instrument->ProductClass, Instrument->DeliveryYear, Instrument->DeliveryMonth, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->VolumeMultiple, GetDoubleValue(Instrument->PriceTick), Instrument->CreateDate, Instrument->OpenDate, Instrument->ExpireDate, Instrument->StartDelivDate, Instrument->EndDelivDate, Instrument->InstLifePhase, Instrument->IsTrading, Instrument->PositionType, Instrument->PositionDateType, GetDoubleValue(Instrument->LongMarginRatio), GetDoubleValue(Instrument->ShortMarginRatio), Instrument->MaxMarginSideAlgorithm, Instrument->reserve4, GetDoubleValue(Instrument->StrikePrice), Instrument->OptionsType, GetDoubleValue(Instrument->UnderlyingMultiple), Instrument->CombinationType, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->ProductId, Instrument->UnderlyingInstrID);
+		WriteLog(LogLevel::Info, "CThostFtdcInstrumentField: reserve1[%s], ExchangeID[%s], InstrumentName[%s], reserve2[%s], reserve3[%s], ProductClass[%c], DeliveryYear[%d], DeliveryMonth[%d], MaxMarketOrderVolume[%d], MinMarketOrderVolume[%d], MaxLimitOrderVolume[%d], MinLimitOrderVolume[%d], VolumeMultiple[%d], PriceTick[%f], CreateDate[%s], OpenDate[%s], ExpireDate[%s], StartDelivDate[%s], EndDelivDate[%s], InstLifePhase[%c], IsTrading[%d], PositionType[%c], PositionDateType[%c], LongMarginRatio[%f], ShortMarginRatio[%f], MaxMarginSideAlgorithm[%c], reserve4[%s], StrikePrice[%f], OptionsType[%c], UnderlyingMultiple[%f], CombinationType[%c], InstrumentID[%s], ExchangeInstID[%s], ProductID[%s], UnderlyingInstrID[%s]",
+			Instrument->reserve1, Instrument->ExchangeID, Instrument->InstrumentName, Instrument->reserve2, Instrument->reserve3, Instrument->ProductClass, Instrument->DeliveryYear, Instrument->DeliveryMonth, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->VolumeMultiple, GetDoubleValue(Instrument->PriceTick), Instrument->CreateDate, Instrument->OpenDate, Instrument->ExpireDate, Instrument->StartDelivDate, Instrument->EndDelivDate, Instrument->InstLifePhase, Instrument->IsTrading, Instrument->PositionType, Instrument->PositionDateType, GetDoubleValue(Instrument->LongMarginRatio), GetDoubleValue(Instrument->ShortMarginRatio), Instrument->MaxMarginSideAlgorithm, Instrument->reserve4, GetDoubleValue(Instrument->StrikePrice), Instrument->OptionsType, GetDoubleValue(Instrument->UnderlyingMultiple), Instrument->CombinationType, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->ProductID, Instrument->UnderlyingInstrID);
 	}
 }
 void WriteBroker(CThostFtdcBrokerField* Broker)
@@ -795,16 +795,16 @@ void WriteQryProduct(CThostFtdcQryProductField* QryProduct)
 {
 	if(QryProduct)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryProductField: reserve1[%s], ProductClass[%c], ExchangeID[%s], ProductId[%s]",
-			QryProduct->reserve1, QryProduct->ProductClass, QryProduct->ExchangeID, QryProduct->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcQryProductField: reserve1[%s], ProductClass[%c], ExchangeID[%s], ProductID[%s]",
+			QryProduct->reserve1, QryProduct->ProductClass, QryProduct->ExchangeID, QryProduct->ProductID);
 	}
 }
 void WriteQryInstrument(CThostFtdcQryInstrumentField* QryInstrument)
 {
 	if(QryInstrument)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryInstrumentField: reserve1[%s], ExchangeID[%s], reserve2[%s], reserve3[%s], InstrumentID[%s], ExchangeInstID[%s], ProductId[%s]",
-			QryInstrument->reserve1, QryInstrument->ExchangeID, QryInstrument->reserve2, QryInstrument->reserve3, QryInstrument->InstrumentID, QryInstrument->ExchangeInstID, QryInstrument->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcQryInstrumentField: reserve1[%s], ExchangeID[%s], reserve2[%s], reserve3[%s], InstrumentID[%s], ExchangeInstID[%s], ProductID[%s]",
+			QryInstrument->reserve1, QryInstrument->ExchangeID, QryInstrument->reserve2, QryInstrument->reserve3, QryInstrument->InstrumentID, QryInstrument->ExchangeInstID, QryInstrument->ProductID);
 	}
 }
 void WriteQryDepthMarketData(CThostFtdcQryDepthMarketDataField* QryDepthMarketData)
@@ -1323,16 +1323,16 @@ void WriteProductExchRate(CThostFtdcProductExchRateField* ProductExchRate)
 {
 	if(ProductExchRate)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcProductExchRateField: reserve1[%s], QuoteCurrencyID[%s], ExchangeRate[%f], ExchangeID[%s], ProductId[%s]",
-			ProductExchRate->reserve1, ProductExchRate->QuoteCurrencyID, GetDoubleValue(ProductExchRate->ExchangeRate), ProductExchRate->ExchangeID, ProductExchRate->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcProductExchRateField: reserve1[%s], QuoteCurrencyID[%s], ExchangeRate[%f], ExchangeID[%s], ProductID[%s]",
+			ProductExchRate->reserve1, ProductExchRate->QuoteCurrencyID, GetDoubleValue(ProductExchRate->ExchangeRate), ProductExchRate->ExchangeID, ProductExchRate->ProductID);
 	}
 }
 void WriteQryProductExchRate(CThostFtdcQryProductExchRateField* QryProductExchRate)
 {
 	if(QryProductExchRate)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryProductExchRateField: reserve1[%s], ExchangeID[%s], ProductId[%s]",
-			QryProductExchRate->reserve1, QryProductExchRate->ExchangeID, QryProductExchRate->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcQryProductExchRateField: reserve1[%s], ExchangeID[%s], ProductID[%s]",
+			QryProductExchRate->reserve1, QryProductExchRate->ExchangeID, QryProductExchRate->ProductID);
 	}
 }
 void WriteQryForQuoteParam(CThostFtdcQryForQuoteParamField* QryForQuoteParam)
@@ -1419,8 +1419,8 @@ void WriteFutureLimitPosiParam(CThostFtdcFutureLimitPosiParamField* FutureLimitP
 {
 	if(FutureLimitPosiParam)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcFutureLimitPosiParamField: InvestorRange[%c], BrokerID[%s], InvestorID[%s], reserve1[%s], SpecOpenVolume[%d], ArbiOpenVolume[%d], OpenVolume[%d], ProductId[%s]",
-			FutureLimitPosiParam->InvestorRange, FutureLimitPosiParam->BrokerID, FutureLimitPosiParam->InvestorID, FutureLimitPosiParam->reserve1, FutureLimitPosiParam->SpecOpenVolume, FutureLimitPosiParam->ArbiOpenVolume, FutureLimitPosiParam->OpenVolume, FutureLimitPosiParam->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcFutureLimitPosiParamField: InvestorRange[%c], BrokerID[%s], InvestorID[%s], reserve1[%s], SpecOpenVolume[%d], ArbiOpenVolume[%d], OpenVolume[%d], ProductID[%s]",
+			FutureLimitPosiParam->InvestorRange, FutureLimitPosiParam->BrokerID, FutureLimitPosiParam->InvestorID, FutureLimitPosiParam->reserve1, FutureLimitPosiParam->SpecOpenVolume, FutureLimitPosiParam->ArbiOpenVolume, FutureLimitPosiParam->OpenVolume, FutureLimitPosiParam->ProductID);
 	}
 }
 void WriteLoginForbiddenIP(CThostFtdcLoginForbiddenIPField* LoginForbiddenIP)
@@ -2259,16 +2259,16 @@ void WriteQryProductGroup(CThostFtdcQryProductGroupField* QryProductGroup)
 {
 	if(QryProductGroup)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryProductGroupField: reserve1[%s], ExchangeID[%s], ProductId[%s]",
-			QryProductGroup->reserve1, QryProductGroup->ExchangeID, QryProductGroup->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcQryProductGroupField: reserve1[%s], ExchangeID[%s], ProductID[%s]",
+			QryProductGroup->reserve1, QryProductGroup->ExchangeID, QryProductGroup->ProductID);
 	}
 }
 void WriteProductGroup(CThostFtdcProductGroupField* ProductGroup)
 {
 	if(ProductGroup)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcProductGroupField: reserve1[%s], ExchangeID[%s], reserve2[%s], ProductId[%s], ProductGroupID[%s]",
-			ProductGroup->reserve1, ProductGroup->ExchangeID, ProductGroup->reserve2, ProductGroup->ProductId, ProductGroup->ProductGroupID);
+		WriteLog(LogLevel::Info, "CThostFtdcProductGroupField: reserve1[%s], ExchangeID[%s], reserve2[%s], ProductID[%s], ProductGroupID[%s]",
+			ProductGroup->reserve1, ProductGroup->ExchangeID, ProductGroup->reserve2, ProductGroup->ProductID, ProductGroup->ProductGroupID);
 	}
 }
 void WriteBulletin(CThostFtdcBulletinField* Bulletin)
@@ -2907,8 +2907,8 @@ void WriteQryClassifiedInstrument(CThostFtdcQryClassifiedInstrumentField* QryCla
 {
 	if(QryClassifiedInstrument)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryClassifiedInstrumentField: InstrumentID[%s], ExchangeID[%s], ExchangeInstID[%s], ProductId[%s], TradingType[%c], ClassType[%c]",
-			QryClassifiedInstrument->InstrumentID, QryClassifiedInstrument->ExchangeID, QryClassifiedInstrument->ExchangeInstID, QryClassifiedInstrument->ProductId, QryClassifiedInstrument->TradingType, QryClassifiedInstrument->ClassType);
+		WriteLog(LogLevel::Info, "CThostFtdcQryClassifiedInstrumentField: InstrumentID[%s], ExchangeID[%s], ExchangeInstID[%s], ProductID[%s], TradingType[%c], ClassType[%c]",
+			QryClassifiedInstrument->InstrumentID, QryClassifiedInstrument->ExchangeID, QryClassifiedInstrument->ExchangeInstID, QryClassifiedInstrument->ProductID, QryClassifiedInstrument->TradingType, QryClassifiedInstrument->ClassType);
 	}
 }
 void WriteQryCombPromotionParam(CThostFtdcQryCombPromotionParamField* QryCombPromotionParam)
@@ -2947,8 +2947,8 @@ void WriteQryRiskSettleProductStatus(CThostFtdcQryRiskSettleProductStatusField* 
 {
 	if(QryRiskSettleProductStatus)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryRiskSettleProductStatusField: ProductId[%s]",
-			QryRiskSettleProductStatus->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcQryRiskSettleProductStatusField: ProductID[%s]",
+			QryRiskSettleProductStatus->ProductID);
 	}
 }
 void WriteRiskSettleInvstPosition(CThostFtdcRiskSettleInvstPositionField* RiskSettleInvstPosition)
@@ -2963,8 +2963,8 @@ void WriteRiskSettleProductStatus(CThostFtdcRiskSettleProductStatusField* RiskSe
 {
 	if(RiskSettleProductStatus)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcRiskSettleProductStatusField: ExchangeID[%s], ProductId[%s], ProductStatus[%c]",
-			RiskSettleProductStatus->ExchangeID, RiskSettleProductStatus->ProductId, RiskSettleProductStatus->ProductStatus);
+		WriteLog(LogLevel::Info, "CThostFtdcRiskSettleProductStatusField: ExchangeID[%s], ProductID[%s], ProductStatus[%c]",
+			RiskSettleProductStatus->ExchangeID, RiskSettleProductStatus->ProductID, RiskSettleProductStatus->ProductStatus);
 	}
 }
 void WriteSyncDeltaInfo(CThostFtdcSyncDeltaInfoField* SyncDeltaInfo)
@@ -2979,8 +2979,8 @@ void WriteSyncDeltaProductStatus(CThostFtdcSyncDeltaProductStatusField* SyncDelt
 {
 	if(SyncDeltaProductStatus)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaProductStatusField: SyncDeltaSequenceNo[%d], ExchangeID[%s], ProductId[%s], ProductStatus[%c]",
-			SyncDeltaProductStatus->SyncDeltaSequenceNo, SyncDeltaProductStatus->ExchangeID, SyncDeltaProductStatus->ProductId, SyncDeltaProductStatus->ProductStatus);
+		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaProductStatusField: SyncDeltaSequenceNo[%d], ExchangeID[%s], ProductID[%s], ProductStatus[%c]",
+			SyncDeltaProductStatus->SyncDeltaSequenceNo, SyncDeltaProductStatus->ExchangeID, SyncDeltaProductStatus->ProductID, SyncDeltaProductStatus->ProductStatus);
 	}
 }
 void WriteSyncDeltaInvstPosDtl(CThostFtdcSyncDeltaInvstPosDtlField* SyncDeltaInvstPosDtl)
@@ -3019,8 +3019,8 @@ void WriteSyncDeltaDceCombInstrument(CThostFtdcSyncDeltaDceCombInstrumentField* 
 {
 	if(SyncDeltaDceCombInstrument)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaDceCombInstrumentField: CombInstrumentID[%s], ExchangeID[%s], ExchangeInstID[%s], TradeGroupID[%d], CombHedgeFlag[%c], CombinationType[%c], Direction[%c], ProductId[%s], Xparameter[%f], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
-			SyncDeltaDceCombInstrument->CombInstrumentID, SyncDeltaDceCombInstrument->ExchangeID, SyncDeltaDceCombInstrument->ExchangeInstID, SyncDeltaDceCombInstrument->TradeGroupID, SyncDeltaDceCombInstrument->CombHedgeFlag, SyncDeltaDceCombInstrument->CombinationType, SyncDeltaDceCombInstrument->Direction, SyncDeltaDceCombInstrument->ProductId, GetDoubleValue(SyncDeltaDceCombInstrument->Xparameter), SyncDeltaDceCombInstrument->ActionDirection, SyncDeltaDceCombInstrument->SyncDeltaSequenceNo);
+		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaDceCombInstrumentField: CombInstrumentID[%s], ExchangeID[%s], ExchangeInstID[%s], TradeGroupID[%d], CombHedgeFlag[%c], CombinationType[%c], Direction[%c], ProductID[%s], Xparameter[%f], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
+			SyncDeltaDceCombInstrument->CombInstrumentID, SyncDeltaDceCombInstrument->ExchangeID, SyncDeltaDceCombInstrument->ExchangeInstID, SyncDeltaDceCombInstrument->TradeGroupID, SyncDeltaDceCombInstrument->CombHedgeFlag, SyncDeltaDceCombInstrument->CombinationType, SyncDeltaDceCombInstrument->Direction, SyncDeltaDceCombInstrument->ProductID, GetDoubleValue(SyncDeltaDceCombInstrument->Xparameter), SyncDeltaDceCombInstrument->ActionDirection, SyncDeltaDceCombInstrument->SyncDeltaSequenceNo);
 	}
 }
 void WriteSyncDeltaInvstMarginRate(CThostFtdcSyncDeltaInvstMarginRateField* SyncDeltaInvstMarginRate)
@@ -3083,8 +3083,8 @@ void WriteSyncDeltaProductExchRate(CThostFtdcSyncDeltaProductExchRateField* Sync
 {
 	if(SyncDeltaProductExchRate)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaProductExchRateField: ProductId[%s], QuoteCurrencyID[%s], ExchangeRate[%f], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
-			SyncDeltaProductExchRate->ProductId, SyncDeltaProductExchRate->QuoteCurrencyID, GetDoubleValue(SyncDeltaProductExchRate->ExchangeRate), SyncDeltaProductExchRate->ActionDirection, SyncDeltaProductExchRate->SyncDeltaSequenceNo);
+		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaProductExchRateField: ProductID[%s], QuoteCurrencyID[%s], ExchangeRate[%f], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
+			SyncDeltaProductExchRate->ProductID, SyncDeltaProductExchRate->QuoteCurrencyID, GetDoubleValue(SyncDeltaProductExchRate->ExchangeRate), SyncDeltaProductExchRate->ActionDirection, SyncDeltaProductExchRate->SyncDeltaSequenceNo);
 	}
 }
 void WriteSyncDeltaDepthMarketData(CThostFtdcSyncDeltaDepthMarketDataField* SyncDeltaDepthMarketData)
@@ -3339,8 +3339,8 @@ void WriteQrySPMMProductParam(CThostFtdcQrySPMMProductParamField* QrySPMMProduct
 {
 	if(QrySPMMProductParam)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQrySPMMProductParamField: ProductId[%s]",
-			QrySPMMProductParam->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcQrySPMMProductParamField: ProductID[%s]",
+			QrySPMMProductParam->ProductID);
 	}
 }
 void WriteInvestorCommoditySPMMMargin(CThostFtdcInvestorCommoditySPMMMarginField* InvestorCommoditySPMMMargin)
@@ -3371,8 +3371,8 @@ void WriteSPMMProductParam(CThostFtdcSPMMProductParamField* SPMMProductParam)
 {
 	if(SPMMProductParam)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcSPMMProductParamField: ExchangeID[%s], ProductId[%s], CommodityID[%s], CommodityGroupID[%s]",
-			SPMMProductParam->ExchangeID, SPMMProductParam->ProductId, SPMMProductParam->CommodityID, SPMMProductParam->CommodityGroupID);
+		WriteLog(LogLevel::Info, "CThostFtdcSPMMProductParamField: ExchangeID[%s], ProductID[%s], CommodityID[%s], CommodityGroupID[%s]",
+			SPMMProductParam->ExchangeID, SPMMProductParam->ProductID, SPMMProductParam->CommodityID, SPMMProductParam->CommodityGroupID);
 	}
 }
 void WriteQryTraderAssign(CThostFtdcQryTraderAssignField* QryTraderAssign)
@@ -3395,24 +3395,24 @@ void WriteInvestorInfoCntSetting(CThostFtdcInvestorInfoCntSettingField* Investor
 {
 	if(InvestorInfoCntSetting)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcInvestorInfoCntSettingField: ExchangeID[%s], BrokerID[%s], InvestorID[%s], ProductId[%s], IsCalInfoComm[%d], IsLimitInfoMax[%d], InfoMaxLimit[%d]",
-			InvestorInfoCntSetting->ExchangeID, InvestorInfoCntSetting->BrokerID, InvestorInfoCntSetting->InvestorID, InvestorInfoCntSetting->ProductId, InvestorInfoCntSetting->IsCalInfoComm, InvestorInfoCntSetting->IsLimitInfoMax, InvestorInfoCntSetting->InfoMaxLimit);
+		WriteLog(LogLevel::Info, "CThostFtdcInvestorInfoCntSettingField: ExchangeID[%s], BrokerID[%s], InvestorID[%s], ProductID[%s], IsCalInfoComm[%d], IsLimitInfoMax[%d], InfoMaxLimit[%d]",
+			InvestorInfoCntSetting->ExchangeID, InvestorInfoCntSetting->BrokerID, InvestorInfoCntSetting->InvestorID, InvestorInfoCntSetting->ProductID, InvestorInfoCntSetting->IsCalInfoComm, InvestorInfoCntSetting->IsLimitInfoMax, InvestorInfoCntSetting->InfoMaxLimit);
 	}
 }
 void WriteRCAMSCombProductInfo(CThostFtdcRCAMSCombProductInfoField* RCAMSCombProductInfo)
 {
 	if(RCAMSCombProductInfo)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcRCAMSCombProductInfoField: TradingDay[%s], ExchangeID[%s], ProductId[%s], CombProductID[%s], ProductGroupID[%s]",
-			RCAMSCombProductInfo->TradingDay, RCAMSCombProductInfo->ExchangeID, RCAMSCombProductInfo->ProductId, RCAMSCombProductInfo->CombProductID, RCAMSCombProductInfo->ProductGroupID);
+		WriteLog(LogLevel::Info, "CThostFtdcRCAMSCombProductInfoField: TradingDay[%s], ExchangeID[%s], ProductID[%s], CombProductID[%s], ProductGroupID[%s]",
+			RCAMSCombProductInfo->TradingDay, RCAMSCombProductInfo->ExchangeID, RCAMSCombProductInfo->ProductID, RCAMSCombProductInfo->CombProductID, RCAMSCombProductInfo->ProductGroupID);
 	}
 }
 void WriteRCAMSInstrParameter(CThostFtdcRCAMSInstrParameterField* RCAMSInstrParameter)
 {
 	if(RCAMSInstrParameter)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcRCAMSInstrParameterField: TradingDay[%s], ExchangeID[%s], ProductId[%s], HedgeRate[%f]",
-			RCAMSInstrParameter->TradingDay, RCAMSInstrParameter->ExchangeID, RCAMSInstrParameter->ProductId, GetDoubleValue(RCAMSInstrParameter->HedgeRate));
+		WriteLog(LogLevel::Info, "CThostFtdcRCAMSInstrParameterField: TradingDay[%s], ExchangeID[%s], ProductID[%s], HedgeRate[%f]",
+			RCAMSInstrParameter->TradingDay, RCAMSInstrParameter->ExchangeID, RCAMSInstrParameter->ProductID, GetDoubleValue(RCAMSInstrParameter->HedgeRate));
 	}
 }
 void WriteRCAMSIntraParameter(CThostFtdcRCAMSIntraParameterField* RCAMSIntraParameter)
@@ -3459,16 +3459,16 @@ void WriteQryRCAMSCombProductInfo(CThostFtdcQryRCAMSCombProductInfoField* QryRCA
 {
 	if(QryRCAMSCombProductInfo)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryRCAMSCombProductInfoField: ProductId[%s], CombProductID[%s], ProductGroupID[%s]",
-			QryRCAMSCombProductInfo->ProductId, QryRCAMSCombProductInfo->CombProductID, QryRCAMSCombProductInfo->ProductGroupID);
+		WriteLog(LogLevel::Info, "CThostFtdcQryRCAMSCombProductInfoField: ProductID[%s], CombProductID[%s], ProductGroupID[%s]",
+			QryRCAMSCombProductInfo->ProductID, QryRCAMSCombProductInfo->CombProductID, QryRCAMSCombProductInfo->ProductGroupID);
 	}
 }
 void WriteQryRCAMSInstrParameter(CThostFtdcQryRCAMSInstrParameterField* QryRCAMSInstrParameter)
 {
 	if(QryRCAMSInstrParameter)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryRCAMSInstrParameterField: ProductId[%s]",
-			QryRCAMSInstrParameter->ProductId);
+		WriteLog(LogLevel::Info, "CThostFtdcQryRCAMSInstrParameterField: ProductID[%s]",
+			QryRCAMSInstrParameter->ProductID);
 	}
 }
 void WriteQryRCAMSIntraParameter(CThostFtdcQryRCAMSIntraParameterField* QryRCAMSIntraParameter)
@@ -3643,8 +3643,8 @@ void WriteSyncDeltaSPMMProductParam(CThostFtdcSyncDeltaSPMMProductParamField* Sy
 {
 	if(SyncDeltaSPMMProductParam)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaSPMMProductParamField: ExchangeID[%s], ProductId[%s], CommodityID[%s], CommodityGroupID[%s], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
-			SyncDeltaSPMMProductParam->ExchangeID, SyncDeltaSPMMProductParam->ProductId, SyncDeltaSPMMProductParam->CommodityID, SyncDeltaSPMMProductParam->CommodityGroupID, SyncDeltaSPMMProductParam->ActionDirection, SyncDeltaSPMMProductParam->SyncDeltaSequenceNo);
+		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaSPMMProductParamField: ExchangeID[%s], ProductID[%s], CommodityID[%s], CommodityGroupID[%s], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
+			SyncDeltaSPMMProductParam->ExchangeID, SyncDeltaSPMMProductParam->ProductID, SyncDeltaSPMMProductParam->CommodityID, SyncDeltaSPMMProductParam->CommodityGroupID, SyncDeltaSPMMProductParam->ActionDirection, SyncDeltaSPMMProductParam->SyncDeltaSequenceNo);
 	}
 }
 void WriteSyncDeltaInvestorSPMMModel(CThostFtdcSyncDeltaInvestorSPMMModelField* SyncDeltaInvestorSPMMModel)
@@ -3667,16 +3667,16 @@ void WriteSyncDeltaRCAMSCombProdInfo(CThostFtdcSyncDeltaRCAMSCombProdInfoField* 
 {
 	if(SyncDeltaRCAMSCombProdInfo)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaRCAMSCombProdInfoField: TradingDay[%s], ExchangeID[%s], ProductId[%s], CombProductID[%s], ProductGroupID[%s], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
-			SyncDeltaRCAMSCombProdInfo->TradingDay, SyncDeltaRCAMSCombProdInfo->ExchangeID, SyncDeltaRCAMSCombProdInfo->ProductId, SyncDeltaRCAMSCombProdInfo->CombProductID, SyncDeltaRCAMSCombProdInfo->ProductGroupID, SyncDeltaRCAMSCombProdInfo->ActionDirection, SyncDeltaRCAMSCombProdInfo->SyncDeltaSequenceNo);
+		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaRCAMSCombProdInfoField: TradingDay[%s], ExchangeID[%s], ProductID[%s], CombProductID[%s], ProductGroupID[%s], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
+			SyncDeltaRCAMSCombProdInfo->TradingDay, SyncDeltaRCAMSCombProdInfo->ExchangeID, SyncDeltaRCAMSCombProdInfo->ProductID, SyncDeltaRCAMSCombProdInfo->CombProductID, SyncDeltaRCAMSCombProdInfo->ProductGroupID, SyncDeltaRCAMSCombProdInfo->ActionDirection, SyncDeltaRCAMSCombProdInfo->SyncDeltaSequenceNo);
 	}
 }
 void WriteSyncDeltaRCAMSInstrParameter(CThostFtdcSyncDeltaRCAMSInstrParameterField* SyncDeltaRCAMSInstrParameter)
 {
 	if(SyncDeltaRCAMSInstrParameter)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaRCAMSInstrParameterField: TradingDay[%s], ExchangeID[%s], ProductId[%s], HedgeRate[%f], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
-			SyncDeltaRCAMSInstrParameter->TradingDay, SyncDeltaRCAMSInstrParameter->ExchangeID, SyncDeltaRCAMSInstrParameter->ProductId, GetDoubleValue(SyncDeltaRCAMSInstrParameter->HedgeRate), SyncDeltaRCAMSInstrParameter->ActionDirection, SyncDeltaRCAMSInstrParameter->SyncDeltaSequenceNo);
+		WriteLog(LogLevel::Info, "CThostFtdcSyncDeltaRCAMSInstrParameterField: TradingDay[%s], ExchangeID[%s], ProductID[%s], HedgeRate[%f], ActionDirection[%c], SyncDeltaSequenceNo[%d]",
+			SyncDeltaRCAMSInstrParameter->TradingDay, SyncDeltaRCAMSInstrParameter->ExchangeID, SyncDeltaRCAMSInstrParameter->ProductID, GetDoubleValue(SyncDeltaRCAMSInstrParameter->HedgeRate), SyncDeltaRCAMSInstrParameter->ActionDirection, SyncDeltaRCAMSInstrParameter->SyncDeltaSequenceNo);
 	}
 }
 void WriteSyncDeltaRCAMSIntraParameter(CThostFtdcSyncDeltaRCAMSIntraParameterField* SyncDeltaRCAMSIntraParameter)
@@ -3907,8 +3907,8 @@ void WriteInvestorInfoCommRec(CThostFtdcInvestorInfoCommRecField* InvestorInfoCo
 {
 	if(InvestorInfoCommRec)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcInvestorInfoCommRecField: ExchangeID[%s], BrokerID[%s], InvestorID[%s], InstrumentID[%s], OrderCount[%d], OrderActionCount[%d], ForQuoteCnt[%d], InfoComm[%f], IsOptSeries[%d], ProductId[%s], InfoCnt[%d]",
-			InvestorInfoCommRec->ExchangeID, InvestorInfoCommRec->BrokerID, InvestorInfoCommRec->InvestorID, InvestorInfoCommRec->InstrumentID, InvestorInfoCommRec->OrderCount, InvestorInfoCommRec->OrderActionCount, InvestorInfoCommRec->ForQuoteCnt, GetDoubleValue(InvestorInfoCommRec->InfoComm), InvestorInfoCommRec->IsOptSeries, InvestorInfoCommRec->ProductId, InvestorInfoCommRec->InfoCnt);
+		WriteLog(LogLevel::Info, "CThostFtdcInvestorInfoCommRecField: ExchangeID[%s], BrokerID[%s], InvestorID[%s], InstrumentID[%s], OrderCount[%d], OrderActionCount[%d], ForQuoteCnt[%d], InfoComm[%f], IsOptSeries[%d], ProductID[%s], InfoCnt[%d]",
+			InvestorInfoCommRec->ExchangeID, InvestorInfoCommRec->BrokerID, InvestorInfoCommRec->InvestorID, InvestorInfoCommRec->InstrumentID, InvestorInfoCommRec->OrderCount, InvestorInfoCommRec->OrderActionCount, InvestorInfoCommRec->ForQuoteCnt, GetDoubleValue(InvestorInfoCommRec->InfoComm), InvestorInfoCommRec->IsOptSeries, InvestorInfoCommRec->ProductID, InvestorInfoCommRec->InfoCnt);
 	}
 }
 void WriteQryInvestorInfoCommRec(CThostFtdcQryInvestorInfoCommRecField* QryInvestorInfoCommRec)
@@ -3939,32 +3939,32 @@ void WriteInputOffsetSetting(CThostFtdcInputOffsetSettingField* InputOffsetSetti
 {
 	if(InputOffsetSetting)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcInputOffsetSettingField: BrokerID[%s], InvestorID[%s], InstrumentID[%s], UnderlyingInstrID[%s], ProductId[%s], OffsetType[%c], Volume[%d], IsOffset[%d], RequestID[%d], UserID[%s], ExchangeID[%s], IPAddress[%s], MacAddress[%s]",
-			InputOffsetSetting->BrokerID, InputOffsetSetting->InvestorID, InputOffsetSetting->InstrumentID, InputOffsetSetting->UnderlyingInstrID, InputOffsetSetting->ProductId, InputOffsetSetting->OffsetType, InputOffsetSetting->Volume, InputOffsetSetting->IsOffset, InputOffsetSetting->RequestID, InputOffsetSetting->UserID, InputOffsetSetting->ExchangeID, InputOffsetSetting->IPAddress, InputOffsetSetting->MacAddress);
+		WriteLog(LogLevel::Info, "CThostFtdcInputOffsetSettingField: BrokerID[%s], InvestorID[%s], InstrumentID[%s], UnderlyingInstrID[%s], ProductID[%s], OffsetType[%c], Volume[%d], IsOffset[%d], RequestID[%d], UserID[%s], ExchangeID[%s], IPAddress[%s], MacAddress[%s]",
+			InputOffsetSetting->BrokerID, InputOffsetSetting->InvestorID, InputOffsetSetting->InstrumentID, InputOffsetSetting->UnderlyingInstrID, InputOffsetSetting->ProductID, InputOffsetSetting->OffsetType, InputOffsetSetting->Volume, InputOffsetSetting->IsOffset, InputOffsetSetting->RequestID, InputOffsetSetting->UserID, InputOffsetSetting->ExchangeID, InputOffsetSetting->IPAddress, InputOffsetSetting->MacAddress);
 	}
 }
 void WriteOffsetSetting(CThostFtdcOffsetSettingField* OffsetSetting)
 {
 	if(OffsetSetting)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcOffsetSettingField: BrokerID[%s], InvestorID[%s], InstrumentID[%s], UnderlyingInstrID[%s], ProductId[%s], OffsetType[%c], Volume[%d], IsOffset[%d], RequestID[%d], UserID[%s], ExchangeID[%s], IPAddress[%s], MacAddress[%s], ExchangeInstID[%s], ExchangeSerialNo[%s], ExchangeProductID[%s], ParticipantID[%s], ClientID[%s], TraderID[%s], InstallID[%d], OrderSubmitStatus[%c], TradingDay[%s], SettlementID[%d], InsertDate[%s], InsertTime[%s], CancelTime[%s], ExecResult[%c], SequenceNo[%d], FrontID[%d], SessionID[%d], StatusMsg[%s], ActiveUserID[%s], BrokerOffsetSettingSeq[%d]",
-			OffsetSetting->BrokerID, OffsetSetting->InvestorID, OffsetSetting->InstrumentID, OffsetSetting->UnderlyingInstrID, OffsetSetting->ProductId, OffsetSetting->OffsetType, OffsetSetting->Volume, OffsetSetting->IsOffset, OffsetSetting->RequestID, OffsetSetting->UserID, OffsetSetting->ExchangeID, OffsetSetting->IPAddress, OffsetSetting->MacAddress, OffsetSetting->ExchangeInstID, OffsetSetting->ExchangeSerialNo, OffsetSetting->ExchangeProductID, OffsetSetting->ParticipantID, OffsetSetting->ClientID, OffsetSetting->TraderID, OffsetSetting->InstallID, OffsetSetting->OrderSubmitStatus, OffsetSetting->TradingDay, OffsetSetting->SettlementID, OffsetSetting->InsertDate, OffsetSetting->InsertTime, OffsetSetting->CancelTime, OffsetSetting->ExecResult, OffsetSetting->SequenceNo, OffsetSetting->FrontID, OffsetSetting->SessionID, OffsetSetting->StatusMsg, OffsetSetting->ActiveUserID, OffsetSetting->BrokerOffsetSettingSeq);
+		WriteLog(LogLevel::Info, "CThostFtdcOffsetSettingField: BrokerID[%s], InvestorID[%s], InstrumentID[%s], UnderlyingInstrID[%s], ProductID[%s], OffsetType[%c], Volume[%d], IsOffset[%d], RequestID[%d], UserID[%s], ExchangeID[%s], IPAddress[%s], MacAddress[%s], ExchangeInstID[%s], ExchangeSerialNo[%s], ExchangeProductID[%s], ParticipantID[%s], ClientID[%s], TraderID[%s], InstallID[%d], OrderSubmitStatus[%c], TradingDay[%s], SettlementID[%d], InsertDate[%s], InsertTime[%s], CancelTime[%s], ExecResult[%c], SequenceNo[%d], FrontID[%d], SessionID[%d], StatusMsg[%s], ActiveUserID[%s], BrokerOffsetSettingSeq[%d]",
+			OffsetSetting->BrokerID, OffsetSetting->InvestorID, OffsetSetting->InstrumentID, OffsetSetting->UnderlyingInstrID, OffsetSetting->ProductID, OffsetSetting->OffsetType, OffsetSetting->Volume, OffsetSetting->IsOffset, OffsetSetting->RequestID, OffsetSetting->UserID, OffsetSetting->ExchangeID, OffsetSetting->IPAddress, OffsetSetting->MacAddress, OffsetSetting->ExchangeInstID, OffsetSetting->ExchangeSerialNo, OffsetSetting->ExchangeProductID, OffsetSetting->ParticipantID, OffsetSetting->ClientID, OffsetSetting->TraderID, OffsetSetting->InstallID, OffsetSetting->OrderSubmitStatus, OffsetSetting->TradingDay, OffsetSetting->SettlementID, OffsetSetting->InsertDate, OffsetSetting->InsertTime, OffsetSetting->CancelTime, OffsetSetting->ExecResult, OffsetSetting->SequenceNo, OffsetSetting->FrontID, OffsetSetting->SessionID, OffsetSetting->StatusMsg, OffsetSetting->ActiveUserID, OffsetSetting->BrokerOffsetSettingSeq);
 	}
 }
 void WriteCancelOffsetSetting(CThostFtdcCancelOffsetSettingField* CancelOffsetSetting)
 {
 	if(CancelOffsetSetting)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcCancelOffsetSettingField: BrokerID[%s], InvestorID[%s], InstrumentID[%s], UnderlyingInstrID[%s], ProductId[%s], OffsetType[%c], Volume[%d], IsOffset[%d], RequestID[%d], UserID[%s], ExchangeID[%s], IPAddress[%s], MacAddress[%s], ExchangeInstID[%s], ExchangeSerialNo[%s], ExchangeProductID[%s], TraderID[%s], InstallID[%d], ParticipantID[%s], ClientID[%s], OrderActionStatus[%c], StatusMsg[%s], ActionLocalID[%s], ActionDate[%s], ActionTime[%s]",
-			CancelOffsetSetting->BrokerID, CancelOffsetSetting->InvestorID, CancelOffsetSetting->InstrumentID, CancelOffsetSetting->UnderlyingInstrID, CancelOffsetSetting->ProductId, CancelOffsetSetting->OffsetType, CancelOffsetSetting->Volume, CancelOffsetSetting->IsOffset, CancelOffsetSetting->RequestID, CancelOffsetSetting->UserID, CancelOffsetSetting->ExchangeID, CancelOffsetSetting->IPAddress, CancelOffsetSetting->MacAddress, CancelOffsetSetting->ExchangeInstID, CancelOffsetSetting->ExchangeSerialNo, CancelOffsetSetting->ExchangeProductID, CancelOffsetSetting->TraderID, CancelOffsetSetting->InstallID, CancelOffsetSetting->ParticipantID, CancelOffsetSetting->ClientID, CancelOffsetSetting->OrderActionStatus, CancelOffsetSetting->StatusMsg, CancelOffsetSetting->ActionLocalID, CancelOffsetSetting->ActionDate, CancelOffsetSetting->ActionTime);
+		WriteLog(LogLevel::Info, "CThostFtdcCancelOffsetSettingField: BrokerID[%s], InvestorID[%s], InstrumentID[%s], UnderlyingInstrID[%s], ProductID[%s], OffsetType[%c], Volume[%d], IsOffset[%d], RequestID[%d], UserID[%s], ExchangeID[%s], IPAddress[%s], MacAddress[%s], ExchangeInstID[%s], ExchangeSerialNo[%s], ExchangeProductID[%s], TraderID[%s], InstallID[%d], ParticipantID[%s], ClientID[%s], OrderActionStatus[%c], StatusMsg[%s], ActionLocalID[%s], ActionDate[%s], ActionTime[%s]",
+			CancelOffsetSetting->BrokerID, CancelOffsetSetting->InvestorID, CancelOffsetSetting->InstrumentID, CancelOffsetSetting->UnderlyingInstrID, CancelOffsetSetting->ProductID, CancelOffsetSetting->OffsetType, CancelOffsetSetting->Volume, CancelOffsetSetting->IsOffset, CancelOffsetSetting->RequestID, CancelOffsetSetting->UserID, CancelOffsetSetting->ExchangeID, CancelOffsetSetting->IPAddress, CancelOffsetSetting->MacAddress, CancelOffsetSetting->ExchangeInstID, CancelOffsetSetting->ExchangeSerialNo, CancelOffsetSetting->ExchangeProductID, CancelOffsetSetting->TraderID, CancelOffsetSetting->InstallID, CancelOffsetSetting->ParticipantID, CancelOffsetSetting->ClientID, CancelOffsetSetting->OrderActionStatus, CancelOffsetSetting->StatusMsg, CancelOffsetSetting->ActionLocalID, CancelOffsetSetting->ActionDate, CancelOffsetSetting->ActionTime);
 	}
 }
 void WriteQryOffsetSetting(CThostFtdcQryOffsetSettingField* QryOffsetSetting)
 {
 	if(QryOffsetSetting)
 	{
-		WriteLog(LogLevel::Info, "CThostFtdcQryOffsetSettingField: BrokerID[%s], InvestorID[%s], ProductId[%s], OffsetType[%c]",
-			QryOffsetSetting->BrokerID, QryOffsetSetting->InvestorID, QryOffsetSetting->ProductId, QryOffsetSetting->OffsetType);
+		WriteLog(LogLevel::Info, "CThostFtdcQryOffsetSettingField: BrokerID[%s], InvestorID[%s], ProductID[%s], OffsetType[%c]",
+			QryOffsetSetting->BrokerID, QryOffsetSetting->InvestorID, QryOffsetSetting->ProductID, QryOffsetSetting->OffsetType);
 	}
 }
 void WriteAddrAppIDRelation(CThostFtdcAddrAppIDRelationField* AddrAppIDRelation)
@@ -3991,3 +3991,4 @@ void WriteFrontInfo(CThostFtdcFrontInfoField* FrontInfo)
 			FrontInfo->FrontAddr, FrontInfo->QryFreq, FrontInfo->FTDPkgFreq);
 	}
 }
+

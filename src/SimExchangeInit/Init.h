@@ -4,7 +4,7 @@
 #include <string>
 
 using QuantTrading::AccountInfo;
-namespace QuantTrading::simexchangeinit
+namespace QuantTrading::SimExchangeInit
 {
     void Init(QuantTrading::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay);
 }

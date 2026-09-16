@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include <QuantTrading/TraderApi.h>
 
@@ -14,7 +14,7 @@ public:
 	virtual void Join() override;
 	virtual void Release() override;
 	virtual void RegisterFront(const char* address) override;
-	virtual void RegisterSpi(TraderSpi* pSpi) override;
+	virtual void RegisterSpi(TraderSpi* spi) override;
 	
 	virtual int ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID) override;
 	virtual int ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID) override;

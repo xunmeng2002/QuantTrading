@@ -17,18 +17,18 @@
 #include <condition_variable>
 
 using namespace QuantTrading::Packages;
-using QuantTrading::bar::MinuteBar;
-using QuantTrading::bar::TradeSessions;
+using QuantTrading::Bar::MinuteBar;
+using QuantTrading::Bar::TradeSessions;
 
-namespace QuantTrading::mdoffer
+namespace QuantTrading::MdOffer
 {
-    class MdKernel : public Spark::core::ThreadBase, public Spark::Network::ProtocolSubscriber, public QuantTrading::bar::BarSubscriber, public dbadapters::DBSubscriber
+    class MdKernel : public Spark::Core::ThreadBase, public Spark::Network::ProtocolSubscriber, public QuantTrading::Bar::BarSubscriber, public DbAdapters::DbSubscriber
     {
     public:
         // tradeSessions 须长于本对象（转交 MinuteBar 持有），且须在首个订阅到达前装载完成；
         // 启动订阅清单项指向配置单例，生命周期同进程
         MdKernel(QuantTrading::Mdb* mdb, const TradeSessions& tradeSessions,
-            const std::list<Spark::core::SubscribeInstrument*>& startupSubscribeInstruments);
+            const std::list<Spark::Core::SubscribeInstrument*>& startupSubscribeInstruments);
         void SetMdFront(MdFront* mdFront);
         void SetMdSpi(CThostFtdcMdSpiImpl* mdSpi);
 
@@ -39,8 +39,8 @@ namespace QuantTrading::mdoffer
 
         virtual void OnBarMarketData(BarMarketDataField* bar) override;
 
-        virtual void OnDBConnected() override;
-        virtual void OnDBDisConnected() override;
+        virtual void OnDbConnected() override;
+        virtual void OnDbDisConnected() override;
     protected:
         virtual void Run() override;
         void CheckEvent();
@@ -48,8 +48,8 @@ namespace QuantTrading::mdoffer
         // 返回 true 表示包已用完可回收，false 表示 Handler 接管了所有权
         bool DispatchPackage(Package* package);
         int HandleNotifyDisConnect(NotifyDisConnectPackage* package);
-        int HandleNotifyDBConnect(NotifyDBConnectPackage* package);
-        int HandleNotifyDBDisConnect(NotifyDBDisConnectPackage* package);
+        int HandleNotifyDbConnect(NotifyDbConnectPackage* package);
+        int HandleNotifyDbDisConnect(NotifyDbDisConnectPackage* package);
         int HandleReqMdUserLogin(ReqMdUserLoginPackage* package);
         int HandleReqMdUserLogout(ReqMdUserLogoutPackage* package);
         int HandleReqSubMarketData(ReqSubMarketDataPackage* package);
@@ -65,7 +65,7 @@ namespace QuantTrading::mdoffer
         MdFront* m_MdFront;
         CThostFtdcMdSpiImpl* m_MdSpi;
         MinuteBar* m_MinuteBar;
-        std::list<Spark::core::SubscribeInstrument*> m_StartupSubscribeInstruments;
+        std::list<Spark::Core::SubscribeInstrument*> m_StartupSubscribeInstruments;
 
         std::mutex m_Mutex;
         std::condition_variable m_ConditionVariable;

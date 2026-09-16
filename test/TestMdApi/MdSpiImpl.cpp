@@ -3,7 +3,7 @@
 #include <Spark/Core/Utility/Utility.h>
 
 
-namespace QuantTrading::testmdapi
+namespace QuantTrading::TestMdApi
 {
 MdSpiImpl::MdSpiImpl(MdApi* mdApi)
 	:m_MdApi(mdApi), m_RequestID(0)
@@ -48,7 +48,7 @@ void MdSpiImpl::ReqUserLogin()
 {
 	ReqMdUserLoginField reqMdUserLogin;
 	memset(&reqMdUserLogin, 0, sizeof(ReqMdUserLoginField));
-	Utility::Strcpy(reqMdUserLogin.UserID, Config::GetInstance().MdUser.c_str());
+	Utility::Strcpy(reqMdUserLogin.UserId, Config::GetInstance().MdUser.c_str());
     Utility::Strcpy(reqMdUserLogin.Password, Config::GetInstance().MdPassword.c_str());
 	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
 }
@@ -56,7 +56,7 @@ void MdSpiImpl::ReqUserLogout()
 {
 	ReqMdUserLogoutField reqMdUserLogout;
 	memset(&reqMdUserLogout, 0, sizeof(ReqMdUserLogoutField));
-	Utility::Strcpy(reqMdUserLogout.UserID, Config::GetInstance().MdUser.c_str());
+	Utility::Strcpy(reqMdUserLogout.UserId, Config::GetInstance().MdUser.c_str());
 	m_MdApi->ReqMdUserLogout(&reqMdUserLogout, ++m_RequestID);
 }
 void MdSpiImpl::ReqSubscribeMd()

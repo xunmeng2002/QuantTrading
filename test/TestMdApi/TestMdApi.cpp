@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace QuantTrading;
-using namespace QuantTrading::testmdapi;
+using namespace QuantTrading::TestMdApi;
 using namespace QuantTrading;
 
 const char* ConfigName = "TestMdApi.json";

@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 
-using namespace QuantTrading::unittest;
+using namespace QuantTrading::UnitTest;
 
 // 配置键 BarPreces 经 GridParams 传入即声明周期；非法格式在构造期拒启（拒启语义同 DeclareBarPeriod）
 TEST_CASE("GridStrategy declares bar period from params and rejects invalid preces at construction")

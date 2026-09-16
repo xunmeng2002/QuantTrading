@@ -2,7 +2,7 @@
 #include <Spark/Core/Utility/DoubleUtility.h>
 
 using namespace std;
-using namespace mdb;
+using namespace QuantTrading;
 using namespace Spark::Core;
 
 

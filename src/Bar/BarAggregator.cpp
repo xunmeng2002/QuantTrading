@@ -10,7 +10,7 @@
 
 using namespace Spark::Core;
 
-namespace QuantTrading::bar
+namespace QuantTrading::Bar
 {
     namespace
     {

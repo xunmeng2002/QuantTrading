@@ -5,7 +5,7 @@
 
 using namespace std;
 using namespace QuantTrading;
-using namespace QuantTrading::testbacktest;
+using namespace QuantTrading::TestBackTest;
 
 const char* ConfigName = "TestBackTest.json";
 

@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "BackTestApiImpl.h"
 #include "SimExchange.h"
 #include "Config/Config.h"
@@ -11,14 +11,14 @@ static const char* ConfigName = "BackTest.json";
 
 BackTestApi* BackTestApi::CreateBackTestApi()
 {
-	return new QuantTrading::backtest::BackTestApiImpl();
+	return new QuantTrading::BackTest::BackTestApiImpl();
 }
 const char* BackTestApi::GetApiVersion()
 {
 	return QUANTTRADING_VERSION;
 }
 
-namespace QuantTrading::backtest
+namespace QuantTrading::BackTest
 {
 BackTestApiImpl::BackTestApiImpl()
 {

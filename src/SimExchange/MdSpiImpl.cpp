@@ -10,7 +10,7 @@ using namespace Spark;
 using namespace Spark::Core;
 
 
-namespace QuantTrading::simexchange
+namespace QuantTrading::SimExchange
 {
 MdSpiImpl::MdSpiImpl(MdApi* mdApi, const std::string& mdUser, const std::string& mdPassword)
 	:m_MdApi(mdApi), m_SimExchange(nullptr), m_MdUser(mdUser), m_MdPassword(mdPassword), m_RequestID(0)
@@ -36,8 +36,8 @@ void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, cons
 	WriteLog(LogLevel::Info, "OnRspMdUserLogin: RequestId:%d, IsLast:%d", requestID, isLast);
 	if (rspMdUserLogin != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspMdUserLoginField:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]",
-			rspMdUserLogin->UserID, rspMdUserLogin->LoginDate, rspMdUserLogin->LoginTime, rspMdUserLogin->SessionId);
+		WriteLog(LogLevel::Info, "RspMdUserLoginField:UserId:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]",
+			rspMdUserLogin->UserId, rspMdUserLogin->LoginDate, rspMdUserLogin->LoginTime, rspMdUserLogin->SessionId);
 	}
 	else
 	{
@@ -45,7 +45,7 @@ void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, cons
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]", rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]", rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -70,8 +70,8 @@ void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, c
 	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestId:%d, IsLast:%d", requestID, isLast);
 	if (rspMdUserLogout != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspMdUserLogoutField:UserID:[%s]",
-			rspMdUserLogout->UserID);
+		WriteLog(LogLevel::Info, "RspMdUserLogoutField:UserId:[%s]",
+			rspMdUserLogout->UserId);
 	}
 	else
 	{
@@ -79,8 +79,8 @@ void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, c
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -114,8 +114,8 @@ void MdSpiImpl::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -136,8 +136,8 @@ void MdSpiImpl::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMark
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -189,7 +189,7 @@ void MdSpiImpl::ReqMdUserLogin()
 {
 	ReqMdUserLoginField reqMdUserLogin;
 	memset(&reqMdUserLogin, 0, sizeof(ReqMdUserLoginField));
-    Utility::Strcpy(reqMdUserLogin.UserID, m_MdUser.c_str());
+    Utility::Strcpy(reqMdUserLogin.UserId, m_MdUser.c_str());
     Utility::Strcpy(reqMdUserLogin.Password, m_MdPassword.c_str());
 	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
 }

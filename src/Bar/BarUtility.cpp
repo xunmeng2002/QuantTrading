@@ -1,7 +1,7 @@
 #include "BarUtility.h"
 #include <cstring>
 
-namespace QuantTrading::bar
+namespace QuantTrading::Bar
 {
     std::string GetUnderlyingID(const std::string& instrumentId)
     {

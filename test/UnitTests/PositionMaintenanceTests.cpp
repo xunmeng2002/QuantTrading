@@ -2,15 +2,15 @@
 #include "doctest/doctest.h"
 #include "SettlementTestHelpers.h"
 
-using namespace QuantTrading::unittest;
-using QuantTrading::settlement::PositionMaintenance;
+using namespace QuantTrading::UnitTest;
+using QuantTrading::Settlement::PositionMaintenance;
 
 TEST_SUITE("PositionMaintenance")
 {
 
 TEST_CASE("开仓成交建持仓与开仓明细")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
@@ -36,7 +36,7 @@ TEST_CASE("开仓成交建持仓与开仓明细")
 
 TEST_CASE("同向加仓累计持仓且明细逐笔新建")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
@@ -53,7 +53,7 @@ TEST_CASE("同向加仓累计持仓且明细逐笔新建")
 
 TEST_CASE("平仓先开先平且跨日明细盈亏按昨结算价")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
@@ -81,7 +81,7 @@ TEST_CASE("平仓先开先平且跨日明细盈亏按昨结算价")
 
 TEST_CASE("当日开仓平仓盈亏按开仓价")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
@@ -97,7 +97,7 @@ TEST_CASE("当日开仓平仓盈亏按开仓价")
 
 TEST_CASE("同日同开仓日期按TradeId先开先平")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
@@ -117,7 +117,7 @@ TEST_CASE("同日同开仓日期按TradeId先开先平")
 
 TEST_CASE("超量平仓持仓扣为负且只配对现存明细")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
@@ -136,7 +136,7 @@ TEST_CASE("超量平仓持仓扣为负且只配对现存明细")
 
 TEST_CASE("期权平仓按方向记现金收支")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 

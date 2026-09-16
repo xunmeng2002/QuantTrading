@@ -351,7 +351,7 @@ Four test clients are shipped under `test/`:
 ## 9. Additional Notes
 
 - **Include style**: public headers use `#include <QuantTrading/XxxApi.h>`; internal module headers use `#include <Module/Xxx.h>`
-- **Namespaces**: public APIs live in `QuantTrading`; modules use `QuantTrading::mdoffer`, `QuantTrading::simexchange`, `QuantTrading::backtest`, `QuantTrading::ordermatch`, etc.
+- **Namespaces**: public APIs live in `QuantTrading`; modules use `QuantTrading::MdOffer`, `QuantTrading::SimExchange`, `QuantTrading::BackTest`, `QuantTrading::ordermatch`, etc.
 - **Dependency chain**: `Spark` (threading / logging / networking) → `DBAdapters` (unified DB access) → `QuantTrading`
 - **Version**: CTP API v6.7.9 (see `API Version` in the MdOffer startup log)
 - **Encoding variants**: MdApi / TraderApi / SimExchangeApi each ship **UTF-8** (`MdApi` etc.) and **GBK** (`MdGbkApi` etc.) shared libraries

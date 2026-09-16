@@ -7,7 +7,7 @@
 #include <map>
 
 using QuantTrading::AccountInfo;
-namespace QuantTrading::testsimexchangeapi
+namespace QuantTrading::TestSimExchangeApi
 {
 class SimExchangeSpiImpl : public SimExchangeSpiMiddle
 {

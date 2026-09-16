@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/Api/ApiBase.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/Api/ApiBase.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdApiBase.h"
 #include "QuantTrading/Version.h"
 
@@ -10,24 +10,24 @@ const char* MdApi::GetApiVersion()
 }
 
 MdApiBase::MdApiBase()
-	:ApiBase("MdApi"), mdSpi(nullptr), sessionID(0)
+	:ApiBase("MdApi"), mdSpi(nullptr), sessionId_(0)
 {
 }
 MdApiBase::~MdApiBase()
 {
 }
 
-void MdApiBase::OnProtocolConnect(SessionIDType newSessionID, const char* ip, int port)
+void MdApiBase::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
 {
-	sessionID = newSessionID;
+	sessionId_ = sessionId;
 	if (mdSpi != nullptr)
 	{
 		mdSpi->OnConnected();
 	}
 }
-void MdApiBase::OnProtocolDisConnect(SessionIDType newSessionID, const char* ip, int port)
+void MdApiBase::OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port)
 {
-	sessionID = -1;
+	sessionId_ = -1;
 	if (mdSpi != nullptr)
 	{
 		mdSpi->OnDisConnected();

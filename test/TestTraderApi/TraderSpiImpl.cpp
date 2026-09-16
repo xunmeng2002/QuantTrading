@@ -3,7 +3,7 @@
 #include <Spark/Core/Utility/Utility.h>
 
 
-namespace QuantTrading::testtraderapi
+namespace QuantTrading::TestTraderApi
 {
 TraderSpiImpl::TraderSpiImpl(TraderApi* api)
 	:m_TraderApi(api), m_AccountInfo(nullptr), m_Instrument{}, m_HasInstrument(false), m_MaxRequestID(0), m_MaxClientOrderID(0), m_OrderCount(0),
@@ -132,7 +132,7 @@ void TraderSpiImpl::ReqCancelOrder(const OrderField* order)
 	strcpy(cancelOrder.AccountId, order->AccountId);
 	strcpy(cancelOrder.ExchangeId, order->ExchangeId);
 	strcpy(cancelOrder.InstrumentId, order->InstrumentId);
-	cancelOrder.ClientCancelOrderID = ++m_MaxClientOrderID;
+	cancelOrder.ClientCancelOrderId = ++m_MaxClientOrderID;
 	cancelOrder.OrderId = order->OrderId;
 	strcpy(cancelOrder.OrderSysId, order->OrderSysId);
 	cancelOrder.SessionId = order->SessionId;

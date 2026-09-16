@@ -77,7 +77,7 @@ void StrategyBase::DeclareBarPeriod(const char* barPreces)
 	m_DeclaredBarPeriod = barPeriod;
 }
 
-ClientOrderIDType StrategyBase::InsertLimitOrder(const char* exchangeId, const char* instrumentId, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume)
+ClientOrderIdType StrategyBase::InsertLimitOrder(const char* exchangeId, const char* instrumentId, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume)
 {
 	ReqInsertOrderField reqInsertOrder;
 	memset(&reqInsertOrder, 0, sizeof(ReqInsertOrderField));
@@ -98,24 +98,24 @@ ClientOrderIDType StrategyBase::InsertLimitOrder(const char* exchangeId, const c
 	m_OrderContexts[reqInsertOrder.ClientOrderId] = orderContext;
 	return reqInsertOrder.ClientOrderId;
 }
-ClientOrderIDType StrategyBase::BuyOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
+ClientOrderIdType StrategyBase::BuyOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
 {
 	return InsertLimitOrder(exchangeId, instrumentId, DirectionType::Buy, OffsetFlagType::Open, price, volume);
 }
-ClientOrderIDType StrategyBase::SellOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
+ClientOrderIdType StrategyBase::SellOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
 {
 	return InsertLimitOrder(exchangeId, instrumentId, DirectionType::Sell, OffsetFlagType::Open, price, volume);
 }
-ClientOrderIDType StrategyBase::BuyClose(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
+ClientOrderIdType StrategyBase::BuyClose(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
 {
 	return InsertLimitOrder(exchangeId, instrumentId, DirectionType::Buy, OffsetFlagType::Close, price, volume);
 }
-ClientOrderIDType StrategyBase::SellClose(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
+ClientOrderIdType StrategyBase::SellClose(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
 {
 	return InsertLimitOrder(exchangeId, instrumentId, DirectionType::Sell, OffsetFlagType::Close, price, volume);
 }
 
-bool StrategyBase::CancelOrder(ClientOrderIDType clientOrderID)
+bool StrategyBase::CancelOrder(ClientOrderIdType clientOrderID)
 {
 	auto orderContextIt = m_OrderContexts.find(clientOrderID);
 	if (orderContextIt == m_OrderContexts.end())
@@ -129,7 +129,7 @@ bool StrategyBase::CancelOrder(ClientOrderIDType clientOrderID)
 	Utility::Strcpy(reqCancelOrder.ExchangeId, orderContextIt->second.ExchangeId.c_str());
 	Utility::Strcpy(reqCancelOrder.InstrumentId, orderContextIt->second.InstrumentId.c_str());
 	reqCancelOrder.ClientOrderId = clientOrderID;
-	reqCancelOrder.ClientCancelOrderID = ++m_NextClientCancelOrderID;
+	reqCancelOrder.ClientCancelOrderId = ++m_NextClientCancelOrderID;
 	auto orderIt = m_Orders.find(clientOrderID);
 	if (orderIt != m_Orders.end())
 	{
@@ -165,17 +165,17 @@ void StrategyBase::OnDisConnected()
 }
 void StrategyBase::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (rspInfo != nullptr && rspInfo->ErrorID != 0)
+	if (rspInfo != nullptr && rspInfo->ErrorId != 0)
 	{
-		WriteLog(LogLevel::Error, "SubscribeMarketData failed: ErrorID:%d ErrorMsg:%s", rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Error, "SubscribeMarketData failed: ErrorId:%d ErrorMsg:%s", rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 }
 void StrategyBase::OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (rspInfo != nullptr && rspInfo->ErrorID != 0)
+	if (rspInfo != nullptr && rspInfo->ErrorId != 0)
 	{
-		WriteLog(LogLevel::Error, "RegisterAccount failed: AccountId:%s ErrorID:%d ErrorMsg:%s",
-			rspRegisterAccount != nullptr ? rspRegisterAccount->AccountId : "", rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Error, "RegisterAccount failed: AccountId:%s ErrorId:%d ErrorMsg:%s",
+			rspRegisterAccount != nullptr ? rspRegisterAccount->AccountId : "", rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 }
 void StrategyBase::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
@@ -208,19 +208,19 @@ void StrategyBase::OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd)
 }
 void StrategyBase::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (rspInfo != nullptr && rspInfo->ErrorID != 0)
+	if (rspInfo != nullptr && rspInfo->ErrorId != 0)
 	{
-		WriteLog(LogLevel::Error, "InsertOrder rejected, ClientOrderId:%d ErrorID:%d ErrorMsg:%s",
-			reqInsertOrder != nullptr ? reqInsertOrder->ClientOrderId : 0, rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Error, "InsertOrder rejected, ClientOrderId:%d ErrorId:%d ErrorMsg:%s",
+			reqInsertOrder != nullptr ? reqInsertOrder->ClientOrderId : 0, rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	OnInsertOrderRsp(reqInsertOrder, rspInfo);
 }
 void StrategyBase::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
-	if (rspInfo != nullptr && rspInfo->ErrorID != 0)
+	if (rspInfo != nullptr && rspInfo->ErrorId != 0)
 	{
-		WriteLog(LogLevel::Warning, "CancelOrder failed, ClientOrderId:%d ErrorID:%d ErrorMsg:%s",
-			reqCancelOrder != nullptr ? reqCancelOrder->ClientOrderId : 0, rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Warning, "CancelOrder failed, ClientOrderId:%d ErrorId:%d ErrorMsg:%s",
+			reqCancelOrder != nullptr ? reqCancelOrder->ClientOrderId : 0, rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	OnCancelOrderRsp(reqCancelOrder, rspInfo);
 }
@@ -255,7 +255,7 @@ void StrategyBase::OnRtnTrade(const TradeField* trade)
 	{
 		instrumentState.LongVolume -= trade->Volume;
 	}
-	ClientOrderIDType clientOrderID = 0;
+	ClientOrderIdType clientOrderID = 0;
 	auto engineOrderIDIt = m_EngineOrderIDs.find(trade->OrderId);
 	if (engineOrderIDIt != m_EngineOrderIDs.end())
 	{

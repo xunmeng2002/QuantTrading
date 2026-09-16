@@ -3,13 +3,13 @@
 
 using namespace Spark::Network;
 
-namespace QuantTrading::mdoffer
+namespace QuantTrading::MdOffer
 {
-    MdFront::MdFront(IOModelType ioModel, const char* address, int milliSecond)
+    MdFront::MdFront(IoModelType ioModel, const char* address, int milliSecond)
         :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new QuantTrading::Packages::PackageFactory()), m_Address(address)
     {
         RegisterFront(address);
-        m_IOThread = new IOThread("MdFront");
-        SetIOThread(m_IOThread);
+        m_IOThread = new IoThread("MdFront");
+        SetIoThread(m_IOThread);
     }
 }

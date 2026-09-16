@@ -6,7 +6,7 @@
 #include <string>
 
 using namespace std;
-using namespace mdb;
+using namespace QuantTrading;
 using namespace Spark::Core;
 using namespace QuantTrading::Packages;
 
@@ -49,7 +49,7 @@ namespace QuantTrading::ordermatch
     void SeedNextOrderIDFromOrders(QuantTrading::OrderTable* orderTable)
     {
         OrderIdType maxOrderId = 0;
-        auto orderPair = orderTable->primaryKey->SelectAll();
+        auto orderPair = orderTable->PrimaryKey->SelectAll();
         for (auto& it = orderPair.first; it != orderPair.second; ++it)
         {
             if ((*it)->OrderId > maxOrderId)
@@ -133,7 +133,7 @@ namespace QuantTrading::ordermatch
         return ErrorFinalOrderStatus;
     }
     QuantTrading::Order* CreateOrder(ReqInsertOrderPackage* reqPackage, QuantTrading::Account* account, QuantTrading::Instrument* instrument,
-        const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIdType& offerID)
+        const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIdType& offerId)
     {
         auto order = Order::Allocate();
         memset(order, 0, sizeof(Order));
@@ -159,10 +159,10 @@ namespace QuantTrading::ordermatch
         order->SessionId = reqPackage->SessionId;
         order->ClientOrderId = reqPackage->ReqInsertOrder->ClientOrderId;
         order->RequestId = reqPackage->Head.MsgSeqNum;
-        order->OfferID = offerID;
-        order->TradeGroupID = account->TradeGroupID;
-        order->RiskGroupID = account->RiskGroupID;
-        order->CommissionGroupID = account->CommissionGroupID;
+        order->OfferId = offerId;
+        order->TradeGroupId = account->TradeGroupId;
+        order->RiskGroupId = account->RiskGroupId;
+        order->CommissionGroupId = account->CommissionGroupId;
         order->RebuildMark = false;
         order->IsForceClose = false;
 

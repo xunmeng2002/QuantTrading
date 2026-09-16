@@ -9,7 +9,7 @@
 #include <string>
 
 using QuantTrading::AccountInfo;
-namespace QuantTrading::simexchangeinit
+namespace QuantTrading::SimExchangeInit
 {
 class CThostFtdcTraderSpiImpl : public CThostFtdcTraderSpiMiddle
 {

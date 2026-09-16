@@ -6,13 +6,13 @@
 #include <algorithm>
 #include <cstring>
 
-using namespace mdb;
+using namespace QuantTrading;
 using namespace Spark;
 using namespace Spark::Core;
 using namespace QuantTrading;
 using namespace QuantTrading::ordermatch;
 
-namespace QuantTrading::settlement
+namespace QuantTrading::Settlement
 {
 	bool PositionDetailLessForOpenDate::operator()(const QuantTrading::PositionDetail* const left, const QuantTrading::PositionDetail* const right) const
 	{
@@ -32,11 +32,11 @@ namespace QuantTrading::settlement
 	void PositionMaintenance::UpdateOnTrade(QuantTrading::Trade* trade)
 	{
 		auto posiDirection = QuantTrading::GetPosiDirection(trade->OffsetFlag, trade->Direction);
-		auto position = m_Mdb->position->primaryKey->Select(trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, posiDirection);
+		auto position = m_Mdb->Position->PrimaryKey->Select(trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, posiDirection);
 		if (position == nullptr)
 		{
 			position = QuantTrading::ordermatch::CreatePosition(trade, posiDirection);
-			m_Mdb->position->Insert(position);
+			m_Mdb->Position->Insert(position);
 		}
 		else
 		{
@@ -57,12 +57,12 @@ namespace QuantTrading::settlement
 		if (trade->OffsetFlag == OffsetFlagType::Open)
 		{
 			auto positionDetail = QuantTrading::ordermatch::CreatePositionDetail(trade, posiDirection);
-			m_Mdb->positionDetail->Insert(positionDetail);
+			m_Mdb->PositionDetail->Insert(positionDetail);
 		}
 		else
 		{
 			std::set<QuantTrading::PositionDetail*, PositionDetailLessForOpenDate> positionDetails;
-			auto itPair = m_Mdb->positionDetail->tradeMatchIndex->EqualRange(position->TradingDay, position->AccountId, position->ExchangeId,
+			auto itPair = m_Mdb->PositionDetail->TradeMatchIndex->EqualRange(position->TradingDay, position->AccountId, position->ExchangeId,
 				position->InstrumentId, position->PosiDirection);
 			for (auto& it = itPair.first; it != itPair.second; ++it)
 			{

@@ -7,7 +7,7 @@
 
 using namespace Spark::Core;
 
-namespace QuantTrading::bar
+namespace QuantTrading::Bar
 {
     MinuteBar::MinuteBar(const TradeSessions& tradeSessions)
         :m_TradeSessions(tradeSessions)
@@ -271,7 +271,7 @@ namespace QuantTrading::bar
     }
     void MinuteBar::EndBar(BarMarketDataField* preBar, BarMarketDataField* bar)
     {
-        QuantTrading::bar::EndBar((BarMarketDataField*)preBar, (BarMarketDataField*)bar);
+        QuantTrading::Bar::EndBar((BarMarketDataField*)preBar, (BarMarketDataField*)bar);
         m_PreAggregationBars[bar->InstrumentId] = bar;
         m_AggregationBars[bar->InstrumentId] = nullptr;
 

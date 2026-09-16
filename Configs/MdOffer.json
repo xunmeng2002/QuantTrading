@@ -10,7 +10,7 @@
 	"DbUser": "",
 	"DbPassword": "",
 	"DbHost": "./MdOffer.db",
-	"MdUserID": "MdUser",
+	"MdUserId": "MdUser",
 	"MdPassword": "123456",
 	"SubscribeInstruments": [{
 		"ExchangeId": "CFFEX",

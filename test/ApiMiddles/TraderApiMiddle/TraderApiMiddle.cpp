@@ -1,8 +1,8 @@
-// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "TraderApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
-using namespace Spark::core;
+using namespace Spark::Core;
 
 
 namespace QuantTrading
@@ -42,15 +42,15 @@ void TraderApiMiddle::RegisterFront(const char* address)
 	WriteLog(LogLevel::Info, "RegisterFront:%s", address);
 	traderApi->RegisterFront(address);
 }
-void TraderApiMiddle::RegisterSpi(TraderSpi* pSpi)
+void TraderApiMiddle::RegisterSpi(TraderSpi* spi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi");
-	traderApi->RegisterSpi(pSpi);
+	traderApi->RegisterSpi(spi);
 }
 
-int TraderApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
+int TraderApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqAccountLogin: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqAccountLogin: RequestID:%d", requestId);
 	if (reqAccountLogin != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqAccountLoginField:AccountId:[%s]",
@@ -60,11 +60,11 @@ int TraderApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin
 	{
 		WriteLog(LogLevel::Info, "reqAccountLogin is nullptr");
 	}
-	return traderApi->ReqAccountLogin(reqAccountLogin, requestID);
+	return traderApi->ReqAccountLogin(reqAccountLogin, requestId);
 }
-int TraderApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
+int TraderApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqAccountLogout: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqAccountLogout: RequestID:%d", requestId);
 	if (reqAccountLogout != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqAccountLogoutField:AccountId:[%s]",
@@ -74,11 +74,11 @@ int TraderApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccountLog
 	{
 		WriteLog(LogLevel::Info, "reqAccountLogout is nullptr");
 	}
-	return traderApi->ReqAccountLogout(reqAccountLogout, requestID);
+	return traderApi->ReqAccountLogout(reqAccountLogout, requestId);
 }
-int TraderApiMiddle::ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryHolderAccount, int requestID)
+int TraderApiMiddle::ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryHolderAccount, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryHolderAccount: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryHolderAccount: RequestID:%d", requestId);
 	if (reqQryHolderAccount != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryHolderAccountField:AccountId:[%s]",
@@ -88,11 +88,11 @@ int TraderApiMiddle::ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryH
 	{
 		WriteLog(LogLevel::Info, "reqQryHolderAccount is nullptr");
 	}
-	return traderApi->ReqQryHolderAccount(reqQryHolderAccount, requestID);
+	return traderApi->ReqQryHolderAccount(reqQryHolderAccount, requestId);
 }
-int TraderApiMiddle::ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int requestID)
+int TraderApiMiddle::ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryCapital: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryCapital: RequestID:%d", requestId);
 	if (reqQryCapital != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryCapitalField:AccountId:[%s]",
@@ -102,11 +102,11 @@ int TraderApiMiddle::ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int 
 	{
 		WriteLog(LogLevel::Info, "reqQryCapital is nullptr");
 	}
-	return traderApi->ReqQryCapital(reqQryCapital, requestID);
+	return traderApi->ReqQryCapital(reqQryCapital, requestId);
 }
-int TraderApiMiddle::ReqQryPosition(const ReqQryPositionField* reqQryPosition, int requestID)
+int TraderApiMiddle::ReqQryPosition(const ReqQryPositionField* reqQryPosition, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryPosition: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryPosition: RequestID:%d", requestId);
 	if (reqQryPosition != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryPositionField:AccountId:[%s]",
@@ -116,11 +116,11 @@ int TraderApiMiddle::ReqQryPosition(const ReqQryPositionField* reqQryPosition, i
 	{
 		WriteLog(LogLevel::Info, "reqQryPosition is nullptr");
 	}
-	return traderApi->ReqQryPosition(reqQryPosition, requestID);
+	return traderApi->ReqQryPosition(reqQryPosition, requestId);
 }
-int TraderApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
+int TraderApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryOrder: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryOrder: RequestID:%d", requestId);
 	if (reqQryOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryOrderField:AccountId:[%s]",
@@ -130,11 +130,11 @@ int TraderApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int reques
 	{
 		WriteLog(LogLevel::Info, "reqQryOrder is nullptr");
 	}
-	return traderApi->ReqQryOrder(reqQryOrder, requestID);
+	return traderApi->ReqQryOrder(reqQryOrder, requestId);
 }
-int TraderApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
+int TraderApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryTrade: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryTrade: RequestID:%d", requestId);
 	if (reqQryTrade != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryTradeField:AccountId:[%s]",
@@ -144,11 +144,11 @@ int TraderApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int reques
 	{
 		WriteLog(LogLevel::Info, "reqQryTrade is nullptr");
 	}
-	return traderApi->ReqQryTrade(reqQryTrade, requestID);
+	return traderApi->ReqQryTrade(reqQryTrade, requestId);
 }
-int TraderApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
+int TraderApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryInstrument: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryInstrument: RequestID:%d", requestId);
 	if (reqQryInstrument != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryInstrumentField:ExchangeId:[%s], InstrumentId:[%s]",
@@ -158,11 +158,11 @@ int TraderApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrum
 	{
 		WriteLog(LogLevel::Info, "reqQryInstrument is nullptr");
 	}
-	return traderApi->ReqQryInstrument(reqQryInstrument, requestID);
+	return traderApi->ReqQryInstrument(reqQryInstrument, requestId);
 }
-int TraderApiMiddle::ReqQryOptionInstrument(const ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestID)
+int TraderApiMiddle::ReqQryOptionInstrument(const ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryOptionInstrument: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryOptionInstrument: RequestID:%d", requestId);
 	if (reqQryOptionInstrument != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryOptionInstrumentField:ExchangeId:[%s], InstrumentId:[%s]",
@@ -172,11 +172,11 @@ int TraderApiMiddle::ReqQryOptionInstrument(const ReqQryOptionInstrumentField* r
 	{
 		WriteLog(LogLevel::Info, "reqQryOptionInstrument is nullptr");
 	}
-	return traderApi->ReqQryOptionInstrument(reqQryOptionInstrument, requestID);
+	return traderApi->ReqQryOptionInstrument(reqQryOptionInstrument, requestId);
 }
-int TraderApiMiddle::ReqQryCommissionRate(const ReqQryCommissionRateField* reqQryCommissionRate, int requestID)
+int TraderApiMiddle::ReqQryCommissionRate(const ReqQryCommissionRateField* reqQryCommissionRate, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryCommissionRate: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryCommissionRate: RequestID:%d", requestId);
 	if (reqQryCommissionRate != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryCommissionRateField:AccountId:[%s], ExchangeId:[%s], ProductClass:[%d]",
@@ -186,11 +186,11 @@ int TraderApiMiddle::ReqQryCommissionRate(const ReqQryCommissionRateField* reqQr
 	{
 		WriteLog(LogLevel::Info, "reqQryCommissionRate is nullptr");
 	}
-	return traderApi->ReqQryCommissionRate(reqQryCommissionRate, requestID);
+	return traderApi->ReqQryCommissionRate(reqQryCommissionRate, requestId);
 }
-int TraderApiMiddle::ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestID)
+int TraderApiMiddle::ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqQryMoneyTransfer: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqQryMoneyTransfer: RequestID:%d", requestId);
 	if (reqQryMoneyTransfer != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqQryMoneyTransferField:AccountId:[%s]",
@@ -200,11 +200,11 @@ int TraderApiMiddle::ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryM
 	{
 		WriteLog(LogLevel::Info, "reqQryMoneyTransfer is nullptr");
 	}
-	return traderApi->ReqQryMoneyTransfer(reqQryMoneyTransfer, requestID);
+	return traderApi->ReqQryMoneyTransfer(reqQryMoneyTransfer, requestId);
 }
-int TraderApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
+int TraderApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestId);
 	if (reqInsertOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
@@ -214,11 +214,11 @@ int TraderApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, i
 	{
 		WriteLog(LogLevel::Info, "reqInsertOrder is nullptr");
 	}
-	return traderApi->ReqInsertOrder(reqInsertOrder, requestID);
+	return traderApi->ReqInsertOrder(reqInsertOrder, requestId);
 }
-int TraderApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
+int TraderApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestId);
 	if (reqCancelOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",
@@ -228,6 +228,6 @@ int TraderApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, i
 	{
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
-	return traderApi->ReqCancelOrder(reqCancelOrder, requestID);
+	return traderApi->ReqCancelOrder(reqCancelOrder, requestId);
 }
 }

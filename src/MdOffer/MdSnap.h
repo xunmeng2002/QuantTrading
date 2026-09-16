@@ -4,7 +4,7 @@
 #include <string>
 
 using QuantTrading::Packages::RtnDepthMarketDataPackage;
-namespace QuantTrading::mdoffer
+namespace QuantTrading::MdOffer
 {
     class MdSnap
     {

@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/Api/ApiBase.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/Api/ApiBase.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "SimExchangeApiBase.h"
 #include "QuantTrading/Version.h"
 
@@ -10,24 +10,24 @@ const char* SimExchangeApi::GetApiVersion()
 }
 
 SimExchangeApiBase::SimExchangeApiBase()
-	:ApiBase("SimExchangeApi"), simExchangeSpi(nullptr), sessionID(0)
+	:ApiBase("SimExchangeApi"), simExchangeSpi(nullptr), sessionId_(0)
 {
 }
 SimExchangeApiBase::~SimExchangeApiBase()
 {
 }
 
-void SimExchangeApiBase::OnProtocolConnect(SessionIDType newSessionID, const char* ip, int port)
+void SimExchangeApiBase::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
 {
-	sessionID = newSessionID;
+	sessionId_ = sessionId;
 	if (simExchangeSpi != nullptr)
 	{
 		simExchangeSpi->OnConnected();
 	}
 }
-void SimExchangeApiBase::OnProtocolDisConnect(SessionIDType newSessionID, const char* ip, int port)
+void SimExchangeApiBase::OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port)
 {
-	sessionID = -1;
+	sessionId_ = -1;
 	if (simExchangeSpi != nullptr)
 	{
 		simExchangeSpi->OnDisConnected();

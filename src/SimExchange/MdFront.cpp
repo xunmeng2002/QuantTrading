@@ -5,14 +5,14 @@
 
 using namespace Spark::Network;
 
-namespace QuantTrading::simexchange
+namespace QuantTrading::SimExchange
 {
 MdFront::MdFront(const char* address, int milliSecond)
-	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IOModelType::Select,  milliSecond, new PackageFactory())
+	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IoModelType::Select,  milliSecond, new PackageFactory())
 {
 	RegisterFront(address);
-	m_IOThread = new IOThread("MdFront");
-	SetIOThread(m_IOThread);
+	m_IOThread = new IoThread("MdFront");
+	SetIoThread(m_IOThread);
 }
 void MdFront::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
 {

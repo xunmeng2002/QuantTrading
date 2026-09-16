@@ -2,7 +2,7 @@
 #include "Config/Config.h"
 #include "ServerConfig.h"
 #include "Mdb.h"
-#include "InitMdbFromDB.h"
+#include "InitMdbFromDb.h"
 #include "MdbTableRegistry.h"
 #include "SimExchangeTableList.h"
 #include "MdSpiImpl.h"
@@ -12,21 +12,21 @@
 #include "SimExchange.h"
 #include <QuantTrading/MdApi.h>
 #include <Spark/Core/Logger/Logger.h>
-#include <DBAdapters/AsyncDBWriter/AsyncDBWriter.h>
-#include <DBAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <DBAdapters/SqliteWrapper/SqliteWrapper.h>
-#include <DBAdapters/MysqlWrapper/MysqlWrapper.h>
-#include <DBAdapters/MariadbWrapper/MariadbWrapper.h>
+#include <DbAdapters/AsyncDbWriter/AsyncDbWriter.h>
+#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
+#include <DbAdapters/SqliteWrapper/SqliteWrapper.h>
+#include <DbAdapters/MysqlWrapper/MysqlWrapper.h>
+#include <DbAdapters/MariadbWrapper/MariadbWrapper.h>
 #include <chrono>
 #include <string.h>
 #include <thread>
 
 using namespace std;
-using namespace mdb;
-using namespace Spark::Core;
-using namespace dbadapters;
 using namespace QuantTrading;
-using namespace QuantTrading::simexchange;
+using namespace Spark::Core;
+using namespace DbAdapters;
+using namespace QuantTrading;
+using namespace QuantTrading::SimExchange;
 
 const char* ConfigName = "SimExchange.json";
 
@@ -38,7 +38,7 @@ int Exit(int code = -1)
 	return code;
 }
 
-static DB* CreateDB(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
+static Db* CreateDb(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
 {
     if (dbType == "0")
     {
@@ -67,23 +67,23 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Start();
 	ShutdownSignal::InstallHandlers();
 
-	DB* initDB = CreateDB(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
-	DB* db = CreateDB(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
-	if (initDB == nullptr || db == nullptr)
+	Db* initDb = CreateDb(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
+	Db* db = CreateDb(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+	if (initDb == nullptr || db == nullptr)
 	{
 		return Exit();
 	}
-	Mdb* mdb = new Mdb(simexchangeTableList);
-	QuantTrading::MdbTableRegistry schemaRegistry(simexchangeTableList);
-	AsyncDBWriter* dbWriter = new AsyncDBWriter(db, &schemaRegistry);
-	if (!initDB->Connect())
+	Mdb* mdb = new Mdb(SimExchangeTableList);
+	QuantTrading::MdbTableRegistry schemaRegistry(SimExchangeTableList);
+	AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &schemaRegistry);
+	if (!initDb->Connect())
 	{
-		WriteLog(LogLevel::Error, "InitDB Connect Failed.");
+		WriteLog(LogLevel::Error, "InitDb Connect Failed.");
 		return Exit();
 	}
-	InitMdbFromDB::LoadTables(mdb, initDB, simexchangeTableList);
-	initDB->DisConnect();
-	delete initDB;
+	InitMdbFromDb::LoadTables(mdb, initDb, SimExchangeTableList);
+	initDb->DisConnect();
+	delete initDb;
 
 	mdb->Subscribe(dbWriter);
 	dbWriter->Subscribe(mdb);
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 	mdApi->RegisterFront(serverConfig.MdOfferAddress.c_str());
 	TradeFront* tradeFront = new TradeFront(serverConfig.TradeFrontAddress.c_str());
 	MdFront* mdFront = new MdFront(serverConfig.MdOfferAddress.c_str());
-	auto simExchange = new SimExchange(mdb, tradeFront, mdFront, mdSpi, (MatchModeType)config.MatchMode);
+	auto simExchange = new QuantTrading::SimExchange::SimExchange(mdb, tradeFront, mdFront, mdSpi, (MatchModeType)config.MatchMode);
 	tradeFront->Subscribe(simExchange);
 	//mdFront->Subscribe(*);
 	mdSpi->SetSimExchange(simExchange);

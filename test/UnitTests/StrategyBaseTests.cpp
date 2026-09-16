@@ -5,9 +5,9 @@
 
 #include <string>
 
-using namespace QuantTrading::unittest;
+using namespace QuantTrading::UnitTest;
 
-namespace QuantTrading::unittest
+namespace QuantTrading::UnitTest
 {
     // 暴露 StrategyBase 受保护接口给测试断言
     class ProbeStrategy : public QuantTrading::strategy::StrategyBase

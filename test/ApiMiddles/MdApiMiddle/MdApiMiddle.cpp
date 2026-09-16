@@ -1,8 +1,8 @@
-// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
-using namespace Spark::core;
+using namespace Spark::Core;
 
 
 namespace QuantTrading
@@ -42,15 +42,15 @@ void MdApiMiddle::RegisterFront(const char* address)
 	WriteLog(LogLevel::Info, "RegisterFront:%s", address);
 	mdApi->RegisterFront(address);
 }
-void MdApiMiddle::RegisterSpi(MdSpi* pSpi)
+void MdApiMiddle::RegisterSpi(MdSpi* spi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi");
-	mdApi->RegisterSpi(pSpi);
+	mdApi->RegisterSpi(spi);
 }
 
-int MdApiMiddle::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID)
+int MdApiMiddle::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqMdUserLogin: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqMdUserLogin: RequestID:%d", requestId);
 	if (reqMdUserLogin != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqMdUserLoginField:UserId:[%s]",
@@ -60,11 +60,11 @@ int MdApiMiddle::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int r
 	{
 		WriteLog(LogLevel::Info, "reqMdUserLogin is nullptr");
 	}
-	return mdApi->ReqMdUserLogin(reqMdUserLogin, requestID);
+	return mdApi->ReqMdUserLogin(reqMdUserLogin, requestId);
 }
-int MdApiMiddle::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID)
+int MdApiMiddle::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqMdUserLogout: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqMdUserLogout: RequestID:%d", requestId);
 	if (reqMdUserLogout != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqMdUserLogoutField:UserId:[%s]",
@@ -74,11 +74,11 @@ int MdApiMiddle::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, in
 	{
 		WriteLog(LogLevel::Info, "reqMdUserLogout is nullptr");
 	}
-	return mdApi->ReqMdUserLogout(reqMdUserLogout, requestID);
+	return mdApi->ReqMdUserLogout(reqMdUserLogout, requestId);
 }
-int MdApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
+int MdApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestId);
 	if (reqSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s], BarPreces:[%d], BarPeriod:[%d]",
@@ -88,11 +88,11 @@ int MdApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData,
 	{
 		WriteLog(LogLevel::Info, "reqSubMarketData is nullptr");
 	}
-	return mdApi->ReqSubMarketData(reqSubMarketData, requestID);
+	return mdApi->ReqSubMarketData(reqSubMarketData, requestId);
 }
-int MdApiMiddle::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
+int MdApiMiddle::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqUnSubMarketData: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqUnSubMarketData: RequestID:%d", requestId);
 	if (reqUnSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqUnSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s]",
@@ -102,6 +102,6 @@ int MdApiMiddle::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarke
 	{
 		WriteLog(LogLevel::Info, "reqUnSubMarketData is nullptr");
 	}
-	return mdApi->ReqUnSubMarketData(reqUnSubMarketData, requestID);
+	return mdApi->ReqUnSubMarketData(reqUnSubMarketData, requestId);
 }
 }

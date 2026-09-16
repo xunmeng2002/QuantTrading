@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-namespace QuantTrading::bar
+namespace QuantTrading::Bar
 {
     class BarAggregator
     {

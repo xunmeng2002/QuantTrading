@@ -51,7 +51,7 @@ void BindEnums(py::module_& module)
 void BindFields(py::module_& module)
 {
 	py::class_<RspInfoField>(module, "RspInfoField")
-		.def_readonly("error_id", &RspInfoField::ErrorID)
+		.def_readonly("error_id", &RspInfoField::ErrorId)
 		.def_property_readonly("error_msg", [](const RspInfoField& field) { return std::string(field.ErrorMsg); });
 
 	py::class_<SessionBeginField> sessionBeginField(module, "SessionBeginField");
@@ -159,7 +159,7 @@ void BindFields(py::module_& module)
 		.def_property_readonly("account_id", [](const ReqCancelOrderField& field) { return std::string(field.AccountId); })
 		.def_property_readonly("exchange_id", [](const ReqCancelOrderField& field) { return std::string(field.ExchangeId); })
 		.def_property_readonly("instrument_id", [](const ReqCancelOrderField& field) { return std::string(field.InstrumentId); })
-		.def_readonly("client_cancel_order_id", &ReqCancelOrderField::ClientCancelOrderID)
+		.def_readonly("client_cancel_order_id", &ReqCancelOrderField::ClientCancelOrderId)
 		.def_readonly("order_id", &ReqCancelOrderField::OrderId)
 		.def_readonly("session_id", &ReqCancelOrderField::SessionId)
 		.def_readonly("client_order_id", &ReqCancelOrderField::ClientOrderId);

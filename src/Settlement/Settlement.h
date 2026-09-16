@@ -6,7 +6,7 @@ namespace QuantTrading
 	class Mdb;
 }
 
-namespace QuantTrading::settlement
+namespace QuantTrading::Settlement
 {
 	class SettlementPriceSource;
 

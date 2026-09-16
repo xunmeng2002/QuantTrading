@@ -4,16 +4,17 @@
 #include "SettlementTestHelpers.h"
 #include <limits>
 
-using namespace QuantTrading::unittest;
-using QuantTrading::settlement::MdbTickSettlementPriceSource;
-using QuantTrading::settlement::Settlement;
+using namespace QuantTrading::UnitTest;
+using QuantTrading::Settlement::MdbTickSettlementPriceSource;
+
 
 TEST_SUITE("Settlement")
 {
+using QuantTrading::Settlement::Settlement;
 
 TEST_CASE("Settle明细逐日逐笔盈亏与期权市值")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     FixedSettlementPriceSource priceSource;
     priceSource.prices = {{"IF2503", 3100.0}, {"IO2503", 110.0}};
     Settlement settlement(&settlementMdb, &priceSource);
@@ -45,7 +46,7 @@ TEST_CASE("Settle明细逐日逐笔盈亏与期权市值")
 
 TEST_CASE("Settle聚合持仓与资金并核算权益可用")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     FixedSettlementPriceSource priceSource;
     priceSource.prices = {{"IF2503", 3100.0}};
     Settlement settlement(&settlementMdb, &priceSource);
@@ -86,7 +87,7 @@ TEST_CASE("Settle聚合持仓与资金并核算权益可用")
 
 TEST_CASE("RollToNextDay结转未平记录并过滤已平与零持仓")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     FixedSettlementPriceSource priceSource;
     Settlement settlement(&settlementMdb, &priceSource);
 
@@ -105,23 +106,23 @@ TEST_CASE("RollToNextDay结转未平记录并过滤已平与零持仓")
 
     RollDay(settlement, "20240301", "20240302");
 
-    CHECK(CountByTradingDay(settlementMdb.position, "20240302") == 1);
-    auto* nextPosition = FirstByTradingDay(settlementMdb.position, "20240302");
+    CHECK(CountByTradingDay(settlementMdb.Position, "20240302") == 1);
+    auto* nextPosition = FirstByTradingDay(settlementMdb.Position, "20240302");
     REQUIRE(nextPosition != nullptr);
     CHECK(nextPosition->TotalPosition == 2);
     CHECK(nextPosition->TodayPosition == 0);
     CHECK(nextPosition->PreSettlementPrice == doctest::Approx(3100.0));
 
-    CHECK(CountByTradingDay(settlementMdb.positionDetail, "20240302") == 1);
-    auto* nextDetail = FirstByTradingDay(settlementMdb.positionDetail, "20240302");
+    CHECK(CountByTradingDay(settlementMdb.PositionDetail, "20240302") == 1);
+    auto* nextDetail = FirstByTradingDay(settlementMdb.PositionDetail, "20240302");
     REQUIRE(nextDetail != nullptr);
     CHECK(std::string(nextDetail->OpenDate) == "20240301");
     CHECK(nextDetail->Volume == 2);
     CHECK(nextDetail->CloseVolume == 1);
     CHECK(nextDetail->PreSettlementPrice == doctest::Approx(3100.0));
 
-    CHECK(CountByTradingDay(settlementMdb.capital, "20240302") == 1);
-    auto* nextCapital = FirstByTradingDay(settlementMdb.capital, "20240302");
+    CHECK(CountByTradingDay(settlementMdb.Capital, "20240302") == 1);
+    auto* nextCapital = FirstByTradingDay(settlementMdb.Capital, "20240302");
     REQUIRE(nextCapital != nullptr);
     CHECK(nextCapital->PreBalance == doctest::Approx(1100000.0));
     CHECK(nextCapital->MarketValue == doctest::Approx(0.0));
@@ -129,7 +130,7 @@ TEST_CASE("RollToNextDay结转未平记录并过滤已平与零持仓")
 
 TEST_CASE("MdbTickSettlementPriceSource异常值逐级回退")
 {
-    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::SimExchange::SimExchangeTableList);
     MdbTickSettlementPriceSource priceSource(&settlementMdb);
     auto infinity = std::numeric_limits<double>::infinity();
 
@@ -142,7 +143,7 @@ TEST_CASE("MdbTickSettlementPriceSource异常值逐级回退")
         CopyString(tick->InstrumentId, instrumentId);
         tick->LastPrice = lastPrice;
         tick->PreSettlementPrice = preSettlementPrice;
-        REQUIRE(settlementMdb.depthMarketData->Insert(tick));
+        REQUIRE(settlementMdb.DepthMarketData->Insert(tick));
     };
 
     auto* validDetail = InsertSettlementPositionDetail(&settlementMdb, "20240308", "20240308", "T1", PosiDirectionType::Long, 3000.0, 3000.0, 1);

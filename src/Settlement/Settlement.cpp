@@ -4,7 +4,7 @@
 #include <cstring>
 #include <vector>
 
-namespace QuantTrading::settlement
+namespace QuantTrading::Settlement
 {
 	Settlement::Settlement(QuantTrading::Mdb* mdb, SettlementPriceSource* settlementPriceSource)
 		:m_Mdb(mdb), m_SettlementPriceSource(settlementPriceSource)

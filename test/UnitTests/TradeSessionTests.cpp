@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-using namespace QuantTrading::bar;
-using namespace QuantTrading::unittest;
+using namespace QuantTrading::Bar;
+using namespace QuantTrading::UnitTest;
 
 TEST_SUITE("TradeSession")
 {
@@ -66,7 +66,7 @@ TEST_CASE("夜盘与跨零点时段的bar时间换算")
     auto* night = AddTradeSection(trade_session, 2100, 2300, SectionClassType::Section);
     auto* overnight = AddTradeSection(trade_session, 2400, 2700, SectionClassType::Section);
 
-    auto pre_trading_day = Spark::core::TimeUtility::GetPreTradingDay(20240301);
+    auto pre_trading_day = Spark::Core::TimeUtility::GetPreTradingDay(20240301);
     CHECK(trade_session.GetFirstBarTime(20240301) == pre_trading_day * 10000LL + 2101);
 
     long long begin_bar_time = 0;

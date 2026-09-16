@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-using namespace QuantTrading::bar;
-using namespace QuantTrading::unittest;
+using namespace QuantTrading::Bar;
+using namespace QuantTrading::UnitTest;
 
 TEST_SUITE("BarAggregator")
 {
@@ -98,7 +98,7 @@ BarMarketDataField MakeSessionBar(const char* exchange_id, const char* instrumen
 void FeedMinuteBars(BarAggregator& aggregator, const char* exchange_id, const char* instrument_id, const char* trading_day,
     long long begin_minute, long long end_minute)
 {
-    for (long long bar_minute = begin_minute; bar_minute <= end_minute; bar_minute = Spark::core::TimeUtility::MinuteAdd(bar_minute, 1))
+    for (long long bar_minute = begin_minute; bar_minute <= end_minute; bar_minute = Spark::Core::TimeUtility::MinuteAdd(bar_minute, 1))
     {
         auto bar = MakeSessionBar(exchange_id, instrument_id, trading_day, bar_minute);
         aggregator.OnBarMarketData(&bar);

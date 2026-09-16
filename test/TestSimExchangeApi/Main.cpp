@@ -8,7 +8,7 @@
 
 using namespace std;
 using namespace QuantTrading;
-using namespace QuantTrading::testsimexchangeapi;
+using namespace QuantTrading::TestSimExchangeApi;
 using namespace QuantTrading;
 
 const char* ConfigName = "TestSimExchangeApi.json";

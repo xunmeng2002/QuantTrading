@@ -12,7 +12,7 @@
 
 
 using QuantTrading::AccountInfo;
-namespace QuantTrading::mdoffer
+namespace QuantTrading::MdOffer
 {
     class MdKernel;
     class CThostFtdcMdSpiImpl : public CThostFtdcMdSpiMiddle

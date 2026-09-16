@@ -1,7 +1,7 @@
 #include "MdSnap.h"
 #include <string.h>
 
-namespace QuantTrading::mdoffer
+namespace QuantTrading::MdOffer
 {
     MdSnap MdSnap::m_Instance;
     MdSnap::MdSnap()

@@ -1,9 +1,9 @@
-// 本文件由 ../Templates/Cpp/LibTest/CtpWrapper/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/LibTest/CtpWrapper/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "ThostFtdcTraderApiMiddle.h"
 #include "StructLogFunc.h"
 #include <Spark/Core/Logger/Logger.h>
 
-using namespace Spark::core;
+using namespace Spark::Core;
 
 
 CThostFtdcTraderApi *CThostFtdcTraderApiMiddle::CreateFtdcTraderApi(const char *pszFlowPath)

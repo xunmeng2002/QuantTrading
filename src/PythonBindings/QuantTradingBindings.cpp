@@ -83,7 +83,7 @@ namespace
 			}
 			DispatchHookWithGil("on_bar", [&] { StrategyBase::OnBar(barMarketData); }, *barMarketData);
 		}
-		void OnTrade(const TradeField* trade, ClientOrderIDType clientOrderID) override
+		void OnTrade(const TradeField* trade, ClientOrderIdType clientOrderID) override
 		{
 			if (trade == nullptr)
 			{

@@ -2,11 +2,11 @@
 #include "TestHelpers.h"
 #include "GridStrategy.h"
 
-namespace QuantTrading::unittest
+namespace QuantTrading::UnitTest
 {
-    using QuantTrading::teststrategygrid::GridParams;
+    using QuantTrading::TestStrategyGrid::GridParams;
 
-    inline QuantTrading::teststrategygrid::GridParams MakeGridParams(double grid_step, int grid_count)
+    inline QuantTrading::TestStrategyGrid::GridParams MakeGridParams(double grid_step, int grid_count)
     {
         GridParams grid_params;
         grid_params.GridStep = grid_step;
@@ -18,7 +18,7 @@ namespace QuantTrading::unittest
     }
 
     // 暴露 GridStrategy 继承自 StrategyBase 的受保护查询接口给测试断言
-    class GridStrategyProbe : public QuantTrading::teststrategygrid::GridStrategy
+    class GridStrategyProbe : public QuantTrading::TestStrategyGrid::GridStrategy
     {
     public:
         using GridStrategy::GridStrategy;

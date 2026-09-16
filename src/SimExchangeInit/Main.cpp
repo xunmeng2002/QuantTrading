@@ -10,12 +10,12 @@
 #include "Config/Config.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Core/Utility/TimeUtility.h>
-#include <DBAdapters/AsyncDBWriter/AsyncDBWriter.h>
-#include <DBAdapters/DBInterface/DB.h>
-#include <DBAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <DBAdapters/SqliteWrapper/SqliteWrapper.h>
-#include <DBAdapters/MysqlWrapper/MysqlWrapper.h>
-#include <DBAdapters/MariadbWrapper/MariadbWrapper.h>
+#include <DbAdapters/AsyncDbWriter/AsyncDbWriter.h>
+#include <DbAdapters/DbInterface/Db.h>
+#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
+#include <DbAdapters/SqliteWrapper/SqliteWrapper.h>
+#include <DbAdapters/MysqlWrapper/MysqlWrapper.h>
+#include <DbAdapters/MariadbWrapper/MariadbWrapper.h>
 #include <chrono>
 #include <iostream>
 #include <map>
@@ -23,16 +23,16 @@
 #include <thread>
 
 using namespace std;
-using namespace mdb;
+using namespace QuantTrading;
 using namespace Spark::Core;
-using namespace dbadapters;
-using namespace QuantTrading::simexchange;
-using namespace QuantTrading::simexchangeinit;
+using namespace DbAdapters;
+using namespace QuantTrading::SimExchange;
+using namespace QuantTrading::SimExchangeInit;
 using namespace QuantTrading;
 
 const char* ConfigName = "SimExchangeInit.json";
 
-static DB* CreateDB(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
+static Db* CreateDb(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
 {
     if (dbType == "0")
     {
@@ -69,10 +69,10 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	DB* db = CreateDB(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
-    QuantTrading::MdbTableRegistry registry(simexchangeTableList);
-	AsyncDBWriter* dbWriter = new AsyncDBWriter(db, &registry);
-	Mdb* mdb = new Mdb(simexchangeTableList);
+	Db* db = CreateDb(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+    QuantTrading::MdbTableRegistry registry(SimExchangeTableList);
+	AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &registry);
+	Mdb* mdb = new Mdb(SimExchangeTableList);
 	mdb->Subscribe(dbWriter);
 	dbWriter->Subscribe(mdb);
 

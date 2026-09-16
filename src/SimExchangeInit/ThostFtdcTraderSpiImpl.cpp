@@ -6,12 +6,12 @@
 #include <string.h>
 
 using namespace std;
-using namespace mdb;
+using namespace QuantTrading;
 using namespace Spark::Core;
-using namespace Spark::serialization;
+using namespace Spark::Serialization;
 
 
-namespace QuantTrading::simexchangeinit
+namespace QuantTrading::SimExchangeInit
 {
 CThostFtdcTraderSpiImpl::CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, QuantTrading::Mdb* mdb)
 	:m_TraderApi(traderApi), m_Mdb(mdb), m_RequestID(0), m_AccountInfo(nullptr), m_QryFinished(false)
@@ -44,7 +44,7 @@ void CThostFtdcTraderSpiImpl::OnRspAuthenticate(CThostFtdcRspAuthenticateField* 
 void CThostFtdcTraderSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
 	CThostFtdcTraderSpiMiddle::OnRspUserLogin(pRspUserLogin, pRspInfo, nRequestID, bIsLast);
-	//if (pRspInfo != nullptr && pRspInfo->ErrorID == 141)	//PWD_OUT_OF_DATE
+	//if (pRspInfo != nullptr && pRspInfo->ErrorId == 141)	//PWD_OUT_OF_DATE
 	//{
 	//	ReqUserPasswordUpdate();
 	//}
@@ -54,12 +54,12 @@ void CThostFtdcTraderSpiImpl::OnRspQryExchange(CThostFtdcExchangeField* pExchang
 {
 	CThostFtdcTraderSpiMiddle::OnRspQryExchange(pExchange, pRspInfo, nRequestID, bIsLast);
 	Exchange* exchange = Exchange::Allocate();
-	Utility::Strcpy(exchange->ExchangeId, pExchange->ExchangeId);
+	Utility::Strcpy(exchange->ExchangeId, pExchange->ExchangeID);
     Utility::Strcpy(exchange->ExchangeName, GbkToUtf8(pExchange->ExchangeName).c_str());
 	m_Exchanges->push_back(exchange);
 	if (bIsLast)
 	{
-		m_Mdb->exchange->BatchInsert(m_Exchanges);
+		m_Mdb->Exchange->BatchInsert(m_Exchanges);
 		ReqQryProduct();
 	}
 }
@@ -67,8 +67,8 @@ void CThostFtdcTraderSpiImpl::OnRspQryProduct(CThostFtdcProductField* pProduct, 
 {
 	CThostFtdcTraderSpiMiddle::OnRspQryProduct(pProduct, pRspInfo, nRequestID, bIsLast);
 	Product* product = Product::Allocate();
-    Utility::Strcpy(product->ExchangeId, pProduct->ExchangeId);
-    Utility::Strcpy(product->ProductId, pProduct->ProductId);
+    Utility::Strcpy(product->ExchangeId, pProduct->ExchangeID);
+    Utility::Strcpy(product->ProductId, pProduct->ProductID);
     Utility::Strcpy(product->ProductName, GbkToUtf8(pProduct->ProductName).c_str());
 	switch (pProduct->ProductClass)
 	{
@@ -110,7 +110,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryProduct(CThostFtdcProductField* pProduct, 
 	m_Products->push_back(product);
 	if (bIsLast)
 	{
-		m_Mdb->product->BatchInsert(m_Products);
+		m_Mdb->Product->BatchInsert(m_Products);
 		ReqQryInstrument();
 	}
 }
@@ -118,11 +118,11 @@ void CThostFtdcTraderSpiImpl::OnRspQryInstrument(CThostFtdcInstrumentField* pIns
 {
 	CThostFtdcTraderSpiMiddle::OnRspQryInstrument(pInstrument, pRspInfo, nRequestID, bIsLast);
 	Instrument* instrument = Instrument::Allocate();
-    Utility::Strcpy(instrument->ExchangeId, pInstrument->ExchangeId);
-    Utility::Strcpy(instrument->InstrumentId, pInstrument->InstrumentId);
-    Utility::Strcpy(instrument->ExchangeInstID, pInstrument->ExchangeInstID);
+    Utility::Strcpy(instrument->ExchangeId, pInstrument->ExchangeID);
+    Utility::Strcpy(instrument->InstrumentId, pInstrument->InstrumentID);
+    Utility::Strcpy(instrument->ExchangeInstId, pInstrument->ExchangeInstID);
     Utility::Strcpy(instrument->InstrumentName, GbkToUtf8(pInstrument->InstrumentName).c_str());
-    Utility::Strcpy(instrument->ProductId, pInstrument->ProductId);
+    Utility::Strcpy(instrument->ProductId, pInstrument->ProductID);
 	switch (pInstrument->ProductClass)
 	{
 	case THOST_FTDC_PC_Futures:
@@ -166,7 +166,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryInstrument(CThostFtdcInstrumentField* pIns
 	m_Instruments->push_back(instrument);
 	if (bIsLast)
 	{
-		m_Mdb->instrument->BatchInsert(m_Instruments);
+		m_Mdb->Instrument->BatchInsert(m_Instruments);
 		ReqQryTradingAccount();
 	}
 }
@@ -213,11 +213,11 @@ void CThostFtdcTraderSpiImpl::ReqAuthenticate()
 {
 	CThostFtdcReqAuthenticateField authenticate;
 	::memset(&authenticate, 0, sizeof(authenticate));
-	Utility::Strcpy(authenticate.BrokerId, m_AccountInfo->BrokerId);
+	Utility::Strcpy(authenticate.BrokerID, m_AccountInfo->BrokerId);
 	Utility::Strcpy(authenticate.UserID, m_AccountInfo->InvestorId);
 	Utility::Strcpy(authenticate.UserProductInfo, m_AccountInfo->UserProductInfo);
 	Utility::Strcpy(authenticate.AuthCode, m_AccountInfo->AuthCode);
-	Utility::Strcpy(authenticate.AppId, m_AccountInfo->AppId);
+	Utility::Strcpy(authenticate.AppID, m_AccountInfo->AppId);
 
 	int ret = m_TraderApi->ReqAuthenticate(&authenticate, m_RequestID++);
 	WriteLog(LogLevel::Info, "ReqAuthenticate: ret[%d]", ret);
@@ -227,7 +227,7 @@ void CThostFtdcTraderSpiImpl::ReqUserLogin()
 	CThostFtdcReqUserLoginField userLogin;
 	::memset(&userLogin, 0, sizeof(userLogin));
 	Utility::Strcpy(userLogin.TradingDay, "");
-	Utility::Strcpy(userLogin.BrokerId, m_AccountInfo->BrokerId);
+	Utility::Strcpy(userLogin.BrokerID, m_AccountInfo->BrokerId);
 	Utility::Strcpy(userLogin.UserID, m_AccountInfo->InvestorId);
 	Utility::Strcpy(userLogin.Password, m_AccountInfo->Password);
 	Utility::Strcpy(userLogin.UserProductInfo, m_AccountInfo->UserProductInfo);
@@ -239,7 +239,7 @@ void CThostFtdcTraderSpiImpl::ReqUserPasswordUpdate()
 {
 	CThostFtdcUserPasswordUpdateField userPasswordUpdate;
 	::memset(&userPasswordUpdate, 0, sizeof(userPasswordUpdate));
-	Utility::Strcpy(userPasswordUpdate.BrokerId, m_AccountInfo->BrokerId);
+	Utility::Strcpy(userPasswordUpdate.BrokerID, m_AccountInfo->BrokerId);
 	Utility::Strcpy(userPasswordUpdate.UserID, m_AccountInfo->InvestorId);
 	Utility::Strcpy(userPasswordUpdate.OldPassword, m_AccountInfo->Password);
 	Utility::Strcpy(userPasswordUpdate.NewPassword, m_NewPassword.c_str());

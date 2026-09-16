@@ -2,12 +2,12 @@
 #include "MdbStructs.h"
 #include <set>
 
-namespace mdb
+namespace QuantTrading
 {
 	class Mdb;
 }
 
-namespace QuantTrading::settlement
+namespace QuantTrading::Settlement
 {
 	// 平仓配对顺序：先开仓日期早者优先，同日按开仓成交 TradeId 先开先平
 	struct PositionDetailLessForOpenDate

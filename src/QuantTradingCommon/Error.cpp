@@ -110,8 +110,8 @@ namespace QuantTrading
 		{ErrorAuditReject, reinterpret_cast<const char*>(u8"审核拒绝")},
 	};
 
-	const char* GetErrorMessage(unsigned int errorID)
+	const char* GetErrorMessage(unsigned int errorId)
 	{
-		return Errors[errorID].c_str();
+		return Errors[errorId].c_str();
 	}
 }

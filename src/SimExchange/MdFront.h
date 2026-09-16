@@ -3,7 +3,7 @@
 #include <Spark/Network/Protocol/ProtocolSubscriber.h>
 
 
-namespace QuantTrading::simexchange
+namespace QuantTrading::SimExchange
 {
 class MdFront : public Spark::Network::Protocol, public Spark::Network::ProtocolSubscriber
 {
@@ -16,7 +16,7 @@ public:
 	virtual void OnMessage(Spark::Network::Package* package) override;
 
 private:
-    Spark::Network::IOThread* m_IOThread;
+    Spark::Network::IoThread* m_IOThread;
 };
 }
 

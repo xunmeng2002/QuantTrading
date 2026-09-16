@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/Api/ApiBase.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/Api/ApiBase.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include "ApiBase.h"
 #include <QuantTrading/MdApi.h>
@@ -14,8 +14,8 @@ public:
 	virtual ~MdApiBase();
 
 	//override for ProtocolSubscriber
-	virtual void OnProtocolConnect(SessionIDType newSessionID, const char* ip, int port) override;
-	virtual void OnProtocolDisConnect(SessionIDType newSessionID, const char* ip, int port) override;
+	virtual void OnProtocolConnect(SessionIdType sessionId, const char* ip, int port) override;
+	virtual void OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port) override;
 
 	//override for MdApi
 	virtual bool Init() override;
@@ -27,7 +27,7 @@ public:
 
 protected:
 	MdSpi* mdSpi;
-	SessionIDType sessionID;
+	SessionIdType sessionId_;
 };
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <QuantTrading/Fields.h>
 
-namespace QuantTrading::bar
+namespace QuantTrading::Bar
 {
     class BarSubscriber
     {

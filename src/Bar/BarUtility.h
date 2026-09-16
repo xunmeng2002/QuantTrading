@@ -4,7 +4,7 @@
 #include <list>
 #include <string>
 
-namespace QuantTrading::bar
+namespace QuantTrading::Bar
 {
     std::string GetUnderlyingID(const std::string& instrumentId);
 

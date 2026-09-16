@@ -10,14 +10,14 @@
 #include "Mdb.h"
 #include "MdbTableRegistry.h"
 #include "MdOfferTableList.h"
-#include <DBAdapters/DBInterface/DB.h>
-#include <DBAdapters/DBInterface/TypedTable.h>
-#include <DBAdapters/DBInterface/SchemaRegistry.h>
-#include <DBAdapters/AsyncDBWriter/AsyncDBWriter.h>
-#include <DBAdapters/SqliteWrapper/SqliteWrapper.h>
-#include <DBAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <DBAdapters/MysqlWrapper/MysqlWrapper.h>
-#include <DBAdapters/MariadbWrapper/MariadbWrapper.h>
+#include <DbAdapters/DbInterface/Db.h>
+#include <DbAdapters/DbInterface/TypedTable.h>
+#include <DbAdapters/DbInterface/SchemaRegistry.h>
+#include <DbAdapters/AsyncDbWriter/AsyncDbWriter.h>
+#include <DbAdapters/SqliteWrapper/SqliteWrapper.h>
+#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
+#include <DbAdapters/MysqlWrapper/MysqlWrapper.h>
+#include <DbAdapters/MariadbWrapper/MariadbWrapper.h>
 #include "MdFront.h"
 #include "MdKernel.h"
 #include "ShutdownSignal.h"
@@ -28,16 +28,16 @@
 #include <thread>
 
 using namespace std;
-using namespace mdb;
-using namespace Spark::Core;
-using namespace dbadapters;
 using namespace QuantTrading;
-using namespace QuantTrading::bar;
-using namespace QuantTrading::mdoffer;
+using namespace Spark::Core;
+using namespace DbAdapters;
+using namespace QuantTrading;
+using namespace QuantTrading::Bar;
+using namespace QuantTrading::MdOffer;
 
 const char* ConfigName = "MdOffer.json";
 
-static DB* CreateDataDb(const Config& config)
+static Db* CreateDataDb(const Config& config)
 {
     if (config.DbType == "0")
     {
@@ -91,26 +91,26 @@ int main(int argc, char* argv[])
 		return Exit();
 	}
 
-    DB* db = CreateDataDb(config);
+    Db* db = CreateDataDb(config);
 
-    Mdb* mdb = new Mdb(mdofferTableList);
-    QuantTrading::MdbTableRegistry schemaRegistry(mdofferTableList);
-    AsyncDBWriter* dbWriter = new AsyncDBWriter(db, &schemaRegistry);
+    Mdb* mdb = new Mdb(MdOfferTableList);
+    QuantTrading::MdbTableRegistry schemaRegistry(MdOfferTableList);
+    AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &schemaRegistry);
     mdb->Subscribe(dbWriter);
     dbWriter->Subscribe(mdb);
 
-    if (!config.MdUserID.empty())
+    if (!config.MdUserId.empty())
     {
         MdUser* mdUser = MdUser::Allocate();
-        Utility::Strcpy(mdUser->MdUserID, config.MdUserID.c_str());
+        Utility::Strcpy(mdUser->MdUserId, config.MdUserId.c_str());
         Utility::Strcpy(mdUser->MdUserName, "");
         Utility::Strcpy(mdUser->Password, config.MdPassword.c_str());
-        mdb->mdUser->Insert(mdUser);
+        mdb->MdUser->Insert(mdUser);
     }
 
 	MdKernel* mdKernel = new MdKernel(mdb, tradeSessions, config.SubscribeInstruments);
 	dbWriter->Subscribe(mdKernel);
-	MdFront* mdFront = new MdFront(IOModelType::Select, serverConfig.MdOfferAddress.c_str(), 100);
+	MdFront* mdFront = new MdFront(IoModelType::Select, serverConfig.MdOfferAddress.c_str(), 100);
 
 	CThostFtdcMdApi* mdApi = CThostFtdcMdApiMiddle::CreateFtdcMdApi();
 	cout << "API Version:" << mdApi->GetApiVersion() << endl;

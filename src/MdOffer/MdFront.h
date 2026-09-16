@@ -4,18 +4,18 @@
 #include <string>
 
 
-namespace QuantTrading::mdoffer
+namespace QuantTrading::MdOffer
 {
     class MdFront : public Spark::Network::Protocol
     {
     public:
-        MdFront(IOModelType ioModel, const char* address, int milliSecond = 1);
+        MdFront(IoModelType ioModel, const char* address, int milliSecond = 1);
 
 
 
     private:
         std::string m_Address;
-        Spark::Network::IOThread* m_IOThread;
+        Spark::Network::IoThread* m_IOThread;
     };
 }
 

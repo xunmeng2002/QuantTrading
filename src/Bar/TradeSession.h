@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace QuantTrading::bar
+namespace QuantTrading::Bar
 {
     class TradeSection
     {

@@ -11,7 +11,7 @@ using namespace Spark;
 using namespace Spark::Core;
 using namespace QuantTrading::Packages;
 
-namespace QuantTrading::mdoffer
+namespace QuantTrading::MdOffer
 {
     CThostFtdcMdSpiImpl::CThostFtdcMdSpiImpl(CThostFtdcMdApi* MdApi, MdKernel* mdKernel)
         :m_MdApi(MdApi), m_MdKernel(mdKernel), m_IsLogged(false), m_RequestID(0), m_AccountInfo(nullptr)
@@ -66,10 +66,10 @@ namespace QuantTrading::mdoffer
         {
             Utility::Strcpy(package->DepthMarketData->TradingDay, pDepthMarketData->ActionDay);
         }
-        Utility::Strcpy(package->DepthMarketData->InstrumentId, pDepthMarketData->InstrumentId);
-        if (strlen(pDepthMarketData->ExchangeId) != 0)
+        Utility::Strcpy(package->DepthMarketData->InstrumentId, pDepthMarketData->InstrumentID);
+        if (strlen(pDepthMarketData->ExchangeID) != 0)
         {
-            Utility::Strcpy(package->DepthMarketData->ExchangeId, pDepthMarketData->ExchangeId);
+            Utility::Strcpy(package->DepthMarketData->ExchangeId, pDepthMarketData->ExchangeID);
         }
         else
         {
@@ -130,7 +130,7 @@ namespace QuantTrading::mdoffer
     }
     void CThostFtdcMdSpiImpl::SubscribeMd(const ReqSubMarketDataField* reqSubMd)
     {
-        WriteLog(LogLevel::Info, "SubscribeMd: ExchangeId:%s, InstrumentId:%s", reqSubMd->ExchangeId, reqSubMd->InstrumentId);
+        WriteLog(LogLevel::Info, "SubscribeMd: ExchangeID:%s, InstrumentID:%s", reqSubMd->ExchangeId, reqSubMd->InstrumentId);
         lock_guard<mutex> gurad(m_Mutex);
         if (!m_ReqSubMds.try_emplace(reqSubMd->InstrumentId, reqSubMd).second)
         {
@@ -174,7 +174,7 @@ namespace QuantTrading::mdoffer
         CThostFtdcReqUserLoginField userLogin;
         ::memset(&userLogin, 0, sizeof(userLogin));
         Utility::Strcpy(userLogin.TradingDay, "");
-        Utility::Strcpy(userLogin.BrokerId, m_AccountInfo->BrokerId);
+        Utility::Strcpy(userLogin.BrokerID, m_AccountInfo->BrokerId);
         Utility::Strcpy(userLogin.UserID, m_AccountInfo->InvestorId);
         Utility::Strcpy(userLogin.Password, m_AccountInfo->Password);
         Utility::Strcpy(userLogin.UserProductInfo, m_AccountInfo->UserProductInfo);

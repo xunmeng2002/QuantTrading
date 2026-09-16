@@ -4,7 +4,7 @@
 
 using namespace Spark::Core;
 
-namespace QuantTrading::teststrategygrid
+namespace QuantTrading::TestStrategyGrid
 {
 GridStrategy::GridStrategy(QuantTrading::BackTestApi* backTestApi, const char* accountId, const GridParams& gridParams)
 	:StrategyBase(backTestApi, accountId), m_Params(gridParams)
@@ -108,7 +108,7 @@ void GridStrategy::PlaceCloseOrder(GridSlot& gridSlot, VolumeType volume)
 	WriteLog(LogLevel::Info, "Place close order, ClientOrderId:%d Price:%f Volume:%lld", gridSlot.CloseClientOrderID, gridSlot.ClosePrice, volume);
 }
 
-void GridStrategy::OnTrade(const TradeField* trade, ClientOrderIDType clientOrderID)
+void GridStrategy::OnTrade(const TradeField* trade, ClientOrderIdType clientOrderID)
 {
 	if (clientOrderID == 0)
 	{
@@ -244,11 +244,11 @@ void GridStrategy::HandleCloseOrderCanceled(GridSlot* gridSlot)
 
 void GridStrategy::OnInsertOrderRsp(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo)
 {
-	if (reqInsertOrder == nullptr || rspInfo == nullptr || rspInfo->ErrorID == 0)
+	if (reqInsertOrder == nullptr || rspInfo == nullptr || rspInfo->ErrorId == 0)
 	{
 		return;
 	}
-	ClientOrderIDType clientOrderID = reqInsertOrder->ClientOrderId;
+	ClientOrderIdType clientOrderID = reqInsertOrder->ClientOrderId;
 	if (GridSlot* gridSlot = FindSlotByOpenOrder(clientOrderID))
 	{
 		if (gridSlot->State == GridSlotState::OpenPending)
@@ -300,7 +300,7 @@ void GridStrategy::OnEnd()
 		GetLongPosition(m_Params.InstrumentId.c_str()), GetShortPosition(m_Params.InstrumentId.c_str()));
 }
 
-GridStrategy::GridSlot* GridStrategy::FindSlotByOpenOrder(ClientOrderIDType clientOrderID)
+GridStrategy::GridSlot* GridStrategy::FindSlotByOpenOrder(ClientOrderIdType clientOrderID)
 {
 	for (auto& gridSlot : m_Slots)
 	{
@@ -311,7 +311,7 @@ GridStrategy::GridSlot* GridStrategy::FindSlotByOpenOrder(ClientOrderIDType clie
 	}
 	return nullptr;
 }
-GridStrategy::GridSlot* GridStrategy::FindSlotByCloseOrder(ClientOrderIDType clientOrderID)
+GridStrategy::GridSlot* GridStrategy::FindSlotByCloseOrder(ClientOrderIdType clientOrderID)
 {
 	for (auto& gridSlot : m_Slots)
 	{

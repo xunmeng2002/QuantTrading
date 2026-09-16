@@ -1,8 +1,8 @@
-// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "BackTestApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
-using namespace Spark::core;
+using namespace Spark::Core;
 
 
 namespace QuantTrading
@@ -42,15 +42,15 @@ void BackTestApiMiddle::RegisterFront(const char* address)
 	WriteLog(LogLevel::Info, "RegisterFront:%s", address);
 	backTestApi->RegisterFront(address);
 }
-void BackTestApiMiddle::RegisterSpi(BackTestSpi* pSpi)
+void BackTestApiMiddle::RegisterSpi(BackTestSpi* spi)
 {
 	WriteLog(LogLevel::Info, "RegisterSpi");
-	backTestApi->RegisterSpi(pSpi);
+	backTestApi->RegisterSpi(spi);
 }
 
-int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
+int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestId);
 	if (reqSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s], BarPreces:[%d], BarPeriod:[%d]",
@@ -60,11 +60,11 @@ int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarke
 	{
 		WriteLog(LogLevel::Info, "reqSubMarketData is nullptr");
 	}
-	return backTestApi->ReqSubMarketData(reqSubMarketData, requestID);
+	return backTestApi->ReqSubMarketData(reqSubMarketData, requestId);
 }
-int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
+int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqSubMarketDataFinished: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqSubMarketDataFinished: RequestID:%d", requestId);
 	if (reqSubMarketDataFinished != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqSubMarketDataFinishedField:SessionId:[%lld]",
@@ -74,11 +74,11 @@ int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedFi
 	{
 		WriteLog(LogLevel::Info, "reqSubMarketDataFinished is nullptr");
 	}
-	return backTestApi->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
+	return backTestApi->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestId);
 }
-int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
+int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqRegisterAccount: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqRegisterAccount: RequestID:%d", requestId);
 	if (reqRegisterAccount != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqRegisterAccountField:AccountId:[%s]",
@@ -88,11 +88,11 @@ int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegi
 	{
 		WriteLog(LogLevel::Info, "reqRegisterAccount is nullptr");
 	}
-	return backTestApi->ReqRegisterAccount(reqRegisterAccount, requestID);
+	return backTestApi->ReqRegisterAccount(reqRegisterAccount, requestId);
 }
-int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
+int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestId);
 	if (reqInsertOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
@@ -102,11 +102,11 @@ int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder,
 	{
 		WriteLog(LogLevel::Info, "reqInsertOrder is nullptr");
 	}
-	return backTestApi->ReqInsertOrder(reqInsertOrder, requestID);
+	return backTestApi->ReqInsertOrder(reqInsertOrder, requestId);
 }
-int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
+int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId)
 {
-	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestID);
+	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestId);
 	if (reqCancelOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",
@@ -116,6 +116,6 @@ int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder,
 	{
 		WriteLog(LogLevel::Info, "reqCancelOrder is nullptr");
 	}
-	return backTestApi->ReqCancelOrder(reqCancelOrder, requestID);
+	return backTestApi->ReqCancelOrder(reqCancelOrder, requestId);
 }
 }

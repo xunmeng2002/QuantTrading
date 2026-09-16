@@ -5,8 +5,8 @@
 
 #include <vector>
 
-using namespace QuantTrading::bar;
-using namespace QuantTrading::unittest;
+using namespace QuantTrading::Bar;
+using namespace QuantTrading::UnitTest;
 
 TEST_SUITE("MinuteBar")
 {
