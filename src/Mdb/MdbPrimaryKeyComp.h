@@ -3,7 +3,7 @@
 #include "MdbStructs.h"
 #include <stddef.h>
 
-namespace mdb
+namespace QuantTrading
 {
 	struct TradingDayEqualForTradingDayPrimaryKey
 	{
@@ -197,15 +197,15 @@ namespace mdb
 	{
 		size_t operator()(const Order* const record) const;
 	};
-	struct OrderEqualForClientOrderIDUniqueKey
+	struct OrderEqualForClientOrderIdUniqueKey
 	{
 		bool operator()(const Order* const left, const Order* const right) const;
 	};
-	struct OrderLessForClientOrderIDUniqueKey
+	struct OrderLessForClientOrderIdUniqueKey
 	{
 		bool operator()(const Order* const left, const Order* const right) const;
 	};
-	struct OrderHashForClientOrderIDUniqueKey
+	struct OrderHashForClientOrderIdUniqueKey
 	{
 		size_t operator()(const Order* const record) const;
 	};

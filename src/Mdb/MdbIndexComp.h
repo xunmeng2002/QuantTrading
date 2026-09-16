@@ -2,7 +2,7 @@
 #pragma once
 #include "MdbStructs.h"
 
-namespace mdb
+namespace QuantTrading
 {
 	struct HotInstrumentEqualForTradingDayIndex
 	{
@@ -13,38 +13,38 @@ namespace mdb
 		bool operator()(const HotInstrument* const left, const HotInstrument* const right) const;
 	};
 	
-	struct InstrumentEqualForExchangeIDIndex
+	struct InstrumentEqualForExchangeIdIndex
 	{
 		bool operator()(const Instrument* const left, const Instrument* const right) const;
 	};
-	struct InstrumentLessForExchangeIDIndex
+	struct InstrumentLessForExchangeIdIndex
 	{
 		bool operator()(const Instrument* const left, const Instrument* const right) const;
 	};
 	
-	struct MdUserLoginSessionEqualForSessionIDIndex
+	struct MdUserLoginSessionEqualForSessionIdIndex
 	{
 		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
 	};
-	struct MdUserLoginSessionLessForSessionIDIndex
-	{
-		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
-	};
-	
-	struct MdUserLoginSessionEqualForMdUserIDIndex
-	{
-		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
-	};
-	struct MdUserLoginSessionLessForMdUserIDIndex
+	struct MdUserLoginSessionLessForSessionIdIndex
 	{
 		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
 	};
 	
-	struct PrimaryAccountEqualForOfferIDIndex
+	struct MdUserLoginSessionEqualForMdUserIdIndex
+	{
+		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
+	};
+	struct MdUserLoginSessionLessForMdUserIdIndex
+	{
+		bool operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const;
+	};
+	
+	struct PrimaryAccountEqualForOfferIdIndex
 	{
 		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
 	};
-	struct PrimaryAccountLessForOfferIDIndex
+	struct PrimaryAccountLessForOfferIdIndex
 	{
 		bool operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const;
 	};
@@ -94,56 +94,56 @@ namespace mdb
 		bool operator()(const PositionDetail* const left, const PositionDetail* const right) const;
 	};
 	
-	struct OrderEqualForAccountIDIndex
+	struct OrderEqualForAccountIdIndex
 	{
 		bool operator()(const Order* const left, const Order* const right) const;
 	};
-	struct OrderLessForAccountIDIndex
+	struct OrderLessForAccountIdIndex
 	{
 		bool operator()(const Order* const left, const Order* const right) const;
 	};
 	
-	struct TradeEqualForAccountIDIndex
+	struct TradeEqualForAccountIdIndex
 	{
 		bool operator()(const Trade* const left, const Trade* const right) const;
 	};
-	struct TradeLessForAccountIDIndex
+	struct TradeLessForAccountIdIndex
 	{
 		bool operator()(const Trade* const left, const Trade* const right) const;
 	};
 	
-	struct AccountLoginSessionEqualForSessionIDIndex
+	struct AccountLoginSessionEqualForSessionIdIndex
 	{
 		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
 	};
-	struct AccountLoginSessionLessForSessionIDIndex
-	{
-		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
-	};
-	
-	struct AccountLoginSessionEqualForAccountIDIndex
-	{
-		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
-	};
-	struct AccountLoginSessionLessForAccountIDIndex
+	struct AccountLoginSessionLessForSessionIdIndex
 	{
 		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
 	};
 	
-	struct PrimaryAccountLoginSessionEqualForSessionIDIndex
+	struct AccountLoginSessionEqualForAccountIdIndex
+	{
+		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
+	};
+	struct AccountLoginSessionLessForAccountIdIndex
+	{
+		bool operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const;
+	};
+	
+	struct PrimaryAccountLoginSessionEqualForSessionIdIndex
 	{
 		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
 	};
-	struct PrimaryAccountLoginSessionLessForSessionIDIndex
+	struct PrimaryAccountLoginSessionLessForSessionIdIndex
 	{
 		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
 	};
 	
-	struct PrimaryAccountLoginSessionEqualForPrimaryAccountIDIndex
+	struct PrimaryAccountLoginSessionEqualForPrimaryAccountIdIndex
 	{
 		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
 	};
-	struct PrimaryAccountLoginSessionLessForPrimaryAccountIDIndex
+	struct PrimaryAccountLoginSessionLessForPrimaryAccountIdIndex
 	{
 		bool operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const;
 	};

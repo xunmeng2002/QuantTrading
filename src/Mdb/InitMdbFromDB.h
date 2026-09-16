@@ -2,31 +2,31 @@
 #pragma once
 #include "Mdb.h"
 #include "TableList.h"
-#include <DBAdapters/DBInterface/DB.h>
+#include <DBAdapters/DbInterface/Db.h>
 
-using dbadapters::DB;
-namespace mdb
+using DbAdapters::Db;
+namespace QuantTrading
 {
-	class InitMdbFromDB
+	class InitMdbFromDb
 	{
 	public:
-		static void LoadTables(Mdb* mdb, DB* db, const TableList& tableList);
+		static void LoadTables(Mdb* mdb, Db* db, const TableList& tableList);
 
-		static void LoadTradingDayTable(Mdb* mdb, DB* db);
-		static void LoadExchangeTable(Mdb* mdb, DB* db);
-		static void LoadProductTable(Mdb* mdb, DB* db);
-		static void LoadHotInstrumentTable(Mdb* mdb, DB* db);
-		static void LoadInstrumentTable(Mdb* mdb, DB* db);
-		static void LoadDepthMarketDataTable(Mdb* mdb, DB* db);
-		static void LoadBarMarketDataTable(Mdb* mdb, DB* db);
-		static void LoadMdSubscribeTable(Mdb* mdb, DB* db);
-		static void LoadMdUserTable(Mdb* mdb, DB* db);
-		static void LoadPrimaryAccountTable(Mdb* mdb, DB* db);
-		static void LoadAccountTable(Mdb* mdb, DB* db);
-		static void LoadCapitalTable(Mdb* mdb, DB* db);
-		static void LoadPositionTable(Mdb* mdb, DB* db);
-		static void LoadPositionDetailTable(Mdb* mdb, DB* db);
-		static void LoadOrderTable(Mdb* mdb, DB* db);
-		static void LoadTradeTable(Mdb* mdb, DB* db);
+		static void LoadTradingDayTable(Mdb* mdb, Db* db);
+		static void LoadExchangeTable(Mdb* mdb, Db* db);
+		static void LoadProductTable(Mdb* mdb, Db* db);
+		static void LoadHotInstrumentTable(Mdb* mdb, Db* db);
+		static void LoadInstrumentTable(Mdb* mdb, Db* db);
+		static void LoadDepthMarketDataTable(Mdb* mdb, Db* db);
+		static void LoadBarMarketDataTable(Mdb* mdb, Db* db);
+		static void LoadMdSubscribeTable(Mdb* mdb, Db* db);
+		static void LoadMdUserTable(Mdb* mdb, Db* db);
+		static void LoadPrimaryAccountTable(Mdb* mdb, Db* db);
+		static void LoadAccountTable(Mdb* mdb, Db* db);
+		static void LoadCapitalTable(Mdb* mdb, Db* db);
+		static void LoadPositionTable(Mdb* mdb, Db* db);
+		static void LoadPositionDetailTable(Mdb* mdb, Db* db);
+		static void LoadOrderTable(Mdb* mdb, Db* db);
+		static void LoadTradeTable(Mdb* mdb, Db* db);
 	};
 }

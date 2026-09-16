@@ -3,60 +3,60 @@
 #include "MdbStructs.h"
 
 
-namespace mdb
+namespace QuantTrading
 {
 	MdbTableRegistry::MdbTableRegistry(const TableList& tableList)
 	{
 		for (int i = 0; i < tableList.Count; ++i)
 		{
-			unsigned int tableID = tableList.TableIDs[i];
-			tableIDs.push_back(tableID);
-			schemas.push_back(GetSchemaByID(tableID));
+			unsigned int tableId = tableList.TableIds[i];
+			tableIds_.push_back(tableId);
+			schemas_.push_back(GetSchemaByID(tableId));
 		}
 	}
-	const TableSchema* MdbTableRegistry::GetSchemaByID(unsigned int tableID)
+	const TableSchema* MdbTableRegistry::GetSchemaByID(unsigned int tableId)
 	{
-		switch (tableID)
+		switch (tableId)
 		{
-		case TradingDay::TableID: return &TradingDay::GetSchema();
-		case Exchange::TableID: return &Exchange::GetSchema();
-		case Product::TableID: return &Product::GetSchema();
-		case HotInstrument::TableID: return &HotInstrument::GetSchema();
-		case Instrument::TableID: return &Instrument::GetSchema();
-		case DepthMarketData::TableID: return &DepthMarketData::GetSchema();
-		case BarMarketData::TableID: return &BarMarketData::GetSchema();
-		case MdSubscribe::TableID: return &MdSubscribe::GetSchema();
-		case MdUser::TableID: return &MdUser::GetSchema();
-		case MdUserLoginSession::TableID: return &MdUserLoginSession::GetSchema();
-		case PrimaryAccount::TableID: return &PrimaryAccount::GetSchema();
-		case Account::TableID: return &Account::GetSchema();
-		case Capital::TableID: return &Capital::GetSchema();
-		case Position::TableID: return &Position::GetSchema();
-		case PositionDetail::TableID: return &PositionDetail::GetSchema();
-		case Order::TableID: return &Order::GetSchema();
-		case Trade::TableID: return &Trade::GetSchema();
-		case AccountLoginSession::TableID: return &AccountLoginSession::GetSchema();
-		case PrimaryAccountLoginSession::TableID: return &PrimaryAccountLoginSession::GetSchema();
+		case TradingDay::TableId: return &TradingDay::GetSchema();
+		case Exchange::TableId: return &Exchange::GetSchema();
+		case Product::TableId: return &Product::GetSchema();
+		case HotInstrument::TableId: return &HotInstrument::GetSchema();
+		case Instrument::TableId: return &Instrument::GetSchema();
+		case DepthMarketData::TableId: return &DepthMarketData::GetSchema();
+		case BarMarketData::TableId: return &BarMarketData::GetSchema();
+		case MdSubscribe::TableId: return &MdSubscribe::GetSchema();
+		case MdUser::TableId: return &MdUser::GetSchema();
+		case MdUserLoginSession::TableId: return &MdUserLoginSession::GetSchema();
+		case PrimaryAccount::TableId: return &PrimaryAccount::GetSchema();
+		case Account::TableId: return &Account::GetSchema();
+		case Capital::TableId: return &Capital::GetSchema();
+		case Position::TableId: return &Position::GetSchema();
+		case PositionDetail::TableId: return &PositionDetail::GetSchema();
+		case Order::TableId: return &Order::GetSchema();
+		case Trade::TableId: return &Trade::GetSchema();
+		case AccountLoginSession::TableId: return &AccountLoginSession::GetSchema();
+		case PrimaryAccountLoginSession::TableId: return &PrimaryAccountLoginSession::GetSchema();
 		default: return nullptr;
 		}
 	}
-	const TableSchema* MdbTableRegistry::GetSchema(unsigned int tableID) const
+	const TableSchema* MdbTableRegistry::GetSchema(unsigned int tableId) const
 	{
-		for (size_t i = 0; i < tableIDs.size(); ++i)
+		for (size_t i = 0; i < tableIds_.size(); ++i)
 		{
-			if (tableIDs[i] == tableID)
+			if (tableIds_[i] == tableId)
 			{
-				return schemas[i];
+				return schemas_[i];
 			}
 		}
 		return nullptr;
 	}
 	const TableSchema* const* MdbTableRegistry::GetAllSchemas() const
 	{
-		return schemas.data();
+		return schemas_.data();
 	}
 	int MdbTableRegistry::GetTableCount() const
 	{
-		return static_cast<int>(tableIDs.size());
+		return static_cast<int>(tableIds_.size());
 	}
 }

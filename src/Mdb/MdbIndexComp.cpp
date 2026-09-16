@@ -3,21 +3,21 @@
 #include <string.h>
 
 
-namespace mdb
+namespace QuantTrading
 {
 	bool HotInstrumentEqualForTradingDayIndex::operator()(const HotInstrument* const left, const HotInstrument* const right) const
 	{
-		return strcmp(left->ExchangeID, right->ExchangeID) == 0&& strcmp(left->ProductID, right->ProductID) == 0&& left->Rank == right->Rank && strcmp(left->TradingDay, right->TradingDay) == 0;
+		return strcmp(left->ExchangeId, right->ExchangeId) == 0&& strcmp(left->ProductId, right->ProductId) == 0&& left->Rank == right->Rank && strcmp(left->TradingDay, right->TradingDay) == 0;
 	}
 	bool HotInstrumentLessForTradingDayIndex::operator()(const HotInstrument* const left, const HotInstrument* const right) const
 	{
-		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+		if (strcmp(left->ExchangeId, right->ExchangeId) < 0)
 			return true;
-		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+		else if (strcmp(left->ExchangeId, right->ExchangeId) > 0)
 			return false;
-		if (strcmp(left->ProductID, right->ProductID) < 0)
+		if (strcmp(left->ProductId, right->ProductId) < 0)
 			return true;
-		else if (strcmp(left->ProductID, right->ProductID) > 0)
+		else if (strcmp(left->ProductId, right->ProductId) > 0)
 			return false;
 		if (left->Rank < right->Rank)
 			return true;
@@ -30,54 +30,54 @@ namespace mdb
 		return false;
 	}
 	
-	bool InstrumentEqualForExchangeIDIndex::operator()(const Instrument* const left, const Instrument* const right) const
+	bool InstrumentEqualForExchangeIdIndex::operator()(const Instrument* const left, const Instrument* const right) const
 	{
-		return strcmp(left->ExchangeID, right->ExchangeID) == 0;
+		return strcmp(left->ExchangeId, right->ExchangeId) == 0;
 	}
-	bool InstrumentLessForExchangeIDIndex::operator()(const Instrument* const left, const Instrument* const right) const
+	bool InstrumentLessForExchangeIdIndex::operator()(const Instrument* const left, const Instrument* const right) const
 	{
-		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+		if (strcmp(left->ExchangeId, right->ExchangeId) < 0)
 			return true;
-		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+		else if (strcmp(left->ExchangeId, right->ExchangeId) > 0)
 			return false;
 		return false;
 	}
 	
-	bool MdUserLoginSessionEqualForSessionIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	bool MdUserLoginSessionEqualForSessionIdIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
 	{
-		return left->SessionID == right->SessionID ;
+		return left->SessionId == right->SessionId ;
 	}
-	bool MdUserLoginSessionLessForSessionIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	bool MdUserLoginSessionLessForSessionIdIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
 	{
-		if (left->SessionID < right->SessionID)
+		if (left->SessionId < right->SessionId)
 			return true;
-		else if (left->SessionID > right->SessionID)
+		else if (left->SessionId > right->SessionId)
 			return false;
 		return false;
 	}
 	
-	bool MdUserLoginSessionEqualForMdUserIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	bool MdUserLoginSessionEqualForMdUserIdIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
 	{
-		return strcmp(left->MdUserID, right->MdUserID) == 0;
+		return strcmp(left->MdUserId, right->MdUserId) == 0;
 	}
-	bool MdUserLoginSessionLessForMdUserIDIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
+	bool MdUserLoginSessionLessForMdUserIdIndex::operator()(const MdUserLoginSession* const left, const MdUserLoginSession* const right) const
 	{
-		if (strcmp(left->MdUserID, right->MdUserID) < 0)
+		if (strcmp(left->MdUserId, right->MdUserId) < 0)
 			return true;
-		else if (strcmp(left->MdUserID, right->MdUserID) > 0)
+		else if (strcmp(left->MdUserId, right->MdUserId) > 0)
 			return false;
 		return false;
 	}
 	
-	bool PrimaryAccountEqualForOfferIDIndex::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
+	bool PrimaryAccountEqualForOfferIdIndex::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
 	{
-		return left->OfferID == right->OfferID ;
+		return left->OfferId == right->OfferId ;
 	}
-	bool PrimaryAccountLessForOfferIDIndex::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
+	bool PrimaryAccountLessForOfferIdIndex::operator()(const PrimaryAccount* const left, const PrimaryAccount* const right) const
 	{
-		if (left->OfferID < right->OfferID)
+		if (left->OfferId < right->OfferId)
 			return true;
-		else if (left->OfferID > right->OfferID)
+		else if (left->OfferId > right->OfferId)
 			return false;
 		return false;
 	}
@@ -97,7 +97,7 @@ namespace mdb
 	
 	bool PositionEqualForAccountIndex::operator()(const Position* const left, const Position* const right) const
 	{
-		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountID, right->AccountID) == 0;
+		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountId, right->AccountId) == 0;
 	}
 	bool PositionLessForAccountIndex::operator()(const Position* const left, const Position* const right) const
 	{
@@ -105,9 +105,9 @@ namespace mdb
 			return true;
 		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
 			return false;
-		if (strcmp(left->AccountID, right->AccountID) < 0)
+		if (strcmp(left->AccountId, right->AccountId) < 0)
 			return true;
-		else if (strcmp(left->AccountID, right->AccountID) > 0)
+		else if (strcmp(left->AccountId, right->AccountId) > 0)
 			return false;
 		return false;
 	}
@@ -127,7 +127,7 @@ namespace mdb
 	
 	bool PositionDetailEqualForTradeMatchIndex::operator()(const PositionDetail* const left, const PositionDetail* const right) const
 	{
-		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountID, right->AccountID) == 0&& strcmp(left->ExchangeID, right->ExchangeID) == 0&& strcmp(left->InstrumentID, right->InstrumentID) == 0&& left->PosiDirection == right->PosiDirection ;
+		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountId, right->AccountId) == 0&& strcmp(left->ExchangeId, right->ExchangeId) == 0&& strcmp(left->InstrumentId, right->InstrumentId) == 0&& left->PosiDirection == right->PosiDirection ;
 	}
 	bool PositionDetailLessForTradeMatchIndex::operator()(const PositionDetail* const left, const PositionDetail* const right) const
 	{
@@ -135,17 +135,17 @@ namespace mdb
 			return true;
 		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
 			return false;
-		if (strcmp(left->AccountID, right->AccountID) < 0)
+		if (strcmp(left->AccountId, right->AccountId) < 0)
 			return true;
-		else if (strcmp(left->AccountID, right->AccountID) > 0)
+		else if (strcmp(left->AccountId, right->AccountId) > 0)
 			return false;
-		if (strcmp(left->ExchangeID, right->ExchangeID) < 0)
+		if (strcmp(left->ExchangeId, right->ExchangeId) < 0)
 			return true;
-		else if (strcmp(left->ExchangeID, right->ExchangeID) > 0)
+		else if (strcmp(left->ExchangeId, right->ExchangeId) > 0)
 			return false;
-		if (strcmp(left->InstrumentID, right->InstrumentID) < 0)
+		if (strcmp(left->InstrumentId, right->InstrumentId) < 0)
 			return true;
-		else if (strcmp(left->InstrumentID, right->InstrumentID) > 0)
+		else if (strcmp(left->InstrumentId, right->InstrumentId) > 0)
 			return false;
 		if (left->PosiDirection < right->PosiDirection)
 			return true;
@@ -167,88 +167,88 @@ namespace mdb
 		return false;
 	}
 	
-	bool OrderEqualForAccountIDIndex::operator()(const Order* const left, const Order* const right) const
+	bool OrderEqualForAccountIdIndex::operator()(const Order* const left, const Order* const right) const
 	{
-		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountID, right->AccountID) == 0;
+		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountId, right->AccountId) == 0;
 	}
-	bool OrderLessForAccountIDIndex::operator()(const Order* const left, const Order* const right) const
+	bool OrderLessForAccountIdIndex::operator()(const Order* const left, const Order* const right) const
 	{
 		if (strcmp(left->TradingDay, right->TradingDay) < 0)
 			return true;
 		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
 			return false;
-		if (strcmp(left->AccountID, right->AccountID) < 0)
+		if (strcmp(left->AccountId, right->AccountId) < 0)
 			return true;
-		else if (strcmp(left->AccountID, right->AccountID) > 0)
+		else if (strcmp(left->AccountId, right->AccountId) > 0)
 			return false;
 		return false;
 	}
 	
-	bool TradeEqualForAccountIDIndex::operator()(const Trade* const left, const Trade* const right) const
+	bool TradeEqualForAccountIdIndex::operator()(const Trade* const left, const Trade* const right) const
 	{
-		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountID, right->AccountID) == 0;
+		return strcmp(left->TradingDay, right->TradingDay) == 0&& strcmp(left->AccountId, right->AccountId) == 0;
 	}
-	bool TradeLessForAccountIDIndex::operator()(const Trade* const left, const Trade* const right) const
+	bool TradeLessForAccountIdIndex::operator()(const Trade* const left, const Trade* const right) const
 	{
 		if (strcmp(left->TradingDay, right->TradingDay) < 0)
 			return true;
 		else if (strcmp(left->TradingDay, right->TradingDay) > 0)
 			return false;
-		if (strcmp(left->AccountID, right->AccountID) < 0)
+		if (strcmp(left->AccountId, right->AccountId) < 0)
 			return true;
-		else if (strcmp(left->AccountID, right->AccountID) > 0)
+		else if (strcmp(left->AccountId, right->AccountId) > 0)
 			return false;
 		return false;
 	}
 	
-	bool AccountLoginSessionEqualForSessionIDIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
+	bool AccountLoginSessionEqualForSessionIdIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
 	{
-		return left->SessionID == right->SessionID ;
+		return left->SessionId == right->SessionId ;
 	}
-	bool AccountLoginSessionLessForSessionIDIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
+	bool AccountLoginSessionLessForSessionIdIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
 	{
-		if (left->SessionID < right->SessionID)
+		if (left->SessionId < right->SessionId)
 			return true;
-		else if (left->SessionID > right->SessionID)
+		else if (left->SessionId > right->SessionId)
 			return false;
 		return false;
 	}
 	
-	bool AccountLoginSessionEqualForAccountIDIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
+	bool AccountLoginSessionEqualForAccountIdIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
 	{
-		return strcmp(left->AccountID, right->AccountID) == 0;
+		return strcmp(left->AccountId, right->AccountId) == 0;
 	}
-	bool AccountLoginSessionLessForAccountIDIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
+	bool AccountLoginSessionLessForAccountIdIndex::operator()(const AccountLoginSession* const left, const AccountLoginSession* const right) const
 	{
-		if (strcmp(left->AccountID, right->AccountID) < 0)
+		if (strcmp(left->AccountId, right->AccountId) < 0)
 			return true;
-		else if (strcmp(left->AccountID, right->AccountID) > 0)
+		else if (strcmp(left->AccountId, right->AccountId) > 0)
 			return false;
 		return false;
 	}
 	
-	bool PrimaryAccountLoginSessionEqualForSessionIDIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	bool PrimaryAccountLoginSessionEqualForSessionIdIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
 	{
-		return left->SessionID == right->SessionID ;
+		return left->SessionId == right->SessionId ;
 	}
-	bool PrimaryAccountLoginSessionLessForSessionIDIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	bool PrimaryAccountLoginSessionLessForSessionIdIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
 	{
-		if (left->SessionID < right->SessionID)
+		if (left->SessionId < right->SessionId)
 			return true;
-		else if (left->SessionID > right->SessionID)
+		else if (left->SessionId > right->SessionId)
 			return false;
 		return false;
 	}
 	
-	bool PrimaryAccountLoginSessionEqualForPrimaryAccountIDIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	bool PrimaryAccountLoginSessionEqualForPrimaryAccountIdIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
 	{
-		return strcmp(left->PrimaryAccountID, right->PrimaryAccountID) == 0;
+		return strcmp(left->PrimaryAccountId, right->PrimaryAccountId) == 0;
 	}
-	bool PrimaryAccountLoginSessionLessForPrimaryAccountIDIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
+	bool PrimaryAccountLoginSessionLessForPrimaryAccountIdIndex::operator()(const PrimaryAccountLoginSession* const left, const PrimaryAccountLoginSession* const right) const
 	{
-		if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) < 0)
+		if (strcmp(left->PrimaryAccountId, right->PrimaryAccountId) < 0)
 			return true;
-		else if (strcmp(left->PrimaryAccountID, right->PrimaryAccountID) > 0)
+		else if (strcmp(left->PrimaryAccountId, right->PrimaryAccountId) > 0)
 			return false;
 		return false;
 	}

@@ -3,18 +3,18 @@
 #include "TableList.h"
 #include "MdbStructs.h"
 
-using namespace mdb;
-namespace quanttrading::mdoffer
+using namespace QuantTrading;
+namespace QuantTrading::MdOffer
 {
-	inline const unsigned int kmdofferTableIDs[] =
+	inline const unsigned int MdOfferTableIds[] =
 	{
-		Exchange::TableID,
-		Instrument::TableID,
-		DepthMarketData::TableID,
-		BarMarketData::TableID,
-		MdSubscribe::TableID,
-		MdUser::TableID,
-		MdUserLoginSession::TableID,
+		Exchange::TableId,
+		Instrument::TableId,
+		DepthMarketData::TableId,
+		BarMarketData::TableId,
+		MdSubscribe::TableId,
+		MdUser::TableId,
+		MdUserLoginSession::TableId,
 	};
-	inline const TableList mdofferTableList = { "mdoffer", kmdofferTableIDs, static_cast<int>(sizeof(kmdofferTableIDs) / sizeof(kmdofferTableIDs[0])) };
+	inline const TableList MdOfferTableList = { "MdOffer", MdOfferTableIds, static_cast<int>(sizeof(MdOfferTableIds) / sizeof(MdOfferTableIds[0])) };
 }

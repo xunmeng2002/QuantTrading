@@ -2,16 +2,16 @@
 #pragma once
 #include "MdbStructs.h"
 #include "MdbTableBase.h"
-#include <DBAdapters/DBInterface/MdbSubscriber.h>
+#include <DbAdapters/DbInterface/MdbSubscriber.h>
 #include "MdbPrimaryKeys.h"
 #include "MdbIndexes.h"
 #include <shared_mutex>
 #include <atomic>
 #include <vector>
 
-using dbadapters::MdbSubscriber;
+using DbAdapters::MdbSubscriber;
 
-namespace mdb
+namespace QuantTrading
 {
 	class TradingDayTable : public MdbTableBase
 	{
@@ -22,9 +22,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(TradingDay* record);
-		void BatchInsert(std::vector<mdb::TradingDay*>* records);
+		void BatchInsert(std::vector<TradingDay*>* records);
 		void Erase(TradingDay* record);
 		bool Update(TradingDay* const oldRecord, TradingDay* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -36,9 +36,10 @@ namespace mdb
 		void EraseIndex(TradingDay* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		TradingDayPrimaryKey* primaryKey;
+		std::shared_mutex SharedMutex;
+		TradingDayPrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class ExchangeTable : public MdbTableBase
@@ -50,9 +51,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(Exchange* record);
-		void BatchInsert(std::vector<mdb::Exchange*>* records);
+		void BatchInsert(std::vector<Exchange*>* records);
 		void Erase(Exchange* record);
 		bool Update(Exchange* const oldRecord, Exchange* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -64,9 +65,10 @@ namespace mdb
 		void EraseIndex(Exchange* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		ExchangePrimaryKey* primaryKey;
+		std::shared_mutex SharedMutex;
+		ExchangePrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class ProductTable : public MdbTableBase
@@ -78,9 +80,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(Product* record);
-		void BatchInsert(std::vector<mdb::Product*>* records);
+		void BatchInsert(std::vector<Product*>* records);
 		void Erase(Product* record);
 		bool Update(Product* const oldRecord, Product* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -92,9 +94,10 @@ namespace mdb
 		void EraseIndex(Product* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		ProductPrimaryKey* primaryKey;
+		std::shared_mutex SharedMutex;
+		ProductPrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class HotInstrumentTable : public MdbTableBase
@@ -106,11 +109,11 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(HotInstrument* record);
-		void BatchInsert(std::vector<mdb::HotInstrument*>* records);
+		void BatchInsert(std::vector<HotInstrument*>* records);
 		void Erase(HotInstrument* record);
-		int EraseByTradingDayIndex(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay);
+		int EraseByTradingDayIndex(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay);
 		bool Update(HotInstrument* const oldRecord, HotInstrument* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();
@@ -121,10 +124,11 @@ namespace mdb
 		void EraseIndex(HotInstrument* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		HotInstrumentPrimaryKey* primaryKey;
-		HotInstrumentIndexTradingDay* tradingDayIndex;
+		std::shared_mutex SharedMutex;
+		HotInstrumentPrimaryKey* PrimaryKey;
+		HotInstrumentIndexTradingDay* TradingDayIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class InstrumentTable : public MdbTableBase
@@ -136,11 +140,11 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(Instrument* record);
-		void BatchInsert(std::vector<mdb::Instrument*>* records);
+		void BatchInsert(std::vector<Instrument*>* records);
 		void Erase(Instrument* record);
-		int EraseByExchangeIDIndex(const ExchangeIDType& ExchangeID);
+		int EraseByExchangeIdIndex(const ExchangeIdType& ExchangeId);
 		bool Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();
@@ -151,10 +155,11 @@ namespace mdb
 		void EraseIndex(Instrument* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		InstrumentPrimaryKey* primaryKey;
-		InstrumentIndexExchangeID* exchangeIDIndex;
+		std::shared_mutex SharedMutex;
+		InstrumentPrimaryKey* PrimaryKey;
+		InstrumentIndexExchangeId* ExchangeIdIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class DepthMarketDataTable : public MdbTableBase
@@ -166,9 +171,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(DepthMarketData* record);
-		void BatchInsert(std::vector<mdb::DepthMarketData*>* records);
+		void BatchInsert(std::vector<DepthMarketData*>* records);
 		void Erase(DepthMarketData* record);
 		bool Update(DepthMarketData* const oldRecord, DepthMarketData* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -180,9 +185,10 @@ namespace mdb
 		void EraseIndex(DepthMarketData* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		DepthMarketDataPrimaryKey* primaryKey;
+		std::shared_mutex SharedMutex;
+		DepthMarketDataPrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class BarMarketDataTable : public MdbTableBase
@@ -194,9 +200,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(BarMarketData* record);
-		void BatchInsert(std::vector<mdb::BarMarketData*>* records);
+		void BatchInsert(std::vector<BarMarketData*>* records);
 		void Erase(BarMarketData* record);
 		bool Update(BarMarketData* const oldRecord, BarMarketData* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -208,9 +214,10 @@ namespace mdb
 		void EraseIndex(BarMarketData* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		BarMarketDataPrimaryKey* primaryKey;
+		std::shared_mutex SharedMutex;
+		BarMarketDataPrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class MdSubscribeTable : public MdbTableBase
@@ -222,9 +229,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(MdSubscribe* record);
-		void BatchInsert(std::vector<mdb::MdSubscribe*>* records);
+		void BatchInsert(std::vector<MdSubscribe*>* records);
 		void Erase(MdSubscribe* record);
 		bool Update(MdSubscribe* const oldRecord, MdSubscribe* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -236,9 +243,10 @@ namespace mdb
 		void EraseIndex(MdSubscribe* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		MdSubscribePrimaryKey* primaryKey;
+		std::shared_mutex SharedMutex;
+		MdSubscribePrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class MdUserTable : public MdbTableBase
@@ -250,9 +258,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(MdUser* record);
-		void BatchInsert(std::vector<mdb::MdUser*>* records);
+		void BatchInsert(std::vector<MdUser*>* records);
 		void Erase(MdUser* record);
 		bool Update(MdUser* const oldRecord, MdUser* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -264,9 +272,10 @@ namespace mdb
 		void EraseIndex(MdUser* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		MdUserPrimaryKey* primaryKey;
+		std::shared_mutex SharedMutex;
+		MdUserPrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class MdUserLoginSessionTable : public MdbTableBase
@@ -278,12 +287,12 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(MdUserLoginSession* record);
-		void BatchInsert(std::vector<mdb::MdUserLoginSession*>* records);
+		void BatchInsert(std::vector<MdUserLoginSession*>* records);
 		void Erase(MdUserLoginSession* record);
-		int EraseBySessionIDIndex(const SessionIDType& SessionID);
-		int EraseByMdUserIDIndex(const UserIDType& MdUserID);
+		int EraseBySessionIdIndex(const SessionIdType& SessionId);
+		int EraseByMdUserIdIndex(const UserIdType& MdUserId);
 		bool Update(MdUserLoginSession* const oldRecord, MdUserLoginSession* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();
@@ -294,11 +303,12 @@ namespace mdb
 		void EraseIndex(MdUserLoginSession* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		MdUserLoginSessionPrimaryKey* primaryKey;
-		MdUserLoginSessionIndexSessionID* sessionIDIndex;
-		MdUserLoginSessionIndexMdUserID* mdUserIDIndex;
+		std::shared_mutex SharedMutex;
+		MdUserLoginSessionPrimaryKey* PrimaryKey;
+		MdUserLoginSessionIndexSessionId* SessionIdIndex;
+		MdUserLoginSessionIndexMdUserId* MdUserIdIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class PrimaryAccountTable : public MdbTableBase
@@ -310,11 +320,11 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(PrimaryAccount* record);
-		void BatchInsert(std::vector<mdb::PrimaryAccount*>* records);
+		void BatchInsert(std::vector<PrimaryAccount*>* records);
 		void Erase(PrimaryAccount* record);
-		int EraseByOfferIDIndex(const OfferIDType& OfferID);
+		int EraseByOfferIdIndex(const OfferIdType& OfferId);
 		bool Update(PrimaryAccount* const oldRecord, PrimaryAccount* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();
@@ -325,10 +335,11 @@ namespace mdb
 		void EraseIndex(PrimaryAccount* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		PrimaryAccountPrimaryKey* primaryKey;
-		PrimaryAccountIndexOfferID* offerIDIndex;
+		std::shared_mutex SharedMutex;
+		PrimaryAccountPrimaryKey* PrimaryKey;
+		PrimaryAccountIndexOfferId* OfferIdIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class AccountTable : public MdbTableBase
@@ -340,9 +351,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(Account* record);
-		void BatchInsert(std::vector<mdb::Account*>* records);
+		void BatchInsert(std::vector<Account*>* records);
 		void Erase(Account* record);
 		bool Update(Account* const oldRecord, Account* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -354,9 +365,10 @@ namespace mdb
 		void EraseIndex(Account* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		AccountPrimaryKey* primaryKey;
+		std::shared_mutex SharedMutex;
+		AccountPrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class CapitalTable : public MdbTableBase
@@ -368,9 +380,9 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(Capital* record);
-		void BatchInsert(std::vector<mdb::Capital*>* records);
+		void BatchInsert(std::vector<Capital*>* records);
 		void Erase(Capital* record);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
 		bool Update(Capital* const oldRecord, Capital* const newRecord, bool updateDB = true);
@@ -383,10 +395,11 @@ namespace mdb
 		void EraseIndex(Capital* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		CapitalPrimaryKey* primaryKey;
-		CapitalIndexTradingDay* tradingDayIndex;
+		std::shared_mutex SharedMutex;
+		CapitalPrimaryKey* PrimaryKey;
+		CapitalIndexTradingDay* TradingDayIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class PositionTable : public MdbTableBase
@@ -398,11 +411,11 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(Position* record);
-		void BatchInsert(std::vector<mdb::Position*>* records);
+		void BatchInsert(std::vector<Position*>* records);
 		void Erase(Position* record);
-		int EraseByAccountIndex(const DateType& TradingDay, const AccountIDType& AccountID);
+		int EraseByAccountIndex(const DateType& TradingDay, const AccountIdType& AccountId);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
 		bool Update(Position* const oldRecord, Position* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -414,11 +427,12 @@ namespace mdb
 		void EraseIndex(Position* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		PositionPrimaryKey* primaryKey;
-		PositionIndexAccount* accountIndex;
-		PositionIndexTradingDay* tradingDayIndex;
+		std::shared_mutex SharedMutex;
+		PositionPrimaryKey* PrimaryKey;
+		PositionIndexAccount* AccountIndex;
+		PositionIndexTradingDay* TradingDayIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class PositionDetailTable : public MdbTableBase
@@ -430,11 +444,11 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(PositionDetail* record);
-		void BatchInsert(std::vector<mdb::PositionDetail*>* records);
+		void BatchInsert(std::vector<PositionDetail*>* records);
 		void Erase(PositionDetail* record);
-		int EraseByTradeMatchIndex(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection);
+		int EraseByTradeMatchIndex(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
 		bool Update(PositionDetail* const oldRecord, PositionDetail* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -446,11 +460,12 @@ namespace mdb
 		void EraseIndex(PositionDetail* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		PositionDetailPrimaryKey* primaryKey;
-		PositionDetailIndexTradeMatch* tradeMatchIndex;
-		PositionDetailIndexTradingDay* tradingDayIndex;
+		std::shared_mutex SharedMutex;
+		PositionDetailPrimaryKey* PrimaryKey;
+		PositionDetailIndexTradeMatch* TradeMatchIndex;
+		PositionDetailIndexTradingDay* TradingDayIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class OrderTable : public MdbTableBase
@@ -462,11 +477,11 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(Order* record);
-		void BatchInsert(std::vector<mdb::Order*>* records);
+		void BatchInsert(std::vector<Order*>* records);
 		void Erase(Order* record);
-		int EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID);
+		int EraseByAccountIdIndex(const DateType& TradingDay, const AccountIdType& AccountId);
 		bool Update(Order* const oldRecord, Order* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();
@@ -477,11 +492,12 @@ namespace mdb
 		void EraseIndex(Order* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		OrderPrimaryKey* primaryKey;
-		OrderUniqueKeyClientOrderID* clientOrderIDUniqueKey;
-		OrderIndexAccountID* accountIDIndex;
+		std::shared_mutex SharedMutex;
+		OrderPrimaryKey* PrimaryKey;
+		OrderUniqueKeyClientOrderId* ClientOrderIdUniqueKey;
+		OrderIndexAccountId* AccountIdIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class TradeTable : public MdbTableBase
@@ -493,11 +509,11 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(Trade* record);
-		void BatchInsert(std::vector<mdb::Trade*>* records);
+		void BatchInsert(std::vector<Trade*>* records);
 		void Erase(Trade* record);
-		int EraseByAccountIDIndex(const DateType& TradingDay, const AccountIDType& AccountID);
+		int EraseByAccountIdIndex(const DateType& TradingDay, const AccountIdType& AccountId);
 		bool Update(Trade* const oldRecord, Trade* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();
@@ -508,10 +524,11 @@ namespace mdb
 		void EraseIndex(Trade* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		TradePrimaryKey* primaryKey;
-		TradeIndexAccountID* accountIDIndex;
+		std::shared_mutex SharedMutex;
+		TradePrimaryKey* PrimaryKey;
+		TradeIndexAccountId* AccountIdIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class AccountLoginSessionTable : public MdbTableBase
@@ -523,12 +540,12 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(AccountLoginSession* record);
-		void BatchInsert(std::vector<mdb::AccountLoginSession*>* records);
+		void BatchInsert(std::vector<AccountLoginSession*>* records);
 		void Erase(AccountLoginSession* record);
-		int EraseBySessionIDIndex(const SessionIDType& SessionID);
-		int EraseByAccountIDIndex(const AccountIDType& AccountID);
+		int EraseBySessionIdIndex(const SessionIdType& SessionId);
+		int EraseByAccountIdIndex(const AccountIdType& AccountId);
 		bool Update(AccountLoginSession* const oldRecord, AccountLoginSession* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();
@@ -539,11 +556,12 @@ namespace mdb
 		void EraseIndex(AccountLoginSession* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		AccountLoginSessionPrimaryKey* primaryKey;
-		AccountLoginSessionIndexSessionID* sessionIDIndex;
-		AccountLoginSessionIndexAccountID* accountIDIndex;
+		std::shared_mutex SharedMutex;
+		AccountLoginSessionPrimaryKey* PrimaryKey;
+		AccountLoginSessionIndexSessionId* SessionIdIndex;
+		AccountLoginSessionIndexAccountId* AccountIdIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 	class PrimaryAccountLoginSessionTable : public MdbTableBase
@@ -555,12 +573,12 @@ namespace mdb
 		virtual void UnSubscribe() override;
 		void LockShared();
 		void UnlockShared();
-		virtual void InitDB() override;
+		virtual void InitDb() override;
 		bool Insert(PrimaryAccountLoginSession* record);
-		void BatchInsert(std::vector<mdb::PrimaryAccountLoginSession*>* records);
+		void BatchInsert(std::vector<PrimaryAccountLoginSession*>* records);
 		void Erase(PrimaryAccountLoginSession* record);
-		int EraseBySessionIDIndex(const SessionIDType& SessionID);
-		int EraseByPrimaryAccountIDIndex(const AccountIDType& PrimaryAccountID);
+		int EraseBySessionIdIndex(const SessionIdType& SessionId);
+		int EraseByPrimaryAccountIdIndex(const AccountIdType& PrimaryAccountId);
 		bool Update(PrimaryAccountLoginSession* const oldRecord, PrimaryAccountLoginSession* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
 		void TruncateTable();
@@ -571,11 +589,12 @@ namespace mdb
 		void EraseIndex(PrimaryAccountLoginSession* record);
 
 	public:
-		MdbSubscriber* mdbSubscriber;
-		std::shared_mutex sharedMutex;
-		PrimaryAccountLoginSessionPrimaryKey* primaryKey;
-		PrimaryAccountLoginSessionIndexSessionID* sessionIDIndex;
-		PrimaryAccountLoginSessionIndexPrimaryAccountID* primaryAccountIDIndex;
+		std::shared_mutex SharedMutex;
+		PrimaryAccountLoginSessionPrimaryKey* PrimaryKey;
+		PrimaryAccountLoginSessionIndexSessionId* SessionIdIndex;
+		PrimaryAccountLoginSessionIndexPrimaryAccountId* PrimaryAccountIdIndex;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
 	};
 
 }

@@ -1,18 +1,18 @@
 ﻿// 本文件由 ../Templates/Cpp/Mdb/MdbStructs.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
-#include <DBAdapters/DBInterface/Schema.h>
+#include <DBAdapters/DbInterface/Schema.h>
 #include <Spark/Types.h>
 
-using dbadapters::TableSchema;
+using DbAdapters::TableSchema;
 
-namespace mdb
+namespace QuantTrading
 {
-	class TradingDay
+	struct TradingDay
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0001;
+		static constexpr unsigned int TableId = 0x0001;
 		//主键
-		Int32Type PK;
+		Int32Type Pk;
 		//当前交易日
 		DateType CurrTradingDay;
 		//昨交易日
@@ -24,12 +24,12 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class Exchange
+	struct Exchange
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0002;
+		static constexpr unsigned int TableId = 0x0002;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//交易所名称
 		ExchangeNameType ExchangeName;
 		
@@ -39,14 +39,14 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class Product
+	struct Product
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0003;
+		static constexpr unsigned int TableId = 0x0003;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//品种代码
-		ProductIDType ProductID;
+		ProductIdType ProductId;
 		//品种名称
 		ProductNameType ProductName;
 		//品种类型
@@ -72,18 +72,18 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class HotInstrument
+	struct HotInstrument
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0004;
+		static constexpr unsigned int TableId = 0x0004;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//品种代码
-		ProductIDType ProductID;
+		ProductIdType ProductId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//品种类型
 		ProductClassType ProductClass;
 		//委托数量
@@ -107,20 +107,20 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class Instrument
+	struct Instrument
 	{
 	public:
-		static constexpr unsigned int TableID = 0x0005;
+		static constexpr unsigned int TableId = 0x0005;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//交易所合约代码
-		InstrumentIDType ExchangeInstID;
+		InstrumentIdType ExchangeInstId;
 		//合约名称
 		InstrumentNameType InstrumentName;
 		//品种代码
-		ProductIDType ProductID;
+		ProductIdType ProductId;
 		//品种类型
 		ProductClassType ProductClass;
 		//合约类别
@@ -148,16 +148,16 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class DepthMarketData
+	struct DepthMarketData
 	{
 	public:
-		static constexpr unsigned int TableID = 0x2001;
+		static constexpr unsigned int TableId = 0x2001;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//更新时间戳
 		Int64Type UpdateTs;
 		//最新价
@@ -281,16 +281,16 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class BarMarketData
+	struct BarMarketData
 	{
 	public:
-		static constexpr unsigned int TableID = 0x2002;
+		static constexpr unsigned int TableId = 0x2002;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//Bar精度
 		BarPrecesType BarPreces;
 		//Bar周期
@@ -332,18 +332,18 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class MdSubscribe
+	struct MdSubscribe
 	{
 	public:
-		static constexpr unsigned int TableID = 0x2003;
+		static constexpr unsigned int TableId = 0x2003;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//真实合约代码
-		InstrumentIDType RealInstrumentID;
+		InstrumentIdType RealInstrumentId;
 		//品种代码
-		ProductIDType ProductID;
+		ProductIdType ProductId;
 		//品种类型
 		ProductClassType ProductClass;
 		//开始交易日
@@ -357,12 +357,12 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class MdUser
+	struct MdUser
 	{
 	public:
-		static constexpr unsigned int TableID = 0x2004;
+		static constexpr unsigned int TableId = 0x2004;
 		//行情用户代码
-		UserIDType MdUserID;
+		UserIdType MdUserId;
 		//行情用户名称
 		UserNameType MdUserName;
 		//密码
@@ -374,16 +374,16 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class MdUserLoginSession
+	struct MdUserLoginSession
 	{
 	public:
-		static constexpr unsigned int TableID = 0x2005;
+		static constexpr unsigned int TableId = 0x2005;
 		//行情用户代码
-		UserIDType MdUserID;
+		UserIdType MdUserId;
 		//会话编号
-		SessionIDType SessionID;
-		//IP地址
-		IPAddressType IPAddress;
+		SessionIdType SessionId;
+		//Ip地址
+		IpAddressType IpAddress;
 		
 		static MdUserLoginSession* Allocate();
 		void Deallocate();
@@ -391,12 +391,12 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class PrimaryAccount
+	struct PrimaryAccount
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3001;
+		static constexpr unsigned int TableId = 0x3001;
 		//主账户代码
-		AccountIDType PrimaryAccountID;
+		AccountIdType PrimaryAccountId;
 		//主账户名称
 		AccountNameType PrimaryAccountName;
 		//账户类别
@@ -404,7 +404,7 @@ namespace mdb
 		//密码
 		PasswordType Password;
 		//报盘代码
-		OfferIDType OfferID;
+		OfferIdType OfferId;
 		//是否允许登陆
 		BoolType IsAllowLogin;
 		//是否模拟账号
@@ -420,12 +420,12 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class Account
+	struct Account
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3002;
+		static constexpr unsigned int TableId = 0x3002;
 		//账户代码
-		AccountIDType AccountID;
+		AccountIdType AccountId;
 		//账户名称
 		AccountNameType AccountName;
 		//账户类型
@@ -435,11 +435,11 @@ namespace mdb
 		//密码
 		PasswordType Password;
 		//交易组代码
-		GroupIDType TradeGroupID;
+		GroupIdType TradeGroupId;
 		//交易组代码
-		GroupIDType RiskGroupID;
+		GroupIdType RiskGroupId;
 		//交易组代码
-		GroupIDType CommissionGroupID;
+		GroupIdType CommissionGroupId;
 		
 		static Account* Allocate();
 		void Deallocate();
@@ -447,14 +447,14 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class Capital
+	struct Capital
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3003;
+		static constexpr unsigned int TableId = 0x3003;
 		//交易日
 		DateType TradingDay;
 		//账户代码
-		AccountIDType AccountID;
+		AccountIdType AccountId;
 		//账户类型
 		AccountTypeType AccountType;
 		//权益
@@ -498,20 +498,20 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class Position
+	struct Position
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3004;
+		static constexpr unsigned int TableId = 0x3004;
 		//交易日
 		DateType TradingDay;
 		//账户代码
-		AccountIDType AccountID;
+		AccountIdType AccountId;
 		//账户类型
 		AccountTypeType AccountType;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//品种类型
 		ProductClassType ProductClass;
 		//持仓方向
@@ -559,20 +559,20 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class PositionDetail
+	struct PositionDetail
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3005;
+		static constexpr unsigned int TableId = 0x3005;
 		//交易日
 		DateType TradingDay;
 		//账户代码
-		AccountIDType AccountID;
+		AccountIdType AccountId;
 		//账户类型
 		AccountTypeType AccountType;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//品种类型
 		ProductClassType ProductClass;
 		//持仓方向
@@ -580,7 +580,7 @@ namespace mdb
 		//开仓日期
 		DateType OpenDate;
 		//成交编号
-		TradeIDType TradeID;
+		TradeIdType TradeId;
 		//委托数量
 		VolumeType Volume;
 		//开盘价
@@ -620,26 +620,26 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class Order
+	struct Order
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3006;
+		static constexpr unsigned int TableId = 0x3006;
 		//交易日
 		DateType TradingDay;
 		//账户代码
-		AccountIDType AccountID;
+		AccountIdType AccountId;
 		//账户类型
 		AccountTypeType AccountType;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//品种类型
 		ProductClassType ProductClass;
 		//委托编号
-		OrderIDType OrderID;
+		OrderIdType OrderId;
 		//系统委托编号
-		OrderSysIDType OrderSysID;
+		OrderSysIdType OrderSysId;
 		//买卖方向
 		DirectionType Direction;
 		//开平标志
@@ -667,19 +667,19 @@ namespace mdb
 		//撤单时间
 		TimeType CancelTime;
 		//会话编号
-		SessionIDType SessionID;
+		SessionIdType SessionId;
 		//客户端委托编号
-		ClientOrderIDType ClientOrderID;
+		ClientOrderIdType ClientOrderId;
 		//客户端请求编号
-		RequestIDType RequestID;
+		RequestIdType RequestId;
 		//报盘代码
-		OfferIDType OfferID;
+		OfferIdType OfferId;
 		//交易组代码
-		GroupIDType TradeGroupID;
+		GroupIdType TradeGroupId;
 		//交易组代码
-		GroupIDType RiskGroupID;
+		GroupIdType RiskGroupId;
 		//交易组代码
-		GroupIDType CommissionGroupID;
+		GroupIdType CommissionGroupId;
 		//冻结资金
 		MoneyType FrozenCash;
 		//冻结保证金
@@ -697,28 +697,28 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class Trade
+	struct Trade
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3007;
+		static constexpr unsigned int TableId = 0x3007;
 		//交易日
 		DateType TradingDay;
 		//账户代码
-		AccountIDType AccountID;
+		AccountIdType AccountId;
 		//账户类型
 		AccountTypeType AccountType;
 		//交易所代码
-		ExchangeIDType ExchangeID;
+		ExchangeIdType ExchangeId;
 		//合约代码
-		InstrumentIDType InstrumentID;
+		InstrumentIdType InstrumentId;
 		//品种类型
 		ProductClassType ProductClass;
 		//委托编号
-		OrderIDType OrderID;
+		OrderIdType OrderId;
 		//系统委托编号
-		OrderSysIDType OrderSysID;
+		OrderSysIdType OrderSysId;
 		//成交编号
-		TradeIDType TradeID;
+		TradeIdType TradeId;
 		//买卖方向
 		DirectionType Direction;
 		//开平标志
@@ -744,16 +744,16 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class AccountLoginSession
+	struct AccountLoginSession
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3008;
+		static constexpr unsigned int TableId = 0x3008;
 		//账户代码
-		AccountIDType AccountID;
+		AccountIdType AccountId;
 		//会话编号
-		SessionIDType SessionID;
-		//IP地址
-		IPAddressType IPAddress;
+		SessionIdType SessionId;
+		//Ip地址
+		IpAddressType IpAddress;
 		
 		static AccountLoginSession* Allocate();
 		void Deallocate();
@@ -761,16 +761,16 @@ namespace mdb
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
-	class PrimaryAccountLoginSession
+	struct PrimaryAccountLoginSession
 	{
 	public:
-		static constexpr unsigned int TableID = 0x3009;
+		static constexpr unsigned int TableId = 0x3009;
 		//主账户代码
-		AccountIDType PrimaryAccountID;
+		AccountIdType PrimaryAccountId;
 		//会话编号
-		SessionIDType SessionID;
-		//IP地址
-		IPAddressType IPAddress;
+		SessionIdType SessionId;
+		//Ip地址
+		IpAddressType IpAddress;
 		
 		static PrimaryAccountLoginSession* Allocate();
 		void Deallocate();

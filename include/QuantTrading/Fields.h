@@ -5,109 +5,109 @@
 class RspInfoField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x0001;
-	ErrorIDType ErrorID;		//错误代码
+	static constexpr UInt16Type FieldId = 0x0001;
+	ErrorIdType ErrorId;		//错误代码
 	MessageType ErrorMsg;		//错误信息
 };
 class NotifyConnectField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x0002;
-	SessionIDType SessionID;		//会话编号
-	IPAddressType IPAddress;		//IP地址
+	static constexpr UInt16Type FieldId = 0x0002;
+	SessionIdType SessionId;		//会话编号
+	IpAddressType IpAddress;		//Ip地址
 	Int32Type Port;		//端口
 };
 class NotifyDisConnectField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x0003;
-	SessionIDType SessionID;		//会话编号
-	IPAddressType IPAddress;		//IP地址
+	static constexpr UInt16Type FieldId = 0x0003;
+	SessionIdType SessionId;		//会话编号
+	IpAddressType IpAddress;		//Ip地址
 	Int32Type Port;		//端口
 };
-class NotifyDBConnectField
+class NotifyDbConnectField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x0004;
-	DBNameType DBName;		//数据库名称
+	static constexpr UInt16Type FieldId = 0x0004;
+	DbNameType DbName;		//数据库名称
 };
-class NotifyDBDisConnectField
+class NotifyDbDisConnectField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x0005;
-	DBNameType DBName;		//数据库名称
+	static constexpr UInt16Type FieldId = 0x0005;
+	DbNameType DbName;		//数据库名称
 };
 class ReqMdUserLoginField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1001;
-	UserIDType UserID;		//用户代码
+	static constexpr UInt16Type FieldId = 0x1001;
+	UserIdType UserId;		//用户代码
 	PasswordType Password;		//密码
 };
 class RspMdUserLoginField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1002;
-	UserIDType UserID;		//用户代码
+	static constexpr UInt16Type FieldId = 0x1002;
+	UserIdType UserId;		//用户代码
 	DateType LoginDate;		//登录日期
 	TimeType LoginTime;		//登录时间
-	SessionIDType SessionID;		//会话编号
+	SessionIdType SessionId;		//会话编号
 };
 class ReqMdUserLogoutField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1003;
-	UserIDType UserID;		//用户代码
+	static constexpr UInt16Type FieldId = 0x1003;
+	UserIdType UserId;		//用户代码
 };
 class RspMdUserLogoutField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1004;
-	UserIDType UserID;		//用户代码
+	static constexpr UInt16Type FieldId = 0x1004;
+	UserIdType UserId;		//用户代码
 };
 class ReqSubMarketDataField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1005;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	static constexpr UInt16Type FieldId = 0x1005;
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 	BarPrecesType BarPreces;		//Bar精度
 	Int32Type BarPeriod;		//Bar周期
 };
 class RspSubMarketDataField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1006;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	static constexpr UInt16Type FieldId = 0x1006;
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 };
 class ReqUnSubMarketDataField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1007;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	static constexpr UInt16Type FieldId = 0x1007;
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 };
 class RspUnSubMarketDataField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1008;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	static constexpr UInt16Type FieldId = 0x1008;
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 };
 class ReqSubMarketDataFinishedField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x1009;
-	SessionIDType SessionID;		//会话编号
+	static constexpr UInt16Type FieldId = 0x1009;
+	SessionIdType SessionId;		//会话编号
 };
 class DepthMarketDataField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x100A;
+	static constexpr UInt16Type FieldId = 0x100A;
 	DateType TradingDay;		//交易日
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 	Int64Type UpdateTs;		//更新时间戳
 	PriceType LastPrice;		//最新价
 	PriceType PreSettlementPrice;		//昨结算价
@@ -170,10 +170,10 @@ public:
 class BarMarketDataField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x100B;
+	static constexpr UInt16Type FieldId = 0x100B;
 	DateType TradingDay;		//交易日
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 	BarPrecesType BarPreces;		//Bar精度
 	Int32Type BarPeriod;		//Bar周期
 	Int64Type BarTime;		//Bar时间
@@ -195,112 +195,112 @@ public:
 class SessionBeginField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x100C;
+	static constexpr UInt16Type FieldId = 0x100C;
 	DateType TradingDay;		//交易日
 };
 class SessionEndField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x100D;
+	static constexpr UInt16Type FieldId = 0x100D;
 	DateType TradingDay;		//交易日
 };
 class MarketDataEndField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x100E;
+	static constexpr UInt16Type FieldId = 0x100E;
 	DateType TradingDay;		//交易日
 };
 class ReqRegisterAccountField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2001;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2001;
+	AccountIdType AccountId;		//账户代码
 };
 class RspRegisterAccountField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2002;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2002;
+	AccountIdType AccountId;		//账户代码
 };
 class ReqAccountLoginField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2003;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2003;
+	AccountIdType AccountId;		//账户代码
 	PasswordType Password;		//密码
 };
 class RspAccountLoginField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2004;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2004;
+	AccountIdType AccountId;		//账户代码
 	DateType LoginDate;		//登录日期
 	TimeType LoginTime;		//登录时间
-	SessionIDType SessionID;		//会话编号
+	SessionIdType SessionId;		//会话编号
 };
 class ReqAccountLogoutField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2005;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2005;
+	AccountIdType AccountId;		//账户代码
 };
 class RspAccountLogoutField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2006;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2006;
+	AccountIdType AccountId;		//账户代码
 };
 class AccountLogoutField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2007;
-	AccountIDType AccountID;		//账户代码
-	ErrorIDType ErrorID;		//错误代码
+	static constexpr UInt16Type FieldId = 0x2007;
+	AccountIdType AccountId;		//账户代码
+	ErrorIdType ErrorId;		//错误代码
 	MessageType ErrorMsg;		//错误信息
 };
 class ReqQryAccountField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2008;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2008;
+	AccountIdType AccountId;		//账户代码
 };
 class AccountField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2009;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2009;
+	AccountIdType AccountId;		//账户代码
 	AccountTypeType AccountType;		//账户类型
 	AccountStatusType AccountStatus;		//账户状态
-	GroupIDType TradeGroupID;		//交易组代码
-	GroupIDType RiskGroupID;		//交易组代码
-	GroupIDType CommissionGroupID;		//交易组代码
+	GroupIdType TradeGroupId;		//交易组代码
+	GroupIdType RiskGroupId;		//交易组代码
+	GroupIdType CommissionGroupId;		//交易组代码
 };
 class ReqQryHolderAccountField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x200A;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x200A;
+	AccountIdType AccountId;		//账户代码
 };
 class HolderAccountField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x200B;
-	ExchangeIDType ExchangeID;		//交易所代码
-	AccountIDType HolderAccountID;		//股东账户代码
+	static constexpr UInt16Type FieldId = 0x200B;
+	ExchangeIdType ExchangeId;		//交易所代码
+	AccountIdType HolderAccountId;		//股东账户代码
 	BoolType PrimaryFlag;		//主账号标志
 };
 class ReqQryCapitalField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x200C;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x200C;
+	AccountIdType AccountId;		//账户代码
 };
 class CapitalField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x200D;
+	static constexpr UInt16Type FieldId = 0x200D;
 	DateType TradingDay;		//交易日
-	AccountIDType AccountID;		//账户代码
+	AccountIdType AccountId;		//账户代码
 	AccountTypeType AccountType;		//账户类型
 	MoneyType Balance;		//权益
 	MoneyType PreBalance;		//上日权益
@@ -323,18 +323,18 @@ public:
 class ReqQryPositionField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x200E;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x200E;
+	AccountIdType AccountId;		//账户代码
 };
 class PositionField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x200F;
+	static constexpr UInt16Type FieldId = 0x200F;
 	DateType TradingDay;		//交易日
-	AccountIDType AccountID;		//账户代码
+	AccountIdType AccountId;		//账户代码
 	AccountTypeType AccountType;		//账户类型
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 	ProductClassType ProductClass;		//品种类型
 	PosiDirectionType PosiDirection;		//持仓方向
 	VolumeType TotalPosition;		//持仓数量
@@ -356,20 +356,20 @@ public:
 class ReqQryOrderField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2010;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2010;
+	AccountIdType AccountId;		//账户代码
 };
 class OrderField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2011;
+	static constexpr UInt16Type FieldId = 0x2011;
 	DateType TradingDay;		//交易日
-	AccountIDType AccountID;		//账户代码
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	AccountIdType AccountId;		//账户代码
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 	ProductClassType ProductClass;		//品种类型
-	OrderIDType OrderID;		//委托编号
-	OrderSysIDType OrderSysID;		//系统委托编号
+	OrderIdType OrderId;		//委托编号
+	OrderSysIdType OrderSysId;		//系统委托编号
 	DirectionType Direction;		//买卖方向
 	OffsetFlagType OffsetFlag;		//开平标志
 	OrderPriceTypeType OrderPriceType;		//委托价格类型
@@ -383,9 +383,9 @@ public:
 	TimeType OrderTime;		//委托时间
 	DateType CancelDate;		//撤单日期
 	TimeType CancelTime;		//撤单时间
-	SessionIDType SessionID;		//会话编号
-	ClientOrderIDType ClientOrderID;		//客户端委托编号
-	RequestIDType RequestID;		//客户端请求编号
+	SessionIdType SessionId;		//会话编号
+	ClientOrderIdType ClientOrderId;		//客户端委托编号
+	RequestIdType RequestId;		//客户端请求编号
 	MoneyType FrozenCash;		//冻结资金
 	MoneyType FrozenMargin;		//冻结保证金
 	MoneyType FrozenCommission;		//冻结手续费
@@ -393,21 +393,21 @@ public:
 class ReqQryTradeField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2012;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x2012;
+	AccountIdType AccountId;		//账户代码
 };
 class TradeField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2013;
+	static constexpr UInt16Type FieldId = 0x2013;
 	DateType TradingDay;		//交易日
-	AccountIDType AccountID;		//账户代码
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	AccountIdType AccountId;		//账户代码
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 	ProductClassType ProductClass;		//品种类型
-	OrderIDType OrderID;		//委托编号
-	OrderSysIDType OrderSysID;		//系统委托编号
-	TradeIDType TradeID;		//成交编号
+	OrderIdType OrderId;		//委托编号
+	OrderSysIdType OrderSysId;		//系统委托编号
+	TradeIdType TradeId;		//成交编号
 	DirectionType Direction;		//买卖方向
 	OffsetFlagType OffsetFlag;		//开平标志
 	PriceType Price;		//委托价格
@@ -421,19 +421,19 @@ public:
 class ReqQryInstrumentField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2014;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	static constexpr UInt16Type FieldId = 0x2014;
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 };
 class InstrumentField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2015;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
-	InstrumentIDType ExchangeInstID;		//交易所合约代码
+	static constexpr UInt16Type FieldId = 0x2015;
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
+	InstrumentIdType ExchangeInstId;		//交易所合约代码
 	InstrumentNameType InstrumentName;		//合约名称
-	ProductIDType ProductID;		//品种代码
+	ProductIdType ProductId;		//品种代码
 	ProductClassType ProductClass;		//品种类型
 	VolumeMultipleType VolumeMultiple;		//合约乘数
 	PriceType PriceTick;		//最小变动价位
@@ -446,21 +446,21 @@ public:
 class ReqQryOptionInstrumentField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2016;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	static constexpr UInt16Type FieldId = 0x2016;
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 };
 class OptionInstrumentField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2017;
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
-	InstrumentIDType ExchangeInstID;		//交易所合约代码
+	static constexpr UInt16Type FieldId = 0x2017;
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
+	InstrumentIdType ExchangeInstId;		//交易所合约代码
 	InstrumentNameType InstrumentName;		//合约名称
 	VolumeMultipleType VolumeMultiple;		//合约乘数
 	OptionTypeType OptionType;		//期权类型
-	InstrumentIDType UnderlyingInstrumentID;		//标的合约代码
+	InstrumentIdType UnderlyingInstrumentId;		//标的合约代码
 	PriceType ExecutePrice;		//行权价
 	MoneyType UnitMargin;		//单位保证金
 	PriceType PriceTick;		//最小变动价位
@@ -471,17 +471,17 @@ public:
 class ReqQryCommissionRateField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2018;
-	AccountIDType AccountID;		//账户代码
-	ExchangeIDType ExchangeID;		//交易所代码
+	static constexpr UInt16Type FieldId = 0x2018;
+	AccountIdType AccountId;		//账户代码
+	ExchangeIdType ExchangeId;		//交易所代码
 	ProductClassType ProductClass;		//品种类型
 };
 class CommissionRateField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x2019;
-	AccountIDType AccountID;		//账户代码
-	ExchangeIDType ExchangeID;		//交易所代码
+	static constexpr UInt16Type FieldId = 0x2019;
+	AccountIdType AccountId;		//账户代码
+	ExchangeIdType ExchangeId;		//交易所代码
 	ProductClassType ProductClass;		//品种类型
 	RateType OpenBuyByMoney;		//买开仓费率
 	RateType OpenSellByMoney;		//卖开仓费率
@@ -497,48 +497,48 @@ public:
 class ReqQryMoneyTransferField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x201A;
-	AccountIDType AccountID;		//账户代码
+	static constexpr UInt16Type FieldId = 0x201A;
+	AccountIdType AccountId;		//账户代码
 };
 class MoneyTransferField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x201B;
+	static constexpr UInt16Type FieldId = 0x201B;
 	DateType TradingDay;		//交易日
-	AccountIDType AccountID;		//账户代码
-	SequenceNoType MoneyTransferID;		//出入金编号
+	AccountIdType AccountId;		//账户代码
+	SequenceNoType MoneyTransferId;		//出入金编号
 	AccountTypeType AccountType;		//账户类型
 	TransferDirectionType TransferDirection;		//转移方向
 	MoneyType TransferAmount;		//转移金额
 	MessageType InfoMessage;		//备注信息
-	UserIDType UserID;		//用户代码
+	UserIdType UserId;		//用户代码
 	DateType TransferDate;		//操作日期
 	TimeType TransferTime;		//操作时间
 };
 class ReqInsertOrderField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x201C;
-	AccountIDType AccountID;		//账户代码
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
+	static constexpr UInt16Type FieldId = 0x201C;
+	AccountIdType AccountId;		//账户代码
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
 	DirectionType Direction;		//买卖方向
 	OffsetFlagType OffsetFlag;		//开平标志
 	OrderPriceTypeType OrderPriceType;		//委托价格类型
 	PriceType Price;		//委托价格
 	VolumeType Volume;		//委托数量
-	ClientOrderIDType ClientOrderID;		//客户端委托编号
+	ClientOrderIdType ClientOrderId;		//客户端委托编号
 };
 class ReqCancelOrderField
 {
 public:
-	static constexpr UInt16Type FieldID = 0x201D;
-	AccountIDType AccountID;		//账户代码
-	ExchangeIDType ExchangeID;		//交易所代码
-	InstrumentIDType InstrumentID;		//合约代码
-	ClientOrderIDType ClientCancelOrderID;		//客户端撤单委托编号
-	OrderIDType OrderID;		//委托编号
-	OrderSysIDType OrderSysID;		//系统委托编号
-	SessionIDType SessionID;		//会话编号
-	ClientOrderIDType ClientOrderID;		//客户端委托编号
+	static constexpr UInt16Type FieldId = 0x201D;
+	AccountIdType AccountId;		//账户代码
+	ExchangeIdType ExchangeId;		//交易所代码
+	InstrumentIdType InstrumentId;		//合约代码
+	ClientOrderIdType ClientCancelOrderId;		//客户端撤单委托编号
+	OrderIdType OrderId;		//委托编号
+	OrderSysIdType OrderSysId;		//系统委托编号
+	SessionIdType SessionId;		//会话编号
+	ClientOrderIdType ClientOrderId;		//客户端委托编号
 };

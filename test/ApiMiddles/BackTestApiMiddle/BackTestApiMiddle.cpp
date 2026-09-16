@@ -53,8 +53,8 @@ int BackTestApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarke
 	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestID);
 	if (reqSubMarketData != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]",
-			reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID, static_cast<int>(reqSubMarketData->BarPreces), reqSubMarketData->BarPeriod);
+		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s], BarPreces:[%d], BarPeriod:[%d]",
+			reqSubMarketData->ExchangeId, reqSubMarketData->InstrumentId, static_cast<int>(reqSubMarketData->BarPreces), reqSubMarketData->BarPeriod);
 	}
 	else
 	{
@@ -67,8 +67,8 @@ int BackTestApiMiddle::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedFi
 	WriteLog(LogLevel::Info, "ReqSubMarketDataFinished: RequestID:%d", requestID);
 	if (reqSubMarketDataFinished != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSubMarketDataFinishedField:SessionID:[%lld]",
-			reqSubMarketDataFinished->SessionID);
+		WriteLog(LogLevel::Info, "ReqSubMarketDataFinishedField:SessionId:[%lld]",
+			reqSubMarketDataFinished->SessionId);
 	}
 	else
 	{
@@ -81,8 +81,8 @@ int BackTestApiMiddle::ReqRegisterAccount(const ReqRegisterAccountField* reqRegi
 	WriteLog(LogLevel::Info, "ReqRegisterAccount: RequestID:%d", requestID);
 	if (reqRegisterAccount != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqRegisterAccountField:AccountID:[%s]",
-			reqRegisterAccount->AccountID);
+		WriteLog(LogLevel::Info, "ReqRegisterAccountField:AccountId:[%s]",
+			reqRegisterAccount->AccountId);
 	}
 	else
 	{
@@ -95,8 +95,8 @@ int BackTestApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder,
 	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);
 	if (reqInsertOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]",
-			reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, static_cast<int>(reqInsertOrder->Direction), static_cast<int>(reqInsertOrder->OffsetFlag), static_cast<int>(reqInsertOrder->OrderPriceType), reqInsertOrder->Price, reqInsertOrder->Volume, reqInsertOrder->ClientOrderID);
+		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
+			reqInsertOrder->AccountId, reqInsertOrder->ExchangeId, reqInsertOrder->InstrumentId, static_cast<int>(reqInsertOrder->Direction), static_cast<int>(reqInsertOrder->OffsetFlag), static_cast<int>(reqInsertOrder->OrderPriceType), reqInsertOrder->Price, reqInsertOrder->Volume, reqInsertOrder->ClientOrderId);
 	}
 	else
 	{
@@ -109,8 +109,8 @@ int BackTestApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder,
 	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestID);
 	if (reqCancelOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]",
-			reqCancelOrder->AccountID, reqCancelOrder->ExchangeID, reqCancelOrder->InstrumentID, reqCancelOrder->ClientCancelOrderID, reqCancelOrder->OrderID, reqCancelOrder->OrderSysID, reqCancelOrder->SessionID, reqCancelOrder->ClientOrderID);
+		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",
+			reqCancelOrder->AccountId, reqCancelOrder->ExchangeId, reqCancelOrder->InstrumentId, reqCancelOrder->ClientCancelOrderId, reqCancelOrder->OrderId, reqCancelOrder->OrderSysId, reqCancelOrder->SessionId, reqCancelOrder->ClientOrderId);
 	}
 	else
 	{

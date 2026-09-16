@@ -49,12 +49,12 @@ message(STATUS "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 
 if(WIN32)
     find_package(Spark REQUIRED PATHS "../Libs/Spark/x64-windows")
-    find_package(DBAdapters CONFIG REQUIRED PATHS "../Libs/DBAdapters/x64-windows")
+    find_package(DbAdapters CONFIG REQUIRED PATHS "../Libs/DbAdapters/x64-windows")
     find_package(duckdb CONFIG REQUIRED PATHS "../Libs/duckdb/x64-windows")
     find_package(CTP CONFIG REQUIRED PATHS "../Libs/Ctp/x64-windows")
 else()
     find_package(Spark REQUIRED PATHS "../Libs/Spark/x64-linux")
-    find_package(DBAdapters CONFIG REQUIRED PATHS "../Libs/DBAdapters/x64-linux")
+    find_package(DbAdapters CONFIG REQUIRED PATHS "../Libs/DbAdapters/x64-linux")
     find_package(duckdb CONFIG REQUIRED PATHS "../Libs/duckdb/x64-linux")
     find_package(CTP CONFIG REQUIRED PATHS "../Libs/Ctp/x64-linux")
 endif()
@@ -67,7 +67,7 @@ target_link_libraries(QuantTradingCommonStatic PUBLIC QuantTradingInterface Spar
 target_link_libraries(QuantTradingCommonStatic PRIVATE Spark::Serialization)
 
 add_static_md_module(Mdb ${CMAKE_CURRENT_SOURCE_DIR}/src/Mdb ${CMAKE_CURRENT_SOURCE_DIR}/src/Mdb)
-target_link_libraries(MdbStatic PUBLIC QuantTradingInterface Spark::Core DBAdapters::DBInterface)
+target_link_libraries(MdbStatic PUBLIC QuantTradingInterface Spark::Core DbAdapters::DbInterface)
 target_link_libraries(MdbStatic PRIVATE Spark::TemplateLib)
 
 add_static_md_module(Packages ${CMAKE_CURRENT_SOURCE_DIR}/src/Packages ${CMAKE_CURRENT_SOURCE_DIR}/src/Packages)
@@ -140,7 +140,7 @@ target_compile_definitions(SimExchangeGbkApi PRIVATE SimExchangeApi_EXPORTS)
 add_application(MdOffer  ${CMAKE_CURRENT_SOURCE_DIR}/src/MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/src/MdOffer)
 target_link_libraries(MdOffer PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic CtpMdApiMiddleStatic
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
-    DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
+    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper DbAdapters::MysqlWrapper DbAdapters::MariadbWrapper)
 copy_dll_file(MdOffer)
 copy_config_file(MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/MdOffer.json)
 copy_config_file(MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/CtpAccountInfo.json)
@@ -151,7 +151,7 @@ copy_config_file(MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/ServerConfig.json)
 add_application(SimExchange  ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange)
 target_link_libraries(SimExchange PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic SettlementStatic MdApi
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
-    DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
+    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper DbAdapters::MysqlWrapper DbAdapters::MariadbWrapper)
 copy_dll_file(SimExchange)
 copy_config_file(SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchange.json)
 
@@ -159,12 +159,12 @@ copy_config_file(SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchange.jso
 add_shared_module(BackTest  ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
 target_link_libraries(BackTest PRIVATE QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic SettlementStatic BarStatic
     Spark::Core Spark::Serialization
-    DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
+    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper DbAdapters::MysqlWrapper DbAdapters::MariadbWrapper)
 
 add_application(SimExchangeInit  ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchangeInit ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchangeInit)
 target_link_libraries(SimExchangeInit PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic CtpTraderApiMiddleStatic
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
-    DBAdapters::DBInterface DBAdapters::AsyncDBWriter DBAdapters::SqliteWrapper DBAdapters::DuckdbWrapper DBAdapters::MysqlWrapper DBAdapters::MariadbWrapper)
+    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper DbAdapters::MysqlWrapper DbAdapters::MariadbWrapper)
 copy_dll_file(SimExchangeInit)
 copy_config_file(SimExchangeInit ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchangeInit.json)
 

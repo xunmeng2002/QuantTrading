@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fields>
 	<field name="RspInfo" id="0x0001" desc="应答信息">
-		<item name="ErrorID" id="0x1009" type="ErrorID" desc="错误代码"/>
+		<item name="ErrorId" id="0x1009" type="ErrorId" desc="错误代码"/>
 		<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
 	</field>
 	<field name="NotifyConnect" id="0x0002" desc="连接成功通知">
-		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
-		<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
+		<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
+		<item name="IpAddress" id="0x8803" type="IpAddress" desc="Ip地址"/>
 		<item name="Port" id="0x2902" type="Int32" desc="端口"/>
 	</field>
 	<field name="NotifyDisConnect" id="0x0003" desc="断开连接通知">
-		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
-		<item name="IPAddress" id="0x8803" type="IPAddress" desc="IP地址"/>
+		<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
+		<item name="IpAddress" id="0x8803" type="IpAddress" desc="Ip地址"/>
 		<item name="Port" id="0x2902" type="Int32" desc="端口"/>
 	</field>
-	<field name="NotifyDBConnect" id="0x0004" desc="数据库连接成功通知">
-		<item name="DBName" id="0x2004" type="DBName" desc="数据库名称"/>
+	<field name="NotifyDbConnect" id="0x0004" desc="数据库连接成功通知">
+		<item name="DbName" id="0x2004" type="DbName" desc="数据库名称"/>
 	</field>
-	<field name="NotifyDBDisConnect" id="0x0005" desc="数据库断开连接通知">
-		<item name="DBName" id="0x2004" type="DBName" desc="数据库名称"/>
+	<field name="NotifyDbDisConnect" id="0x0005" desc="数据库断开连接通知">
+		<item name="DbName" id="0x2004" type="DbName" desc="数据库名称"/>
 	</field>
 	<field name="ReqMdUserLogin" id="0x1001" desc="行情用户登录请求">
-		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+		<item name="UserId" id="0x1022" type="UserId" desc="用户代码"/>
 		<item name="Password" id="0x2801" type="Password" desc="密码"/>
 	</field>
 	<field name="RspMdUserLogin" id="0x1002" desc="行情用户登录应答">
-		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+		<item name="UserId" id="0x1022" type="UserId" desc="用户代码"/>
 		<item name="LoginDate" id="0x3002" type="Date" desc="登录日期"/>
 		<item name="LoginTime" id="0x3801" type="Time" desc="登录时间"/>
-		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+		<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
 	</field>
 	<field name="ReqMdUserLogout" id="0x1003" desc="行情用户登录请求">
-		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+		<item name="UserId" id="0x1022" type="UserId" desc="用户代码"/>
 	</field>
 	<field name="RspMdUserLogout" id="0x1004" desc="行情用户登录应答">
-		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+		<item name="UserId" id="0x1022" type="UserId" desc="用户代码"/>
 	</field>
 	<field name="ReqSubMarketData" id="0x1005" desc="订阅行情请求">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 		<item name="BarPreces" id="0x901A" type="BarPreces" desc="Bar精度"/>
 		<item name="BarPeriod" id="0x1003" type="Int32" desc="Bar周期"/>
 	</field>
 	<field name="RspSubMarketData" id="0x1006" desc="订阅行情应答">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 	</field>
 	<field name="ReqUnSubMarketData" id="0x1007" desc="退订行情请求">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 	</field>
 	<field name="RspUnSubMarketData" id="0x1008" desc="退订行情应答">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 	</field>
 	<field name="ReqSubMarketDataFinished" id="0x1009" desc="行情完成请求">
-		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+		<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
 	</field>
 	<field name="DepthMarketData" id="0x100A" desc="深度行情">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 		<item name="UpdateTs" id="0x4202" type="Int64" desc="更新时间戳"/>
 		<item name="LastPrice" id="0x6016" type="Price" desc="最新价"/>
 		<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
@@ -122,8 +122,8 @@
 	</field>
 	<field name="BarMarketData" id="0x100B" desc="Bar行情">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 		<item name="BarPreces" id="0x901A" type="BarPreces" desc="Bar精度"/>
 		<item name="BarPeriod" id="0x1003" type="Int32" desc="Bar周期"/>
 		<item name="BarTime" id="0x4201" type="Int64" desc="Bar时间"/>
@@ -152,57 +152,57 @@
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 	</field>
 	<field name="ReqRegisterAccount" id="0x2001" desc="账户注册请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="RspRegisterAccount" id="0x2002" desc="账户注册应答">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="ReqAccountLogin" id="0x2003" desc="账户登录请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 		<item name="Password" id="0x2801" type="Password" desc="密码"/>
 	</field>
 	<field name="RspAccountLogin" id="0x2004" desc="账户登录应答">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 		<item name="LoginDate" id="0x3002" type="Date" desc="登录日期"/>
 		<item name="LoginTime" id="0x3801" type="Time" desc="登录时间"/>
-		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
+		<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
 	</field>
 	<field name="ReqAccountLogout" id="0x2005" desc="账户登出请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="RspAccountLogout" id="0x2006" desc="账户登出应答">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="AccountLogout" id="0x2007" desc="账户登出">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-		<item name="ErrorID" id="0x1009" type="ErrorID" desc="错误代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
+		<item name="ErrorId" id="0x1009" type="ErrorId" desc="错误代码"/>
 		<item name="ErrorMsg" id="0x2401" type="Message" desc="错误信息"/>
 	</field>
 	<field name="ReqQryAccount" id="0x2008" desc="查询账户请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="Account" id="0x2009" desc="账户">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 		<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 		<item name="AccountStatus" id="0x9003" type="AccountStatus" desc="账户状态"/>
-		<item name="TradeGroupID" id="0x1020" type="GroupID" desc="交易组代码"/>
-		<item name="RiskGroupID" id="0x1019" type="GroupID" desc="交易组代码"/>
-		<item name="CommissionGroupID" id="0x1007" type="GroupID" desc="交易组代码"/>
+		<item name="TradeGroupId" id="0x1020" type="GroupId" desc="交易组代码"/>
+		<item name="RiskGroupId" id="0x1019" type="GroupId" desc="交易组代码"/>
+		<item name="CommissionGroupId" id="0x1007" type="GroupId" desc="交易组代码"/>
 	</field>
 	<field name="ReqQryHolderAccount" id="0x200A" desc="查询股东账户请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="HolderAccount" id="0x200B" desc="股东账户">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="HolderAccountID" id="0x100C" type="AccountID" desc="股东账户代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="HolderAccountId" id="0x100C" type="AccountId" desc="股东账户代码"/>
 		<item name="PrimaryFlag" id="0x9014" type="Bool" desc="主账号标志"/>
 	</field>
 	<field name="ReqQryCapital" id="0x200C" desc="查询资金请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="Capital" id="0x200D" desc="资金">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 		<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 		<item name="Balance" id="0x7001" type="Money" desc="权益"/>
 		<item name="PreBalance" id="0x7002" type="Money" desc="上日权益"/>
@@ -223,14 +223,14 @@
 		<item name="Withdraw" id="0x7013" type="Money" desc="出金"/>
 	</field>
 	<field name="ReqQryPosition" id="0x200E" desc="查询持仓请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="Position" id="0x200F" desc="持仓">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 		<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 		<item name="PosiDirection" id="0x9004" type="PosiDirection" desc="持仓方向"/>
 		<item name="TotalPosition" id="0x4019" type="Volume" desc="持仓数量"/>
@@ -250,16 +250,16 @@
 		<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
 	</field>
 	<field name="ReqQryOrder" id="0x2010" desc="查询委托请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="Order" id="0x2011" desc="委托">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
-		<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
-		<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
+		<item name="OrderId" id="0x1012" type="OrderId" desc="委托编号"/>
+		<item name="OrderSysId" id="0x1013" type="OrderSysId" desc="系统委托编号"/>
 		<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
 		<item name="OffsetFlag" id="0x9006" type="OffsetFlag" desc="开平标志"/>
 		<item name="OrderPriceType" id="0x9008" type="OrderPriceType" desc="委托价格类型"/>
@@ -273,25 +273,25 @@
 		<item name="OrderTime" id="0x3802" type="Time" desc="委托时间"/>
 		<item name="CancelDate" id="0x3004" type="Date" desc="撤单日期"/>
 		<item name="CancelTime" id="0x3803" type="Time" desc="撤单时间"/>
-		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
-		<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
-		<item name="RequestID" id="0x1016" type="RequestID" desc="客户端请求编号"/>
+		<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
+		<item name="ClientOrderId" id="0x1006" type="ClientOrderId" desc="客户端委托编号"/>
+		<item name="RequestId" id="0x1016" type="RequestId" desc="客户端请求编号"/>
 		<item name="FrozenCash" id="0x7017" type="Money" desc="冻结资金"/>
 		<item name="FrozenMargin" id="0x7009" type="Money" desc="冻结保证金"/>
 		<item name="FrozenCommission" id="0x700B" type="Money" desc="冻结手续费"/>
 	</field>
 	<field name="ReqQryTrade" id="0x2012" desc="查询成交请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="Trade" id="0x2013" desc="成交">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
-		<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
-		<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
-		<item name="TradeID" id="0x101F" type="TradeID" desc="成交编号"/>
+		<item name="OrderId" id="0x1012" type="OrderId" desc="委托编号"/>
+		<item name="OrderSysId" id="0x1013" type="OrderSysId" desc="系统委托编号"/>
+		<item name="TradeId" id="0x101F" type="TradeId" desc="成交编号"/>
 		<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
 		<item name="OffsetFlag" id="0x9006" type="OffsetFlag" desc="开平标志"/>
 		<item name="Price" id="0x6015" type="Price" desc="委托价格"/>
@@ -303,15 +303,15 @@
 		<item name="TradeTime" id="0x3804" type="Time" desc="成交时间"/>
 	</field>
 	<field name="ReqQryInstrument" id="0x2014" desc="查询合约请求">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 	</field>
 	<field name="Instrument" id="0x2015" desc="合约">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-		<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
+		<item name="ExchangeInstId" id="0x100B" type="InstrumentId" desc="交易所合约代码"/>
 		<item name="InstrumentName" id="0x2006" type="InstrumentName" desc="合约名称"/>
-		<item name="ProductID" id="0x1015" type="ProductID" desc="品种代码"/>
+		<item name="ProductId" id="0x1015" type="ProductId" desc="品种代码"/>
 		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 		<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
 		<item name="PriceTick" id="0x6024" type="Price" desc="最小变动价位"/>
@@ -322,17 +322,17 @@
 		<item name="SessionName" id="0x200E" type="SessionName" desc="交易节名称"/>
 	</field>
 	<field name="ReqQryOptionInstrument" id="0x2016" desc="查询期权合约请求">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 	</field>
 	<field name="OptionInstrument" id="0x2017" desc="期权合约">
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-		<item name="ExchangeInstID" id="0x100B" type="InstrumentID" desc="交易所合约代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
+		<item name="ExchangeInstId" id="0x100B" type="InstrumentId" desc="交易所合约代码"/>
 		<item name="InstrumentName" id="0x2006" type="InstrumentName" desc="合约名称"/>
 		<item name="VolumeMultiple" id="0x8403" type="VolumeMultiple" desc="合约乘数"/>
 		<item name="OptionType" id="0x9015" type="OptionType" desc="期权类型"/>
-		<item name="UnderlyingInstrumentID" id="0x1021" type="InstrumentID" desc="标的合约代码"/>
+		<item name="UnderlyingInstrumentId" id="0x1021" type="InstrumentId" desc="标的合约代码"/>
 		<item name="ExecutePrice" id="0x6023" type="Price" desc="行权价"/>
 		<item name="UnitMargin" id="0x7021" type="Money" desc="单位保证金"/>
 		<item name="PriceTick" id="0x6024" type="Price" desc="最小变动价位"/>
@@ -341,13 +341,13 @@
 		<item name="ExpiringDate" id="0x300D" type="Date" desc="到期日"/>
 	</field>
 	<field name="ReqQryCommissionRate" id="0x2018" desc="查询手续费率请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
 		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 	</field>
 	<field name="CommissionRate" id="0x2019" desc="手续费率">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
 		<item name="ProductClass" id="0x901C" type="ProductClass" desc="品种类型"/>
 		<item name="OpenBuyByMoney" id="0x5006" type="Rate" desc="买开仓费率"/>
 		<item name="OpenSellByMoney" id="0x5007" type="Rate" desc="卖开仓费率"/>
@@ -361,39 +361,39 @@
 		<item name="MaxCommission" id="0x700D" type="Money" desc="最高手续费"/>
 	</field>
 	<field name="ReqQryMoneyTransfer" id="0x201A" desc="出入金查询请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 	</field>
 	<field name="MoneyTransfer" id="0x201B" desc="出入金">
 		<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-		<item name="MoneyTransferID" id="0x1010" type="SequenceNo" desc="出入金编号"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
+		<item name="MoneyTransferId" id="0x1010" type="SequenceNo" desc="出入金编号"/>
 		<item name="AccountType" id="0x9002" type="AccountType" desc="账户类型"/>
 		<item name="TransferDirection" id="0x901B" type="TransferDirection" desc="转移方向"/>
 		<item name="TransferAmount" id="0x7025" type="Money" desc="转移金额"/>
 		<item name="InfoMessage" id="0x2405" type="Message" desc="备注信息"/>
-		<item name="UserID" id="0x1022" type="UserID" desc="用户代码"/>
+		<item name="UserId" id="0x1022" type="UserId" desc="用户代码"/>
 		<item name="TransferDate" id="0x300C" type="Date" desc="操作日期"/>
 		<item name="TransferTime" id="0x3807" type="Time" desc="操作时间"/>
 	</field>
 	<field name="ReqInsertOrder" id="0x201C" desc="委托请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
 		<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
 		<item name="OffsetFlag" id="0x9006" type="OffsetFlag" desc="开平标志"/>
 		<item name="OrderPriceType" id="0x9008" type="OrderPriceType" desc="委托价格类型"/>
 		<item name="Price" id="0x6015" type="Price" desc="委托价格"/>
 		<item name="Volume" id="0x4015" type="Volume" desc="委托数量"/>
-		<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
+		<item name="ClientOrderId" id="0x1006" type="ClientOrderId" desc="客户端委托编号"/>
 	</field>
 	<field name="ReqCancelOrder" id="0x201D" desc="撤单请求">
-		<item name="AccountID" id="0x1001" type="AccountID" desc="账户代码"/>
-		<item name="ExchangeID" id="0x100A" type="ExchangeID" desc="交易所代码"/>
-		<item name="InstrumentID" id="0x100D" type="InstrumentID" desc="合约代码"/>
-		<item name="ClientCancelOrderID" id="0x1005" type="ClientOrderID" desc="客户端撤单委托编号"/>
-		<item name="OrderID" id="0x1012" type="OrderID" desc="委托编号"/>
-		<item name="OrderSysID" id="0x1013" type="OrderSysID" desc="系统委托编号"/>
-		<item name="SessionID" id="0x101E" type="SessionID" desc="会话编号"/>
-		<item name="ClientOrderID" id="0x1006" type="ClientOrderID" desc="客户端委托编号"/>
+		<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
+		<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+		<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
+		<item name="ClientCancelOrderId" id="0x1005" type="ClientOrderId" desc="客户端撤单委托编号"/>
+		<item name="OrderId" id="0x1012" type="OrderId" desc="委托编号"/>
+		<item name="OrderSysId" id="0x1013" type="OrderSysId" desc="系统委托编号"/>
+		<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
+		<item name="ClientOrderId" id="0x1006" type="ClientOrderId" desc="客户端委托编号"/>
 	</field>
 </fields>

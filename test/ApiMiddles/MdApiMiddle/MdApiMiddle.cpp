@@ -53,8 +53,8 @@ int MdApiMiddle::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int r
 	WriteLog(LogLevel::Info, "ReqMdUserLogin: RequestID:%d", requestID);
 	if (reqMdUserLogin != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqMdUserLoginField:UserID:[%s]",
-			reqMdUserLogin->UserID);
+		WriteLog(LogLevel::Info, "ReqMdUserLoginField:UserId:[%s]",
+			reqMdUserLogin->UserId);
 	}
 	else
 	{
@@ -67,8 +67,8 @@ int MdApiMiddle::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, in
 	WriteLog(LogLevel::Info, "ReqMdUserLogout: RequestID:%d", requestID);
 	if (reqMdUserLogout != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqMdUserLogoutField:UserID:[%s]",
-			reqMdUserLogout->UserID);
+		WriteLog(LogLevel::Info, "ReqMdUserLogoutField:UserId:[%s]",
+			reqMdUserLogout->UserId);
 	}
 	else
 	{
@@ -81,8 +81,8 @@ int MdApiMiddle::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData,
 	WriteLog(LogLevel::Info, "ReqSubMarketData: RequestID:%d", requestID);
 	if (reqSubMarketData != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]",
-			reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID, static_cast<int>(reqSubMarketData->BarPreces), reqSubMarketData->BarPeriod);
+		WriteLog(LogLevel::Info, "ReqSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s], BarPreces:[%d], BarPeriod:[%d]",
+			reqSubMarketData->ExchangeId, reqSubMarketData->InstrumentId, static_cast<int>(reqSubMarketData->BarPreces), reqSubMarketData->BarPeriod);
 	}
 	else
 	{
@@ -95,8 +95,8 @@ int MdApiMiddle::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarke
 	WriteLog(LogLevel::Info, "ReqUnSubMarketData: RequestID:%d", requestID);
 	if (reqUnSubMarketData != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqUnSubMarketDataField:ExchangeID:[%s], InstrumentID:[%s]",
-			reqUnSubMarketData->ExchangeID, reqUnSubMarketData->InstrumentID);
+		WriteLog(LogLevel::Info, "ReqUnSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s]",
+			reqUnSubMarketData->ExchangeId, reqUnSubMarketData->InstrumentId);
 	}
 	else
 	{

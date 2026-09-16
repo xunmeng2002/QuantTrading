@@ -3,25 +3,25 @@
 #include "TableList.h"
 #include "MdbStructs.h"
 
-using namespace mdb;
-namespace quanttrading::simexchange
+using namespace QuantTrading;
+namespace QuantTrading::SimExchange
 {
-	inline const unsigned int ksimexchangeTableIDs[] =
+	inline const unsigned int SimExchangeTableIds[] =
 	{
-		TradingDay::TableID,
-		Exchange::TableID,
-		Product::TableID,
-		Instrument::TableID,
-		PrimaryAccount::TableID,
-		Account::TableID,
-		Capital::TableID,
-		Position::TableID,
-		PositionDetail::TableID,
-		Order::TableID,
-		Trade::TableID,
-		PrimaryAccountLoginSession::TableID,
-		DepthMarketData::TableID,
-		BarMarketData::TableID,
+		TradingDay::TableId,
+		Exchange::TableId,
+		Product::TableId,
+		Instrument::TableId,
+		PrimaryAccount::TableId,
+		Account::TableId,
+		Capital::TableId,
+		Position::TableId,
+		PositionDetail::TableId,
+		Order::TableId,
+		Trade::TableId,
+		PrimaryAccountLoginSession::TableId,
+		DepthMarketData::TableId,
+		BarMarketData::TableId,
 	};
-	inline const TableList simexchangeTableList = { "simexchange", ksimexchangeTableIDs, static_cast<int>(sizeof(ksimexchangeTableIDs) / sizeof(ksimexchangeTableIDs[0])) };
+	inline const TableList SimExchangeTableList = { "SimExchange", SimExchangeTableIds, static_cast<int>(sizeof(SimExchangeTableIds) / sizeof(SimExchangeTableIds[0])) };
 }

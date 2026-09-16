@@ -2,12 +2,12 @@
 #pragma once
 #include <Spark/Network/Protocol/PackageFactoryBase.h>
 
-namespace quanttrading::packages
+namespace QuantTrading::Packages
 {
-class PackageFactory : public spark::network::PackageFactoryBase
+class PackageFactory : public Spark::Network::PackageFactoryBase
 {
 public:
-	virtual spark::network::Package* CreatePackage(UInt16Type packageID) override;
+	virtual Spark::Network::Package* CreatePackage(UInt16Type packageId) override;
 };
 }
 

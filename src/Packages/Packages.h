@@ -3,9 +3,9 @@
 #include <QuantTrading/Fields.h>
 #include <Spark/Network/Protocol/Package.h>
 
-using spark::network::Package;
+using Spark::Network::Package;
 
-namespace quanttrading::packages
+namespace QuantTrading::Packages
 {
 class NotifyConnectPackage : public Package
 {
@@ -14,14 +14,14 @@ public:
 	~NotifyConnectPackage();
 	static NotifyConnectPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x0001;
+	static constexpr UInt16Type PackageId = 0x0001;
 	NotifyConnectField* NotifyConnect = nullptr;
 };
 class NotifyDisConnectPackage : public Package
@@ -31,49 +31,49 @@ public:
 	~NotifyDisConnectPackage();
 	static NotifyDisConnectPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x0002;
+	static constexpr UInt16Type PackageId = 0x0002;
 	NotifyDisConnectField* NotifyDisConnect = nullptr;
 };
-class NotifyDBConnectPackage : public Package
+class NotifyDbConnectPackage : public Package
 {
 public:
-	NotifyDBConnectPackage();
-	~NotifyDBConnectPackage();
-	static NotifyDBConnectPackage* Allocate();
+	NotifyDbConnectPackage();
+	~NotifyDbConnectPackage();
+	static NotifyDbConnectPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x0003;
-	NotifyDBConnectField* NotifyDBConnect = nullptr;
+	static constexpr UInt16Type PackageId = 0x0003;
+	NotifyDbConnectField* NotifyDbConnect = nullptr;
 };
-class NotifyDBDisConnectPackage : public Package
+class NotifyDbDisConnectPackage : public Package
 {
 public:
-	NotifyDBDisConnectPackage();
-	~NotifyDBDisConnectPackage();
-	static NotifyDBDisConnectPackage* Allocate();
+	NotifyDbDisConnectPackage();
+	~NotifyDbDisConnectPackage();
+	static NotifyDbDisConnectPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x0004;
-	NotifyDBDisConnectField* NotifyDBDisConnect = nullptr;
+	static constexpr UInt16Type PackageId = 0x0004;
+	NotifyDbDisConnectField* NotifyDbDisConnect = nullptr;
 };
 class ReqMdUserLoginPackage : public Package
 {
@@ -82,14 +82,14 @@ public:
 	~ReqMdUserLoginPackage();
 	static ReqMdUserLoginPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1001;
+	static constexpr UInt16Type PackageId = 0x1001;
 	ReqMdUserLoginField* ReqMdUserLogin = nullptr;
 };
 class RspMdUserLoginPackage : public Package
@@ -99,14 +99,14 @@ public:
 	~RspMdUserLoginPackage();
 	static RspMdUserLoginPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1002;
+	static constexpr UInt16Type PackageId = 0x1002;
 	RspMdUserLoginField* RspMdUserLogin = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -117,14 +117,14 @@ public:
 	~ReqMdUserLogoutPackage();
 	static ReqMdUserLogoutPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1003;
+	static constexpr UInt16Type PackageId = 0x1003;
 	ReqMdUserLogoutField* ReqMdUserLogout = nullptr;
 };
 class RspMdUserLogoutPackage : public Package
@@ -134,14 +134,14 @@ public:
 	~RspMdUserLogoutPackage();
 	static RspMdUserLogoutPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1004;
+	static constexpr UInt16Type PackageId = 0x1004;
 	RspMdUserLogoutField* RspMdUserLogout = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -152,14 +152,14 @@ public:
 	~ReqSubMarketDataPackage();
 	static ReqSubMarketDataPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1005;
+	static constexpr UInt16Type PackageId = 0x1005;
 	ReqSubMarketDataField* ReqSubMarketData = nullptr;
 };
 class RspSubMarketDataPackage : public Package
@@ -169,14 +169,14 @@ public:
 	~RspSubMarketDataPackage();
 	static RspSubMarketDataPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1006;
+	static constexpr UInt16Type PackageId = 0x1006;
 	RspSubMarketDataField* RspSubMarketData = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -187,14 +187,14 @@ public:
 	~ReqUnSubMarketDataPackage();
 	static ReqUnSubMarketDataPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1007;
+	static constexpr UInt16Type PackageId = 0x1007;
 	ReqUnSubMarketDataField* ReqUnSubMarketData = nullptr;
 };
 class RspUnSubMarketDataPackage : public Package
@@ -204,14 +204,14 @@ public:
 	~RspUnSubMarketDataPackage();
 	static RspUnSubMarketDataPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1008;
+	static constexpr UInt16Type PackageId = 0x1008;
 	RspUnSubMarketDataField* RspUnSubMarketData = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -222,14 +222,14 @@ public:
 	~ReqSubMarketDataFinishedPackage();
 	static ReqSubMarketDataFinishedPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x1009;
+	static constexpr UInt16Type PackageId = 0x1009;
 	ReqSubMarketDataFinishedField* ReqSubMarketDataFinished = nullptr;
 };
 class RtnDepthMarketDataPackage : public Package
@@ -239,14 +239,14 @@ public:
 	~RtnDepthMarketDataPackage();
 	static RtnDepthMarketDataPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x100A;
+	static constexpr UInt16Type PackageId = 0x100A;
 	DepthMarketDataField* DepthMarketData = nullptr;
 };
 class RtnBarMarketDataPackage : public Package
@@ -256,14 +256,14 @@ public:
 	~RtnBarMarketDataPackage();
 	static RtnBarMarketDataPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x100B;
+	static constexpr UInt16Type PackageId = 0x100B;
 	BarMarketDataField* BarMarketData = nullptr;
 };
 class RtnSessionBeginPackage : public Package
@@ -273,14 +273,14 @@ public:
 	~RtnSessionBeginPackage();
 	static RtnSessionBeginPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x100C;
+	static constexpr UInt16Type PackageId = 0x100C;
 	SessionBeginField* SessionBegin = nullptr;
 };
 class RtnSessionEndPackage : public Package
@@ -290,14 +290,14 @@ public:
 	~RtnSessionEndPackage();
 	static RtnSessionEndPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x100D;
+	static constexpr UInt16Type PackageId = 0x100D;
 	SessionEndField* SessionEnd = nullptr;
 };
 class RtnMarketDataEndPackage : public Package
@@ -307,14 +307,14 @@ public:
 	~RtnMarketDataEndPackage();
 	static RtnMarketDataEndPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x100E;
+	static constexpr UInt16Type PackageId = 0x100E;
 	MarketDataEndField* MarketDataEnd = nullptr;
 };
 class ReqRegisterAccountPackage : public Package
@@ -324,14 +324,14 @@ public:
 	~ReqRegisterAccountPackage();
 	static ReqRegisterAccountPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2001;
+	static constexpr UInt16Type PackageId = 0x2001;
 	ReqRegisterAccountField* ReqRegisterAccount = nullptr;
 };
 class RspRegisterAccountPackage : public Package
@@ -341,14 +341,14 @@ public:
 	~RspRegisterAccountPackage();
 	static RspRegisterAccountPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2002;
+	static constexpr UInt16Type PackageId = 0x2002;
 	RspRegisterAccountField* RspRegisterAccount = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -359,14 +359,14 @@ public:
 	~ReqAccountLoginPackage();
 	static ReqAccountLoginPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2003;
+	static constexpr UInt16Type PackageId = 0x2003;
 	ReqAccountLoginField* ReqAccountLogin = nullptr;
 };
 class RspAccountLoginPackage : public Package
@@ -376,14 +376,14 @@ public:
 	~RspAccountLoginPackage();
 	static RspAccountLoginPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2004;
+	static constexpr UInt16Type PackageId = 0x2004;
 	RspAccountLoginField* RspAccountLogin = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -394,14 +394,14 @@ public:
 	~ReqAccountLogoutPackage();
 	static ReqAccountLogoutPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2005;
+	static constexpr UInt16Type PackageId = 0x2005;
 	ReqAccountLogoutField* ReqAccountLogout = nullptr;
 };
 class RspAccountLogoutPackage : public Package
@@ -411,14 +411,14 @@ public:
 	~RspAccountLogoutPackage();
 	static RspAccountLogoutPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2006;
+	static constexpr UInt16Type PackageId = 0x2006;
 	RspAccountLogoutField* RspAccountLogout = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -429,14 +429,14 @@ public:
 	~ReqQryAccountPackage();
 	static ReqQryAccountPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2007;
+	static constexpr UInt16Type PackageId = 0x2007;
 	ReqQryAccountField* ReqQryAccount = nullptr;
 };
 class RspQryAccountPackage : public Package
@@ -446,14 +446,14 @@ public:
 	~RspQryAccountPackage();
 	static RspQryAccountPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2008;
+	static constexpr UInt16Type PackageId = 0x2008;
 	AccountField* Account = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -464,14 +464,14 @@ public:
 	~ReqQryHolderAccountPackage();
 	static ReqQryHolderAccountPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2009;
+	static constexpr UInt16Type PackageId = 0x2009;
 	ReqQryHolderAccountField* ReqQryHolderAccount = nullptr;
 };
 class RspQryHolderAccountPackage : public Package
@@ -481,14 +481,14 @@ public:
 	~RspQryHolderAccountPackage();
 	static RspQryHolderAccountPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x200A;
+	static constexpr UInt16Type PackageId = 0x200A;
 	HolderAccountField* HolderAccount = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -499,14 +499,14 @@ public:
 	~ReqQryCapitalPackage();
 	static ReqQryCapitalPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x200B;
+	static constexpr UInt16Type PackageId = 0x200B;
 	ReqQryCapitalField* ReqQryCapital = nullptr;
 };
 class RspQryCapitalPackage : public Package
@@ -516,14 +516,14 @@ public:
 	~RspQryCapitalPackage();
 	static RspQryCapitalPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x200C;
+	static constexpr UInt16Type PackageId = 0x200C;
 	CapitalField* Capital = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -534,14 +534,14 @@ public:
 	~ReqQryPositionPackage();
 	static ReqQryPositionPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x200D;
+	static constexpr UInt16Type PackageId = 0x200D;
 	ReqQryPositionField* ReqQryPosition = nullptr;
 };
 class RspQryPositionPackage : public Package
@@ -551,14 +551,14 @@ public:
 	~RspQryPositionPackage();
 	static RspQryPositionPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x200E;
+	static constexpr UInt16Type PackageId = 0x200E;
 	PositionField* Position = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -569,14 +569,14 @@ public:
 	~ReqQryOrderPackage();
 	static ReqQryOrderPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x200F;
+	static constexpr UInt16Type PackageId = 0x200F;
 	ReqQryOrderField* ReqQryOrder = nullptr;
 };
 class RspQryOrderPackage : public Package
@@ -586,14 +586,14 @@ public:
 	~RspQryOrderPackage();
 	static RspQryOrderPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2010;
+	static constexpr UInt16Type PackageId = 0x2010;
 	OrderField* Order = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -604,14 +604,14 @@ public:
 	~ReqQryTradePackage();
 	static ReqQryTradePackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2011;
+	static constexpr UInt16Type PackageId = 0x2011;
 	ReqQryTradeField* ReqQryTrade = nullptr;
 };
 class RspQryTradePackage : public Package
@@ -621,14 +621,14 @@ public:
 	~RspQryTradePackage();
 	static RspQryTradePackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2012;
+	static constexpr UInt16Type PackageId = 0x2012;
 	TradeField* Trade = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -639,14 +639,14 @@ public:
 	~ReqQryInstrumentPackage();
 	static ReqQryInstrumentPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2013;
+	static constexpr UInt16Type PackageId = 0x2013;
 	ReqQryInstrumentField* ReqQryInstrument = nullptr;
 };
 class RspQryInstrumentPackage : public Package
@@ -656,14 +656,14 @@ public:
 	~RspQryInstrumentPackage();
 	static RspQryInstrumentPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2014;
+	static constexpr UInt16Type PackageId = 0x2014;
 	InstrumentField* Instrument = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -674,14 +674,14 @@ public:
 	~ReqQryOptionInstrumentPackage();
 	static ReqQryOptionInstrumentPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2015;
+	static constexpr UInt16Type PackageId = 0x2015;
 	ReqQryOptionInstrumentField* ReqQryOptionInstrument = nullptr;
 };
 class RspQryOptionInstrumentPackage : public Package
@@ -691,14 +691,14 @@ public:
 	~RspQryOptionInstrumentPackage();
 	static RspQryOptionInstrumentPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2016;
+	static constexpr UInt16Type PackageId = 0x2016;
 	OptionInstrumentField* OptionInstrument = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -709,14 +709,14 @@ public:
 	~ReqQryCommissionRatePackage();
 	static ReqQryCommissionRatePackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2017;
+	static constexpr UInt16Type PackageId = 0x2017;
 	ReqQryCommissionRateField* ReqQryCommissionRate = nullptr;
 };
 class RspQryCommissionRatePackage : public Package
@@ -726,14 +726,14 @@ public:
 	~RspQryCommissionRatePackage();
 	static RspQryCommissionRatePackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2018;
+	static constexpr UInt16Type PackageId = 0x2018;
 	CommissionRateField* CommissionRate = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -744,14 +744,14 @@ public:
 	~ReqQryMoneyTransferPackage();
 	static ReqQryMoneyTransferPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2019;
+	static constexpr UInt16Type PackageId = 0x2019;
 	ReqQryMoneyTransferField* ReqQryMoneyTransfer = nullptr;
 };
 class RspQryMoneyTransferPackage : public Package
@@ -761,14 +761,14 @@ public:
 	~RspQryMoneyTransferPackage();
 	static RspQryMoneyTransferPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x201A;
+	static constexpr UInt16Type PackageId = 0x201A;
 	MoneyTransferField* MoneyTransfer = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -779,14 +779,14 @@ public:
 	~ReqInsertOrderPackage();
 	static ReqInsertOrderPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x201B;
+	static constexpr UInt16Type PackageId = 0x201B;
 	ReqInsertOrderField* ReqInsertOrder = nullptr;
 };
 class RspInsertOrderPackage : public Package
@@ -796,14 +796,14 @@ public:
 	~RspInsertOrderPackage();
 	static RspInsertOrderPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x201C;
+	static constexpr UInt16Type PackageId = 0x201C;
 	ReqInsertOrderField* ReqInsertOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -814,14 +814,14 @@ public:
 	~ReqCancelOrderPackage();
 	static ReqCancelOrderPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x201D;
+	static constexpr UInt16Type PackageId = 0x201D;
 	ReqCancelOrderField* ReqCancelOrder = nullptr;
 };
 class RspCancelOrderPackage : public Package
@@ -831,14 +831,14 @@ public:
 	~RspCancelOrderPackage();
 	static RspCancelOrderPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x201E;
+	static constexpr UInt16Type PackageId = 0x201E;
 	ReqCancelOrderField* ReqCancelOrder = nullptr;
 	RspInfoField* RspInfo = nullptr;
 };
@@ -849,14 +849,14 @@ public:
 	~RtnOrderPackage();
 	static RtnOrderPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x201F;
+	static constexpr UInt16Type PackageId = 0x201F;
 	OrderField* Order = nullptr;
 };
 class RtnTradePackage : public Package
@@ -866,14 +866,14 @@ public:
 	~RtnTradePackage();
 	static RtnTradePackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2020;
+	static constexpr UInt16Type PackageId = 0x2020;
 	TradeField* Trade = nullptr;
 };
 class RtnMoneyTransferPackage : public Package
@@ -883,14 +883,14 @@ public:
 	~RtnMoneyTransferPackage();
 	static RtnMoneyTransferPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2021;
+	static constexpr UInt16Type PackageId = 0x2021;
 	MoneyTransferField* MoneyTransfer = nullptr;
 };
 class RtnAccountLogoutPackage : public Package
@@ -900,14 +900,14 @@ public:
 	~RtnAccountLogoutPackage();
 	static RtnAccountLogoutPackage* Allocate();
 	virtual void Deallocate() override;
-	virtual void Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum) override;
+	virtual void Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum) override;
 	virtual int ToStepStream(char* buff, int size) const override;
 	virtual bool FromStepStream(char* buff, int startIndex, int endIndex) override;
 	virtual int ToXtpStream(char* buff, int size) const override;
 	virtual bool FromXtpStream(char* buff, int startIndex, int endIndex) override;
 	virtual const char* GetDebugString() const override;
 public:
-	static constexpr UInt16Type PackageID = 0x2022;
+	static constexpr UInt16Type PackageId = 0x2022;
 	AccountLogoutField* AccountLogout = nullptr;
 };
 }

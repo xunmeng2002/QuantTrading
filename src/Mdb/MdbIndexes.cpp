@@ -5,45 +5,45 @@
 #include <string.h>
 
 
-using namespace spark::core;
-namespace mdb
+using namespace Spark::Core;
+namespace QuantTrading
 {
 	HotInstrumentIndexTradingDay::HotInstrumentIndexTradingDay(HotInstrumentTable* tableOwner)
-		:table(tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::LowerBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
+	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::LowerBound(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay)
 	{
-		FillCompareRecord(ExchangeID, ProductID, Rank, TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareHotInstrument);
+		FillCompareRecord(ExchangeId, ProductId, Rank, TradingDay);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareHotInstrument);
 	}
-	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::UpperBound(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
+	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::UpperBound(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay)
 	{
-		FillCompareRecord(ExchangeID, ProductID, Rank, TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareHotInstrument);
+		FillCompareRecord(ExchangeId, ProductId, Rank, TradingDay);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareHotInstrument);
 	}
-	std::pair<HotInstrumentIndexTradingDay::iterator, HotInstrumentIndexTradingDay::iterator> HotInstrumentIndexTradingDay::EqualRange(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
+	std::pair<HotInstrumentIndexTradingDay::iterator, HotInstrumentIndexTradingDay::iterator> HotInstrumentIndexTradingDay::EqualRange(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay)
 	{
-		FillCompareRecord(ExchangeID, ProductID, Rank, TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareHotInstrument);
+		FillCompareRecord(ExchangeId, ProductId, Rank, TradingDay);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareHotInstrument);
 	}
 	void HotInstrumentIndexTradingDay::Insert(HotInstrument* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
 	void HotInstrumentIndexTradingDay::Erase(HotInstrument* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
 	void HotInstrumentIndexTradingDay::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
 	bool HotInstrumentIndexTradingDay::NeedUpdate(const HotInstrument* const oldRecord, const HotInstrument* const newRecord)
 	{
@@ -51,7 +51,7 @@ namespace mdb
 	}
 	HotInstrumentIndexTradingDay::iterator HotInstrumentIndexTradingDay::FindNode(HotInstrument* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -59,60 +59,60 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void HotInstrumentIndexTradingDay::FillCompareRecord(const ExchangeIDType& ExchangeID, const ProductIDType& ProductID, const Int32Type& Rank, const DateType& TradingDay)
+	void HotInstrumentIndexTradingDay::FillCompareRecord(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay)
 	{
-		Utility::Strcpy(CompareHotInstrument.ExchangeID, ExchangeID);
-		Utility::Strcpy(CompareHotInstrument.ProductID, ProductID);
+		Utility::Strcpy(CompareHotInstrument.ExchangeId, ExchangeId);
+		Utility::Strcpy(CompareHotInstrument.ProductId, ProductId);
 		CompareHotInstrument.Rank = Rank;
 		Utility::Strcpy(CompareHotInstrument.TradingDay, TradingDay);
 	}
 	
-	InstrumentIndexExchangeID::InstrumentIndexExchangeID(InstrumentTable* tableOwner)
-		:table(tableOwner)
+	InstrumentIndexExchangeId::InstrumentIndexExchangeId(InstrumentTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	InstrumentIndexExchangeID::iterator InstrumentIndexExchangeID::LowerBound(const ExchangeIDType& ExchangeID)
+	InstrumentIndexExchangeId::iterator InstrumentIndexExchangeId::LowerBound(const ExchangeIdType& ExchangeId)
 	{
-		FillCompareRecord(ExchangeID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareInstrument);
+		FillCompareRecord(ExchangeId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareInstrument);
 	}
-	InstrumentIndexExchangeID::iterator InstrumentIndexExchangeID::UpperBound(const ExchangeIDType& ExchangeID)
+	InstrumentIndexExchangeId::iterator InstrumentIndexExchangeId::UpperBound(const ExchangeIdType& ExchangeId)
 	{
-		FillCompareRecord(ExchangeID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareInstrument);
+		FillCompareRecord(ExchangeId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareInstrument);
 	}
-	std::pair<InstrumentIndexExchangeID::iterator, InstrumentIndexExchangeID::iterator> InstrumentIndexExchangeID::EqualRange(const ExchangeIDType& ExchangeID)
+	std::pair<InstrumentIndexExchangeId::iterator, InstrumentIndexExchangeId::iterator> InstrumentIndexExchangeId::EqualRange(const ExchangeIdType& ExchangeId)
 	{
-		FillCompareRecord(ExchangeID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareInstrument);
+		FillCompareRecord(ExchangeId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareInstrument);
 	}
-	void InstrumentIndexExchangeID::Insert(Instrument* const record)
+	void InstrumentIndexExchangeId::Insert(Instrument* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void InstrumentIndexExchangeID::Erase(Instrument* const record)
+	void InstrumentIndexExchangeId::Erase(Instrument* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void InstrumentIndexExchangeID::Update(iterator it)
+	void InstrumentIndexExchangeId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool InstrumentIndexExchangeID::NeedUpdate(const Instrument* const oldRecord, const Instrument* const newRecord)
+	bool InstrumentIndexExchangeId::NeedUpdate(const Instrument* const oldRecord, const Instrument* const newRecord)
 	{
-		return !(InstrumentEqualForExchangeIDIndex()(oldRecord, newRecord));
+		return !(InstrumentEqualForExchangeIdIndex()(oldRecord, newRecord));
 	}
-	InstrumentIndexExchangeID::iterator InstrumentIndexExchangeID::FindNode(Instrument* const record)
+	InstrumentIndexExchangeId::iterator InstrumentIndexExchangeId::FindNode(Instrument* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -120,57 +120,57 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void InstrumentIndexExchangeID::FillCompareRecord(const ExchangeIDType& ExchangeID)
+	void InstrumentIndexExchangeId::FillCompareRecord(const ExchangeIdType& ExchangeId)
 	{
-		Utility::Strcpy(CompareInstrument.ExchangeID, ExchangeID);
+		Utility::Strcpy(CompareInstrument.ExchangeId, ExchangeId);
 	}
 	
-	MdUserLoginSessionIndexSessionID::MdUserLoginSessionIndexSessionID(MdUserLoginSessionTable* tableOwner)
-		:table(tableOwner)
+	MdUserLoginSessionIndexSessionId::MdUserLoginSessionIndexSessionId(MdUserLoginSessionTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	MdUserLoginSessionIndexSessionID::iterator MdUserLoginSessionIndexSessionID::LowerBound(const SessionIDType& SessionID)
+	MdUserLoginSessionIndexSessionId::iterator MdUserLoginSessionIndexSessionId::LowerBound(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareMdUserLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareMdUserLoginSession);
 	}
-	MdUserLoginSessionIndexSessionID::iterator MdUserLoginSessionIndexSessionID::UpperBound(const SessionIDType& SessionID)
+	MdUserLoginSessionIndexSessionId::iterator MdUserLoginSessionIndexSessionId::UpperBound(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareMdUserLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareMdUserLoginSession);
 	}
-	std::pair<MdUserLoginSessionIndexSessionID::iterator, MdUserLoginSessionIndexSessionID::iterator> MdUserLoginSessionIndexSessionID::EqualRange(const SessionIDType& SessionID)
+	std::pair<MdUserLoginSessionIndexSessionId::iterator, MdUserLoginSessionIndexSessionId::iterator> MdUserLoginSessionIndexSessionId::EqualRange(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareMdUserLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareMdUserLoginSession);
 	}
-	void MdUserLoginSessionIndexSessionID::Insert(MdUserLoginSession* const record)
+	void MdUserLoginSessionIndexSessionId::Insert(MdUserLoginSession* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void MdUserLoginSessionIndexSessionID::Erase(MdUserLoginSession* const record)
+	void MdUserLoginSessionIndexSessionId::Erase(MdUserLoginSession* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void MdUserLoginSessionIndexSessionID::Update(iterator it)
+	void MdUserLoginSessionIndexSessionId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool MdUserLoginSessionIndexSessionID::NeedUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord)
+	bool MdUserLoginSessionIndexSessionId::NeedUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord)
 	{
-		return !(MdUserLoginSessionEqualForSessionIDIndex()(oldRecord, newRecord));
+		return !(MdUserLoginSessionEqualForSessionIdIndex()(oldRecord, newRecord));
 	}
-	MdUserLoginSessionIndexSessionID::iterator MdUserLoginSessionIndexSessionID::FindNode(MdUserLoginSession* const record)
+	MdUserLoginSessionIndexSessionId::iterator MdUserLoginSessionIndexSessionId::FindNode(MdUserLoginSession* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -178,57 +178,57 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void MdUserLoginSessionIndexSessionID::FillCompareRecord(const SessionIDType& SessionID)
+	void MdUserLoginSessionIndexSessionId::FillCompareRecord(const SessionIdType& SessionId)
 	{
-		CompareMdUserLoginSession.SessionID = SessionID;
+		CompareMdUserLoginSession.SessionId = SessionId;
 	}
 	
-	MdUserLoginSessionIndexMdUserID::MdUserLoginSessionIndexMdUserID(MdUserLoginSessionTable* tableOwner)
-		:table(tableOwner)
+	MdUserLoginSessionIndexMdUserId::MdUserLoginSessionIndexMdUserId(MdUserLoginSessionTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	MdUserLoginSessionIndexMdUserID::iterator MdUserLoginSessionIndexMdUserID::LowerBound(const UserIDType& MdUserID)
+	MdUserLoginSessionIndexMdUserId::iterator MdUserLoginSessionIndexMdUserId::LowerBound(const UserIdType& MdUserId)
 	{
-		FillCompareRecord(MdUserID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareMdUserLoginSession);
+		FillCompareRecord(MdUserId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareMdUserLoginSession);
 	}
-	MdUserLoginSessionIndexMdUserID::iterator MdUserLoginSessionIndexMdUserID::UpperBound(const UserIDType& MdUserID)
+	MdUserLoginSessionIndexMdUserId::iterator MdUserLoginSessionIndexMdUserId::UpperBound(const UserIdType& MdUserId)
 	{
-		FillCompareRecord(MdUserID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareMdUserLoginSession);
+		FillCompareRecord(MdUserId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareMdUserLoginSession);
 	}
-	std::pair<MdUserLoginSessionIndexMdUserID::iterator, MdUserLoginSessionIndexMdUserID::iterator> MdUserLoginSessionIndexMdUserID::EqualRange(const UserIDType& MdUserID)
+	std::pair<MdUserLoginSessionIndexMdUserId::iterator, MdUserLoginSessionIndexMdUserId::iterator> MdUserLoginSessionIndexMdUserId::EqualRange(const UserIdType& MdUserId)
 	{
-		FillCompareRecord(MdUserID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareMdUserLoginSession);
+		FillCompareRecord(MdUserId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareMdUserLoginSession);
 	}
-	void MdUserLoginSessionIndexMdUserID::Insert(MdUserLoginSession* const record)
+	void MdUserLoginSessionIndexMdUserId::Insert(MdUserLoginSession* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void MdUserLoginSessionIndexMdUserID::Erase(MdUserLoginSession* const record)
+	void MdUserLoginSessionIndexMdUserId::Erase(MdUserLoginSession* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void MdUserLoginSessionIndexMdUserID::Update(iterator it)
+	void MdUserLoginSessionIndexMdUserId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool MdUserLoginSessionIndexMdUserID::NeedUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord)
+	bool MdUserLoginSessionIndexMdUserId::NeedUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord)
 	{
-		return !(MdUserLoginSessionEqualForMdUserIDIndex()(oldRecord, newRecord));
+		return !(MdUserLoginSessionEqualForMdUserIdIndex()(oldRecord, newRecord));
 	}
-	MdUserLoginSessionIndexMdUserID::iterator MdUserLoginSessionIndexMdUserID::FindNode(MdUserLoginSession* const record)
+	MdUserLoginSessionIndexMdUserId::iterator MdUserLoginSessionIndexMdUserId::FindNode(MdUserLoginSession* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -236,57 +236,57 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void MdUserLoginSessionIndexMdUserID::FillCompareRecord(const UserIDType& MdUserID)
+	void MdUserLoginSessionIndexMdUserId::FillCompareRecord(const UserIdType& MdUserId)
 	{
-		Utility::Strcpy(CompareMdUserLoginSession.MdUserID, MdUserID);
+		Utility::Strcpy(CompareMdUserLoginSession.MdUserId, MdUserId);
 	}
 	
-	PrimaryAccountIndexOfferID::PrimaryAccountIndexOfferID(PrimaryAccountTable* tableOwner)
-		:table(tableOwner)
+	PrimaryAccountIndexOfferId::PrimaryAccountIndexOfferId(PrimaryAccountTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	PrimaryAccountIndexOfferID::iterator PrimaryAccountIndexOfferID::LowerBound(const OfferIDType& OfferID)
+	PrimaryAccountIndexOfferId::iterator PrimaryAccountIndexOfferId::LowerBound(const OfferIdType& OfferId)
 	{
-		FillCompareRecord(OfferID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&ComparePrimaryAccount);
+		FillCompareRecord(OfferId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&ComparePrimaryAccount);
 	}
-	PrimaryAccountIndexOfferID::iterator PrimaryAccountIndexOfferID::UpperBound(const OfferIDType& OfferID)
+	PrimaryAccountIndexOfferId::iterator PrimaryAccountIndexOfferId::UpperBound(const OfferIdType& OfferId)
 	{
-		FillCompareRecord(OfferID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&ComparePrimaryAccount);
+		FillCompareRecord(OfferId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&ComparePrimaryAccount);
 	}
-	std::pair<PrimaryAccountIndexOfferID::iterator, PrimaryAccountIndexOfferID::iterator> PrimaryAccountIndexOfferID::EqualRange(const OfferIDType& OfferID)
+	std::pair<PrimaryAccountIndexOfferId::iterator, PrimaryAccountIndexOfferId::iterator> PrimaryAccountIndexOfferId::EqualRange(const OfferIdType& OfferId)
 	{
-		FillCompareRecord(OfferID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&ComparePrimaryAccount);
+		FillCompareRecord(OfferId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&ComparePrimaryAccount);
 	}
-	void PrimaryAccountIndexOfferID::Insert(PrimaryAccount* const record)
+	void PrimaryAccountIndexOfferId::Insert(PrimaryAccount* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void PrimaryAccountIndexOfferID::Erase(PrimaryAccount* const record)
+	void PrimaryAccountIndexOfferId::Erase(PrimaryAccount* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void PrimaryAccountIndexOfferID::Update(iterator it)
+	void PrimaryAccountIndexOfferId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool PrimaryAccountIndexOfferID::NeedUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord)
+	bool PrimaryAccountIndexOfferId::NeedUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord)
 	{
-		return !(PrimaryAccountEqualForOfferIDIndex()(oldRecord, newRecord));
+		return !(PrimaryAccountEqualForOfferIdIndex()(oldRecord, newRecord));
 	}
-	PrimaryAccountIndexOfferID::iterator PrimaryAccountIndexOfferID::FindNode(PrimaryAccount* const record)
+	PrimaryAccountIndexOfferId::iterator PrimaryAccountIndexOfferId::FindNode(PrimaryAccount* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -294,49 +294,49 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void PrimaryAccountIndexOfferID::FillCompareRecord(const OfferIDType& OfferID)
+	void PrimaryAccountIndexOfferId::FillCompareRecord(const OfferIdType& OfferId)
 	{
-		ComparePrimaryAccount.OfferID = OfferID;
+		ComparePrimaryAccount.OfferId = OfferId;
 	}
 	
 	CapitalIndexTradingDay::CapitalIndexTradingDay(CapitalTable* tableOwner)
-		:table(tableOwner)
+		:table_(tableOwner)
 	{
 	}
 	CapitalIndexTradingDay::iterator CapitalIndexTradingDay::LowerBound(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareCapital);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareCapital);
 	}
 	CapitalIndexTradingDay::iterator CapitalIndexTradingDay::UpperBound(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareCapital);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareCapital);
 	}
 	std::pair<CapitalIndexTradingDay::iterator, CapitalIndexTradingDay::iterator> CapitalIndexTradingDay::EqualRange(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareCapital);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareCapital);
 	}
 	void CapitalIndexTradingDay::Insert(Capital* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
 	void CapitalIndexTradingDay::Erase(Capital* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
 	void CapitalIndexTradingDay::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
 	bool CapitalIndexTradingDay::NeedUpdate(const Capital* const oldRecord, const Capital* const newRecord)
 	{
@@ -344,7 +344,7 @@ namespace mdb
 	}
 	CapitalIndexTradingDay::iterator CapitalIndexTradingDay::FindNode(Capital* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -352,7 +352,7 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
 	void CapitalIndexTradingDay::FillCompareRecord(const DateType& TradingDay)
 	{
@@ -360,41 +360,41 @@ namespace mdb
 	}
 	
 	PositionIndexAccount::PositionIndexAccount(PositionTable* tableOwner)
-		:table(tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	PositionIndexAccount::iterator PositionIndexAccount::LowerBound(const DateType& TradingDay, const AccountIDType& AccountID)
+	PositionIndexAccount::iterator PositionIndexAccount::LowerBound(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&ComparePosition);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&ComparePosition);
 	}
-	PositionIndexAccount::iterator PositionIndexAccount::UpperBound(const DateType& TradingDay, const AccountIDType& AccountID)
+	PositionIndexAccount::iterator PositionIndexAccount::UpperBound(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&ComparePosition);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&ComparePosition);
 	}
-	std::pair<PositionIndexAccount::iterator, PositionIndexAccount::iterator> PositionIndexAccount::EqualRange(const DateType& TradingDay, const AccountIDType& AccountID)
+	std::pair<PositionIndexAccount::iterator, PositionIndexAccount::iterator> PositionIndexAccount::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&ComparePosition);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&ComparePosition);
 	}
 	void PositionIndexAccount::Insert(Position* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
 	void PositionIndexAccount::Erase(Position* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
 	void PositionIndexAccount::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
 	bool PositionIndexAccount::NeedUpdate(const Position* const oldRecord, const Position* const newRecord)
 	{
@@ -402,7 +402,7 @@ namespace mdb
 	}
 	PositionIndexAccount::iterator PositionIndexAccount::FindNode(Position* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -410,50 +410,50 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void PositionIndexAccount::FillCompareRecord(const DateType& TradingDay, const AccountIDType& AccountID)
+	void PositionIndexAccount::FillCompareRecord(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
 		Utility::Strcpy(ComparePosition.TradingDay, TradingDay);
-		Utility::Strcpy(ComparePosition.AccountID, AccountID);
+		Utility::Strcpy(ComparePosition.AccountId, AccountId);
 	}
 	
 	PositionIndexTradingDay::PositionIndexTradingDay(PositionTable* tableOwner)
-		:table(tableOwner)
+		:table_(tableOwner)
 	{
 	}
 	PositionIndexTradingDay::iterator PositionIndexTradingDay::LowerBound(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&ComparePosition);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&ComparePosition);
 	}
 	PositionIndexTradingDay::iterator PositionIndexTradingDay::UpperBound(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&ComparePosition);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&ComparePosition);
 	}
 	std::pair<PositionIndexTradingDay::iterator, PositionIndexTradingDay::iterator> PositionIndexTradingDay::EqualRange(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&ComparePosition);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&ComparePosition);
 	}
 	void PositionIndexTradingDay::Insert(Position* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
 	void PositionIndexTradingDay::Erase(Position* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
 	void PositionIndexTradingDay::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
 	bool PositionIndexTradingDay::NeedUpdate(const Position* const oldRecord, const Position* const newRecord)
 	{
@@ -461,7 +461,7 @@ namespace mdb
 	}
 	PositionIndexTradingDay::iterator PositionIndexTradingDay::FindNode(Position* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -469,7 +469,7 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
 	void PositionIndexTradingDay::FillCompareRecord(const DateType& TradingDay)
 	{
@@ -477,41 +477,41 @@ namespace mdb
 	}
 	
 	PositionDetailIndexTradeMatch::PositionDetailIndexTradeMatch(PositionDetailTable* tableOwner)
-		:table(tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	PositionDetailIndexTradeMatch::iterator PositionDetailIndexTradeMatch::LowerBound(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
+	PositionDetailIndexTradeMatch::iterator PositionDetailIndexTradeMatch::LowerBound(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
 	{
-		FillCompareRecord(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&ComparePositionDetail);
+		FillCompareRecord(TradingDay, AccountId, ExchangeId, InstrumentId, PosiDirection);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&ComparePositionDetail);
 	}
-	PositionDetailIndexTradeMatch::iterator PositionDetailIndexTradeMatch::UpperBound(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
+	PositionDetailIndexTradeMatch::iterator PositionDetailIndexTradeMatch::UpperBound(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
 	{
-		FillCompareRecord(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&ComparePositionDetail);
+		FillCompareRecord(TradingDay, AccountId, ExchangeId, InstrumentId, PosiDirection);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&ComparePositionDetail);
 	}
-	std::pair<PositionDetailIndexTradeMatch::iterator, PositionDetailIndexTradeMatch::iterator> PositionDetailIndexTradeMatch::EqualRange(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
+	std::pair<PositionDetailIndexTradeMatch::iterator, PositionDetailIndexTradeMatch::iterator> PositionDetailIndexTradeMatch::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
 	{
-		FillCompareRecord(TradingDay, AccountID, ExchangeID, InstrumentID, PosiDirection);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&ComparePositionDetail);
+		FillCompareRecord(TradingDay, AccountId, ExchangeId, InstrumentId, PosiDirection);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&ComparePositionDetail);
 	}
 	void PositionDetailIndexTradeMatch::Insert(PositionDetail* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
 	void PositionDetailIndexTradeMatch::Erase(PositionDetail* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
 	void PositionDetailIndexTradeMatch::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
 	bool PositionDetailIndexTradeMatch::NeedUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord)
 	{
@@ -519,7 +519,7 @@ namespace mdb
 	}
 	PositionDetailIndexTradeMatch::iterator PositionDetailIndexTradeMatch::FindNode(PositionDetail* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -527,53 +527,53 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void PositionDetailIndexTradeMatch::FillCompareRecord(const DateType& TradingDay, const AccountIDType& AccountID, const ExchangeIDType& ExchangeID, const InstrumentIDType& InstrumentID, const PosiDirectionType& PosiDirection)
+	void PositionDetailIndexTradeMatch::FillCompareRecord(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
 	{
 		Utility::Strcpy(ComparePositionDetail.TradingDay, TradingDay);
-		Utility::Strcpy(ComparePositionDetail.AccountID, AccountID);
-		Utility::Strcpy(ComparePositionDetail.ExchangeID, ExchangeID);
-		Utility::Strcpy(ComparePositionDetail.InstrumentID, InstrumentID);
+		Utility::Strcpy(ComparePositionDetail.AccountId, AccountId);
+		Utility::Strcpy(ComparePositionDetail.ExchangeId, ExchangeId);
+		Utility::Strcpy(ComparePositionDetail.InstrumentId, InstrumentId);
 		ComparePositionDetail.PosiDirection = PosiDirection;
 	}
 	
 	PositionDetailIndexTradingDay::PositionDetailIndexTradingDay(PositionDetailTable* tableOwner)
-		:table(tableOwner)
+		:table_(tableOwner)
 	{
 	}
 	PositionDetailIndexTradingDay::iterator PositionDetailIndexTradingDay::LowerBound(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&ComparePositionDetail);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&ComparePositionDetail);
 	}
 	PositionDetailIndexTradingDay::iterator PositionDetailIndexTradingDay::UpperBound(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&ComparePositionDetail);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&ComparePositionDetail);
 	}
 	std::pair<PositionDetailIndexTradingDay::iterator, PositionDetailIndexTradingDay::iterator> PositionDetailIndexTradingDay::EqualRange(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&ComparePositionDetail);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&ComparePositionDetail);
 	}
 	void PositionDetailIndexTradingDay::Insert(PositionDetail* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
 	void PositionDetailIndexTradingDay::Erase(PositionDetail* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
 	void PositionDetailIndexTradingDay::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
 	bool PositionDetailIndexTradingDay::NeedUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord)
 	{
@@ -581,7 +581,7 @@ namespace mdb
 	}
 	PositionDetailIndexTradingDay::iterator PositionDetailIndexTradingDay::FindNode(PositionDetail* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -589,57 +589,57 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
 	void PositionDetailIndexTradingDay::FillCompareRecord(const DateType& TradingDay)
 	{
 		Utility::Strcpy(ComparePositionDetail.TradingDay, TradingDay);
 	}
 	
-	OrderIndexAccountID::OrderIndexAccountID(OrderTable* tableOwner)
-		:table(tableOwner)
+	OrderIndexAccountId::OrderIndexAccountId(OrderTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	OrderIndexAccountID::iterator OrderIndexAccountID::LowerBound(const DateType& TradingDay, const AccountIDType& AccountID)
+	OrderIndexAccountId::iterator OrderIndexAccountId::LowerBound(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareOrder);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareOrder);
 	}
-	OrderIndexAccountID::iterator OrderIndexAccountID::UpperBound(const DateType& TradingDay, const AccountIDType& AccountID)
+	OrderIndexAccountId::iterator OrderIndexAccountId::UpperBound(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareOrder);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareOrder);
 	}
-	std::pair<OrderIndexAccountID::iterator, OrderIndexAccountID::iterator> OrderIndexAccountID::EqualRange(const DateType& TradingDay, const AccountIDType& AccountID)
+	std::pair<OrderIndexAccountId::iterator, OrderIndexAccountId::iterator> OrderIndexAccountId::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareOrder);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareOrder);
 	}
-	void OrderIndexAccountID::Insert(Order* const record)
+	void OrderIndexAccountId::Insert(Order* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void OrderIndexAccountID::Erase(Order* const record)
+	void OrderIndexAccountId::Erase(Order* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void OrderIndexAccountID::Update(iterator it)
+	void OrderIndexAccountId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool OrderIndexAccountID::NeedUpdate(const Order* const oldRecord, const Order* const newRecord)
+	bool OrderIndexAccountId::NeedUpdate(const Order* const oldRecord, const Order* const newRecord)
 	{
-		return !(OrderEqualForAccountIDIndex()(oldRecord, newRecord));
+		return !(OrderEqualForAccountIdIndex()(oldRecord, newRecord));
 	}
-	OrderIndexAccountID::iterator OrderIndexAccountID::FindNode(Order* const record)
+	OrderIndexAccountId::iterator OrderIndexAccountId::FindNode(Order* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -647,58 +647,58 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void OrderIndexAccountID::FillCompareRecord(const DateType& TradingDay, const AccountIDType& AccountID)
+	void OrderIndexAccountId::FillCompareRecord(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
 		Utility::Strcpy(CompareOrder.TradingDay, TradingDay);
-		Utility::Strcpy(CompareOrder.AccountID, AccountID);
+		Utility::Strcpy(CompareOrder.AccountId, AccountId);
 	}
 	
-	TradeIndexAccountID::TradeIndexAccountID(TradeTable* tableOwner)
-		:table(tableOwner)
+	TradeIndexAccountId::TradeIndexAccountId(TradeTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	TradeIndexAccountID::iterator TradeIndexAccountID::LowerBound(const DateType& TradingDay, const AccountIDType& AccountID)
+	TradeIndexAccountId::iterator TradeIndexAccountId::LowerBound(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareTrade);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareTrade);
 	}
-	TradeIndexAccountID::iterator TradeIndexAccountID::UpperBound(const DateType& TradingDay, const AccountIDType& AccountID)
+	TradeIndexAccountId::iterator TradeIndexAccountId::UpperBound(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareTrade);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareTrade);
 	}
-	std::pair<TradeIndexAccountID::iterator, TradeIndexAccountID::iterator> TradeIndexAccountID::EqualRange(const DateType& TradingDay, const AccountIDType& AccountID)
+	std::pair<TradeIndexAccountId::iterator, TradeIndexAccountId::iterator> TradeIndexAccountId::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
-		FillCompareRecord(TradingDay, AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareTrade);
+		FillCompareRecord(TradingDay, AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareTrade);
 	}
-	void TradeIndexAccountID::Insert(Trade* const record)
+	void TradeIndexAccountId::Insert(Trade* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void TradeIndexAccountID::Erase(Trade* const record)
+	void TradeIndexAccountId::Erase(Trade* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void TradeIndexAccountID::Update(iterator it)
+	void TradeIndexAccountId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool TradeIndexAccountID::NeedUpdate(const Trade* const oldRecord, const Trade* const newRecord)
+	bool TradeIndexAccountId::NeedUpdate(const Trade* const oldRecord, const Trade* const newRecord)
 	{
-		return !(TradeEqualForAccountIDIndex()(oldRecord, newRecord));
+		return !(TradeEqualForAccountIdIndex()(oldRecord, newRecord));
 	}
-	TradeIndexAccountID::iterator TradeIndexAccountID::FindNode(Trade* const record)
+	TradeIndexAccountId::iterator TradeIndexAccountId::FindNode(Trade* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -706,58 +706,58 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void TradeIndexAccountID::FillCompareRecord(const DateType& TradingDay, const AccountIDType& AccountID)
+	void TradeIndexAccountId::FillCompareRecord(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
 		Utility::Strcpy(CompareTrade.TradingDay, TradingDay);
-		Utility::Strcpy(CompareTrade.AccountID, AccountID);
+		Utility::Strcpy(CompareTrade.AccountId, AccountId);
 	}
 	
-	AccountLoginSessionIndexSessionID::AccountLoginSessionIndexSessionID(AccountLoginSessionTable* tableOwner)
-		:table(tableOwner)
+	AccountLoginSessionIndexSessionId::AccountLoginSessionIndexSessionId(AccountLoginSessionTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	AccountLoginSessionIndexSessionID::iterator AccountLoginSessionIndexSessionID::LowerBound(const SessionIDType& SessionID)
+	AccountLoginSessionIndexSessionId::iterator AccountLoginSessionIndexSessionId::LowerBound(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareAccountLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareAccountLoginSession);
 	}
-	AccountLoginSessionIndexSessionID::iterator AccountLoginSessionIndexSessionID::UpperBound(const SessionIDType& SessionID)
+	AccountLoginSessionIndexSessionId::iterator AccountLoginSessionIndexSessionId::UpperBound(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareAccountLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareAccountLoginSession);
 	}
-	std::pair<AccountLoginSessionIndexSessionID::iterator, AccountLoginSessionIndexSessionID::iterator> AccountLoginSessionIndexSessionID::EqualRange(const SessionIDType& SessionID)
+	std::pair<AccountLoginSessionIndexSessionId::iterator, AccountLoginSessionIndexSessionId::iterator> AccountLoginSessionIndexSessionId::EqualRange(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareAccountLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareAccountLoginSession);
 	}
-	void AccountLoginSessionIndexSessionID::Insert(AccountLoginSession* const record)
+	void AccountLoginSessionIndexSessionId::Insert(AccountLoginSession* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void AccountLoginSessionIndexSessionID::Erase(AccountLoginSession* const record)
+	void AccountLoginSessionIndexSessionId::Erase(AccountLoginSession* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void AccountLoginSessionIndexSessionID::Update(iterator it)
+	void AccountLoginSessionIndexSessionId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool AccountLoginSessionIndexSessionID::NeedUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord)
+	bool AccountLoginSessionIndexSessionId::NeedUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord)
 	{
-		return !(AccountLoginSessionEqualForSessionIDIndex()(oldRecord, newRecord));
+		return !(AccountLoginSessionEqualForSessionIdIndex()(oldRecord, newRecord));
 	}
-	AccountLoginSessionIndexSessionID::iterator AccountLoginSessionIndexSessionID::FindNode(AccountLoginSession* const record)
+	AccountLoginSessionIndexSessionId::iterator AccountLoginSessionIndexSessionId::FindNode(AccountLoginSession* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -765,57 +765,57 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void AccountLoginSessionIndexSessionID::FillCompareRecord(const SessionIDType& SessionID)
+	void AccountLoginSessionIndexSessionId::FillCompareRecord(const SessionIdType& SessionId)
 	{
-		CompareAccountLoginSession.SessionID = SessionID;
+		CompareAccountLoginSession.SessionId = SessionId;
 	}
 	
-	AccountLoginSessionIndexAccountID::AccountLoginSessionIndexAccountID(AccountLoginSessionTable* tableOwner)
-		:table(tableOwner)
+	AccountLoginSessionIndexAccountId::AccountLoginSessionIndexAccountId(AccountLoginSessionTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	AccountLoginSessionIndexAccountID::iterator AccountLoginSessionIndexAccountID::LowerBound(const AccountIDType& AccountID)
+	AccountLoginSessionIndexAccountId::iterator AccountLoginSessionIndexAccountId::LowerBound(const AccountIdType& AccountId)
 	{
-		FillCompareRecord(AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&CompareAccountLoginSession);
+		FillCompareRecord(AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&CompareAccountLoginSession);
 	}
-	AccountLoginSessionIndexAccountID::iterator AccountLoginSessionIndexAccountID::UpperBound(const AccountIDType& AccountID)
+	AccountLoginSessionIndexAccountId::iterator AccountLoginSessionIndexAccountId::UpperBound(const AccountIdType& AccountId)
 	{
-		FillCompareRecord(AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&CompareAccountLoginSession);
+		FillCompareRecord(AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&CompareAccountLoginSession);
 	}
-	std::pair<AccountLoginSessionIndexAccountID::iterator, AccountLoginSessionIndexAccountID::iterator> AccountLoginSessionIndexAccountID::EqualRange(const AccountIDType& AccountID)
+	std::pair<AccountLoginSessionIndexAccountId::iterator, AccountLoginSessionIndexAccountId::iterator> AccountLoginSessionIndexAccountId::EqualRange(const AccountIdType& AccountId)
 	{
-		FillCompareRecord(AccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&CompareAccountLoginSession);
+		FillCompareRecord(AccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&CompareAccountLoginSession);
 	}
-	void AccountLoginSessionIndexAccountID::Insert(AccountLoginSession* const record)
+	void AccountLoginSessionIndexAccountId::Insert(AccountLoginSession* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void AccountLoginSessionIndexAccountID::Erase(AccountLoginSession* const record)
+	void AccountLoginSessionIndexAccountId::Erase(AccountLoginSession* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void AccountLoginSessionIndexAccountID::Update(iterator it)
+	void AccountLoginSessionIndexAccountId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool AccountLoginSessionIndexAccountID::NeedUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord)
+	bool AccountLoginSessionIndexAccountId::NeedUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord)
 	{
-		return !(AccountLoginSessionEqualForAccountIDIndex()(oldRecord, newRecord));
+		return !(AccountLoginSessionEqualForAccountIdIndex()(oldRecord, newRecord));
 	}
-	AccountLoginSessionIndexAccountID::iterator AccountLoginSessionIndexAccountID::FindNode(AccountLoginSession* const record)
+	AccountLoginSessionIndexAccountId::iterator AccountLoginSessionIndexAccountId::FindNode(AccountLoginSession* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -823,57 +823,57 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void AccountLoginSessionIndexAccountID::FillCompareRecord(const AccountIDType& AccountID)
+	void AccountLoginSessionIndexAccountId::FillCompareRecord(const AccountIdType& AccountId)
 	{
-		Utility::Strcpy(CompareAccountLoginSession.AccountID, AccountID);
+		Utility::Strcpy(CompareAccountLoginSession.AccountId, AccountId);
 	}
 	
-	PrimaryAccountLoginSessionIndexSessionID::PrimaryAccountLoginSessionIndexSessionID(PrimaryAccountLoginSessionTable* tableOwner)
-		:table(tableOwner)
+	PrimaryAccountLoginSessionIndexSessionId::PrimaryAccountLoginSessionIndexSessionId(PrimaryAccountLoginSessionTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	PrimaryAccountLoginSessionIndexSessionID::iterator PrimaryAccountLoginSessionIndexSessionID::LowerBound(const SessionIDType& SessionID)
+	PrimaryAccountLoginSessionIndexSessionId::iterator PrimaryAccountLoginSessionIndexSessionId::LowerBound(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&ComparePrimaryAccountLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&ComparePrimaryAccountLoginSession);
 	}
-	PrimaryAccountLoginSessionIndexSessionID::iterator PrimaryAccountLoginSessionIndexSessionID::UpperBound(const SessionIDType& SessionID)
+	PrimaryAccountLoginSessionIndexSessionId::iterator PrimaryAccountLoginSessionIndexSessionId::UpperBound(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&ComparePrimaryAccountLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&ComparePrimaryAccountLoginSession);
 	}
-	std::pair<PrimaryAccountLoginSessionIndexSessionID::iterator, PrimaryAccountLoginSessionIndexSessionID::iterator> PrimaryAccountLoginSessionIndexSessionID::EqualRange(const SessionIDType& SessionID)
+	std::pair<PrimaryAccountLoginSessionIndexSessionId::iterator, PrimaryAccountLoginSessionIndexSessionId::iterator> PrimaryAccountLoginSessionIndexSessionId::EqualRange(const SessionIdType& SessionId)
 	{
-		FillCompareRecord(SessionID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&ComparePrimaryAccountLoginSession);
+		FillCompareRecord(SessionId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&ComparePrimaryAccountLoginSession);
 	}
-	void PrimaryAccountLoginSessionIndexSessionID::Insert(PrimaryAccountLoginSession* const record)
+	void PrimaryAccountLoginSessionIndexSessionId::Insert(PrimaryAccountLoginSession* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void PrimaryAccountLoginSessionIndexSessionID::Erase(PrimaryAccountLoginSession* const record)
+	void PrimaryAccountLoginSessionIndexSessionId::Erase(PrimaryAccountLoginSession* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void PrimaryAccountLoginSessionIndexSessionID::Update(iterator it)
+	void PrimaryAccountLoginSessionIndexSessionId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool PrimaryAccountLoginSessionIndexSessionID::NeedUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
+	bool PrimaryAccountLoginSessionIndexSessionId::NeedUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
 	{
-		return !(PrimaryAccountLoginSessionEqualForSessionIDIndex()(oldRecord, newRecord));
+		return !(PrimaryAccountLoginSessionEqualForSessionIdIndex()(oldRecord, newRecord));
 	}
-	PrimaryAccountLoginSessionIndexSessionID::iterator PrimaryAccountLoginSessionIndexSessionID::FindNode(PrimaryAccountLoginSession* const record)
+	PrimaryAccountLoginSessionIndexSessionId::iterator PrimaryAccountLoginSessionIndexSessionId::FindNode(PrimaryAccountLoginSession* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -881,57 +881,57 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void PrimaryAccountLoginSessionIndexSessionID::FillCompareRecord(const SessionIDType& SessionID)
+	void PrimaryAccountLoginSessionIndexSessionId::FillCompareRecord(const SessionIdType& SessionId)
 	{
-		ComparePrimaryAccountLoginSession.SessionID = SessionID;
+		ComparePrimaryAccountLoginSession.SessionId = SessionId;
 	}
 	
-	PrimaryAccountLoginSessionIndexPrimaryAccountID::PrimaryAccountLoginSessionIndexPrimaryAccountID(PrimaryAccountLoginSessionTable* tableOwner)
-		:table(tableOwner)
+	PrimaryAccountLoginSessionIndexPrimaryAccountId::PrimaryAccountLoginSessionIndexPrimaryAccountId(PrimaryAccountLoginSessionTable* tableOwner)
+		:table_(tableOwner)
 	{
 	}
-	PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator PrimaryAccountLoginSessionIndexPrimaryAccountID::LowerBound(const AccountIDType& PrimaryAccountID)
+	PrimaryAccountLoginSessionIndexPrimaryAccountId::iterator PrimaryAccountLoginSessionIndexPrimaryAccountId::LowerBound(const AccountIdType& PrimaryAccountId)
 	{
-		FillCompareRecord(PrimaryAccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.lower_bound(&ComparePrimaryAccountLoginSession);
+		FillCompareRecord(PrimaryAccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.lower_bound(&ComparePrimaryAccountLoginSession);
 	}
-	PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator PrimaryAccountLoginSessionIndexPrimaryAccountID::UpperBound(const AccountIDType& PrimaryAccountID)
+	PrimaryAccountLoginSessionIndexPrimaryAccountId::iterator PrimaryAccountLoginSessionIndexPrimaryAccountId::UpperBound(const AccountIdType& PrimaryAccountId)
 	{
-		FillCompareRecord(PrimaryAccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.upper_bound(&ComparePrimaryAccountLoginSession);
+		FillCompareRecord(PrimaryAccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.upper_bound(&ComparePrimaryAccountLoginSession);
 	}
-	std::pair<PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator, PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator> PrimaryAccountLoginSessionIndexPrimaryAccountID::EqualRange(const AccountIDType& PrimaryAccountID)
+	std::pair<PrimaryAccountLoginSessionIndexPrimaryAccountId::iterator, PrimaryAccountLoginSessionIndexPrimaryAccountId::iterator> PrimaryAccountLoginSessionIndexPrimaryAccountId::EqualRange(const AccountIdType& PrimaryAccountId)
 	{
-		FillCompareRecord(PrimaryAccountID);
-		std::shared_lock guard(table->sharedMutex);
-		return index.equal_range(&ComparePrimaryAccountLoginSession);
+		FillCompareRecord(PrimaryAccountId);
+		std::shared_lock guard(table_->SharedMutex);
+		return index_.equal_range(&ComparePrimaryAccountLoginSession);
 	}
-	void PrimaryAccountLoginSessionIndexPrimaryAccountID::Insert(PrimaryAccountLoginSession* const record)
+	void PrimaryAccountLoginSessionIndexPrimaryAccountId::Insert(PrimaryAccountLoginSession* const record)
 	{
-		index.insert(record);
+		index_.insert(record);
 	}
-	void PrimaryAccountLoginSessionIndexPrimaryAccountID::Erase(PrimaryAccountLoginSession* const record)
+	void PrimaryAccountLoginSessionIndexPrimaryAccountId::Erase(PrimaryAccountLoginSession* const record)
 	{
 		auto it = FindNode(record);
-		index.erase(it);
+		index_.erase(it);
 	}
-	void PrimaryAccountLoginSessionIndexPrimaryAccountID::Update(iterator it)
+	void PrimaryAccountLoginSessionIndexPrimaryAccountId::Update(iterator it)
 	{
 		auto record = *it;
-		index.erase(it);
-		index.insert(record);
+		index_.erase(it);
+		index_.insert(record);
 	}
-	bool PrimaryAccountLoginSessionIndexPrimaryAccountID::NeedUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
+	bool PrimaryAccountLoginSessionIndexPrimaryAccountId::NeedUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
 	{
-		return !(PrimaryAccountLoginSessionEqualForPrimaryAccountIDIndex()(oldRecord, newRecord));
+		return !(PrimaryAccountLoginSessionEqualForPrimaryAccountIdIndex()(oldRecord, newRecord));
 	}
-	PrimaryAccountLoginSessionIndexPrimaryAccountID::iterator PrimaryAccountLoginSessionIndexPrimaryAccountID::FindNode(PrimaryAccountLoginSession* const record)
+	PrimaryAccountLoginSessionIndexPrimaryAccountId::iterator PrimaryAccountLoginSessionIndexPrimaryAccountId::FindNode(PrimaryAccountLoginSession* const record)
 	{
-		auto p = index.equal_range(record);
+		auto p = index_.equal_range(record);
 		for (auto it = p.first; it != p.second; ++it)
 		{
 			if (*it == record)
@@ -939,11 +939,11 @@ namespace mdb
 				return it;
 			}
 		}
-		return index.end();
+		return index_.end();
 	}
-	void PrimaryAccountLoginSessionIndexPrimaryAccountID::FillCompareRecord(const AccountIDType& PrimaryAccountID)
+	void PrimaryAccountLoginSessionIndexPrimaryAccountId::FillCompareRecord(const AccountIdType& PrimaryAccountId)
 	{
-		Utility::Strcpy(ComparePrimaryAccountLoginSession.PrimaryAccountID, PrimaryAccountID);
+		Utility::Strcpy(ComparePrimaryAccountLoginSession.PrimaryAccountId, PrimaryAccountId);
 	}
 	
 }

@@ -28,7 +28,7 @@ void MdApiImpl::OnMessage(Package* package)
 		auto rspMdUserLogin = static_cast<RspMdUserLoginPackage*>(package)->RspMdUserLogin;
 		if (rspMdUserLogin != nullptr)
 		{
-			TrunsferUtf8ToGbk(rspMdUserLogin->UserID);
+			TrunsferUtf8ToGbk(rspMdUserLogin->UserId);
 			TrunsferUtf8ToGbk(rspMdUserLogin->LoginDate);
 			TrunsferUtf8ToGbk(rspMdUserLogin->LoginTime);
 		}
@@ -45,7 +45,7 @@ void MdApiImpl::OnMessage(Package* package)
 		auto rspMdUserLogout = static_cast<RspMdUserLogoutPackage*>(package)->RspMdUserLogout;
 		if (rspMdUserLogout != nullptr)
 		{
-			TrunsferUtf8ToGbk(rspMdUserLogout->UserID);
+			TrunsferUtf8ToGbk(rspMdUserLogout->UserId);
 		}
 		auto rspInfo = static_cast<RspMdUserLogoutPackage*>(package)->RspInfo;
 		if (rspInfo != nullptr)
@@ -60,8 +60,8 @@ void MdApiImpl::OnMessage(Package* package)
 		auto rspSubMarketData = static_cast<RspSubMarketDataPackage*>(package)->RspSubMarketData;
 		if (rspSubMarketData != nullptr)
 		{
-			TrunsferUtf8ToGbk(rspSubMarketData->ExchangeID);
-			TrunsferUtf8ToGbk(rspSubMarketData->InstrumentID);
+			TrunsferUtf8ToGbk(rspSubMarketData->ExchangeId);
+			TrunsferUtf8ToGbk(rspSubMarketData->InstrumentId);
 		}
 		auto rspInfo = static_cast<RspSubMarketDataPackage*>(package)->RspInfo;
 		if (rspInfo != nullptr)
@@ -76,8 +76,8 @@ void MdApiImpl::OnMessage(Package* package)
 		auto rspUnSubMarketData = static_cast<RspUnSubMarketDataPackage*>(package)->RspUnSubMarketData;
 		if (rspUnSubMarketData != nullptr)
 		{
-			TrunsferUtf8ToGbk(rspUnSubMarketData->ExchangeID);
-			TrunsferUtf8ToGbk(rspUnSubMarketData->InstrumentID);
+			TrunsferUtf8ToGbk(rspUnSubMarketData->ExchangeId);
+			TrunsferUtf8ToGbk(rspUnSubMarketData->InstrumentId);
 		}
 		auto rspInfo = static_cast<RspUnSubMarketDataPackage*>(package)->RspInfo;
 		if (rspInfo != nullptr)
@@ -93,8 +93,8 @@ void MdApiImpl::OnMessage(Package* package)
 		if (depthMarketData != nullptr)
 		{
 			TrunsferUtf8ToGbk(depthMarketData->TradingDay);
-			TrunsferUtf8ToGbk(depthMarketData->ExchangeID);
-			TrunsferUtf8ToGbk(depthMarketData->InstrumentID);
+			TrunsferUtf8ToGbk(depthMarketData->ExchangeId);
+			TrunsferUtf8ToGbk(depthMarketData->InstrumentId);
 		}
 		mdSpi->OnRtnDepthMarketData(depthMarketData);
 		break;
@@ -105,8 +105,8 @@ void MdApiImpl::OnMessage(Package* package)
 		if (barMarketData != nullptr)
 		{
 			TrunsferUtf8ToGbk(barMarketData->TradingDay);
-			TrunsferUtf8ToGbk(barMarketData->ExchangeID);
-			TrunsferUtf8ToGbk(barMarketData->InstrumentID);
+			TrunsferUtf8ToGbk(barMarketData->ExchangeId);
+			TrunsferUtf8ToGbk(barMarketData->InstrumentId);
 		}
 		mdSpi->OnRtnBarMarketData(barMarketData);
 		break;
@@ -124,7 +124,7 @@ int MdApiImpl::ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int req
 	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqMdUserLogin = Allocate<ReqMdUserLoginField>();
 	memcpy(reqPackage->ReqMdUserLogin, reqMdUserLogin, sizeof(ReqMdUserLoginField));
-	TrunsferGbkToUtf8(reqPackage->ReqMdUserLogin->UserID);
+	TrunsferGbkToUtf8(reqPackage->ReqMdUserLogin->UserId);
 	TrunsferGbkToUtf8(reqPackage->ReqMdUserLogin->Password);
 	
 	
@@ -138,7 +138,7 @@ int MdApiImpl::ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int 
 	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqMdUserLogout = Allocate<ReqMdUserLogoutField>();
 	memcpy(reqPackage->ReqMdUserLogout, reqMdUserLogout, sizeof(ReqMdUserLogoutField));
-	TrunsferGbkToUtf8(reqPackage->ReqMdUserLogout->UserID);
+	TrunsferGbkToUtf8(reqPackage->ReqMdUserLogout->UserId);
 	
 	
 	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
@@ -151,8 +151,8 @@ int MdApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, i
 	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqSubMarketData = Allocate<ReqSubMarketDataField>();
 	memcpy(reqPackage->ReqSubMarketData, reqSubMarketData, sizeof(ReqSubMarketDataField));
-	TrunsferGbkToUtf8(reqPackage->ReqSubMarketData->ExchangeID);
-	TrunsferGbkToUtf8(reqPackage->ReqSubMarketData->InstrumentID);
+	TrunsferGbkToUtf8(reqPackage->ReqSubMarketData->ExchangeId);
+	TrunsferGbkToUtf8(reqPackage->ReqSubMarketData->InstrumentId);
 	
 	
 	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;
@@ -165,8 +165,8 @@ int MdApiImpl::ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketD
 	reqPackage->Prepare(sessionID, false, requestID);
 	reqPackage->ReqUnSubMarketData = Allocate<ReqUnSubMarketDataField>();
 	memcpy(reqPackage->ReqUnSubMarketData, reqUnSubMarketData, sizeof(ReqUnSubMarketDataField));
-	TrunsferGbkToUtf8(reqPackage->ReqUnSubMarketData->ExchangeID);
-	TrunsferGbkToUtf8(reqPackage->ReqUnSubMarketData->InstrumentID);
+	TrunsferGbkToUtf8(reqPackage->ReqUnSubMarketData->ExchangeId);
+	TrunsferGbkToUtf8(reqPackage->ReqUnSubMarketData->InstrumentId);
 	
 	
 	int result = (m_Protocol->Send(reqPackage))? ErrorNone : ErrorNetwork;

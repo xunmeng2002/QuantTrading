@@ -19,16 +19,6 @@ bool MdKernel::DispatchPackage(Package* package)
 		HandleNotifyDisConnect(static_cast<NotifyDisConnectPackage*>(package));
 		return true;
 	}
-	case NotifyDBConnectPackage::PackageID:
-	{
-		HandleNotifyDBConnect(static_cast<NotifyDBConnectPackage*>(package));
-		return true;
-	}
-	case NotifyDBDisConnectPackage::PackageID:
-	{
-		HandleNotifyDBDisConnect(static_cast<NotifyDBDisConnectPackage*>(package));
-		return true;
-	}
 	case ReqMdUserLoginPackage::PackageID:
 	{
 		auto reqPackage = static_cast<ReqMdUserLoginPackage*>(package);

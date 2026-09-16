@@ -53,8 +53,8 @@ int SimExchangeApiMiddle::ReqAccountLogin(const ReqAccountLoginField* reqAccount
 	WriteLog(LogLevel::Info, "ReqAccountLogin: RequestID:%d", requestID);
 	if (reqAccountLogin != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqAccountLoginField:AccountID:[%s]",
-			reqAccountLogin->AccountID);
+		WriteLog(LogLevel::Info, "ReqAccountLoginField:AccountId:[%s]",
+			reqAccountLogin->AccountId);
 	}
 	else
 	{
@@ -67,8 +67,8 @@ int SimExchangeApiMiddle::ReqAccountLogout(const ReqAccountLogoutField* reqAccou
 	WriteLog(LogLevel::Info, "ReqAccountLogout: RequestID:%d", requestID);
 	if (reqAccountLogout != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqAccountLogoutField:AccountID:[%s]",
-			reqAccountLogout->AccountID);
+		WriteLog(LogLevel::Info, "ReqAccountLogoutField:AccountId:[%s]",
+			reqAccountLogout->AccountId);
 	}
 	else
 	{
@@ -81,8 +81,8 @@ int SimExchangeApiMiddle::ReqQryOrder(const ReqQryOrderField* reqQryOrder, int r
 	WriteLog(LogLevel::Info, "ReqQryOrder: RequestID:%d", requestID);
 	if (reqQryOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqQryOrderField:AccountID:[%s]",
-			reqQryOrder->AccountID);
+		WriteLog(LogLevel::Info, "ReqQryOrderField:AccountId:[%s]",
+			reqQryOrder->AccountId);
 	}
 	else
 	{
@@ -95,8 +95,8 @@ int SimExchangeApiMiddle::ReqQryTrade(const ReqQryTradeField* reqQryTrade, int r
 	WriteLog(LogLevel::Info, "ReqQryTrade: RequestID:%d", requestID);
 	if (reqQryTrade != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqQryTradeField:AccountID:[%s]",
-			reqQryTrade->AccountID);
+		WriteLog(LogLevel::Info, "ReqQryTradeField:AccountId:[%s]",
+			reqQryTrade->AccountId);
 	}
 	else
 	{
@@ -109,8 +109,8 @@ int SimExchangeApiMiddle::ReqQryInstrument(const ReqQryInstrumentField* reqQryIn
 	WriteLog(LogLevel::Info, "ReqQryInstrument: RequestID:%d", requestID);
 	if (reqQryInstrument != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqQryInstrumentField:ExchangeID:[%s], InstrumentID:[%s]",
-			reqQryInstrument->ExchangeID, reqQryInstrument->InstrumentID);
+		WriteLog(LogLevel::Info, "ReqQryInstrumentField:ExchangeId:[%s], InstrumentId:[%s]",
+			reqQryInstrument->ExchangeId, reqQryInstrument->InstrumentId);
 	}
 	else
 	{
@@ -123,8 +123,8 @@ int SimExchangeApiMiddle::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrd
 	WriteLog(LogLevel::Info, "ReqInsertOrder: RequestID:%d", requestID);
 	if (reqInsertOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]",
-			reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, static_cast<int>(reqInsertOrder->Direction), static_cast<int>(reqInsertOrder->OffsetFlag), static_cast<int>(reqInsertOrder->OrderPriceType), reqInsertOrder->Price, reqInsertOrder->Volume, reqInsertOrder->ClientOrderID);
+		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
+			reqInsertOrder->AccountId, reqInsertOrder->ExchangeId, reqInsertOrder->InstrumentId, static_cast<int>(reqInsertOrder->Direction), static_cast<int>(reqInsertOrder->OffsetFlag), static_cast<int>(reqInsertOrder->OrderPriceType), reqInsertOrder->Price, reqInsertOrder->Volume, reqInsertOrder->ClientOrderId);
 	}
 	else
 	{
@@ -137,8 +137,8 @@ int SimExchangeApiMiddle::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrd
 	WriteLog(LogLevel::Info, "ReqCancelOrder: RequestID:%d", requestID);
 	if (reqCancelOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]",
-			reqCancelOrder->AccountID, reqCancelOrder->ExchangeID, reqCancelOrder->InstrumentID, reqCancelOrder->ClientCancelOrderID, reqCancelOrder->OrderID, reqCancelOrder->OrderSysID, reqCancelOrder->SessionID, reqCancelOrder->ClientOrderID);
+		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",
+			reqCancelOrder->AccountId, reqCancelOrder->ExchangeId, reqCancelOrder->InstrumentId, reqCancelOrder->ClientCancelOrderId, reqCancelOrder->OrderId, reqCancelOrder->OrderSysId, reqCancelOrder->SessionId, reqCancelOrder->ClientOrderId);
 	}
 	else
 	{

@@ -30,8 +30,8 @@ void SimExchangeSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAcco
 	WriteLog(LogLevel::Info, "OnRspAccountLogin: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspAccountLogin != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspAccountLoginField:AccountID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]",
-			rspAccountLogin->AccountID, rspAccountLogin->LoginDate, rspAccountLogin->LoginTime, rspAccountLogin->SessionID);
+		WriteLog(LogLevel::Info, "RspAccountLoginField:AccountId:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]",
+			rspAccountLogin->AccountId, rspAccountLogin->LoginDate, rspAccountLogin->LoginTime, rspAccountLogin->SessionId);
 	}
 	else
 	{
@@ -39,8 +39,8 @@ void SimExchangeSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAcco
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -52,8 +52,8 @@ void SimExchangeSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAc
 	WriteLog(LogLevel::Info, "OnRspAccountLogout: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (rspAccountLogout != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspAccountLogoutField:AccountID:[%s]",
-			rspAccountLogout->AccountID);
+		WriteLog(LogLevel::Info, "RspAccountLogoutField:AccountId:[%s]",
+			rspAccountLogout->AccountId);
 	}
 	else
 	{
@@ -61,8 +61,8 @@ void SimExchangeSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAc
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -74,8 +74,8 @@ void SimExchangeSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoF
 	WriteLog(LogLevel::Info, "OnRspQryOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (order != nullptr)
 	{
-		WriteLog(LogLevel::Info, "OrderField:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]",
-			order->TradingDay, order->AccountID, order->ExchangeID, order->InstrumentID, static_cast<int>(order->ProductClass), order->OrderID, order->OrderSysID, static_cast<int>(order->Direction), static_cast<int>(order->OffsetFlag), static_cast<int>(order->OrderPriceType), GetDoubleValue(order->Price), order->Volume, order->VolumeTotal, order->VolumeTraded, order->VolumeMultiple, static_cast<int>(order->OrderStatus), order->OrderDate, order->OrderTime, order->CancelDate, order->CancelTime, order->SessionID, order->ClientOrderID, order->RequestID, GetDoubleValue(order->FrozenCash), GetDoubleValue(order->FrozenMargin), GetDoubleValue(order->FrozenCommission));
+		WriteLog(LogLevel::Info, "OrderField:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionId:[%lld], ClientOrderId:[%d], RequestId:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]",
+			order->TradingDay, order->AccountId, order->ExchangeId, order->InstrumentId, static_cast<int>(order->ProductClass), order->OrderId, order->OrderSysId, static_cast<int>(order->Direction), static_cast<int>(order->OffsetFlag), static_cast<int>(order->OrderPriceType), GetDoubleValue(order->Price), order->Volume, order->VolumeTotal, order->VolumeTraded, order->VolumeMultiple, static_cast<int>(order->OrderStatus), order->OrderDate, order->OrderTime, order->CancelDate, order->CancelTime, order->SessionId, order->ClientOrderId, order->RequestId, GetDoubleValue(order->FrozenCash), GetDoubleValue(order->FrozenMargin), GetDoubleValue(order->FrozenCommission));
 	}
 	else
 	{
@@ -83,8 +83,8 @@ void SimExchangeSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoF
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -96,8 +96,8 @@ void SimExchangeSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoF
 	WriteLog(LogLevel::Info, "OnRspQryTrade: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (trade != nullptr)
 	{
-		WriteLog(LogLevel::Info, "TradeField:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
-			trade->TradingDay, trade->AccountID, trade->ExchangeID, trade->InstrumentID, static_cast<int>(trade->ProductClass), trade->OrderID, trade->OrderSysID, trade->TradeID, static_cast<int>(trade->Direction), static_cast<int>(trade->OffsetFlag), GetDoubleValue(trade->Price), trade->Volume, trade->VolumeMultiple, GetDoubleValue(trade->TradeAmount), GetDoubleValue(trade->Commission), trade->TradeDate, trade->TradeTime);
+		WriteLog(LogLevel::Info, "TradeField:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], TradeId:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
+			trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, static_cast<int>(trade->ProductClass), trade->OrderId, trade->OrderSysId, trade->TradeId, static_cast<int>(trade->Direction), static_cast<int>(trade->OffsetFlag), GetDoubleValue(trade->Price), trade->Volume, trade->VolumeMultiple, GetDoubleValue(trade->TradeAmount), GetDoubleValue(trade->Commission), trade->TradeDate, trade->TradeTime);
 	}
 	else
 	{
@@ -105,8 +105,8 @@ void SimExchangeSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoF
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -118,8 +118,8 @@ void SimExchangeSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument,
 	WriteLog(LogLevel::Info, "OnRspQryInstrument: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (instrument != nullptr)
 	{
-		WriteLog(LogLevel::Info, "InstrumentField:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]",
-			instrument->ExchangeID, instrument->InstrumentID, instrument->ExchangeInstID, instrument->InstrumentName, instrument->ProductID, static_cast<int>(instrument->ProductClass), instrument->VolumeMultiple, GetDoubleValue(instrument->PriceTick), instrument->MaxMarketOrderVolume, instrument->MinMarketOrderVolume, instrument->MaxLimitOrderVolume, instrument->MinLimitOrderVolume, instrument->SessionName);
+		WriteLog(LogLevel::Info, "InstrumentField:ExchangeId:[%s], InstrumentId:[%s], ExchangeInstId:[%s], InstrumentName:[%s], ProductId:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]",
+			instrument->ExchangeId, instrument->InstrumentId, instrument->ExchangeInstId, instrument->InstrumentName, instrument->ProductId, static_cast<int>(instrument->ProductClass), instrument->VolumeMultiple, GetDoubleValue(instrument->PriceTick), instrument->MaxMarketOrderVolume, instrument->MinMarketOrderVolume, instrument->MaxLimitOrderVolume, instrument->MinLimitOrderVolume, instrument->SessionName);
 	}
 	else
 	{
@@ -127,8 +127,8 @@ void SimExchangeSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument,
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -140,8 +140,8 @@ void SimExchangeSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsert
 	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (reqInsertOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]",
-			reqInsertOrder->AccountID, reqInsertOrder->ExchangeID, reqInsertOrder->InstrumentID, static_cast<int>(reqInsertOrder->Direction), static_cast<int>(reqInsertOrder->OffsetFlag), static_cast<int>(reqInsertOrder->OrderPriceType), GetDoubleValue(reqInsertOrder->Price), reqInsertOrder->Volume, reqInsertOrder->ClientOrderID);
+		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
+			reqInsertOrder->AccountId, reqInsertOrder->ExchangeId, reqInsertOrder->InstrumentId, static_cast<int>(reqInsertOrder->Direction), static_cast<int>(reqInsertOrder->OffsetFlag), static_cast<int>(reqInsertOrder->OrderPriceType), GetDoubleValue(reqInsertOrder->Price), reqInsertOrder->Volume, reqInsertOrder->ClientOrderId);
 	}
 	else
 	{
@@ -149,8 +149,8 @@ void SimExchangeSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsert
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -162,8 +162,8 @@ void SimExchangeSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancel
 	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestID, isLast);
 	if (reqCancelOrder != nullptr)
 	{
-		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]",
-			reqCancelOrder->AccountID, reqCancelOrder->ExchangeID, reqCancelOrder->InstrumentID, reqCancelOrder->ClientCancelOrderID, reqCancelOrder->OrderID, reqCancelOrder->OrderSysID, reqCancelOrder->SessionID, reqCancelOrder->ClientOrderID);
+		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",
+			reqCancelOrder->AccountId, reqCancelOrder->ExchangeId, reqCancelOrder->InstrumentId, reqCancelOrder->ClientCancelOrderId, reqCancelOrder->OrderId, reqCancelOrder->OrderSysId, reqCancelOrder->SessionId, reqCancelOrder->ClientOrderId);
 	}
 	else
 	{
@@ -171,8 +171,8 @@ void SimExchangeSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancel
 	}
 	if (rspInfo != nullptr)
 	{
-		WriteLog(LogLevel::Info, "RspInfoField:ErrorID:[%d], ErrorMsg:[%s]",
-			rspInfo->ErrorID, rspInfo->ErrorMsg);
+		WriteLog(LogLevel::Info, "RspInfoField:ErrorId:[%d], ErrorMsg:[%s]",
+			rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 	else
 	{
@@ -184,8 +184,8 @@ void SimExchangeSpiMiddle::OnRtnOrder(const OrderField* order)
 	WriteLog(LogLevel::Info, "OnRtnOrder");
 	if (order != nullptr)
 	{
-		WriteLog(LogLevel::Info, "OrderField:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]",
-			order->TradingDay, order->AccountID, order->ExchangeID, order->InstrumentID, static_cast<int>(order->ProductClass), order->OrderID, order->OrderSysID, static_cast<int>(order->Direction), static_cast<int>(order->OffsetFlag), static_cast<int>(order->OrderPriceType), GetDoubleValue(order->Price), order->Volume, order->VolumeTotal, order->VolumeTraded, order->VolumeMultiple, static_cast<int>(order->OrderStatus), order->OrderDate, order->OrderTime, order->CancelDate, order->CancelTime, order->SessionID, order->ClientOrderID, order->RequestID, GetDoubleValue(order->FrozenCash), GetDoubleValue(order->FrozenMargin), GetDoubleValue(order->FrozenCommission));
+		WriteLog(LogLevel::Info, "OrderField:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionId:[%lld], ClientOrderId:[%d], RequestId:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]",
+			order->TradingDay, order->AccountId, order->ExchangeId, order->InstrumentId, static_cast<int>(order->ProductClass), order->OrderId, order->OrderSysId, static_cast<int>(order->Direction), static_cast<int>(order->OffsetFlag), static_cast<int>(order->OrderPriceType), GetDoubleValue(order->Price), order->Volume, order->VolumeTotal, order->VolumeTraded, order->VolumeMultiple, static_cast<int>(order->OrderStatus), order->OrderDate, order->OrderTime, order->CancelDate, order->CancelTime, order->SessionId, order->ClientOrderId, order->RequestId, GetDoubleValue(order->FrozenCash), GetDoubleValue(order->FrozenMargin), GetDoubleValue(order->FrozenCommission));
 	}
 	else
 	{
@@ -197,8 +197,8 @@ void SimExchangeSpiMiddle::OnRtnTrade(const TradeField* trade)
 	WriteLog(LogLevel::Info, "OnRtnTrade");
 	if (trade != nullptr)
 	{
-		WriteLog(LogLevel::Info, "TradeField:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
-			trade->TradingDay, trade->AccountID, trade->ExchangeID, trade->InstrumentID, static_cast<int>(trade->ProductClass), trade->OrderID, trade->OrderSysID, trade->TradeID, static_cast<int>(trade->Direction), static_cast<int>(trade->OffsetFlag), GetDoubleValue(trade->Price), trade->Volume, trade->VolumeMultiple, GetDoubleValue(trade->TradeAmount), GetDoubleValue(trade->Commission), trade->TradeDate, trade->TradeTime);
+		WriteLog(LogLevel::Info, "TradeField:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], TradeId:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
+			trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, static_cast<int>(trade->ProductClass), trade->OrderId, trade->OrderSysId, trade->TradeId, static_cast<int>(trade->Direction), static_cast<int>(trade->OffsetFlag), GetDoubleValue(trade->Price), trade->Volume, trade->VolumeMultiple, GetDoubleValue(trade->TradeAmount), GetDoubleValue(trade->Commission), trade->TradeDate, trade->TradeTime);
 	}
 	else
 	{

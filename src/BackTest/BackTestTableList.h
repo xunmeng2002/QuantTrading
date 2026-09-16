@@ -3,26 +3,26 @@
 #include "TableList.h"
 #include "MdbStructs.h"
 
-using namespace mdb;
-namespace quanttrading::backtest
+using namespace QuantTrading;
+namespace QuantTrading::BackTest
 {
-	inline const unsigned int kbacktestTableIDs[] =
+	inline const unsigned int BackTestTableIds[] =
 	{
-		TradingDay::TableID,
-		Exchange::TableID,
-		Product::TableID,
-		HotInstrument::TableID,
-		Instrument::TableID,
-		PrimaryAccount::TableID,
-		Account::TableID,
-		Capital::TableID,
-		Position::TableID,
-		PositionDetail::TableID,
-		Order::TableID,
-		Trade::TableID,
-		DepthMarketData::TableID,
-		BarMarketData::TableID,
-		MdSubscribe::TableID,
+		TradingDay::TableId,
+		Exchange::TableId,
+		Product::TableId,
+		HotInstrument::TableId,
+		Instrument::TableId,
+		PrimaryAccount::TableId,
+		Account::TableId,
+		Capital::TableId,
+		Position::TableId,
+		PositionDetail::TableId,
+		Order::TableId,
+		Trade::TableId,
+		DepthMarketData::TableId,
+		BarMarketData::TableId,
+		MdSubscribe::TableId,
 	};
-	inline const TableList backtestTableList = { "backtest", kbacktestTableIDs, static_cast<int>(sizeof(kbacktestTableIDs) / sizeof(kbacktestTableIDs[0])) };
+	inline const TableList BackTestTableList = { "BackTest", BackTestTableIds, static_cast<int>(sizeof(BackTestTableIds) / sizeof(BackTestTableIds[0])) };
 }

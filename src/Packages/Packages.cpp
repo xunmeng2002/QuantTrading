@@ -8,11 +8,11 @@
 #include <cstdio>
 #include <cstring>
 
-using namespace spark;
-using namespace spark::core;
-using namespace spark::network;
+using namespace Spark;
+using namespace Spark::Core;
+using namespace Spark::Network;
 
-namespace quanttrading::packages
+namespace QuantTrading::Packages
 {
 thread_local char DataStringBuffer[10240];
 
@@ -60,25 +60,25 @@ void NotifyConnectPackage::Deallocate()
 {
 	ObjectPool<NotifyConnectPackage>::GetInstance().Deallocate(this);
 }
-void NotifyConnectPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void NotifyConnectPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int NotifyConnectPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (NotifyConnect != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyConnectField::FieldID);
-		StepUtility::WriteString(cursor, Items::SessionID, NotifyConnect->SessionID);
-		if (strlen(NotifyConnect->IPAddress) >= sizeof(NotifyConnect->IPAddress))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyConnectField::FieldId);
+		StepUtility::WriteString(cursor, Items::SessionId, NotifyConnect->SessionId);
+		if (strlen(NotifyConnect->IpAddress) >= sizeof(NotifyConnect->IpAddress))
 		{
-			NotifyConnect->IPAddress[sizeof(NotifyConnect->IPAddress) - 1] = 0;
+			NotifyConnect->IpAddress[sizeof(NotifyConnect->IpAddress) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::IPAddress, NotifyConnect->IPAddress);
+		StepUtility::WriteString(cursor, Items::IpAddress, NotifyConnect->IpAddress);
 		StepUtility::WriteString(cursor, Items::Port, NotifyConnect->Port);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyConnectField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyConnectField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -90,39 +90,39 @@ bool NotifyConnectPackage::FromStepStream(char* buff, int startIndex, int endInd
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case NotifyConnectField::FieldID:
+			case NotifyConnectField::FieldId:
 			{
 				NotifyConnect = ObjectPool<NotifyConnectField>::GetInstance().Allocate();
 				memset(NotifyConnect, 0, sizeof(*NotifyConnect));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							NotifyConnect->SessionID = atoll(value.c_str());
+							NotifyConnect->SessionId = atoll(value.c_str());
 							break;
 						}
-						case Items::IPAddress:
+						case Items::IpAddress:
 						{
-							size_t len = value.length() >= sizeof(NotifyConnect->IPAddress) ? sizeof(NotifyConnect->IPAddress) - 1 : value.length();
-							memcpy(NotifyConnect->IPAddress, value.c_str(), len);
+							size_t len = value.length() >= sizeof(NotifyConnect->IpAddress) ? sizeof(NotifyConnect->IpAddress) - 1 : value.length();
+							memcpy(NotifyConnect->IpAddress, value.c_str(), len);
 							break;
 						}
 						case Items::Port:
@@ -131,21 +131,21 @@ bool NotifyConnectPackage::FromStepStream(char* buff, int startIndex, int endInd
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for NotifyConnectField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for NotifyConnectField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyConnectPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyConnectPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -168,7 +168,7 @@ int NotifyConnectPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &NotifyConnectField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &NotifyConnectField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, NotifyConnect, sizeof(NotifyConnectField));
 		offset += sizeof(NotifyConnectField);
@@ -180,12 +180,12 @@ bool NotifyConnectPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case NotifyConnectField::FieldID:
+		case NotifyConnectField::FieldId:
 		{
 			NotifyConnect = ObjectPool<NotifyConnectField>::GetInstance().Allocate();
 			memcpy(NotifyConnect, buff + offset, sizeof(NotifyConnectField));
@@ -203,7 +203,7 @@ const char* NotifyConnectPackage::GetDebugString() const
 	int offset = 0;
 	if (NotifyConnect != nullptr)
 	{
-		offset = AppendDebugString(offset, "NotifyConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyConnect->SessionID, NotifyConnect->IPAddress, NotifyConnect->Port);
+		offset = AppendDebugString(offset, "NotifyConnect:SessionId:[%lld], IpAddress:[%s], Port:[%d]", NotifyConnect->SessionId, NotifyConnect->IpAddress, NotifyConnect->Port);
 	}
 	return DataStringBuffer;
 }
@@ -228,25 +228,25 @@ void NotifyDisConnectPackage::Deallocate()
 {
 	ObjectPool<NotifyDisConnectPackage>::GetInstance().Deallocate(this);
 }
-void NotifyDisConnectPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void NotifyDisConnectPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int NotifyDisConnectPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (NotifyDisConnect != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDisConnectField::FieldID);
-		StepUtility::WriteString(cursor, Items::SessionID, NotifyDisConnect->SessionID);
-		if (strlen(NotifyDisConnect->IPAddress) >= sizeof(NotifyDisConnect->IPAddress))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDisConnectField::FieldId);
+		StepUtility::WriteString(cursor, Items::SessionId, NotifyDisConnect->SessionId);
+		if (strlen(NotifyDisConnect->IpAddress) >= sizeof(NotifyDisConnect->IpAddress))
 		{
-			NotifyDisConnect->IPAddress[sizeof(NotifyDisConnect->IPAddress) - 1] = 0;
+			NotifyDisConnect->IpAddress[sizeof(NotifyDisConnect->IpAddress) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::IPAddress, NotifyDisConnect->IPAddress);
+		StepUtility::WriteString(cursor, Items::IpAddress, NotifyDisConnect->IpAddress);
 		StepUtility::WriteString(cursor, Items::Port, NotifyDisConnect->Port);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDisConnectField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDisConnectField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -258,39 +258,39 @@ bool NotifyDisConnectPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case NotifyDisConnectField::FieldID:
+			case NotifyDisConnectField::FieldId:
 			{
 				NotifyDisConnect = ObjectPool<NotifyDisConnectField>::GetInstance().Allocate();
 				memset(NotifyDisConnect, 0, sizeof(*NotifyDisConnect));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							NotifyDisConnect->SessionID = atoll(value.c_str());
+							NotifyDisConnect->SessionId = atoll(value.c_str());
 							break;
 						}
-						case Items::IPAddress:
+						case Items::IpAddress:
 						{
-							size_t len = value.length() >= sizeof(NotifyDisConnect->IPAddress) ? sizeof(NotifyDisConnect->IPAddress) - 1 : value.length();
-							memcpy(NotifyDisConnect->IPAddress, value.c_str(), len);
+							size_t len = value.length() >= sizeof(NotifyDisConnect->IpAddress) ? sizeof(NotifyDisConnect->IpAddress) - 1 : value.length();
+							memcpy(NotifyDisConnect->IpAddress, value.c_str(), len);
 							break;
 						}
 						case Items::Port:
@@ -299,21 +299,21 @@ bool NotifyDisConnectPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for NotifyDisConnectField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for NotifyDisConnectField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyDisConnectPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyDisConnectPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -336,7 +336,7 @@ int NotifyDisConnectPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &NotifyDisConnectField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &NotifyDisConnectField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, NotifyDisConnect, sizeof(NotifyDisConnectField));
 		offset += sizeof(NotifyDisConnectField);
@@ -348,12 +348,12 @@ bool NotifyDisConnectPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case NotifyDisConnectField::FieldID:
+		case NotifyDisConnectField::FieldId:
 		{
 			NotifyDisConnect = ObjectPool<NotifyDisConnectField>::GetInstance().Allocate();
 			memcpy(NotifyDisConnect, buff + offset, sizeof(NotifyDisConnectField));
@@ -371,48 +371,48 @@ const char* NotifyDisConnectPackage::GetDebugString() const
 	int offset = 0;
 	if (NotifyDisConnect != nullptr)
 	{
-		offset = AppendDebugString(offset, "NotifyDisConnect:SessionID:[%lld], IPAddress:[%s], Port:[%d]", NotifyDisConnect->SessionID, NotifyDisConnect->IPAddress, NotifyDisConnect->Port);
+		offset = AppendDebugString(offset, "NotifyDisConnect:SessionId:[%lld], IpAddress:[%s], Port:[%d]", NotifyDisConnect->SessionId, NotifyDisConnect->IpAddress, NotifyDisConnect->Port);
 	}
 	return DataStringBuffer;
 }
  
-NotifyDBConnectPackage::NotifyDBConnectPackage()
-	:NotifyDBConnect(nullptr)
+NotifyDbConnectPackage::NotifyDbConnectPackage()
+	:NotifyDbConnect(nullptr)
 {
 }
-NotifyDBConnectPackage::~NotifyDBConnectPackage()
+NotifyDbConnectPackage::~NotifyDbConnectPackage()
 {
-	if (NotifyDBConnect != nullptr)
+	if (NotifyDbConnect != nullptr)
 	{
-		ObjectPool<NotifyDBConnectField>::GetInstance().Deallocate(NotifyDBConnect);
-		NotifyDBConnect = nullptr;
+		ObjectPool<NotifyDbConnectField>::GetInstance().Deallocate(NotifyDbConnect);
+		NotifyDbConnect = nullptr;
 	}
 }
-NotifyDBConnectPackage* NotifyDBConnectPackage::Allocate()
+NotifyDbConnectPackage* NotifyDbConnectPackage::Allocate()
 {
-	return ObjectPool<NotifyDBConnectPackage>::GetInstance().Allocate();
+	return ObjectPool<NotifyDbConnectPackage>::GetInstance().Allocate();
 }
-void NotifyDBConnectPackage::Deallocate()
+void NotifyDbConnectPackage::Deallocate()
 {
-	ObjectPool<NotifyDBConnectPackage>::GetInstance().Deallocate(this);
+	ObjectPool<NotifyDbConnectPackage>::GetInstance().Deallocate(this);
 }
-void NotifyDBConnectPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void NotifyDbConnectPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
-int NotifyDBConnectPackage::ToStepStream(char* buff, int size) const
+int NotifyDbConnectPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
-	if (NotifyDBConnect != nullptr)
+	if (NotifyDbConnect != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDBConnectField::FieldID);
-		if (strlen(NotifyDBConnect->DBName) >= sizeof(NotifyDBConnect->DBName))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDbConnectField::FieldId);
+		if (strlen(NotifyDbConnect->DbName) >= sizeof(NotifyDbConnect->DbName))
 		{
-			NotifyDBConnect->DBName[sizeof(NotifyDBConnect->DBName) - 1] = 0;
+			NotifyDbConnect->DbName[sizeof(NotifyDbConnect->DbName) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::DBName, NotifyDBConnect->DBName);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDBConnectField::FieldID);
+		StepUtility::WriteString(cursor, Items::DbName, NotifyDbConnect->DbName);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDbConnectField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -420,100 +420,100 @@ int NotifyDBConnectPackage::ToStepStream(char* buff, int size) const
 	}
 	return cursor.GetWrittenLength();
 }
-bool NotifyDBConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+bool NotifyDbConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case NotifyDBConnectField::FieldID:
+			case NotifyDbConnectField::FieldId:
 			{
-				NotifyDBConnect = ObjectPool<NotifyDBConnectField>::GetInstance().Allocate();
-				memset(NotifyDBConnect, 0, sizeof(*NotifyDBConnect));
+				NotifyDbConnect = ObjectPool<NotifyDbConnectField>::GetInstance().Allocate();
+				memset(NotifyDbConnect, 0, sizeof(*NotifyDbConnect));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::DBName:
+						case Items::DbName:
 						{
-							size_t len = value.length() >= sizeof(NotifyDBConnect->DBName) ? sizeof(NotifyDBConnect->DBName) - 1 : value.length();
-							memcpy(NotifyDBConnect->DBName, value.c_str(), len);
+							size_t len = value.length() >= sizeof(NotifyDbConnect->DbName) ? sizeof(NotifyDbConnect->DbName) - 1 : value.length();
+							memcpy(NotifyDbConnect->DbName, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for NotifyDBConnectField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for NotifyDbConnectField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyDBConnectPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyDbConnectPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
 		}
 		else
 		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For NotifyDBConnectPackage");
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For NotifyDbConnectPackage");
 			return false;
 		}
 	}
 	return true;
 }
-int NotifyDBConnectPackage::ToXtpStream(char* buff, int size) const
+int NotifyDbConnectPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	if (NotifyDBConnect != nullptr)
+	if (NotifyDbConnect != nullptr)
 	{
-		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(NotifyDBConnectField));
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(NotifyDbConnectField));
 		if (offset + fieldSize > size)
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &NotifyDBConnectField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &NotifyDbConnectField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		memcpy(buff + offset, NotifyDBConnect, sizeof(NotifyDBConnectField));
-		offset += sizeof(NotifyDBConnectField);
+		memcpy(buff + offset, NotifyDbConnect, sizeof(NotifyDbConnectField));
+		offset += sizeof(NotifyDbConnectField);
 	}
 	return offset;
 }
-bool NotifyDBConnectPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+bool NotifyDbConnectPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case NotifyDBConnectField::FieldID:
+		case NotifyDbConnectField::FieldId:
 		{
-			NotifyDBConnect = ObjectPool<NotifyDBConnectField>::GetInstance().Allocate();
-			memcpy(NotifyDBConnect, buff + offset, sizeof(NotifyDBConnectField));
-			offset += sizeof(NotifyDBConnectField);	
+			NotifyDbConnect = ObjectPool<NotifyDbConnectField>::GetInstance().Allocate();
+			memcpy(NotifyDbConnect, buff + offset, sizeof(NotifyDbConnectField));
+			offset += sizeof(NotifyDbConnectField);	
 			break;
 		}
 		default:
@@ -522,53 +522,53 @@ bool NotifyDBConnectPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	}
 	return offset == endIndex;
 }
-const char* NotifyDBConnectPackage::GetDebugString() const
+const char* NotifyDbConnectPackage::GetDebugString() const
 {
 	int offset = 0;
-	if (NotifyDBConnect != nullptr)
+	if (NotifyDbConnect != nullptr)
 	{
-		offset = AppendDebugString(offset, "NotifyDBConnect:DBName:[%s]", NotifyDBConnect->DBName);
+		offset = AppendDebugString(offset, "NotifyDbConnect:DbName:[%s]", NotifyDbConnect->DbName);
 	}
 	return DataStringBuffer;
 }
  
-NotifyDBDisConnectPackage::NotifyDBDisConnectPackage()
-	:NotifyDBDisConnect(nullptr)
+NotifyDbDisConnectPackage::NotifyDbDisConnectPackage()
+	:NotifyDbDisConnect(nullptr)
 {
 }
-NotifyDBDisConnectPackage::~NotifyDBDisConnectPackage()
+NotifyDbDisConnectPackage::~NotifyDbDisConnectPackage()
 {
-	if (NotifyDBDisConnect != nullptr)
+	if (NotifyDbDisConnect != nullptr)
 	{
-		ObjectPool<NotifyDBDisConnectField>::GetInstance().Deallocate(NotifyDBDisConnect);
-		NotifyDBDisConnect = nullptr;
+		ObjectPool<NotifyDbDisConnectField>::GetInstance().Deallocate(NotifyDbDisConnect);
+		NotifyDbDisConnect = nullptr;
 	}
 }
-NotifyDBDisConnectPackage* NotifyDBDisConnectPackage::Allocate()
+NotifyDbDisConnectPackage* NotifyDbDisConnectPackage::Allocate()
 {
-	return ObjectPool<NotifyDBDisConnectPackage>::GetInstance().Allocate();
+	return ObjectPool<NotifyDbDisConnectPackage>::GetInstance().Allocate();
 }
-void NotifyDBDisConnectPackage::Deallocate()
+void NotifyDbDisConnectPackage::Deallocate()
 {
-	ObjectPool<NotifyDBDisConnectPackage>::GetInstance().Deallocate(this);
+	ObjectPool<NotifyDbDisConnectPackage>::GetInstance().Deallocate(this);
 }
-void NotifyDBDisConnectPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void NotifyDbDisConnectPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
-int NotifyDBDisConnectPackage::ToStepStream(char* buff, int size) const
+int NotifyDbDisConnectPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
-	if (NotifyDBDisConnect != nullptr)
+	if (NotifyDbDisConnect != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDBDisConnectField::FieldID);
-		if (strlen(NotifyDBDisConnect->DBName) >= sizeof(NotifyDBDisConnect->DBName))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, NotifyDbDisConnectField::FieldId);
+		if (strlen(NotifyDbDisConnect->DbName) >= sizeof(NotifyDbDisConnect->DbName))
 		{
-			NotifyDBDisConnect->DBName[sizeof(NotifyDBDisConnect->DBName) - 1] = 0;
+			NotifyDbDisConnect->DbName[sizeof(NotifyDbDisConnect->DbName) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::DBName, NotifyDBDisConnect->DBName);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDBDisConnectField::FieldID);
+		StepUtility::WriteString(cursor, Items::DbName, NotifyDbDisConnect->DbName);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, NotifyDbDisConnectField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -576,100 +576,100 @@ int NotifyDBDisConnectPackage::ToStepStream(char* buff, int size) const
 	}
 	return cursor.GetWrittenLength();
 }
-bool NotifyDBDisConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
+bool NotifyDbDisConnectPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case NotifyDBDisConnectField::FieldID:
+			case NotifyDbDisConnectField::FieldId:
 			{
-				NotifyDBDisConnect = ObjectPool<NotifyDBDisConnectField>::GetInstance().Allocate();
-				memset(NotifyDBDisConnect, 0, sizeof(*NotifyDBDisConnect));
+				NotifyDbDisConnect = ObjectPool<NotifyDbDisConnectField>::GetInstance().Allocate();
+				memset(NotifyDbDisConnect, 0, sizeof(*NotifyDbDisConnect));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::DBName:
+						case Items::DbName:
 						{
-							size_t len = value.length() >= sizeof(NotifyDBDisConnect->DBName) ? sizeof(NotifyDBDisConnect->DBName) - 1 : value.length();
-							memcpy(NotifyDBDisConnect->DBName, value.c_str(), len);
+							size_t len = value.length() >= sizeof(NotifyDbDisConnect->DbName) ? sizeof(NotifyDbDisConnect->DbName) - 1 : value.length();
+							memcpy(NotifyDbDisConnect->DbName, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for NotifyDBDisConnectField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for NotifyDbDisConnectField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyDBDisConnectPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For NotifyDbDisConnectPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
 		}
 		else
 		{
-			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For NotifyDBDisConnectPackage");
+			WriteLog(LogLevel::Warning, "GetNextFieldZone Failed For NotifyDbDisConnectPackage");
 			return false;
 		}
 	}
 	return true;
 }
-int NotifyDBDisConnectPackage::ToXtpStream(char* buff, int size) const
+int NotifyDbDisConnectPackage::ToXtpStream(char* buff, int size) const
 {
 	int offset = 0;
-	if (NotifyDBDisConnect != nullptr)
+	if (NotifyDbDisConnect != nullptr)
 	{
-		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(NotifyDBDisConnectField));
+		const int fieldSize = static_cast<int>(sizeof(UInt16Type) + sizeof(NotifyDbDisConnectField));
 		if (offset + fieldSize > size)
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &NotifyDBDisConnectField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &NotifyDbDisConnectField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		memcpy(buff + offset, NotifyDBDisConnect, sizeof(NotifyDBDisConnectField));
-		offset += sizeof(NotifyDBDisConnectField);
+		memcpy(buff + offset, NotifyDbDisConnect, sizeof(NotifyDbDisConnectField));
+		offset += sizeof(NotifyDbDisConnectField);
 	}
 	return offset;
 }
-bool NotifyDBDisConnectPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
+bool NotifyDbDisConnectPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 {
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case NotifyDBDisConnectField::FieldID:
+		case NotifyDbDisConnectField::FieldId:
 		{
-			NotifyDBDisConnect = ObjectPool<NotifyDBDisConnectField>::GetInstance().Allocate();
-			memcpy(NotifyDBDisConnect, buff + offset, sizeof(NotifyDBDisConnectField));
-			offset += sizeof(NotifyDBDisConnectField);	
+			NotifyDbDisConnect = ObjectPool<NotifyDbDisConnectField>::GetInstance().Allocate();
+			memcpy(NotifyDbDisConnect, buff + offset, sizeof(NotifyDbDisConnectField));
+			offset += sizeof(NotifyDbDisConnectField);	
 			break;
 		}
 		default:
@@ -678,12 +678,12 @@ bool NotifyDBDisConnectPackage::FromXtpStream(char* buff, int startIndex, int en
 	}
 	return offset == endIndex;
 }
-const char* NotifyDBDisConnectPackage::GetDebugString() const
+const char* NotifyDbDisConnectPackage::GetDebugString() const
 {
 	int offset = 0;
-	if (NotifyDBDisConnect != nullptr)
+	if (NotifyDbDisConnect != nullptr)
 	{
-		offset = AppendDebugString(offset, "NotifyDBDisConnect:DBName:[%s]", NotifyDBDisConnect->DBName);
+		offset = AppendDebugString(offset, "NotifyDbDisConnect:DbName:[%s]", NotifyDbDisConnect->DbName);
 	}
 	return DataStringBuffer;
 }
@@ -708,28 +708,28 @@ void ReqMdUserLoginPackage::Deallocate()
 {
 	ObjectPool<ReqMdUserLoginPackage>::GetInstance().Deallocate(this);
 }
-void ReqMdUserLoginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqMdUserLoginPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqMdUserLoginPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqMdUserLogin != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqMdUserLoginField::FieldID);
-		if (strlen(ReqMdUserLogin->UserID) >= sizeof(ReqMdUserLogin->UserID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqMdUserLoginField::FieldId);
+		if (strlen(ReqMdUserLogin->UserId) >= sizeof(ReqMdUserLogin->UserId))
 		{
-			ReqMdUserLogin->UserID[sizeof(ReqMdUserLogin->UserID) - 1] = 0;
+			ReqMdUserLogin->UserId[sizeof(ReqMdUserLogin->UserId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::UserID, ReqMdUserLogin->UserID);
+		StepUtility::WriteString(cursor, Items::UserId, ReqMdUserLogin->UserId);
 		if (strlen(ReqMdUserLogin->Password) >= sizeof(ReqMdUserLogin->Password))
 		{
 			ReqMdUserLogin->Password[sizeof(ReqMdUserLogin->Password) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::Password, ReqMdUserLogin->Password);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqMdUserLoginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqMdUserLoginField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -741,34 +741,34 @@ bool ReqMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqMdUserLoginField::FieldID:
+			case ReqMdUserLoginField::FieldId:
 			{
 				ReqMdUserLogin = ObjectPool<ReqMdUserLoginField>::GetInstance().Allocate();
 				memset(ReqMdUserLogin, 0, sizeof(*ReqMdUserLogin));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::UserID:
+						case Items::UserId:
 						{
-							size_t len = value.length() >= sizeof(ReqMdUserLogin->UserID) ? sizeof(ReqMdUserLogin->UserID) - 1 : value.length();
-							memcpy(ReqMdUserLogin->UserID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqMdUserLogin->UserId) ? sizeof(ReqMdUserLogin->UserId) - 1 : value.length();
+							memcpy(ReqMdUserLogin->UserId, value.c_str(), len);
 							break;
 						}
 						case Items::Password:
@@ -778,21 +778,21 @@ bool ReqMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqMdUserLoginField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqMdUserLoginField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqMdUserLoginPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqMdUserLoginPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -815,7 +815,7 @@ int ReqMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqMdUserLoginField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqMdUserLoginField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqMdUserLogin, sizeof(ReqMdUserLoginField));
 		offset += sizeof(ReqMdUserLoginField);
@@ -827,12 +827,12 @@ bool ReqMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqMdUserLoginField::FieldID:
+		case ReqMdUserLoginField::FieldId:
 		{
 			ReqMdUserLogin = ObjectPool<ReqMdUserLoginField>::GetInstance().Allocate();
 			memcpy(ReqMdUserLogin, buff + offset, sizeof(ReqMdUserLoginField));
@@ -850,7 +850,7 @@ const char* ReqMdUserLoginPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqMdUserLogin != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqMdUserLogin:UserID:[%s], Password:[%s]", ReqMdUserLogin->UserID, ReqMdUserLogin->Password);
+		offset = AppendDebugString(offset, "ReqMdUserLogin:UserId:[%s], Password:[%s]", ReqMdUserLogin->UserId, ReqMdUserLogin->Password);
 	}
 	return DataStringBuffer;
 }
@@ -880,22 +880,22 @@ void RspMdUserLoginPackage::Deallocate()
 {
 	ObjectPool<RspMdUserLoginPackage>::GetInstance().Deallocate(this);
 }
-void RspMdUserLoginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspMdUserLoginPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspMdUserLoginPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (RspMdUserLogin != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspMdUserLoginField::FieldID);
-		if (strlen(RspMdUserLogin->UserID) >= sizeof(RspMdUserLogin->UserID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspMdUserLoginField::FieldId);
+		if (strlen(RspMdUserLogin->UserId) >= sizeof(RspMdUserLogin->UserId))
 		{
-			RspMdUserLogin->UserID[sizeof(RspMdUserLogin->UserID) - 1] = 0;
+			RspMdUserLogin->UserId[sizeof(RspMdUserLogin->UserId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::UserID, RspMdUserLogin->UserID);
+		StepUtility::WriteString(cursor, Items::UserId, RspMdUserLogin->UserId);
 		if (strlen(RspMdUserLogin->LoginDate) >= sizeof(RspMdUserLogin->LoginDate))
 		{
 			RspMdUserLogin->LoginDate[sizeof(RspMdUserLogin->LoginDate) - 1] = 0;
@@ -906,19 +906,19 @@ int RspMdUserLoginPackage::ToStepStream(char* buff, int size) const
 			RspMdUserLogin->LoginTime[sizeof(RspMdUserLogin->LoginTime) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::LoginTime, RspMdUserLogin->LoginTime);
-		StepUtility::WriteString(cursor, Items::SessionID, RspMdUserLogin->SessionID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspMdUserLoginField::FieldID);
+		StepUtility::WriteString(cursor, Items::SessionId, RspMdUserLogin->SessionId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspMdUserLoginField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -930,34 +930,34 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case RspMdUserLoginField::FieldID:
+			case RspMdUserLoginField::FieldId:
 			{
 				RspMdUserLogin = ObjectPool<RspMdUserLoginField>::GetInstance().Allocate();
 				memset(RspMdUserLogin, 0, sizeof(*RspMdUserLogin));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::UserID:
+						case Items::UserId:
 						{
-							size_t len = value.length() >= sizeof(RspMdUserLogin->UserID) ? sizeof(RspMdUserLogin->UserID) - 1 : value.length();
-							memcpy(RspMdUserLogin->UserID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspMdUserLogin->UserId) ? sizeof(RspMdUserLogin->UserId) - 1 : value.length();
+							memcpy(RspMdUserLogin->UserId, value.c_str(), len);
 							break;
 						}
 						case Items::LoginDate:
@@ -972,44 +972,44 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 							memcpy(RspMdUserLogin->LoginTime, value.c_str(), len);
 							break;
 						}
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							RspMdUserLogin->SessionID = atoll(value.c_str());
+							RspMdUserLogin->SessionId = atoll(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspMdUserLoginField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspMdUserLoginField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLoginPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLoginPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -1019,21 +1019,21 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLoginPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLoginPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -1056,7 +1056,7 @@ int RspMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspMdUserLoginField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspMdUserLoginField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspMdUserLogin, sizeof(RspMdUserLoginField));
 		offset += sizeof(RspMdUserLoginField);
@@ -1068,7 +1068,7 @@ int RspMdUserLoginPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -1080,19 +1080,19 @@ bool RspMdUserLoginPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case RspMdUserLoginField::FieldID:
+		case RspMdUserLoginField::FieldId:
 		{
 			RspMdUserLogin = ObjectPool<RspMdUserLoginField>::GetInstance().Allocate();
 			memcpy(RspMdUserLogin, buff + offset, sizeof(RspMdUserLoginField));
 			offset += sizeof(RspMdUserLoginField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -1110,11 +1110,11 @@ const char* RspMdUserLoginPackage::GetDebugString() const
 	int offset = 0;
 	if (RspMdUserLogin != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspMdUserLogin:UserID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspMdUserLogin->UserID, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionID);
+		offset = AppendDebugString(offset, "RspMdUserLogin:UserId:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]", RspMdUserLogin->UserId, RspMdUserLogin->LoginDate, RspMdUserLogin->LoginTime, RspMdUserLogin->SessionId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -1139,23 +1139,23 @@ void ReqMdUserLogoutPackage::Deallocate()
 {
 	ObjectPool<ReqMdUserLogoutPackage>::GetInstance().Deallocate(this);
 }
-void ReqMdUserLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqMdUserLogoutPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqMdUserLogoutPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqMdUserLogout != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqMdUserLogoutField::FieldID);
-		if (strlen(ReqMdUserLogout->UserID) >= sizeof(ReqMdUserLogout->UserID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqMdUserLogoutField::FieldId);
+		if (strlen(ReqMdUserLogout->UserId) >= sizeof(ReqMdUserLogout->UserId))
 		{
-			ReqMdUserLogout->UserID[sizeof(ReqMdUserLogout->UserID) - 1] = 0;
+			ReqMdUserLogout->UserId[sizeof(ReqMdUserLogout->UserId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::UserID, ReqMdUserLogout->UserID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqMdUserLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::UserId, ReqMdUserLogout->UserId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqMdUserLogoutField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -1167,52 +1167,52 @@ bool ReqMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqMdUserLogoutField::FieldID:
+			case ReqMdUserLogoutField::FieldId:
 			{
 				ReqMdUserLogout = ObjectPool<ReqMdUserLogoutField>::GetInstance().Allocate();
 				memset(ReqMdUserLogout, 0, sizeof(*ReqMdUserLogout));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::UserID:
+						case Items::UserId:
 						{
-							size_t len = value.length() >= sizeof(ReqMdUserLogout->UserID) ? sizeof(ReqMdUserLogout->UserID) - 1 : value.length();
-							memcpy(ReqMdUserLogout->UserID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqMdUserLogout->UserId) ? sizeof(ReqMdUserLogout->UserId) - 1 : value.length();
+							memcpy(ReqMdUserLogout->UserId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqMdUserLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqMdUserLogoutField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqMdUserLogoutPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqMdUserLogoutPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -1235,7 +1235,7 @@ int ReqMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqMdUserLogoutField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqMdUserLogoutField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqMdUserLogout, sizeof(ReqMdUserLogoutField));
 		offset += sizeof(ReqMdUserLogoutField);
@@ -1247,12 +1247,12 @@ bool ReqMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqMdUserLogoutField::FieldID:
+		case ReqMdUserLogoutField::FieldId:
 		{
 			ReqMdUserLogout = ObjectPool<ReqMdUserLogoutField>::GetInstance().Allocate();
 			memcpy(ReqMdUserLogout, buff + offset, sizeof(ReqMdUserLogoutField));
@@ -1270,7 +1270,7 @@ const char* ReqMdUserLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqMdUserLogout != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqMdUserLogout:UserID:[%s]", ReqMdUserLogout->UserID);
+		offset = AppendDebugString(offset, "ReqMdUserLogout:UserId:[%s]", ReqMdUserLogout->UserId);
 	}
 	return DataStringBuffer;
 }
@@ -1300,34 +1300,34 @@ void RspMdUserLogoutPackage::Deallocate()
 {
 	ObjectPool<RspMdUserLogoutPackage>::GetInstance().Deallocate(this);
 }
-void RspMdUserLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspMdUserLogoutPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspMdUserLogoutPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (RspMdUserLogout != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspMdUserLogoutField::FieldID);
-		if (strlen(RspMdUserLogout->UserID) >= sizeof(RspMdUserLogout->UserID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspMdUserLogoutField::FieldId);
+		if (strlen(RspMdUserLogout->UserId) >= sizeof(RspMdUserLogout->UserId))
 		{
-			RspMdUserLogout->UserID[sizeof(RspMdUserLogout->UserID) - 1] = 0;
+			RspMdUserLogout->UserId[sizeof(RspMdUserLogout->UserId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::UserID, RspMdUserLogout->UserID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspMdUserLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::UserId, RspMdUserLogout->UserId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspMdUserLogoutField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -1339,69 +1339,69 @@ bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case RspMdUserLogoutField::FieldID:
+			case RspMdUserLogoutField::FieldId:
 			{
 				RspMdUserLogout = ObjectPool<RspMdUserLogoutField>::GetInstance().Allocate();
 				memset(RspMdUserLogout, 0, sizeof(*RspMdUserLogout));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::UserID:
+						case Items::UserId:
 						{
-							size_t len = value.length() >= sizeof(RspMdUserLogout->UserID) ? sizeof(RspMdUserLogout->UserID) - 1 : value.length();
-							memcpy(RspMdUserLogout->UserID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspMdUserLogout->UserId) ? sizeof(RspMdUserLogout->UserId) - 1 : value.length();
+							memcpy(RspMdUserLogout->UserId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspMdUserLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspMdUserLogoutField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLogoutPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLogoutPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -1411,21 +1411,21 @@ bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLogoutPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspMdUserLogoutPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -1448,7 +1448,7 @@ int RspMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspMdUserLogoutField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspMdUserLogoutField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspMdUserLogout, sizeof(RspMdUserLogoutField));
 		offset += sizeof(RspMdUserLogoutField);
@@ -1460,7 +1460,7 @@ int RspMdUserLogoutPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -1472,19 +1472,19 @@ bool RspMdUserLogoutPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case RspMdUserLogoutField::FieldID:
+		case RspMdUserLogoutField::FieldId:
 		{
 			RspMdUserLogout = ObjectPool<RspMdUserLogoutField>::GetInstance().Allocate();
 			memcpy(RspMdUserLogout, buff + offset, sizeof(RspMdUserLogoutField));
 			offset += sizeof(RspMdUserLogoutField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -1502,11 +1502,11 @@ const char* RspMdUserLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (RspMdUserLogout != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspMdUserLogout:UserID:[%s]", RspMdUserLogout->UserID);
+		offset = AppendDebugString(offset, "RspMdUserLogout:UserId:[%s]", RspMdUserLogout->UserId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -1531,30 +1531,30 @@ void ReqSubMarketDataPackage::Deallocate()
 {
 	ObjectPool<ReqSubMarketDataPackage>::GetInstance().Deallocate(this);
 }
-void ReqSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqSubMarketDataPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqSubMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqSubMarketDataField::FieldID);
-		if (strlen(ReqSubMarketData->ExchangeID) >= sizeof(ReqSubMarketData->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqSubMarketDataField::FieldId);
+		if (strlen(ReqSubMarketData->ExchangeId) >= sizeof(ReqSubMarketData->ExchangeId))
 		{
-			ReqSubMarketData->ExchangeID[sizeof(ReqSubMarketData->ExchangeID) - 1] = 0;
+			ReqSubMarketData->ExchangeId[sizeof(ReqSubMarketData->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqSubMarketData->ExchangeID);
-		if (strlen(ReqSubMarketData->InstrumentID) >= sizeof(ReqSubMarketData->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqSubMarketData->ExchangeId);
+		if (strlen(ReqSubMarketData->InstrumentId) >= sizeof(ReqSubMarketData->InstrumentId))
 		{
-			ReqSubMarketData->InstrumentID[sizeof(ReqSubMarketData->InstrumentID) - 1] = 0;
+			ReqSubMarketData->InstrumentId[sizeof(ReqSubMarketData->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, ReqSubMarketData->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, ReqSubMarketData->InstrumentId);
 		StepUtility::WriteString(cursor, Items::BarPreces, static_cast<int>(ReqSubMarketData->BarPreces));
 		StepUtility::WriteString(cursor, Items::BarPeriod, ReqSubMarketData->BarPeriod);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqSubMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqSubMarketDataField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -1566,40 +1566,40 @@ bool ReqSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqSubMarketDataField::FieldID:
+			case ReqSubMarketDataField::FieldId:
 			{
 				ReqSubMarketData = ObjectPool<ReqSubMarketDataField>::GetInstance().Allocate();
 				memset(ReqSubMarketData, 0, sizeof(*ReqSubMarketData));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqSubMarketData->ExchangeID) ? sizeof(ReqSubMarketData->ExchangeID) - 1 : value.length();
-							memcpy(ReqSubMarketData->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSubMarketData->ExchangeId) ? sizeof(ReqSubMarketData->ExchangeId) - 1 : value.length();
+							memcpy(ReqSubMarketData->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(ReqSubMarketData->InstrumentID) ? sizeof(ReqSubMarketData->InstrumentID) - 1 : value.length();
-							memcpy(ReqSubMarketData->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqSubMarketData->InstrumentId) ? sizeof(ReqSubMarketData->InstrumentId) - 1 : value.length();
+							memcpy(ReqSubMarketData->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::BarPreces:
@@ -1613,21 +1613,21 @@ bool ReqSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSubMarketDataField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqSubMarketDataField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqSubMarketDataPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqSubMarketDataPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -1650,7 +1650,7 @@ int ReqSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqSubMarketDataField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqSubMarketDataField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqSubMarketData, sizeof(ReqSubMarketDataField));
 		offset += sizeof(ReqSubMarketDataField);
@@ -1662,12 +1662,12 @@ bool ReqSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqSubMarketDataField::FieldID:
+		case ReqSubMarketDataField::FieldId:
 		{
 			ReqSubMarketData = ObjectPool<ReqSubMarketDataField>::GetInstance().Allocate();
 			memcpy(ReqSubMarketData, buff + offset, sizeof(ReqSubMarketDataField));
@@ -1685,7 +1685,7 @@ const char* ReqSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqSubMarketData != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqSubMarketData:ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d]", ReqSubMarketData->ExchangeID, ReqSubMarketData->InstrumentID, static_cast<int>(ReqSubMarketData->BarPreces), ReqSubMarketData->BarPeriod);
+		offset = AppendDebugString(offset, "ReqSubMarketData:ExchangeId:[%s], InstrumentId:[%s], BarPreces:[%d], BarPeriod:[%d]", ReqSubMarketData->ExchangeId, ReqSubMarketData->InstrumentId, static_cast<int>(ReqSubMarketData->BarPreces), ReqSubMarketData->BarPeriod);
 	}
 	return DataStringBuffer;
 }
@@ -1715,39 +1715,39 @@ void RspSubMarketDataPackage::Deallocate()
 {
 	ObjectPool<RspSubMarketDataPackage>::GetInstance().Deallocate(this);
 }
-void RspSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspSubMarketDataPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (RspSubMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspSubMarketDataField::FieldID);
-		if (strlen(RspSubMarketData->ExchangeID) >= sizeof(RspSubMarketData->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspSubMarketDataField::FieldId);
+		if (strlen(RspSubMarketData->ExchangeId) >= sizeof(RspSubMarketData->ExchangeId))
 		{
-			RspSubMarketData->ExchangeID[sizeof(RspSubMarketData->ExchangeID) - 1] = 0;
+			RspSubMarketData->ExchangeId[sizeof(RspSubMarketData->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, RspSubMarketData->ExchangeID);
-		if (strlen(RspSubMarketData->InstrumentID) >= sizeof(RspSubMarketData->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, RspSubMarketData->ExchangeId);
+		if (strlen(RspSubMarketData->InstrumentId) >= sizeof(RspSubMarketData->InstrumentId))
 		{
-			RspSubMarketData->InstrumentID[sizeof(RspSubMarketData->InstrumentID) - 1] = 0;
+			RspSubMarketData->InstrumentId[sizeof(RspSubMarketData->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, RspSubMarketData->InstrumentID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspSubMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, RspSubMarketData->InstrumentId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspSubMarketDataField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -1759,75 +1759,75 @@ bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case RspSubMarketDataField::FieldID:
+			case RspSubMarketDataField::FieldId:
 			{
 				RspSubMarketData = ObjectPool<RspSubMarketDataField>::GetInstance().Allocate();
 				memset(RspSubMarketData, 0, sizeof(*RspSubMarketData));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(RspSubMarketData->ExchangeID) ? sizeof(RspSubMarketData->ExchangeID) - 1 : value.length();
-							memcpy(RspSubMarketData->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspSubMarketData->ExchangeId) ? sizeof(RspSubMarketData->ExchangeId) - 1 : value.length();
+							memcpy(RspSubMarketData->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(RspSubMarketData->InstrumentID) ? sizeof(RspSubMarketData->InstrumentID) - 1 : value.length();
-							memcpy(RspSubMarketData->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspSubMarketData->InstrumentId) ? sizeof(RspSubMarketData->InstrumentId) - 1 : value.length();
+							memcpy(RspSubMarketData->InstrumentId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspSubMarketDataField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspSubMarketDataField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspSubMarketDataPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSubMarketDataPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -1837,21 +1837,21 @@ bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspSubMarketDataPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspSubMarketDataPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -1874,7 +1874,7 @@ int RspSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspSubMarketDataField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspSubMarketDataField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspSubMarketData, sizeof(RspSubMarketDataField));
 		offset += sizeof(RspSubMarketDataField);
@@ -1886,7 +1886,7 @@ int RspSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -1898,19 +1898,19 @@ bool RspSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case RspSubMarketDataField::FieldID:
+		case RspSubMarketDataField::FieldId:
 		{
 			RspSubMarketData = ObjectPool<RspSubMarketDataField>::GetInstance().Allocate();
 			memcpy(RspSubMarketData, buff + offset, sizeof(RspSubMarketDataField));
 			offset += sizeof(RspSubMarketDataField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -1928,11 +1928,11 @@ const char* RspSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (RspSubMarketData != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspSubMarketData->ExchangeID, RspSubMarketData->InstrumentID);
+		offset = AppendDebugString(offset, "RspSubMarketData:ExchangeId:[%s], InstrumentId:[%s]", RspSubMarketData->ExchangeId, RspSubMarketData->InstrumentId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -1957,28 +1957,28 @@ void ReqUnSubMarketDataPackage::Deallocate()
 {
 	ObjectPool<ReqUnSubMarketDataPackage>::GetInstance().Deallocate(this);
 }
-void ReqUnSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqUnSubMarketDataPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqUnSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqUnSubMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqUnSubMarketDataField::FieldID);
-		if (strlen(ReqUnSubMarketData->ExchangeID) >= sizeof(ReqUnSubMarketData->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqUnSubMarketDataField::FieldId);
+		if (strlen(ReqUnSubMarketData->ExchangeId) >= sizeof(ReqUnSubMarketData->ExchangeId))
 		{
-			ReqUnSubMarketData->ExchangeID[sizeof(ReqUnSubMarketData->ExchangeID) - 1] = 0;
+			ReqUnSubMarketData->ExchangeId[sizeof(ReqUnSubMarketData->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqUnSubMarketData->ExchangeID);
-		if (strlen(ReqUnSubMarketData->InstrumentID) >= sizeof(ReqUnSubMarketData->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqUnSubMarketData->ExchangeId);
+		if (strlen(ReqUnSubMarketData->InstrumentId) >= sizeof(ReqUnSubMarketData->InstrumentId))
 		{
-			ReqUnSubMarketData->InstrumentID[sizeof(ReqUnSubMarketData->InstrumentID) - 1] = 0;
+			ReqUnSubMarketData->InstrumentId[sizeof(ReqUnSubMarketData->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, ReqUnSubMarketData->InstrumentID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqUnSubMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, ReqUnSubMarketData->InstrumentId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqUnSubMarketDataField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -1990,58 +1990,58 @@ bool ReqUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqUnSubMarketDataField::FieldID:
+			case ReqUnSubMarketDataField::FieldId:
 			{
 				ReqUnSubMarketData = ObjectPool<ReqUnSubMarketDataField>::GetInstance().Allocate();
 				memset(ReqUnSubMarketData, 0, sizeof(*ReqUnSubMarketData));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqUnSubMarketData->ExchangeID) ? sizeof(ReqUnSubMarketData->ExchangeID) - 1 : value.length();
-							memcpy(ReqUnSubMarketData->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqUnSubMarketData->ExchangeId) ? sizeof(ReqUnSubMarketData->ExchangeId) - 1 : value.length();
+							memcpy(ReqUnSubMarketData->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(ReqUnSubMarketData->InstrumentID) ? sizeof(ReqUnSubMarketData->InstrumentID) - 1 : value.length();
-							memcpy(ReqUnSubMarketData->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqUnSubMarketData->InstrumentId) ? sizeof(ReqUnSubMarketData->InstrumentId) - 1 : value.length();
+							memcpy(ReqUnSubMarketData->InstrumentId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqUnSubMarketDataField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqUnSubMarketDataField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqUnSubMarketDataPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqUnSubMarketDataPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -2064,7 +2064,7 @@ int ReqUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqUnSubMarketDataField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqUnSubMarketDataField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqUnSubMarketData, sizeof(ReqUnSubMarketDataField));
 		offset += sizeof(ReqUnSubMarketDataField);
@@ -2076,12 +2076,12 @@ bool ReqUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqUnSubMarketDataField::FieldID:
+		case ReqUnSubMarketDataField::FieldId:
 		{
 			ReqUnSubMarketData = ObjectPool<ReqUnSubMarketDataField>::GetInstance().Allocate();
 			memcpy(ReqUnSubMarketData, buff + offset, sizeof(ReqUnSubMarketDataField));
@@ -2099,7 +2099,7 @@ const char* ReqUnSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqUnSubMarketData != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", ReqUnSubMarketData->ExchangeID, ReqUnSubMarketData->InstrumentID);
+		offset = AppendDebugString(offset, "ReqUnSubMarketData:ExchangeId:[%s], InstrumentId:[%s]", ReqUnSubMarketData->ExchangeId, ReqUnSubMarketData->InstrumentId);
 	}
 	return DataStringBuffer;
 }
@@ -2129,39 +2129,39 @@ void RspUnSubMarketDataPackage::Deallocate()
 {
 	ObjectPool<RspUnSubMarketDataPackage>::GetInstance().Deallocate(this);
 }
-void RspUnSubMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspUnSubMarketDataPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspUnSubMarketDataPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (RspUnSubMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspUnSubMarketDataField::FieldID);
-		if (strlen(RspUnSubMarketData->ExchangeID) >= sizeof(RspUnSubMarketData->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspUnSubMarketDataField::FieldId);
+		if (strlen(RspUnSubMarketData->ExchangeId) >= sizeof(RspUnSubMarketData->ExchangeId))
 		{
-			RspUnSubMarketData->ExchangeID[sizeof(RspUnSubMarketData->ExchangeID) - 1] = 0;
+			RspUnSubMarketData->ExchangeId[sizeof(RspUnSubMarketData->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, RspUnSubMarketData->ExchangeID);
-		if (strlen(RspUnSubMarketData->InstrumentID) >= sizeof(RspUnSubMarketData->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, RspUnSubMarketData->ExchangeId);
+		if (strlen(RspUnSubMarketData->InstrumentId) >= sizeof(RspUnSubMarketData->InstrumentId))
 		{
-			RspUnSubMarketData->InstrumentID[sizeof(RspUnSubMarketData->InstrumentID) - 1] = 0;
+			RspUnSubMarketData->InstrumentId[sizeof(RspUnSubMarketData->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, RspUnSubMarketData->InstrumentID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspUnSubMarketDataField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, RspUnSubMarketData->InstrumentId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspUnSubMarketDataField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -2173,75 +2173,75 @@ bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case RspUnSubMarketDataField::FieldID:
+			case RspUnSubMarketDataField::FieldId:
 			{
 				RspUnSubMarketData = ObjectPool<RspUnSubMarketDataField>::GetInstance().Allocate();
 				memset(RspUnSubMarketData, 0, sizeof(*RspUnSubMarketData));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(RspUnSubMarketData->ExchangeID) ? sizeof(RspUnSubMarketData->ExchangeID) - 1 : value.length();
-							memcpy(RspUnSubMarketData->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspUnSubMarketData->ExchangeId) ? sizeof(RspUnSubMarketData->ExchangeId) - 1 : value.length();
+							memcpy(RspUnSubMarketData->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(RspUnSubMarketData->InstrumentID) ? sizeof(RspUnSubMarketData->InstrumentID) - 1 : value.length();
-							memcpy(RspUnSubMarketData->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspUnSubMarketData->InstrumentId) ? sizeof(RspUnSubMarketData->InstrumentId) - 1 : value.length();
+							memcpy(RspUnSubMarketData->InstrumentId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspUnSubMarketDataField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspUnSubMarketDataField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspUnSubMarketDataPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspUnSubMarketDataPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -2251,21 +2251,21 @@ bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspUnSubMarketDataPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspUnSubMarketDataPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -2288,7 +2288,7 @@ int RspUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspUnSubMarketDataField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspUnSubMarketDataField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspUnSubMarketData, sizeof(RspUnSubMarketDataField));
 		offset += sizeof(RspUnSubMarketDataField);
@@ -2300,7 +2300,7 @@ int RspUnSubMarketDataPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -2312,19 +2312,19 @@ bool RspUnSubMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case RspUnSubMarketDataField::FieldID:
+		case RspUnSubMarketDataField::FieldId:
 		{
 			RspUnSubMarketData = ObjectPool<RspUnSubMarketDataField>::GetInstance().Allocate();
 			memcpy(RspUnSubMarketData, buff + offset, sizeof(RspUnSubMarketDataField));
 			offset += sizeof(RspUnSubMarketDataField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -2342,11 +2342,11 @@ const char* RspUnSubMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (RspUnSubMarketData != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspUnSubMarketData:ExchangeID:[%s], InstrumentID:[%s]", RspUnSubMarketData->ExchangeID, RspUnSubMarketData->InstrumentID);
+		offset = AppendDebugString(offset, "RspUnSubMarketData:ExchangeId:[%s], InstrumentId:[%s]", RspUnSubMarketData->ExchangeId, RspUnSubMarketData->InstrumentId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -2371,19 +2371,19 @@ void ReqSubMarketDataFinishedPackage::Deallocate()
 {
 	ObjectPool<ReqSubMarketDataFinishedPackage>::GetInstance().Deallocate(this);
 }
-void ReqSubMarketDataFinishedPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqSubMarketDataFinishedPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqSubMarketDataFinishedPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqSubMarketDataFinished != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqSubMarketDataFinishedField::FieldID);
-		StepUtility::WriteString(cursor, Items::SessionID, ReqSubMarketDataFinished->SessionID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqSubMarketDataFinishedField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqSubMarketDataFinishedField::FieldId);
+		StepUtility::WriteString(cursor, Items::SessionId, ReqSubMarketDataFinished->SessionId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqSubMarketDataFinishedField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -2395,51 +2395,51 @@ bool ReqSubMarketDataFinishedPackage::FromStepStream(char* buff, int startIndex,
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqSubMarketDataFinishedField::FieldID:
+			case ReqSubMarketDataFinishedField::FieldId:
 			{
 				ReqSubMarketDataFinished = ObjectPool<ReqSubMarketDataFinishedField>::GetInstance().Allocate();
 				memset(ReqSubMarketDataFinished, 0, sizeof(*ReqSubMarketDataFinished));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							ReqSubMarketDataFinished->SessionID = atoll(value.c_str());
+							ReqSubMarketDataFinished->SessionId = atoll(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqSubMarketDataFinishedField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqSubMarketDataFinishedField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqSubMarketDataFinishedPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqSubMarketDataFinishedPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -2462,7 +2462,7 @@ int ReqSubMarketDataFinishedPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqSubMarketDataFinishedField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqSubMarketDataFinishedField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqSubMarketDataFinished, sizeof(ReqSubMarketDataFinishedField));
 		offset += sizeof(ReqSubMarketDataFinishedField);
@@ -2474,12 +2474,12 @@ bool ReqSubMarketDataFinishedPackage::FromXtpStream(char* buff, int startIndex, 
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqSubMarketDataFinishedField::FieldID:
+		case ReqSubMarketDataFinishedField::FieldId:
 		{
 			ReqSubMarketDataFinished = ObjectPool<ReqSubMarketDataFinishedField>::GetInstance().Allocate();
 			memcpy(ReqSubMarketDataFinished, buff + offset, sizeof(ReqSubMarketDataFinishedField));
@@ -2497,7 +2497,7 @@ const char* ReqSubMarketDataFinishedPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqSubMarketDataFinished != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqSubMarketDataFinished:SessionID:[%lld]", ReqSubMarketDataFinished->SessionID);
+		offset = AppendDebugString(offset, "ReqSubMarketDataFinished:SessionId:[%lld]", ReqSubMarketDataFinished->SessionId);
 	}
 	return DataStringBuffer;
 }
@@ -2522,32 +2522,32 @@ void RtnDepthMarketDataPackage::Deallocate()
 {
 	ObjectPool<RtnDepthMarketDataPackage>::GetInstance().Deallocate(this);
 }
-void RtnDepthMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnDepthMarketDataPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnDepthMarketDataPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (DepthMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, DepthMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, DepthMarketDataField::FieldId);
 		if (strlen(DepthMarketData->TradingDay) >= sizeof(DepthMarketData->TradingDay))
 		{
 			DepthMarketData->TradingDay[sizeof(DepthMarketData->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, DepthMarketData->TradingDay);
-		if (strlen(DepthMarketData->ExchangeID) >= sizeof(DepthMarketData->ExchangeID))
+		if (strlen(DepthMarketData->ExchangeId) >= sizeof(DepthMarketData->ExchangeId))
 		{
-			DepthMarketData->ExchangeID[sizeof(DepthMarketData->ExchangeID) - 1] = 0;
+			DepthMarketData->ExchangeId[sizeof(DepthMarketData->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, DepthMarketData->ExchangeID);
-		if (strlen(DepthMarketData->InstrumentID) >= sizeof(DepthMarketData->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, DepthMarketData->ExchangeId);
+		if (strlen(DepthMarketData->InstrumentId) >= sizeof(DepthMarketData->InstrumentId))
 		{
-			DepthMarketData->InstrumentID[sizeof(DepthMarketData->InstrumentID) - 1] = 0;
+			DepthMarketData->InstrumentId[sizeof(DepthMarketData->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, DepthMarketData->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, DepthMarketData->InstrumentId);
 		StepUtility::WriteString(cursor, Items::UpdateTs, DepthMarketData->UpdateTs);
 		StepUtility::WriteString(cursor, Items::LastPrice, DepthMarketData->LastPrice);
 		StepUtility::WriteString(cursor, Items::PreSettlementPrice, DepthMarketData->PreSettlementPrice);
@@ -2606,7 +2606,7 @@ int RtnDepthMarketDataPackage::ToStepStream(char* buff, int size) const
 		StepUtility::WriteString(cursor, Items::BidVolume8, DepthMarketData->BidVolume8);
 		StepUtility::WriteString(cursor, Items::BidVolume9, DepthMarketData->BidVolume9);
 		StepUtility::WriteString(cursor, Items::BidVolume10, DepthMarketData->BidVolume10);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, DepthMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, DepthMarketDataField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -2618,26 +2618,26 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case DepthMarketDataField::FieldID:
+			case DepthMarketDataField::FieldId:
 			{
 				DepthMarketData = ObjectPool<DepthMarketDataField>::GetInstance().Allocate();
 				memset(DepthMarketData, 0, sizeof(*DepthMarketData));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -2648,16 +2648,16 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 							memcpy(DepthMarketData->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(DepthMarketData->ExchangeID) ? sizeof(DepthMarketData->ExchangeID) - 1 : value.length();
-							memcpy(DepthMarketData->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(DepthMarketData->ExchangeId) ? sizeof(DepthMarketData->ExchangeId) - 1 : value.length();
+							memcpy(DepthMarketData->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(DepthMarketData->InstrumentID) ? sizeof(DepthMarketData->InstrumentID) - 1 : value.length();
-							memcpy(DepthMarketData->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(DepthMarketData->InstrumentId) ? sizeof(DepthMarketData->InstrumentId) - 1 : value.length();
+							memcpy(DepthMarketData->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::UpdateTs:
@@ -2951,21 +2951,21 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for DepthMarketDataField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for DepthMarketDataField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnDepthMarketDataPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnDepthMarketDataPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -2988,7 +2988,7 @@ int RtnDepthMarketDataPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &DepthMarketDataField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &DepthMarketDataField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, DepthMarketData, sizeof(DepthMarketDataField));
 		offset += sizeof(DepthMarketDataField);
@@ -3000,12 +3000,12 @@ bool RtnDepthMarketDataPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case DepthMarketDataField::FieldID:
+		case DepthMarketDataField::FieldId:
 		{
 			DepthMarketData = ObjectPool<DepthMarketDataField>::GetInstance().Allocate();
 			memcpy(DepthMarketData, buff + offset, sizeof(DepthMarketDataField));
@@ -3023,7 +3023,7 @@ const char* RtnDepthMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (DepthMarketData != nullptr)
 	{
-		offset = AppendDebugString(offset, "DepthMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], UpdateTs:[%lld], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%f], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]", DepthMarketData->TradingDay, DepthMarketData->ExchangeID, DepthMarketData->InstrumentID, DepthMarketData->UpdateTs, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
+		offset = AppendDebugString(offset, "DepthMarketData:TradingDay:[%s], ExchangeId:[%s], InstrumentId:[%s], UpdateTs:[%lld], LastPrice:[%f], PreSettlementPrice:[%f], PreClosePrice:[%f], PreOpenInterest:[%f], OpenPrice:[%f], HighestPrice:[%f], LowestPrice:[%f], ClosePrice:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f], SettlementPrice:[%f], UpperLimitPrice:[%f], LowerLimitPrice:[%f], AveragePrice:[%f], AskPrice1:[%f], AskPrice2:[%f], AskPrice3:[%f], AskPrice4:[%f], AskPrice5:[%f], AskPrice6:[%f], AskPrice7:[%f], AskPrice8:[%f], AskPrice9:[%f], AskPrice10:[%f], AskVolume1:[%lld], AskVolume2:[%lld], AskVolume3:[%lld], AskVolume4:[%lld], AskVolume5:[%lld], AskVolume6:[%lld], AskVolume7:[%lld], AskVolume8:[%lld], AskVolume9:[%lld], AskVolume10:[%lld], BidPrice1:[%f], BidPrice2:[%f], BidPrice3:[%f], BidPrice4:[%f], BidPrice5:[%f], BidPrice6:[%f], BidPrice7:[%f], BidPrice8:[%f], BidPrice9:[%f], BidPrice10:[%f], BidVolume1:[%lld], BidVolume2:[%lld], BidVolume3:[%lld], BidVolume4:[%lld], BidVolume5:[%lld], BidVolume6:[%lld], BidVolume7:[%lld], BidVolume8:[%lld], BidVolume9:[%lld], BidVolume10:[%lld]", DepthMarketData->TradingDay, DepthMarketData->ExchangeId, DepthMarketData->InstrumentId, DepthMarketData->UpdateTs, DepthMarketData->LastPrice, DepthMarketData->PreSettlementPrice, DepthMarketData->PreClosePrice, DepthMarketData->PreOpenInterest, DepthMarketData->OpenPrice, DepthMarketData->HighestPrice, DepthMarketData->LowestPrice, DepthMarketData->ClosePrice, DepthMarketData->CurrVolume, DepthMarketData->Volume, DepthMarketData->CurrTurnover, DepthMarketData->Turnover, DepthMarketData->OpenInterest, DepthMarketData->SettlementPrice, DepthMarketData->UpperLimitPrice, DepthMarketData->LowerLimitPrice, DepthMarketData->AveragePrice, DepthMarketData->AskPrice1, DepthMarketData->AskPrice2, DepthMarketData->AskPrice3, DepthMarketData->AskPrice4, DepthMarketData->AskPrice5, DepthMarketData->AskPrice6, DepthMarketData->AskPrice7, DepthMarketData->AskPrice8, DepthMarketData->AskPrice9, DepthMarketData->AskPrice10, DepthMarketData->AskVolume1, DepthMarketData->AskVolume2, DepthMarketData->AskVolume3, DepthMarketData->AskVolume4, DepthMarketData->AskVolume5, DepthMarketData->AskVolume6, DepthMarketData->AskVolume7, DepthMarketData->AskVolume8, DepthMarketData->AskVolume9, DepthMarketData->AskVolume10, DepthMarketData->BidPrice1, DepthMarketData->BidPrice2, DepthMarketData->BidPrice3, DepthMarketData->BidPrice4, DepthMarketData->BidPrice5, DepthMarketData->BidPrice6, DepthMarketData->BidPrice7, DepthMarketData->BidPrice8, DepthMarketData->BidPrice9, DepthMarketData->BidPrice10, DepthMarketData->BidVolume1, DepthMarketData->BidVolume2, DepthMarketData->BidVolume3, DepthMarketData->BidVolume4, DepthMarketData->BidVolume5, DepthMarketData->BidVolume6, DepthMarketData->BidVolume7, DepthMarketData->BidVolume8, DepthMarketData->BidVolume9, DepthMarketData->BidVolume10);
 	}
 	return DataStringBuffer;
 }
@@ -3048,32 +3048,32 @@ void RtnBarMarketDataPackage::Deallocate()
 {
 	ObjectPool<RtnBarMarketDataPackage>::GetInstance().Deallocate(this);
 }
-void RtnBarMarketDataPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnBarMarketDataPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnBarMarketDataPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (BarMarketData != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, BarMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, BarMarketDataField::FieldId);
 		if (strlen(BarMarketData->TradingDay) >= sizeof(BarMarketData->TradingDay))
 		{
 			BarMarketData->TradingDay[sizeof(BarMarketData->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, BarMarketData->TradingDay);
-		if (strlen(BarMarketData->ExchangeID) >= sizeof(BarMarketData->ExchangeID))
+		if (strlen(BarMarketData->ExchangeId) >= sizeof(BarMarketData->ExchangeId))
 		{
-			BarMarketData->ExchangeID[sizeof(BarMarketData->ExchangeID) - 1] = 0;
+			BarMarketData->ExchangeId[sizeof(BarMarketData->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, BarMarketData->ExchangeID);
-		if (strlen(BarMarketData->InstrumentID) >= sizeof(BarMarketData->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, BarMarketData->ExchangeId);
+		if (strlen(BarMarketData->InstrumentId) >= sizeof(BarMarketData->InstrumentId))
 		{
-			BarMarketData->InstrumentID[sizeof(BarMarketData->InstrumentID) - 1] = 0;
+			BarMarketData->InstrumentId[sizeof(BarMarketData->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, BarMarketData->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, BarMarketData->InstrumentId);
 		StepUtility::WriteString(cursor, Items::BarPreces, static_cast<int>(BarMarketData->BarPreces));
 		StepUtility::WriteString(cursor, Items::BarPeriod, BarMarketData->BarPeriod);
 		StepUtility::WriteString(cursor, Items::BarTime, BarMarketData->BarTime);
@@ -3091,7 +3091,7 @@ int RtnBarMarketDataPackage::ToStepStream(char* buff, int size) const
 		StepUtility::WriteString(cursor, Items::CurrTurnover, BarMarketData->CurrTurnover);
 		StepUtility::WriteString(cursor, Items::Turnover, BarMarketData->Turnover);
 		StepUtility::WriteString(cursor, Items::OpenInterest, BarMarketData->OpenInterest);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, BarMarketDataField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, BarMarketDataField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -3103,26 +3103,26 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case BarMarketDataField::FieldID:
+			case BarMarketDataField::FieldId:
 			{
 				BarMarketData = ObjectPool<BarMarketDataField>::GetInstance().Allocate();
 				memset(BarMarketData, 0, sizeof(*BarMarketData));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -3133,16 +3133,16 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 							memcpy(BarMarketData->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(BarMarketData->ExchangeID) ? sizeof(BarMarketData->ExchangeID) - 1 : value.length();
-							memcpy(BarMarketData->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(BarMarketData->ExchangeId) ? sizeof(BarMarketData->ExchangeId) - 1 : value.length();
+							memcpy(BarMarketData->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(BarMarketData->InstrumentID) ? sizeof(BarMarketData->InstrumentID) - 1 : value.length();
-							memcpy(BarMarketData->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(BarMarketData->InstrumentId) ? sizeof(BarMarketData->InstrumentId) - 1 : value.length();
+							memcpy(BarMarketData->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::BarPreces:
@@ -3231,21 +3231,21 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for BarMarketDataField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for BarMarketDataField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnBarMarketDataPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnBarMarketDataPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -3268,7 +3268,7 @@ int RtnBarMarketDataPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &BarMarketDataField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &BarMarketDataField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, BarMarketData, sizeof(BarMarketDataField));
 		offset += sizeof(BarMarketDataField);
@@ -3280,12 +3280,12 @@ bool RtnBarMarketDataPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case BarMarketDataField::FieldID:
+		case BarMarketDataField::FieldId:
 		{
 			BarMarketData = ObjectPool<BarMarketDataField>::GetInstance().Allocate();
 			memcpy(BarMarketData, buff + offset, sizeof(BarMarketDataField));
@@ -3303,7 +3303,7 @@ const char* RtnBarMarketDataPackage::GetDebugString() const
 	int offset = 0;
 	if (BarMarketData != nullptr)
 	{
-		offset = AppendDebugString(offset, "BarMarketData:TradingDay:[%s], ExchangeID:[%s], InstrumentID:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeID, BarMarketData->InstrumentID, static_cast<int>(BarMarketData->BarPreces), BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->PreSettlementPrice, BarMarketData->PreClosePrice, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
+		offset = AppendDebugString(offset, "BarMarketData:TradingDay:[%s], ExchangeId:[%s], InstrumentId:[%s], BarPreces:[%d], BarPeriod:[%d], BarTime:[%lld], UpdateTs:[%lld], PreSettlementPrice:[%f], PreClosePrice:[%f], HighestPrice:[%f], LowestPrice:[%f], Open:[%f], High:[%f], Low:[%f], Close:[%f], CurrVolume:[%lld], Volume:[%lld], CurrTurnover:[%f], Turnover:[%f], OpenInterest:[%f]", BarMarketData->TradingDay, BarMarketData->ExchangeId, BarMarketData->InstrumentId, static_cast<int>(BarMarketData->BarPreces), BarMarketData->BarPeriod, BarMarketData->BarTime, BarMarketData->UpdateTs, BarMarketData->PreSettlementPrice, BarMarketData->PreClosePrice, BarMarketData->HighestPrice, BarMarketData->LowestPrice, BarMarketData->Open, BarMarketData->High, BarMarketData->Low, BarMarketData->Close, BarMarketData->CurrVolume, BarMarketData->Volume, BarMarketData->CurrTurnover, BarMarketData->Turnover, BarMarketData->OpenInterest);
 	}
 	return DataStringBuffer;
 }
@@ -3328,23 +3328,23 @@ void RtnSessionBeginPackage::Deallocate()
 {
 	ObjectPool<RtnSessionBeginPackage>::GetInstance().Deallocate(this);
 }
-void RtnSessionBeginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnSessionBeginPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnSessionBeginPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (SessionBegin != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, SessionBeginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, SessionBeginField::FieldId);
 		if (strlen(SessionBegin->TradingDay) >= sizeof(SessionBegin->TradingDay))
 		{
 			SessionBegin->TradingDay[sizeof(SessionBegin->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, SessionBegin->TradingDay);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, SessionBeginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, SessionBeginField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -3356,26 +3356,26 @@ bool RtnSessionBeginPackage::FromStepStream(char* buff, int startIndex, int endI
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case SessionBeginField::FieldID:
+			case SessionBeginField::FieldId:
 			{
 				SessionBegin = ObjectPool<SessionBeginField>::GetInstance().Allocate();
 				memset(SessionBegin, 0, sizeof(*SessionBegin));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -3387,21 +3387,21 @@ bool RtnSessionBeginPackage::FromStepStream(char* buff, int startIndex, int endI
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SessionBeginField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for SessionBeginField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnSessionBeginPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnSessionBeginPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -3424,7 +3424,7 @@ int RtnSessionBeginPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &SessionBeginField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &SessionBeginField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, SessionBegin, sizeof(SessionBeginField));
 		offset += sizeof(SessionBeginField);
@@ -3436,12 +3436,12 @@ bool RtnSessionBeginPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case SessionBeginField::FieldID:
+		case SessionBeginField::FieldId:
 		{
 			SessionBegin = ObjectPool<SessionBeginField>::GetInstance().Allocate();
 			memcpy(SessionBegin, buff + offset, sizeof(SessionBeginField));
@@ -3484,23 +3484,23 @@ void RtnSessionEndPackage::Deallocate()
 {
 	ObjectPool<RtnSessionEndPackage>::GetInstance().Deallocate(this);
 }
-void RtnSessionEndPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnSessionEndPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnSessionEndPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (SessionEnd != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, SessionEndField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, SessionEndField::FieldId);
 		if (strlen(SessionEnd->TradingDay) >= sizeof(SessionEnd->TradingDay))
 		{
 			SessionEnd->TradingDay[sizeof(SessionEnd->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, SessionEnd->TradingDay);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, SessionEndField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, SessionEndField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -3512,26 +3512,26 @@ bool RtnSessionEndPackage::FromStepStream(char* buff, int startIndex, int endInd
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case SessionEndField::FieldID:
+			case SessionEndField::FieldId:
 			{
 				SessionEnd = ObjectPool<SessionEndField>::GetInstance().Allocate();
 				memset(SessionEnd, 0, sizeof(*SessionEnd));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -3543,21 +3543,21 @@ bool RtnSessionEndPackage::FromStepStream(char* buff, int startIndex, int endInd
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for SessionEndField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for SessionEndField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnSessionEndPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnSessionEndPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -3580,7 +3580,7 @@ int RtnSessionEndPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &SessionEndField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &SessionEndField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, SessionEnd, sizeof(SessionEndField));
 		offset += sizeof(SessionEndField);
@@ -3592,12 +3592,12 @@ bool RtnSessionEndPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case SessionEndField::FieldID:
+		case SessionEndField::FieldId:
 		{
 			SessionEnd = ObjectPool<SessionEndField>::GetInstance().Allocate();
 			memcpy(SessionEnd, buff + offset, sizeof(SessionEndField));
@@ -3640,23 +3640,23 @@ void RtnMarketDataEndPackage::Deallocate()
 {
 	ObjectPool<RtnMarketDataEndPackage>::GetInstance().Deallocate(this);
 }
-void RtnMarketDataEndPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnMarketDataEndPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnMarketDataEndPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (MarketDataEnd != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, MarketDataEndField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, MarketDataEndField::FieldId);
 		if (strlen(MarketDataEnd->TradingDay) >= sizeof(MarketDataEnd->TradingDay))
 		{
 			MarketDataEnd->TradingDay[sizeof(MarketDataEnd->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, MarketDataEnd->TradingDay);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, MarketDataEndField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, MarketDataEndField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -3668,26 +3668,26 @@ bool RtnMarketDataEndPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case MarketDataEndField::FieldID:
+			case MarketDataEndField::FieldId:
 			{
 				MarketDataEnd = ObjectPool<MarketDataEndField>::GetInstance().Allocate();
 				memset(MarketDataEnd, 0, sizeof(*MarketDataEnd));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -3699,21 +3699,21 @@ bool RtnMarketDataEndPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for MarketDataEndField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for MarketDataEndField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnMarketDataEndPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnMarketDataEndPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -3736,7 +3736,7 @@ int RtnMarketDataEndPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &MarketDataEndField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &MarketDataEndField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, MarketDataEnd, sizeof(MarketDataEndField));
 		offset += sizeof(MarketDataEndField);
@@ -3748,12 +3748,12 @@ bool RtnMarketDataEndPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case MarketDataEndField::FieldID:
+		case MarketDataEndField::FieldId:
 		{
 			MarketDataEnd = ObjectPool<MarketDataEndField>::GetInstance().Allocate();
 			memcpy(MarketDataEnd, buff + offset, sizeof(MarketDataEndField));
@@ -3796,23 +3796,23 @@ void ReqRegisterAccountPackage::Deallocate()
 {
 	ObjectPool<ReqRegisterAccountPackage>::GetInstance().Deallocate(this);
 }
-void ReqRegisterAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqRegisterAccountPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqRegisterAccountPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqRegisterAccount != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqRegisterAccountField::FieldID);
-		if (strlen(ReqRegisterAccount->AccountID) >= sizeof(ReqRegisterAccount->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqRegisterAccountField::FieldId);
+		if (strlen(ReqRegisterAccount->AccountId) >= sizeof(ReqRegisterAccount->AccountId))
 		{
-			ReqRegisterAccount->AccountID[sizeof(ReqRegisterAccount->AccountID) - 1] = 0;
+			ReqRegisterAccount->AccountId[sizeof(ReqRegisterAccount->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqRegisterAccount->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqRegisterAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqRegisterAccount->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqRegisterAccountField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -3824,52 +3824,52 @@ bool ReqRegisterAccountPackage::FromStepStream(char* buff, int startIndex, int e
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqRegisterAccountField::FieldID:
+			case ReqRegisterAccountField::FieldId:
 			{
 				ReqRegisterAccount = ObjectPool<ReqRegisterAccountField>::GetInstance().Allocate();
 				memset(ReqRegisterAccount, 0, sizeof(*ReqRegisterAccount));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqRegisterAccount->AccountID) ? sizeof(ReqRegisterAccount->AccountID) - 1 : value.length();
-							memcpy(ReqRegisterAccount->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqRegisterAccount->AccountId) ? sizeof(ReqRegisterAccount->AccountId) - 1 : value.length();
+							memcpy(ReqRegisterAccount->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqRegisterAccountField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqRegisterAccountField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqRegisterAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqRegisterAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -3892,7 +3892,7 @@ int ReqRegisterAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqRegisterAccountField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqRegisterAccountField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqRegisterAccount, sizeof(ReqRegisterAccountField));
 		offset += sizeof(ReqRegisterAccountField);
@@ -3904,12 +3904,12 @@ bool ReqRegisterAccountPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqRegisterAccountField::FieldID:
+		case ReqRegisterAccountField::FieldId:
 		{
 			ReqRegisterAccount = ObjectPool<ReqRegisterAccountField>::GetInstance().Allocate();
 			memcpy(ReqRegisterAccount, buff + offset, sizeof(ReqRegisterAccountField));
@@ -3927,7 +3927,7 @@ const char* ReqRegisterAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqRegisterAccount != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqRegisterAccount:AccountID:[%s]", ReqRegisterAccount->AccountID);
+		offset = AppendDebugString(offset, "ReqRegisterAccount:AccountId:[%s]", ReqRegisterAccount->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -3957,34 +3957,34 @@ void RspRegisterAccountPackage::Deallocate()
 {
 	ObjectPool<RspRegisterAccountPackage>::GetInstance().Deallocate(this);
 }
-void RspRegisterAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspRegisterAccountPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspRegisterAccountPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (RspRegisterAccount != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspRegisterAccountField::FieldID);
-		if (strlen(RspRegisterAccount->AccountID) >= sizeof(RspRegisterAccount->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspRegisterAccountField::FieldId);
+		if (strlen(RspRegisterAccount->AccountId) >= sizeof(RspRegisterAccount->AccountId))
 		{
-			RspRegisterAccount->AccountID[sizeof(RspRegisterAccount->AccountID) - 1] = 0;
+			RspRegisterAccount->AccountId[sizeof(RspRegisterAccount->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, RspRegisterAccount->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspRegisterAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, RspRegisterAccount->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspRegisterAccountField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -3996,69 +3996,69 @@ bool RspRegisterAccountPackage::FromStepStream(char* buff, int startIndex, int e
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case RspRegisterAccountField::FieldID:
+			case RspRegisterAccountField::FieldId:
 			{
 				RspRegisterAccount = ObjectPool<RspRegisterAccountField>::GetInstance().Allocate();
 				memset(RspRegisterAccount, 0, sizeof(*RspRegisterAccount));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(RspRegisterAccount->AccountID) ? sizeof(RspRegisterAccount->AccountID) - 1 : value.length();
-							memcpy(RspRegisterAccount->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspRegisterAccount->AccountId) ? sizeof(RspRegisterAccount->AccountId) - 1 : value.length();
+							memcpy(RspRegisterAccount->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspRegisterAccountField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspRegisterAccountField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspRegisterAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspRegisterAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -4068,21 +4068,21 @@ bool RspRegisterAccountPackage::FromStepStream(char* buff, int startIndex, int e
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspRegisterAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspRegisterAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -4105,7 +4105,7 @@ int RspRegisterAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspRegisterAccountField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspRegisterAccountField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspRegisterAccount, sizeof(RspRegisterAccountField));
 		offset += sizeof(RspRegisterAccountField);
@@ -4117,7 +4117,7 @@ int RspRegisterAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -4129,19 +4129,19 @@ bool RspRegisterAccountPackage::FromXtpStream(char* buff, int startIndex, int en
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case RspRegisterAccountField::FieldID:
+		case RspRegisterAccountField::FieldId:
 		{
 			RspRegisterAccount = ObjectPool<RspRegisterAccountField>::GetInstance().Allocate();
 			memcpy(RspRegisterAccount, buff + offset, sizeof(RspRegisterAccountField));
 			offset += sizeof(RspRegisterAccountField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -4159,11 +4159,11 @@ const char* RspRegisterAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (RspRegisterAccount != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspRegisterAccount:AccountID:[%s]", RspRegisterAccount->AccountID);
+		offset = AppendDebugString(offset, "RspRegisterAccount:AccountId:[%s]", RspRegisterAccount->AccountId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -4188,28 +4188,28 @@ void ReqAccountLoginPackage::Deallocate()
 {
 	ObjectPool<ReqAccountLoginPackage>::GetInstance().Deallocate(this);
 }
-void ReqAccountLoginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqAccountLoginPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqAccountLoginPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqAccountLogin != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqAccountLoginField::FieldID);
-		if (strlen(ReqAccountLogin->AccountID) >= sizeof(ReqAccountLogin->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqAccountLoginField::FieldId);
+		if (strlen(ReqAccountLogin->AccountId) >= sizeof(ReqAccountLogin->AccountId))
 		{
-			ReqAccountLogin->AccountID[sizeof(ReqAccountLogin->AccountID) - 1] = 0;
+			ReqAccountLogin->AccountId[sizeof(ReqAccountLogin->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqAccountLogin->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqAccountLogin->AccountId);
 		if (strlen(ReqAccountLogin->Password) >= sizeof(ReqAccountLogin->Password))
 		{
 			ReqAccountLogin->Password[sizeof(ReqAccountLogin->Password) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::Password, ReqAccountLogin->Password);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqAccountLoginField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqAccountLoginField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -4221,34 +4221,34 @@ bool ReqAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqAccountLoginField::FieldID:
+			case ReqAccountLoginField::FieldId:
 			{
 				ReqAccountLogin = ObjectPool<ReqAccountLoginField>::GetInstance().Allocate();
 				memset(ReqAccountLogin, 0, sizeof(*ReqAccountLogin));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqAccountLogin->AccountID) ? sizeof(ReqAccountLogin->AccountID) - 1 : value.length();
-							memcpy(ReqAccountLogin->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqAccountLogin->AccountId) ? sizeof(ReqAccountLogin->AccountId) - 1 : value.length();
+							memcpy(ReqAccountLogin->AccountId, value.c_str(), len);
 							break;
 						}
 						case Items::Password:
@@ -4258,21 +4258,21 @@ bool ReqAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqAccountLoginField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqAccountLoginField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqAccountLoginPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqAccountLoginPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -4295,7 +4295,7 @@ int ReqAccountLoginPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqAccountLoginField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqAccountLoginField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqAccountLogin, sizeof(ReqAccountLoginField));
 		offset += sizeof(ReqAccountLoginField);
@@ -4307,12 +4307,12 @@ bool ReqAccountLoginPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqAccountLoginField::FieldID:
+		case ReqAccountLoginField::FieldId:
 		{
 			ReqAccountLogin = ObjectPool<ReqAccountLoginField>::GetInstance().Allocate();
 			memcpy(ReqAccountLogin, buff + offset, sizeof(ReqAccountLoginField));
@@ -4330,7 +4330,7 @@ const char* ReqAccountLoginPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqAccountLogin != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqAccountLogin:AccountID:[%s], Password:[%s]", ReqAccountLogin->AccountID, ReqAccountLogin->Password);
+		offset = AppendDebugString(offset, "ReqAccountLogin:AccountId:[%s], Password:[%s]", ReqAccountLogin->AccountId, ReqAccountLogin->Password);
 	}
 	return DataStringBuffer;
 }
@@ -4360,22 +4360,22 @@ void RspAccountLoginPackage::Deallocate()
 {
 	ObjectPool<RspAccountLoginPackage>::GetInstance().Deallocate(this);
 }
-void RspAccountLoginPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspAccountLoginPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspAccountLoginPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (RspAccountLogin != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspAccountLoginField::FieldID);
-		if (strlen(RspAccountLogin->AccountID) >= sizeof(RspAccountLogin->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspAccountLoginField::FieldId);
+		if (strlen(RspAccountLogin->AccountId) >= sizeof(RspAccountLogin->AccountId))
 		{
-			RspAccountLogin->AccountID[sizeof(RspAccountLogin->AccountID) - 1] = 0;
+			RspAccountLogin->AccountId[sizeof(RspAccountLogin->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, RspAccountLogin->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountId, RspAccountLogin->AccountId);
 		if (strlen(RspAccountLogin->LoginDate) >= sizeof(RspAccountLogin->LoginDate))
 		{
 			RspAccountLogin->LoginDate[sizeof(RspAccountLogin->LoginDate) - 1] = 0;
@@ -4386,19 +4386,19 @@ int RspAccountLoginPackage::ToStepStream(char* buff, int size) const
 			RspAccountLogin->LoginTime[sizeof(RspAccountLogin->LoginTime) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::LoginTime, RspAccountLogin->LoginTime);
-		StepUtility::WriteString(cursor, Items::SessionID, RspAccountLogin->SessionID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspAccountLoginField::FieldID);
+		StepUtility::WriteString(cursor, Items::SessionId, RspAccountLogin->SessionId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspAccountLoginField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -4410,34 +4410,34 @@ bool RspAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case RspAccountLoginField::FieldID:
+			case RspAccountLoginField::FieldId:
 			{
 				RspAccountLogin = ObjectPool<RspAccountLoginField>::GetInstance().Allocate();
 				memset(RspAccountLogin, 0, sizeof(*RspAccountLogin));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(RspAccountLogin->AccountID) ? sizeof(RspAccountLogin->AccountID) - 1 : value.length();
-							memcpy(RspAccountLogin->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspAccountLogin->AccountId) ? sizeof(RspAccountLogin->AccountId) - 1 : value.length();
+							memcpy(RspAccountLogin->AccountId, value.c_str(), len);
 							break;
 						}
 						case Items::LoginDate:
@@ -4452,44 +4452,44 @@ bool RspAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 							memcpy(RspAccountLogin->LoginTime, value.c_str(), len);
 							break;
 						}
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							RspAccountLogin->SessionID = atoll(value.c_str());
+							RspAccountLogin->SessionId = atoll(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspAccountLoginField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspAccountLoginField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspAccountLoginPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspAccountLoginPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -4499,21 +4499,21 @@ bool RspAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspAccountLoginPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspAccountLoginPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -4536,7 +4536,7 @@ int RspAccountLoginPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspAccountLoginField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspAccountLoginField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspAccountLogin, sizeof(RspAccountLoginField));
 		offset += sizeof(RspAccountLoginField);
@@ -4548,7 +4548,7 @@ int RspAccountLoginPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -4560,19 +4560,19 @@ bool RspAccountLoginPackage::FromXtpStream(char* buff, int startIndex, int endIn
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case RspAccountLoginField::FieldID:
+		case RspAccountLoginField::FieldId:
 		{
 			RspAccountLogin = ObjectPool<RspAccountLoginField>::GetInstance().Allocate();
 			memcpy(RspAccountLogin, buff + offset, sizeof(RspAccountLoginField));
 			offset += sizeof(RspAccountLoginField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -4590,11 +4590,11 @@ const char* RspAccountLoginPackage::GetDebugString() const
 	int offset = 0;
 	if (RspAccountLogin != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspAccountLogin:AccountID:[%s], LoginDate:[%s], LoginTime:[%s], SessionID:[%lld]", RspAccountLogin->AccountID, RspAccountLogin->LoginDate, RspAccountLogin->LoginTime, RspAccountLogin->SessionID);
+		offset = AppendDebugString(offset, "RspAccountLogin:AccountId:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]", RspAccountLogin->AccountId, RspAccountLogin->LoginDate, RspAccountLogin->LoginTime, RspAccountLogin->SessionId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -4619,23 +4619,23 @@ void ReqAccountLogoutPackage::Deallocate()
 {
 	ObjectPool<ReqAccountLogoutPackage>::GetInstance().Deallocate(this);
 }
-void ReqAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqAccountLogoutPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqAccountLogoutPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqAccountLogout != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqAccountLogoutField::FieldID);
-		if (strlen(ReqAccountLogout->AccountID) >= sizeof(ReqAccountLogout->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqAccountLogoutField::FieldId);
+		if (strlen(ReqAccountLogout->AccountId) >= sizeof(ReqAccountLogout->AccountId))
 		{
-			ReqAccountLogout->AccountID[sizeof(ReqAccountLogout->AccountID) - 1] = 0;
+			ReqAccountLogout->AccountId[sizeof(ReqAccountLogout->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqAccountLogout->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqAccountLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqAccountLogout->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqAccountLogoutField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -4647,52 +4647,52 @@ bool ReqAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqAccountLogoutField::FieldID:
+			case ReqAccountLogoutField::FieldId:
 			{
 				ReqAccountLogout = ObjectPool<ReqAccountLogoutField>::GetInstance().Allocate();
 				memset(ReqAccountLogout, 0, sizeof(*ReqAccountLogout));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqAccountLogout->AccountID) ? sizeof(ReqAccountLogout->AccountID) - 1 : value.length();
-							memcpy(ReqAccountLogout->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqAccountLogout->AccountId) ? sizeof(ReqAccountLogout->AccountId) - 1 : value.length();
+							memcpy(ReqAccountLogout->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqAccountLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqAccountLogoutField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqAccountLogoutPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqAccountLogoutPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -4715,7 +4715,7 @@ int ReqAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqAccountLogoutField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqAccountLogoutField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqAccountLogout, sizeof(ReqAccountLogoutField));
 		offset += sizeof(ReqAccountLogoutField);
@@ -4727,12 +4727,12 @@ bool ReqAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqAccountLogoutField::FieldID:
+		case ReqAccountLogoutField::FieldId:
 		{
 			ReqAccountLogout = ObjectPool<ReqAccountLogoutField>::GetInstance().Allocate();
 			memcpy(ReqAccountLogout, buff + offset, sizeof(ReqAccountLogoutField));
@@ -4750,7 +4750,7 @@ const char* ReqAccountLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqAccountLogout != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqAccountLogout:AccountID:[%s]", ReqAccountLogout->AccountID);
+		offset = AppendDebugString(offset, "ReqAccountLogout:AccountId:[%s]", ReqAccountLogout->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -4780,34 +4780,34 @@ void RspAccountLogoutPackage::Deallocate()
 {
 	ObjectPool<RspAccountLogoutPackage>::GetInstance().Deallocate(this);
 }
-void RspAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspAccountLogoutPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspAccountLogoutPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (RspAccountLogout != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspAccountLogoutField::FieldID);
-		if (strlen(RspAccountLogout->AccountID) >= sizeof(RspAccountLogout->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspAccountLogoutField::FieldId);
+		if (strlen(RspAccountLogout->AccountId) >= sizeof(RspAccountLogout->AccountId))
 		{
-			RspAccountLogout->AccountID[sizeof(RspAccountLogout->AccountID) - 1] = 0;
+			RspAccountLogout->AccountId[sizeof(RspAccountLogout->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, RspAccountLogout->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspAccountLogoutField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, RspAccountLogout->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspAccountLogoutField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -4819,69 +4819,69 @@ bool RspAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case RspAccountLogoutField::FieldID:
+			case RspAccountLogoutField::FieldId:
 			{
 				RspAccountLogout = ObjectPool<RspAccountLogoutField>::GetInstance().Allocate();
 				memset(RspAccountLogout, 0, sizeof(*RspAccountLogout));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(RspAccountLogout->AccountID) ? sizeof(RspAccountLogout->AccountID) - 1 : value.length();
-							memcpy(RspAccountLogout->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(RspAccountLogout->AccountId) ? sizeof(RspAccountLogout->AccountId) - 1 : value.length();
+							memcpy(RspAccountLogout->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspAccountLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspAccountLogoutField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspAccountLogoutPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspAccountLogoutPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -4891,21 +4891,21 @@ bool RspAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspAccountLogoutPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspAccountLogoutPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -4928,7 +4928,7 @@ int RspAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspAccountLogoutField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspAccountLogoutField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspAccountLogout, sizeof(RspAccountLogoutField));
 		offset += sizeof(RspAccountLogoutField);
@@ -4940,7 +4940,7 @@ int RspAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -4952,19 +4952,19 @@ bool RspAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case RspAccountLogoutField::FieldID:
+		case RspAccountLogoutField::FieldId:
 		{
 			RspAccountLogout = ObjectPool<RspAccountLogoutField>::GetInstance().Allocate();
 			memcpy(RspAccountLogout, buff + offset, sizeof(RspAccountLogoutField));
 			offset += sizeof(RspAccountLogoutField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -4982,11 +4982,11 @@ const char* RspAccountLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (RspAccountLogout != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspAccountLogout:AccountID:[%s]", RspAccountLogout->AccountID);
+		offset = AppendDebugString(offset, "RspAccountLogout:AccountId:[%s]", RspAccountLogout->AccountId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -5011,23 +5011,23 @@ void ReqQryAccountPackage::Deallocate()
 {
 	ObjectPool<ReqQryAccountPackage>::GetInstance().Deallocate(this);
 }
-void ReqQryAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryAccountPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryAccountPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryAccount != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryAccountField::FieldID);
-		if (strlen(ReqQryAccount->AccountID) >= sizeof(ReqQryAccount->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryAccountField::FieldId);
+		if (strlen(ReqQryAccount->AccountId) >= sizeof(ReqQryAccount->AccountId))
 		{
-			ReqQryAccount->AccountID[sizeof(ReqQryAccount->AccountID) - 1] = 0;
+			ReqQryAccount->AccountId[sizeof(ReqQryAccount->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqQryAccount->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqQryAccount->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryAccountField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -5039,52 +5039,52 @@ bool ReqQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryAccountField::FieldID:
+			case ReqQryAccountField::FieldId:
 			{
 				ReqQryAccount = ObjectPool<ReqQryAccountField>::GetInstance().Allocate();
 				memset(ReqQryAccount, 0, sizeof(*ReqQryAccount));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryAccount->AccountID) ? sizeof(ReqQryAccount->AccountID) - 1 : value.length();
-							memcpy(ReqQryAccount->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryAccount->AccountId) ? sizeof(ReqQryAccount->AccountId) - 1 : value.length();
+							memcpy(ReqQryAccount->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryAccountField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryAccountField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -5107,7 +5107,7 @@ int ReqQryAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryAccountField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryAccountField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryAccount, sizeof(ReqQryAccountField));
 		offset += sizeof(ReqQryAccountField);
@@ -5119,12 +5119,12 @@ bool ReqQryAccountPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryAccountField::FieldID:
+		case ReqQryAccountField::FieldId:
 		{
 			ReqQryAccount = ObjectPool<ReqQryAccountField>::GetInstance().Allocate();
 			memcpy(ReqQryAccount, buff + offset, sizeof(ReqQryAccountField));
@@ -5142,7 +5142,7 @@ const char* ReqQryAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryAccount != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryAccount:AccountID:[%s]", ReqQryAccount->AccountID);
+		offset = AppendDebugString(offset, "ReqQryAccount:AccountId:[%s]", ReqQryAccount->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -5172,39 +5172,39 @@ void RspQryAccountPackage::Deallocate()
 {
 	ObjectPool<RspQryAccountPackage>::GetInstance().Deallocate(this);
 }
-void RspQryAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryAccountPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryAccountPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (Account != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, AccountField::FieldID);
-		if (strlen(Account->AccountID) >= sizeof(Account->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, AccountField::FieldId);
+		if (strlen(Account->AccountId) >= sizeof(Account->AccountId))
 		{
-			Account->AccountID[sizeof(Account->AccountID) - 1] = 0;
+			Account->AccountId[sizeof(Account->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, Account->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountId, Account->AccountId);
 		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(Account->AccountType));
 		StepUtility::WriteString(cursor, Items::AccountStatus, static_cast<int>(Account->AccountStatus));
-		StepUtility::WriteString(cursor, Items::TradeGroupID, Account->TradeGroupID);
-		StepUtility::WriteString(cursor, Items::RiskGroupID, Account->RiskGroupID);
-		StepUtility::WriteString(cursor, Items::CommissionGroupID, Account->CommissionGroupID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, AccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::TradeGroupId, Account->TradeGroupId);
+		StepUtility::WriteString(cursor, Items::RiskGroupId, Account->RiskGroupId);
+		StepUtility::WriteString(cursor, Items::CommissionGroupId, Account->CommissionGroupId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, AccountField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -5216,34 +5216,34 @@ bool RspQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case AccountField::FieldID:
+			case AccountField::FieldId:
 			{
 				Account = ObjectPool<AccountField>::GetInstance().Allocate();
 				memset(Account, 0, sizeof(*Account));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(Account->AccountID) ? sizeof(Account->AccountID) - 1 : value.length();
-							memcpy(Account->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Account->AccountId) ? sizeof(Account->AccountId) - 1 : value.length();
+							memcpy(Account->AccountId, value.c_str(), len);
 							break;
 						}
 						case Items::AccountType:
@@ -5256,54 +5256,54 @@ bool RspQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 							Account->AccountStatus = static_cast<AccountStatusType>(atoi(value.c_str()));
 							break;
 						}
-						case Items::TradeGroupID:
+						case Items::TradeGroupId:
 						{
-							Account->TradeGroupID = atoi(value.c_str());
+							Account->TradeGroupId = atoi(value.c_str());
 							break;
 						}
-						case Items::RiskGroupID:
+						case Items::RiskGroupId:
 						{
-							Account->RiskGroupID = atoi(value.c_str());
+							Account->RiskGroupId = atoi(value.c_str());
 							break;
 						}
-						case Items::CommissionGroupID:
+						case Items::CommissionGroupId:
 						{
-							Account->CommissionGroupID = atoi(value.c_str());
+							Account->CommissionGroupId = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for AccountField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for AccountField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -5313,21 +5313,21 @@ bool RspQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -5350,7 +5350,7 @@ int RspQryAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &AccountField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &AccountField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Account, sizeof(AccountField));
 		offset += sizeof(AccountField);
@@ -5362,7 +5362,7 @@ int RspQryAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -5374,19 +5374,19 @@ bool RspQryAccountPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case AccountField::FieldID:
+		case AccountField::FieldId:
 		{
 			Account = ObjectPool<AccountField>::GetInstance().Allocate();
 			memcpy(Account, buff + offset, sizeof(AccountField));
 			offset += sizeof(AccountField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -5404,11 +5404,11 @@ const char* RspQryAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (Account != nullptr)
 	{
-		offset = AppendDebugString(offset, "Account:AccountID:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupID:[%d], RiskGroupID:[%d], CommissionGroupID:[%d]", Account->AccountID, static_cast<int>(Account->AccountType), static_cast<int>(Account->AccountStatus), Account->TradeGroupID, Account->RiskGroupID, Account->CommissionGroupID);
+		offset = AppendDebugString(offset, "Account:AccountId:[%s], AccountType:[%d], AccountStatus:[%d], TradeGroupId:[%d], RiskGroupId:[%d], CommissionGroupId:[%d]", Account->AccountId, static_cast<int>(Account->AccountType), static_cast<int>(Account->AccountStatus), Account->TradeGroupId, Account->RiskGroupId, Account->CommissionGroupId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -5433,23 +5433,23 @@ void ReqQryHolderAccountPackage::Deallocate()
 {
 	ObjectPool<ReqQryHolderAccountPackage>::GetInstance().Deallocate(this);
 }
-void ReqQryHolderAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryHolderAccountPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryHolderAccountPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryHolderAccount != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryHolderAccountField::FieldID);
-		if (strlen(ReqQryHolderAccount->AccountID) >= sizeof(ReqQryHolderAccount->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryHolderAccountField::FieldId);
+		if (strlen(ReqQryHolderAccount->AccountId) >= sizeof(ReqQryHolderAccount->AccountId))
 		{
-			ReqQryHolderAccount->AccountID[sizeof(ReqQryHolderAccount->AccountID) - 1] = 0;
+			ReqQryHolderAccount->AccountId[sizeof(ReqQryHolderAccount->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqQryHolderAccount->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryHolderAccountField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqQryHolderAccount->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryHolderAccountField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -5461,52 +5461,52 @@ bool ReqQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int 
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryHolderAccountField::FieldID:
+			case ReqQryHolderAccountField::FieldId:
 			{
 				ReqQryHolderAccount = ObjectPool<ReqQryHolderAccountField>::GetInstance().Allocate();
 				memset(ReqQryHolderAccount, 0, sizeof(*ReqQryHolderAccount));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryHolderAccount->AccountID) ? sizeof(ReqQryHolderAccount->AccountID) - 1 : value.length();
-							memcpy(ReqQryHolderAccount->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryHolderAccount->AccountId) ? sizeof(ReqQryHolderAccount->AccountId) - 1 : value.length();
+							memcpy(ReqQryHolderAccount->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryHolderAccountField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryHolderAccountField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryHolderAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryHolderAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -5529,7 +5529,7 @@ int ReqQryHolderAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryHolderAccountField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryHolderAccountField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryHolderAccount, sizeof(ReqQryHolderAccountField));
 		offset += sizeof(ReqQryHolderAccountField);
@@ -5541,12 +5541,12 @@ bool ReqQryHolderAccountPackage::FromXtpStream(char* buff, int startIndex, int e
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryHolderAccountField::FieldID:
+		case ReqQryHolderAccountField::FieldId:
 		{
 			ReqQryHolderAccount = ObjectPool<ReqQryHolderAccountField>::GetInstance().Allocate();
 			memcpy(ReqQryHolderAccount, buff + offset, sizeof(ReqQryHolderAccountField));
@@ -5564,7 +5564,7 @@ const char* ReqQryHolderAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryHolderAccount != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryHolderAccount:AccountID:[%s]", ReqQryHolderAccount->AccountID);
+		offset = AppendDebugString(offset, "ReqQryHolderAccount:AccountId:[%s]", ReqQryHolderAccount->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -5594,40 +5594,40 @@ void RspQryHolderAccountPackage::Deallocate()
 {
 	ObjectPool<RspQryHolderAccountPackage>::GetInstance().Deallocate(this);
 }
-void RspQryHolderAccountPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryHolderAccountPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryHolderAccountPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (HolderAccount != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, HolderAccountField::FieldID);
-		if (strlen(HolderAccount->ExchangeID) >= sizeof(HolderAccount->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, HolderAccountField::FieldId);
+		if (strlen(HolderAccount->ExchangeId) >= sizeof(HolderAccount->ExchangeId))
 		{
-			HolderAccount->ExchangeID[sizeof(HolderAccount->ExchangeID) - 1] = 0;
+			HolderAccount->ExchangeId[sizeof(HolderAccount->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, HolderAccount->ExchangeID);
-		if (strlen(HolderAccount->HolderAccountID) >= sizeof(HolderAccount->HolderAccountID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, HolderAccount->ExchangeId);
+		if (strlen(HolderAccount->HolderAccountId) >= sizeof(HolderAccount->HolderAccountId))
 		{
-			HolderAccount->HolderAccountID[sizeof(HolderAccount->HolderAccountID) - 1] = 0;
+			HolderAccount->HolderAccountId[sizeof(HolderAccount->HolderAccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::HolderAccountID, HolderAccount->HolderAccountID);
+		StepUtility::WriteString(cursor, Items::HolderAccountId, HolderAccount->HolderAccountId);
 		StepUtility::WriteString(cursor, Items::PrimaryFlag, HolderAccount->PrimaryFlag);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, HolderAccountField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, HolderAccountField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -5639,40 +5639,40 @@ bool RspQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int 
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case HolderAccountField::FieldID:
+			case HolderAccountField::FieldId:
 			{
 				HolderAccount = ObjectPool<HolderAccountField>::GetInstance().Allocate();
 				memset(HolderAccount, 0, sizeof(*HolderAccount));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(HolderAccount->ExchangeID) ? sizeof(HolderAccount->ExchangeID) - 1 : value.length();
-							memcpy(HolderAccount->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(HolderAccount->ExchangeId) ? sizeof(HolderAccount->ExchangeId) - 1 : value.length();
+							memcpy(HolderAccount->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::HolderAccountID:
+						case Items::HolderAccountId:
 						{
-							size_t len = value.length() >= sizeof(HolderAccount->HolderAccountID) ? sizeof(HolderAccount->HolderAccountID) - 1 : value.length();
-							memcpy(HolderAccount->HolderAccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(HolderAccount->HolderAccountId) ? sizeof(HolderAccount->HolderAccountId) - 1 : value.length();
+							memcpy(HolderAccount->HolderAccountId, value.c_str(), len);
 							break;
 						}
 						case Items::PrimaryFlag:
@@ -5681,38 +5681,38 @@ bool RspQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int 
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for HolderAccountField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for HolderAccountField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryHolderAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryHolderAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -5722,21 +5722,21 @@ bool RspQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int 
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryHolderAccountPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryHolderAccountPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -5759,7 +5759,7 @@ int RspQryHolderAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &HolderAccountField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &HolderAccountField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, HolderAccount, sizeof(HolderAccountField));
 		offset += sizeof(HolderAccountField);
@@ -5771,7 +5771,7 @@ int RspQryHolderAccountPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -5783,19 +5783,19 @@ bool RspQryHolderAccountPackage::FromXtpStream(char* buff, int startIndex, int e
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case HolderAccountField::FieldID:
+		case HolderAccountField::FieldId:
 		{
 			HolderAccount = ObjectPool<HolderAccountField>::GetInstance().Allocate();
 			memcpy(HolderAccount, buff + offset, sizeof(HolderAccountField));
 			offset += sizeof(HolderAccountField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -5813,11 +5813,11 @@ const char* RspQryHolderAccountPackage::GetDebugString() const
 	int offset = 0;
 	if (HolderAccount != nullptr)
 	{
-		offset = AppendDebugString(offset, "HolderAccount:ExchangeID:[%s], HolderAccountID:[%s], PrimaryFlag:[%d]", HolderAccount->ExchangeID, HolderAccount->HolderAccountID, HolderAccount->PrimaryFlag);
+		offset = AppendDebugString(offset, "HolderAccount:ExchangeId:[%s], HolderAccountId:[%s], PrimaryFlag:[%d]", HolderAccount->ExchangeId, HolderAccount->HolderAccountId, HolderAccount->PrimaryFlag);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -5842,23 +5842,23 @@ void ReqQryCapitalPackage::Deallocate()
 {
 	ObjectPool<ReqQryCapitalPackage>::GetInstance().Deallocate(this);
 }
-void ReqQryCapitalPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryCapitalPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryCapitalPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryCapital != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryCapitalField::FieldID);
-		if (strlen(ReqQryCapital->AccountID) >= sizeof(ReqQryCapital->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryCapitalField::FieldId);
+		if (strlen(ReqQryCapital->AccountId) >= sizeof(ReqQryCapital->AccountId))
 		{
-			ReqQryCapital->AccountID[sizeof(ReqQryCapital->AccountID) - 1] = 0;
+			ReqQryCapital->AccountId[sizeof(ReqQryCapital->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqQryCapital->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryCapitalField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqQryCapital->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryCapitalField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -5870,52 +5870,52 @@ bool ReqQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryCapitalField::FieldID:
+			case ReqQryCapitalField::FieldId:
 			{
 				ReqQryCapital = ObjectPool<ReqQryCapitalField>::GetInstance().Allocate();
 				memset(ReqQryCapital, 0, sizeof(*ReqQryCapital));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryCapital->AccountID) ? sizeof(ReqQryCapital->AccountID) - 1 : value.length();
-							memcpy(ReqQryCapital->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryCapital->AccountId) ? sizeof(ReqQryCapital->AccountId) - 1 : value.length();
+							memcpy(ReqQryCapital->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryCapitalField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryCapitalField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryCapitalPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryCapitalPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -5938,7 +5938,7 @@ int ReqQryCapitalPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryCapitalField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryCapitalField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryCapital, sizeof(ReqQryCapitalField));
 		offset += sizeof(ReqQryCapitalField);
@@ -5950,12 +5950,12 @@ bool ReqQryCapitalPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryCapitalField::FieldID:
+		case ReqQryCapitalField::FieldId:
 		{
 			ReqQryCapital = ObjectPool<ReqQryCapitalField>::GetInstance().Allocate();
 			memcpy(ReqQryCapital, buff + offset, sizeof(ReqQryCapitalField));
@@ -5973,7 +5973,7 @@ const char* ReqQryCapitalPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryCapital != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryCapital:AccountID:[%s]", ReqQryCapital->AccountID);
+		offset = AppendDebugString(offset, "ReqQryCapital:AccountId:[%s]", ReqQryCapital->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -6003,27 +6003,27 @@ void RspQryCapitalPackage::Deallocate()
 {
 	ObjectPool<RspQryCapitalPackage>::GetInstance().Deallocate(this);
 }
-void RspQryCapitalPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryCapitalPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryCapitalPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (Capital != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, CapitalField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, CapitalField::FieldId);
 		if (strlen(Capital->TradingDay) >= sizeof(Capital->TradingDay))
 		{
 			Capital->TradingDay[sizeof(Capital->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, Capital->TradingDay);
-		if (strlen(Capital->AccountID) >= sizeof(Capital->AccountID))
+		if (strlen(Capital->AccountId) >= sizeof(Capital->AccountId))
 		{
-			Capital->AccountID[sizeof(Capital->AccountID) - 1] = 0;
+			Capital->AccountId[sizeof(Capital->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, Capital->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountId, Capital->AccountId);
 		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(Capital->AccountType));
 		StepUtility::WriteString(cursor, Items::Balance, Capital->Balance);
 		StepUtility::WriteString(cursor, Items::PreBalance, Capital->PreBalance);
@@ -6042,18 +6042,18 @@ int RspQryCapitalPackage::ToStepStream(char* buff, int size) const
 		StepUtility::WriteString(cursor, Items::PositionProfitByTrade, Capital->PositionProfitByTrade);
 		StepUtility::WriteString(cursor, Items::Deposit, Capital->Deposit);
 		StepUtility::WriteString(cursor, Items::Withdraw, Capital->Withdraw);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, CapitalField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, CapitalField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -6065,26 +6065,26 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case CapitalField::FieldID:
+			case CapitalField::FieldId:
 			{
 				Capital = ObjectPool<CapitalField>::GetInstance().Allocate();
 				memset(Capital, 0, sizeof(*Capital));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -6095,10 +6095,10 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 							memcpy(Capital->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(Capital->AccountID) ? sizeof(Capital->AccountID) - 1 : value.length();
-							memcpy(Capital->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Capital->AccountId) ? sizeof(Capital->AccountId) - 1 : value.length();
+							memcpy(Capital->AccountId, value.c_str(), len);
 							break;
 						}
 						case Items::AccountType:
@@ -6192,38 +6192,38 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for CapitalField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for CapitalField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryCapitalPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryCapitalPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -6233,21 +6233,21 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryCapitalPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryCapitalPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -6270,7 +6270,7 @@ int RspQryCapitalPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &CapitalField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &CapitalField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Capital, sizeof(CapitalField));
 		offset += sizeof(CapitalField);
@@ -6282,7 +6282,7 @@ int RspQryCapitalPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -6294,19 +6294,19 @@ bool RspQryCapitalPackage::FromXtpStream(char* buff, int startIndex, int endInde
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case CapitalField::FieldID:
+		case CapitalField::FieldId:
 		{
 			Capital = ObjectPool<CapitalField>::GetInstance().Allocate();
 			memcpy(Capital, buff + offset, sizeof(CapitalField));
 			offset += sizeof(CapitalField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -6324,11 +6324,11 @@ const char* RspQryCapitalPackage::GetDebugString() const
 	int offset = 0;
 	if (Capital != nullptr)
 	{
-		offset = AppendDebugString(offset, "Capital:TradingDay:[%s], AccountID:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountID, static_cast<int>(Capital->AccountType), Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
+		offset = AppendDebugString(offset, "Capital:TradingDay:[%s], AccountId:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]", Capital->TradingDay, Capital->AccountId, static_cast<int>(Capital->AccountType), Capital->Balance, Capital->PreBalance, Capital->Available, Capital->MarketValue, Capital->CashIn, Capital->CashOut, Capital->Margin, Capital->Commission, Capital->FrozenCash, Capital->FrozenMargin, Capital->FrozenCommission, Capital->CloseProfitByDate, Capital->CloseProfitByTrade, Capital->PositionProfitByDate, Capital->PositionProfitByTrade, Capital->Deposit, Capital->Withdraw);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -6353,23 +6353,23 @@ void ReqQryPositionPackage::Deallocate()
 {
 	ObjectPool<ReqQryPositionPackage>::GetInstance().Deallocate(this);
 }
-void ReqQryPositionPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryPositionPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryPositionPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryPosition != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryPositionField::FieldID);
-		if (strlen(ReqQryPosition->AccountID) >= sizeof(ReqQryPosition->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryPositionField::FieldId);
+		if (strlen(ReqQryPosition->AccountId) >= sizeof(ReqQryPosition->AccountId))
 		{
-			ReqQryPosition->AccountID[sizeof(ReqQryPosition->AccountID) - 1] = 0;
+			ReqQryPosition->AccountId[sizeof(ReqQryPosition->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqQryPosition->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryPositionField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqQryPosition->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryPositionField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -6381,52 +6381,52 @@ bool ReqQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryPositionField::FieldID:
+			case ReqQryPositionField::FieldId:
 			{
 				ReqQryPosition = ObjectPool<ReqQryPositionField>::GetInstance().Allocate();
 				memset(ReqQryPosition, 0, sizeof(*ReqQryPosition));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryPosition->AccountID) ? sizeof(ReqQryPosition->AccountID) - 1 : value.length();
-							memcpy(ReqQryPosition->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryPosition->AccountId) ? sizeof(ReqQryPosition->AccountId) - 1 : value.length();
+							memcpy(ReqQryPosition->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryPositionField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryPositionField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryPositionPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryPositionPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -6449,7 +6449,7 @@ int ReqQryPositionPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryPositionField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryPositionField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryPosition, sizeof(ReqQryPositionField));
 		offset += sizeof(ReqQryPositionField);
@@ -6461,12 +6461,12 @@ bool ReqQryPositionPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryPositionField::FieldID:
+		case ReqQryPositionField::FieldId:
 		{
 			ReqQryPosition = ObjectPool<ReqQryPositionField>::GetInstance().Allocate();
 			memcpy(ReqQryPosition, buff + offset, sizeof(ReqQryPositionField));
@@ -6484,7 +6484,7 @@ const char* ReqQryPositionPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryPosition != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryPosition:AccountID:[%s]", ReqQryPosition->AccountID);
+		offset = AppendDebugString(offset, "ReqQryPosition:AccountId:[%s]", ReqQryPosition->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -6514,38 +6514,38 @@ void RspQryPositionPackage::Deallocate()
 {
 	ObjectPool<RspQryPositionPackage>::GetInstance().Deallocate(this);
 }
-void RspQryPositionPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryPositionPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryPositionPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (Position != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, PositionField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, PositionField::FieldId);
 		if (strlen(Position->TradingDay) >= sizeof(Position->TradingDay))
 		{
 			Position->TradingDay[sizeof(Position->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, Position->TradingDay);
-		if (strlen(Position->AccountID) >= sizeof(Position->AccountID))
+		if (strlen(Position->AccountId) >= sizeof(Position->AccountId))
 		{
-			Position->AccountID[sizeof(Position->AccountID) - 1] = 0;
+			Position->AccountId[sizeof(Position->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, Position->AccountID);
+		StepUtility::WriteString(cursor, Items::AccountId, Position->AccountId);
 		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(Position->AccountType));
-		if (strlen(Position->ExchangeID) >= sizeof(Position->ExchangeID))
+		if (strlen(Position->ExchangeId) >= sizeof(Position->ExchangeId))
 		{
-			Position->ExchangeID[sizeof(Position->ExchangeID) - 1] = 0;
+			Position->ExchangeId[sizeof(Position->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, Position->ExchangeID);
-		if (strlen(Position->InstrumentID) >= sizeof(Position->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, Position->ExchangeId);
+		if (strlen(Position->InstrumentId) >= sizeof(Position->InstrumentId))
 		{
-			Position->InstrumentID[sizeof(Position->InstrumentID) - 1] = 0;
+			Position->InstrumentId[sizeof(Position->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, Position->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, Position->InstrumentId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Position->ProductClass));
 		StepUtility::WriteString(cursor, Items::PosiDirection, static_cast<int>(Position->PosiDirection));
 		StepUtility::WriteString(cursor, Items::TotalPosition, Position->TotalPosition);
@@ -6563,18 +6563,18 @@ int RspQryPositionPackage::ToStepStream(char* buff, int size) const
 		StepUtility::WriteString(cursor, Items::PositionProfitByTrade, Position->PositionProfitByTrade);
 		StepUtility::WriteString(cursor, Items::LastPrice, Position->LastPrice);
 		StepUtility::WriteString(cursor, Items::PreSettlementPrice, Position->PreSettlementPrice);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, PositionField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, PositionField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -6586,26 +6586,26 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case PositionField::FieldID:
+			case PositionField::FieldId:
 			{
 				Position = ObjectPool<PositionField>::GetInstance().Allocate();
 				memset(Position, 0, sizeof(*Position));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -6616,10 +6616,10 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							memcpy(Position->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(Position->AccountID) ? sizeof(Position->AccountID) - 1 : value.length();
-							memcpy(Position->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Position->AccountId) ? sizeof(Position->AccountId) - 1 : value.length();
+							memcpy(Position->AccountId, value.c_str(), len);
 							break;
 						}
 						case Items::AccountType:
@@ -6627,16 +6627,16 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							Position->AccountType = static_cast<AccountTypeType>(atoi(value.c_str()));
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(Position->ExchangeID) ? sizeof(Position->ExchangeID) - 1 : value.length();
-							memcpy(Position->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Position->ExchangeId) ? sizeof(Position->ExchangeId) - 1 : value.length();
+							memcpy(Position->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(Position->InstrumentID) ? sizeof(Position->InstrumentID) - 1 : value.length();
-							memcpy(Position->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Position->InstrumentId) ? sizeof(Position->InstrumentId) - 1 : value.length();
+							memcpy(Position->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
@@ -6725,38 +6725,38 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for PositionField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for PositionField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryPositionPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryPositionPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -6766,21 +6766,21 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryPositionPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryPositionPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -6803,7 +6803,7 @@ int RspQryPositionPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &PositionField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &PositionField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Position, sizeof(PositionField));
 		offset += sizeof(PositionField);
@@ -6815,7 +6815,7 @@ int RspQryPositionPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -6827,19 +6827,19 @@ bool RspQryPositionPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case PositionField::FieldID:
+		case PositionField::FieldId:
 		{
 			Position = ObjectPool<PositionField>::GetInstance().Allocate();
 			memcpy(Position, buff + offset, sizeof(PositionField));
 			offset += sizeof(PositionField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -6857,11 +6857,11 @@ const char* RspQryPositionPackage::GetDebugString() const
 	int offset = 0;
 	if (Position != nullptr)
 	{
-		offset = AppendDebugString(offset, "Position:TradingDay:[%s], AccountID:[%s], AccountType:[%d], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountID, static_cast<int>(Position->AccountType), Position->ExchangeID, Position->InstrumentID, static_cast<int>(Position->ProductClass), static_cast<int>(Position->PosiDirection), Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
+		offset = AppendDebugString(offset, "Position:TradingDay:[%s], AccountId:[%s], AccountType:[%d], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]", Position->TradingDay, Position->AccountId, static_cast<int>(Position->AccountType), Position->ExchangeId, Position->InstrumentId, static_cast<int>(Position->ProductClass), static_cast<int>(Position->PosiDirection), Position->TotalPosition, Position->PositionFrozen, Position->TodayPosition, Position->MarketValue, Position->CashIn, Position->CashOut, Position->Margin, Position->Commission, Position->VolumeMultiple, Position->CloseProfitByDate, Position->CloseProfitByTrade, Position->PositionProfitByDate, Position->PositionProfitByTrade, Position->LastPrice, Position->PreSettlementPrice);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -6886,23 +6886,23 @@ void ReqQryOrderPackage::Deallocate()
 {
 	ObjectPool<ReqQryOrderPackage>::GetInstance().Deallocate(this);
 }
-void ReqQryOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryOrderPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryOrderPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryOrder != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryOrderField::FieldID);
-		if (strlen(ReqQryOrder->AccountID) >= sizeof(ReqQryOrder->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryOrderField::FieldId);
+		if (strlen(ReqQryOrder->AccountId) >= sizeof(ReqQryOrder->AccountId))
 		{
-			ReqQryOrder->AccountID[sizeof(ReqQryOrder->AccountID) - 1] = 0;
+			ReqQryOrder->AccountId[sizeof(ReqQryOrder->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqQryOrder->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqQryOrder->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryOrderField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -6914,52 +6914,52 @@ bool ReqQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryOrderField::FieldID:
+			case ReqQryOrderField::FieldId:
 			{
 				ReqQryOrder = ObjectPool<ReqQryOrderField>::GetInstance().Allocate();
 				memset(ReqQryOrder, 0, sizeof(*ReqQryOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryOrder->AccountID) ? sizeof(ReqQryOrder->AccountID) - 1 : value.length();
-							memcpy(ReqQryOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryOrder->AccountId) ? sizeof(ReqQryOrder->AccountId) - 1 : value.length();
+							memcpy(ReqQryOrder->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryOrderField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -6982,7 +6982,7 @@ int ReqQryOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryOrderField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryOrderField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryOrder, sizeof(ReqQryOrderField));
 		offset += sizeof(ReqQryOrderField);
@@ -6994,12 +6994,12 @@ bool ReqQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryOrderField::FieldID:
+		case ReqQryOrderField::FieldId:
 		{
 			ReqQryOrder = ObjectPool<ReqQryOrderField>::GetInstance().Allocate();
 			memcpy(ReqQryOrder, buff + offset, sizeof(ReqQryOrderField));
@@ -7017,7 +7017,7 @@ const char* ReqQryOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryOrder != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryOrder:AccountID:[%s]", ReqQryOrder->AccountID);
+		offset = AppendDebugString(offset, "ReqQryOrder:AccountId:[%s]", ReqQryOrder->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -7047,44 +7047,44 @@ void RspQryOrderPackage::Deallocate()
 {
 	ObjectPool<RspQryOrderPackage>::GetInstance().Deallocate(this);
 }
-void RspQryOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryOrderPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryOrderPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (Order != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, OrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, OrderField::FieldId);
 		if (strlen(Order->TradingDay) >= sizeof(Order->TradingDay))
 		{
 			Order->TradingDay[sizeof(Order->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, Order->TradingDay);
-		if (strlen(Order->AccountID) >= sizeof(Order->AccountID))
+		if (strlen(Order->AccountId) >= sizeof(Order->AccountId))
 		{
-			Order->AccountID[sizeof(Order->AccountID) - 1] = 0;
+			Order->AccountId[sizeof(Order->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, Order->AccountID);
-		if (strlen(Order->ExchangeID) >= sizeof(Order->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, Order->AccountId);
+		if (strlen(Order->ExchangeId) >= sizeof(Order->ExchangeId))
 		{
-			Order->ExchangeID[sizeof(Order->ExchangeID) - 1] = 0;
+			Order->ExchangeId[sizeof(Order->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, Order->ExchangeID);
-		if (strlen(Order->InstrumentID) >= sizeof(Order->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, Order->ExchangeId);
+		if (strlen(Order->InstrumentId) >= sizeof(Order->InstrumentId))
 		{
-			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
+			Order->InstrumentId[sizeof(Order->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, Order->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, Order->InstrumentId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Order->ProductClass));
-		StepUtility::WriteString(cursor, Items::OrderID, Order->OrderID);
-		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
+		StepUtility::WriteString(cursor, Items::OrderId, Order->OrderId);
+		if (strlen(Order->OrderSysId) >= sizeof(Order->OrderSysId))
 		{
-			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
+			Order->OrderSysId[sizeof(Order->OrderSysId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::OrderSysID, Order->OrderSysID);
+		StepUtility::WriteString(cursor, Items::OrderSysId, Order->OrderSysId);
 		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(Order->Direction));
 		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(Order->OffsetFlag));
 		StepUtility::WriteString(cursor, Items::OrderPriceType, static_cast<int>(Order->OrderPriceType));
@@ -7114,24 +7114,24 @@ int RspQryOrderPackage::ToStepStream(char* buff, int size) const
 			Order->CancelTime[sizeof(Order->CancelTime) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::CancelTime, Order->CancelTime);
-		StepUtility::WriteString(cursor, Items::SessionID, Order->SessionID);
-		StepUtility::WriteString(cursor, Items::ClientOrderID, Order->ClientOrderID);
-		StepUtility::WriteString(cursor, Items::RequestID, Order->RequestID);
+		StepUtility::WriteString(cursor, Items::SessionId, Order->SessionId);
+		StepUtility::WriteString(cursor, Items::ClientOrderId, Order->ClientOrderId);
+		StepUtility::WriteString(cursor, Items::RequestId, Order->RequestId);
 		StepUtility::WriteString(cursor, Items::FrozenCash, Order->FrozenCash);
 		StepUtility::WriteString(cursor, Items::FrozenMargin, Order->FrozenMargin);
 		StepUtility::WriteString(cursor, Items::FrozenCommission, Order->FrozenCommission);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, OrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, OrderField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -7143,26 +7143,26 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case OrderField::FieldID:
+			case OrderField::FieldId:
 			{
 				Order = ObjectPool<OrderField>::GetInstance().Allocate();
 				memset(Order, 0, sizeof(*Order));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -7173,22 +7173,22 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 							memcpy(Order->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(Order->AccountID) ? sizeof(Order->AccountID) - 1 : value.length();
-							memcpy(Order->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Order->AccountId) ? sizeof(Order->AccountId) - 1 : value.length();
+							memcpy(Order->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(Order->ExchangeID) ? sizeof(Order->ExchangeID) - 1 : value.length();
-							memcpy(Order->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Order->ExchangeId) ? sizeof(Order->ExchangeId) - 1 : value.length();
+							memcpy(Order->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(Order->InstrumentID) ? sizeof(Order->InstrumentID) - 1 : value.length();
-							memcpy(Order->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Order->InstrumentId) ? sizeof(Order->InstrumentId) - 1 : value.length();
+							memcpy(Order->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
@@ -7196,15 +7196,15 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 							Order->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
-						case Items::OrderID:
+						case Items::OrderId:
 						{
-							Order->OrderID = atoi(value.c_str());
+							Order->OrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::OrderSysID:
+						case Items::OrderSysId:
 						{
-							size_t len = value.length() >= sizeof(Order->OrderSysID) ? sizeof(Order->OrderSysID) - 1 : value.length();
-							memcpy(Order->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Order->OrderSysId) ? sizeof(Order->OrderSysId) - 1 : value.length();
+							memcpy(Order->OrderSysId, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
@@ -7276,19 +7276,19 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 							memcpy(Order->CancelTime, value.c_str(), len);
 							break;
 						}
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							Order->SessionID = atoll(value.c_str());
+							Order->SessionId = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::ClientOrderId:
 						{
-							Order->ClientOrderID = atoi(value.c_str());
+							Order->ClientOrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::RequestID:
+						case Items::RequestId:
 						{
-							Order->RequestID = atoi(value.c_str());
+							Order->RequestId = atoi(value.c_str());
 							break;
 						}
 						case Items::FrozenCash:
@@ -7307,38 +7307,38 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for OrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for OrderField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -7348,21 +7348,21 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -7385,7 +7385,7 @@ int RspQryOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &OrderField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &OrderField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Order, sizeof(OrderField));
 		offset += sizeof(OrderField);
@@ -7397,7 +7397,7 @@ int RspQryOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -7409,19 +7409,19 @@ bool RspQryOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case OrderField::FieldID:
+		case OrderField::FieldId:
 		{
 			Order = ObjectPool<OrderField>::GetInstance().Allocate();
 			memcpy(Order, buff + offset, sizeof(OrderField));
 			offset += sizeof(OrderField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -7439,11 +7439,11 @@ const char* RspQryOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (Order != nullptr)
 	{
-		offset = AppendDebugString(offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, static_cast<int>(Order->ProductClass), Order->OrderID, Order->OrderSysID, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+		offset = AppendDebugString(offset, "Order:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionId:[%lld], ClientOrderId:[%d], RequestId:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountId, Order->ExchangeId, Order->InstrumentId, static_cast<int>(Order->ProductClass), Order->OrderId, Order->OrderSysId, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionId, Order->ClientOrderId, Order->RequestId, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -7468,23 +7468,23 @@ void ReqQryTradePackage::Deallocate()
 {
 	ObjectPool<ReqQryTradePackage>::GetInstance().Deallocate(this);
 }
-void ReqQryTradePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryTradePackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryTradePackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryTrade != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryTradeField::FieldID);
-		if (strlen(ReqQryTrade->AccountID) >= sizeof(ReqQryTrade->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryTradeField::FieldId);
+		if (strlen(ReqQryTrade->AccountId) >= sizeof(ReqQryTrade->AccountId))
 		{
-			ReqQryTrade->AccountID[sizeof(ReqQryTrade->AccountID) - 1] = 0;
+			ReqQryTrade->AccountId[sizeof(ReqQryTrade->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqQryTrade->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryTradeField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqQryTrade->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryTradeField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -7496,52 +7496,52 @@ bool ReqQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryTradeField::FieldID:
+			case ReqQryTradeField::FieldId:
 			{
 				ReqQryTrade = ObjectPool<ReqQryTradeField>::GetInstance().Allocate();
 				memset(ReqQryTrade, 0, sizeof(*ReqQryTrade));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryTrade->AccountID) ? sizeof(ReqQryTrade->AccountID) - 1 : value.length();
-							memcpy(ReqQryTrade->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryTrade->AccountId) ? sizeof(ReqQryTrade->AccountId) - 1 : value.length();
+							memcpy(ReqQryTrade->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryTradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryTradeField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryTradePackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryTradePackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -7564,7 +7564,7 @@ int ReqQryTradePackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryTradeField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryTradeField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryTrade, sizeof(ReqQryTradeField));
 		offset += sizeof(ReqQryTradeField);
@@ -7576,12 +7576,12 @@ bool ReqQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryTradeField::FieldID:
+		case ReqQryTradeField::FieldId:
 		{
 			ReqQryTrade = ObjectPool<ReqQryTradeField>::GetInstance().Allocate();
 			memcpy(ReqQryTrade, buff + offset, sizeof(ReqQryTradeField));
@@ -7599,7 +7599,7 @@ const char* ReqQryTradePackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryTrade != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryTrade:AccountID:[%s]", ReqQryTrade->AccountID);
+		offset = AppendDebugString(offset, "ReqQryTrade:AccountId:[%s]", ReqQryTrade->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -7629,49 +7629,49 @@ void RspQryTradePackage::Deallocate()
 {
 	ObjectPool<RspQryTradePackage>::GetInstance().Deallocate(this);
 }
-void RspQryTradePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryTradePackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryTradePackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (Trade != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, TradeField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, TradeField::FieldId);
 		if (strlen(Trade->TradingDay) >= sizeof(Trade->TradingDay))
 		{
 			Trade->TradingDay[sizeof(Trade->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, Trade->TradingDay);
-		if (strlen(Trade->AccountID) >= sizeof(Trade->AccountID))
+		if (strlen(Trade->AccountId) >= sizeof(Trade->AccountId))
 		{
-			Trade->AccountID[sizeof(Trade->AccountID) - 1] = 0;
+			Trade->AccountId[sizeof(Trade->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, Trade->AccountID);
-		if (strlen(Trade->ExchangeID) >= sizeof(Trade->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, Trade->AccountId);
+		if (strlen(Trade->ExchangeId) >= sizeof(Trade->ExchangeId))
 		{
-			Trade->ExchangeID[sizeof(Trade->ExchangeID) - 1] = 0;
+			Trade->ExchangeId[sizeof(Trade->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, Trade->ExchangeID);
-		if (strlen(Trade->InstrumentID) >= sizeof(Trade->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, Trade->ExchangeId);
+		if (strlen(Trade->InstrumentId) >= sizeof(Trade->InstrumentId))
 		{
-			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
+			Trade->InstrumentId[sizeof(Trade->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, Trade->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, Trade->InstrumentId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Trade->ProductClass));
-		StepUtility::WriteString(cursor, Items::OrderID, Trade->OrderID);
-		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
+		StepUtility::WriteString(cursor, Items::OrderId, Trade->OrderId);
+		if (strlen(Trade->OrderSysId) >= sizeof(Trade->OrderSysId))
 		{
-			Trade->OrderSysID[sizeof(Trade->OrderSysID) - 1] = 0;
+			Trade->OrderSysId[sizeof(Trade->OrderSysId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::OrderSysID, Trade->OrderSysID);
-		if (strlen(Trade->TradeID) >= sizeof(Trade->TradeID))
+		StepUtility::WriteString(cursor, Items::OrderSysId, Trade->OrderSysId);
+		if (strlen(Trade->TradeId) >= sizeof(Trade->TradeId))
 		{
-			Trade->TradeID[sizeof(Trade->TradeID) - 1] = 0;
+			Trade->TradeId[sizeof(Trade->TradeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::TradeID, Trade->TradeID);
+		StepUtility::WriteString(cursor, Items::TradeId, Trade->TradeId);
 		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(Trade->Direction));
 		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(Trade->OffsetFlag));
 		StepUtility::WriteString(cursor, Items::Price, Trade->Price);
@@ -7689,18 +7689,18 @@ int RspQryTradePackage::ToStepStream(char* buff, int size) const
 			Trade->TradeTime[sizeof(Trade->TradeTime) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradeTime, Trade->TradeTime);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, TradeField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, TradeField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -7712,26 +7712,26 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case TradeField::FieldID:
+			case TradeField::FieldId:
 			{
 				Trade = ObjectPool<TradeField>::GetInstance().Allocate();
 				memset(Trade, 0, sizeof(*Trade));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -7742,22 +7742,22 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 							memcpy(Trade->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(Trade->AccountID) ? sizeof(Trade->AccountID) - 1 : value.length();
-							memcpy(Trade->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->AccountId) ? sizeof(Trade->AccountId) - 1 : value.length();
+							memcpy(Trade->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(Trade->ExchangeID) ? sizeof(Trade->ExchangeID) - 1 : value.length();
-							memcpy(Trade->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->ExchangeId) ? sizeof(Trade->ExchangeId) - 1 : value.length();
+							memcpy(Trade->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(Trade->InstrumentID) ? sizeof(Trade->InstrumentID) - 1 : value.length();
-							memcpy(Trade->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->InstrumentId) ? sizeof(Trade->InstrumentId) - 1 : value.length();
+							memcpy(Trade->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
@@ -7765,21 +7765,21 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 							Trade->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
-						case Items::OrderID:
+						case Items::OrderId:
 						{
-							Trade->OrderID = atoi(value.c_str());
+							Trade->OrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::OrderSysID:
+						case Items::OrderSysId:
 						{
-							size_t len = value.length() >= sizeof(Trade->OrderSysID) ? sizeof(Trade->OrderSysID) - 1 : value.length();
-							memcpy(Trade->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->OrderSysId) ? sizeof(Trade->OrderSysId) - 1 : value.length();
+							memcpy(Trade->OrderSysId, value.c_str(), len);
 							break;
 						}
-						case Items::TradeID:
+						case Items::TradeId:
 						{
-							size_t len = value.length() >= sizeof(Trade->TradeID) ? sizeof(Trade->TradeID) - 1 : value.length();
-							memcpy(Trade->TradeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->TradeId) ? sizeof(Trade->TradeId) - 1 : value.length();
+							memcpy(Trade->TradeId, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
@@ -7830,38 +7830,38 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for TradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for TradeField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryTradePackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryTradePackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -7871,21 +7871,21 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryTradePackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryTradePackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -7908,7 +7908,7 @@ int RspQryTradePackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &TradeField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &TradeField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Trade, sizeof(TradeField));
 		offset += sizeof(TradeField);
@@ -7920,7 +7920,7 @@ int RspQryTradePackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -7932,19 +7932,19 @@ bool RspQryTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case TradeField::FieldID:
+		case TradeField::FieldId:
 		{
 			Trade = ObjectPool<TradeField>::GetInstance().Allocate();
 			memcpy(Trade, buff + offset, sizeof(TradeField));
 			offset += sizeof(TradeField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -7962,11 +7962,11 @@ const char* RspQryTradePackage::GetDebugString() const
 	int offset = 0;
 	if (Trade != nullptr)
 	{
-		offset = AppendDebugString(offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, static_cast<int>(Trade->ProductClass), Trade->OrderID, Trade->OrderSysID, Trade->TradeID, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+		offset = AppendDebugString(offset, "Trade:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], TradeId:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountId, Trade->ExchangeId, Trade->InstrumentId, static_cast<int>(Trade->ProductClass), Trade->OrderId, Trade->OrderSysId, Trade->TradeId, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -7991,28 +7991,28 @@ void ReqQryInstrumentPackage::Deallocate()
 {
 	ObjectPool<ReqQryInstrumentPackage>::GetInstance().Deallocate(this);
 }
-void ReqQryInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryInstrumentPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryInstrumentPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryInstrument != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryInstrumentField::FieldID);
-		if (strlen(ReqQryInstrument->ExchangeID) >= sizeof(ReqQryInstrument->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryInstrumentField::FieldId);
+		if (strlen(ReqQryInstrument->ExchangeId) >= sizeof(ReqQryInstrument->ExchangeId))
 		{
-			ReqQryInstrument->ExchangeID[sizeof(ReqQryInstrument->ExchangeID) - 1] = 0;
+			ReqQryInstrument->ExchangeId[sizeof(ReqQryInstrument->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqQryInstrument->ExchangeID);
-		if (strlen(ReqQryInstrument->InstrumentID) >= sizeof(ReqQryInstrument->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqQryInstrument->ExchangeId);
+		if (strlen(ReqQryInstrument->InstrumentId) >= sizeof(ReqQryInstrument->InstrumentId))
 		{
-			ReqQryInstrument->InstrumentID[sizeof(ReqQryInstrument->InstrumentID) - 1] = 0;
+			ReqQryInstrument->InstrumentId[sizeof(ReqQryInstrument->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, ReqQryInstrument->InstrumentID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryInstrumentField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, ReqQryInstrument->InstrumentId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryInstrumentField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -8024,58 +8024,58 @@ bool ReqQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryInstrumentField::FieldID:
+			case ReqQryInstrumentField::FieldId:
 			{
 				ReqQryInstrument = ObjectPool<ReqQryInstrumentField>::GetInstance().Allocate();
 				memset(ReqQryInstrument, 0, sizeof(*ReqQryInstrument));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryInstrument->ExchangeID) ? sizeof(ReqQryInstrument->ExchangeID) - 1 : value.length();
-							memcpy(ReqQryInstrument->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryInstrument->ExchangeId) ? sizeof(ReqQryInstrument->ExchangeId) - 1 : value.length();
+							memcpy(ReqQryInstrument->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryInstrument->InstrumentID) ? sizeof(ReqQryInstrument->InstrumentID) - 1 : value.length();
-							memcpy(ReqQryInstrument->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryInstrument->InstrumentId) ? sizeof(ReqQryInstrument->InstrumentId) - 1 : value.length();
+							memcpy(ReqQryInstrument->InstrumentId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryInstrumentField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryInstrumentField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryInstrumentPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryInstrumentPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -8098,7 +8098,7 @@ int ReqQryInstrumentPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryInstrumentField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryInstrumentField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryInstrument, sizeof(ReqQryInstrumentField));
 		offset += sizeof(ReqQryInstrumentField);
@@ -8110,12 +8110,12 @@ bool ReqQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryInstrumentField::FieldID:
+		case ReqQryInstrumentField::FieldId:
 		{
 			ReqQryInstrument = ObjectPool<ReqQryInstrumentField>::GetInstance().Allocate();
 			memcpy(ReqQryInstrument, buff + offset, sizeof(ReqQryInstrumentField));
@@ -8133,7 +8133,7 @@ const char* ReqQryInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryInstrument != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryInstrument->ExchangeID, ReqQryInstrument->InstrumentID);
+		offset = AppendDebugString(offset, "ReqQryInstrument:ExchangeId:[%s], InstrumentId:[%s]", ReqQryInstrument->ExchangeId, ReqQryInstrument->InstrumentId);
 	}
 	return DataStringBuffer;
 }
@@ -8163,42 +8163,42 @@ void RspQryInstrumentPackage::Deallocate()
 {
 	ObjectPool<RspQryInstrumentPackage>::GetInstance().Deallocate(this);
 }
-void RspQryInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryInstrumentPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryInstrumentPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (Instrument != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, InstrumentField::FieldID);
-		if (strlen(Instrument->ExchangeID) >= sizeof(Instrument->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, InstrumentField::FieldId);
+		if (strlen(Instrument->ExchangeId) >= sizeof(Instrument->ExchangeId))
 		{
-			Instrument->ExchangeID[sizeof(Instrument->ExchangeID) - 1] = 0;
+			Instrument->ExchangeId[sizeof(Instrument->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, Instrument->ExchangeID);
-		if (strlen(Instrument->InstrumentID) >= sizeof(Instrument->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, Instrument->ExchangeId);
+		if (strlen(Instrument->InstrumentId) >= sizeof(Instrument->InstrumentId))
 		{
-			Instrument->InstrumentID[sizeof(Instrument->InstrumentID) - 1] = 0;
+			Instrument->InstrumentId[sizeof(Instrument->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, Instrument->InstrumentID);
-		if (strlen(Instrument->ExchangeInstID) >= sizeof(Instrument->ExchangeInstID))
+		StepUtility::WriteString(cursor, Items::InstrumentId, Instrument->InstrumentId);
+		if (strlen(Instrument->ExchangeInstId) >= sizeof(Instrument->ExchangeInstId))
 		{
-			Instrument->ExchangeInstID[sizeof(Instrument->ExchangeInstID) - 1] = 0;
+			Instrument->ExchangeInstId[sizeof(Instrument->ExchangeInstId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeInstID, Instrument->ExchangeInstID);
+		StepUtility::WriteString(cursor, Items::ExchangeInstId, Instrument->ExchangeInstId);
 		if (strlen(Instrument->InstrumentName) >= sizeof(Instrument->InstrumentName))
 		{
 			Instrument->InstrumentName[sizeof(Instrument->InstrumentName) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InstrumentName, Instrument->InstrumentName);
-		if (strlen(Instrument->ProductID) >= sizeof(Instrument->ProductID))
+		if (strlen(Instrument->ProductId) >= sizeof(Instrument->ProductId))
 		{
-			Instrument->ProductID[sizeof(Instrument->ProductID) - 1] = 0;
+			Instrument->ProductId[sizeof(Instrument->ProductId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ProductID, Instrument->ProductID);
+		StepUtility::WriteString(cursor, Items::ProductId, Instrument->ProductId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Instrument->ProductClass));
 		StepUtility::WriteString(cursor, Items::VolumeMultiple, Instrument->VolumeMultiple);
 		StepUtility::WriteString(cursor, Items::PriceTick, Instrument->PriceTick);
@@ -8211,18 +8211,18 @@ int RspQryInstrumentPackage::ToStepStream(char* buff, int size) const
 			Instrument->SessionName[sizeof(Instrument->SessionName) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::SessionName, Instrument->SessionName);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, InstrumentField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, InstrumentField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -8234,46 +8234,46 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case InstrumentField::FieldID:
+			case InstrumentField::FieldId:
 			{
 				Instrument = ObjectPool<InstrumentField>::GetInstance().Allocate();
 				memset(Instrument, 0, sizeof(*Instrument));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(Instrument->ExchangeID) ? sizeof(Instrument->ExchangeID) - 1 : value.length();
-							memcpy(Instrument->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Instrument->ExchangeId) ? sizeof(Instrument->ExchangeId) - 1 : value.length();
+							memcpy(Instrument->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(Instrument->InstrumentID) ? sizeof(Instrument->InstrumentID) - 1 : value.length();
-							memcpy(Instrument->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Instrument->InstrumentId) ? sizeof(Instrument->InstrumentId) - 1 : value.length();
+							memcpy(Instrument->InstrumentId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeInstID:
+						case Items::ExchangeInstId:
 						{
-							size_t len = value.length() >= sizeof(Instrument->ExchangeInstID) ? sizeof(Instrument->ExchangeInstID) - 1 : value.length();
-							memcpy(Instrument->ExchangeInstID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Instrument->ExchangeInstId) ? sizeof(Instrument->ExchangeInstId) - 1 : value.length();
+							memcpy(Instrument->ExchangeInstId, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentName:
@@ -8282,10 +8282,10 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 							memcpy(Instrument->InstrumentName, value.c_str(), len);
 							break;
 						}
-						case Items::ProductID:
+						case Items::ProductId:
 						{
-							size_t len = value.length() >= sizeof(Instrument->ProductID) ? sizeof(Instrument->ProductID) - 1 : value.length();
-							memcpy(Instrument->ProductID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Instrument->ProductId) ? sizeof(Instrument->ProductId) - 1 : value.length();
+							memcpy(Instrument->ProductId, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
@@ -8330,38 +8330,38 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for InstrumentField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for InstrumentField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryInstrumentPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryInstrumentPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -8371,21 +8371,21 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryInstrumentPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryInstrumentPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -8408,7 +8408,7 @@ int RspQryInstrumentPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &InstrumentField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &InstrumentField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Instrument, sizeof(InstrumentField));
 		offset += sizeof(InstrumentField);
@@ -8420,7 +8420,7 @@ int RspQryInstrumentPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -8432,19 +8432,19 @@ bool RspQryInstrumentPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case InstrumentField::FieldID:
+		case InstrumentField::FieldId:
 		{
 			Instrument = ObjectPool<InstrumentField>::GetInstance().Allocate();
 			memcpy(Instrument, buff + offset, sizeof(InstrumentField));
 			offset += sizeof(InstrumentField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -8462,11 +8462,11 @@ const char* RspQryInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (Instrument != nullptr)
 	{
-		offset = AppendDebugString(offset, "Instrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], ProductID:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]", Instrument->ExchangeID, Instrument->InstrumentID, Instrument->ExchangeInstID, Instrument->InstrumentName, Instrument->ProductID, static_cast<int>(Instrument->ProductClass), Instrument->VolumeMultiple, Instrument->PriceTick, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->SessionName);
+		offset = AppendDebugString(offset, "Instrument:ExchangeId:[%s], InstrumentId:[%s], ExchangeInstId:[%s], InstrumentName:[%s], ProductId:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]", Instrument->ExchangeId, Instrument->InstrumentId, Instrument->ExchangeInstId, Instrument->InstrumentName, Instrument->ProductId, static_cast<int>(Instrument->ProductClass), Instrument->VolumeMultiple, Instrument->PriceTick, Instrument->MaxMarketOrderVolume, Instrument->MinMarketOrderVolume, Instrument->MaxLimitOrderVolume, Instrument->MinLimitOrderVolume, Instrument->SessionName);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -8491,28 +8491,28 @@ void ReqQryOptionInstrumentPackage::Deallocate()
 {
 	ObjectPool<ReqQryOptionInstrumentPackage>::GetInstance().Deallocate(this);
 }
-void ReqQryOptionInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryOptionInstrumentPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryOptionInstrumentPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryOptionInstrument != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryOptionInstrumentField::FieldID);
-		if (strlen(ReqQryOptionInstrument->ExchangeID) >= sizeof(ReqQryOptionInstrument->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryOptionInstrumentField::FieldId);
+		if (strlen(ReqQryOptionInstrument->ExchangeId) >= sizeof(ReqQryOptionInstrument->ExchangeId))
 		{
-			ReqQryOptionInstrument->ExchangeID[sizeof(ReqQryOptionInstrument->ExchangeID) - 1] = 0;
+			ReqQryOptionInstrument->ExchangeId[sizeof(ReqQryOptionInstrument->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqQryOptionInstrument->ExchangeID);
-		if (strlen(ReqQryOptionInstrument->InstrumentID) >= sizeof(ReqQryOptionInstrument->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqQryOptionInstrument->ExchangeId);
+		if (strlen(ReqQryOptionInstrument->InstrumentId) >= sizeof(ReqQryOptionInstrument->InstrumentId))
 		{
-			ReqQryOptionInstrument->InstrumentID[sizeof(ReqQryOptionInstrument->InstrumentID) - 1] = 0;
+			ReqQryOptionInstrument->InstrumentId[sizeof(ReqQryOptionInstrument->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, ReqQryOptionInstrument->InstrumentID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryOptionInstrumentField::FieldID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, ReqQryOptionInstrument->InstrumentId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryOptionInstrumentField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -8524,58 +8524,58 @@ bool ReqQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryOptionInstrumentField::FieldID:
+			case ReqQryOptionInstrumentField::FieldId:
 			{
 				ReqQryOptionInstrument = ObjectPool<ReqQryOptionInstrumentField>::GetInstance().Allocate();
 				memset(ReqQryOptionInstrument, 0, sizeof(*ReqQryOptionInstrument));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryOptionInstrument->ExchangeID) ? sizeof(ReqQryOptionInstrument->ExchangeID) - 1 : value.length();
-							memcpy(ReqQryOptionInstrument->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryOptionInstrument->ExchangeId) ? sizeof(ReqQryOptionInstrument->ExchangeId) - 1 : value.length();
+							memcpy(ReqQryOptionInstrument->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryOptionInstrument->InstrumentID) ? sizeof(ReqQryOptionInstrument->InstrumentID) - 1 : value.length();
-							memcpy(ReqQryOptionInstrument->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryOptionInstrument->InstrumentId) ? sizeof(ReqQryOptionInstrument->InstrumentId) - 1 : value.length();
+							memcpy(ReqQryOptionInstrument->InstrumentId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryOptionInstrumentField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryOptionInstrumentField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryOptionInstrumentPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryOptionInstrumentPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -8598,7 +8598,7 @@ int ReqQryOptionInstrumentPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryOptionInstrumentField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryOptionInstrumentField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryOptionInstrument, sizeof(ReqQryOptionInstrumentField));
 		offset += sizeof(ReqQryOptionInstrumentField);
@@ -8610,12 +8610,12 @@ bool ReqQryOptionInstrumentPackage::FromXtpStream(char* buff, int startIndex, in
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryOptionInstrumentField::FieldID:
+		case ReqQryOptionInstrumentField::FieldId:
 		{
 			ReqQryOptionInstrument = ObjectPool<ReqQryOptionInstrumentField>::GetInstance().Allocate();
 			memcpy(ReqQryOptionInstrument, buff + offset, sizeof(ReqQryOptionInstrumentField));
@@ -8633,7 +8633,7 @@ const char* ReqQryOptionInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryOptionInstrument != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryOptionInstrument:ExchangeID:[%s], InstrumentID:[%s]", ReqQryOptionInstrument->ExchangeID, ReqQryOptionInstrument->InstrumentID);
+		offset = AppendDebugString(offset, "ReqQryOptionInstrument:ExchangeId:[%s], InstrumentId:[%s]", ReqQryOptionInstrument->ExchangeId, ReqQryOptionInstrument->InstrumentId);
 	}
 	return DataStringBuffer;
 }
@@ -8663,32 +8663,32 @@ void RspQryOptionInstrumentPackage::Deallocate()
 {
 	ObjectPool<RspQryOptionInstrumentPackage>::GetInstance().Deallocate(this);
 }
-void RspQryOptionInstrumentPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryOptionInstrumentPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryOptionInstrumentPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (OptionInstrument != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, OptionInstrumentField::FieldID);
-		if (strlen(OptionInstrument->ExchangeID) >= sizeof(OptionInstrument->ExchangeID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, OptionInstrumentField::FieldId);
+		if (strlen(OptionInstrument->ExchangeId) >= sizeof(OptionInstrument->ExchangeId))
 		{
-			OptionInstrument->ExchangeID[sizeof(OptionInstrument->ExchangeID) - 1] = 0;
+			OptionInstrument->ExchangeId[sizeof(OptionInstrument->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, OptionInstrument->ExchangeID);
-		if (strlen(OptionInstrument->InstrumentID) >= sizeof(OptionInstrument->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, OptionInstrument->ExchangeId);
+		if (strlen(OptionInstrument->InstrumentId) >= sizeof(OptionInstrument->InstrumentId))
 		{
-			OptionInstrument->InstrumentID[sizeof(OptionInstrument->InstrumentID) - 1] = 0;
+			OptionInstrument->InstrumentId[sizeof(OptionInstrument->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, OptionInstrument->InstrumentID);
-		if (strlen(OptionInstrument->ExchangeInstID) >= sizeof(OptionInstrument->ExchangeInstID))
+		StepUtility::WriteString(cursor, Items::InstrumentId, OptionInstrument->InstrumentId);
+		if (strlen(OptionInstrument->ExchangeInstId) >= sizeof(OptionInstrument->ExchangeInstId))
 		{
-			OptionInstrument->ExchangeInstID[sizeof(OptionInstrument->ExchangeInstID) - 1] = 0;
+			OptionInstrument->ExchangeInstId[sizeof(OptionInstrument->ExchangeInstId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeInstID, OptionInstrument->ExchangeInstID);
+		StepUtility::WriteString(cursor, Items::ExchangeInstId, OptionInstrument->ExchangeInstId);
 		if (strlen(OptionInstrument->InstrumentName) >= sizeof(OptionInstrument->InstrumentName))
 		{
 			OptionInstrument->InstrumentName[sizeof(OptionInstrument->InstrumentName) - 1] = 0;
@@ -8696,11 +8696,11 @@ int RspQryOptionInstrumentPackage::ToStepStream(char* buff, int size) const
 		StepUtility::WriteString(cursor, Items::InstrumentName, OptionInstrument->InstrumentName);
 		StepUtility::WriteString(cursor, Items::VolumeMultiple, OptionInstrument->VolumeMultiple);
 		StepUtility::WriteString(cursor, Items::OptionType, static_cast<int>(OptionInstrument->OptionType));
-		if (strlen(OptionInstrument->UnderlyingInstrumentID) >= sizeof(OptionInstrument->UnderlyingInstrumentID))
+		if (strlen(OptionInstrument->UnderlyingInstrumentId) >= sizeof(OptionInstrument->UnderlyingInstrumentId))
 		{
-			OptionInstrument->UnderlyingInstrumentID[sizeof(OptionInstrument->UnderlyingInstrumentID) - 1] = 0;
+			OptionInstrument->UnderlyingInstrumentId[sizeof(OptionInstrument->UnderlyingInstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::UnderlyingInstrumentID, OptionInstrument->UnderlyingInstrumentID);
+		StepUtility::WriteString(cursor, Items::UnderlyingInstrumentId, OptionInstrument->UnderlyingInstrumentId);
 		StepUtility::WriteString(cursor, Items::ExecutePrice, OptionInstrument->ExecutePrice);
 		StepUtility::WriteString(cursor, Items::UnitMargin, OptionInstrument->UnitMargin);
 		StepUtility::WriteString(cursor, Items::PriceTick, OptionInstrument->PriceTick);
@@ -8711,18 +8711,18 @@ int RspQryOptionInstrumentPackage::ToStepStream(char* buff, int size) const
 			OptionInstrument->ExpiringDate[sizeof(OptionInstrument->ExpiringDate) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ExpiringDate, OptionInstrument->ExpiringDate);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, OptionInstrumentField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, OptionInstrumentField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -8734,46 +8734,46 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case OptionInstrumentField::FieldID:
+			case OptionInstrumentField::FieldId:
 			{
 				OptionInstrument = ObjectPool<OptionInstrumentField>::GetInstance().Allocate();
 				memset(OptionInstrument, 0, sizeof(*OptionInstrument));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(OptionInstrument->ExchangeID) ? sizeof(OptionInstrument->ExchangeID) - 1 : value.length();
-							memcpy(OptionInstrument->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(OptionInstrument->ExchangeId) ? sizeof(OptionInstrument->ExchangeId) - 1 : value.length();
+							memcpy(OptionInstrument->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(OptionInstrument->InstrumentID) ? sizeof(OptionInstrument->InstrumentID) - 1 : value.length();
-							memcpy(OptionInstrument->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(OptionInstrument->InstrumentId) ? sizeof(OptionInstrument->InstrumentId) - 1 : value.length();
+							memcpy(OptionInstrument->InstrumentId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeInstID:
+						case Items::ExchangeInstId:
 						{
-							size_t len = value.length() >= sizeof(OptionInstrument->ExchangeInstID) ? sizeof(OptionInstrument->ExchangeInstID) - 1 : value.length();
-							memcpy(OptionInstrument->ExchangeInstID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(OptionInstrument->ExchangeInstId) ? sizeof(OptionInstrument->ExchangeInstId) - 1 : value.length();
+							memcpy(OptionInstrument->ExchangeInstId, value.c_str(), len);
 							break;
 						}
 						case Items::InstrumentName:
@@ -8792,10 +8792,10 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 							OptionInstrument->OptionType = static_cast<OptionTypeType>(atoi(value.c_str()));
 							break;
 						}
-						case Items::UnderlyingInstrumentID:
+						case Items::UnderlyingInstrumentId:
 						{
-							size_t len = value.length() >= sizeof(OptionInstrument->UnderlyingInstrumentID) ? sizeof(OptionInstrument->UnderlyingInstrumentID) - 1 : value.length();
-							memcpy(OptionInstrument->UnderlyingInstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(OptionInstrument->UnderlyingInstrumentId) ? sizeof(OptionInstrument->UnderlyingInstrumentId) - 1 : value.length();
+							memcpy(OptionInstrument->UnderlyingInstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::ExecutePrice:
@@ -8830,38 +8830,38 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for OptionInstrumentField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for OptionInstrumentField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOptionInstrumentPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOptionInstrumentPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -8871,21 +8871,21 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOptionInstrumentPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryOptionInstrumentPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -8908,7 +8908,7 @@ int RspQryOptionInstrumentPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &OptionInstrumentField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &OptionInstrumentField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, OptionInstrument, sizeof(OptionInstrumentField));
 		offset += sizeof(OptionInstrumentField);
@@ -8920,7 +8920,7 @@ int RspQryOptionInstrumentPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -8932,19 +8932,19 @@ bool RspQryOptionInstrumentPackage::FromXtpStream(char* buff, int startIndex, in
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case OptionInstrumentField::FieldID:
+		case OptionInstrumentField::FieldId:
 		{
 			OptionInstrument = ObjectPool<OptionInstrumentField>::GetInstance().Allocate();
 			memcpy(OptionInstrument, buff + offset, sizeof(OptionInstrumentField));
 			offset += sizeof(OptionInstrumentField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -8962,11 +8962,11 @@ const char* RspQryOptionInstrumentPackage::GetDebugString() const
 	int offset = 0;
 	if (OptionInstrument != nullptr)
 	{
-		offset = AppendDebugString(offset, "OptionInstrument:ExchangeID:[%s], InstrumentID:[%s], ExchangeInstID:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentID:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeID, OptionInstrument->InstrumentID, OptionInstrument->ExchangeInstID, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, static_cast<int>(OptionInstrument->OptionType), OptionInstrument->UnderlyingInstrumentID, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
+		offset = AppendDebugString(offset, "OptionInstrument:ExchangeId:[%s], InstrumentId:[%s], ExchangeInstId:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentId:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]", OptionInstrument->ExchangeId, OptionInstrument->InstrumentId, OptionInstrument->ExchangeInstId, OptionInstrument->InstrumentName, OptionInstrument->VolumeMultiple, static_cast<int>(OptionInstrument->OptionType), OptionInstrument->UnderlyingInstrumentId, OptionInstrument->ExecutePrice, OptionInstrument->UnitMargin, OptionInstrument->PriceTick, OptionInstrument->MaxLimitOrderVolume, OptionInstrument->MaxMarketOrderVolume, OptionInstrument->ExpiringDate);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -8991,29 +8991,29 @@ void ReqQryCommissionRatePackage::Deallocate()
 {
 	ObjectPool<ReqQryCommissionRatePackage>::GetInstance().Deallocate(this);
 }
-void ReqQryCommissionRatePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryCommissionRatePackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryCommissionRate != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryCommissionRateField::FieldID);
-		if (strlen(ReqQryCommissionRate->AccountID) >= sizeof(ReqQryCommissionRate->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryCommissionRateField::FieldId);
+		if (strlen(ReqQryCommissionRate->AccountId) >= sizeof(ReqQryCommissionRate->AccountId))
 		{
-			ReqQryCommissionRate->AccountID[sizeof(ReqQryCommissionRate->AccountID) - 1] = 0;
+			ReqQryCommissionRate->AccountId[sizeof(ReqQryCommissionRate->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqQryCommissionRate->AccountID);
-		if (strlen(ReqQryCommissionRate->ExchangeID) >= sizeof(ReqQryCommissionRate->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, ReqQryCommissionRate->AccountId);
+		if (strlen(ReqQryCommissionRate->ExchangeId) >= sizeof(ReqQryCommissionRate->ExchangeId))
 		{
-			ReqQryCommissionRate->ExchangeID[sizeof(ReqQryCommissionRate->ExchangeID) - 1] = 0;
+			ReqQryCommissionRate->ExchangeId[sizeof(ReqQryCommissionRate->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqQryCommissionRate->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqQryCommissionRate->ExchangeId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(ReqQryCommissionRate->ProductClass));
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryCommissionRateField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryCommissionRateField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -9025,40 +9025,40 @@ bool ReqQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryCommissionRateField::FieldID:
+			case ReqQryCommissionRateField::FieldId:
 			{
 				ReqQryCommissionRate = ObjectPool<ReqQryCommissionRateField>::GetInstance().Allocate();
 				memset(ReqQryCommissionRate, 0, sizeof(*ReqQryCommissionRate));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryCommissionRate->AccountID) ? sizeof(ReqQryCommissionRate->AccountID) - 1 : value.length();
-							memcpy(ReqQryCommissionRate->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryCommissionRate->AccountId) ? sizeof(ReqQryCommissionRate->AccountId) - 1 : value.length();
+							memcpy(ReqQryCommissionRate->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryCommissionRate->ExchangeID) ? sizeof(ReqQryCommissionRate->ExchangeID) - 1 : value.length();
-							memcpy(ReqQryCommissionRate->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryCommissionRate->ExchangeId) ? sizeof(ReqQryCommissionRate->ExchangeId) - 1 : value.length();
+							memcpy(ReqQryCommissionRate->ExchangeId, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
@@ -9067,21 +9067,21 @@ bool ReqQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryCommissionRateField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryCommissionRateField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryCommissionRatePackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryCommissionRatePackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -9104,7 +9104,7 @@ int ReqQryCommissionRatePackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryCommissionRateField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryCommissionRateField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryCommissionRate, sizeof(ReqQryCommissionRateField));
 		offset += sizeof(ReqQryCommissionRateField);
@@ -9116,12 +9116,12 @@ bool ReqQryCommissionRatePackage::FromXtpStream(char* buff, int startIndex, int 
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryCommissionRateField::FieldID:
+		case ReqQryCommissionRateField::FieldId:
 		{
 			ReqQryCommissionRate = ObjectPool<ReqQryCommissionRateField>::GetInstance().Allocate();
 			memcpy(ReqQryCommissionRate, buff + offset, sizeof(ReqQryCommissionRateField));
@@ -9139,7 +9139,7 @@ const char* ReqQryCommissionRatePackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryCommissionRate != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryCommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountID, ReqQryCommissionRate->ExchangeID, static_cast<int>(ReqQryCommissionRate->ProductClass));
+		offset = AppendDebugString(offset, "ReqQryCommissionRate:AccountId:[%s], ExchangeId:[%s], ProductClass:[%d]", ReqQryCommissionRate->AccountId, ReqQryCommissionRate->ExchangeId, static_cast<int>(ReqQryCommissionRate->ProductClass));
 	}
 	return DataStringBuffer;
 }
@@ -9169,27 +9169,27 @@ void RspQryCommissionRatePackage::Deallocate()
 {
 	ObjectPool<RspQryCommissionRatePackage>::GetInstance().Deallocate(this);
 }
-void RspQryCommissionRatePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryCommissionRatePackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (CommissionRate != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, CommissionRateField::FieldID);
-		if (strlen(CommissionRate->AccountID) >= sizeof(CommissionRate->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, CommissionRateField::FieldId);
+		if (strlen(CommissionRate->AccountId) >= sizeof(CommissionRate->AccountId))
 		{
-			CommissionRate->AccountID[sizeof(CommissionRate->AccountID) - 1] = 0;
+			CommissionRate->AccountId[sizeof(CommissionRate->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, CommissionRate->AccountID);
-		if (strlen(CommissionRate->ExchangeID) >= sizeof(CommissionRate->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, CommissionRate->AccountId);
+		if (strlen(CommissionRate->ExchangeId) >= sizeof(CommissionRate->ExchangeId))
 		{
-			CommissionRate->ExchangeID[sizeof(CommissionRate->ExchangeID) - 1] = 0;
+			CommissionRate->ExchangeId[sizeof(CommissionRate->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, CommissionRate->ExchangeID);
+		StepUtility::WriteString(cursor, Items::ExchangeId, CommissionRate->ExchangeId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(CommissionRate->ProductClass));
 		StepUtility::WriteString(cursor, Items::OpenBuyByMoney, CommissionRate->OpenBuyByMoney);
 		StepUtility::WriteString(cursor, Items::OpenSellByMoney, CommissionRate->OpenSellByMoney);
@@ -9201,18 +9201,18 @@ int RspQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 		StepUtility::WriteString(cursor, Items::CloseSellByVolume, CommissionRate->CloseSellByVolume);
 		StepUtility::WriteString(cursor, Items::MinCommission, CommissionRate->MinCommission);
 		StepUtility::WriteString(cursor, Items::MaxCommission, CommissionRate->MaxCommission);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, CommissionRateField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, CommissionRateField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -9224,40 +9224,40 @@ bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case CommissionRateField::FieldID:
+			case CommissionRateField::FieldId:
 			{
 				CommissionRate = ObjectPool<CommissionRateField>::GetInstance().Allocate();
 				memset(CommissionRate, 0, sizeof(*CommissionRate));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(CommissionRate->AccountID) ? sizeof(CommissionRate->AccountID) - 1 : value.length();
-							memcpy(CommissionRate->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(CommissionRate->AccountId) ? sizeof(CommissionRate->AccountId) - 1 : value.length();
+							memcpy(CommissionRate->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(CommissionRate->ExchangeID) ? sizeof(CommissionRate->ExchangeID) - 1 : value.length();
-							memcpy(CommissionRate->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(CommissionRate->ExchangeId) ? sizeof(CommissionRate->ExchangeId) - 1 : value.length();
+							memcpy(CommissionRate->ExchangeId, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
@@ -9316,38 +9316,38 @@ bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for CommissionRateField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for CommissionRateField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryCommissionRatePackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryCommissionRatePackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -9357,21 +9357,21 @@ bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryCommissionRatePackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryCommissionRatePackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -9394,7 +9394,7 @@ int RspQryCommissionRatePackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &CommissionRateField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &CommissionRateField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, CommissionRate, sizeof(CommissionRateField));
 		offset += sizeof(CommissionRateField);
@@ -9406,7 +9406,7 @@ int RspQryCommissionRatePackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -9418,19 +9418,19 @@ bool RspQryCommissionRatePackage::FromXtpStream(char* buff, int startIndex, int 
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case CommissionRateField::FieldID:
+		case CommissionRateField::FieldId:
 		{
 			CommissionRate = ObjectPool<CommissionRateField>::GetInstance().Allocate();
 			memcpy(CommissionRate, buff + offset, sizeof(CommissionRateField));
 			offset += sizeof(CommissionRateField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -9448,11 +9448,11 @@ const char* RspQryCommissionRatePackage::GetDebugString() const
 	int offset = 0;
 	if (CommissionRate != nullptr)
 	{
-		offset = AppendDebugString(offset, "CommissionRate:AccountID:[%s], ExchangeID:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountID, CommissionRate->ExchangeID, static_cast<int>(CommissionRate->ProductClass), CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
+		offset = AppendDebugString(offset, "CommissionRate:AccountId:[%s], ExchangeId:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountId, CommissionRate->ExchangeId, static_cast<int>(CommissionRate->ProductClass), CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -9477,23 +9477,23 @@ void ReqQryMoneyTransferPackage::Deallocate()
 {
 	ObjectPool<ReqQryMoneyTransferPackage>::GetInstance().Deallocate(this);
 }
-void ReqQryMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqQryMoneyTransferPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqQryMoneyTransferPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqQryMoneyTransfer != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryMoneyTransferField::FieldID);
-		if (strlen(ReqQryMoneyTransfer->AccountID) >= sizeof(ReqQryMoneyTransfer->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqQryMoneyTransferField::FieldId);
+		if (strlen(ReqQryMoneyTransfer->AccountId) >= sizeof(ReqQryMoneyTransfer->AccountId))
 		{
-			ReqQryMoneyTransfer->AccountID[sizeof(ReqQryMoneyTransfer->AccountID) - 1] = 0;
+			ReqQryMoneyTransfer->AccountId[sizeof(ReqQryMoneyTransfer->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqQryMoneyTransfer->AccountID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryMoneyTransferField::FieldID);
+		StepUtility::WriteString(cursor, Items::AccountId, ReqQryMoneyTransfer->AccountId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqQryMoneyTransferField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -9505,52 +9505,52 @@ bool ReqQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqQryMoneyTransferField::FieldID:
+			case ReqQryMoneyTransferField::FieldId:
 			{
 				ReqQryMoneyTransfer = ObjectPool<ReqQryMoneyTransferField>::GetInstance().Allocate();
 				memset(ReqQryMoneyTransfer, 0, sizeof(*ReqQryMoneyTransfer));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqQryMoneyTransfer->AccountID) ? sizeof(ReqQryMoneyTransfer->AccountID) - 1 : value.length();
-							memcpy(ReqQryMoneyTransfer->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqQryMoneyTransfer->AccountId) ? sizeof(ReqQryMoneyTransfer->AccountId) - 1 : value.length();
+							memcpy(ReqQryMoneyTransfer->AccountId, value.c_str(), len);
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqQryMoneyTransferField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqQryMoneyTransferField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryMoneyTransferPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqQryMoneyTransferPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -9573,7 +9573,7 @@ int ReqQryMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqQryMoneyTransferField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqQryMoneyTransferField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqQryMoneyTransfer, sizeof(ReqQryMoneyTransferField));
 		offset += sizeof(ReqQryMoneyTransferField);
@@ -9585,12 +9585,12 @@ bool ReqQryMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int e
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqQryMoneyTransferField::FieldID:
+		case ReqQryMoneyTransferField::FieldId:
 		{
 			ReqQryMoneyTransfer = ObjectPool<ReqQryMoneyTransferField>::GetInstance().Allocate();
 			memcpy(ReqQryMoneyTransfer, buff + offset, sizeof(ReqQryMoneyTransferField));
@@ -9608,7 +9608,7 @@ const char* ReqQryMoneyTransferPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqQryMoneyTransfer != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqQryMoneyTransfer:AccountID:[%s]", ReqQryMoneyTransfer->AccountID);
+		offset = AppendDebugString(offset, "ReqQryMoneyTransfer:AccountId:[%s]", ReqQryMoneyTransfer->AccountId);
 	}
 	return DataStringBuffer;
 }
@@ -9638,28 +9638,28 @@ void RspQryMoneyTransferPackage::Deallocate()
 {
 	ObjectPool<RspQryMoneyTransferPackage>::GetInstance().Deallocate(this);
 }
-void RspQryMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspQryMoneyTransferPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspQryMoneyTransferPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (MoneyTransfer != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, MoneyTransferField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, MoneyTransferField::FieldId);
 		if (strlen(MoneyTransfer->TradingDay) >= sizeof(MoneyTransfer->TradingDay))
 		{
 			MoneyTransfer->TradingDay[sizeof(MoneyTransfer->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, MoneyTransfer->TradingDay);
-		if (strlen(MoneyTransfer->AccountID) >= sizeof(MoneyTransfer->AccountID))
+		if (strlen(MoneyTransfer->AccountId) >= sizeof(MoneyTransfer->AccountId))
 		{
-			MoneyTransfer->AccountID[sizeof(MoneyTransfer->AccountID) - 1] = 0;
+			MoneyTransfer->AccountId[sizeof(MoneyTransfer->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, MoneyTransfer->AccountID);
-		StepUtility::WriteString(cursor, Items::MoneyTransferID, MoneyTransfer->MoneyTransferID);
+		StepUtility::WriteString(cursor, Items::AccountId, MoneyTransfer->AccountId);
+		StepUtility::WriteString(cursor, Items::MoneyTransferId, MoneyTransfer->MoneyTransferId);
 		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(MoneyTransfer->AccountType));
 		StepUtility::WriteString(cursor, Items::TransferDirection, static_cast<int>(MoneyTransfer->TransferDirection));
 		StepUtility::WriteString(cursor, Items::TransferAmount, MoneyTransfer->TransferAmount);
@@ -9668,11 +9668,11 @@ int RspQryMoneyTransferPackage::ToStepStream(char* buff, int size) const
 			MoneyTransfer->InfoMessage[sizeof(MoneyTransfer->InfoMessage) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InfoMessage, MoneyTransfer->InfoMessage);
-		if (strlen(MoneyTransfer->UserID) >= sizeof(MoneyTransfer->UserID))
+		if (strlen(MoneyTransfer->UserId) >= sizeof(MoneyTransfer->UserId))
 		{
-			MoneyTransfer->UserID[sizeof(MoneyTransfer->UserID) - 1] = 0;
+			MoneyTransfer->UserId[sizeof(MoneyTransfer->UserId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::UserID, MoneyTransfer->UserID);
+		StepUtility::WriteString(cursor, Items::UserId, MoneyTransfer->UserId);
 		if (strlen(MoneyTransfer->TransferDate) >= sizeof(MoneyTransfer->TransferDate))
 		{
 			MoneyTransfer->TransferDate[sizeof(MoneyTransfer->TransferDate) - 1] = 0;
@@ -9683,18 +9683,18 @@ int RspQryMoneyTransferPackage::ToStepStream(char* buff, int size) const
 			MoneyTransfer->TransferTime[sizeof(MoneyTransfer->TransferTime) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TransferTime, MoneyTransfer->TransferTime);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, MoneyTransferField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, MoneyTransferField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -9706,26 +9706,26 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case MoneyTransferField::FieldID:
+			case MoneyTransferField::FieldId:
 			{
 				MoneyTransfer = ObjectPool<MoneyTransferField>::GetInstance().Allocate();
 				memset(MoneyTransfer, 0, sizeof(*MoneyTransfer));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -9736,15 +9736,15 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 							memcpy(MoneyTransfer->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(MoneyTransfer->AccountID) ? sizeof(MoneyTransfer->AccountID) - 1 : value.length();
-							memcpy(MoneyTransfer->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(MoneyTransfer->AccountId) ? sizeof(MoneyTransfer->AccountId) - 1 : value.length();
+							memcpy(MoneyTransfer->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::MoneyTransferID:
+						case Items::MoneyTransferId:
 						{
-							MoneyTransfer->MoneyTransferID = atoi(value.c_str());
+							MoneyTransfer->MoneyTransferId = atoi(value.c_str());
 							break;
 						}
 						case Items::AccountType:
@@ -9768,10 +9768,10 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 							memcpy(MoneyTransfer->InfoMessage, value.c_str(), len);
 							break;
 						}
-						case Items::UserID:
+						case Items::UserId:
 						{
-							size_t len = value.length() >= sizeof(MoneyTransfer->UserID) ? sizeof(MoneyTransfer->UserID) - 1 : value.length();
-							memcpy(MoneyTransfer->UserID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(MoneyTransfer->UserId) ? sizeof(MoneyTransfer->UserId) - 1 : value.length();
+							memcpy(MoneyTransfer->UserId, value.c_str(), len);
 							break;
 						}
 						case Items::TransferDate:
@@ -9787,38 +9787,38 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for MoneyTransferField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for MoneyTransferField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryMoneyTransferPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryMoneyTransferPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -9828,21 +9828,21 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryMoneyTransferPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspQryMoneyTransferPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -9865,7 +9865,7 @@ int RspQryMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &MoneyTransferField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &MoneyTransferField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, MoneyTransfer, sizeof(MoneyTransferField));
 		offset += sizeof(MoneyTransferField);
@@ -9877,7 +9877,7 @@ int RspQryMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -9889,19 +9889,19 @@ bool RspQryMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int e
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case MoneyTransferField::FieldID:
+		case MoneyTransferField::FieldId:
 		{
 			MoneyTransfer = ObjectPool<MoneyTransferField>::GetInstance().Allocate();
 			memcpy(MoneyTransfer, buff + offset, sizeof(MoneyTransferField));
 			offset += sizeof(MoneyTransferField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -9919,11 +9919,11 @@ const char* RspQryMoneyTransferPackage::GetDebugString() const
 	int offset = 0;
 	if (MoneyTransfer != nullptr)
 	{
-		offset = AppendDebugString(offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+		offset = AppendDebugString(offset, "MoneyTransfer:TradingDay:[%s], AccountId:[%s], MoneyTransferId:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserId:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountId, MoneyTransfer->MoneyTransferId, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserId, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -9948,39 +9948,39 @@ void ReqInsertOrderPackage::Deallocate()
 {
 	ObjectPool<ReqInsertOrderPackage>::GetInstance().Deallocate(this);
 }
-void ReqInsertOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqInsertOrderPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqInsertOrderPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqInsertOrder != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqInsertOrderField::FieldID);
-		if (strlen(ReqInsertOrder->AccountID) >= sizeof(ReqInsertOrder->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqInsertOrderField::FieldId);
+		if (strlen(ReqInsertOrder->AccountId) >= sizeof(ReqInsertOrder->AccountId))
 		{
-			ReqInsertOrder->AccountID[sizeof(ReqInsertOrder->AccountID) - 1] = 0;
+			ReqInsertOrder->AccountId[sizeof(ReqInsertOrder->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqInsertOrder->AccountID);
-		if (strlen(ReqInsertOrder->ExchangeID) >= sizeof(ReqInsertOrder->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, ReqInsertOrder->AccountId);
+		if (strlen(ReqInsertOrder->ExchangeId) >= sizeof(ReqInsertOrder->ExchangeId))
 		{
-			ReqInsertOrder->ExchangeID[sizeof(ReqInsertOrder->ExchangeID) - 1] = 0;
+			ReqInsertOrder->ExchangeId[sizeof(ReqInsertOrder->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqInsertOrder->ExchangeID);
-		if (strlen(ReqInsertOrder->InstrumentID) >= sizeof(ReqInsertOrder->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqInsertOrder->ExchangeId);
+		if (strlen(ReqInsertOrder->InstrumentId) >= sizeof(ReqInsertOrder->InstrumentId))
 		{
-			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
+			ReqInsertOrder->InstrumentId[sizeof(ReqInsertOrder->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, ReqInsertOrder->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, ReqInsertOrder->InstrumentId);
 		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(ReqInsertOrder->Direction));
 		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(ReqInsertOrder->OffsetFlag));
 		StepUtility::WriteString(cursor, Items::OrderPriceType, static_cast<int>(ReqInsertOrder->OrderPriceType));
 		StepUtility::WriteString(cursor, Items::Price, ReqInsertOrder->Price);
 		StepUtility::WriteString(cursor, Items::Volume, ReqInsertOrder->Volume);
-		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqInsertOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::ClientOrderId, ReqInsertOrder->ClientOrderId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqInsertOrderField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -9992,46 +9992,46 @@ bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqInsertOrderField::FieldID:
+			case ReqInsertOrderField::FieldId:
 			{
 				ReqInsertOrder = ObjectPool<ReqInsertOrderField>::GetInstance().Allocate();
 				memset(ReqInsertOrder, 0, sizeof(*ReqInsertOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->AccountID) ? sizeof(ReqInsertOrder->AccountID) - 1 : value.length();
-							memcpy(ReqInsertOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->AccountId) ? sizeof(ReqInsertOrder->AccountId) - 1 : value.length();
+							memcpy(ReqInsertOrder->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->ExchangeID) ? sizeof(ReqInsertOrder->ExchangeID) - 1 : value.length();
-							memcpy(ReqInsertOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->ExchangeId) ? sizeof(ReqInsertOrder->ExchangeId) - 1 : value.length();
+							memcpy(ReqInsertOrder->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->InstrumentID) ? sizeof(ReqInsertOrder->InstrumentID) - 1 : value.length();
-							memcpy(ReqInsertOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->InstrumentId) ? sizeof(ReqInsertOrder->InstrumentId) - 1 : value.length();
+							memcpy(ReqInsertOrder->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
@@ -10059,27 +10059,27 @@ bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							ReqInsertOrder->Volume = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::ClientOrderId:
 						{
-							ReqInsertOrder->ClientOrderID = atoi(value.c_str());
+							ReqInsertOrder->ClientOrderId = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqInsertOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqInsertOrderField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqInsertOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqInsertOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -10102,7 +10102,7 @@ int ReqInsertOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqInsertOrderField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqInsertOrderField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
 		offset += sizeof(ReqInsertOrderField);
@@ -10114,12 +10114,12 @@ bool ReqInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqInsertOrderField::FieldID:
+		case ReqInsertOrderField::FieldId:
 		{
 			ReqInsertOrder = ObjectPool<ReqInsertOrderField>::GetInstance().Allocate();
 			memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
@@ -10137,7 +10137,7 @@ const char* ReqInsertOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqInsertOrder != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+		offset = AppendDebugString(offset, "ReqInsertOrder:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]", ReqInsertOrder->AccountId, ReqInsertOrder->ExchangeId, ReqInsertOrder->InstrumentId, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderId);
 	}
 	return DataStringBuffer;
 }
@@ -10167,50 +10167,50 @@ void RspInsertOrderPackage::Deallocate()
 {
 	ObjectPool<RspInsertOrderPackage>::GetInstance().Deallocate(this);
 }
-void RspInsertOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspInsertOrderPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspInsertOrderPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqInsertOrder != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqInsertOrderField::FieldID);
-		if (strlen(ReqInsertOrder->AccountID) >= sizeof(ReqInsertOrder->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqInsertOrderField::FieldId);
+		if (strlen(ReqInsertOrder->AccountId) >= sizeof(ReqInsertOrder->AccountId))
 		{
-			ReqInsertOrder->AccountID[sizeof(ReqInsertOrder->AccountID) - 1] = 0;
+			ReqInsertOrder->AccountId[sizeof(ReqInsertOrder->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqInsertOrder->AccountID);
-		if (strlen(ReqInsertOrder->ExchangeID) >= sizeof(ReqInsertOrder->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, ReqInsertOrder->AccountId);
+		if (strlen(ReqInsertOrder->ExchangeId) >= sizeof(ReqInsertOrder->ExchangeId))
 		{
-			ReqInsertOrder->ExchangeID[sizeof(ReqInsertOrder->ExchangeID) - 1] = 0;
+			ReqInsertOrder->ExchangeId[sizeof(ReqInsertOrder->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqInsertOrder->ExchangeID);
-		if (strlen(ReqInsertOrder->InstrumentID) >= sizeof(ReqInsertOrder->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqInsertOrder->ExchangeId);
+		if (strlen(ReqInsertOrder->InstrumentId) >= sizeof(ReqInsertOrder->InstrumentId))
 		{
-			ReqInsertOrder->InstrumentID[sizeof(ReqInsertOrder->InstrumentID) - 1] = 0;
+			ReqInsertOrder->InstrumentId[sizeof(ReqInsertOrder->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, ReqInsertOrder->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, ReqInsertOrder->InstrumentId);
 		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(ReqInsertOrder->Direction));
 		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(ReqInsertOrder->OffsetFlag));
 		StepUtility::WriteString(cursor, Items::OrderPriceType, static_cast<int>(ReqInsertOrder->OrderPriceType));
 		StepUtility::WriteString(cursor, Items::Price, ReqInsertOrder->Price);
 		StepUtility::WriteString(cursor, Items::Volume, ReqInsertOrder->Volume);
-		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqInsertOrder->ClientOrderID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqInsertOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::ClientOrderId, ReqInsertOrder->ClientOrderId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqInsertOrderField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -10222,46 +10222,46 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqInsertOrderField::FieldID:
+			case ReqInsertOrderField::FieldId:
 			{
 				ReqInsertOrder = ObjectPool<ReqInsertOrderField>::GetInstance().Allocate();
 				memset(ReqInsertOrder, 0, sizeof(*ReqInsertOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->AccountID) ? sizeof(ReqInsertOrder->AccountID) - 1 : value.length();
-							memcpy(ReqInsertOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->AccountId) ? sizeof(ReqInsertOrder->AccountId) - 1 : value.length();
+							memcpy(ReqInsertOrder->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->ExchangeID) ? sizeof(ReqInsertOrder->ExchangeID) - 1 : value.length();
-							memcpy(ReqInsertOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->ExchangeId) ? sizeof(ReqInsertOrder->ExchangeId) - 1 : value.length();
+							memcpy(ReqInsertOrder->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(ReqInsertOrder->InstrumentID) ? sizeof(ReqInsertOrder->InstrumentID) - 1 : value.length();
-							memcpy(ReqInsertOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqInsertOrder->InstrumentId) ? sizeof(ReqInsertOrder->InstrumentId) - 1 : value.length();
+							memcpy(ReqInsertOrder->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
@@ -10289,44 +10289,44 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							ReqInsertOrder->Volume = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::ClientOrderId:
 						{
-							ReqInsertOrder->ClientOrderID = atoi(value.c_str());
+							ReqInsertOrder->ClientOrderId = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqInsertOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqInsertOrderField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspInsertOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspInsertOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -10336,21 +10336,21 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspInsertOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspInsertOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -10373,7 +10373,7 @@ int RspInsertOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqInsertOrderField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqInsertOrderField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqInsertOrder, sizeof(ReqInsertOrderField));
 		offset += sizeof(ReqInsertOrderField);
@@ -10385,7 +10385,7 @@ int RspInsertOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -10397,19 +10397,19 @@ bool RspInsertOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqInsertOrderField::FieldID:
+		case ReqInsertOrderField::FieldId:
 		{
 			ReqInsertOrder = ObjectPool<ReqInsertOrderField>::GetInstance().Allocate();
 			memcpy(ReqInsertOrder, buff + offset, sizeof(ReqInsertOrderField));
 			offset += sizeof(ReqInsertOrderField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -10427,11 +10427,11 @@ const char* RspInsertOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqInsertOrder != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqInsertOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderID:[%d]", ReqInsertOrder->AccountID, ReqInsertOrder->ExchangeID, ReqInsertOrder->InstrumentID, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderID);
+		offset = AppendDebugString(offset, "ReqInsertOrder:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]", ReqInsertOrder->AccountId, ReqInsertOrder->ExchangeId, ReqInsertOrder->InstrumentId, static_cast<int>(ReqInsertOrder->Direction), static_cast<int>(ReqInsertOrder->OffsetFlag), static_cast<int>(ReqInsertOrder->OrderPriceType), ReqInsertOrder->Price, ReqInsertOrder->Volume, ReqInsertOrder->ClientOrderId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -10456,42 +10456,42 @@ void ReqCancelOrderPackage::Deallocate()
 {
 	ObjectPool<ReqCancelOrderPackage>::GetInstance().Deallocate(this);
 }
-void ReqCancelOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void ReqCancelOrderPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int ReqCancelOrderPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqCancelOrder != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqCancelOrderField::FieldID);
-		if (strlen(ReqCancelOrder->AccountID) >= sizeof(ReqCancelOrder->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqCancelOrderField::FieldId);
+		if (strlen(ReqCancelOrder->AccountId) >= sizeof(ReqCancelOrder->AccountId))
 		{
-			ReqCancelOrder->AccountID[sizeof(ReqCancelOrder->AccountID) - 1] = 0;
+			ReqCancelOrder->AccountId[sizeof(ReqCancelOrder->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqCancelOrder->AccountID);
-		if (strlen(ReqCancelOrder->ExchangeID) >= sizeof(ReqCancelOrder->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, ReqCancelOrder->AccountId);
+		if (strlen(ReqCancelOrder->ExchangeId) >= sizeof(ReqCancelOrder->ExchangeId))
 		{
-			ReqCancelOrder->ExchangeID[sizeof(ReqCancelOrder->ExchangeID) - 1] = 0;
+			ReqCancelOrder->ExchangeId[sizeof(ReqCancelOrder->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqCancelOrder->ExchangeID);
-		if (strlen(ReqCancelOrder->InstrumentID) >= sizeof(ReqCancelOrder->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqCancelOrder->ExchangeId);
+		if (strlen(ReqCancelOrder->InstrumentId) >= sizeof(ReqCancelOrder->InstrumentId))
 		{
-			ReqCancelOrder->InstrumentID[sizeof(ReqCancelOrder->InstrumentID) - 1] = 0;
+			ReqCancelOrder->InstrumentId[sizeof(ReqCancelOrder->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, ReqCancelOrder->InstrumentID);
-		StepUtility::WriteString(cursor, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
-		StepUtility::WriteString(cursor, Items::OrderID, ReqCancelOrder->OrderID);
-		if (strlen(ReqCancelOrder->OrderSysID) >= sizeof(ReqCancelOrder->OrderSysID))
+		StepUtility::WriteString(cursor, Items::InstrumentId, ReqCancelOrder->InstrumentId);
+		StepUtility::WriteString(cursor, Items::ClientCancelOrderId, ReqCancelOrder->ClientCancelOrderId);
+		StepUtility::WriteString(cursor, Items::OrderId, ReqCancelOrder->OrderId);
+		if (strlen(ReqCancelOrder->OrderSysId) >= sizeof(ReqCancelOrder->OrderSysId))
 		{
-			ReqCancelOrder->OrderSysID[sizeof(ReqCancelOrder->OrderSysID) - 1] = 0;
+			ReqCancelOrder->OrderSysId[sizeof(ReqCancelOrder->OrderSysId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::OrderSysID, ReqCancelOrder->OrderSysID);
-		StepUtility::WriteString(cursor, Items::SessionID, ReqCancelOrder->SessionID);
-		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqCancelOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::OrderSysId, ReqCancelOrder->OrderSysId);
+		StepUtility::WriteString(cursor, Items::SessionId, ReqCancelOrder->SessionId);
+		StepUtility::WriteString(cursor, Items::ClientOrderId, ReqCancelOrder->ClientOrderId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqCancelOrderField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -10503,90 +10503,90 @@ bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqCancelOrderField::FieldID:
+			case ReqCancelOrderField::FieldId:
 			{
 				ReqCancelOrder = ObjectPool<ReqCancelOrderField>::GetInstance().Allocate();
 				memset(ReqCancelOrder, 0, sizeof(*ReqCancelOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->AccountID) ? sizeof(ReqCancelOrder->AccountID) - 1 : value.length();
-							memcpy(ReqCancelOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->AccountId) ? sizeof(ReqCancelOrder->AccountId) - 1 : value.length();
+							memcpy(ReqCancelOrder->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->ExchangeID) ? sizeof(ReqCancelOrder->ExchangeID) - 1 : value.length();
-							memcpy(ReqCancelOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->ExchangeId) ? sizeof(ReqCancelOrder->ExchangeId) - 1 : value.length();
+							memcpy(ReqCancelOrder->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->InstrumentID) ? sizeof(ReqCancelOrder->InstrumentID) - 1 : value.length();
-							memcpy(ReqCancelOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->InstrumentId) ? sizeof(ReqCancelOrder->InstrumentId) - 1 : value.length();
+							memcpy(ReqCancelOrder->InstrumentId, value.c_str(), len);
 							break;
 						}
-						case Items::ClientCancelOrderID:
+						case Items::ClientCancelOrderId:
 						{
-							ReqCancelOrder->ClientCancelOrderID = atoi(value.c_str());
+							ReqCancelOrder->ClientCancelOrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::OrderID:
+						case Items::OrderId:
 						{
-							ReqCancelOrder->OrderID = atoi(value.c_str());
+							ReqCancelOrder->OrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::OrderSysID:
+						case Items::OrderSysId:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->OrderSysID) ? sizeof(ReqCancelOrder->OrderSysID) - 1 : value.length();
-							memcpy(ReqCancelOrder->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->OrderSysId) ? sizeof(ReqCancelOrder->OrderSysId) - 1 : value.length();
+							memcpy(ReqCancelOrder->OrderSysId, value.c_str(), len);
 							break;
 						}
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							ReqCancelOrder->SessionID = atoll(value.c_str());
+							ReqCancelOrder->SessionId = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::ClientOrderId:
 						{
-							ReqCancelOrder->ClientOrderID = atoi(value.c_str());
+							ReqCancelOrder->ClientOrderId = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqCancelOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqCancelOrderField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For ReqCancelOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For ReqCancelOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -10609,7 +10609,7 @@ int ReqCancelOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqCancelOrderField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqCancelOrderField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
 		offset += sizeof(ReqCancelOrderField);
@@ -10621,12 +10621,12 @@ bool ReqCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqCancelOrderField::FieldID:
+		case ReqCancelOrderField::FieldId:
 		{
 			ReqCancelOrder = ObjectPool<ReqCancelOrderField>::GetInstance().Allocate();
 			memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
@@ -10644,7 +10644,7 @@ const char* ReqCancelOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqCancelOrder != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+		offset = AppendDebugString(offset, "ReqCancelOrder:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]", ReqCancelOrder->AccountId, ReqCancelOrder->ExchangeId, ReqCancelOrder->InstrumentId, ReqCancelOrder->ClientCancelOrderId, ReqCancelOrder->OrderId, ReqCancelOrder->OrderSysId, ReqCancelOrder->SessionId, ReqCancelOrder->ClientOrderId);
 	}
 	return DataStringBuffer;
 }
@@ -10674,53 +10674,53 @@ void RspCancelOrderPackage::Deallocate()
 {
 	ObjectPool<RspCancelOrderPackage>::GetInstance().Deallocate(this);
 }
-void RspCancelOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RspCancelOrderPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RspCancelOrderPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (ReqCancelOrder != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqCancelOrderField::FieldID);
-		if (strlen(ReqCancelOrder->AccountID) >= sizeof(ReqCancelOrder->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, ReqCancelOrderField::FieldId);
+		if (strlen(ReqCancelOrder->AccountId) >= sizeof(ReqCancelOrder->AccountId))
 		{
-			ReqCancelOrder->AccountID[sizeof(ReqCancelOrder->AccountID) - 1] = 0;
+			ReqCancelOrder->AccountId[sizeof(ReqCancelOrder->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, ReqCancelOrder->AccountID);
-		if (strlen(ReqCancelOrder->ExchangeID) >= sizeof(ReqCancelOrder->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, ReqCancelOrder->AccountId);
+		if (strlen(ReqCancelOrder->ExchangeId) >= sizeof(ReqCancelOrder->ExchangeId))
 		{
-			ReqCancelOrder->ExchangeID[sizeof(ReqCancelOrder->ExchangeID) - 1] = 0;
+			ReqCancelOrder->ExchangeId[sizeof(ReqCancelOrder->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, ReqCancelOrder->ExchangeID);
-		if (strlen(ReqCancelOrder->InstrumentID) >= sizeof(ReqCancelOrder->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, ReqCancelOrder->ExchangeId);
+		if (strlen(ReqCancelOrder->InstrumentId) >= sizeof(ReqCancelOrder->InstrumentId))
 		{
-			ReqCancelOrder->InstrumentID[sizeof(ReqCancelOrder->InstrumentID) - 1] = 0;
+			ReqCancelOrder->InstrumentId[sizeof(ReqCancelOrder->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, ReqCancelOrder->InstrumentID);
-		StepUtility::WriteString(cursor, Items::ClientCancelOrderID, ReqCancelOrder->ClientCancelOrderID);
-		StepUtility::WriteString(cursor, Items::OrderID, ReqCancelOrder->OrderID);
-		if (strlen(ReqCancelOrder->OrderSysID) >= sizeof(ReqCancelOrder->OrderSysID))
+		StepUtility::WriteString(cursor, Items::InstrumentId, ReqCancelOrder->InstrumentId);
+		StepUtility::WriteString(cursor, Items::ClientCancelOrderId, ReqCancelOrder->ClientCancelOrderId);
+		StepUtility::WriteString(cursor, Items::OrderId, ReqCancelOrder->OrderId);
+		if (strlen(ReqCancelOrder->OrderSysId) >= sizeof(ReqCancelOrder->OrderSysId))
 		{
-			ReqCancelOrder->OrderSysID[sizeof(ReqCancelOrder->OrderSysID) - 1] = 0;
+			ReqCancelOrder->OrderSysId[sizeof(ReqCancelOrder->OrderSysId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::OrderSysID, ReqCancelOrder->OrderSysID);
-		StepUtility::WriteString(cursor, Items::SessionID, ReqCancelOrder->SessionID);
-		StepUtility::WriteString(cursor, Items::ClientOrderID, ReqCancelOrder->ClientOrderID);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqCancelOrderField::FieldID);
+		StepUtility::WriteString(cursor, Items::OrderSysId, ReqCancelOrder->OrderSysId);
+		StepUtility::WriteString(cursor, Items::SessionId, ReqCancelOrder->SessionId);
+		StepUtility::WriteString(cursor, Items::ClientOrderId, ReqCancelOrder->ClientOrderId);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, ReqCancelOrderField::FieldId);
 	}
 	if (RspInfo != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldID);
-		StepUtility::WriteString(cursor, Items::ErrorID, RspInfo->ErrorID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, RspInfoField::FieldId);
+		StepUtility::WriteString(cursor, Items::ErrorId, RspInfo->ErrorId);
 		if (strlen(RspInfo->ErrorMsg) >= sizeof(RspInfo->ErrorMsg))
 		{
 			RspInfo->ErrorMsg[sizeof(RspInfo->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, RspInfo->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, RspInfoField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -10732,107 +10732,107 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case ReqCancelOrderField::FieldID:
+			case ReqCancelOrderField::FieldId:
 			{
 				ReqCancelOrder = ObjectPool<ReqCancelOrderField>::GetInstance().Allocate();
 				memset(ReqCancelOrder, 0, sizeof(*ReqCancelOrder));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->AccountID) ? sizeof(ReqCancelOrder->AccountID) - 1 : value.length();
-							memcpy(ReqCancelOrder->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->AccountId) ? sizeof(ReqCancelOrder->AccountId) - 1 : value.length();
+							memcpy(ReqCancelOrder->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->ExchangeID) ? sizeof(ReqCancelOrder->ExchangeID) - 1 : value.length();
-							memcpy(ReqCancelOrder->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->ExchangeId) ? sizeof(ReqCancelOrder->ExchangeId) - 1 : value.length();
+							memcpy(ReqCancelOrder->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->InstrumentID) ? sizeof(ReqCancelOrder->InstrumentID) - 1 : value.length();
-							memcpy(ReqCancelOrder->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->InstrumentId) ? sizeof(ReqCancelOrder->InstrumentId) - 1 : value.length();
+							memcpy(ReqCancelOrder->InstrumentId, value.c_str(), len);
 							break;
 						}
-						case Items::ClientCancelOrderID:
+						case Items::ClientCancelOrderId:
 						{
-							ReqCancelOrder->ClientCancelOrderID = atoi(value.c_str());
+							ReqCancelOrder->ClientCancelOrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::OrderID:
+						case Items::OrderId:
 						{
-							ReqCancelOrder->OrderID = atoi(value.c_str());
+							ReqCancelOrder->OrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::OrderSysID:
+						case Items::OrderSysId:
 						{
-							size_t len = value.length() >= sizeof(ReqCancelOrder->OrderSysID) ? sizeof(ReqCancelOrder->OrderSysID) - 1 : value.length();
-							memcpy(ReqCancelOrder->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(ReqCancelOrder->OrderSysId) ? sizeof(ReqCancelOrder->OrderSysId) - 1 : value.length();
+							memcpy(ReqCancelOrder->OrderSysId, value.c_str(), len);
 							break;
 						}
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							ReqCancelOrder->SessionID = atoll(value.c_str());
+							ReqCancelOrder->SessionId = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::ClientOrderId:
 						{
-							ReqCancelOrder->ClientOrderID = atoi(value.c_str());
+							ReqCancelOrder->ClientOrderId = atoi(value.c_str());
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for ReqCancelOrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for ReqCancelOrderField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspCancelOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspCancelOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
-			case RspInfoField::FieldID:
+			case RspInfoField::FieldId:
 			{
 				RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 				memset(RspInfo, 0, sizeof(*RspInfo));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							RspInfo->ErrorID = atoi(value.c_str());
+							RspInfo->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -10842,21 +10842,21 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for RspInfoField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for RspInfoField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RspCancelOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RspCancelOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -10879,7 +10879,7 @@ int RspCancelOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &ReqCancelOrderField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &ReqCancelOrderField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, ReqCancelOrder, sizeof(ReqCancelOrderField));
 		offset += sizeof(ReqCancelOrderField);
@@ -10891,7 +10891,7 @@ int RspCancelOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &RspInfoField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &RspInfoField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, RspInfo, sizeof(RspInfoField));
 		offset += sizeof(RspInfoField);
@@ -10903,19 +10903,19 @@ bool RspCancelOrderPackage::FromXtpStream(char* buff, int startIndex, int endInd
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case ReqCancelOrderField::FieldID:
+		case ReqCancelOrderField::FieldId:
 		{
 			ReqCancelOrder = ObjectPool<ReqCancelOrderField>::GetInstance().Allocate();
 			memcpy(ReqCancelOrder, buff + offset, sizeof(ReqCancelOrderField));
 			offset += sizeof(ReqCancelOrderField);	
 			break;
 		}
-		case RspInfoField::FieldID:
+		case RspInfoField::FieldId:
 		{
 			RspInfo = ObjectPool<RspInfoField>::GetInstance().Allocate();
 			memcpy(RspInfo, buff + offset, sizeof(RspInfoField));
@@ -10933,11 +10933,11 @@ const char* RspCancelOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (ReqCancelOrder != nullptr)
 	{
-		offset = AppendDebugString(offset, "ReqCancelOrder:AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ClientCancelOrderID:[%d], OrderID:[%d], OrderSysID:[%s], SessionID:[%lld], ClientOrderID:[%d]", ReqCancelOrder->AccountID, ReqCancelOrder->ExchangeID, ReqCancelOrder->InstrumentID, ReqCancelOrder->ClientCancelOrderID, ReqCancelOrder->OrderID, ReqCancelOrder->OrderSysID, ReqCancelOrder->SessionID, ReqCancelOrder->ClientOrderID);
+		offset = AppendDebugString(offset, "ReqCancelOrder:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]", ReqCancelOrder->AccountId, ReqCancelOrder->ExchangeId, ReqCancelOrder->InstrumentId, ReqCancelOrder->ClientCancelOrderId, ReqCancelOrder->OrderId, ReqCancelOrder->OrderSysId, ReqCancelOrder->SessionId, ReqCancelOrder->ClientOrderId);
 	}
 	if (RspInfo != nullptr)
 	{
-		offset = AppendDebugString(offset, "RspInfo:ErrorID:[%d], ErrorMsg:[%s]", RspInfo->ErrorID, RspInfo->ErrorMsg);
+		offset = AppendDebugString(offset, "RspInfo:ErrorId:[%d], ErrorMsg:[%s]", RspInfo->ErrorId, RspInfo->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
@@ -10962,44 +10962,44 @@ void RtnOrderPackage::Deallocate()
 {
 	ObjectPool<RtnOrderPackage>::GetInstance().Deallocate(this);
 }
-void RtnOrderPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnOrderPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnOrderPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (Order != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, OrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, OrderField::FieldId);
 		if (strlen(Order->TradingDay) >= sizeof(Order->TradingDay))
 		{
 			Order->TradingDay[sizeof(Order->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, Order->TradingDay);
-		if (strlen(Order->AccountID) >= sizeof(Order->AccountID))
+		if (strlen(Order->AccountId) >= sizeof(Order->AccountId))
 		{
-			Order->AccountID[sizeof(Order->AccountID) - 1] = 0;
+			Order->AccountId[sizeof(Order->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, Order->AccountID);
-		if (strlen(Order->ExchangeID) >= sizeof(Order->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, Order->AccountId);
+		if (strlen(Order->ExchangeId) >= sizeof(Order->ExchangeId))
 		{
-			Order->ExchangeID[sizeof(Order->ExchangeID) - 1] = 0;
+			Order->ExchangeId[sizeof(Order->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, Order->ExchangeID);
-		if (strlen(Order->InstrumentID) >= sizeof(Order->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, Order->ExchangeId);
+		if (strlen(Order->InstrumentId) >= sizeof(Order->InstrumentId))
 		{
-			Order->InstrumentID[sizeof(Order->InstrumentID) - 1] = 0;
+			Order->InstrumentId[sizeof(Order->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, Order->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, Order->InstrumentId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Order->ProductClass));
-		StepUtility::WriteString(cursor, Items::OrderID, Order->OrderID);
-		if (strlen(Order->OrderSysID) >= sizeof(Order->OrderSysID))
+		StepUtility::WriteString(cursor, Items::OrderId, Order->OrderId);
+		if (strlen(Order->OrderSysId) >= sizeof(Order->OrderSysId))
 		{
-			Order->OrderSysID[sizeof(Order->OrderSysID) - 1] = 0;
+			Order->OrderSysId[sizeof(Order->OrderSysId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::OrderSysID, Order->OrderSysID);
+		StepUtility::WriteString(cursor, Items::OrderSysId, Order->OrderSysId);
 		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(Order->Direction));
 		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(Order->OffsetFlag));
 		StepUtility::WriteString(cursor, Items::OrderPriceType, static_cast<int>(Order->OrderPriceType));
@@ -11029,13 +11029,13 @@ int RtnOrderPackage::ToStepStream(char* buff, int size) const
 			Order->CancelTime[sizeof(Order->CancelTime) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::CancelTime, Order->CancelTime);
-		StepUtility::WriteString(cursor, Items::SessionID, Order->SessionID);
-		StepUtility::WriteString(cursor, Items::ClientOrderID, Order->ClientOrderID);
-		StepUtility::WriteString(cursor, Items::RequestID, Order->RequestID);
+		StepUtility::WriteString(cursor, Items::SessionId, Order->SessionId);
+		StepUtility::WriteString(cursor, Items::ClientOrderId, Order->ClientOrderId);
+		StepUtility::WriteString(cursor, Items::RequestId, Order->RequestId);
 		StepUtility::WriteString(cursor, Items::FrozenCash, Order->FrozenCash);
 		StepUtility::WriteString(cursor, Items::FrozenMargin, Order->FrozenMargin);
 		StepUtility::WriteString(cursor, Items::FrozenCommission, Order->FrozenCommission);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, OrderField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, OrderField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -11047,26 +11047,26 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case OrderField::FieldID:
+			case OrderField::FieldId:
 			{
 				Order = ObjectPool<OrderField>::GetInstance().Allocate();
 				memset(Order, 0, sizeof(*Order));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -11077,22 +11077,22 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							memcpy(Order->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(Order->AccountID) ? sizeof(Order->AccountID) - 1 : value.length();
-							memcpy(Order->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Order->AccountId) ? sizeof(Order->AccountId) - 1 : value.length();
+							memcpy(Order->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(Order->ExchangeID) ? sizeof(Order->ExchangeID) - 1 : value.length();
-							memcpy(Order->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Order->ExchangeId) ? sizeof(Order->ExchangeId) - 1 : value.length();
+							memcpy(Order->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(Order->InstrumentID) ? sizeof(Order->InstrumentID) - 1 : value.length();
-							memcpy(Order->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Order->InstrumentId) ? sizeof(Order->InstrumentId) - 1 : value.length();
+							memcpy(Order->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
@@ -11100,15 +11100,15 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							Order->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
-						case Items::OrderID:
+						case Items::OrderId:
 						{
-							Order->OrderID = atoi(value.c_str());
+							Order->OrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::OrderSysID:
+						case Items::OrderSysId:
 						{
-							size_t len = value.length() >= sizeof(Order->OrderSysID) ? sizeof(Order->OrderSysID) - 1 : value.length();
-							memcpy(Order->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Order->OrderSysId) ? sizeof(Order->OrderSysId) - 1 : value.length();
+							memcpy(Order->OrderSysId, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
@@ -11180,19 +11180,19 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							memcpy(Order->CancelTime, value.c_str(), len);
 							break;
 						}
-						case Items::SessionID:
+						case Items::SessionId:
 						{
-							Order->SessionID = atoll(value.c_str());
+							Order->SessionId = atoll(value.c_str());
 							break;
 						}
-						case Items::ClientOrderID:
+						case Items::ClientOrderId:
 						{
-							Order->ClientOrderID = atoi(value.c_str());
+							Order->ClientOrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::RequestID:
+						case Items::RequestId:
 						{
-							Order->RequestID = atoi(value.c_str());
+							Order->RequestId = atoi(value.c_str());
 							break;
 						}
 						case Items::FrozenCash:
@@ -11211,21 +11211,21 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for OrderField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for OrderField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnOrderPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnOrderPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -11248,7 +11248,7 @@ int RtnOrderPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &OrderField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &OrderField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Order, sizeof(OrderField));
 		offset += sizeof(OrderField);
@@ -11260,12 +11260,12 @@ bool RtnOrderPackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case OrderField::FieldID:
+		case OrderField::FieldId:
 		{
 			Order = ObjectPool<OrderField>::GetInstance().Allocate();
 			memcpy(Order, buff + offset, sizeof(OrderField));
@@ -11283,7 +11283,7 @@ const char* RtnOrderPackage::GetDebugString() const
 	int offset = 0;
 	if (Order != nullptr)
 	{
-		offset = AppendDebugString(offset, "Order:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionID:[%lld], ClientOrderID:[%d], RequestID:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountID, Order->ExchangeID, Order->InstrumentID, static_cast<int>(Order->ProductClass), Order->OrderID, Order->OrderSysID, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionID, Order->ClientOrderID, Order->RequestID, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
+		offset = AppendDebugString(offset, "Order:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionId:[%lld], ClientOrderId:[%d], RequestId:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]", Order->TradingDay, Order->AccountId, Order->ExchangeId, Order->InstrumentId, static_cast<int>(Order->ProductClass), Order->OrderId, Order->OrderSysId, static_cast<int>(Order->Direction), static_cast<int>(Order->OffsetFlag), static_cast<int>(Order->OrderPriceType), Order->Price, Order->Volume, Order->VolumeTotal, Order->VolumeTraded, Order->VolumeMultiple, static_cast<int>(Order->OrderStatus), Order->OrderDate, Order->OrderTime, Order->CancelDate, Order->CancelTime, Order->SessionId, Order->ClientOrderId, Order->RequestId, Order->FrozenCash, Order->FrozenMargin, Order->FrozenCommission);
 	}
 	return DataStringBuffer;
 }
@@ -11308,49 +11308,49 @@ void RtnTradePackage::Deallocate()
 {
 	ObjectPool<RtnTradePackage>::GetInstance().Deallocate(this);
 }
-void RtnTradePackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnTradePackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnTradePackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (Trade != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, TradeField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, TradeField::FieldId);
 		if (strlen(Trade->TradingDay) >= sizeof(Trade->TradingDay))
 		{
 			Trade->TradingDay[sizeof(Trade->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, Trade->TradingDay);
-		if (strlen(Trade->AccountID) >= sizeof(Trade->AccountID))
+		if (strlen(Trade->AccountId) >= sizeof(Trade->AccountId))
 		{
-			Trade->AccountID[sizeof(Trade->AccountID) - 1] = 0;
+			Trade->AccountId[sizeof(Trade->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, Trade->AccountID);
-		if (strlen(Trade->ExchangeID) >= sizeof(Trade->ExchangeID))
+		StepUtility::WriteString(cursor, Items::AccountId, Trade->AccountId);
+		if (strlen(Trade->ExchangeId) >= sizeof(Trade->ExchangeId))
 		{
-			Trade->ExchangeID[sizeof(Trade->ExchangeID) - 1] = 0;
+			Trade->ExchangeId[sizeof(Trade->ExchangeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::ExchangeID, Trade->ExchangeID);
-		if (strlen(Trade->InstrumentID) >= sizeof(Trade->InstrumentID))
+		StepUtility::WriteString(cursor, Items::ExchangeId, Trade->ExchangeId);
+		if (strlen(Trade->InstrumentId) >= sizeof(Trade->InstrumentId))
 		{
-			Trade->InstrumentID[sizeof(Trade->InstrumentID) - 1] = 0;
+			Trade->InstrumentId[sizeof(Trade->InstrumentId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::InstrumentID, Trade->InstrumentID);
+		StepUtility::WriteString(cursor, Items::InstrumentId, Trade->InstrumentId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(Trade->ProductClass));
-		StepUtility::WriteString(cursor, Items::OrderID, Trade->OrderID);
-		if (strlen(Trade->OrderSysID) >= sizeof(Trade->OrderSysID))
+		StepUtility::WriteString(cursor, Items::OrderId, Trade->OrderId);
+		if (strlen(Trade->OrderSysId) >= sizeof(Trade->OrderSysId))
 		{
-			Trade->OrderSysID[sizeof(Trade->OrderSysID) - 1] = 0;
+			Trade->OrderSysId[sizeof(Trade->OrderSysId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::OrderSysID, Trade->OrderSysID);
-		if (strlen(Trade->TradeID) >= sizeof(Trade->TradeID))
+		StepUtility::WriteString(cursor, Items::OrderSysId, Trade->OrderSysId);
+		if (strlen(Trade->TradeId) >= sizeof(Trade->TradeId))
 		{
-			Trade->TradeID[sizeof(Trade->TradeID) - 1] = 0;
+			Trade->TradeId[sizeof(Trade->TradeId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::TradeID, Trade->TradeID);
+		StepUtility::WriteString(cursor, Items::TradeId, Trade->TradeId);
 		StepUtility::WriteString(cursor, Items::Direction, static_cast<int>(Trade->Direction));
 		StepUtility::WriteString(cursor, Items::OffsetFlag, static_cast<int>(Trade->OffsetFlag));
 		StepUtility::WriteString(cursor, Items::Price, Trade->Price);
@@ -11368,7 +11368,7 @@ int RtnTradePackage::ToStepStream(char* buff, int size) const
 			Trade->TradeTime[sizeof(Trade->TradeTime) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradeTime, Trade->TradeTime);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, TradeField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, TradeField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -11380,26 +11380,26 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case TradeField::FieldID:
+			case TradeField::FieldId:
 			{
 				Trade = ObjectPool<TradeField>::GetInstance().Allocate();
 				memset(Trade, 0, sizeof(*Trade));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -11410,22 +11410,22 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							memcpy(Trade->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(Trade->AccountID) ? sizeof(Trade->AccountID) - 1 : value.length();
-							memcpy(Trade->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->AccountId) ? sizeof(Trade->AccountId) - 1 : value.length();
+							memcpy(Trade->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ExchangeID:
+						case Items::ExchangeId:
 						{
-							size_t len = value.length() >= sizeof(Trade->ExchangeID) ? sizeof(Trade->ExchangeID) - 1 : value.length();
-							memcpy(Trade->ExchangeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->ExchangeId) ? sizeof(Trade->ExchangeId) - 1 : value.length();
+							memcpy(Trade->ExchangeId, value.c_str(), len);
 							break;
 						}
-						case Items::InstrumentID:
+						case Items::InstrumentId:
 						{
-							size_t len = value.length() >= sizeof(Trade->InstrumentID) ? sizeof(Trade->InstrumentID) - 1 : value.length();
-							memcpy(Trade->InstrumentID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->InstrumentId) ? sizeof(Trade->InstrumentId) - 1 : value.length();
+							memcpy(Trade->InstrumentId, value.c_str(), len);
 							break;
 						}
 						case Items::ProductClass:
@@ -11433,21 +11433,21 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							Trade->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
-						case Items::OrderID:
+						case Items::OrderId:
 						{
-							Trade->OrderID = atoi(value.c_str());
+							Trade->OrderId = atoi(value.c_str());
 							break;
 						}
-						case Items::OrderSysID:
+						case Items::OrderSysId:
 						{
-							size_t len = value.length() >= sizeof(Trade->OrderSysID) ? sizeof(Trade->OrderSysID) - 1 : value.length();
-							memcpy(Trade->OrderSysID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->OrderSysId) ? sizeof(Trade->OrderSysId) - 1 : value.length();
+							memcpy(Trade->OrderSysId, value.c_str(), len);
 							break;
 						}
-						case Items::TradeID:
+						case Items::TradeId:
 						{
-							size_t len = value.length() >= sizeof(Trade->TradeID) ? sizeof(Trade->TradeID) - 1 : value.length();
-							memcpy(Trade->TradeID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(Trade->TradeId) ? sizeof(Trade->TradeId) - 1 : value.length();
+							memcpy(Trade->TradeId, value.c_str(), len);
 							break;
 						}
 						case Items::Direction:
@@ -11498,21 +11498,21 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for TradeField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for TradeField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnTradePackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnTradePackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -11535,7 +11535,7 @@ int RtnTradePackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &TradeField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &TradeField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, Trade, sizeof(TradeField));
 		offset += sizeof(TradeField);
@@ -11547,12 +11547,12 @@ bool RtnTradePackage::FromXtpStream(char* buff, int startIndex, int endIndex)
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case TradeField::FieldID:
+		case TradeField::FieldId:
 		{
 			Trade = ObjectPool<TradeField>::GetInstance().Allocate();
 			memcpy(Trade, buff + offset, sizeof(TradeField));
@@ -11570,7 +11570,7 @@ const char* RtnTradePackage::GetDebugString() const
 	int offset = 0;
 	if (Trade != nullptr)
 	{
-		offset = AppendDebugString(offset, "Trade:TradingDay:[%s], AccountID:[%s], ExchangeID:[%s], InstrumentID:[%s], ProductClass:[%d], OrderID:[%d], OrderSysID:[%s], TradeID:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountID, Trade->ExchangeID, Trade->InstrumentID, static_cast<int>(Trade->ProductClass), Trade->OrderID, Trade->OrderSysID, Trade->TradeID, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
+		offset = AppendDebugString(offset, "Trade:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], TradeId:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]", Trade->TradingDay, Trade->AccountId, Trade->ExchangeId, Trade->InstrumentId, static_cast<int>(Trade->ProductClass), Trade->OrderId, Trade->OrderSysId, Trade->TradeId, static_cast<int>(Trade->Direction), static_cast<int>(Trade->OffsetFlag), Trade->Price, Trade->Volume, Trade->VolumeMultiple, Trade->TradeAmount, Trade->Commission, Trade->TradeDate, Trade->TradeTime);
 	}
 	return DataStringBuffer;
 }
@@ -11595,28 +11595,28 @@ void RtnMoneyTransferPackage::Deallocate()
 {
 	ObjectPool<RtnMoneyTransferPackage>::GetInstance().Deallocate(this);
 }
-void RtnMoneyTransferPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnMoneyTransferPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnMoneyTransferPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (MoneyTransfer != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, MoneyTransferField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldStart, MoneyTransferField::FieldId);
 		if (strlen(MoneyTransfer->TradingDay) >= sizeof(MoneyTransfer->TradingDay))
 		{
 			MoneyTransfer->TradingDay[sizeof(MoneyTransfer->TradingDay) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TradingDay, MoneyTransfer->TradingDay);
-		if (strlen(MoneyTransfer->AccountID) >= sizeof(MoneyTransfer->AccountID))
+		if (strlen(MoneyTransfer->AccountId) >= sizeof(MoneyTransfer->AccountId))
 		{
-			MoneyTransfer->AccountID[sizeof(MoneyTransfer->AccountID) - 1] = 0;
+			MoneyTransfer->AccountId[sizeof(MoneyTransfer->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, MoneyTransfer->AccountID);
-		StepUtility::WriteString(cursor, Items::MoneyTransferID, MoneyTransfer->MoneyTransferID);
+		StepUtility::WriteString(cursor, Items::AccountId, MoneyTransfer->AccountId);
+		StepUtility::WriteString(cursor, Items::MoneyTransferId, MoneyTransfer->MoneyTransferId);
 		StepUtility::WriteString(cursor, Items::AccountType, static_cast<int>(MoneyTransfer->AccountType));
 		StepUtility::WriteString(cursor, Items::TransferDirection, static_cast<int>(MoneyTransfer->TransferDirection));
 		StepUtility::WriteString(cursor, Items::TransferAmount, MoneyTransfer->TransferAmount);
@@ -11625,11 +11625,11 @@ int RtnMoneyTransferPackage::ToStepStream(char* buff, int size) const
 			MoneyTransfer->InfoMessage[sizeof(MoneyTransfer->InfoMessage) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::InfoMessage, MoneyTransfer->InfoMessage);
-		if (strlen(MoneyTransfer->UserID) >= sizeof(MoneyTransfer->UserID))
+		if (strlen(MoneyTransfer->UserId) >= sizeof(MoneyTransfer->UserId))
 		{
-			MoneyTransfer->UserID[sizeof(MoneyTransfer->UserID) - 1] = 0;
+			MoneyTransfer->UserId[sizeof(MoneyTransfer->UserId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::UserID, MoneyTransfer->UserID);
+		StepUtility::WriteString(cursor, Items::UserId, MoneyTransfer->UserId);
 		if (strlen(MoneyTransfer->TransferDate) >= sizeof(MoneyTransfer->TransferDate))
 		{
 			MoneyTransfer->TransferDate[sizeof(MoneyTransfer->TransferDate) - 1] = 0;
@@ -11640,7 +11640,7 @@ int RtnMoneyTransferPackage::ToStepStream(char* buff, int size) const
 			MoneyTransfer->TransferTime[sizeof(MoneyTransfer->TransferTime) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::TransferTime, MoneyTransfer->TransferTime);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, MoneyTransferField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, MoneyTransferField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -11652,26 +11652,26 @@ bool RtnMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case MoneyTransferField::FieldID:
+			case MoneyTransferField::FieldId:
 			{
 				MoneyTransfer = ObjectPool<MoneyTransferField>::GetInstance().Allocate();
 				memset(MoneyTransfer, 0, sizeof(*MoneyTransfer));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
@@ -11682,15 +11682,15 @@ bool RtnMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int end
 							memcpy(MoneyTransfer->TradingDay, value.c_str(), len);
 							break;
 						}
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(MoneyTransfer->AccountID) ? sizeof(MoneyTransfer->AccountID) - 1 : value.length();
-							memcpy(MoneyTransfer->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(MoneyTransfer->AccountId) ? sizeof(MoneyTransfer->AccountId) - 1 : value.length();
+							memcpy(MoneyTransfer->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::MoneyTransferID:
+						case Items::MoneyTransferId:
 						{
-							MoneyTransfer->MoneyTransferID = atoi(value.c_str());
+							MoneyTransfer->MoneyTransferId = atoi(value.c_str());
 							break;
 						}
 						case Items::AccountType:
@@ -11714,10 +11714,10 @@ bool RtnMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int end
 							memcpy(MoneyTransfer->InfoMessage, value.c_str(), len);
 							break;
 						}
-						case Items::UserID:
+						case Items::UserId:
 						{
-							size_t len = value.length() >= sizeof(MoneyTransfer->UserID) ? sizeof(MoneyTransfer->UserID) - 1 : value.length();
-							memcpy(MoneyTransfer->UserID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(MoneyTransfer->UserId) ? sizeof(MoneyTransfer->UserId) - 1 : value.length();
+							memcpy(MoneyTransfer->UserId, value.c_str(), len);
 							break;
 						}
 						case Items::TransferDate:
@@ -11733,21 +11733,21 @@ bool RtnMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for MoneyTransferField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for MoneyTransferField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnMoneyTransferPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnMoneyTransferPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -11770,7 +11770,7 @@ int RtnMoneyTransferPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &MoneyTransferField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &MoneyTransferField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, MoneyTransfer, sizeof(MoneyTransferField));
 		offset += sizeof(MoneyTransferField);
@@ -11782,12 +11782,12 @@ bool RtnMoneyTransferPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case MoneyTransferField::FieldID:
+		case MoneyTransferField::FieldId:
 		{
 			MoneyTransfer = ObjectPool<MoneyTransferField>::GetInstance().Allocate();
 			memcpy(MoneyTransfer, buff + offset, sizeof(MoneyTransferField));
@@ -11805,7 +11805,7 @@ const char* RtnMoneyTransferPackage::GetDebugString() const
 	int offset = 0;
 	if (MoneyTransfer != nullptr)
 	{
-		offset = AppendDebugString(offset, "MoneyTransfer:TradingDay:[%s], AccountID:[%s], MoneyTransferID:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserID:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountID, MoneyTransfer->MoneyTransferID, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserID, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
+		offset = AppendDebugString(offset, "MoneyTransfer:TradingDay:[%s], AccountId:[%s], MoneyTransferId:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserId:[%s], TransferDate:[%s], TransferTime:[%s]", MoneyTransfer->TradingDay, MoneyTransfer->AccountId, MoneyTransfer->MoneyTransferId, static_cast<int>(MoneyTransfer->AccountType), static_cast<int>(MoneyTransfer->TransferDirection), MoneyTransfer->TransferAmount, MoneyTransfer->InfoMessage, MoneyTransfer->UserId, MoneyTransfer->TransferDate, MoneyTransfer->TransferTime);
 	}
 	return DataStringBuffer;
 }
@@ -11830,29 +11830,29 @@ void RtnAccountLogoutPackage::Deallocate()
 {
 	ObjectPool<RtnAccountLogoutPackage>::GetInstance().Deallocate(this);
 }
-void RtnAccountLogoutPackage::Prepare(SessionIDType sessionID, int messageChain, int msgSeqNum)
+void RtnAccountLogoutPackage::Prepare(SessionIdType sessionId, int messageChain, int msgSeqNum)
 {
-	Package::Prepare(sessionID, messageChain, msgSeqNum);
-	Head.PackageID = PackageID;
+	Package::Prepare(sessionId, messageChain, msgSeqNum);
+	Head.PackageId = PackageId;
 }
 int RtnAccountLogoutPackage::ToStepStream(char* buff, int size) const
 {
 	StepWriteCursor cursor(buff, size);
 	if (AccountLogout != nullptr)
 	{
-		StepUtility::WriteHexString(cursor, Items::FieldStart, AccountLogoutField::FieldID);
-		if (strlen(AccountLogout->AccountID) >= sizeof(AccountLogout->AccountID))
+		StepUtility::WriteHexString(cursor, Items::FieldStart, AccountLogoutField::FieldId);
+		if (strlen(AccountLogout->AccountId) >= sizeof(AccountLogout->AccountId))
 		{
-			AccountLogout->AccountID[sizeof(AccountLogout->AccountID) - 1] = 0;
+			AccountLogout->AccountId[sizeof(AccountLogout->AccountId) - 1] = 0;
 		}
-		StepUtility::WriteString(cursor, Items::AccountID, AccountLogout->AccountID);
-		StepUtility::WriteString(cursor, Items::ErrorID, AccountLogout->ErrorID);
+		StepUtility::WriteString(cursor, Items::AccountId, AccountLogout->AccountId);
+		StepUtility::WriteString(cursor, Items::ErrorId, AccountLogout->ErrorId);
 		if (strlen(AccountLogout->ErrorMsg) >= sizeof(AccountLogout->ErrorMsg))
 		{
 			AccountLogout->ErrorMsg[sizeof(AccountLogout->ErrorMsg) - 1] = 0;
 		}
 		StepUtility::WriteString(cursor, Items::ErrorMsg, AccountLogout->ErrorMsg);
-		StepUtility::WriteHexString(cursor, Items::FieldEnd, AccountLogoutField::FieldID);
+		StepUtility::WriteHexString(cursor, Items::FieldEnd, AccountLogoutField::FieldId);
 	}
 	if (cursor.IsTruncated())
 	{
@@ -11864,39 +11864,39 @@ bool RtnAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 {
 	while (startIndex < endIndex)
 	{
-		unsigned short fieldID;
+		unsigned short fieldId;
 		int fieldStartIndex;
 		int fieldEndIndex;
-		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldID, fieldStartIndex, fieldEndIndex))
+		if (StepUtility::GetNextFieldZone(buff, startIndex, endIndex, fieldId, fieldStartIndex, fieldEndIndex))
 		{
 			int itemStartIndex = fieldStartIndex;
-			switch (fieldID)
+			switch (fieldId)
 			{
-			case AccountLogoutField::FieldID:
+			case AccountLogoutField::FieldId:
 			{
 				AccountLogout = ObjectPool<AccountLogoutField>::GetInstance().Allocate();
 				memset(AccountLogout, 0, sizeof(*AccountLogout));
 				while (itemStartIndex < fieldEndIndex)
 				{
-					unsigned short  itemID;
+					unsigned short  itemId;
 					std::string value;
 					int sohIndex;
-					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemID, value, sohIndex))
+					if (StepUtility::GetNext(buff, itemStartIndex, fieldEndIndex, itemId, value, sohIndex))
 					{
-						switch (itemID)
+						switch (itemId)
 						{
 						case Items::FieldStart:
 						case Items::FieldEnd:
 							break;
-						case Items::AccountID:
+						case Items::AccountId:
 						{
-							size_t len = value.length() >= sizeof(AccountLogout->AccountID) ? sizeof(AccountLogout->AccountID) - 1 : value.length();
-							memcpy(AccountLogout->AccountID, value.c_str(), len);
+							size_t len = value.length() >= sizeof(AccountLogout->AccountId) ? sizeof(AccountLogout->AccountId) - 1 : value.length();
+							memcpy(AccountLogout->AccountId, value.c_str(), len);
 							break;
 						}
-						case Items::ErrorID:
+						case Items::ErrorId:
 						{
-							AccountLogout->ErrorID = atoi(value.c_str());
+							AccountLogout->ErrorId = atoi(value.c_str());
 							break;
 						}
 						case Items::ErrorMsg:
@@ -11906,21 +11906,21 @@ bool RtnAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						}
 						default:
-							WriteLog(LogLevel::Warning, "Unexpected ItemID:0x%X for AccountLogoutField FieldID:0x%X, Please Check ApiVersion.", itemID, fieldID);
+							WriteLog(LogLevel::Warning, "Unexpected ItemId:0x%X for AccountLogoutField FieldId:0x%X, Please Check ApiVersion.", itemId, fieldId);
 							return false;
 						}
 						itemStartIndex = sohIndex + 1;
 					}
 					else
 					{
-						WriteLog(LogLevel::Warning, "GetNext Failed For RtnAccountLogoutPackage FieldID:0x%X", fieldID);
+						WriteLog(LogLevel::Warning, "GetNext Failed For RtnAccountLogoutPackage FieldId:0x%X", fieldId);
 						return false;
 					}
 				}
 				break;
 			}
 			default:
-				WriteLog(LogLevel::Warning, "Unexpected FieldID:0x%X, Please Check Api Version.", fieldID);
+				WriteLog(LogLevel::Warning, "Unexpected FieldId:0x%X, Please Check Api Version.", fieldId);
 				return false;
 			}
 			startIndex = fieldEndIndex;
@@ -11943,7 +11943,7 @@ int RtnAccountLogoutPackage::ToXtpStream(char* buff, int size) const
 		{
 			return -1;
 		}
-		memcpy(buff + offset, &AccountLogoutField::FieldID, sizeof(UInt16Type));
+		memcpy(buff + offset, &AccountLogoutField::FieldId, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
 		memcpy(buff + offset, AccountLogout, sizeof(AccountLogoutField));
 		offset += sizeof(AccountLogoutField);
@@ -11955,12 +11955,12 @@ bool RtnAccountLogoutPackage::FromXtpStream(char* buff, int startIndex, int endI
 	int offset = startIndex;
 	while(offset < endIndex)
 	{
-		UInt16Type fieldID = 0;
-		memcpy(&fieldID, buff + offset, sizeof(UInt16Type));
+		UInt16Type fieldId = 0;
+		memcpy(&fieldId, buff + offset, sizeof(UInt16Type));
 		offset += sizeof(UInt16Type);
-		switch (fieldID)
+		switch (fieldId)
 		{
-		case AccountLogoutField::FieldID:
+		case AccountLogoutField::FieldId:
 		{
 			AccountLogout = ObjectPool<AccountLogoutField>::GetInstance().Allocate();
 			memcpy(AccountLogout, buff + offset, sizeof(AccountLogoutField));
@@ -11978,7 +11978,7 @@ const char* RtnAccountLogoutPackage::GetDebugString() const
 	int offset = 0;
 	if (AccountLogout != nullptr)
 	{
-		offset = AppendDebugString(offset, "AccountLogout:AccountID:[%s], ErrorID:[%d], ErrorMsg:[%s]", AccountLogout->AccountID, AccountLogout->ErrorID, AccountLogout->ErrorMsg);
+		offset = AppendDebugString(offset, "AccountLogout:AccountId:[%s], ErrorId:[%d], ErrorMsg:[%s]", AccountLogout->AccountId, AccountLogout->ErrorId, AccountLogout->ErrorMsg);
 	}
 	return DataStringBuffer;
 }
