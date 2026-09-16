@@ -1,18 +1,18 @@
 #include "BarUtility.h"
 #include <cstring>
 
-namespace quanttrading::bar
+namespace QuantTrading::bar
 {
-    std::string GetUnderlyingID(const std::string& instrumentID)
+    std::string GetUnderlyingID(const std::string& instrumentId)
     {
-        for (auto it = instrumentID.begin(); it < instrumentID.end(); ++it)
+        for (auto it = instrumentId.begin(); it < instrumentId.end(); ++it)
         {
             if (*it >= '0' && *it <= '9')
             {
-                return std::string(instrumentID.begin(), it);
+                return std::string(instrumentId.begin(), it);
             }
         }
-        return instrumentID;
+        return instrumentId;
     }
 
     void UpdateBarFromDepthMarketData(DepthMarketDataField* depthMd, BarMarketDataField* bar)

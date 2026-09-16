@@ -3,15 +3,15 @@
 #include <string>
 #include <vector>
 
-namespace quanttrading::teststrategygrid
+namespace QuantTrading::teststrategygrid
 {
 struct GridParams
 {
 	double GridStep = 0.0;
 	int GridCount = 0;
 	int VolumePerGrid = 0;
-	std::string ExchangeID;
-	std::string InstrumentID;
+	std::string ExchangeId;
+	std::string InstrumentId;
 	std::string BarPreces;   // 策略期望 bar 周期（"5m" 格式）；空=不声明，OnBar 收数据集精度 bar（由引擎按 BackTest.json BarPreces 聚合推送）
 };
 
@@ -22,10 +22,10 @@ struct GridParams
 // 引擎日切结算统一撤销全部未成交挂单（撤单回报先于 SessionEnd 推送）：零成交开仓格经撤单
 // 回报复位 Empty 等次日重锚重挂；部分成交开仓格与被撤平仓格按已成交/剩余量即时补平仓单，
 // 新平仓单经引擎队列在次一交易日撮合。平仓单价格取自开仓成交价 ∓ 步长，与锚点无关。
-class GridStrategy : public quanttrading::strategy::StrategyBase
+class GridStrategy : public QuantTrading::strategy::StrategyBase
 {
 public:
-	GridStrategy(quanttrading::BackTestApi* backTestApi, const char* accountID, const GridParams& gridParams);
+	GridStrategy(QuantTrading::BackTestApi* backTestApi, const char* accountId, const GridParams& gridParams);
 
 protected:
 	void OnStart() override;

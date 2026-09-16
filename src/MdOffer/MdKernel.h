@@ -16,25 +16,25 @@
 #include <mutex>
 #include <condition_variable>
 
-using namespace quanttrading::packages;
-using quanttrading::bar::MinuteBar;
-using quanttrading::bar::TradeSessions;
+using namespace QuantTrading::Packages;
+using QuantTrading::bar::MinuteBar;
+using QuantTrading::bar::TradeSessions;
 
-namespace quanttrading::mdoffer
+namespace QuantTrading::mdoffer
 {
-    class MdKernel : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public quanttrading::bar::BarSubscriber, public dbadapters::DBSubscriber
+    class MdKernel : public Spark::core::ThreadBase, public Spark::Network::ProtocolSubscriber, public QuantTrading::bar::BarSubscriber, public dbadapters::DBSubscriber
     {
     public:
         // tradeSessions 须长于本对象（转交 MinuteBar 持有），且须在首个订阅到达前装载完成；
         // 启动订阅清单项指向配置单例，生命周期同进程
-        MdKernel(mdb::Mdb* mdb, const TradeSessions& tradeSessions,
-            const std::list<spark::core::SubscribeInstrument*>& startupSubscribeInstruments);
+        MdKernel(QuantTrading::Mdb* mdb, const TradeSessions& tradeSessions,
+            const std::list<Spark::core::SubscribeInstrument*>& startupSubscribeInstruments);
         void SetMdFront(MdFront* mdFront);
         void SetMdSpi(CThostFtdcMdSpiImpl* mdSpi);
 
 
-        virtual void OnProtocolConnect(SessionIDType sessionID, const char* ip, int port) override;
-        virtual void OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port) override;
+        virtual void OnProtocolConnect(SessionIdType sessionId, const char* ip, int port) override;
+        virtual void OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port) override;
         virtual void OnMessage(Package* package) override;
 
         virtual void OnBarMarketData(BarMarketDataField* bar) override;
@@ -58,20 +58,20 @@ namespace quanttrading::mdoffer
         Package* GetPackage();
         void PushToAll(Package* package);
         void PushToAllSubscribed(ReqSubMarketDataField* reqSubMarketData, Package* package);
-        bool IsSessionLoggedIn(const SessionIDType& sessionID);
+        bool IsSessionLoggedIn(const SessionIdType& sessionId);
 
     private:
-        mdb::Mdb* m_Mdb;
+        QuantTrading::Mdb* m_Mdb;
         MdFront* m_MdFront;
         CThostFtdcMdSpiImpl* m_MdSpi;
         MinuteBar* m_MinuteBar;
-        std::list<spark::core::SubscribeInstrument*> m_StartupSubscribeInstruments;
+        std::list<Spark::core::SubscribeInstrument*> m_StartupSubscribeInstruments;
 
         std::mutex m_Mutex;
         std::condition_variable m_ConditionVariable;
 
         std::set<ReqSubMarketDataField> m_SubscribeInstruments;
-        std::map<SessionIDType, std::set<ReqSubMarketDataField>> m_SessionSubscribeInstruments;
+        std::map<SessionIdType, std::set<ReqSubMarketDataField>> m_SessionSubscribeInstruments;
         std::list<Package*> m_RecvPackages;
 
         ReqSubMarketDataField* m_ReqSubMarketData;

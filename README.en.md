@@ -221,8 +221,8 @@ After building, executables are output to `bin/<Config>` (e.g. `bin/Debug/MdOffe
 #include <Spark/Core/Logger/Logger.h>
 #include <cstring>
 
-using namespace quanttrading;
-using namespace spark::core;
+using namespace QuantTrading;
+using namespace Spark::Core;
 
 // Strategy callback: on each tick, submit a buy order at the last price (illustrative)
 class DemoBackTestSpi : public BackTestSpi
@@ -232,8 +232,8 @@ public:
     {
         ReqInsertOrderField req;
         std::memset(&req, 0, sizeof(req));
-        std::strcpy(req.AccountID, m_AccountID);
-        std::strcpy(req.InstrumentID, depthMarketData->InstrumentID);
+        std::strcpy(req.AccountId, m_AccountID);
+        std::strcpy(req.InstrumentId, depthMarketData->InstrumentId);
         req.Direction = DirectionType::Buy;
         req.OffsetFlag = OffsetFlagType::Open;
         req.Price = depthMarketData->LastPrice;
@@ -262,8 +262,8 @@ int main(int argc, char* argv[])
 
     ReqSubMarketDataField reqSubMd;
     std::memset(&reqSubMd, 0, sizeof(reqSubMd));
-    std::strcpy(reqSubMd.ExchangeID, "CFFEX");
-    std::strcpy(reqSubMd.InstrumentID, "IF2503");
+    std::strcpy(reqSubMd.ExchangeId, "CFFEX");
+    std::strcpy(reqSubMd.InstrumentId, "IF2503");
     api->ReqSubMarketData(&reqSubMd, 1);
 
     api->Join();                    // blocks until the replay finishes
@@ -282,15 +282,15 @@ int main(int argc, char* argv[])
 #include <Spark/Core/Logger/Logger.h>
 #include <cstring>
 
-using namespace quanttrading;
-using namespace spark::core;
+using namespace QuantTrading;
+using namespace Spark::Core;
 
 class DemoMdSpi : public MdSpi
 {
 public:
     void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) override
     {
-        WriteLog(LogLevel::Info, "%s last=%.2f", depthMarketData->InstrumentID, depthMarketData->LastPrice);
+        WriteLog(LogLevel::Info, "%s last=%.2f", depthMarketData->InstrumentId, depthMarketData->LastPrice);
     }
 };
 
@@ -307,8 +307,8 @@ int main(int argc, char* argv[])
 
     ReqSubMarketDataField reqSubMd;
     std::memset(&reqSubMd, 0, sizeof(reqSubMd));
-    std::strcpy(reqSubMd.ExchangeID, "CFFEX");
-    std::strcpy(reqSubMd.InstrumentID, "IF2503");
+    std::strcpy(reqSubMd.ExchangeId, "CFFEX");
+    std::strcpy(reqSubMd.InstrumentId, "IF2503");
     api->ReqSubMarketData(&reqSubMd, 1);
 
     api->Join();
@@ -351,7 +351,7 @@ Four test clients are shipped under `test/`:
 ## 9. Additional Notes
 
 - **Include style**: public headers use `#include <QuantTrading/XxxApi.h>`; internal module headers use `#include <Module/Xxx.h>`
-- **Namespaces**: public APIs live in `quanttrading`; modules use `quanttrading::mdoffer`, `quanttrading::simexchange`, `quanttrading::backtest`, `quanttrading::ordermatch`, etc.
+- **Namespaces**: public APIs live in `QuantTrading`; modules use `QuantTrading::mdoffer`, `QuantTrading::simexchange`, `QuantTrading::backtest`, `QuantTrading::ordermatch`, etc.
 - **Dependency chain**: `Spark` (threading / logging / networking) → `DBAdapters` (unified DB access) → `QuantTrading`
 - **Version**: CTP API v6.7.9 (see `API Version` in the MdOffer startup log)
 - **Encoding variants**: MdApi / TraderApi / SimExchangeApi each ship **UTF-8** (`MdApi` etc.) and **GBK** (`MdGbkApi` etc.) shared libraries

@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-namespace quanttrading::testsimexchangeapi
+namespace QuantTrading::TestSimExchangeApi
 {
 Config Config::instance;
 Config::Config()

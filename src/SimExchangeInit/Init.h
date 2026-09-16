@@ -3,9 +3,9 @@
 #include "Environment.h"
 #include <string>
 
-using quanttrading::AccountInfo;
-namespace quanttrading::simexchangeinit
+using QuantTrading::AccountInfo;
+namespace QuantTrading::simexchangeinit
 {
-    void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay);
+    void Init(QuantTrading::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay);
 }
 

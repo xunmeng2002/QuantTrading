@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-namespace quanttrading::teststrategygrid
+namespace QuantTrading::TestStrategyGrid
 {
 Config Config::instance;
 Config::Config()
@@ -37,9 +37,9 @@ void Config::Load(const char* fileName)
 	inFile.close();
 	
 	LogLevel = root["LogLevel"].asInt();
-	AccountID = root["AccountID"].asString();
-	ExchangeID = root["ExchangeID"].asString();
-	InstrumentID = root["InstrumentID"].asString();
+	AccountId = root["AccountId"].asString();
+	ExchangeId = root["ExchangeId"].asString();
+	InstrumentId = root["InstrumentId"].asString();
 	BarPreces = root["BarPreces"].asString();
 	GridStep = root["GridStep"].asDouble();
 	GridCount = root["GridCount"].asInt();
@@ -52,9 +52,9 @@ void Config::Load(const char* fileName)
 void Config::Print()
 {
 	printf("LogLevel:%d\n", LogLevel);
-	printf("AccountID:%s\n", AccountID.c_str());
-	printf("ExchangeID:%s\n", ExchangeID.c_str());
-	printf("InstrumentID:%s\n", InstrumentID.c_str());
+	printf("AccountId:%s\n", AccountId.c_str());
+	printf("ExchangeId:%s\n", ExchangeId.c_str());
+	printf("InstrumentId:%s\n", InstrumentId.c_str());
 	printf("BarPreces:%s\n", BarPreces.c_str());
 	printf("GridStep:%f\n", GridStep);
 	printf("GridCount:%d\n", GridCount);

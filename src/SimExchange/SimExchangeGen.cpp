@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "SimExchange.h"
 
 #include "Error.h"
@@ -8,7 +8,7 @@
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Network/Protocol/Package.h>
 
-namespace quanttrading::simexchange
+namespace QuantTrading::simexchange
 {
 bool SimExchange::DispatchPackage(Package* package)
 {
@@ -118,7 +118,7 @@ bool SimExchange::DispatchPackage(Package* package)
 	}
 	default:
 	{
-		WriteLog(spark::core::LogLevel::Warning, "UnExpected PackageID:%d", package->Head.PackageID);
+		WriteLog(Spark::core::LogLevel::Warning, "UnExpected PackageID:%d", package->Head.PackageID);
 		break;
 	}
 	}

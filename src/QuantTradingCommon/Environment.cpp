@@ -9,9 +9,9 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading
+namespace QuantTrading
 {
 
     void PrintEnvironment(Environment* environment)
@@ -23,8 +23,8 @@ namespace quanttrading
         }
         for (auto account : environment->Accounts)
         {
-            WriteLog(LogLevel::Info, "BrokerID:%s, InvestorID:%s, Phone:%s, UserProductInfo:%s, AppID:%s",
-                account->BrokerID, account->InvestorID, account->Phone, account->UserProductInfo, account->AppID);
+            WriteLog(LogLevel::Info, "BrokerId:%s, InvestorId:%s, Phone:%s, UserProductInfo:%s, AppId:%s",
+                account->BrokerId, account->InvestorId, account->Phone, account->UserProductInfo, account->AppId);
         }
     }
     // 用系统环境变量值覆盖凭证字段,超长时拒绝并跳过(不截断,避免拼出错误凭证)
@@ -105,13 +105,13 @@ namespace quanttrading
             for (auto i = 0u; i < accountsValue.size(); i++)
             {
                 AccountInfo* accountInfo = new AccountInfo();
-                strcpy(accountInfo->BrokerID, accountsValue[i]["BrokerID"].asString().c_str());
-                strcpy(accountInfo->InvestorID, accountsValue[i]["InvestorID"].asString().c_str());
+                strcpy(accountInfo->BrokerId, accountsValue[i]["BrokerId"].asString().c_str());
+                strcpy(accountInfo->InvestorId, accountsValue[i]["InvestorId"].asString().c_str());
                 strcpy(accountInfo->Password, accountsValue[i]["Password"].asString().c_str());
                 strcpy(accountInfo->Phone, accountsValue[i]["Phone"].asString().c_str());
                 strcpy(accountInfo->UserProductInfo, accountsValue[i]["UserProductInfo"].asString().c_str());
                 strcpy(accountInfo->AuthCode, accountsValue[i]["AuthCode"].asString().c_str());
-                strcpy(accountInfo->AppID, accountsValue[i]["AppID"].asString().c_str());
+                strcpy(accountInfo->AppId, accountsValue[i]["AppId"].asString().c_str());
                 environment->Accounts.push_back(accountInfo);
             }
             environments.insert(make_pair(environment->Name, environment));

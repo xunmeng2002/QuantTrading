@@ -2,9 +2,9 @@
 #include <Spark/Core/Utility/DoubleUtility.h>
 
 using namespace std;
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::ordermatch
+namespace QuantTrading::ordermatch
 {
     OrderBookOrderMatch::OrderBookOrderMatch(const DateType& tradingDay, int maxTradeID)
         :OrderMatch(tradingDay, maxTradeID)
@@ -16,15 +16,15 @@ namespace quanttrading::ordermatch
 
     }
 
-    void OrderBookOrderMatch::OnTick(mdb::DepthMarketData* mdTick)
+    void OrderBookOrderMatch::OnTick(QuantTrading::DepthMarketData* mdTick)
     {
 
     }
-    void OrderBookOrderMatch::OnBar(mdb::BarMarketData* mdBar)
+    void OrderBookOrderMatch::OnBar(QuantTrading::BarMarketData* mdBar)
     {
 
     }
-    void OrderBookOrderMatch::InsertOrder(mdb::Order* order)
+    void OrderBookOrderMatch::InsertOrder(QuantTrading::Order* order)
     {
         UpdateDateTime();
         if (order->OrderPriceType == OrderPriceTypeType::BestOwnPrice)
@@ -69,11 +69,11 @@ namespace quanttrading::ordermatch
             }
         }
     }
-    void OrderBookOrderMatch::CheckMatch(mdb::Order* order)
+    void OrderBookOrderMatch::CheckMatch(QuantTrading::Order* order)
     {
         if (order->Direction == DirectionType::Buy)
         {
-            auto& queueOrders = m_SellOrders[order->InstrumentID];
+            auto& queueOrders = m_SellOrders[order->InstrumentId];
             for (auto queueOrder : queueOrders)
             {
                 if (!CheckMatchForTwoOrder(order, queueOrder))
@@ -84,7 +84,7 @@ namespace quanttrading::ordermatch
         }
         else
         {
-            auto& queueOrders = m_BuyOrders[order->InstrumentID];
+            auto& queueOrders = m_BuyOrders[order->InstrumentId];
             for (auto queueOrder : queueOrders)
             {
                 if (!CheckMatchForTwoOrder(order, queueOrder))
@@ -94,7 +94,7 @@ namespace quanttrading::ordermatch
             }
         }
     }
-    bool OrderBookOrderMatch::CheckMatchForTwoOrder(mdb::Order* order, mdb::Order* queueOrder)
+    bool OrderBookOrderMatch::CheckMatchForTwoOrder(QuantTrading::Order* order, QuantTrading::Order* queueOrder)
     {
         if (order->VolumeTotal <= 0)
             return false;

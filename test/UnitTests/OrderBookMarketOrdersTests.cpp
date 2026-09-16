@@ -8,8 +8,8 @@
 #include <cstring>
 #include <vector>
 
-using namespace quanttrading::ordermatch;
-using namespace quanttrading::unittest;
+using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::unittest;
 
 TEST_SUITE("OrderBookMarketOrders")
 {
@@ -269,22 +269,22 @@ TEST_CASE("入口校验按市价限价类分流合约量限")
 {
     ReqInsertOrderField req_insert_order;
     std::memset(&req_insert_order, 0, sizeof(req_insert_order));
-    CopyString(req_insert_order.AccountID, "test");
+    CopyString(req_insert_order.AccountId, "test");
     req_insert_order.Direction = DirectionType::Buy;
     req_insert_order.OffsetFlag = OffsetFlagType::Open;
     req_insert_order.Volume = 10;
 
-    mdb::Instrument instrument;
+    QuantTrading::Instrument instrument;
     std::memset(&instrument, 0, sizeof(instrument));
     instrument.MaxMarketOrderVolume = 5;
     instrument.MaxLimitOrderVolume = 100;
 
     req_insert_order.OrderPriceType = OrderPriceTypeType::AnyPriceFAK;
-    CHECK(CheckForInsertOrder(&req_insert_order, &instrument) == quanttrading::ErrorInvalidOrderVolume);
+    CHECK(CheckForInsertOrder(&req_insert_order, &instrument) == QuantTrading::ErrorInvalidOrderVolume);
     req_insert_order.OrderPriceType = OrderPriceTypeType::LimitPrice;
-    CHECK(CheckForInsertOrder(&req_insert_order, &instrument) == quanttrading::ErrorNone);
+    CHECK(CheckForInsertOrder(&req_insert_order, &instrument) == QuantTrading::ErrorNone);
     req_insert_order.OrderPriceType = static_cast<OrderPriceTypeType>(99);
-    CHECK(CheckForInsertOrder(&req_insert_order, &instrument) == quanttrading::ErrorInvalidOrderPriceType);
+    CHECK(CheckForInsertOrder(&req_insert_order, &instrument) == QuantTrading::ErrorInvalidOrderPriceType);
 }
 
 }

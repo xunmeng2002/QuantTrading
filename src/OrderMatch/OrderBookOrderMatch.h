@@ -2,7 +2,7 @@
 #include "OrderMatch.h"
 
 
-namespace quanttrading::ordermatch
+namespace QuantTrading::ordermatch
 {
     class OrderBookOrderMatch : public OrderMatch
     {
@@ -10,12 +10,12 @@ namespace quanttrading::ordermatch
         OrderBookOrderMatch(const DateType& tradingDay, int maxTradeID = 0);
         virtual ~OrderBookOrderMatch();
 
-        virtual void OnTick(mdb::DepthMarketData* mdTick) override;
-        virtual void OnBar(mdb::BarMarketData* mdBar) override;
-        virtual void InsertOrder(mdb::Order* order) override;
+        virtual void OnTick(QuantTrading::DepthMarketData* mdTick) override;
+        virtual void OnBar(QuantTrading::BarMarketData* mdBar) override;
+        virtual void InsertOrder(QuantTrading::Order* order) override;
 
     protected:
-        void CheckMatch(mdb::Order* order);
-        bool  CheckMatchForTwoOrder(mdb::Order* order, mdb::Order* queueOrder);
+        void CheckMatch(QuantTrading::Order* order);
+        bool  CheckMatchForTwoOrder(QuantTrading::Order* order, QuantTrading::Order* queueOrder);
     };
 }

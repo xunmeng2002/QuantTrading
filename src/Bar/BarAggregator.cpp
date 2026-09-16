@@ -8,9 +8,9 @@
 #include <stdexcept>
 #include <system_error>
 
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::bar
+namespace QuantTrading::bar
 {
     namespace
     {
@@ -49,7 +49,7 @@ namespace quanttrading::bar
         ,m_TargetPeriod(targetPeriod)
         ,m_BarSubscriber(nullptr)
     {
-        if (!quanttrading::IsValidBarPrecesTarget(targetPreces, targetPeriod))
+        if (!QuantTrading::IsValidBarPrecesTarget(targetPreces, targetPeriod))
         {
             WriteLog(LogLevel::Error, "BarAggregator: Invalid target. BarPreces:%d, BarPeriod:%d", static_cast<int>(targetPreces), targetPeriod);
             throw std::logic_error("BarAggregator: target preces must be Minute or Day with positive period");
@@ -75,15 +75,15 @@ namespace quanttrading::bar
             m_Validated = true;
         }
         const long long barMinute = bar->BarTime / 100000LL;
-        Bucket& bucket = m_Buckets[bar->InstrumentID];
+        Bucket& bucket = m_Buckets[bar->InstrumentId];
         if (bucket.HasBar && strcmp(bucket.Bar.TradingDay, bar->TradingDay) != 0)
             CloseBucket(bucket);
         if (bucket.HasBar && barMinute > bucket.EndMinute)
             CloseBucket(bucket);
         if (bucket.HasBar && barMinute <= bucket.LastMinute)
         {
-            WriteLog(LogLevel::Warning, "BarAggregator: Late bar dropped. InstrumentID:%s, BarTime:%lld, BucketLastMinute:%lld",
-                bar->InstrumentID, bar->BarTime, bucket.LastMinute);
+            WriteLog(LogLevel::Warning, "BarAggregator: Late bar dropped. InstrumentId:%s, BarTime:%lld, BucketLastMinute:%lld",
+                bar->InstrumentId, bar->BarTime, bucket.LastMinute);
             return;
         }
         if (!bucket.HasBar)
@@ -113,14 +113,14 @@ namespace quanttrading::bar
         }
     }
 
-    void BarAggregator::ValidatePrecesRelation(BarPrecesType inputPreces, int inputPeriod, BarPrecesType targetPreces, int targetPeriod, const char* instrumentID)
+    void BarAggregator::ValidatePrecesRelation(BarPrecesType inputPreces, int inputPeriod, BarPrecesType targetPreces, int targetPeriod, const char* instrumentId)
     {
         // 目标周期本身非法（Second 精度无分钟粒度 BarTime 可用、周期数 <=0）先拒，且必须早于同精度放行：
         // 否则"数据集精度即 Second"的声明会经同精度分支直通构造期，绕过构造期校验在引擎线程内抛异常
-        if (!quanttrading::IsValidBarPrecesTarget(targetPreces, targetPeriod))
+        if (!QuantTrading::IsValidBarPrecesTarget(targetPreces, targetPeriod))
         {
-            WriteLog(LogLevel::Error, "BarAggregator: Invalid target preces. Target BarPreces:%d BarPeriod:%d, InstrumentID:%s",
-                static_cast<int>(targetPreces), targetPeriod, instrumentID);
+            WriteLog(LogLevel::Error, "BarAggregator: Invalid target preces. Target BarPreces:%d BarPeriod:%d, InstrumentId:%s",
+                static_cast<int>(targetPreces), targetPeriod, instrumentId);
             throw std::logic_error("BarAggregator: invalid target preces");
         }
         // 同精度同周期无需聚合（OnBarMarketData 的透传分支直发，不建桶）：
@@ -132,19 +132,19 @@ namespace quanttrading::bar
         if (targetPreces == BarPrecesType::Day)
         {
             // 同精度 Day→Day 已由透传分支直发；跨精度聚合日线需要交易日历（午休/夜盘/法定假日）与日线量额结算字段，不支持
-            WriteLog(LogLevel::Error, "BarAggregator: Day target only passes through same-preces bars, cross-preces aggregation is not supported. Input BarPreces:%d BarPeriod:%d, Target BarPeriod:%d, InstrumentID:%s",
-                static_cast<int>(inputPreces), inputPeriod, targetPeriod, instrumentID);
+            WriteLog(LogLevel::Error, "BarAggregator: Day target only passes through same-preces bars, cross-preces aggregation is not supported. Input BarPreces:%d BarPeriod:%d, Target BarPeriod:%d, InstrumentId:%s",
+                static_cast<int>(inputPreces), inputPeriod, targetPeriod, instrumentId);
             throw std::logic_error("BarAggregator: day target can not aggregate cross preces input");
         }
         if (inputPreces == BarPrecesType::Second)
         {
-            WriteLog(LogLevel::Error, "BarAggregator: Second preces input can not aggregate (BarTime is minute-grained). InstrumentID:%s", instrumentID);
+            WriteLog(LogLevel::Error, "BarAggregator: Second preces input can not aggregate (BarTime is minute-grained). InstrumentId:%s", instrumentId);
             throw std::logic_error("BarAggregator: second preces input can not aggregate");
         }
         if (inputPreces == BarPrecesType::Day)
         {
             // 同精度 Day→Day 已由透传分支直发；跨日再聚合需交易日历，不支持
-            WriteLog(LogLevel::Error, "BarAggregator: Day preces input can not aggregate. InstrumentID:%s", instrumentID);
+            WriteLog(LogLevel::Error, "BarAggregator: Day preces input can not aggregate. InstrumentId:%s", instrumentId);
             throw std::logic_error("BarAggregator: day preces input can not aggregate");
         }
         const long long inputSeconds = PrecesToSeconds(inputPreces, inputPeriod);
@@ -152,15 +152,15 @@ namespace quanttrading::bar
         // inputSeconds 兼作取模除数，非正即拒（周期数 <=0 的输入 bar 视为非法数据，不得触发除零）
         if (inputSeconds <= 0LL || inputSeconds > targetSeconds || targetSeconds % inputSeconds != 0)
         {
-            WriteLog(LogLevel::Error, "BarAggregator: Input preces can not aggregate to target. Input BarPreces:%d BarPeriod:%d, Target BarPreces:%d BarPeriod:%d, InstrumentID:%s",
-                static_cast<int>(inputPreces), inputPeriod, static_cast<int>(targetPreces), targetPeriod, instrumentID);
+            WriteLog(LogLevel::Error, "BarAggregator: Input preces can not aggregate to target. Input BarPreces:%d BarPeriod:%d, Target BarPreces:%d BarPeriod:%d, InstrumentId:%s",
+                static_cast<int>(inputPreces), inputPeriod, static_cast<int>(targetPreces), targetPeriod, instrumentId);
             throw std::logic_error("BarAggregator: input preces can not aggregate to target preces");
         }
     }
 
     void BarAggregator::ValidateInputBar(const BarMarketDataField& bar)
     {
-        ValidatePrecesRelation(bar.BarPreces, bar.BarPeriod, m_TargetPreces, m_TargetPeriod, bar.InstrumentID);
+        ValidatePrecesRelation(bar.BarPreces, bar.BarPeriod, m_TargetPreces, m_TargetPeriod, bar.InstrumentId);
     }
 
     void BarAggregator::CloseBucket(Bucket& bucket)
@@ -177,17 +177,17 @@ namespace quanttrading::bar
 
     const TradeSession* BarAggregator::ResolveTradeSession(const BarMarketDataField& bar)
     {
-        auto cachedIt = m_InstrumentTradeSessions.find(bar.InstrumentID);
+        auto cachedIt = m_InstrumentTradeSessions.find(bar.InstrumentId);
         if (cachedIt != m_InstrumentTradeSessions.end())
             return cachedIt->second;
 
-        const TradeSession* tradeSession = m_TradeSessions.GetTradeSessionForInstrument(bar.ExchangeID, bar.InstrumentID);
+        const TradeSession* tradeSession = m_TradeSessions.GetTradeSessionForInstrument(bar.ExchangeId, bar.InstrumentId);
         if (tradeSession == nullptr)
         {
-            WriteLog(LogLevel::Warning, "BarAggregator: Trade session not found, fall back to wall-clock alignment. ExchangeID:%s, InstrumentID:%s",
-                bar.ExchangeID, bar.InstrumentID);
+            WriteLog(LogLevel::Warning, "BarAggregator: Trade session not found, fall back to wall-clock alignment. ExchangeId:%s, InstrumentId:%s",
+                bar.ExchangeId, bar.InstrumentId);
         }
-        m_InstrumentTradeSessions[bar.InstrumentID] = tradeSession;
+        m_InstrumentTradeSessions[bar.InstrumentId] = tradeSession;
         return tradeSession;
     }
 
@@ -218,8 +218,8 @@ namespace quanttrading::bar
         const int tradingDay = ParseTradingDay(bar.TradingDay);
         if (tradingDay == 0)
         {
-            WriteLog(LogLevel::Warning, "BarAggregator: Invalid TradingDay, fall back to wall-clock alignment. TradingDay:%s, InstrumentID:%s",
-                bar.TradingDay, bar.InstrumentID);
+            WriteLog(LogLevel::Warning, "BarAggregator: Invalid TradingDay, fall back to wall-clock alignment. TradingDay:%s, InstrumentId:%s",
+                bar.TradingDay, bar.InstrumentId);
             return 0LL;
         }
         long long sectionBeginBarTime = 0LL;

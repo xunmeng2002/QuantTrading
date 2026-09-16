@@ -10,20 +10,20 @@
 
 using namespace std;
 using namespace mdb;
-using namespace spark;
-using namespace spark::core;
-using namespace quanttrading;
-using namespace quanttrading::bar;
+using namespace Spark;
+using namespace Spark::Core;
+using namespace QuantTrading;
+using namespace QuantTrading::bar;
 
-namespace quanttrading::mdoffer
+namespace QuantTrading::mdoffer
 {
-    MdKernel::MdKernel(mdb::Mdb* mdb, const TradeSessions& tradeSessions,
-        const std::list<spark::core::SubscribeInstrument*>& startupSubscribeInstruments)
+    MdKernel::MdKernel(QuantTrading::Mdb* mdb, const TradeSessions& tradeSessions,
+        const std::list<Spark::core::SubscribeInstrument*>& startupSubscribeInstruments)
         :ThreadBase("MdKernel"), m_Mdb(mdb), m_MdFront(nullptr), m_MdSpi(nullptr), m_StartupSubscribeInstruments(startupSubscribeInstruments)
     {
         m_MinuteBar = new MinuteBar(tradeSessions);
         m_MinuteBar->Subscribe(this);
-        // 复用为查询键（仅 ExchangeID/InstrumentID 参与比较），零初始化以免未参与赋值的字段带出随机值
+        // 复用为查询键（仅 ExchangeId/InstrumentId 参与比较），零初始化以免未参与赋值的字段带出随机值
         m_ReqSubMarketData = new ReqSubMarketDataField();
         memset(m_ReqSubMarketData, 0, sizeof(ReqSubMarketDataField));
         m_BarMdPackage = new RtnBarMarketDataPackage();
@@ -37,18 +37,18 @@ namespace quanttrading::mdoffer
     {
         m_MdSpi = mdSpi;
     }
-    void MdKernel::OnProtocolConnect(SessionIDType sessionID, const char* ip, int port)
+    void MdKernel::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
     {
-        WriteLog(LogLevel::Info, "MdKernel: OnConnect SessionID:%lld, IP:%s, Port:%d", sessionID, ip, port);
+        WriteLog(LogLevel::Info, "MdKernel: OnConnect SessionId:%lld, IP:%s, Port:%d", sessionId, ip, port);
     }
-    void MdKernel::OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port)
+    void MdKernel::OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port)
     {
-        WriteLog(LogLevel::Info, "MdKernel: OnDisConnect SessionID:%lld, IP:%s, Port:%d", sessionID, ip, port);
+        WriteLog(LogLevel::Info, "MdKernel: OnDisConnect SessionId:%lld, IP:%s, Port:%d", sessionId, ip, port);
 
         NotifyDisConnectPackage* package = NotifyDisConnectPackage::Allocate();
         package->Prepare(0, false, 0);
         package->NotifyDisConnect = ::Allocate<NotifyDisConnectField>();
-        package->NotifyDisConnect->SessionID = sessionID;
+        package->NotifyDisConnect->SessionId = sessionId;
         Utility::Strcpy(package->NotifyDisConnect->IPAddress, ip);
         package->NotifyDisConnect->Port = port;
 
@@ -66,7 +66,7 @@ namespace quanttrading::mdoffer
     {
         BarMarketData* barMarketData = ::Allocate<BarMarketData>();
         FieldToMdb(bar, barMarketData);
-        auto oldBarMarketData = m_Mdb->barMarketData->primaryKey->Select(barMarketData->TradingDay, barMarketData->ExchangeID, barMarketData->InstrumentID, barMarketData->BarPreces, barMarketData->BarPeriod, barMarketData->BarTime);
+        auto oldBarMarketData = m_Mdb->barMarketData->primaryKey->Select(barMarketData->TradingDay, barMarketData->ExchangeId, barMarketData->InstrumentId, barMarketData->BarPreces, barMarketData->BarPeriod, barMarketData->BarTime);
         if (oldBarMarketData == nullptr)
         {
             m_Mdb->barMarketData->Insert(barMarketData);
@@ -78,8 +78,8 @@ namespace quanttrading::mdoffer
 
         m_BarMdPackage->BarMarketData = bar;
 
-        Utility::Strcpy(m_ReqSubMarketData->ExchangeID, bar->ExchangeID);
-        Utility::Strcpy(m_ReqSubMarketData->InstrumentID, bar->InstrumentID);
+        Utility::Strcpy(m_ReqSubMarketData->ExchangeId, bar->ExchangeId);
+        Utility::Strcpy(m_ReqSubMarketData->InstrumentId, bar->InstrumentId);
         PushToAllSubscribed(m_ReqSubMarketData, m_BarMdPackage);
     }
 
@@ -130,14 +130,14 @@ namespace quanttrading::mdoffer
         if (package->NotifyDisConnect == nullptr)
         {
             // 字段区缺失时解析层仍返回成功（只拦"多余字段"，不校验"缺失字段"），此处不判空即读空指针；
-            // 断开清理以字段内的 SessionID 为键，缺字段则无从清理，直接丢弃
-            WriteLog(LogLevel::Warning, "HandleNotifyDisConnect: missing field zone. SessionID:%lld", package->SessionID);
+            // 断开清理以字段内的 SessionId 为键，缺字段则无从清理，直接丢弃
+            WriteLog(LogLevel::Warning, "HandleNotifyDisConnect: missing field zone. SessionId:%lld", package->SessionId);
             return 0;
         }
-        m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionID);
+        m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionId);
 
-        // 同步清理持久化会话记录，否则同 SessionID 重连会命中 ErrorSessionAlreadyLogin。
-        m_Mdb->mdUserLoginSession->EraseBySessionIDIndex(package->NotifyDisConnect->SessionID);
+        // 同步清理持久化会话记录，否则同 SessionId 重连会命中 ErrorSessionAlreadyLogin。
+        m_Mdb->mdUserLoginSession->EraseBySessionIDIndex(package->NotifyDisConnect->SessionId);
         return 0;
     }
     int MdKernel::HandleNotifyDBConnect(NotifyDBConnectPackage* package)
@@ -150,12 +150,12 @@ namespace quanttrading::mdoffer
             // 启动订阅不对 bar 周期提要求，BarPreces/BarPeriod 置 0
             ReqSubMarketDataField field;
             memset(&field, 0, sizeof(ReqSubMarketDataField));
-            Utility::Strcpy(field.ExchangeID, startupSubscribeInstrument->ExchangeID.c_str());
-            Utility::Strcpy(field.InstrumentID, startupSubscribeInstrument->InstrumentID.c_str());
+            Utility::Strcpy(field.ExchangeId, startupSubscribeInstrument->ExchangeId.c_str());
+            Utility::Strcpy(field.InstrumentId, startupSubscribeInstrument->InstrumentId.c_str());
             auto [fieldIt, isNew] = m_SubscribeInstruments.insert(field);
             if (isNew)
             {
-                m_MinuteBar->ReqSubMarketData(fieldIt->ExchangeID, fieldIt->InstrumentID);
+                m_MinuteBar->ReqSubMarketData(fieldIt->ExchangeId, fieldIt->InstrumentId);
                 reqSubMds.push_back(&*fieldIt);
             }
         }
@@ -178,7 +178,7 @@ namespace quanttrading::mdoffer
         auto errorID = ErrorUserNotExist;
         if (reqMdUserLogin == nullptr)
         {
-            WriteLog(LogLevel::Warning, "HandleReqMdUserLogin: missing field zone. SessionID:%lld", package->SessionID);
+            WriteLog(LogLevel::Warning, "HandleReqMdUserLogin: missing field zone. SessionId:%lld", package->SessionId);
         }
         else
         {
@@ -193,7 +193,7 @@ namespace quanttrading::mdoffer
             }
             else
             {
-                auto mdUserLoginSession = m_Mdb->mdUserLoginSession->primaryKey->Select(mdUser->MdUserID, package->SessionID);
+                auto mdUserLoginSession = m_Mdb->mdUserLoginSession->primaryKey->Select(mdUser->MdUserID, package->SessionId);
                 if (mdUserLoginSession != nullptr)
                 {
                     errorID = ErrorSessionAlreadyLogin;
@@ -203,7 +203,7 @@ namespace quanttrading::mdoffer
                     mdUserLoginSession = MdUserLoginSession::Allocate();
                     memset(mdUserLoginSession, 0, sizeof(MdUserLoginSession));
                     Utility::Strcpy(mdUserLoginSession->MdUserID, mdUser->MdUserID);
-                    mdUserLoginSession->SessionID = package->SessionID;
+                    mdUserLoginSession->SessionId = package->SessionId;
                     Utility::Strcpy(mdUserLoginSession->IPAddress, package->IPAddress);
                     if (m_Mdb->mdUserLoginSession->Insert(mdUserLoginSession))
                     {
@@ -218,7 +218,7 @@ namespace quanttrading::mdoffer
         }
 
         RspMdUserLoginPackage* rspPackage = RspMdUserLoginPackage::Allocate();
-        rspPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
+        rspPackage->Prepare(package->SessionId, false, package->Head.MsgSeqNum);
 
         rspPackage->RspInfo = ::Allocate<RspInfoField>();
         rspPackage->RspInfo->ErrorID = errorID;
@@ -229,7 +229,7 @@ namespace quanttrading::mdoffer
         {
             Utility::Strcpy(rspPackage->RspMdUserLogin->UserID, reqMdUserLogin->UserID);
         }
-        rspPackage->RspMdUserLogin->SessionID = package->SessionID;
+        rspPackage->RspMdUserLogin->SessionId = package->SessionId;
         if (errorID == ErrorNone)
         {
             TimeUtility::GetLocalDateTime(rspPackage->RspMdUserLogin->LoginDate, rspPackage->RspMdUserLogin->LoginTime);
@@ -243,24 +243,24 @@ namespace quanttrading::mdoffer
     }
     int MdKernel::HandleReqMdUserLogout(ReqMdUserLogoutPackage* package)
     {
-        m_SessionSubscribeInstruments.erase(package->SessionID);
+        m_SessionSubscribeInstruments.erase(package->SessionId);
 
-        // 同步清理持久化会话记录，否则同 SessionID 重登会命中 ErrorSessionAlreadyLogin。
-        m_Mdb->mdUserLoginSession->EraseBySessionIDIndex(package->SessionID);
+        // 同步清理持久化会话记录，否则同 SessionId 重登会命中 ErrorSessionAlreadyLogin。
+        m_Mdb->mdUserLoginSession->EraseBySessionIDIndex(package->SessionId);
 
         RspMdUserLogoutPackage* rspPackage = RspMdUserLogoutPackage::Allocate();
-        rspPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
+        rspPackage->Prepare(package->SessionId, false, package->Head.MsgSeqNum);
 
         rspPackage->RspInfo = ::Allocate<RspInfoField>();
         rspPackage->RspInfo->ErrorID = ErrorNone;
         Utility::Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(ErrorNone));
 
-        // 字段区缺失时解析层仍返回成功，此处判空避免读空指针；登出以传输层 SessionID 为准，
+        // 字段区缺失时解析层仍返回成功，此处判空避免读空指针；登出以传输层 SessionId 为准，
         // 响应里的 UserID 只是回显，缺字段时留空即可
         rspPackage->RspMdUserLogout = ::Allocate<RspMdUserLogoutField>();
         if (package->ReqMdUserLogout == nullptr)
         {
-            WriteLog(LogLevel::Warning, "HandleReqMdUserLogout: missing field zone. SessionID:%lld", package->SessionID);
+            WriteLog(LogLevel::Warning, "HandleReqMdUserLogout: missing field zone. SessionId:%lld", package->SessionId);
         }
         else
         {
@@ -280,7 +280,7 @@ namespace quanttrading::mdoffer
         WriteLog(LogLevel::Info, "HandleReqSubMarketData: %s", package->GetDebugString());
         auto reqSubMarketData = package->ReqSubMarketData;
         auto errorID = ErrorNone;
-        if (!IsSessionLoggedIn(package->SessionID))
+        if (!IsSessionLoggedIn(package->SessionId))
         {
             errorID = ErrorUserNotLogin;
         }
@@ -288,7 +288,7 @@ namespace quanttrading::mdoffer
         {
             // 报文体缺整段字段区时解析层仍返回成功（它只拦"多余字段"，不校验"缺失字段"），
             // 这里补判空并按"合约不存在"回复，否则下面每处解引用都会读到空指针
-            WriteLog(LogLevel::Warning, "HandleReqSubMarketData: missing field zone. SessionID:%lld", package->SessionID);
+            WriteLog(LogLevel::Warning, "HandleReqSubMarketData: missing field zone. SessionId:%lld", package->SessionId);
             errorID = ErrorInstrumentNotExist;
         }
         else
@@ -298,33 +298,33 @@ namespace quanttrading::mdoffer
             auto [canonicalIt, isNew] = m_SubscribeInstruments.insert(*reqSubMarketData);
             if (isNew)
             {
-                // set 节点地址在进程生命周期内稳定，MdSpi 以此反查 ExchangeID。
-                m_MinuteBar->ReqSubMarketData(canonicalIt->ExchangeID, canonicalIt->InstrumentID);
+                // set 节点地址在进程生命周期内稳定，MdSpi 以此反查 ExchangeId。
+                m_MinuteBar->ReqSubMarketData(canonicalIt->ExchangeId, canonicalIt->InstrumentId);
                 m_MdSpi->SubscribeMd(&*canonicalIt);
             }
-            m_SessionSubscribeInstruments[package->SessionID].insert(*reqSubMarketData);
+            m_SessionSubscribeInstruments[package->SessionId].insert(*reqSubMarketData);
         }
 
         RspSubMarketDataPackage* rspPackage = RspSubMarketDataPackage::Allocate();
-        rspPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
+        rspPackage->Prepare(package->SessionId, false, package->Head.MsgSeqNum);
         rspPackage->RspInfo = ::Allocate<RspInfoField>();
         rspPackage->RspInfo->ErrorID = errorID;
         Utility::Strcpy(rspPackage->RspInfo->ErrorMsg, GetErrorMessage(errorID));
         rspPackage->RspSubMarketData = ::Allocate<RspSubMarketDataField>();
         if (reqSubMarketData != nullptr)
         {
-            Utility::Strcpy(rspPackage->RspSubMarketData->ExchangeID, reqSubMarketData->ExchangeID);
-            Utility::Strcpy(rspPackage->RspSubMarketData->InstrumentID, reqSubMarketData->InstrumentID);
+            Utility::Strcpy(rspPackage->RspSubMarketData->ExchangeId, reqSubMarketData->ExchangeId);
+            Utility::Strcpy(rspPackage->RspSubMarketData->InstrumentId, reqSubMarketData->InstrumentId);
         }
         m_MdFront->Send(rspPackage);
         rspPackage->Deallocate();
 
         if (reqSubMarketData != nullptr)
         {
-            auto rtnDepthMdPackage = MdSnap::GetInstance().GetDepthMd(reqSubMarketData->ExchangeID, reqSubMarketData->InstrumentID);
+            auto rtnDepthMdPackage = MdSnap::GetInstance().GetDepthMd(reqSubMarketData->ExchangeId, reqSubMarketData->InstrumentId);
             if (rtnDepthMdPackage != nullptr)
             {
-                rtnDepthMdPackage->Prepare(package->SessionID, false, package->Head.MsgSeqNum);
+                rtnDepthMdPackage->Prepare(package->SessionId, false, package->Head.MsgSeqNum);
                 m_MdFront->Send(rtnDepthMdPackage);
             }
         }
@@ -336,7 +336,7 @@ namespace quanttrading::mdoffer
         {
             // 字段区缺失时解析层仍返回成功，往下走 MinuteBar 会按空指针取合约会话；
             // 本分支由 DispatchPackage 返回 false（所有权交给 MdSnap），丢弃时须自行归还
-            WriteLog(LogLevel::Warning, "HandleRtnDepthMarketData: missing field zone. SessionID:%lld", package->SessionID);
+            WriteLog(LogLevel::Warning, "HandleRtnDepthMarketData: missing field zone. SessionId:%lld", package->SessionId);
             package->Deallocate();
             return 0;
         }
@@ -344,7 +344,7 @@ namespace quanttrading::mdoffer
 
         DepthMarketData* depthMarketData = ::Allocate<DepthMarketData>();
         FieldToMdb(package->DepthMarketData, depthMarketData);
-        auto oldDepthMarketData = m_Mdb->depthMarketData->primaryKey->Select(depthMarketData->TradingDay, depthMarketData->ExchangeID, depthMarketData->InstrumentID);
+        auto oldDepthMarketData = m_Mdb->depthMarketData->primaryKey->Select(depthMarketData->TradingDay, depthMarketData->ExchangeId, depthMarketData->InstrumentId);
         if (oldDepthMarketData == nullptr)
         {
             m_Mdb->depthMarketData->Insert(depthMarketData);
@@ -355,15 +355,15 @@ namespace quanttrading::mdoffer
         }
 
         package = MdSnap::GetInstance().AddDepthMd(package);
-        Utility::Strcpy(m_ReqSubMarketData->ExchangeID, package->DepthMarketData->ExchangeID);
-        Utility::Strcpy(m_ReqSubMarketData->InstrumentID, package->DepthMarketData->InstrumentID);
+        Utility::Strcpy(m_ReqSubMarketData->ExchangeId, package->DepthMarketData->ExchangeId);
+        Utility::Strcpy(m_ReqSubMarketData->InstrumentId, package->DepthMarketData->InstrumentId);
         PushToAllSubscribed(m_ReqSubMarketData, package);
         return 0;
     }
 
-    bool MdKernel::IsSessionLoggedIn(const SessionIDType& sessionID)
+    bool MdKernel::IsSessionLoggedIn(const SessionIdType& sessionId)
     {
-        auto sessionIDRange = m_Mdb->mdUserLoginSession->sessionIDIndex->EqualRange(sessionID);
+        auto sessionIDRange = m_Mdb->mdUserLoginSession->sessionIDIndex->EqualRange(sessionId);
         return sessionIDRange.first != sessionIDRange.second;
     }
 
@@ -385,7 +385,7 @@ namespace quanttrading::mdoffer
             package->Prepare(item.first, false, 0);
             if (!m_MdFront->Send(package))
             {
-                WriteLog(LogLevel::Error, "PushToAll MdFront->Send Failed. SessionID:%lld, Package:%s", item.first, package->GetDebugString());
+                WriteLog(LogLevel::Error, "PushToAll MdFront->Send Failed. SessionId:%lld, Package:%s", item.first, package->GetDebugString());
             }
         }
     }
@@ -399,7 +399,7 @@ namespace quanttrading::mdoffer
                 package->Prepare(item.first, false, 0);
                 if (!m_MdFront->Send(package))
                 {
-                    WriteLog(LogLevel::Error, "PushToAllSubscribed MdFront->Send Failed. SessionID:%lld, Package:%s", item.first, package->GetDebugString());
+                    WriteLog(LogLevel::Error, "PushToAllSubscribed MdFront->Send Failed. SessionId:%lld, Package:%s", item.first, package->GetDebugString());
                 }
             }
         }

@@ -1,12 +1,12 @@
 #pragma once
 #include "MdbStructs.h"
 
-namespace mdb
+namespace QuantTrading
 {
 	class Mdb;
 }
 
-namespace quanttrading::settlement
+namespace QuantTrading::settlement
 {
 	class SettlementPriceSource;
 
@@ -14,7 +14,7 @@ namespace quanttrading::settlement
 	class Settlement
 	{
 	public:
-		Settlement(mdb::Mdb* mdb, SettlementPriceSource* settlementPriceSource);
+		Settlement(QuantTrading::Mdb* mdb, SettlementPriceSource* settlementPriceSource);
 
 		void Settle(const DateType& tradingDay);
 		void RollToNextDay(const DateType& tradingDay, const DateType& nextTradingDay);
@@ -26,9 +26,9 @@ namespace quanttrading::settlement
 		void InitAccount(const DateType& tradingDay, const DateType& nextTradingDay);
 		void InitPosition(const DateType& tradingDay, const DateType& nextTradingDay);
 		void InitPositionDetail(const DateType& tradingDay, const DateType& nextTradingDay);
-		void CalcCapital(mdb::Capital* capital);
+		void CalcCapital(QuantTrading::Capital* capital);
 
-		mdb::Mdb* m_Mdb;
+		QuantTrading::Mdb* m_Mdb;
 		SettlementPriceSource* m_SettlementPriceSource;
 	};
 }

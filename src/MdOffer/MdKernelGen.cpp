@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdKernel.h"
 
 #include "Error.h"
@@ -8,7 +8,7 @@
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Network/Protocol/Package.h>
 
-namespace quanttrading::mdoffer
+namespace QuantTrading::mdoffer
 {
 bool MdKernel::DispatchPackage(Package* package)
 {
@@ -59,7 +59,7 @@ bool MdKernel::DispatchPackage(Package* package)
 	}
 	default:
 	{
-		WriteLog(spark::core::LogLevel::Warning, "UnExpected PackageID:%d", package->Head.PackageID);
+		WriteLog(Spark::core::LogLevel::Warning, "UnExpected PackageID:%d", package->Head.PackageID);
 		break;
 	}
 	}

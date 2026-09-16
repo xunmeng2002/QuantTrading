@@ -2,28 +2,28 @@
 #include "TestHelpers.h"
 #include "GridStrategy.h"
 
-namespace quanttrading::unittest
+namespace QuantTrading::unittest
 {
-    using quanttrading::teststrategygrid::GridParams;
+    using QuantTrading::teststrategygrid::GridParams;
 
-    inline quanttrading::teststrategygrid::GridParams MakeGridParams(double grid_step, int grid_count)
+    inline QuantTrading::teststrategygrid::GridParams MakeGridParams(double grid_step, int grid_count)
     {
         GridParams grid_params;
         grid_params.GridStep = grid_step;
         grid_params.GridCount = grid_count;
         grid_params.VolumePerGrid = 1;
-        grid_params.ExchangeID = "CFFEX";
-        grid_params.InstrumentID = "IF2503";
+        grid_params.ExchangeId = "CFFEX";
+        grid_params.InstrumentId = "IF2503";
         return grid_params;
     }
 
     // 暴露 GridStrategy 继承自 StrategyBase 的受保护查询接口给测试断言
-    class GridStrategyProbe : public quanttrading::teststrategygrid::GridStrategy
+    class GridStrategyProbe : public QuantTrading::teststrategygrid::GridStrategy
     {
     public:
         using GridStrategy::GridStrategy;
-        using quanttrading::strategy::StrategyBase::GetLongPosition;
-        using quanttrading::strategy::StrategyBase::GetShortPosition;
+        using QuantTrading::strategy::StrategyBase::GetLongPosition;
+        using QuantTrading::strategy::StrategyBase::GetShortPosition;
     };
 
     // 造引擎日终撤单回报（值类型，OrderStatus/成交量按撤单场景填充）

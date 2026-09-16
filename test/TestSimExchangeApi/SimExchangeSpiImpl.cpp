@@ -3,7 +3,7 @@
 #include <Spark/Core/Utility/Utility.h>
 
 
-namespace quanttrading::testsimexchangeapi
+namespace QuantTrading::testsimexchangeapi
 {
 SimExchangeSpiImpl::SimExchangeSpiImpl(SimExchangeApi* api)
 	:m_SimExchangeApi(api), m_AccountInfo(nullptr), m_Instrument{}, m_HasInstrument(false), m_MaxRequestID(0), m_MaxClientOrderID(0), m_OrderCount(0),
@@ -46,7 +46,7 @@ void SimExchangeSpiImpl::OnRspInsertOrder(const ReqInsertOrderField* reqSEInsert
 void SimExchangeSpiImpl::OnRspQryInstrument(const InstrumentField* sEInstrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	SimExchangeSpiMiddle::OnRspQryInstrument(sEInstrument, rspInfo, requestID, isLast);
-	if (m_HasInstrument == false && sEInstrument != nullptr && strcmp(sEInstrument->ExchangeID, "CFFEX") == 0)
+	if (m_HasInstrument == false && sEInstrument != nullptr && strcmp(sEInstrument->ExchangeId, "CFFEX") == 0)
 	{
 		m_Instrument = *sEInstrument;
 		m_HasInstrument = true;
@@ -74,7 +74,7 @@ void SimExchangeSpiImpl::ReqQryOrder()
 {
 	ReqQryOrderField qryOrder;
 	memset(&qryOrder, 0, sizeof(ReqQryOrderField));
-	strcpy(qryOrder.AccountID, m_AccountInfo->InvestorID);
+	strcpy(qryOrder.AccountId, m_AccountInfo->InvestorId);
 	m_SimExchangeApi->ReqQryOrder(&qryOrder, ++m_MaxRequestID);
 }
 void SimExchangeSpiImpl::ReqInsertOrders()
@@ -99,7 +99,7 @@ void SimExchangeSpiImpl::ReqAccountLogin()
 {
 	ReqAccountLoginField brokerLogin;
 	memset(&brokerLogin, 0, sizeof(ReqAccountLoginField));
-	strcpy(brokerLogin.AccountID, m_AccountInfo->InvestorID);
+	strcpy(brokerLogin.AccountId, m_AccountInfo->InvestorId);
 	strcpy(brokerLogin.Password, m_AccountInfo->Password);
 	m_SimExchangeApi->ReqAccountLogin(&brokerLogin, ++m_MaxRequestID);
 }
@@ -113,15 +113,15 @@ void SimExchangeSpiImpl::ReqInsertOrder(DirectionType direction, OffsetFlagType 
 {
 	ReqInsertOrderField insertOrder;
 	memset(&insertOrder, 0, sizeof(ReqInsertOrderField));
-	strcpy(insertOrder.AccountID, m_AccountInfo->InvestorID);
-	strcpy(insertOrder.ExchangeID, m_Instrument.ExchangeID);
-	strcpy(insertOrder.InstrumentID, m_Instrument.InstrumentID);
+	strcpy(insertOrder.AccountId, m_AccountInfo->InvestorId);
+	strcpy(insertOrder.ExchangeId, m_Instrument.ExchangeId);
+	strcpy(insertOrder.InstrumentId, m_Instrument.InstrumentId);
 	insertOrder.Direction = direction;
 	insertOrder.OffsetFlag = offsetFlag;
 	insertOrder.OrderPriceType = orderPriceType;
 	insertOrder.Price = price;
 	insertOrder.Volume = volume;
-	insertOrder.ClientOrderID = ++m_MaxClientOrderID;
+	insertOrder.ClientOrderId = ++m_MaxClientOrderID;
 
 	m_SimExchangeApi->ReqInsertOrder(&insertOrder, ++m_MaxRequestID);
 }
@@ -129,14 +129,14 @@ void SimExchangeSpiImpl::ReqCancelOrder(const OrderField* order)
 {
 	ReqCancelOrderField cancelOrder;
 	memset(&cancelOrder, 0, sizeof(ReqCancelOrderField));
-	strcpy(cancelOrder.AccountID, order->AccountID);
-	strcpy(cancelOrder.ExchangeID, order->ExchangeID);
-	strcpy(cancelOrder.InstrumentID, order->InstrumentID);
+	strcpy(cancelOrder.AccountId, order->AccountId);
+	strcpy(cancelOrder.ExchangeId, order->ExchangeId);
+	strcpy(cancelOrder.InstrumentId, order->InstrumentId);
 	cancelOrder.ClientCancelOrderID = ++m_MaxClientOrderID;
-	cancelOrder.OrderID = order->OrderID;
-	strcpy(cancelOrder.OrderSysID, order->OrderSysID);
-	cancelOrder.SessionID = order->SessionID;
-	cancelOrder.ClientOrderID = order->ClientOrderID;
+	cancelOrder.OrderId = order->OrderId;
+	strcpy(cancelOrder.OrderSysId, order->OrderSysId);
+	cancelOrder.SessionId = order->SessionId;
+	cancelOrder.ClientOrderId = order->ClientOrderId;
 
 	m_SimExchangeApi->ReqCancelOrder(&cancelOrder, ++m_MaxRequestID);
 }

@@ -7,35 +7,35 @@
 #include <cstring>
 
 using namespace mdb;
-using namespace spark;
-using namespace spark::core;
-using namespace quanttrading;
-using namespace quanttrading::ordermatch;
+using namespace Spark;
+using namespace Spark::Core;
+using namespace QuantTrading;
+using namespace QuantTrading::ordermatch;
 
-namespace quanttrading::settlement
+namespace QuantTrading::settlement
 {
-	bool PositionDetailLessForOpenDate::operator()(const mdb::PositionDetail* const left, const mdb::PositionDetail* const right) const
+	bool PositionDetailLessForOpenDate::operator()(const QuantTrading::PositionDetail* const left, const QuantTrading::PositionDetail* const right) const
 	{
 		auto openDateResult = strcmp(left->OpenDate, right->OpenDate);
 		if (openDateResult != 0)
 		{
 			return openDateResult < 0;
 		}
-		return strcmp(left->TradeID, right->TradeID) < 0;
+		return strcmp(left->TradeId, right->TradeId) < 0;
 	}
 
-	PositionMaintenance::PositionMaintenance(mdb::Mdb* mdb)
+	PositionMaintenance::PositionMaintenance(QuantTrading::Mdb* mdb)
 		:m_Mdb(mdb)
 	{
 	}
 
-	void PositionMaintenance::UpdateOnTrade(mdb::Trade* trade)
+	void PositionMaintenance::UpdateOnTrade(QuantTrading::Trade* trade)
 	{
-		auto posiDirection = quanttrading::GetPosiDirection(trade->OffsetFlag, trade->Direction);
-		auto position = m_Mdb->position->primaryKey->Select(trade->TradingDay, trade->AccountID, trade->ExchangeID, trade->InstrumentID, posiDirection);
+		auto posiDirection = QuantTrading::GetPosiDirection(trade->OffsetFlag, trade->Direction);
+		auto position = m_Mdb->position->primaryKey->Select(trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, posiDirection);
 		if (position == nullptr)
 		{
-			position = quanttrading::ordermatch::CreatePosition(trade, posiDirection);
+			position = QuantTrading::ordermatch::CreatePosition(trade, posiDirection);
 			m_Mdb->position->Insert(position);
 		}
 		else
@@ -56,14 +56,14 @@ namespace quanttrading::settlement
 
 		if (trade->OffsetFlag == OffsetFlagType::Open)
 		{
-			auto positionDetail = quanttrading::ordermatch::CreatePositionDetail(trade, posiDirection);
+			auto positionDetail = QuantTrading::ordermatch::CreatePositionDetail(trade, posiDirection);
 			m_Mdb->positionDetail->Insert(positionDetail);
 		}
 		else
 		{
-			std::set<mdb::PositionDetail*, PositionDetailLessForOpenDate> positionDetails;
-			auto itPair = m_Mdb->positionDetail->tradeMatchIndex->EqualRange(position->TradingDay, position->AccountID, position->ExchangeID,
-				position->InstrumentID, position->PosiDirection);
+			std::set<QuantTrading::PositionDetail*, PositionDetailLessForOpenDate> positionDetails;
+			auto itPair = m_Mdb->positionDetail->tradeMatchIndex->EqualRange(position->TradingDay, position->AccountId, position->ExchangeId,
+				position->InstrumentId, position->PosiDirection);
 			for (auto& it = itPair.first; it != itPair.second; ++it)
 			{
 				positionDetails.insert(*it);

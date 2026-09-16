@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 
-using namespace quanttrading::unittest;
+using namespace QuantTrading::unittest;
 
 // 配置键 BarPreces 经 GridParams 传入即声明周期；非法格式在构造期拒启（拒启语义同 DeclareBarPeriod）
 TEST_CASE("GridStrategy declares bar period from params and rejects invalid preces at construction")
@@ -50,7 +50,7 @@ TEST_CASE("GridStrategy resets unfilled open slot on day-end cancel and re-place
     fake_api.registered_spi->OnRtnDepthMarketData(&anchor_tick);
     REQUIRE(fake_api.insert_requests.size() == 4);
 
-    // 买开 3990（ClientOrderID 1）零成交被日终撤销：复位 Empty、不即时重挂
+    // 买开 3990（ClientOrderId 1）零成交被日终撤销：复位 Empty、不即时重挂
     auto canceled_open_order = MakeCanceledOrderField("IF2503", 42, 1, OrderStatusType::Canceled, 0);
     fake_api.registered_spi->OnRtnOrder(&canceled_open_order);
     CHECK(fake_api.insert_requests.size() == 4);

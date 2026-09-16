@@ -1,16 +1,16 @@
-﻿// 本文件由 ../Templates/Cpp/Api/ApiImpl.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/ApiImpl.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include "TraderApiBase.h"
 #include <Spark/Network/Protocol/Package.h>
 
 
-namespace quanttrading
+namespace QuantTrading
 {
 class TraderApiImpl : public TraderApiBase
 {
 public:
 	TraderApiImpl();
-	virtual void OnMessage(spark::network::Package* package) override;
+	virtual void OnMessage(Spark::network::Package* package) override;
 	
 	virtual int ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID) override;
 	virtual int ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID) override;

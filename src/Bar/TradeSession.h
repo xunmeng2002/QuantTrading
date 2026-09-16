@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace quanttrading::bar
+namespace QuantTrading::bar
 {
     class TradeSection
     {
@@ -24,7 +24,7 @@ namespace quanttrading::bar
         std::vector<std::unique_ptr<TradeSection>> TradeSections;
 
     public:
-        bool Check(const char* exchangeID, const char* productID) const;
+        bool Check(const char* exchangeId, const char* productId) const;
         long long GetFirstBarTime(int tradingDay) const;
         const TradeSection* GetTradeSection(int time) const;
         const TradeSection* GetNextTradeSection(const TradeSection* preTradeSection) const;
@@ -44,9 +44,9 @@ namespace quanttrading::bar
         bool LoadFromFile(const std::string& sessionFile);
         // 从 JSON 串装载（供不经文件的调用方与单测使用），语义与 LoadFromFile 一致
         bool ParseFromJsonString(const std::string& sessionJsonString);
-        const TradeSession* GetTradeSession(const char* exchangeID, const char* productID) const;
+        const TradeSession* GetTradeSession(const char* exchangeId, const char* productId) const;
         // 按合约查交易节：先取合约品种精确匹配，再按该交易所的 "*" 兜底；未匹配返回 nullptr
-        const TradeSession* GetTradeSessionForInstrument(const char* exchangeID, const char* instrumentID) const;
+        const TradeSession* GetTradeSessionForInstrument(const char* exchangeId, const char* instrumentId) const;
 
     private:
         // 已装载则 WriteLog 并返回 true（调用方据此拒绝重复装载，避免他方缓存的裸指针失效）

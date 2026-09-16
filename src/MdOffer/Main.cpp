@@ -29,11 +29,11 @@
 
 using namespace std;
 using namespace mdb;
-using namespace spark::core;
+using namespace Spark::Core;
 using namespace dbadapters;
-using namespace quanttrading;
-using namespace quanttrading::bar;
-using namespace quanttrading::mdoffer;
+using namespace QuantTrading;
+using namespace QuantTrading::bar;
+using namespace QuantTrading::mdoffer;
 
 const char* ConfigName = "MdOffer.json";
 
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     DB* db = CreateDataDb(config);
 
     Mdb* mdb = new Mdb(mdofferTableList);
-    mdb::MdbTableRegistry schemaRegistry(mdofferTableList);
+    QuantTrading::MdbTableRegistry schemaRegistry(mdofferTableList);
     AsyncDBWriter* dbWriter = new AsyncDBWriter(db, &schemaRegistry);
     mdb->Subscribe(dbWriter);
     dbWriter->Subscribe(mdb);

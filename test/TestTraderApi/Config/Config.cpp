@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-namespace quanttrading::testtraderapi
+namespace QuantTrading::TestTraderApi
 {
 Config Config::instance;
 Config::Config()

@@ -3,7 +3,7 @@
 
 bool std::less<ReqSubMarketDataField>::operator()(const ReqSubMarketDataField* left, const ReqSubMarketDataField* right) const
 {
-    int exchangeCmp = strcmp(left->ExchangeID, right->ExchangeID);
+    int exchangeCmp = strcmp(left->ExchangeId, right->ExchangeId);
     if (exchangeCmp < 0)
     {
         return true;
@@ -12,11 +12,11 @@ bool std::less<ReqSubMarketDataField>::operator()(const ReqSubMarketDataField* l
     {
         return false;
     }
-    return strcmp(left->InstrumentID, right->InstrumentID) < 0;
+    return strcmp(left->InstrumentId, right->InstrumentId) < 0;
 }
 bool std::less<ReqSubMarketDataField>::operator()(const ReqSubMarketDataField left, const ReqSubMarketDataField right) const
 {
-    int exchangeCmp = strcmp(left.ExchangeID, right.ExchangeID);
+    int exchangeCmp = strcmp(left.ExchangeId, right.ExchangeId);
     if (exchangeCmp < 0)
     {
         return true;
@@ -25,5 +25,5 @@ bool std::less<ReqSubMarketDataField>::operator()(const ReqSubMarketDataField le
     {
         return false;
     }
-    return strcmp(left.InstrumentID, right.InstrumentID) < 0;
+    return strcmp(left.InstrumentId, right.InstrumentId) < 0;
 }

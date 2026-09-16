@@ -4,9 +4,9 @@
 #include <string>
 
 
-namespace quanttrading::mdoffer
+namespace QuantTrading::mdoffer
 {
-    class MdFront : public spark::network::Protocol
+    class MdFront : public Spark::Network::Protocol
     {
     public:
         MdFront(IOModelType ioModel, const char* address, int milliSecond = 1);
@@ -15,7 +15,7 @@ namespace quanttrading::mdoffer
 
     private:
         std::string m_Address;
-        spark::network::IOThread* m_IOThread;
+        Spark::Network::IOThread* m_IOThread;
     };
 }
 

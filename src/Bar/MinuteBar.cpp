@@ -5,9 +5,9 @@
 #include <limits>
 #include <cstring>
 
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::bar
+namespace QuantTrading::bar
 {
     MinuteBar::MinuteBar(const TradeSessions& tradeSessions)
         :m_TradeSessions(tradeSessions)
@@ -17,34 +17,34 @@ namespace quanttrading::bar
     {
         m_BarSubscriber = barSubscriber;
     }
-    void MinuteBar::ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID)
+    void MinuteBar::ReqSubMarketData(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId)
     {
-        const TradeSession* selectedTradeSession = m_TradeSessions.GetTradeSessionForInstrument(exchangeID, instrumentID);
+        const TradeSession* selectedTradeSession = m_TradeSessions.GetTradeSessionForInstrument(exchangeId, instrumentId);
         if (selectedTradeSession != nullptr)
         {
-            m_InstrumentTradeSessions[instrumentID] = selectedTradeSession;
+            m_InstrumentTradeSessions[instrumentId] = selectedTradeSession;
         }
     }
     void MinuteBar::OnDepthMarketData(DepthMarketDataField* depthMd)
     {
-        auto tradeSession = m_InstrumentTradeSessions[depthMd->InstrumentID];
+        auto tradeSession = m_InstrumentTradeSessions[depthMd->InstrumentId];
         if (tradeSession == nullptr)
             return;
-        auto preBar = m_PreAggregationBars[depthMd->InstrumentID];
+        auto preBar = m_PreAggregationBars[depthMd->InstrumentId];
         if (preBar != nullptr && depthMd->UpdateTs < preBar->UpdateTs)
         {
-            WriteLog(LogLevel::Warning, "MdFrontBar AggregationBar: TickUpdateTs < PreBarUpdateTs. ExchangeID:%s, InstrumentID:%s, TickUpdateTs:%lld, TickLastPrice:%f, BarUpdateTs:%lld, BarClose:%f",
-                depthMd->ExchangeID, depthMd->InstrumentID, depthMd->UpdateTs, depthMd->LastPrice, preBar->UpdateTs, preBar->Close);
+            WriteLog(LogLevel::Warning, "MdFrontBar AggregationBar: TickUpdateTs < PreBarUpdateTs. ExchangeId:%s, InstrumentId:%s, TickUpdateTs:%lld, TickLastPrice:%f, BarUpdateTs:%lld, BarClose:%f",
+                depthMd->ExchangeId, depthMd->InstrumentId, depthMd->UpdateTs, depthMd->LastPrice, preBar->UpdateTs, preBar->Close);
             return;
         }
-        auto bar = m_AggregationBars[depthMd->InstrumentID];
+        auto bar = m_AggregationBars[depthMd->InstrumentId];
 
         m_LostBars.clear();
         if (bar == nullptr)
         {
             bar = (BarMarketDataField*)InitMinuteBarFromDepthMarketData((DepthMarketDataField*)depthMd, (BarMarketDataField*)preBar, tradeSession);
             EndLostBars();
-            m_AggregationBars[depthMd->InstrumentID] = bar;
+            m_AggregationBars[depthMd->InstrumentId] = bar;
             if (bar != nullptr)
             {
                 AddBar(bar);
@@ -56,7 +56,7 @@ namespace quanttrading::bar
             preBar = bar;
             bar = (BarMarketDataField*)InitMinuteBarFromDepthMarketData((DepthMarketDataField*)depthMd, (BarMarketDataField*)preBar, tradeSession);
             EndLostBars();
-            m_AggregationBars[depthMd->InstrumentID] = bar;
+            m_AggregationBars[depthMd->InstrumentId] = bar;
             if (bar != nullptr)
             {
                 AddBar(bar);
@@ -111,8 +111,8 @@ namespace quanttrading::bar
         memset(bar, 0, sizeof(BarMarketDataField));
 
         strcpy(bar->TradingDay, preBar->TradingDay);
-        strcpy(bar->ExchangeID, preBar->ExchangeID);
-        strcpy(bar->InstrumentID, preBar->InstrumentID);
+        strcpy(bar->ExchangeId, preBar->ExchangeId);
+        strcpy(bar->InstrumentId, preBar->InstrumentId);
         bar->BarPreces = BarPrecesType::Minute;
         bar->BarPeriod = 1;
         bar->BarTime = barMinuteTime * 100000LL;
@@ -146,8 +146,8 @@ namespace quanttrading::bar
         memset(bar, 0, sizeof(BarMarketDataField));
 
         strcpy(bar->TradingDay, depthMd->TradingDay);
-        strcpy(bar->ExchangeID, depthMd->ExchangeID);
-        strcpy(bar->InstrumentID, depthMd->InstrumentID);
+        strcpy(bar->ExchangeId, depthMd->ExchangeId);
+        strcpy(bar->InstrumentId, depthMd->InstrumentId);
         bar->BarPreces = BarPrecesType::Minute;
         bar->BarPeriod = 1;
         bar->BarTime = barMinuteTime * 100000LL;
@@ -198,7 +198,7 @@ namespace quanttrading::bar
             tradeSection = tradeSession->GetNextTradeSection(tradeSection);
             if (tradeSection == nullptr)
             {
-                WriteLog(LogLevel::Warning, "MinuteBar: NextTradeSection not exist. InstrumentID:%s, TradingDay:%s", depthMd->InstrumentID, depthMd->TradingDay);
+                WriteLog(LogLevel::Warning, "MinuteBar: NextTradeSection not exist. InstrumentId:%s, TradingDay:%s", depthMd->InstrumentId, depthMd->TradingDay);
                 break;
             }
             tradeSession->GetSectionBarTime(tradeSection, tradingDay, sectionBeginBarTime, sectionEndBarTime);
@@ -221,8 +221,8 @@ namespace quanttrading::bar
         memset(bar, 0, sizeof(BarMarketDataField));
 
         strcpy(bar->TradingDay, depthMd->TradingDay);
-        strcpy(bar->ExchangeID, depthMd->ExchangeID);
-        strcpy(bar->InstrumentID, depthMd->InstrumentID);
+        strcpy(bar->ExchangeId, depthMd->ExchangeId);
+        strcpy(bar->InstrumentId, depthMd->InstrumentId);
         bar->BarPreces = BarPrecesType::Minute;
         bar->BarPeriod = 1;
         bar->BarTime = barMinuteTime * 100000LL;
@@ -256,24 +256,24 @@ namespace quanttrading::bar
     void MinuteBar::AddBar(BarMarketDataField* bar)
     {
         std::lock_guard<std::mutex> guard(m_TodayBarsMutex);
-        m_TodayBars[bar->InstrumentID].push_back(bar);
+        m_TodayBars[bar->InstrumentId].push_back(bar);
     }
     void MinuteBar::EndLostBars()
     {
         std::lock_guard<std::mutex> guard(m_TodayBarsMutex);
         for (auto lostBar : m_LostBars)
         {
-            m_TodayBars[lostBar->InstrumentID].push_back(lostBar);
-            m_PreAggregationBars[lostBar->InstrumentID] = lostBar;
+            m_TodayBars[lostBar->InstrumentId].push_back(lostBar);
+            m_PreAggregationBars[lostBar->InstrumentId] = lostBar;
             if (m_BarSubscriber != nullptr)
                 m_BarSubscriber->OnBarMarketData(lostBar);
         }
     }
     void MinuteBar::EndBar(BarMarketDataField* preBar, BarMarketDataField* bar)
     {
-        quanttrading::bar::EndBar((BarMarketDataField*)preBar, (BarMarketDataField*)bar);
-        m_PreAggregationBars[bar->InstrumentID] = bar;
-        m_AggregationBars[bar->InstrumentID] = nullptr;
+        QuantTrading::bar::EndBar((BarMarketDataField*)preBar, (BarMarketDataField*)bar);
+        m_PreAggregationBars[bar->InstrumentId] = bar;
+        m_AggregationBars[bar->InstrumentId] = nullptr;
 
         if (m_BarSubscriber != nullptr)
             m_BarSubscriber->OnBarMarketData(bar);

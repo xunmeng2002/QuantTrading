@@ -3,20 +3,20 @@
 #include <Spark/Network/Protocol/ProtocolSubscriber.h>
 
 
-namespace quanttrading::simexchange
+namespace QuantTrading::simexchange
 {
-class MdFront : public spark::network::Protocol, public spark::network::ProtocolSubscriber
+class MdFront : public Spark::Network::Protocol, public Spark::Network::ProtocolSubscriber
 {
 public:
 	MdFront(const char* address, int milliSecond = 100);
 
 public:
-	virtual void OnProtocolConnect(SessionIDType sessionID, const char* ip, int port) override;
-	virtual void OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port) override;
-	virtual void OnMessage(spark::network::Package* package) override;
+	virtual void OnProtocolConnect(SessionIdType sessionId, const char* ip, int port) override;
+	virtual void OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port) override;
+	virtual void OnMessage(Spark::Network::Package* package) override;
 
 private:
-    spark::network::IOThread* m_IOThread;
+    Spark::Network::IOThread* m_IOThread;
 };
 }
 

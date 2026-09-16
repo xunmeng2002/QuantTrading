@@ -4,22 +4,22 @@
 #include <vector>
 #include <string>
 
-namespace quanttrading
+namespace QuantTrading
 {
     struct FrontInfo
     {
-        IPAddressType	TradeFront;
-        IPAddressType	MdFront;
+        IpAddressType	TradeFront;
+        IpAddressType	MdFront;
     };
     struct AccountInfo
     {
-        BrokerIDType	BrokerID;
-        UserIDType		InvestorID;
+        BrokerIdType	BrokerId;
+        UserIdType		InvestorId;
         PasswordType	Password;
         PhoneNumberType	Phone;
         ProductInfoType	UserProductInfo;
         AuthCodeType	AuthCode;
-        AppIDType		AppID;
+        AppIdType		AppId;
     };
 
     struct Environment

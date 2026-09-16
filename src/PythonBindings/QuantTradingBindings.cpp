@@ -8,8 +8,8 @@
 #include <string>
 
 namespace py = pybind11;
-using namespace spark::core;
-using quanttrading::strategy::StrategyBase;
+using namespace Spark::Core;
+using QuantTrading::strategy::StrategyBase;
 
 void BindEnumsAndFields(pybind11::module_& module);
 
@@ -20,16 +20,16 @@ namespace
 	class BackTestApiHandle
 	{
 	public:
-		explicit BackTestApiHandle(quanttrading::BackTestApi* backTestApi) :m_BackTestApi(backTestApi) {}
-		quanttrading::BackTestApi* Get() const { return m_BackTestApi; }
+		explicit BackTestApiHandle(QuantTrading::BackTestApi* backTestApi) :m_BackTestApi(backTestApi) {}
+		QuantTrading::BackTestApi* Get() const { return m_BackTestApi; }
 
 	private:
-		quanttrading::BackTestApi* m_BackTestApi = nullptr;
+		QuantTrading::BackTestApi* m_BackTestApi = nullptr;
 	};
 
 	BackTestApiHandle* CreateBackTestApiHandle()
 	{
-		return new BackTestApiHandle(quanttrading::BackTestApiMiddle::CreateBackTestApiMiddle());
+		return new BackTestApiHandle(QuantTrading::BackTestApiMiddle::CreateBackTestApiMiddle());
 	}
 
 	// StrategyBase 的 Python 桥接：钩子统一「取得 GIL → 存在 Python 覆写按值拷贝分发 / 无覆写走基类 →
@@ -37,8 +37,8 @@ namespace
 	class StrategyBasePy : public StrategyBase
 	{
 	public:
-		StrategyBasePy(quanttrading::BackTestApi* backTestApi, const std::string& accountID)
-			:StrategyBase(backTestApi, accountID.c_str())
+		StrategyBasePy(QuantTrading::BackTestApi* backTestApi, const std::string& accountId)
+			:StrategyBase(backTestApi, accountId.c_str())
 		{
 		}
 
@@ -171,7 +171,7 @@ namespace
 	};
 }
 
-PYBIND11_MODULE(quanttrading, module)
+PYBIND11_MODULE(QuantTrading, module)
 {
 	BindEnumsAndFields(module);
 
@@ -179,13 +179,13 @@ PYBIND11_MODULE(quanttrading, module)
 	module.def("create_backtest_api", &CreateBackTestApiHandle, py::return_value_policy::take_ownership);
 
 	py::class_<StrategyBase, StrategyBasePy> strategyClass(module, "StrategyBase");
-	strategyClass.def(py::init([](BackTestApiHandle* apiHandle, const std::string& accountID)
+	strategyClass.def(py::init([](BackTestApiHandle* apiHandle, const std::string& accountId)
 	{
 		if (apiHandle == nullptr)
 		{
 			throw py::value_error("backtest_api is required");
 		}
-		return new StrategyBasePy(apiHandle->Get(), accountID);
+		return new StrategyBasePy(apiHandle->Get(), accountId);
 	}), py::keep_alive<1, 2>(), py::arg("backtest_api"), py::arg("account_id"));
 	StrategyBasePy::RegisterMethods(strategyClass);
 

@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-namespace quanttrading::bar
+namespace QuantTrading::bar
 {
     class BarAggregator
     {
@@ -14,7 +14,7 @@ namespace quanttrading::bar
         void OnBarMarketData(const BarMarketDataField* bar);
         void Flush();
 
-        static void ValidatePrecesRelation(BarPrecesType inputPreces, int inputPeriod, BarPrecesType targetPreces, int targetPeriod, const char* instrumentID);
+        static void ValidatePrecesRelation(BarPrecesType inputPreces, int inputPeriod, BarPrecesType targetPreces, int targetPeriod, const char* instrumentId);
 
     private:
         struct Bucket

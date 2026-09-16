@@ -1,11 +1,11 @@
-﻿// 本文件由 ../Templates/Cpp/Api/ApiBase.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/ApiBase.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include "ApiBase.h"
 #include <QuantTrading/MdApi.h>
 #include <Spark/Network/Protocol/Protocol.h>
 
 
-namespace quanttrading
+namespace QuantTrading
 {
 class MdApiBase : public ApiBase, public MdApi
 {

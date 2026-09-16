@@ -5,8 +5,8 @@
 
 #include <limits>
 
-using namespace quanttrading::ordermatch;
-using namespace quanttrading::unittest;
+using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::unittest;
 
 TEST_SUITE("LastPriceOrderMatch")
 {
@@ -18,7 +18,7 @@ TEST_CASE("市价买卖单被首个有效tick全额成交于最新价")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::DepthMarketData> tick_pool;
+    PoolRecordGuard<QuantTrading::DepthMarketData> tick_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
     order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Sell, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
@@ -43,7 +43,7 @@ TEST_CASE("限价买单按最新价成交且低于最新价不追价")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::DepthMarketData> tick_pool;
+    PoolRecordGuard<QuantTrading::DepthMarketData> tick_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 105.0, 10));
     order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Buy, 99.0, 10));
@@ -67,7 +67,7 @@ TEST_CASE("限价卖单不高于最新价时按最新价成交")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::DepthMarketData> tick_pool;
+    PoolRecordGuard<QuantTrading::DepthMarketData> tick_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Sell, 95.0, 10));
     order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Sell, 105.0, 10));
@@ -90,8 +90,8 @@ TEST_CASE("无效tick与OnBar不触发撮合")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::DepthMarketData> tick_pool;
-    PoolRecordGuard<mdb::BarMarketData> bar_pool;
+    PoolRecordGuard<QuantTrading::DepthMarketData> tick_pool;
+    PoolRecordGuard<QuantTrading::BarMarketData> bar_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
     order_match.OnTick(MakeMdTick(tick_pool, MakeUpdateTs(20240301, 90000, 0), std::numeric_limits<double>::infinity(), 10, 99.0, 10, 101.0, 10));

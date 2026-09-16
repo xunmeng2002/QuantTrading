@@ -6,8 +6,8 @@
 #include <vector>
 #include <map>
 
-using quanttrading::AccountInfo;
-namespace quanttrading::testtraderapi
+using QuantTrading::AccountInfo;
+namespace QuantTrading::testtraderapi
 {
 class TraderSpiImpl : public TraderSpiMiddle
 {

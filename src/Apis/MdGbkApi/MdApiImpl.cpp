@@ -1,15 +1,15 @@
-﻿// 本文件由 ../Templates/Cpp/Api/GbkApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/GbkApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdApiImpl.h"
 #include "Error.h"
 #include "Packages.h"
 #include <Spark/Network/Protocol/Items.h>
 #include <Spark/Serialization/Encode/Encode.h>
 
-using namespace spark;
-using namespace spark::serialization;
-using namespace quanttrading::packages;
+using namespace Spark;
+using namespace Spark::serialization;
+using namespace QuantTrading::Packages;
 
-namespace quanttrading
+namespace QuantTrading
 {
 MdApi* MdApi::CreateMdApi()
 {

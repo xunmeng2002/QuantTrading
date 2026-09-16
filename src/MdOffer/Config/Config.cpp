@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-namespace quanttrading::mdoffer
+namespace QuantTrading::MdOffer
 {
 Config Config::instance;
 Config::Config()
@@ -51,8 +51,8 @@ void Config::Load(const char* fileName)
 	for (auto& subValue : root["SubscribeInstruments"])
 	{
 		SubscribeInstrument* subRecord = new SubscribeInstrument();
-		subRecord->ExchangeID = subValue["ExchangeID"].asString();
-		subRecord->InstrumentID = subValue["InstrumentID"].asString();
+		subRecord->ExchangeId = subValue["ExchangeId"].asString();
+		subRecord->InstrumentId = subValue["InstrumentId"].asString();
 		SubscribeInstruments.push_back(subRecord);
 	}
 	Print();
@@ -76,8 +76,8 @@ void Config::Print()
 	for (auto record : SubscribeInstruments)
 	{
 		printf("{\n");
-		printf("\tExchangeID:%s, InstrumentID:%s, \n",
-			record->ExchangeID.c_str(), record->InstrumentID.c_str());
+		printf("\tExchangeId:%s, InstrumentId:%s, \n",
+			record->ExchangeId.c_str(), record->InstrumentId.c_str());
 		printf("},\n");
 	}
 	printf("]\n");

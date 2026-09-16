@@ -21,12 +21,12 @@ namespace detail
 	template <typename SrcT, typename DstT>
 	void CopyDepthFields(const SrcT& src, DstT& dst)
 	{
-		static_assert((std::is_same_v<SrcT, DepthMarketDataField> && std::is_same_v<DstT, mdb::DepthMarketData>)
-			|| (std::is_same_v<SrcT, mdb::DepthMarketData> && std::is_same_v<DstT, DepthMarketDataField>));
+		static_assert((std::is_same_v<SrcT, DepthMarketDataField> && std::is_same_v<DstT, QuantTrading::DepthMarketData>)
+			|| (std::is_same_v<SrcT, QuantTrading::DepthMarketData> && std::is_same_v<DstT, DepthMarketDataField>));
 
 		memcpy(dst.TradingDay, src.TradingDay, sizeof(DateType));
-		memcpy(dst.ExchangeID, src.ExchangeID, sizeof(ExchangeIDType));
-		memcpy(dst.InstrumentID, src.InstrumentID, sizeof(InstrumentIDType));
+		memcpy(dst.ExchangeId, src.ExchangeId, sizeof(ExchangeIdType));
+		memcpy(dst.InstrumentId, src.InstrumentId, sizeof(InstrumentIdType));
 		dst.UpdateTs = src.UpdateTs;
 		dst.LastPrice = src.LastPrice;
 		dst.PreSettlementPrice = src.PreSettlementPrice;
@@ -91,12 +91,12 @@ namespace detail
 	template <typename SrcT, typename DstT>
 	void CopyBarFields(const SrcT& src, DstT& dst)
 	{
-		static_assert((std::is_same_v<SrcT, BarMarketDataField> && std::is_same_v<DstT, mdb::BarMarketData>)
-			|| (std::is_same_v<SrcT, mdb::BarMarketData> && std::is_same_v<DstT, BarMarketDataField>));
+		static_assert((std::is_same_v<SrcT, BarMarketDataField> && std::is_same_v<DstT, QuantTrading::BarMarketData>)
+			|| (std::is_same_v<SrcT, QuantTrading::BarMarketData> && std::is_same_v<DstT, BarMarketDataField>));
 
 		memcpy(dst.TradingDay, src.TradingDay, sizeof(DateType));
-		memcpy(dst.ExchangeID, src.ExchangeID, sizeof(ExchangeIDType));
-		memcpy(dst.InstrumentID, src.InstrumentID, sizeof(InstrumentIDType));
+		memcpy(dst.ExchangeId, src.ExchangeId, sizeof(ExchangeIdType));
+		memcpy(dst.InstrumentId, src.InstrumentId, sizeof(InstrumentIdType));
 		dst.BarPreces = src.BarPreces;
 		dst.BarPeriod = src.BarPeriod;
 		dst.BarTime = src.BarTime;
@@ -116,15 +116,15 @@ namespace detail
 		dst.OpenInterest = src.OpenInterest;
 	}
 	// Order 逐字段映射（仅 Mdb→Field 单向）：mdb 行比报文字段多账户类型/报盘/分组等库内字段，布局非镜像，不可整块拷贝
-	void CopyOrderFields(const mdb::Order& src, OrderField& dst)
+	void CopyOrderFields(const QuantTrading::Order& src, OrderField& dst)
 	{
 		memcpy(dst.TradingDay, src.TradingDay, sizeof(DateType));
-		memcpy(dst.AccountID, src.AccountID, sizeof(AccountIDType));
-		memcpy(dst.ExchangeID, src.ExchangeID, sizeof(ExchangeIDType));
-		memcpy(dst.InstrumentID, src.InstrumentID, sizeof(InstrumentIDType));
+		memcpy(dst.AccountId, src.AccountId, sizeof(AccountIdType));
+		memcpy(dst.ExchangeId, src.ExchangeId, sizeof(ExchangeIdType));
+		memcpy(dst.InstrumentId, src.InstrumentId, sizeof(InstrumentIdType));
 		dst.ProductClass = src.ProductClass;
-		dst.OrderID = src.OrderID;
-		memcpy(dst.OrderSysID, src.OrderSysID, sizeof(OrderSysIDType));
+		dst.OrderId = src.OrderId;
+		memcpy(dst.OrderSysId, src.OrderSysId, sizeof(OrderSysIdType));
 		dst.Direction = src.Direction;
 		dst.OffsetFlag = src.OffsetFlag;
 		dst.OrderPriceType = src.OrderPriceType;
@@ -138,25 +138,25 @@ namespace detail
 		memcpy(dst.OrderTime, src.OrderTime, sizeof(TimeType));
 		memcpy(dst.CancelDate, src.CancelDate, sizeof(DateType));
 		memcpy(dst.CancelTime, src.CancelTime, sizeof(TimeType));
-		dst.SessionID = src.SessionID;
-		dst.ClientOrderID = src.ClientOrderID;
-		dst.RequestID = src.RequestID;
+		dst.SessionId = src.SessionId;
+		dst.ClientOrderId = src.ClientOrderId;
+		dst.RequestId = src.RequestId;
 		dst.FrozenCash = src.FrozenCash;
 		dst.FrozenMargin = src.FrozenMargin;
 		dst.FrozenCommission = src.FrozenCommission;
 	}
 
 	// Trade 逐字段映射（仅 Mdb→Field 单向）：mdb 行多账户类型字段，布局非镜像，不可整块拷贝
-	void CopyTradeFields(const mdb::Trade& src, TradeField& dst)
+	void CopyTradeFields(const QuantTrading::Trade& src, TradeField& dst)
 	{
 		memcpy(dst.TradingDay, src.TradingDay, sizeof(DateType));
-		memcpy(dst.AccountID, src.AccountID, sizeof(AccountIDType));
-		memcpy(dst.ExchangeID, src.ExchangeID, sizeof(ExchangeIDType));
-		memcpy(dst.InstrumentID, src.InstrumentID, sizeof(InstrumentIDType));
+		memcpy(dst.AccountId, src.AccountId, sizeof(AccountIdType));
+		memcpy(dst.ExchangeId, src.ExchangeId, sizeof(ExchangeIdType));
+		memcpy(dst.InstrumentId, src.InstrumentId, sizeof(InstrumentIdType));
 		dst.ProductClass = src.ProductClass;
-		dst.OrderID = src.OrderID;
-		memcpy(dst.OrderSysID, src.OrderSysID, sizeof(OrderSysIDType));
-		memcpy(dst.TradeID, src.TradeID, sizeof(TradeIDType));
+		dst.OrderId = src.OrderId;
+		memcpy(dst.OrderSysId, src.OrderSysId, sizeof(OrderSysIdType));
+		memcpy(dst.TradeId, src.TradeId, sizeof(TradeIdType));
 		dst.Direction = src.Direction;
 		dst.OffsetFlag = src.OffsetFlag;
 		dst.Price = src.Price;
@@ -169,7 +169,7 @@ namespace detail
 	}
 }
 
-void FieldToMdb(const DepthMarketDataField* field, mdb::DepthMarketData* dbStruct)
+void FieldToMdb(const DepthMarketDataField* field, QuantTrading::DepthMarketData* dbStruct)
 {
 	if (detail::TryBulkCopy(*field, *dbStruct))
 	{
@@ -177,7 +177,7 @@ void FieldToMdb(const DepthMarketDataField* field, mdb::DepthMarketData* dbStruc
 	}
 	detail::CopyDepthFields(*field, *dbStruct);
 }
-void MdbToField(const mdb::DepthMarketData* dbStruct, DepthMarketDataField* field)
+void MdbToField(const QuantTrading::DepthMarketData* dbStruct, DepthMarketDataField* field)
 {
 	if (detail::TryBulkCopy(*dbStruct, *field))
 	{
@@ -186,7 +186,7 @@ void MdbToField(const mdb::DepthMarketData* dbStruct, DepthMarketDataField* fiel
 	detail::CopyDepthFields(*dbStruct, *field);
 }
 
-void FieldToMdb(const BarMarketDataField* field, mdb::BarMarketData* dbStruct)
+void FieldToMdb(const BarMarketDataField* field, QuantTrading::BarMarketData* dbStruct)
 {
 	if (detail::TryBulkCopy(*field, *dbStruct))
 	{
@@ -194,7 +194,7 @@ void FieldToMdb(const BarMarketDataField* field, mdb::BarMarketData* dbStruct)
 	}
 	detail::CopyBarFields(*field, *dbStruct);
 }
-void MdbToField(const mdb::BarMarketData* dbStruct, BarMarketDataField* field)
+void MdbToField(const QuantTrading::BarMarketData* dbStruct, BarMarketDataField* field)
 {
 	if (detail::TryBulkCopy(*dbStruct, *field))
 	{
@@ -203,12 +203,12 @@ void MdbToField(const mdb::BarMarketData* dbStruct, BarMarketDataField* field)
 	detail::CopyBarFields(*dbStruct, *field);
 }
 
-void MdbToField(const mdb::Order* dbStruct, OrderField* field)
+void MdbToField(const QuantTrading::Order* dbStruct, OrderField* field)
 {
 	memset(field, 0, sizeof(OrderField));
 	detail::CopyOrderFields(*dbStruct, *field);
 }
-void MdbToField(const mdb::Trade* dbStruct, TradeField* field)
+void MdbToField(const QuantTrading::Trade* dbStruct, TradeField* field)
 {
 	memset(field, 0, sizeof(TradeField));
 	detail::CopyTradeFields(*dbStruct, *field);

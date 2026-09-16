@@ -223,8 +223,8 @@ cmake --build out/build/WSL-GCC-Debug
 #include <Spark/Core/Logger/Logger.h>
 #include <cstring>
 
-using namespace quanttrading;
-using namespace spark::core;
+using namespace QuantTrading;
+using namespace Spark::Core;
 
 // 策略回调：收到行情后，以"最新价"下单（示意：仅开仓示例）
 class DemoBackTestSpi : public BackTestSpi
@@ -235,8 +235,8 @@ public:
         // 收到 tick，按最新价下一手买单（首次时）
         ReqInsertOrderField req;
         std::memset(&req, 0, sizeof(req));
-        std::strcpy(req.AccountID, m_AccountID);
-        std::strcpy(req.InstrumentID, depthMarketData->InstrumentID);
+        std::strcpy(req.AccountId, m_AccountID);
+        std::strcpy(req.InstrumentId, depthMarketData->InstrumentId);
         req.Direction = DirectionType::Buy;
         req.OffsetFlag = OffsetFlagType::Open;
         req.Price = depthMarketData->LastPrice;
@@ -265,8 +265,8 @@ int main(int argc, char* argv[])
 
     ReqSubMarketDataField reqSubMd;
     std::memset(&reqSubMd, 0, sizeof(reqSubMd));
-    std::strcpy(reqSubMd.ExchangeID, "CFFEX");
-    std::strcpy(reqSubMd.InstrumentID, "IF2503");
+    std::strcpy(reqSubMd.ExchangeId, "CFFEX");
+    std::strcpy(reqSubMd.InstrumentId, "IF2503");
     api->ReqSubMarketData(&reqSubMd, 1);
 
     api->Join();                    // 阻塞至回测数据重放完毕
@@ -285,15 +285,15 @@ int main(int argc, char* argv[])
 #include <Spark/Core/Logger/Logger.h>
 #include <cstring>
 
-using namespace quanttrading;
-using namespace spark::core;
+using namespace QuantTrading;
+using namespace Spark::Core;
 
 class DemoMdSpi : public MdSpi
 {
 public:
     void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) override
     {
-        WriteLog(LogLevel::Info, "%s last=%.2f", depthMarketData->InstrumentID, depthMarketData->LastPrice);
+        WriteLog(LogLevel::Info, "%s last=%.2f", depthMarketData->InstrumentId, depthMarketData->LastPrice);
     }
 };
 
@@ -310,8 +310,8 @@ int main(int argc, char* argv[])
 
     ReqSubMarketDataField reqSubMd;
     std::memset(&reqSubMd, 0, sizeof(reqSubMd));
-    std::strcpy(reqSubMd.ExchangeID, "CFFEX");
-    std::strcpy(reqSubMd.InstrumentID, "IF2503");
+    std::strcpy(reqSubMd.ExchangeId, "CFFEX");
+    std::strcpy(reqSubMd.InstrumentId, "IF2503");
     api->ReqSubMarketData(&reqSubMd, 1);
 
     api->Join();
@@ -354,7 +354,7 @@ int main(int argc, char* argv[])
 ## 九、补充说明
 
 - **包含路径**：头文件统一使用 `#include <QuantTrading/XxxApi.h>` 风格；模块内部使用 `#include <Module/Xxx.h>`
-- **命名空间**：公共 API 位于 `quanttrading`，各模块分别位于 `quanttrading::mdoffer`、`quanttrading::simexchange`、`quanttrading::backtest`、`quanttrading::ordermatch` 等
+- **命名空间**：公共 API 位于 `QuantTrading`，各模块分别位于 `QuantTrading::mdoffer`、`QuantTrading::simexchange`、`QuantTrading::backtest`、`QuantTrading::ordermatch` 等
 - **依赖链**：`Spark`（线程 / 日志 / 网络）→ `DBAdapters`（四库统一访问）→ `QuantTrading`
 - **版本**：CTP API v6.7.9（`MdOffer` 启动日志可见 `API Version`）
 - **编码变体**：MdApi / TraderApi / SimExchangeApi 各提供 **UTF-8**（`MdApi` 等）与 **GBK**（`MdGbkApi` 等）两套动态库

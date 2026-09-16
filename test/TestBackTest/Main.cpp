@@ -4,8 +4,8 @@
 #include <iostream>
 
 using namespace std;
-using namespace quanttrading;
-using namespace quanttrading::testbacktest;
+using namespace QuantTrading;
+using namespace QuantTrading::testbacktest;
 
 const char* ConfigName = "TestBackTest.json";
 

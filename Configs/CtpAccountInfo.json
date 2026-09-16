@@ -12,13 +12,13 @@
             }
         ],
         "Accounts": [{
-                "BrokerID": "9999",
-                "InvestorID": "229140",
+                "BrokerId": "9999",
+                "InvestorId": "229140",
                 "Password": "",
                 "Phone": "18019749894",
                 "UserProductInfo": "",
                 "AuthCode": "",
-                "AppID": "simnow_client_test"
+                "AppId": "simnow_client_test"
             }
         ]
     }, {
@@ -29,13 +29,13 @@
             }
         ],
         "Accounts": [{
-                "BrokerID": "9999",
-                "InvestorID": "229140",
+                "BrokerId": "9999",
+                "InvestorId": "229140",
                 "Password": "",
                 "Phone": "18019749894",
                 "UserProductInfo": "",
                 "AuthCode": "",
-                "AppID": "simnow_client_test"
+                "AppId": "simnow_client_test"
             }
         ]
     }

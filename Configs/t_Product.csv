@@ -1,4 +1,4 @@
-ExchangeID,ProductID,ProductName,ProductClass,VolumeMultiple,PriceTick,MaxMarketOrderVolume,MinMarketOrderVolume,MaxLimitOrderVolume,MinLimitOrderVolume,SessionName
+ExchangeId,ProductId,ProductName,ProductClass,VolumeMultiple,PriceTick,MaxMarketOrderVolume,MinMarketOrderVolume,MaxLimitOrderVolume,MinLimitOrderVolume,SessionName
 SHFE,fu,燃料油,"1",10,1.0,500,1,500,1,FN2300
 DCE,cs_o,玉米淀粉期权,"2",10,0.5,1000,1,1000,1,FN2300
 SHFE,cu,铜,"1",5,10.0,500,1,500,1,FN0100

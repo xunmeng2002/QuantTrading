@@ -2,7 +2,7 @@
 
 #include "doctest/doctest.h"
 
-using namespace quanttrading::unittest;
+using namespace QuantTrading::unittest;
 
 TEST_CASE("GridStrategy places ladder around first tick anchor")
 {
@@ -17,7 +17,7 @@ TEST_CASE("GridStrategy places ladder around first tick anchor")
     CHECK(fake_api.insert_requests[0].Direction == DirectionType::Buy);
     CHECK(fake_api.insert_requests[0].OffsetFlag == OffsetFlagType::Open);
     CHECK(fake_api.insert_requests[0].Price == doctest::Approx(3990.0));
-    CHECK(fake_api.insert_requests[0].ClientOrderID == 1);
+    CHECK(fake_api.insert_requests[0].ClientOrderId == 1);
     CHECK(fake_api.insert_requests[1].Direction == DirectionType::Sell);
     CHECK(fake_api.insert_requests[1].Price == doctest::Approx(4010.0));
     CHECK(fake_api.insert_requests[2].Direction == DirectionType::Buy);
@@ -94,7 +94,7 @@ TEST_CASE("GridStrategy re-places rejected level at next session anchor")
     // 拒单（level0 卖格）复位 Empty
     ReqInsertOrderField rejected_request;
     std::memset(&rejected_request, 0, sizeof(rejected_request));
-    rejected_request.ClientOrderID = 2;
+    rejected_request.ClientOrderId = 2;
     RspInfoField reject_info;
     reject_info.ErrorID = 27;
     fake_api.registered_spi->OnRspInsertOrder(&rejected_request, &reject_info, 0, true);

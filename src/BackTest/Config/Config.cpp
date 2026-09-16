@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-namespace quanttrading::backtest
+namespace QuantTrading::BackTest
 {
 Config Config::instance;
 Config::Config()

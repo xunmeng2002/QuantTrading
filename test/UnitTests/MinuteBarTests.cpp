@@ -5,8 +5,8 @@
 
 #include <vector>
 
-using namespace quanttrading::bar;
-using namespace quanttrading::unittest;
+using namespace QuantTrading::bar;
+using namespace QuantTrading::unittest;
 
 TEST_SUITE("MinuteBar")
 {
@@ -14,11 +14,11 @@ TEST_SUITE("MinuteBar")
 namespace
 {
 const char* kBarSessionJson = R"([
-    {"Name":"DaySession","Exchanges":[{"ExchangeID":"SHFE","Products":["cu"]}],
+    {"Name":"DaySession","Exchanges":[{"ExchangeId":"SHFE","Products":["cu"]}],
      "Sections":[{"From":900,"To":1015,"SectionClass":1},
                  {"From":1030,"To":1130,"SectionClass":1},
                  {"From":1330,"To":1500,"SectionClass":1}]},
-    {"Name":"AuctionOnly","Exchanges":[{"ExchangeID":"DCE","Products":["a"]}],
+    {"Name":"AuctionOnly","Exchanges":[{"ExchangeId":"DCE","Products":["a"]}],
      "Sections":[{"From":850,"To":900,"SectionClass":0}]}
 ])";
 
@@ -38,8 +38,8 @@ DepthMarketDataField MakeTick(const char* instrument_id, long long update_ts, do
 {
     DepthMarketDataField tick{};
     CopyString(tick.TradingDay, "20240301");
-    CopyString(tick.ExchangeID, "SHFE");
-    CopyString(tick.InstrumentID, instrument_id);
+    CopyString(tick.ExchangeId, "SHFE");
+    CopyString(tick.InstrumentId, instrument_id);
     tick.UpdateTs = update_ts;
     tick.LastPrice = last_price;
     tick.PreClosePrice = 100.0;
@@ -61,8 +61,8 @@ public:
         :minute_bar_(trade_sessions_)
     {
         REQUIRE(LoadTradeSessionJson(trade_sessions_, kBarSessionJson));
-        ExchangeIDType exchange_id_buffer{};
-        InstrumentIDType instrument_id_buffer{};
+        ExchangeIdType exchange_id_buffer{};
+        InstrumentIdType instrument_id_buffer{};
         CopyString(exchange_id_buffer, exchange_id);
         CopyString(instrument_id_buffer, instrument_id);
         minute_bar_.Subscribe(&subscriber_);

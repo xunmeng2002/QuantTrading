@@ -3,7 +3,7 @@
 #include <Spark/Core/Utility/Utility.h>
 
 
-namespace quanttrading::testmdapi
+namespace QuantTrading::testmdapi
 {
 MdSpiImpl::MdSpiImpl(MdApi* mdApi)
 	:m_MdApi(mdApi), m_RequestID(0)
@@ -35,7 +35,7 @@ void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, c
 {
 	MdSpiMiddle::OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
 	++m_RspMdUserLogoutCount;
-	// 同一条连接立即重登：内核按传输层 SessionID 清理会话记录，重登应回 ErrorNone，
+	// 同一条连接立即重登：内核按传输层 SessionId 清理会话记录，重登应回 ErrorNone，
 	// 清理失效则回 ErrorSessionAlreadyLogin，故这次重登本身就是对该清理的验证
 	ReqUserLogin();
 }
@@ -63,8 +63,8 @@ void MdSpiImpl::ReqSubscribeMd()
 {
 	for (auto instrument : Config::GetInstance().SubscribeInstruments)
 	{
-        Utility::Strcpy(m_ReqSubMarketData->ExchangeID, instrument->ExchangeID.c_str());
-        Utility::Strcpy(m_ReqSubMarketData->InstrumentID, instrument->InstrumentID.c_str());
+        Utility::Strcpy(m_ReqSubMarketData->ExchangeId, instrument->ExchangeId.c_str());
+        Utility::Strcpy(m_ReqSubMarketData->InstrumentId, instrument->InstrumentId.c_str());
 		m_MdApi->ReqSubMarketData(m_ReqSubMarketData, ++m_RequestID);
 	}
 }

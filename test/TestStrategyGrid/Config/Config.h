@@ -5,9 +5,9 @@
 #include <list>
 
 using std::string;
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::teststrategygrid
+namespace QuantTrading::TestStrategyGrid
 {
 class Config
 {
@@ -19,9 +19,9 @@ public:
 	
 public:
 	int LogLevel;
-	string AccountID;
-	string ExchangeID;
-	string InstrumentID;
+	string AccountId;
+	string ExchangeId;
+	string InstrumentId;
 	string BarPreces;
 	double GridStep;
 	int GridCount;

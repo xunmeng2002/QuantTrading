@@ -3,7 +3,7 @@
 #include <Spark/Core/Utility/Utility.h>
 
 
-namespace quanttrading::testtraderapi
+namespace QuantTrading::testtraderapi
 {
 TraderSpiImpl::TraderSpiImpl(TraderApi* api)
 	:m_TraderApi(api), m_AccountInfo(nullptr), m_Instrument{}, m_HasInstrument(false), m_MaxRequestID(0), m_MaxClientOrderID(0), m_OrderCount(0),
@@ -46,7 +46,7 @@ void TraderSpiImpl::OnRspInsertOrder(const ReqInsertOrderField* reqSEInsertOrder
 void TraderSpiImpl::OnRspQryInstrument(const InstrumentField* sEInstrument, const RspInfoField* rspInfo, int requestID, bool isLast)
 {
 	TraderSpiMiddle::OnRspQryInstrument(sEInstrument, rspInfo, requestID, isLast);
-	if (m_HasInstrument == false && sEInstrument != nullptr && strcmp(sEInstrument->ExchangeID, "CFFEX") == 0)
+	if (m_HasInstrument == false && sEInstrument != nullptr && strcmp(sEInstrument->ExchangeId, "CFFEX") == 0)
 	{
 		m_Instrument = *sEInstrument;
 		m_HasInstrument = true;
@@ -74,7 +74,7 @@ void TraderSpiImpl::ReqQryOrder()
 {
 	ReqQryOrderField qryOrder;
 	memset(&qryOrder, 0, sizeof(ReqQryOrderField));
-	strcpy(qryOrder.AccountID, m_AccountInfo->InvestorID);
+	strcpy(qryOrder.AccountId, m_AccountInfo->InvestorId);
 	m_TraderApi->ReqQryOrder(&qryOrder, ++m_MaxRequestID);
 }
 void TraderSpiImpl::ReqInsertOrders()
@@ -99,7 +99,7 @@ void TraderSpiImpl::ReqAccountLogin()
 {
 	ReqAccountLoginField brokerLogin;
 	memset(&brokerLogin, 0, sizeof(ReqAccountLoginField));
-	strcpy(brokerLogin.AccountID, m_AccountInfo->InvestorID);
+	strcpy(brokerLogin.AccountId, m_AccountInfo->InvestorId);
 	strcpy(brokerLogin.Password, m_AccountInfo->Password);
 	m_TraderApi->ReqAccountLogin(&brokerLogin, ++m_MaxRequestID);
 }
@@ -113,15 +113,15 @@ void TraderSpiImpl::ReqInsertOrder(DirectionType direction, OffsetFlagType offse
 {
 	ReqInsertOrderField insertOrder;
 	memset(&insertOrder, 0, sizeof(ReqInsertOrderField));
-	strcpy(insertOrder.AccountID, m_AccountInfo->InvestorID);
-	strcpy(insertOrder.ExchangeID, m_Instrument.ExchangeID);
-	strcpy(insertOrder.InstrumentID, m_Instrument.InstrumentID);
+	strcpy(insertOrder.AccountId, m_AccountInfo->InvestorId);
+	strcpy(insertOrder.ExchangeId, m_Instrument.ExchangeId);
+	strcpy(insertOrder.InstrumentId, m_Instrument.InstrumentId);
 	insertOrder.Direction = direction;
 	insertOrder.OffsetFlag = offsetFlag;
 	insertOrder.OrderPriceType = orderPriceType;
 	insertOrder.Price = price;
 	insertOrder.Volume = volume;
-	insertOrder.ClientOrderID = ++m_MaxClientOrderID;
+	insertOrder.ClientOrderId = ++m_MaxClientOrderID;
 
 	m_TraderApi->ReqInsertOrder(&insertOrder, ++m_MaxRequestID);
 }
@@ -129,14 +129,14 @@ void TraderSpiImpl::ReqCancelOrder(const OrderField* order)
 {
 	ReqCancelOrderField cancelOrder;
 	memset(&cancelOrder, 0, sizeof(ReqCancelOrderField));
-	strcpy(cancelOrder.AccountID, order->AccountID);
-	strcpy(cancelOrder.ExchangeID, order->ExchangeID);
-	strcpy(cancelOrder.InstrumentID, order->InstrumentID);
+	strcpy(cancelOrder.AccountId, order->AccountId);
+	strcpy(cancelOrder.ExchangeId, order->ExchangeId);
+	strcpy(cancelOrder.InstrumentId, order->InstrumentId);
 	cancelOrder.ClientCancelOrderID = ++m_MaxClientOrderID;
-	cancelOrder.OrderID = order->OrderID;
-	strcpy(cancelOrder.OrderSysID, order->OrderSysID);
-	cancelOrder.SessionID = order->SessionID;
-	cancelOrder.ClientOrderID = order->ClientOrderID;
+	cancelOrder.OrderId = order->OrderId;
+	strcpy(cancelOrder.OrderSysId, order->OrderSysId);
+	cancelOrder.SessionId = order->SessionId;
+	cancelOrder.ClientOrderId = order->ClientOrderId;
 
 	m_TraderApi->ReqCancelOrder(&cancelOrder, ++m_MaxRequestID);
 }

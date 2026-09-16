@@ -2,14 +2,14 @@
 #include <Spark/Core/Logger/Logger.h>
 #include <string.h>
 
-namespace quanttrading::testbacktest
+namespace QuantTrading::testbacktest
 {
 BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi, const Config& config)
 	:m_BackTestApi(backTestApi), m_LastOrderTickMd(nullptr), m_LastOrderBarMd(nullptr), m_MaxRequestID(0), m_MaxClientOrderID(0)
 {
-	strcpy(m_AccountID, config.AccountID.c_str());
-	strcpy(m_ExchangeID, config.ExchangeID.c_str());
-	strcpy(m_InstrumentID, config.InstrumentID.c_str());
+	strcpy(m_AccountID, config.AccountId.c_str());
+	strcpy(m_ExchangeID, config.ExchangeId.c_str());
+	strcpy(m_InstrumentID, config.InstrumentId.c_str());
 }
 
 void BackTestSpiImpl::OnConnected()
@@ -31,7 +31,7 @@ void BackTestSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMark
 	if (m_LastOrderTickMd == nullptr)
 	{
 		m_LastOrderTickMd = new DepthMarketDataField();
-		ReqInsertOrder(m_LastOrderTickMd->ExchangeID, m_LastOrderTickMd->InstrumentID, m_LastOrderTickMd->LastPrice, DirectionType::Buy);
+		ReqInsertOrder(m_LastOrderTickMd->ExchangeId, m_LastOrderTickMd->InstrumentId, m_LastOrderTickMd->LastPrice, DirectionType::Buy);
 		memcpy(m_LastOrderTickMd, depthMarketData, sizeof(DepthMarketDataField));
 	}
     else
@@ -39,12 +39,12 @@ void BackTestSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMark
         auto percentChange = (depthMarketData->LastPrice - m_LastOrderTickMd->LastPrice) / m_LastOrderTickMd->LastPrice;
         if (percentChange > 0.1)
         {
-            ReqInsertOrder(depthMarketData->ExchangeID, depthMarketData->InstrumentID, depthMarketData->LastPrice, DirectionType::Sell);
+            ReqInsertOrder(depthMarketData->ExchangeId, depthMarketData->InstrumentId, depthMarketData->LastPrice, DirectionType::Sell);
             memcpy(m_LastOrderTickMd, depthMarketData, sizeof(DepthMarketDataField));
         }
         else if (percentChange < -0.1)
         {
-            ReqInsertOrder(depthMarketData->ExchangeID, depthMarketData->InstrumentID, depthMarketData->LastPrice, DirectionType::Buy);
+            ReqInsertOrder(depthMarketData->ExchangeId, depthMarketData->InstrumentId, depthMarketData->LastPrice, DirectionType::Buy);
             memcpy(m_LastOrderTickMd, depthMarketData, sizeof(DepthMarketDataField));
         }
     }
@@ -56,7 +56,7 @@ void BackTestSpiImpl::OnRtnBarMarketData(const BarMarketDataField* barMarketData
 	{
 		m_LastOrderBarMd = new BarMarketDataField();
 		memcpy(m_LastOrderBarMd, barMarketData, sizeof(BarMarketDataField));
-		ReqInsertOrder(m_LastOrderBarMd->ExchangeID, m_LastOrderBarMd->InstrumentID, m_LastOrderBarMd->Close, DirectionType::Buy);
+		ReqInsertOrder(m_LastOrderBarMd->ExchangeId, m_LastOrderBarMd->InstrumentId, m_LastOrderBarMd->Close, DirectionType::Buy);
 	}
 	else
 	{
@@ -64,12 +64,12 @@ void BackTestSpiImpl::OnRtnBarMarketData(const BarMarketDataField* barMarketData
 		if (percentChange > 0.1)
 		{
 			memcpy(m_LastOrderBarMd, barMarketData, sizeof(BarMarketDataField));
-			ReqInsertOrder(barMarketData->ExchangeID, barMarketData->InstrumentID, barMarketData->Close, DirectionType::Sell);
+			ReqInsertOrder(barMarketData->ExchangeId, barMarketData->InstrumentId, barMarketData->Close, DirectionType::Sell);
 		}
 		else if (percentChange < -0.1)
 		{
 			memcpy(m_LastOrderBarMd, barMarketData, sizeof(BarMarketDataField));
-			ReqInsertOrder(barMarketData->ExchangeID, barMarketData->InstrumentID, barMarketData->Close, DirectionType::Buy);
+			ReqInsertOrder(barMarketData->ExchangeId, barMarketData->InstrumentId, barMarketData->Close, DirectionType::Buy);
 		}
 	}
 }
@@ -108,7 +108,7 @@ void BackTestSpiImpl::ReqRegisterAccount()
 {
 	ReqRegisterAccountField reqRegisterAccount;
 	memset(&reqRegisterAccount, 0, sizeof(ReqRegisterAccountField));
-	strcpy(reqRegisterAccount.AccountID, m_AccountID);
+	strcpy(reqRegisterAccount.AccountId, m_AccountID);
 	m_BackTestApi->ReqRegisterAccount(&reqRegisterAccount, ++m_MaxRequestID);
 }
 
@@ -117,26 +117,26 @@ void BackTestSpiImpl::ReqSubMarketData()
 	// BarPeriod 留 0 = 不做周期聚合，按数据集精度收 bar
 	ReqSubMarketDataField reqSubMd;
 	memset(&reqSubMd, 0, sizeof(ReqSubMarketDataField));
-	strcpy(reqSubMd.ExchangeID, m_ExchangeID);
-	strcpy(reqSubMd.InstrumentID, m_InstrumentID);
+	strcpy(reqSubMd.ExchangeId, m_ExchangeID);
+	strcpy(reqSubMd.InstrumentId, m_InstrumentID);
 	m_BackTestApi->ReqSubMarketData(&reqSubMd, ++m_MaxRequestID);
 	ReqSubMarketDataFinishedField reqSubMdFinished;
 	memset(&reqSubMdFinished, 0, sizeof(ReqSubMarketDataFinishedField));
 	m_BackTestApi->ReqSubMarketDataFinished(&reqSubMdFinished, ++m_MaxRequestID);
 }
-void BackTestSpiImpl::ReqInsertOrder(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID, const double& price, DirectionType direction)
+void BackTestSpiImpl::ReqInsertOrder(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId, const double& price, DirectionType direction)
 {
 	ReqInsertOrderField reqInsertOrder;
 	memset(&reqInsertOrder, 0, sizeof(ReqInsertOrderField));
-	strcpy(reqInsertOrder.AccountID, m_AccountID);
-	strcpy(reqInsertOrder.ExchangeID, exchangeID);
-	strcpy(reqInsertOrder.InstrumentID, instrumentID);
+	strcpy(reqInsertOrder.AccountId, m_AccountID);
+	strcpy(reqInsertOrder.ExchangeId, exchangeId);
+	strcpy(reqInsertOrder.InstrumentId, instrumentId);
 	reqInsertOrder.Direction = direction;
 	reqInsertOrder.OffsetFlag = OffsetFlagType::Open;
 	reqInsertOrder.OrderPriceType = OrderPriceTypeType::LimitPrice;
 	reqInsertOrder.Price = price;
 	reqInsertOrder.Volume = 1;
-	reqInsertOrder.ClientOrderID = ++m_MaxClientOrderID;
+	reqInsertOrder.ClientOrderId = ++m_MaxClientOrderID;
 	m_BackTestApi->ReqInsertOrder(&reqInsertOrder, ++m_MaxRequestID);
 }
 }

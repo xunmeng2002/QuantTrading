@@ -1,8 +1,8 @@
-﻿// 本文件由 ../Templates/Cpp/Error/Error.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Error/Error.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "Error.h"
 #include <map>
 
-namespace quanttrading
+namespace QuantTrading
 {
 	std::map<unsigned int, std::string> Errors = {
 		{ErrorNone, reinterpret_cast<const char*>(u8"正确")},

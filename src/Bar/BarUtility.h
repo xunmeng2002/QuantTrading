@@ -4,9 +4,9 @@
 #include <list>
 #include <string>
 
-namespace quanttrading::bar
+namespace QuantTrading::bar
 {
-    std::string GetUnderlyingID(const std::string& instrumentID);
+    std::string GetUnderlyingID(const std::string& instrumentId);
 
     void UpdateBarFromDepthMarketData(DepthMarketDataField* depthMd, BarMarketDataField* bar);
     void UpdateBarFromBar(BarMarketDataField* srcBar, BarMarketDataField* destBar);

@@ -8,13 +8,13 @@
 #include <vector>
 #include <string>
 
-using quanttrading::AccountInfo;
-namespace quanttrading::simexchangeinit
+using QuantTrading::AccountInfo;
+namespace QuantTrading::simexchangeinit
 {
 class CThostFtdcTraderSpiImpl : public CThostFtdcTraderSpiMiddle
 {
 public:
-	CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, mdb::Mdb* mdb);
+	CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, QuantTrading::Mdb* mdb);
 
 	virtual void OnFrontConnected() override;
 	virtual void OnFrontDisconnected(int nReason) override;
@@ -48,14 +48,14 @@ public:
 	std::atomic<bool> m_QryFinished;
 private:
 	CThostFtdcTraderApi* m_TraderApi;
-	mdb::Mdb* m_Mdb;
+	QuantTrading::Mdb* m_Mdb;
 	int m_RequestID;
 
 	AccountInfo* m_AccountInfo;
 	std::string m_NewPassword;
 
-	std::vector<mdb::Exchange*>* m_Exchanges;
-	std::vector<mdb::Product*>* m_Products;
-	std::vector<mdb::Instrument*>* m_Instruments;
+	std::vector<QuantTrading::Exchange*>* m_Exchanges;
+	std::vector<QuantTrading::Product*>* m_Products;
+	std::vector<QuantTrading::Instrument*>* m_Instruments;
 };
 }

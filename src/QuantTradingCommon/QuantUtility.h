@@ -2,7 +2,7 @@
 #include <Spark/Types.h>
 #include <string>
 
-namespace quanttrading
+namespace QuantTrading
 {
     DirectionType GetOppoDirection(const DirectionType& direction);
     PosiDirectionType GetPosiDirection(const OffsetFlagType& offsetFlag, const DirectionType& direction);

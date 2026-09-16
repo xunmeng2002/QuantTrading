@@ -4,9 +4,9 @@
 
 using namespace std;
 using namespace mdb;
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::simexchangeinit
+namespace QuantTrading::simexchangeinit
 {
 void InitTradingDay(Mdb* mdb, const std::string& currTradingDay)
 {
@@ -25,17 +25,17 @@ void InitExchange(Mdb* mdb)
 	Exchange* exchange5 = new Exchange();
 	Exchange* exchange6 = new Exchange();
 
-	strcpy(exchange1->ExchangeID, "CFFEX");
+	strcpy(exchange1->ExchangeId, "CFFEX");
 	strcpy(exchange1->ExchangeName, (const char*)(u8"中国金融期货交易所"));
-	strcpy(exchange2->ExchangeID, "SHFE");
+	strcpy(exchange2->ExchangeId, "SHFE");
 	strcpy(exchange2->ExchangeName, (const char*)(u8"上海期货交易所"));
-	strcpy(exchange3->ExchangeID, "DCE");
+	strcpy(exchange3->ExchangeId, "DCE");
 	strcpy(exchange3->ExchangeName, (const char*)(u8"大商所"));
-	strcpy(exchange4->ExchangeID, "CZCE");
+	strcpy(exchange4->ExchangeId, "CZCE");
 	strcpy(exchange4->ExchangeName, (const char*)(u8"֣郑商所"));
-	strcpy(exchange5->ExchangeID, "INE");
+	strcpy(exchange5->ExchangeId, "INE");
 	strcpy(exchange5->ExchangeName, (const char*)(u8"能源交易中心"));
-	strcpy(exchange6->ExchangeID, "GFEX");
+	strcpy(exchange6->ExchangeId, "GFEX");
 	strcpy(exchange6->ExchangeName, (const char*)(u8"广州期货交易所"));
 
 	mdb->exchange->Insert(exchange1);
@@ -61,7 +61,7 @@ void InitPrimaryAccount(Mdb* mdb, AccountInfo* accountInfo)
 {
 	PrimaryAccount* record1 = new PrimaryAccount();
 	memset(record1, 0, sizeof(PrimaryAccount));
-	strcpy(record1->PrimaryAccountID, accountInfo->InvestorID);
+	strcpy(record1->PrimaryAccountID, accountInfo->InvestorId);
 	strcpy(record1->PrimaryAccountName, accountInfo->Phone);
 	record1->AccountClass = AccountClassType::Option;
 	strcpy(record1->Password, accountInfo->Password);
@@ -75,7 +75,7 @@ void InitPrimaryAccount(Mdb* mdb, AccountInfo* accountInfo)
 Account* InitAccount(Mdb* mdb, AccountInfo* accountInfo)
 {
 	Account* account = new Account();
-	strcpy(account->AccountID, accountInfo->InvestorID);
+	strcpy(account->AccountId, accountInfo->InvestorId);
 	strcpy(account->AccountName, accountInfo->Phone);
 	account->AccountType = AccountTypeType::Primary;
 	account->AccountStatus = AccountStatusType::Normal;
@@ -91,7 +91,7 @@ void InitCapital(Mdb* mdb, Account* account, const std::string& currTradingDay)
 	Capital* capital = new Capital();
 	memset(capital, 0, sizeof(Capital));
 	strcpy(capital->TradingDay, currTradingDay.c_str());
-	strcpy(capital->AccountID, account->AccountID);
+	strcpy(capital->AccountId, account->AccountId);
 	capital->AccountType = account->AccountType;
 	capital->Balance = 0;
 	capital->PreBalance = 0;
@@ -125,7 +125,7 @@ void InitTrade(Mdb* mdb, Account* account)
 {
 }
 
-void Init(mdb::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay)
+void Init(QuantTrading::Mdb* mdb, AccountInfo* accountInfo, const std::string& tradingDay)
 {
 	InitTradingDay(mdb, tradingDay);
 	InitHotInstrument(mdb);

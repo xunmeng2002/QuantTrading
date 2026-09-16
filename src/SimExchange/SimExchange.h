@@ -16,28 +16,28 @@
 #include <mutex>
 #include <condition_variable>
 
-using namespace quanttrading::packages;
+using namespace QuantTrading::Packages;
 
-namespace quanttrading::simexchange
+namespace QuantTrading::simexchange
 {
-class SimExchange : public spark::core::ThreadBase, public spark::network::ProtocolSubscriber, public quanttrading::ordermatch::OrderMatchSubscriber
+class SimExchange : public Spark::core::ThreadBase, public Spark::Network::ProtocolSubscriber, public QuantTrading::ordermatch::OrderMatchSubscriber
 {
 public:
-	SimExchange(mdb::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* mdSpi, MatchModeType matchMode);
+	SimExchange(QuantTrading::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* mdSpi, MatchModeType matchMode);
 	~SimExchange();
 
 	void Init();
 
 	void OnMdDisConnected();
 
-	virtual void OnProtocolConnect(SessionIDType sessionID, const char* ip, int port) override;
-	virtual void OnProtocolDisConnect(SessionIDType sessionID, const char* ip, int port) override;
+	virtual void OnProtocolConnect(SessionIdType sessionId, const char* ip, int port) override;
+	virtual void OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port) override;
 	virtual void OnMessage(Package* package) override;
 
 
-	virtual void OnOrder(mdb::Order* order) override;
-    virtual void OnOrderUpdate(mdb::Order* order, mdb::Order* newOrder) override;
-	virtual void OnTrade(mdb::Trade* trade) override;
+	virtual void OnOrder(QuantTrading::Order* order) override;
+    virtual void OnOrderUpdate(QuantTrading::Order* order, QuantTrading::Order* newOrder) override;
+	virtual void OnTrade(QuantTrading::Trade* trade) override;
 protected:
 	virtual void Run() override;
 	void CheckPackages();
@@ -62,29 +62,29 @@ private:
 	void HandleReqQryInstrument(ReqQryInstrumentPackage* reqPackage);
 
 
-	int CheckSessionLogin(const SessionIDType& sessionID);
-	int CheckSessionLogin(const AccountIDType& primaryAccountID, const SessionIDType& sessionID);
+	int CheckSessionLogin(const SessionIdType& sessionId);
+	int CheckSessionLogin(const AccountIdType& primaryAccountID, const SessionIdType& sessionId);
 	
-	void SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, mdb::PrimaryAccount* primaryAccount, int errorID);
+	void SendRspAccountLogin(ReqAccountLoginPackage* reqPackage, QuantTrading::PrimaryAccount* primaryAccount, int errorID);
 	void SendRspInsertOrder(ReqInsertOrderPackage* reqPackage, int errorID);
 	void SendRspCancelOrder(ReqCancelOrderPackage* reqPackage, int errorID);
-	void SendRspQryOrder(ReqQryOrderPackage* reqPackage, int errorID, bool isLast, mdb::Order* order = nullptr);
-	void SendRspQryTrade(ReqQryTradePackage* reqPackage, int errorID, bool isLast, mdb::Trade* trade = nullptr);
-	void SendRspQryInstrument(ReqQryInstrumentPackage* reqPackage, int errorID, bool isLast, mdb::Instrument* instrument = nullptr);
+	void SendRspQryOrder(ReqQryOrderPackage* reqPackage, int errorID, bool isLast, QuantTrading::Order* order = nullptr);
+	void SendRspQryTrade(ReqQryTradePackage* reqPackage, int errorID, bool isLast, QuantTrading::Trade* trade = nullptr);
+	void SendRspQryInstrument(ReqQryInstrumentPackage* reqPackage, int errorID, bool isLast, QuantTrading::Instrument* instrument = nullptr);
 	
-	void SendRtnOrder(mdb::Order* order);
-	void SendRtnTrade(mdb::Trade* trade);
+	void SendRtnOrder(QuantTrading::Order* order);
+	void SendRtnTrade(QuantTrading::Trade* trade);
 
 	Package* GetNextPackage();
-	void ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID);
+	void ReqSubMarketData(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId);
 
 protected:
 	MdFront* m_MdFront;
 	TradeFront* m_TradeFront;
 	MdSpiImpl* m_MdSpi;
-	mdb::Mdb* m_Mdb;
-    quanttrading::ordermatch::OrderMatch* m_OrderMatch;
-	quanttrading::settlement::PositionMaintenance* m_PositionMaintenance;
+	QuantTrading::Mdb* m_Mdb;
+    QuantTrading::ordermatch::OrderMatch* m_OrderMatch;
+	QuantTrading::settlement::PositionMaintenance* m_PositionMaintenance;
 	std::mutex m_Mutex;
 	std::condition_variable m_ConditionVariable;
 

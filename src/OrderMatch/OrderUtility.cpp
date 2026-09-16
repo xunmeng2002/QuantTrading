@@ -7,57 +7,57 @@
 
 using namespace std;
 using namespace mdb;
-using namespace spark::core;
-using namespace quanttrading::packages;
+using namespace Spark::Core;
+using namespace QuantTrading::Packages;
 
-namespace quanttrading::ordermatch
+namespace QuantTrading::ordermatch
 {
-    static OrderIDType g_MaxOrderID = 0;
+    static OrderIdType g_MaxOrderID = 0;
 
-    bool OrderLessForPrice::operator()(const mdb::Order* const left, const mdb::Order* const right) const
+    bool OrderLessForPrice::operator()(const QuantTrading::Order* const left, const QuantTrading::Order* const right) const
     {
         if (left->Price < right->Price)
             return true;
         else if (left->Price > right->Price)
             return false;
-        return left->OrderID < right->OrderID;
+        return left->OrderId < right->OrderId;
     }
-    bool OrderLessForPriceOpposite::operator()(const mdb::Order* const left, const mdb::Order* const right) const
+    bool OrderLessForPriceOpposite::operator()(const QuantTrading::Order* const left, const QuantTrading::Order* const right) const
     {
         if (left->Price > right->Price)
             return true;
         else if (left->Price < right->Price)
             return false;
-        return left->OrderID < right->OrderID;
+        return left->OrderId < right->OrderId;
     }
-    bool OrderLessForOrderID::operator()(const mdb::Order* const left, const mdb::Order* const right) const
+    bool OrderLessForOrderID::operator()(const QuantTrading::Order* const left, const QuantTrading::Order* const right) const
     {
-        return left->OrderID < right->OrderID;
+        return left->OrderId < right->OrderId;
     }
 
-    OrderIDType GetNextOrderID()
+    OrderIdType GetNextOrderID()
     {
         return ++g_MaxOrderID;
     }
-    void SeedNextOrderIDFromMaxOrderID(OrderIDType maxOrderID)
+    void SeedNextOrderIDFromMaxOrderID(OrderIdType maxOrderId)
     {
-        if (maxOrderID > g_MaxOrderID)
+        if (maxOrderId > g_MaxOrderID)
         {
-            g_MaxOrderID = maxOrderID;
+            g_MaxOrderID = maxOrderId;
         }
     }
-    void SeedNextOrderIDFromOrders(mdb::OrderTable* orderTable)
+    void SeedNextOrderIDFromOrders(QuantTrading::OrderTable* orderTable)
     {
-        OrderIDType maxOrderID = 0;
+        OrderIdType maxOrderId = 0;
         auto orderPair = orderTable->primaryKey->SelectAll();
         for (auto& it = orderPair.first; it != orderPair.second; ++it)
         {
-            if ((*it)->OrderID > maxOrderID)
+            if ((*it)->OrderId > maxOrderId)
             {
-                maxOrderID = (*it)->OrderID;
+                maxOrderId = (*it)->OrderId;
             }
         }
-        SeedNextOrderIDFromMaxOrderID(maxOrderID);
+        SeedNextOrderIDFromMaxOrderID(maxOrderId);
     }
     bool IsMarketPriceClass(OrderPriceTypeType orderPriceType)
     {
@@ -83,9 +83,9 @@ namespace quanttrading::ordermatch
             return false;
         }
     }
-    int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, mdb::Instrument* instrument)
+    int CheckForInsertOrder(ReqInsertOrderField* reqInsertOrder, QuantTrading::Instrument* instrument)
     {
-        if (strlen(reqInsertOrder->AccountID) == 0)
+        if (strlen(reqInsertOrder->AccountId) == 0)
             return ErrorAccountNotExist;
         if (reqInsertOrder->Direction != DirectionType::Buy && reqInsertOrder->Direction != DirectionType::Sell)
             return ErrorInvalidDirection;
@@ -124,7 +124,7 @@ namespace quanttrading::ordermatch
         }
         return ErrorNone;
     }
-    int CheckForCancelOrder(mdb::Order* order)
+    int CheckForCancelOrder(QuantTrading::Order* order)
     {
         if (order->OrderStatus == OrderStatusType::Inserting || order->OrderStatus == OrderStatusType::Inserted || order->OrderStatus == OrderStatusType::PartTraded)
         {
@@ -132,19 +132,19 @@ namespace quanttrading::ordermatch
         }
         return ErrorFinalOrderStatus;
     }
-    mdb::Order* CreateOrder(ReqInsertOrderPackage* reqPackage, mdb::Account* account, mdb::Instrument* instrument,
-        const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIDType& offerID)
+    QuantTrading::Order* CreateOrder(ReqInsertOrderPackage* reqPackage, QuantTrading::Account* account, QuantTrading::Instrument* instrument,
+        const DateType& tradingDay, const DateType& orderDate, const TimeType& orderTime, const OfferIdType& offerID)
     {
         auto order = Order::Allocate();
         memset(order, 0, sizeof(Order));
         Utility::Strcpy(order->TradingDay, tradingDay);
-        Utility::Strcpy(order->AccountID, reqPackage->ReqInsertOrder->AccountID);
+        Utility::Strcpy(order->AccountId, reqPackage->ReqInsertOrder->AccountId);
         order->AccountType = account->AccountType;
-        Utility::Strcpy(order->ExchangeID, reqPackage->ReqInsertOrder->ExchangeID);
-        Utility::Strcpy(order->InstrumentID, reqPackage->ReqInsertOrder->InstrumentID);
+        Utility::Strcpy(order->ExchangeId, reqPackage->ReqInsertOrder->ExchangeId);
+        Utility::Strcpy(order->InstrumentId, reqPackage->ReqInsertOrder->InstrumentId);
         order->ProductClass = instrument->ProductClass;
-        order->OrderID = GetNextOrderID();
-        strcpy(order->OrderSysID, std::to_string(order->OrderID).c_str());
+        order->OrderId = GetNextOrderID();
+        strcpy(order->OrderSysId, std::to_string(order->OrderId).c_str());
         order->Direction = reqPackage->ReqInsertOrder->Direction;
         order->OffsetFlag = reqPackage->ReqInsertOrder->OffsetFlag;
         order->OrderPriceType = reqPackage->ReqInsertOrder->OrderPriceType;
@@ -156,9 +156,9 @@ namespace quanttrading::ordermatch
         order->OrderStatus = OrderStatusType::Inserted;
         Utility::Strcpy(order->OrderDate, orderDate);
         Utility::Strcpy(order->OrderTime, orderTime);
-        order->SessionID = reqPackage->SessionID;
-        order->ClientOrderID = reqPackage->ReqInsertOrder->ClientOrderID;
-        order->RequestID = reqPackage->Head.MsgSeqNum;
+        order->SessionId = reqPackage->SessionId;
+        order->ClientOrderId = reqPackage->ReqInsertOrder->ClientOrderId;
+        order->RequestId = reqPackage->Head.MsgSeqNum;
         order->OfferID = offerID;
         order->TradeGroupID = account->TradeGroupID;
         order->RiskGroupID = account->RiskGroupID;
@@ -168,15 +168,15 @@ namespace quanttrading::ordermatch
 
         return order;
     }
-    mdb::Position* CreatePosition(mdb::Trade* trade, const PosiDirectionType& posiDirection)
+    QuantTrading::Position* CreatePosition(QuantTrading::Trade* trade, const PosiDirectionType& posiDirection)
     {
-        auto position = mdb::Position::Allocate();
+        auto position = QuantTrading::Position::Allocate();
         memset(position, 0, sizeof(Position));
         strcpy(position->TradingDay, trade->TradingDay);
-        strcpy(position->AccountID, trade->AccountID);
+        strcpy(position->AccountId, trade->AccountId);
         position->AccountType = trade->AccountType;
-        strcpy(position->ExchangeID, trade->ExchangeID);
-        strcpy(position->InstrumentID, trade->InstrumentID);
+        strcpy(position->ExchangeId, trade->ExchangeId);
+        strcpy(position->InstrumentId, trade->InstrumentId);
         position->ProductClass = trade->ProductClass;
         position->PosiDirection = posiDirection;
         position->TotalPosition = trade->Volume;
@@ -188,19 +188,19 @@ namespace quanttrading::ordermatch
         position->SettlementPrice = trade->Price;
         return position;
     }
-    mdb::PositionDetail* CreatePositionDetail(mdb::Trade* trade, const PosiDirectionType& posiDirection)
+    QuantTrading::PositionDetail* CreatePositionDetail(QuantTrading::Trade* trade, const PosiDirectionType& posiDirection)
     {
-        auto positionDetail = mdb::PositionDetail::Allocate();
+        auto positionDetail = QuantTrading::PositionDetail::Allocate();
         memset(positionDetail, 0, sizeof(PositionDetail));
         strcpy(positionDetail->TradingDay, trade->TradingDay);
-        strcpy(positionDetail->AccountID, trade->AccountID);
+        strcpy(positionDetail->AccountId, trade->AccountId);
         positionDetail->AccountType = trade->AccountType;
-        strcpy(positionDetail->ExchangeID, trade->ExchangeID);
-        strcpy(positionDetail->InstrumentID, trade->InstrumentID);
+        strcpy(positionDetail->ExchangeId, trade->ExchangeId);
+        strcpy(positionDetail->InstrumentId, trade->InstrumentId);
         positionDetail->ProductClass = trade->ProductClass;
         positionDetail->PosiDirection = posiDirection;
         strcpy(positionDetail->OpenDate, trade->TradingDay);
-        strcpy(positionDetail->TradeID, trade->TradeID);
+        strcpy(positionDetail->TradeId, trade->TradeId);
         positionDetail->Volume = trade->Volume;
         positionDetail->OpenPrice = trade->Price;
         positionDetail->Commission = trade->Commission;

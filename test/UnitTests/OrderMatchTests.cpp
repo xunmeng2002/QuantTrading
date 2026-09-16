@@ -6,8 +6,8 @@
 
 #include <vector>
 
-using namespace quanttrading::ordermatch;
-using namespace quanttrading::unittest;
+using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::unittest;
 
 TEST_SUITE("OrderMatch")
 {

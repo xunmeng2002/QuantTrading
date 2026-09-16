@@ -11,8 +11,8 @@
 #include <string>
 
 
-using quanttrading::AccountInfo;
-namespace quanttrading::mdoffer
+using QuantTrading::AccountInfo;
+namespace QuantTrading::mdoffer
 {
     class MdKernel;
     class CThostFtdcMdSpiImpl : public CThostFtdcMdSpiMiddle

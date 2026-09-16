@@ -3,8 +3,8 @@
 #include <map>
 #include <string>
 
-using quanttrading::packages::RtnDepthMarketDataPackage;
-namespace quanttrading::mdoffer
+using QuantTrading::Packages::RtnDepthMarketDataPackage;
+namespace QuantTrading::mdoffer
 {
     class MdSnap
     {
@@ -14,7 +14,7 @@ namespace quanttrading::mdoffer
     public:
         static MdSnap& GetInstance();
 
-        RtnDepthMarketDataPackage* GetDepthMd(const char* exchangeID, const char* instrumentID);
+        RtnDepthMarketDataPackage* GetDepthMd(const char* exchangeId, const char* instrumentId);
         RtnDepthMarketDataPackage* AddDepthMd(RtnDepthMarketDataPackage* depthMd);
 
     private:

@@ -3,8 +3,8 @@
 #include "Config/Config.h"
 #include <Spark/Core/Logger/Logger.h>
 
-using namespace quanttrading;
-using namespace quanttrading::teststrategygrid;
+using namespace QuantTrading;
+using namespace QuantTrading::teststrategygrid;
 
 const char* ConfigName = "TestStrategyGrid.json";
 
@@ -23,10 +23,10 @@ int main(int argc, char* argv[])
 	gridParams.GridStep = config.GridStep;
 	gridParams.GridCount = config.GridCount;
 	gridParams.VolumePerGrid = config.VolumePerGrid;
-	gridParams.ExchangeID = config.ExchangeID;
-	gridParams.InstrumentID = config.InstrumentID;
+	gridParams.ExchangeId = config.ExchangeId;
+	gridParams.InstrumentId = config.InstrumentId;
 	gridParams.BarPreces = config.BarPreces;
-	GridStrategy gridStrategy(api, config.AccountID.c_str(), gridParams);
+	GridStrategy gridStrategy(api, config.AccountId.c_str(), gridParams);
 	if (!gridStrategy.Start())
 	{
 		Logger::GetInstance().Stop();

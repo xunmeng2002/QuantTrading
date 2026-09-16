@@ -7,7 +7,7 @@
 #include <list>
 #include <string>
 
-namespace quanttrading::bar
+namespace QuantTrading::bar
 {
     class MinuteBar
     {
@@ -15,7 +15,7 @@ namespace quanttrading::bar
         // tradeSessions 须长于本对象，且装载后不得再装载（见 TradeSessions）
         explicit MinuteBar(const TradeSessions& tradeSessions);
         void Subscribe(BarSubscriber* barSubscriber);
-        void ReqSubMarketData(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID);
+        void ReqSubMarketData(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId);
         void OnDepthMarketData(DepthMarketDataField* depthMarketData);
 
     private:

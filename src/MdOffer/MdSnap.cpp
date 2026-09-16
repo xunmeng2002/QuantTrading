@@ -1,7 +1,7 @@
 #include "MdSnap.h"
 #include <string.h>
 
-namespace quanttrading::mdoffer
+namespace QuantTrading::mdoffer
 {
     MdSnap MdSnap::m_Instance;
     MdSnap::MdSnap()
@@ -10,10 +10,10 @@ namespace quanttrading::mdoffer
     {
         return m_Instance;
     }
-    RtnDepthMarketDataPackage* MdSnap::GetDepthMd(const char* exchangeID, const char* instrumentID)
+    RtnDepthMarketDataPackage* MdSnap::GetDepthMd(const char* exchangeId, const char* instrumentId)
     {
-        auto& depthMds = m_ExchangeDepthMds[exchangeID];
-        auto depthMdIt = depthMds.find(instrumentID);
+        auto& depthMds = m_ExchangeDepthMds[exchangeId];
+        auto depthMdIt = depthMds.find(instrumentId);
         if (depthMdIt == depthMds.end())
         {
             return nullptr;
@@ -22,13 +22,13 @@ namespace quanttrading::mdoffer
     }
     RtnDepthMarketDataPackage* MdSnap::AddDepthMd(RtnDepthMarketDataPackage* depthMd)
     {
-        auto& depthMds = m_ExchangeDepthMds[depthMd->DepthMarketData->ExchangeID];
-        auto it = depthMds.find(depthMd->DepthMarketData->InstrumentID);
+        auto& depthMds = m_ExchangeDepthMds[depthMd->DepthMarketData->ExchangeId];
+        auto it = depthMds.find(depthMd->DepthMarketData->InstrumentId);
         if (it == depthMds.end())
         {
             depthMd->DepthMarketData->CurrVolume = depthMd->DepthMarketData->Volume;
             depthMd->DepthMarketData->CurrTurnover = depthMd->DepthMarketData->Turnover;
-            depthMds[depthMd->DepthMarketData->InstrumentID] = depthMd;
+            depthMds[depthMd->DepthMarketData->InstrumentId] = depthMd;
             return depthMd;
         }
         else

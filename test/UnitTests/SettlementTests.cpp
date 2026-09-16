@@ -4,16 +4,16 @@
 #include "SettlementTestHelpers.h"
 #include <limits>
 
-using namespace quanttrading::unittest;
-using quanttrading::settlement::MdbTickSettlementPriceSource;
-using quanttrading::settlement::Settlement;
+using namespace QuantTrading::unittest;
+using QuantTrading::settlement::MdbTickSettlementPriceSource;
+using QuantTrading::settlement::Settlement;
 
 TEST_SUITE("Settlement")
 {
 
 TEST_CASE("Settle明细逐日逐笔盈亏与期权市值")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
     FixedSettlementPriceSource priceSource;
     priceSource.prices = {{"IF2503", 3100.0}, {"IO2503", 110.0}};
     Settlement settlement(&settlementMdb, &priceSource);
@@ -45,7 +45,7 @@ TEST_CASE("Settle明细逐日逐笔盈亏与期权市值")
 
 TEST_CASE("Settle聚合持仓与资金并核算权益可用")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
     FixedSettlementPriceSource priceSource;
     priceSource.prices = {{"IF2503", 3100.0}};
     Settlement settlement(&settlementMdb, &priceSource);
@@ -86,7 +86,7 @@ TEST_CASE("Settle聚合持仓与资金并核算权益可用")
 
 TEST_CASE("RollToNextDay结转未平记录并过滤已平与零持仓")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
     FixedSettlementPriceSource priceSource;
     Settlement settlement(&settlementMdb, &priceSource);
 
@@ -129,17 +129,17 @@ TEST_CASE("RollToNextDay结转未平记录并过滤已平与零持仓")
 
 TEST_CASE("MdbTickSettlementPriceSource异常值逐级回退")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
     MdbTickSettlementPriceSource priceSource(&settlementMdb);
     auto infinity = std::numeric_limits<double>::infinity();
 
-    auto makeTick = [&](const char* instrumentID, double lastPrice, double preSettlementPrice)
+    auto makeTick = [&](const char* instrumentId, double lastPrice, double preSettlementPrice)
     {
-        auto* tick = mdb::DepthMarketData::Allocate();
-        std::memset(tick, 0, sizeof(mdb::DepthMarketData));
+        auto* tick = QuantTrading::DepthMarketData::Allocate();
+        std::memset(tick, 0, sizeof(QuantTrading::DepthMarketData));
         CopyString(tick->TradingDay, "20240308");
-        CopyString(tick->ExchangeID, "CFFEX");
-        CopyString(tick->InstrumentID, instrumentID);
+        CopyString(tick->ExchangeId, "CFFEX");
+        CopyString(tick->InstrumentId, instrumentId);
         tick->LastPrice = lastPrice;
         tick->PreSettlementPrice = preSettlementPrice;
         REQUIRE(settlementMdb.depthMarketData->Insert(tick));

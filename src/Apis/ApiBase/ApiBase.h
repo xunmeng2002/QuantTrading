@@ -1,13 +1,13 @@
 #pragma once
 #include <Spark/Network/Protocol/Protocol.h>
 #include <Spark/Network/Protocol/ProtocolSubscriber.h>
-#include <Spark/Network/IO/IOThread.h>
+#include <Spark/Network/Io/IoThread.h>
 #include <string>
 
 
-namespace quanttrading
+namespace QuantTrading
 {
-class ApiBase : public spark::network::ProtocolSubscriber
+class ApiBase : public Spark::Network::ProtocolSubscriber
 {
 public:
 	ApiBase(const char* name);
@@ -16,8 +16,8 @@ public:
 protected:
 	ProtocolTypeType m_ProtocolType;
 
-    spark::network::IOThread* m_IOThread;
-    spark::network::Protocol* m_Protocol;
+    Spark::Network::IoThread* m_IOThread;
+    Spark::Network::Protocol* m_Protocol;
 };
 }
 

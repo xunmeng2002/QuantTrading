@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-using namespace quanttrading::bar;
-using namespace quanttrading::unittest;
+using namespace QuantTrading::bar;
+using namespace QuantTrading::unittest;
 
 TEST_SUITE("BarAggregator")
 {
@@ -29,13 +29,13 @@ public:
 };
 
 // 与 Configs/Sessions.json 同构的最小交易节集：SSE 股票时段（9:25 集合竞价 + 上下午各一段）
-const char* kStockSessionJson = R"([{"Name":"SD0930","Exchanges":[{"ExchangeID":"SSE","Products":["*"]}],
+const char* kStockSessionJson = R"([{"Name":"SD0930","Exchanges":[{"ExchangeId":"SSE","Products":["*"]}],
 "Sections":[{"From":925,"To":930,"SectionClass":0},{"From":930,"To":1130,"SectionClass":1},{"From":1300,"To":1500,"SectionClass":1}]}])";
 
 // SHFE 交易所级日盘("*")与 cu 夜盘并置：FD0900 在前仍不匹配具体品种，据此验证品种级时段优先于交易所级 "*"
-const char* kFuturesSessionJson = R"([{"Name":"FD0900","Exchanges":[{"ExchangeID":"SHFE","Products":["*"]}],
+const char* kFuturesSessionJson = R"([{"Name":"FD0900","Exchanges":[{"ExchangeId":"SHFE","Products":["*"]}],
 "Sections":[{"From":855,"To":900,"SectionClass":0},{"From":900,"To":1015,"SectionClass":1},{"From":1030,"To":1130,"SectionClass":1},{"From":1330,"To":1500,"SectionClass":1}]},
-{"Name":"FD0100","Exchanges":[{"ExchangeID":"SHFE","Products":["cu","al"]}],
+{"Name":"FD0100","Exchanges":[{"ExchangeId":"SHFE","Products":["cu","al"]}],
 "Sections":[{"From":2059,"To":2100,"SectionClass":0},{"From":2100,"To":100,"SectionClass":1},{"From":855,"To":900,"SectionClass":0},
 {"From":900,"To":1015,"SectionClass":1},{"From":1030,"To":1130,"SectionClass":1},{"From":1330,"To":1500,"SectionClass":1}]}])";
 
@@ -66,8 +66,8 @@ BarMarketDataField MakeBarField(const char* instrument_id, const char* trading_d
 {
     BarMarketDataField bar{};
     CopyString(bar.TradingDay, trading_day);
-    CopyString(bar.ExchangeID, "SSE");
-    CopyString(bar.InstrumentID, instrument_id);
+    CopyString(bar.ExchangeId, "SSE");
+    CopyString(bar.InstrumentId, instrument_id);
     bar.BarPreces = bar_preces;
     bar.BarPeriod = bar_period;
     bar.BarTime = bar_minute * 100000;
@@ -90,7 +90,7 @@ BarMarketDataField MakeBarField(const char* instrument_id, const char* trading_d
 BarMarketDataField MakeSessionBar(const char* exchange_id, const char* instrument_id, const char* trading_day, long long bar_minute)
 {
     auto bar = MakeBarField(instrument_id, trading_day, bar_minute, BarPrecesType::Minute, 1, 100.0, 100.0, 100.0, 100.0, 1, 1);
-    CopyString(bar.ExchangeID, exchange_id);
+    CopyString(bar.ExchangeId, exchange_id);
     return bar;
 }
 
@@ -98,7 +98,7 @@ BarMarketDataField MakeSessionBar(const char* exchange_id, const char* instrumen
 void FeedMinuteBars(BarAggregator& aggregator, const char* exchange_id, const char* instrument_id, const char* trading_day,
     long long begin_minute, long long end_minute)
 {
-    for (long long bar_minute = begin_minute; bar_minute <= end_minute; bar_minute = spark::core::TimeUtility::MinuteAdd(bar_minute, 1))
+    for (long long bar_minute = begin_minute; bar_minute <= end_minute; bar_minute = Spark::core::TimeUtility::MinuteAdd(bar_minute, 1))
     {
         auto bar = MakeSessionBar(exchange_id, instrument_id, trading_day, bar_minute);
         aggregator.OnBarMarketData(&bar);
@@ -115,7 +115,7 @@ void CheckBarMinutes(const RecordingBarSubscriber& subscriber, const std::vector
     }
 }
 
-class BarProbeStrategy : public quanttrading::strategy::StrategyBase
+class BarProbeStrategy : public QuantTrading::strategy::StrategyBase
 {
 public:
     using StrategyBase::StrategyBase;
@@ -312,13 +312,13 @@ TEST_CASE("多合约独立分桶互不串桶")
     aggregator.OnBarMarketData(&barA5);
 
     REQUIRE(subscriber.bars.size() == 1);
-    CHECK(std::string(subscriber.bars[0].InstrumentID) == "600000");
+    CHECK(std::string(subscriber.bars[0].InstrumentId) == "600000");
     CHECK(subscriber.bars[0].CurrVolume == 5);
     auto barB5 = MakeBarField("000001", "20240301", 202403010935LL, BarPrecesType::Minute, 1, 20.2, 20.8, 20.0, 20.5, 2, 2);
     aggregator.OnBarMarketData(&barB5);
 
     REQUIRE(subscriber.bars.size() == 2);
-    CHECK(std::string(subscriber.bars[1].InstrumentID) == "000001");
+    CHECK(std::string(subscriber.bars[1].InstrumentId) == "000001");
     CHECK(subscriber.bars[1].CurrVolume == 10);
     CHECK(subscriber.bars[1].Open == 20.0);
 }
@@ -387,8 +387,8 @@ TEST_CASE("声明的周期随订阅请求上报引擎")
     // 未声明 → BarPeriod 0，引擎按数据集精度推送
     strategy.SubscribeBar("SSE", "600000");
     REQUIRE(fake_api.subscribe_requests.size() == 1);
-    CHECK(std::string(fake_api.subscribe_requests[0].ExchangeID) == "SSE");
-    CHECK(std::string(fake_api.subscribe_requests[0].InstrumentID) == "600000");
+    CHECK(std::string(fake_api.subscribe_requests[0].ExchangeId) == "SSE");
+    CHECK(std::string(fake_api.subscribe_requests[0].InstrumentId) == "600000");
     CHECK(fake_api.subscribe_requests[0].BarPeriod == 0);
 
     // 声明后每次订阅都带上目标周期，引擎据此为合约挂聚合器
@@ -397,7 +397,7 @@ TEST_CASE("声明的周期随订阅请求上报引擎")
     REQUIRE(fake_api.subscribe_requests.size() == 2);
     CHECK(fake_api.subscribe_requests[1].BarPreces == BarPrecesType::Minute);
     CHECK(fake_api.subscribe_requests[1].BarPeriod == 5);
-    CHECK(std::string(fake_api.subscribe_requests[1].InstrumentID) == "000001");
+    CHECK(std::string(fake_api.subscribe_requests[1].InstrumentId) == "000001");
 
     // 小时以上按分钟折算：60m → Minute×60
     strategy.DeclareBarPeriod("60m");

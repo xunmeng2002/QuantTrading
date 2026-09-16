@@ -2,16 +2,16 @@
 #include "Mdb.h"
 #include <cmath>
 
-namespace quanttrading::settlement
+namespace QuantTrading::settlement
 {
-	MdbTickSettlementPriceSource::MdbTickSettlementPriceSource(mdb::Mdb* mdb)
+	MdbTickSettlementPriceSource::MdbTickSettlementPriceSource(QuantTrading::Mdb* mdb)
 		:m_Mdb(mdb)
 	{
 	}
 
-	PriceType MdbTickSettlementPriceSource::GetSettlementPrice(const mdb::PositionDetail* positionDetail)
+	PriceType MdbTickSettlementPriceSource::GetSettlementPrice(const QuantTrading::PositionDetail* positionDetail)
 	{
-		auto mdTick = m_Mdb->depthMarketData->primaryKey->Select(positionDetail->TradingDay, positionDetail->ExchangeID, positionDetail->InstrumentID);
+		auto mdTick = m_Mdb->DepthMarketData->PrimaryKey->Select(positionDetail->TradingDay, positionDetail->ExchangeId, positionDetail->InstrumentId);
 		if (mdTick == nullptr)
 		{
 			return positionDetail->PreSettlementPrice;

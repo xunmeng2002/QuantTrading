@@ -5,7 +5,7 @@
 #include <mutex>
 #include <string>
 
-namespace quanttrading::simexchange
+namespace QuantTrading::simexchange
 {
 class SimExchange;
 class MdSpiImpl : public MdSpi

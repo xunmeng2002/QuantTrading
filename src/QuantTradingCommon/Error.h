@@ -1,8 +1,8 @@
-﻿// 本文件由 ../Templates/Cpp/Error/Error.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Error/Error.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include <string>
 
-namespace quanttrading
+namespace QuantTrading
 {
 	const char* GetErrorMessage(unsigned int errorID);
 

@@ -6,8 +6,8 @@
 #include <vector>
 #include <map>
 
-using quanttrading::AccountInfo;
-namespace quanttrading::testsimexchangeapi
+using QuantTrading::AccountInfo;
+namespace QuantTrading::testsimexchangeapi
 {
 class SimExchangeSpiImpl : public SimExchangeSpiMiddle
 {

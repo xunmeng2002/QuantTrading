@@ -6,7 +6,7 @@
 #include <map>
 #include <atomic>
 
-namespace quanttrading::testmdapi
+namespace QuantTrading::testmdapi
 {
 class MdSpiImpl : public MdSpiMiddle
 {

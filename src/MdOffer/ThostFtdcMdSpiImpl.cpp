@@ -7,11 +7,11 @@
 #include <vector>
 
 using namespace std;
-using namespace spark;
-using namespace spark::core;
-using namespace quanttrading::packages;
+using namespace Spark;
+using namespace Spark::Core;
+using namespace QuantTrading::Packages;
 
-namespace quanttrading::mdoffer
+namespace QuantTrading::mdoffer
 {
     CThostFtdcMdSpiImpl::CThostFtdcMdSpiImpl(CThostFtdcMdApi* MdApi, MdKernel* mdKernel)
         :m_MdApi(MdApi), m_MdKernel(mdKernel), m_IsLogged(false), m_RequestID(0), m_AccountInfo(nullptr)
@@ -66,18 +66,18 @@ namespace quanttrading::mdoffer
         {
             Utility::Strcpy(package->DepthMarketData->TradingDay, pDepthMarketData->ActionDay);
         }
-        Utility::Strcpy(package->DepthMarketData->InstrumentID, pDepthMarketData->InstrumentID);
-        if (strlen(pDepthMarketData->ExchangeID) != 0)
+        Utility::Strcpy(package->DepthMarketData->InstrumentId, pDepthMarketData->InstrumentId);
+        if (strlen(pDepthMarketData->ExchangeId) != 0)
         {
-            Utility::Strcpy(package->DepthMarketData->ExchangeID, pDepthMarketData->ExchangeID);
+            Utility::Strcpy(package->DepthMarketData->ExchangeId, pDepthMarketData->ExchangeId);
         }
         else
         {
             std::lock_guard<std::mutex> guard(m_Mutex);
-            auto reqSubMdIt = m_ReqSubMds.find(package->DepthMarketData->InstrumentID);
+            auto reqSubMdIt = m_ReqSubMds.find(package->DepthMarketData->InstrumentId);
             if (reqSubMdIt != m_ReqSubMds.end())
             {
-                Utility::Strcpy(package->DepthMarketData->ExchangeID, reqSubMdIt->second->ExchangeID);
+                Utility::Strcpy(package->DepthMarketData->ExchangeId, reqSubMdIt->second->ExchangeId);
             }
         }
         package->DepthMarketData->LastPrice = pDepthMarketData->LastPrice;
@@ -130,16 +130,16 @@ namespace quanttrading::mdoffer
     }
     void CThostFtdcMdSpiImpl::SubscribeMd(const ReqSubMarketDataField* reqSubMd)
     {
-        WriteLog(LogLevel::Info, "SubscribeMd: ExchangeID:%s, InstrumentID:%s", reqSubMd->ExchangeID, reqSubMd->InstrumentID);
+        WriteLog(LogLevel::Info, "SubscribeMd: ExchangeId:%s, InstrumentId:%s", reqSubMd->ExchangeId, reqSubMd->InstrumentId);
         lock_guard<mutex> gurad(m_Mutex);
-        if (!m_ReqSubMds.try_emplace(reqSubMd->InstrumentID, reqSubMd).second)
+        if (!m_ReqSubMds.try_emplace(reqSubMd->InstrumentId, reqSubMd).second)
         {
             return;
         }
-        m_ReqSubInstruments.push_back(reqSubMd->InstrumentID);
+        m_ReqSubInstruments.push_back(reqSubMd->InstrumentId);
         if (m_IsLogged)
         {
-            char* instrument[1] = { const_cast<char*>(reqSubMd->InstrumentID) };
+            char* instrument[1] = { const_cast<char*>(reqSubMd->InstrumentId) };
             m_MdApi->SubscribeMarketData(instrument, 1);
         }
     }
@@ -151,12 +151,12 @@ namespace quanttrading::mdoffer
         std::vector<const char*> newInstruments;
         for (auto reqSubMd : reqSubMds)
         {
-            if (!m_ReqSubMds.try_emplace(reqSubMd->InstrumentID, reqSubMd).second)
+            if (!m_ReqSubMds.try_emplace(reqSubMd->InstrumentId, reqSubMd).second)
             {
                 continue;
             }
-            m_ReqSubInstruments.push_back(reqSubMd->InstrumentID);
-            newInstruments.push_back(reqSubMd->InstrumentID);
+            m_ReqSubInstruments.push_back(reqSubMd->InstrumentId);
+            newInstruments.push_back(reqSubMd->InstrumentId);
         }
         if (m_IsLogged && !newInstruments.empty())
         {
@@ -174,8 +174,8 @@ namespace quanttrading::mdoffer
         CThostFtdcReqUserLoginField userLogin;
         ::memset(&userLogin, 0, sizeof(userLogin));
         Utility::Strcpy(userLogin.TradingDay, "");
-        Utility::Strcpy(userLogin.BrokerID, m_AccountInfo->BrokerID);
-        Utility::Strcpy(userLogin.UserID, m_AccountInfo->InvestorID);
+        Utility::Strcpy(userLogin.BrokerId, m_AccountInfo->BrokerId);
+        Utility::Strcpy(userLogin.UserID, m_AccountInfo->InvestorId);
         Utility::Strcpy(userLogin.Password, m_AccountInfo->Password);
         Utility::Strcpy(userLogin.UserProductInfo, m_AccountInfo->UserProductInfo);
 

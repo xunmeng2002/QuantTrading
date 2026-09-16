@@ -1,9 +1,9 @@
-﻿// 本文件由 ../Templates/Cpp/Api/CApi.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/CApi.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include <QuantTrading/MdCApi.h>
 #include <QuantTrading/MdApi.h>
 #include "MdSpiWrap.h"
 
-using namespace quanttrading;
+using namespace QuantTrading;
 
 static MdApi* s_MdApi = nullptr;
 static MdSpiWrap* s_MdSpiWrap = nullptr;

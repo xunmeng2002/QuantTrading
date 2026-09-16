@@ -1,10 +1,10 @@
-﻿// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include <QuantTrading/BackTestApi.h>
 #include <Spark/Network/Protocol/Package.h>
 
 
-namespace quanttrading::backtest
+namespace QuantTrading::backtest
 {
 class SimExchange;
 class BackTestApiImpl : public BackTestApi

@@ -2,7 +2,7 @@
 #include "BackTestSpiMiddle.h"
 #include "Config/Config.h"
 
-namespace quanttrading::testbacktest
+namespace QuantTrading::testbacktest
 {
 class BackTestSpiImpl : public BackTestSpiMiddle
 {
@@ -26,15 +26,15 @@ public:
 	void ReqSubMarketData();
 
 private:
-	void ReqInsertOrder(const ExchangeIDType& exchangeID, const InstrumentIDType& instrumentID, const double& price, DirectionType direction);
+	void ReqInsertOrder(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId, const double& price, DirectionType direction);
 
 private:
 	BackTestApi* m_BackTestApi;
 	DepthMarketDataField* m_LastOrderTickMd;
 	BarMarketDataField* m_LastOrderBarMd;
-	AccountIDType m_AccountID;
-	ExchangeIDType m_ExchangeID;
-	InstrumentIDType m_InstrumentID;
+	AccountIdType m_AccountID;
+	ExchangeIdType m_ExchangeID;
+	InstrumentIdType m_InstrumentID;
 	int m_MaxRequestID;
 	int m_MaxClientOrderID;
 };

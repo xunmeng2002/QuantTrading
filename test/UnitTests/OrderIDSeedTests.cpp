@@ -5,8 +5,8 @@
 
 #include "doctest/doctest.h"
 
-using namespace quanttrading::ordermatch;
-using namespace quanttrading::unittest;
+using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::unittest;
 
 TEST_SUITE("OrderIDSeed")
 {
@@ -23,15 +23,15 @@ TEST_CASE("SeedNextOrderIDFromMaxOrderID只上移计数器(H17回归)")
     CHECK(GetNextOrderID() == first_id + 2);
 }
 
-TEST_CASE("SeedNextOrderIDFromOrders从订单表最大OrderID续接(H17回归)")
+TEST_CASE("SeedNextOrderIDFromOrders从订单表最大OrderId续接(H17回归)")
 {
-    mdb::OrderTable order_table;
-    PoolRecordGuard<mdb::Order> order_pool;
+    QuantTrading::OrderTable order_table;
+    PoolRecordGuard<QuantTrading::Order> order_pool;
     for (int order_id : {7, 3, 9999999})
     {
         auto* order = order_pool.Create();
-        order->OrderID = order_id;
-        order->ClientOrderID = order_id;
+        order->OrderId = order_id;
+        order->ClientOrderId = order_id;
         REQUIRE(order_table.Insert(order));
     }
 

@@ -1,13 +1,13 @@
-﻿// 本文件由 ../Templates/Cpp/Api/ApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/ApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdApiImpl.h"
 #include "Error.h"
 #include "Packages.h"
 #include <Spark/Network/Protocol/Items.h>
 
-using namespace spark;
-using namespace quanttrading::packages;
+using namespace Spark;
+using namespace QuantTrading::Packages;
 
-namespace quanttrading
+namespace QuantTrading
 {
 MdApi* MdApi::CreateMdApi()
 {

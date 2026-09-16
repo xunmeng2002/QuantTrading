@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-namespace quanttrading::simexchange
+namespace QuantTrading::SimExchange
 {
 Config Config::instance;
 Config::Config()

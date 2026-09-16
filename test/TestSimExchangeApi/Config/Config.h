@@ -5,9 +5,9 @@
 #include <list>
 
 using std::string;
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::testsimexchangeapi
+namespace QuantTrading::TestSimExchangeApi
 {
 class Config
 {

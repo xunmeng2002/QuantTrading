@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace quanttrading::unittest
+namespace QuantTrading::unittest
 {
     // 将字符串拷入固定长度字符数组（截断安全）
     template <std::size_t DestSize>
@@ -23,7 +23,7 @@ namespace quanttrading::unittest
     }
 
     // 用 JSON 字符串装载交易时段（绕开文件读取）；实例由持有方管理生命周期，析构即回收，无需手动清理
-    inline bool LoadTradeSessionJson(quanttrading::bar::TradeSessions& tradeSessions, const char* sessionJson)
+    inline bool LoadTradeSessionJson(QuantTrading::bar::TradeSessions& tradeSessions, const char* sessionJson)
     {
         return tradeSessions.ParseFromJsonString(sessionJson);
     }
@@ -53,7 +53,7 @@ namespace quanttrading::unittest
     };
 
     // 撮合订阅者：记录回调并按引擎契约把 newOrder 状态写回原 order（与 order->Update 的 memcpy 语义一致）
-    class RecordingOrderMatchSubscriber : public quanttrading::ordermatch::OrderMatchSubscriber
+    class RecordingOrderMatchSubscriber : public QuantTrading::ordermatch::OrderMatchSubscriber
     {
     public:
         struct OrderUpdateRecord
@@ -72,21 +72,21 @@ namespace quanttrading::unittest
             long long volume;
         };
 
-        void OnOrder(mdb::Order* order) override
+        void OnOrder(QuantTrading::Order* order) override
         {
-            resting_order_ids.push_back(order->OrderID);
+            resting_order_ids.push_back(order->OrderId);
         }
 
-        void OnOrderUpdate(mdb::Order* order, mdb::Order* new_order) override
+        void OnOrderUpdate(QuantTrading::Order* order, QuantTrading::Order* new_order) override
         {
-            std::memcpy(order, new_order, sizeof(mdb::Order));
-            order_updates.push_back({new_order->OrderID, new_order->VolumeTotal, new_order->VolumeTraded, new_order->OrderStatus});
+            std::memcpy(order, new_order, sizeof(QuantTrading::Order));
+            order_updates.push_back({new_order->OrderId, new_order->VolumeTotal, new_order->VolumeTraded, new_order->OrderStatus});
             new_order->Deallocate();
         }
 
-        void OnTrade(mdb::Trade* trade) override
+        void OnTrade(QuantTrading::Trade* trade) override
         {
-            trades.push_back({trade->OrderID, trade->Direction, trade->Price, trade->Volume});
+            trades.push_back({trade->OrderId, trade->Direction, trade->Price, trade->Volume});
             trade->Deallocate();
         }
 
@@ -99,15 +99,15 @@ namespace quanttrading::unittest
     class OrderPoolGuard
     {
     public:
-        mdb::Order* MakeOrder(int order_id, DirectionType direction, double price, long long volume,
+        QuantTrading::Order* MakeOrder(int order_id, DirectionType direction, double price, long long volume,
             OrderPriceTypeType order_price_type = OrderPriceTypeType::LimitPrice)
         {
             auto* order = order_pool_.Create();
             CopyString(order->TradingDay, "20240301");
-            CopyString(order->AccountID, "test");
-            CopyString(order->ExchangeID, "SHFE");
-            CopyString(order->InstrumentID, "cu2503");
-            order->OrderID = order_id;
+            CopyString(order->AccountId, "test");
+            CopyString(order->ExchangeId, "SHFE");
+            CopyString(order->InstrumentId, "cu2503");
+            order->OrderId = order_id;
             order->Direction = direction;
             order->OffsetFlag = OffsetFlagType::Open;
             order->OrderPriceType = order_price_type;
@@ -120,17 +120,17 @@ namespace quanttrading::unittest
         }
 
     private:
-        PoolRecordGuard<mdb::Order> order_pool_;
+        PoolRecordGuard<QuantTrading::Order> order_pool_;
     };
 
     // 造 mdb tick 记录（经守卫登记回池），last_price/bid/ask 按引擎需要填充
-    inline mdb::DepthMarketData* MakeMdTick(PoolRecordGuard<mdb::DepthMarketData>& tick_pool, long long update_ts,
+    inline QuantTrading::DepthMarketData* MakeMdTick(PoolRecordGuard<QuantTrading::DepthMarketData>& tick_pool, long long update_ts,
         double last_price, long long volume, double bid_price, long long bid_volume, double ask_price, long long ask_volume)
     {
         auto* tick = tick_pool.Create();
         CopyString(tick->TradingDay, "20240301");
-        CopyString(tick->ExchangeID, "SHFE");
-        CopyString(tick->InstrumentID, "cu2503");
+        CopyString(tick->ExchangeId, "SHFE");
+        CopyString(tick->InstrumentId, "cu2503");
         tick->UpdateTs = update_ts;
         tick->LastPrice = last_price;
         tick->Volume = volume;
@@ -142,13 +142,13 @@ namespace quanttrading::unittest
     }
 
     // 造 mdb bar 记录（经守卫登记回池）
-    inline mdb::BarMarketData* MakeBarRecord(PoolRecordGuard<mdb::BarMarketData>& bar_pool, long long update_ts,
+    inline QuantTrading::BarMarketData* MakeBarRecord(PoolRecordGuard<QuantTrading::BarMarketData>& bar_pool, long long update_ts,
         double open_price, double high_price, double low_price, double close_price)
     {
         auto* bar = bar_pool.Create();
         CopyString(bar->TradingDay, "20240301");
-        CopyString(bar->ExchangeID, "SHFE");
-        CopyString(bar->InstrumentID, "cu2503");
+        CopyString(bar->ExchangeId, "SHFE");
+        CopyString(bar->InstrumentId, "cu2503");
         bar->UpdateTs = update_ts;
         bar->Open = open_price;
         bar->High = high_price;
@@ -158,14 +158,14 @@ namespace quanttrading::unittest
     }
 
     // 回测策略层测试桩：实现 BackTestApi 纯虚接口，捕获 SPI 注册与 Req 请求，供测试回放引擎事件
-    class FakeBackTestApi : public quanttrading::BackTestApi
+    class FakeBackTestApi : public QuantTrading::BackTestApi
     {
     public:
         bool Init() override { return init_result; }
         void Join() override {}
         void Release() override { ++release_count; }
         void RegisterFront(const char* /*address*/) override {}
-        void RegisterSpi(quanttrading::BackTestSpi* spi) override { registered_spi = spi; }
+        void RegisterSpi(QuantTrading::BackTestSpi* spi) override { registered_spi = spi; }
         int ReqSubMarketData(const ReqSubMarketDataField* req, int requestID) override
         {
             ++subscribe_count;
@@ -202,7 +202,7 @@ namespace quanttrading::unittest
         int subscribe_count = 0;
         int last_subscribe_request_id = 0;
         int register_account_request_id = 0;
-        quanttrading::BackTestSpi* registered_spi = nullptr;
+        QuantTrading::BackTestSpi* registered_spi = nullptr;
         // 逐条留存订阅请求：策略声明的 bar 周期随请求上报，测试据此断言声明的周期已挂到订阅上
         std::vector<ReqSubMarketDataField> subscribe_requests;
         std::vector<ReqRegisterAccountField> register_account_requests;
@@ -215,7 +215,7 @@ namespace quanttrading::unittest
     {
         DepthMarketDataField md_tick;
         std::memset(&md_tick, 0, sizeof(md_tick));
-        CopyString(md_tick.InstrumentID, instrument_id);
+        CopyString(md_tick.InstrumentId, instrument_id);
         md_tick.LastPrice = last_price;
         return md_tick;
     }
@@ -225,7 +225,7 @@ namespace quanttrading::unittest
     {
         BarMarketDataField md_bar;
         std::memset(&md_bar, 0, sizeof(md_bar));
-        CopyString(md_bar.InstrumentID, instrument_id);
+        CopyString(md_bar.InstrumentId, instrument_id);
         md_bar.BarPreces = BarPrecesType::Minute;
         md_bar.BarPeriod = 5;
         md_bar.BarTime = end_bar_minute * 100000;
@@ -245,8 +245,8 @@ namespace quanttrading::unittest
     {
         TradeField trade;
         std::memset(&trade, 0, sizeof(trade));
-        CopyString(trade.InstrumentID, instrument_id);
-        trade.OrderID = order_id;
+        CopyString(trade.InstrumentId, instrument_id);
+        trade.OrderId = order_id;
         trade.Direction = direction;
         trade.OffsetFlag = offset_flag;
         trade.Price = price;
@@ -261,9 +261,9 @@ namespace quanttrading::unittest
     {
         OrderField order;
         std::memset(&order, 0, sizeof(order));
-        CopyString(order.InstrumentID, instrument_id);
-        order.OrderID = order_id;
-        order.ClientOrderID = client_order_id;
+        CopyString(order.InstrumentId, instrument_id);
+        order.OrderId = order_id;
+        order.ClientOrderId = client_order_id;
         return order;
     }
 }

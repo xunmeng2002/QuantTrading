@@ -2,16 +2,16 @@
 #include "doctest/doctest.h"
 #include "SettlementTestHelpers.h"
 
-using namespace quanttrading::unittest;
-using quanttrading::settlement::PositionMaintenance;
+using namespace QuantTrading::unittest;
+using QuantTrading::settlement::PositionMaintenance;
 
 TEST_SUITE("PositionMaintenance")
 {
 
 TEST_CASE("开仓成交建持仓与开仓明细")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
-    PoolRecordGuard<mdb::Trade> tradePool;
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
     auto* trade = MakeSettlementTrade(tradePool, "20240301", "1", DirectionType::Buy, OffsetFlagType::Open, 3000.0, 2);
@@ -28,7 +28,7 @@ TEST_CASE("开仓成交建持仓与开仓明细")
     auto* detail = SelectSettlementPositionDetail(&settlementMdb, "20240301", "IF2503", PosiDirectionType::Long, "20240301", "1");
     REQUIRE(detail != nullptr);
     CHECK(std::string(detail->OpenDate) == "20240301");
-    CHECK(std::string(detail->TradeID) == "1");
+    CHECK(std::string(detail->TradeId) == "1");
     CHECK(detail->Volume == 2);
     CHECK(detail->OpenPrice == 3000.0);
     CHECK(detail->CloseVolume == 0);
@@ -36,8 +36,8 @@ TEST_CASE("开仓成交建持仓与开仓明细")
 
 TEST_CASE("同向加仓累计持仓且明细逐笔新建")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
-    PoolRecordGuard<mdb::Trade> tradePool;
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
     maintenance.UpdateOnTrade(MakeSettlementTrade(tradePool, "20240301", "1", DirectionType::Buy, OffsetFlagType::Open, 3000.0, 2));
@@ -53,8 +53,8 @@ TEST_CASE("同向加仓累计持仓且明细逐笔新建")
 
 TEST_CASE("平仓先开先平且跨日明细盈亏按昨结算价")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
-    PoolRecordGuard<mdb::Trade> tradePool;
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
     REQUIRE(InsertSettlementPosition(&settlementMdb, "20240303", PosiDirectionType::Long, 2, 3050.0));
@@ -81,8 +81,8 @@ TEST_CASE("平仓先开先平且跨日明细盈亏按昨结算价")
 
 TEST_CASE("当日开仓平仓盈亏按开仓价")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
-    PoolRecordGuard<mdb::Trade> tradePool;
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
     maintenance.UpdateOnTrade(MakeSettlementTrade(tradePool, "20240305", "1", DirectionType::Buy, OffsetFlagType::Open, 3000.0, 1));
@@ -95,10 +95,10 @@ TEST_CASE("当日开仓平仓盈亏按开仓价")
     CHECK(detail->CloseProfitByDate == doctest::Approx(30000.0));
 }
 
-TEST_CASE("同日同开仓日期按TradeID先开先平")
+TEST_CASE("同日同开仓日期按TradeId先开先平")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
-    PoolRecordGuard<mdb::Trade> tradePool;
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
     REQUIRE(InsertSettlementPosition(&settlementMdb, "20240306", PosiDirectionType::Long, 2, 3000.0));
@@ -117,8 +117,8 @@ TEST_CASE("同日同开仓日期按TradeID先开先平")
 
 TEST_CASE("超量平仓持仓扣为负且只配对现存明细")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
-    PoolRecordGuard<mdb::Trade> tradePool;
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
     REQUIRE(InsertSettlementPosition(&settlementMdb, "20240307", PosiDirectionType::Long, 1, 3000.0));
@@ -136,8 +136,8 @@ TEST_CASE("超量平仓持仓扣为负且只配对现存明细")
 
 TEST_CASE("期权平仓按方向记现金收支")
 {
-    mdb::Mdb settlementMdb(quanttrading::simexchange::simexchangeTableList);
-    PoolRecordGuard<mdb::Trade> tradePool;
+    QuantTrading::Mdb settlementMdb(QuantTrading::simexchange::simexchangeTableList);
+    PoolRecordGuard<QuantTrading::Trade> tradePool;
     PositionMaintenance maintenance(&settlementMdb);
 
     maintenance.UpdateOnTrade(MakeSettlementTrade(tradePool, "20240308", "1", DirectionType::Sell, OffsetFlagType::Open, 100.0, 1, ProductClassType::FutureOption));

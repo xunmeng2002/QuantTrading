@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-namespace quanttrading::backtest
+namespace QuantTrading::backtest
 {
 class MdReader
 {
@@ -20,20 +20,20 @@ public:
 	BarPrecesType GetBarPrecesType() const { return m_BarPrecesType; }
 	int GetBarPeriod() const { return m_BarPeriod; }
 
-	void ReadMdInstrument(std::list<mdb::Instrument*>& instruments);
-	void ReadMdTick(std::list<mdb::MdSubscribe*>& mdSubscribes, std::list<mdb::DepthMarketData*>& mdTicks);
-	void ReadMdBar(std::list<mdb::MdSubscribe*>& mdSubscribes, std::list<mdb::BarMarketData*>& mdBars);
+	void ReadMdInstrument(std::list<QuantTrading::Instrument*>& instruments);
+	void ReadMdTick(std::list<QuantTrading::MdSubscribe*>& mdSubscribes, std::list<QuantTrading::DepthMarketData*>& mdTicks);
+	void ReadMdBar(std::list<QuantTrading::MdSubscribe*>& mdSubscribes, std::list<QuantTrading::BarMarketData*>& mdBars);
 
 private:
-	void ReadMdTickForOneSub(mdb::MdSubscribe* mdSubscribe, std::list<mdb::DepthMarketData*>& mdTicks);
-	void ReadMdBarForOneSub(mdb::MdSubscribe* mdSubscribe, std::list<mdb::BarMarketData*>& mdBars);
+	void ReadMdTickForOneSub(QuantTrading::MdSubscribe* mdSubscribe, std::list<QuantTrading::DepthMarketData*>& mdTicks);
+	void ReadMdBarForOneSub(QuantTrading::MdSubscribe* mdSubscribe, std::list<QuantTrading::BarMarketData*>& mdBars);
 
-	void UpdateMdTicks(mdb::MdSubscribe* mdSubscribe, std::list<mdb::DepthMarketData*>& mdTicks);
-	void UpdateMdBars(mdb::MdSubscribe* mdSubscribe, std::list<mdb::BarMarketData*>& mdBars);
+	void UpdateMdTicks(QuantTrading::MdSubscribe* mdSubscribe, std::list<QuantTrading::DepthMarketData*>& mdTicks);
+	void UpdateMdBars(QuantTrading::MdSubscribe* mdSubscribe, std::list<QuantTrading::BarMarketData*>& mdBars);
 
 	std::string GetInstrumentSqlString() const;
-	std::string GetTickSqlString(mdb::MdSubscribe* mdSubscribe) const;
-	std::string GetBarSqlString(mdb::MdSubscribe* mdSubscribe) const;
+	std::string GetTickSqlString(QuantTrading::MdSubscribe* mdSubscribe) const;
+	std::string GetBarSqlString(QuantTrading::MdSubscribe* mdSubscribe) const;
 
 private:
 	std::string m_MdDataPath;

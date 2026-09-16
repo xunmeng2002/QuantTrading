@@ -2,7 +2,7 @@
 
 #include "doctest/doctest.h"
 
-using namespace quanttrading::packages;
+using namespace QuantTrading::Packages;
 
 TEST_SUITE("PackageParse")
 {

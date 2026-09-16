@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-using namespace quanttrading::bar;
-using namespace quanttrading::unittest;
+using namespace QuantTrading::bar;
+using namespace QuantTrading::unittest;
 
 TEST_SUITE("TradeSession")
 {
@@ -66,7 +66,7 @@ TEST_CASE("夜盘与跨零点时段的bar时间换算")
     auto* night = AddTradeSection(trade_session, 2100, 2300, SectionClassType::Section);
     auto* overnight = AddTradeSection(trade_session, 2400, 2700, SectionClassType::Section);
 
-    auto pre_trading_day = spark::core::TimeUtility::GetPreTradingDay(20240301);
+    auto pre_trading_day = Spark::core::TimeUtility::GetPreTradingDay(20240301);
     CHECK(trade_session.GetFirstBarTime(20240301) == pre_trading_day * 10000LL + 2101);
 
     long long begin_bar_time = 0;
@@ -113,7 +113,7 @@ TEST_CASE("ParseFromJsonString解析与跨零点时段归一化")
 {
     const char* session_json = R"([
         {"Name":"TestSession",
-         "Exchanges":[{"ExchangeID":"TEST","Products":["cu","*"]}],
+         "Exchanges":[{"ExchangeId":"TEST","Products":["cu","*"]}],
          "Sections":[{"From":850,"To":900,"SectionClass":0},
                      {"From":900,"To":1015,"SectionClass":1},
                      {"From":0,"To":230,"SectionClass":1}]}
@@ -142,7 +142,7 @@ TEST_CASE("TradeSessions拒绝重复装载")
     // 装载后内容不再变化是聚合器缓存 TradeSession* 的前提，重复装载必须被拒（否则缓存裸指针悬空）
     const char* session_json = R"([
         {"Name":"TestSession",
-         "Exchanges":[{"ExchangeID":"TEST","Products":["cu"]}],
+         "Exchanges":[{"ExchangeId":"TEST","Products":["cu"]}],
          "Sections":[{"From":900,"To":1015,"SectionClass":1}]}
     ])";
     TradeSessions trade_sessions;

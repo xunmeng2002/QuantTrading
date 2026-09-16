@@ -2,14 +2,14 @@
 #include <Spark/Network/Protocol/Protocol.h>
 
 
-namespace quanttrading::simexchange
+namespace QuantTrading::simexchange
 {
-class TradeFront : public spark::network::Protocol
+class TradeFront : public Spark::Network::Protocol
 {
 public:
 	TradeFront(const char* address, int milliSecond = 100);
 
 private:
-    spark::network::IOThread* m_IOThread;
+    Spark::Network::IOThread* m_IOThread;
 };
 }

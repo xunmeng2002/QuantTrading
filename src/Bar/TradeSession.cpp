@@ -8,30 +8,30 @@
 #include <iterator>
 #include <sstream>
 
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::bar
+namespace QuantTrading::bar
 {
-    const TradeSession* TradeSessions::GetTradeSessionForInstrument(const char* exchangeID, const char* instrumentID) const
+    const TradeSession* TradeSessions::GetTradeSessionForInstrument(const char* exchangeId, const char* instrumentId) const
     {
         // 交易所与品种共同决定交易节：先按品种精确匹配（同交易所不同节，如 IF/IC 与 cu/al），
         // 再按该交易所的 "*" 兜底（股票等代码无品种前缀）。Check 是字面量匹配，"*" 无通配语义，故两次查询不可合并
-        const std::string productID = GetUnderlyingID(instrumentID);
-        const TradeSession* tradeSession = GetTradeSession(exchangeID, productID.c_str());
+        const std::string productId = GetUnderlyingID(instrumentId);
+        const TradeSession* tradeSession = GetTradeSession(exchangeId, productId.c_str());
         if (tradeSession == nullptr)
         {
-            tradeSession = GetTradeSession(exchangeID, "*");
+            tradeSession = GetTradeSession(exchangeId, "*");
         }
         return tradeSession;
     }
 
-    bool TradeSession::Check(const char* exchangeID, const char* productID) const
+    bool TradeSession::Check(const char* exchangeId, const char* productId) const
     {
-        auto it = ExchangeProducts.find(exchangeID);
+        auto it = ExchangeProducts.find(exchangeId);
         if (it == ExchangeProducts.end())
             return false;
         auto& products = it->second;
-        auto productIt = std::find(products.begin(), products.end(), productID);
+        auto productIt = std::find(products.begin(), products.end(), productId);
         if (productIt == products.end())
             return false;
         return true;
@@ -134,10 +134,10 @@ namespace quanttrading::bar
         sessionText << "{Name:" << Name << ", Exchanges:[";
         for (auto& it : ExchangeProducts)
         {
-            sessionText << "{ExchangeID:" << it.first << ", Products:[";
-            for (auto& productID : it.second)
+            sessionText << "{ExchangeId:" << it.first << ", Products:[";
+            for (auto& productId : it.second)
             {
-                sessionText << productID << ", ";
+                sessionText << productId << ", ";
             }
             sessionText << "]},";
         }
@@ -205,12 +205,12 @@ namespace quanttrading::bar
             for (auto j = 0u; j < tradeSessionValue["Exchanges"].size(); ++j)
             {
                 auto& exchangesValue = tradeSessionValue["Exchanges"][j];
-                auto exchangeID = exchangesValue["ExchangeID"].asString();
-                tradeSession->ExchangeProducts.insert(std::make_pair(exchangeID, std::list<std::string>()));
+                auto exchangeId = exchangesValue["ExchangeId"].asString();
+                tradeSession->ExchangeProducts.insert(std::make_pair(exchangeId, std::list<std::string>()));
                 for (auto k = 0u; k < exchangesValue["Products"].size(); ++k)
                 {
                     auto& productValue = exchangesValue["Products"][k];
-                    tradeSession->ExchangeProducts[exchangeID].push_back(productValue.asString());
+                    tradeSession->ExchangeProducts[exchangeId].push_back(productValue.asString());
                 }
             }
             for (auto j = 0u; j < tradeSessionValue["Sections"].size(); ++j)
@@ -242,11 +242,11 @@ namespace quanttrading::bar
         m_IsLoaded = true;
         return true;
     }
-    const TradeSession* TradeSessions::GetTradeSession(const char* exchangeID, const char* productID) const
+    const TradeSession* TradeSessions::GetTradeSession(const char* exchangeId, const char* productId) const
     {
         for (auto& tradeSession : m_TradeSessions)
         {
-            if (tradeSession->Check(exchangeID, productID))
+            if (tradeSession->Check(exchangeId, productId))
             {
                 return tradeSession.get();
             }

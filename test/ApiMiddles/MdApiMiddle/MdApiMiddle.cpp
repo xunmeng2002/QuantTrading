@@ -1,11 +1,11 @@
-﻿// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/ApiTest/ApiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdApiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
-using namespace spark::core;
+using namespace Spark::core;
 
 
-namespace quanttrading
+namespace QuantTrading
 {
 MdApiMiddle* MdApiMiddle::CreateMdApiMiddle()
 {

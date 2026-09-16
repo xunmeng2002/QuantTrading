@@ -13,17 +13,17 @@
 	"MdUserID": "MdUser",
 	"MdPassword": "123456",
 	"SubscribeInstruments": [{
-		"ExchangeID": "CFFEX",
-		"InstrumentID": "IF2703"
+		"ExchangeId": "CFFEX",
+		"InstrumentId": "IF2703"
 	},{
-		"ExchangeID": "SHFE",
-		"InstrumentID": "rb2703"
+		"ExchangeId": "SHFE",
+		"InstrumentId": "rb2703"
 	},{
-		"ExchangeID": "DCE",
-		"InstrumentID": "jd2703"
+		"ExchangeId": "DCE",
+		"InstrumentId": "jd2703"
 	},{
-		"ExchangeID": "CZCE",
-		"InstrumentID": "AP705"
+		"ExchangeId": "CZCE",
+		"InstrumentId": "AP705"
 	}]
 }
 

@@ -1,4 +1,4 @@
-"""成对网格策略 Python 移植（对应 test/TestStrategyGrid/GridStrategy.cpp，经 quanttrading.pyd 驱动回测引擎）。
+"""成对网格策略 Python 移植（对应 test/TestStrategyGrid/GridStrategy.cpp，经 QuantTrading.pyd 驱动回测引擎）。
 
 运行方式（脚本与配置由构建拷贝至 bin/Release，引擎从 CWD 读 BackTest.json 与 TestStrategyGrid.json）：
     cd bin/Release && python grid_strategy.py
@@ -13,7 +13,7 @@ from enum import IntEnum
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(REPO_ROOT, "bin", "Release"))
 
-import quanttrading as qt
+import QuantTrading as qt
 
 
 class GridSlotState(IntEnum):
@@ -250,10 +250,10 @@ def main():
         grid_step=config["GridStep"],
         grid_count=config["GridCount"],
         volume_per_grid=config["VolumePerGrid"],
-        exchange_id=config["ExchangeID"],
-        instrument_id=config["InstrumentID"],
+        exchange_id=config["ExchangeId"],
+        instrument_id=config["InstrumentId"],
         bar_preces=config.get("BarPreces", ""))
-    strategy = GridStrategy(api, config["AccountID"], params)
+    strategy = GridStrategy(api, config["AccountId"], params)
     if not strategy.start():
         qt.shutdown_logger()
         return 1

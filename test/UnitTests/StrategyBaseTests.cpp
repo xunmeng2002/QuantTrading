@@ -5,12 +5,12 @@
 
 #include <string>
 
-using namespace quanttrading::unittest;
+using namespace QuantTrading::unittest;
 
-namespace quanttrading::unittest
+namespace QuantTrading::unittest
 {
     // 暴露 StrategyBase 受保护接口给测试断言
-    class ProbeStrategy : public quanttrading::strategy::StrategyBase
+    class ProbeStrategy : public QuantTrading::strategy::StrategyBase
     {
     public:
         using StrategyBase::StrategyBase;
@@ -62,7 +62,7 @@ TEST_CASE("StrategyBase registers account before subscribing market data on star
     strategy.SetSubscribeOnStart("CFFEX", "IF2503");
     CHECK(strategy.Start());
     REQUIRE(fake_api.register_account_requests.size() == 1);
-    CHECK(std::string(fake_api.register_account_requests[0].AccountID) == "accountA");
+    CHECK(std::string(fake_api.register_account_requests[0].AccountId) == "accountA");
     CHECK(fake_api.register_account_request_id == 1);
     CHECK(fake_api.last_subscribe_request_id > fake_api.register_account_request_id);
 }
@@ -108,7 +108,7 @@ TEST_CASE("StrategyBase accumulates short position from sell open trade")
     CHECK(strategy.GetLongPosition("IF2503") == 0);
 }
 
-TEST_CASE("StrategyBase cancels by engine OrderID when report seen")
+TEST_CASE("StrategyBase cancels by engine OrderId when report seen")
 {
     FakeBackTestApi fake_api;
     ProbeStrategy strategy(&fake_api, "accountA");
@@ -120,11 +120,11 @@ TEST_CASE("StrategyBase cancels by engine OrderID when report seen")
 
     REQUIRE(strategy.CancelOrder(client_order_id));
     REQUIRE(fake_api.cancel_requests.size() == 1);
-    CHECK(fake_api.cancel_requests[0].OrderID == 42);
-    CHECK(fake_api.cancel_requests[0].ClientOrderID == client_order_id);
+    CHECK(fake_api.cancel_requests[0].OrderId == 42);
+    CHECK(fake_api.cancel_requests[0].ClientOrderId == client_order_id);
 }
 
-TEST_CASE("StrategyBase cancels by ClientOrderID fallback without report")
+TEST_CASE("StrategyBase cancels by ClientOrderId fallback without report")
 {
     FakeBackTestApi fake_api;
     ProbeStrategy strategy(&fake_api, "accountA");
@@ -133,10 +133,10 @@ TEST_CASE("StrategyBase cancels by ClientOrderID fallback without report")
     auto client_order_id = strategy.BuyOpen("CFFEX", "IF2503", 3990.0, 1);
     REQUIRE(strategy.CancelOrder(client_order_id));
     REQUIRE(fake_api.cancel_requests.size() == 1);
-    CHECK(fake_api.cancel_requests[0].OrderID == 0);
-    CHECK(fake_api.cancel_requests[0].ClientOrderID == client_order_id);
-    CHECK(std::string(fake_api.cancel_requests[0].ExchangeID) == "CFFEX");
-    CHECK(std::string(fake_api.cancel_requests[0].InstrumentID) == "IF2503");
+    CHECK(fake_api.cancel_requests[0].OrderId == 0);
+    CHECK(fake_api.cancel_requests[0].ClientOrderId == client_order_id);
+    CHECK(std::string(fake_api.cancel_requests[0].ExchangeId) == "CFFEX");
+    CHECK(std::string(fake_api.cancel_requests[0].InstrumentId) == "IF2503");
 }
 
 TEST_CASE("StrategyBase refuses cancel for unknown client order")

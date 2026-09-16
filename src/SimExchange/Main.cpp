@@ -23,10 +23,10 @@
 
 using namespace std;
 using namespace mdb;
-using namespace spark::core;
+using namespace Spark::Core;
 using namespace dbadapters;
-using namespace quanttrading;
-using namespace quanttrading::simexchange;
+using namespace QuantTrading;
+using namespace QuantTrading::simexchange;
 
 const char* ConfigName = "SimExchange.json";
 
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 		return Exit();
 	}
 	Mdb* mdb = new Mdb(simexchangeTableList);
-	mdb::MdbTableRegistry schemaRegistry(simexchangeTableList);
+	QuantTrading::MdbTableRegistry schemaRegistry(simexchangeTableList);
 	AsyncDBWriter* dbWriter = new AsyncDBWriter(db, &schemaRegistry);
 	if (!initDB->Connect())
 	{

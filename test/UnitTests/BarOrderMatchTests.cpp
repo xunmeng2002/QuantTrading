@@ -3,8 +3,8 @@
 
 #include "doctest/doctest.h"
 
-using namespace quanttrading::ordermatch;
-using namespace quanttrading::unittest;
+using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::unittest;
 
 TEST_SUITE("BarOrderMatch")
 {
@@ -16,7 +16,7 @@ TEST_CASE("限价买在bar价格区间内按委托价成交")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::BarMarketData> bar_pool;
+    PoolRecordGuard<QuantTrading::BarMarketData> bar_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 100.0, 10));
     order_match.OnBar(MakeBarRecord(bar_pool, MakeUpdateTs(20240301, 90100, 0), 99.5, 101.0, 99.0, 100.5));
@@ -33,7 +33,7 @@ TEST_CASE("限价买高于bar最高价按最高价成交")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::BarMarketData> bar_pool;
+    PoolRecordGuard<QuantTrading::BarMarketData> bar_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 105.0, 10));
     order_match.OnBar(MakeBarRecord(bar_pool, MakeUpdateTs(20240301, 90100, 0), 99.0, 101.0, 99.0, 100.0));
@@ -49,7 +49,7 @@ TEST_CASE("限价买低于bar最低价不成交直到bar触及")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::BarMarketData> bar_pool;
+    PoolRecordGuard<QuantTrading::BarMarketData> bar_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 98.0, 10));
     order_match.OnBar(MakeBarRecord(bar_pool, MakeUpdateTs(20240301, 90100, 0), 99.0, 101.0, 99.0, 100.0));
@@ -68,7 +68,7 @@ TEST_CASE("限价卖低于bar最低价按最低价成交且高于最高价不成
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::BarMarketData> bar_pool;
+    PoolRecordGuard<QuantTrading::BarMarketData> bar_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Sell, 95.0, 10));
     order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Sell, 105.0, 10));
@@ -91,7 +91,7 @@ TEST_CASE("市价单按bar中价成交")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::BarMarketData> bar_pool;
+    PoolRecordGuard<QuantTrading::BarMarketData> bar_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
     order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Sell, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
@@ -109,7 +109,7 @@ TEST_CASE("OnTick不触发撮合")
     RecordingOrderMatchSubscriber subscriber;
     order_match.Subscribe(&subscriber);
     OrderPoolGuard order_pool;
-    PoolRecordGuard<mdb::DepthMarketData> tick_pool;
+    PoolRecordGuard<QuantTrading::DepthMarketData> tick_pool;
 
     order_match.InsertOrder(order_pool.MakeOrder(1, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
     order_match.OnTick(MakeMdTick(tick_pool, MakeUpdateTs(20240301, 90000, 0), 100.0, 10, 99.0, 10, 101.0, 10));

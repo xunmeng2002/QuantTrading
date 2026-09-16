@@ -1,7 +1,7 @@
 #pragma once
 #include "OrderMatch.h"
 
-namespace quanttrading::ordermatch
+namespace QuantTrading::ordermatch
 {
     class LastPriceOrderMatch : public OrderMatch
     {
@@ -9,11 +9,11 @@ namespace quanttrading::ordermatch
         LastPriceOrderMatch(const DateType& tradingDay, int maxTradeID = 0);
         virtual ~LastPriceOrderMatch();
 
-        virtual void OnTick(mdb::DepthMarketData* mdTick) override;
-        virtual void OnBar(mdb::BarMarketData* mdBar) override;
+        virtual void OnTick(QuantTrading::DepthMarketData* mdTick) override;
+        virtual void OnBar(QuantTrading::BarMarketData* mdBar) override;
     protected:
-        void CheckMatch(mdb::DepthMarketData* mdTick);
-        bool CheckMatchForOrder(mdb::DepthMarketData* mdTick, mdb::Order* order);
+        void CheckMatch(QuantTrading::DepthMarketData* mdTick);
+        bool CheckMatchForOrder(QuantTrading::DepthMarketData* mdTick, QuantTrading::Order* order);
     };
 }
 

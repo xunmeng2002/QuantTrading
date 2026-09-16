@@ -3,9 +3,9 @@
 
 using namespace std;
 using namespace mdb;
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::ordermatch
+namespace QuantTrading::ordermatch
 {
     LastPriceOrderMatch::LastPriceOrderMatch(const DateType& tradingDay, int maxTradeID)
         :OrderMatch(tradingDay, maxTradeID)
@@ -17,7 +17,7 @@ namespace quanttrading::ordermatch
 
     }
 
-    void LastPriceOrderMatch::OnTick(mdb::DepthMarketData* mdTick)
+    void LastPriceOrderMatch::OnTick(QuantTrading::DepthMarketData* mdTick)
     {
         UpdateDateTime(mdTick->UpdateTs);
         if (mdTick->Volume > 0 && mdTick->LastPrice != std::numeric_limits<double>::infinity())
@@ -25,27 +25,27 @@ namespace quanttrading::ordermatch
             CheckMatch(mdTick);
         }
     }
-    void LastPriceOrderMatch::OnBar(mdb::BarMarketData* mdBar)
+    void LastPriceOrderMatch::OnBar(QuantTrading::BarMarketData* mdBar)
     {
 
     }
 
-    void LastPriceOrderMatch::CheckMatch(mdb::DepthMarketData* mdTick)
+    void LastPriceOrderMatch::CheckMatch(QuantTrading::DepthMarketData* mdTick)
     {
-        auto& marketBuyQueueOrders = m_MarketBuyOrders[mdTick->InstrumentID];
+        auto& marketBuyQueueOrders = m_MarketBuyOrders[mdTick->InstrumentId];
         for (auto& marketBuyQueueOrder : marketBuyQueueOrders)
         {
             MatchMarketOrderAtPrice(marketBuyQueueOrder, mdTick->LastPrice, mdTick->AskPrice1);
         }
-        m_MarketBuyOrders.erase(mdTick->InstrumentID);
-        auto& marketSellQueueOrders = m_MarketSellOrders[mdTick->InstrumentID];
+        m_MarketBuyOrders.erase(mdTick->InstrumentId);
+        auto& marketSellQueueOrders = m_MarketSellOrders[mdTick->InstrumentId];
         for (auto& marketSellQueueOrder : marketSellQueueOrders)
         {
             MatchMarketOrderAtPrice(marketSellQueueOrder, mdTick->LastPrice, mdTick->BidPrice1);
         }
-        m_MarketSellOrders.erase(mdTick->InstrumentID);
+        m_MarketSellOrders.erase(mdTick->InstrumentId);
 
-        auto& buyQueueOrders = m_BuyOrders[mdTick->InstrumentID];
+        auto& buyQueueOrders = m_BuyOrders[mdTick->InstrumentId];
         for (auto& buyQueueOrder : buyQueueOrders)
         {
             if (!CheckMatchForOrder(mdTick, buyQueueOrder))
@@ -54,9 +54,9 @@ namespace quanttrading::ordermatch
             }
         }
         CancelUnfilledImmediateOrders(buyQueueOrders);
-        std::erase_if(buyQueueOrders, [](mdb::Order* order) {return order->VolumeTotal == 0; });
+        std::erase_if(buyQueueOrders, [](QuantTrading::Order* order) {return order->VolumeTotal == 0; });
 
-        auto& sellQueueOrders = m_SellOrders[mdTick->InstrumentID];
+        auto& sellQueueOrders = m_SellOrders[mdTick->InstrumentId];
         for (auto& sellQueueOrder : sellQueueOrders)
         {
             if (!CheckMatchForOrder(mdTick, sellQueueOrder))
@@ -65,9 +65,9 @@ namespace quanttrading::ordermatch
             }
         }
         CancelUnfilledImmediateOrders(sellQueueOrders);
-        std::erase_if(sellQueueOrders, [](mdb::Order* order) {return order->VolumeTotal == 0; });
+        std::erase_if(sellQueueOrders, [](QuantTrading::Order* order) {return order->VolumeTotal == 0; });
     }
-    bool LastPriceOrderMatch::CheckMatchForOrder(mdb::DepthMarketData* mdTick, mdb::Order* order)
+    bool LastPriceOrderMatch::CheckMatchForOrder(QuantTrading::DepthMarketData* mdTick, QuantTrading::Order* order)
     {
         if (order->Direction == DirectionType::Buy && DoubleUtility::DoubleLess(order->Price, mdTick->LastPrice))
             return false;

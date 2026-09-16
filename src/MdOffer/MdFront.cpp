@@ -1,12 +1,12 @@
 #include "MdFront.h"
 #include "PackageFactory.h"
 
-using namespace spark::network;
+using namespace Spark::Network;
 
-namespace quanttrading::mdoffer
+namespace QuantTrading::mdoffer
 {
     MdFront::MdFront(IOModelType ioModel, const char* address, int milliSecond)
-        :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new quanttrading::packages::PackageFactory()), m_Address(address)
+        :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, ioModel, milliSecond, new QuantTrading::Packages::PackageFactory()), m_Address(address)
     {
         RegisterFront(address);
         m_IOThread = new IOThread("MdFront");

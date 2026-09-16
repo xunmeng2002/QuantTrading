@@ -6,7 +6,7 @@
 #include <signal.h>
 #endif // _WIN32
 
-namespace quanttrading
+namespace QuantTrading
 {
 #ifdef _WIN32
 // 控制台 Ctrl+C / Ctrl+Break / 关闭 / 注销 / 关机：置位退出标志，阻止默认终止，

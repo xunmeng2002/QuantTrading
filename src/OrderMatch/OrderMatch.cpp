@@ -11,16 +11,16 @@
 
 using namespace std;
 using namespace mdb;
-using namespace spark::core;
+using namespace Spark::Core;
 
-namespace quanttrading::ordermatch
+namespace QuantTrading::ordermatch
 {
     namespace
     {
         template <typename OrderLess>
-        bool TryGetBookBestPrice(const std::map<std::string, std::set<mdb::Order*, OrderLess>>& orderBook, const std::string& instrumentID, PriceType& bestPrice)
+        bool TryGetBookBestPrice(const std::map<std::string, std::set<QuantTrading::Order*, OrderLess>>& orderBook, const std::string& instrumentId, PriceType& bestPrice)
         {
-            auto it = orderBook.find(instrumentID);
+            auto it = orderBook.find(instrumentId);
             if (it == orderBook.end() || it->second.empty())
             {
                 return false;
@@ -62,7 +62,7 @@ namespace quanttrading::ordermatch
         m_OrderMatchSubscriber = orderMatchSubscriber;
     }
 
-    void OrderMatch::InsertOrder(mdb::Order* order)
+    void OrderMatch::InsertOrder(QuantTrading::Order* order)
     {
         if (order->OrderPriceType == OrderPriceTypeType::BestOwnPrice)
         {
@@ -93,7 +93,7 @@ namespace quanttrading::ordermatch
         m_MarketBuyOrders.clear();
         m_MarketSellOrders.clear();
     }
-    void OrderMatch::CancelOrder(mdb::Order* order)
+    void OrderMatch::CancelOrder(QuantTrading::Order* order)
     {
         auto newOrder = Order::Allocate();
         memcpy(newOrder, order, sizeof(Order));
@@ -103,14 +103,14 @@ namespace quanttrading::ordermatch
         strcpy(newOrder->CancelTime, m_CurrTime);
         m_OrderMatchSubscriber->OnOrderUpdate(order, newOrder);
     }
-    void OrderMatch::CancelOrderOnInsert(mdb::Order* order)
+    void OrderMatch::CancelOrderOnInsert(QuantTrading::Order* order)
     {
         // 接受确认先于撤销回报,维持 已报->已撤 的回报序列
         m_OrderMatchSubscriber->OnOrder(order);
         CancelOrder(order);
     }
 
-    void OrderMatch::Match(mdb::Order* order, PriceType price, VolumeType volume, const TradeIDType& tradeID)
+    void OrderMatch::Match(QuantTrading::Order* order, PriceType price, VolumeType volume, const TradeIdType& tradeID)
     {
         if (volume <= 0)
             return;
@@ -124,14 +124,14 @@ namespace quanttrading::ordermatch
         auto trade = Trade::Allocate();
         memset(trade, 0, sizeof(Trade));
         strcpy(trade->TradingDay, order->TradingDay);
-        strcpy(trade->AccountID, order->AccountID);
+        strcpy(trade->AccountId, order->AccountId);
         trade->AccountType = order->AccountType;
-        strcpy(trade->ExchangeID, order->ExchangeID);
-        strcpy(trade->InstrumentID, order->InstrumentID);
+        strcpy(trade->ExchangeId, order->ExchangeId);
+        strcpy(trade->InstrumentId, order->InstrumentId);
         trade->ProductClass = order->ProductClass;
-        trade->OrderID = order->OrderID;
-        strcpy(trade->OrderSysID, order->OrderSysID);
-        strcpy(trade->TradeID, tradeID);
+        trade->OrderId = order->OrderId;
+        strcpy(trade->OrderSysId, order->OrderSysId);
+        strcpy(trade->TradeId, tradeID);
         trade->Direction = order->Direction;
         trade->OffsetFlag = order->OffsetFlag;
         trade->Price = price;
@@ -144,7 +144,7 @@ namespace quanttrading::ordermatch
 
         m_OrderMatchSubscriber->OnTrade(trade);
     }
-    void OrderMatch::AddOrderToQueue(mdb::Order* order)
+    void OrderMatch::AddOrderToQueue(QuantTrading::Order* order)
     {
         switch (order->OrderPriceType)
         {
@@ -160,54 +160,54 @@ namespace quanttrading::ordermatch
             break;
         }
     }
-    void OrderMatch::AddOrderToLimitQueue(mdb::Order* order)
+    void OrderMatch::AddOrderToLimitQueue(QuantTrading::Order* order)
     {
         if (order->Direction == DirectionType::Buy)
         {
-            m_BuyOrders[order->InstrumentID].insert(order);
+            m_BuyOrders[order->InstrumentId].insert(order);
         }
         else
         {
-            m_SellOrders[order->InstrumentID].insert(order);
+            m_SellOrders[order->InstrumentId].insert(order);
         }
     }
-    void OrderMatch::AddOrderToMarketQueue(mdb::Order* order)
+    void OrderMatch::AddOrderToMarketQueue(QuantTrading::Order* order)
     {
         if (order->Direction == DirectionType::Buy)
         {
-            m_MarketBuyOrders[order->InstrumentID].insert(order);
+            m_MarketBuyOrders[order->InstrumentId].insert(order);
         }
         else
         {
-            m_MarketSellOrders[order->InstrumentID].insert(order);
+            m_MarketSellOrders[order->InstrumentId].insert(order);
         }
     }
-    bool OrderMatch::TryGetOwnBookBestPrice(mdb::Order* order, PriceType& bestPrice)
+    bool OrderMatch::TryGetOwnBookBestPrice(QuantTrading::Order* order, PriceType& bestPrice)
     {
         // 本方簿:买方取买簿最高价,卖方取卖簿最低价
         if (order->Direction == DirectionType::Buy)
         {
-            return TryGetBookBestPrice(m_BuyOrders, order->InstrumentID, bestPrice);
+            return TryGetBookBestPrice(m_BuyOrders, order->InstrumentId, bestPrice);
         }
-        return TryGetBookBestPrice(m_SellOrders, order->InstrumentID, bestPrice);
+        return TryGetBookBestPrice(m_SellOrders, order->InstrumentId, bestPrice);
     }
-    bool OrderMatch::TryGetOpponentBookBestPrice(mdb::Order* order, PriceType& bestPrice)
+    bool OrderMatch::TryGetOpponentBookBestPrice(QuantTrading::Order* order, PriceType& bestPrice)
     {
         // 对手簿:买方取卖簿最低价,卖方取买簿最高价
         if (order->Direction == DirectionType::Buy)
         {
-            return TryGetBookBestPrice(m_SellOrders, order->InstrumentID, bestPrice);
+            return TryGetBookBestPrice(m_SellOrders, order->InstrumentId, bestPrice);
         }
-        return TryGetBookBestPrice(m_BuyOrders, order->InstrumentID, bestPrice);
+        return TryGetBookBestPrice(m_BuyOrders, order->InstrumentId, bestPrice);
     }
-    VolumeType OrderMatch::CountOpponentFillableVolume(mdb::Order* order)
+    VolumeType OrderMatch::CountOpponentFillableVolume(QuantTrading::Order* order)
     {
         // 预扫对手簿累计可成量(FOK 用):受价单只累计价格不劣于委托价的档位,无界市价族累计全簿
         const bool hasPriceBound = HasOrderPriceBound(order->OrderPriceType);
         VolumeType fillableVolume = 0;
         if (order->Direction == DirectionType::Buy)
         {
-            auto it = m_SellOrders.find(order->InstrumentID);
+            auto it = m_SellOrders.find(order->InstrumentId);
             if (it == m_SellOrders.end())
             {
                 return 0;
@@ -227,7 +227,7 @@ namespace quanttrading::ordermatch
         }
         else
         {
-            auto it = m_BuyOrders.find(order->InstrumentID);
+            auto it = m_BuyOrders.find(order->InstrumentId);
             if (it == m_BuyOrders.end())
             {
                 return 0;
@@ -290,11 +290,11 @@ namespace quanttrading::ordermatch
             }
         }
     }
-    void OrderMatch::GetNextTradeID(TradeIDType& tradeID)
+    void OrderMatch::GetNextTradeID(TradeIdType& tradeID)
     {
         sprintf(tradeID, "%s%08d", m_TradingDay, ++m_MaxTradeID);
     }
-    void OrderMatch::MatchMarketOrderAtPrice(mdb::Order* order, PriceType marketPrice, PriceType opponentPrice)
+    void OrderMatch::MatchMarketOrderAtPrice(QuantTrading::Order* order, PriceType marketPrice, PriceType opponentPrice)
     {
         // 对方最优按对手价成交,无有效对手价(inf)时撤销;其余市价族按模式市价成交
         PriceType matchPrice = marketPrice;
