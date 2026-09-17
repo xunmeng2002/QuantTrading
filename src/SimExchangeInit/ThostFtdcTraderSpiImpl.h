@@ -45,17 +45,17 @@ private:
 	void ReqQryTrade();
 
 public:
-	std::atomic<bool> m_QryFinished;
+	std::atomic<bool> qryFinished_;
 private:
-	CThostFtdcTraderApi* m_TraderApi;
+	CThostFtdcTraderApi* traderApi_;
 	QuantTrading::Mdb* mdb_;
-	int m_RequestID;
+	int requestId_;
 
-	AccountInfo* m_AccountInfo;
-	std::string m_NewPassword;
+	AccountInfo* accountInfo_;
+	std::string newPassword_;
 
-	std::vector<QuantTrading::Exchange*>* m_Exchanges;
-	std::vector<QuantTrading::Product*>* m_Products;
-	std::vector<QuantTrading::Instrument*>* m_Instruments;
+	std::vector<QuantTrading::Exchange*>* exchanges_;
+	std::vector<QuantTrading::Product*>* products_;
+	std::vector<QuantTrading::Instrument*>* instruments_;
 };
 }

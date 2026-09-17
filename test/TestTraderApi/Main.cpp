@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	api->Init();
 
 	int waitSeconds = 0;
-	while (!spi->m_Finished && waitSeconds < 120)
+	while (!spi->Finished && waitSeconds < 120)
 	{
 		std::this_thread::sleep_for(chrono::seconds(1));
 		++waitSeconds;

@@ -8,8 +8,8 @@ using namespace Spark::Core;
 
 namespace QuantTrading::ordermatch
 {
-    BarOrderMatch::BarOrderMatch(const DateType& tradingDay, int maxTradeID)
-        :OrderMatch(tradingDay, maxTradeID)
+    BarOrderMatch::BarOrderMatch(const DateType& tradingDay, int tradeId)
+        :OrderMatch(tradingDay, tradeId)
     {
 
     }
@@ -29,20 +29,20 @@ namespace QuantTrading::ordermatch
     }
     void BarOrderMatch::CheckMatch(QuantTrading::BarMarketData* mdBar)
     {
-        auto& marketBuyQueueOrders = m_MarketBuyOrders[mdBar->InstrumentId];
+        auto& marketBuyQueueOrders = marketBuyOrders_[mdBar->InstrumentId];
         for (auto& marketBuyQueueOrder : marketBuyQueueOrders)
         {
             CheckMatchForOrder(mdBar, marketBuyQueueOrder);
         }
-        m_MarketBuyOrders.erase(mdBar->InstrumentId);
-        auto& marketSellQueueOrders = m_MarketSellOrders[mdBar->InstrumentId];
+        marketBuyOrders_.erase(mdBar->InstrumentId);
+        auto& marketSellQueueOrders = marketSellOrders_[mdBar->InstrumentId];
         for (auto& marketSellQueueOrder : marketSellQueueOrders)
         {
             CheckMatchForOrder(mdBar, marketSellQueueOrder);
         }
-        m_MarketSellOrders.erase(mdBar->InstrumentId);
+        marketSellOrders_.erase(mdBar->InstrumentId);
 
-        auto& buyQueueOrders = m_BuyOrders[mdBar->InstrumentId];
+        auto& buyQueueOrders = buyOrders_[mdBar->InstrumentId];
         for (auto& buyQueueOrder : buyQueueOrders)
         {
             if (!CheckMatchForOrder(mdBar, buyQueueOrder))
@@ -53,7 +53,7 @@ namespace QuantTrading::ordermatch
         CancelUnfilledImmediateOrders(buyQueueOrders);
         std::erase_if(buyQueueOrders, [](QuantTrading::Order* order) {return order->VolumeTotal == 0; });
 
-        auto& sellQueueOrders = m_SellOrders[mdBar->InstrumentId];
+        auto& sellQueueOrders = sellOrders_[mdBar->InstrumentId];
         for (auto& sellQueueOrder : sellQueueOrders)
         {
             if (!CheckMatchForOrder(mdBar, sellQueueOrder))
@@ -94,8 +94,8 @@ namespace QuantTrading::ordermatch
             }
             break;
         }
-        GetNextTradeID(m_TradeID);
-        Match(order, matchPrice, order->VolumeTotal, m_TradeID);
+        GetNextTradeID(tradeId_);
+        Match(order, matchPrice, order->VolumeTotal, tradeId_);
         return true;
     }
 }

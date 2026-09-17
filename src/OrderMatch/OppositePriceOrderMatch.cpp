@@ -8,8 +8,8 @@ using namespace Spark::Core;
 
 namespace QuantTrading::ordermatch
 {
-    OppositePriceOrderMatch::OppositePriceOrderMatch(const DateType& tradingDay, int maxTradeID)
-        :OrderMatch(tradingDay, maxTradeID)
+    OppositePriceOrderMatch::OppositePriceOrderMatch(const DateType& tradingDay, int tradeId)
+        :OrderMatch(tradingDay, tradeId)
     {
 
     }
@@ -37,15 +37,15 @@ namespace QuantTrading::ordermatch
 
     void OppositePriceOrderMatch::CheckBuyMatch(QuantTrading::DepthMarketData* mdTick)
     {
-        auto& marketBuyQueueOrders = m_MarketBuyOrders[mdTick->InstrumentId];
+        auto& marketBuyQueueOrders = marketBuyOrders_[mdTick->InstrumentId];
         for (auto& marketBuyQueueOrder : marketBuyQueueOrders)
         {
-            GetNextTradeID(m_TradeID);
-            Match(marketBuyQueueOrder, mdTick->AskPrice1, marketBuyQueueOrder->VolumeTotal, m_TradeID);
+            GetNextTradeID(tradeId_);
+            Match(marketBuyQueueOrder, mdTick->AskPrice1, marketBuyQueueOrder->VolumeTotal, tradeId_);
         }
-        m_MarketBuyOrders.erase(mdTick->InstrumentId);
+        marketBuyOrders_.erase(mdTick->InstrumentId);
 
-        auto& buyQueueOrders = m_BuyOrders[mdTick->InstrumentId];
+        auto& buyQueueOrders = buyOrders_[mdTick->InstrumentId];
         for (auto& buyQueueOrder : buyQueueOrders)
         {
             if (!CheckMatchForOrder(buyQueueOrder, mdTick->AskPrice1))
@@ -58,15 +58,15 @@ namespace QuantTrading::ordermatch
     }
     void OppositePriceOrderMatch::CheckSellMatch(QuantTrading::DepthMarketData* mdTick)
     {
-        auto& marketSellQueueOrders = m_MarketSellOrders[mdTick->InstrumentId];
+        auto& marketSellQueueOrders = marketSellOrders_[mdTick->InstrumentId];
         for (auto& marketSellQueueOrder : marketSellQueueOrders)
         {
-            GetNextTradeID(m_TradeID);
-            Match(marketSellQueueOrder, mdTick->BidPrice1, marketSellQueueOrder->VolumeTotal, m_TradeID);
+            GetNextTradeID(tradeId_);
+            Match(marketSellQueueOrder, mdTick->BidPrice1, marketSellQueueOrder->VolumeTotal, tradeId_);
         }
-        m_MarketSellOrders.erase(mdTick->InstrumentId);
+        marketSellOrders_.erase(mdTick->InstrumentId);
 
-        auto& sellQueueOrders = m_SellOrders[mdTick->InstrumentId];
+        auto& sellQueueOrders = sellOrders_[mdTick->InstrumentId];
         for (auto& sellQueueOrder : sellQueueOrders)
         {
             if (!CheckMatchForOrder(sellQueueOrder, mdTick->BidPrice1))
@@ -84,8 +84,8 @@ namespace QuantTrading::ordermatch
         else if (order->Direction == DirectionType::Sell && DoubleUtility::DoubleGreat(order->Price, price))
             return false;
 
-        GetNextTradeID(m_TradeID);
-        Match(order, price, order->VolumeTotal, m_TradeID);
+        GetNextTradeID(tradeId_);
+        Match(order, price, order->VolumeTotal, tradeId_);
         return true;
     }
 }

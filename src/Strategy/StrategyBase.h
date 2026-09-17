@@ -63,15 +63,15 @@ protected:
 private:
 	void OnConnected() override;
 	void OnDisConnected() override;
-	void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast) override;
 	void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) override;
 	void OnRtnBarMarketData(const BarMarketDataField* barMarketData) override;
 	void OnRtnSessionBegin(const SessionBeginField* sessionBegin) override;
 	void OnRtnSessionEnd(const SessionEndField* sessionEnd) override;
 	void OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd) override;
-	void OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast) override;
-	void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
-	void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	void OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestId, bool isLast) override;
+	void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast) override;
+	void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast) override;
 	void OnRtnOrder(const OrderField* order) override;
 	void OnRtnTrade(const TradeField* trade) override;
 
@@ -90,19 +90,19 @@ private:
 		std::string InstrumentId;
 	};
 
-	std::map<std::string, InstrumentState> m_InstrumentStates;
-	std::map<ClientOrderIdType, OrderContext> m_OrderContexts;   // 下单时记录，撤单时取 ExchangeId/InstrumentId
-	std::map<ClientOrderIdType, OrderField> m_Orders;            // 回报快照，兼作撤单主路径的 OrderId 来源
-	std::map<OrderIdType, ClientOrderIdType> m_EngineOrderIDs;   // 引擎 OrderId → ClientOrderId，供 OnTrade 路由
+	std::map<std::string, InstrumentState> instrumentStates_;
+	std::map<ClientOrderIdType, OrderContext> orderContexts_;   // 下单时记录，撤单时取 ExchangeId/InstrumentId
+	std::map<ClientOrderIdType, OrderField> orders_;            // 回报快照，兼作撤单主路径的 OrderId 来源
+	std::map<OrderIdType, ClientOrderIdType> engineOrderIds_;   // 引擎 OrderId → ClientOrderId，供 OnTrade 路由
 
-	QuantTrading::BackTestApi* m_BackTestApi;
-	std::string m_AccountID;
+	QuantTrading::BackTestApi* backTestApi_;
+	std::string accountId_;
 	// 声明后的目标 bar 周期，随每次行情订阅上报给引擎；BarPeriod<=0 表示未声明，引擎按数据集精度推送
-	BarPrecesType m_DeclaredBarPreces = BarPrecesType::Minute;
-	int m_DeclaredBarPeriod = 0;
-	int m_NextRequestID = 0;
-	ClientOrderIdType m_NextClientOrderID = 0;
-    ClientOrderIdType m_NextClientCancelOrderID = 0;
-	bool m_IsMdEnded = false;
+	BarPrecesType declaredBarPreces_ = BarPrecesType::Minute;
+	int declaredBarPeriod_ = 0;
+	int nextRequestId_ = 0;
+	ClientOrderIdType nextClientOrderId_ = 0;
+    ClientOrderIdType nextClientCancelOrderId_ = 0;
+	bool isMdEnded_ = false;
 };
 }

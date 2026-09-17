@@ -29,6 +29,6 @@ namespace QuantTrading
         string DBPasswd;
 
     private:
-        static ServerConfig m_Instance;
+        static ServerConfig instance_;
     };
 }

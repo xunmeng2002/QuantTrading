@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApi.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApi.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include "Fields.h"
 #include <QuantTrading/BackTest/BackTestExport.h>
@@ -10,15 +10,15 @@ class BackTestSpi
 public:
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
-	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast) {}
 	virtual void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) {}
 	virtual void OnRtnBarMarketData(const BarMarketDataField* barMarketData) {}
 	virtual void OnRtnSessionBegin(const SessionBeginField* sessionBegin) {}
 	virtual void OnRtnSessionEnd(const SessionEndField* sessionEnd) {}
 	virtual void OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd) {}
-	virtual void OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestId, bool isLast) {}
+	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast) {}
+	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast) {}
 	virtual void OnRtnOrder(const OrderField* order) {}
 	virtual void OnRtnTrade(const TradeField* trade) {}
 };
@@ -34,10 +34,10 @@ public:
 	virtual void RegisterFront(const char* address) = 0;
 	virtual void RegisterSpi(BackTestSpi* pSpi) = 0;
 	
-	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID) = 0;
-	virtual int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID) = 0;
-	virtual int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID) = 0;
-	virtual int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID) = 0;
-	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID) = 0;
+	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId) = 0;
+	virtual int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestId) = 0;
+	virtual int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestId) = 0;
+	virtual int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId) = 0;
+	virtual int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId) = 0;
 };
 }

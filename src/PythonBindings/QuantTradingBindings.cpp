@@ -20,11 +20,11 @@ namespace
 	class BackTestApiHandle
 	{
 	public:
-		explicit BackTestApiHandle(QuantTrading::BackTestApi* backTestApi) :m_BackTestApi(backTestApi) {}
-		QuantTrading::BackTestApi* Get() const { return m_BackTestApi; }
+		explicit BackTestApiHandle(QuantTrading::BackTestApi* backTestApi) :backTestApi_(backTestApi) {}
+		QuantTrading::BackTestApi* Get() const { return backTestApi_; }
 
 	private:
-		QuantTrading::BackTestApi* m_BackTestApi = nullptr;
+		QuantTrading::BackTestApi* backTestApi_ = nullptr;
 	};
 
 	BackTestApiHandle* CreateBackTestApiHandle()

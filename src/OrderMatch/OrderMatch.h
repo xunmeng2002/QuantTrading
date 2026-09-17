@@ -18,8 +18,8 @@ namespace QuantTrading::ordermatch
     class OrderMatch
     {
     public:
-        static OrderMatch* CreateOrderMatch(const MatchModeType& matchMode, const DateType& tradingDay, int maxTradeID = 0);
-        OrderMatch(const DateType& tradingDay, int maxTradeID = 0);
+        static OrderMatch* CreateOrderMatch(const MatchModeType& matchMode, const DateType& tradingDay, int tradeId = 0);
+        OrderMatch(const DateType& tradingDay, int tradeId = 0);
         virtual ~OrderMatch();
         void Subscribe(OrderMatchSubscriber* orderMatchSubscriber);
 
@@ -59,16 +59,16 @@ namespace QuantTrading::ordermatch
         }
 
     protected:
-        OrderMatchSubscriber* m_OrderMatchSubscriber;
+        OrderMatchSubscriber* orderMatchSubscriber_;
 
         DateType tradingDay_;
-        int m_MaxTradeID;
-        TradeIdType m_TradeID;
+        int maxTradeId_;
+        TradeIdType tradeId_;
         DateType currDate_;
         TimeType currTime_;
-        std::map<std::string, std::set<QuantTrading::Order*, OrderLessForPriceOpposite>> m_BuyOrders;
-        std::map<std::string, std::set<QuantTrading::Order*, OrderLessForPrice>> m_SellOrders;
-        std::map<std::string, std::set<QuantTrading::Order*, OrderLessForOrderID>> m_MarketBuyOrders;
-        std::map<std::string, std::set<QuantTrading::Order*, OrderLessForOrderID>> m_MarketSellOrders;
+        std::map<std::string, std::set<QuantTrading::Order*, OrderLessForPriceOpposite>> buyOrders_;
+        std::map<std::string, std::set<QuantTrading::Order*, OrderLessForPrice>> sellOrders_;
+        std::map<std::string, std::set<QuantTrading::Order*, OrderLessForOrderID>> marketBuyOrders_;
+        std::map<std::string, std::set<QuantTrading::Order*, OrderLessForOrderID>> marketSellOrders_;
     };
 }

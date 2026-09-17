@@ -6,15 +6,15 @@
 namespace QuantTrading::TestMdApi
 {
 MdSpiImpl::MdSpiImpl(MdApi* mdApi)
-	:m_MdApi(mdApi), m_RequestID(0)
+	:mdApi_(mdApi), requestId_(0)
 {
-	m_ReqSubMarketData = new ReqSubMarketDataField();
-	memset(m_ReqSubMarketData, 0, sizeof(ReqSubMarketDataField));
+	reqSubMarketData_ = new ReqSubMarketDataField();
+	memset(reqSubMarketData_, 0, sizeof(ReqSubMarketDataField));
 }
 MdSpiImpl::~MdSpiImpl()
 {
-	delete m_ReqSubMarketData;
-	m_ReqSubMarketData = nullptr;
+	delete reqSubMarketData_;
+	reqSubMarketData_ = nullptr;
 }
 void MdSpiImpl::OnConnected()
 {
@@ -25,16 +25,16 @@ void MdSpiImpl::OnDisConnected()
 {
 	MdSpiMiddle::OnDisConnected();
 }
-void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	MdSpiMiddle::OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
-	++m_RspMdUserLoginCount;
+	MdSpiMiddle::OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestId, isLast);
+	++RspMdUserLoginCount;
 	ReqSubscribeMd();
 }
-void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	MdSpiMiddle::OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
-	++m_RspMdUserLogoutCount;
+	MdSpiMiddle::OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestId, isLast);
+	++RspMdUserLogoutCount;
 	// 同一条连接立即重登：内核按传输层 SessionId 清理会话记录，重登应回 ErrorNone，
 	// 清理失效则回 ErrorSessionAlreadyLogin，故这次重登本身就是对该清理的验证
 	ReqUserLogin();
@@ -42,7 +42,7 @@ void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, c
 void MdSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
 	MdSpiMiddle::OnRtnDepthMarketData(depthMarketData);
-	++m_RtnMdCount;
+	++RtnMdCount;
 }
 void MdSpiImpl::ReqUserLogin()
 {
@@ -50,22 +50,22 @@ void MdSpiImpl::ReqUserLogin()
 	memset(&reqMdUserLogin, 0, sizeof(ReqMdUserLoginField));
 	Utility::Strcpy(reqMdUserLogin.UserId, Config::GetInstance().MdUser.c_str());
     Utility::Strcpy(reqMdUserLogin.Password, Config::GetInstance().MdPassword.c_str());
-	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
+	mdApi_->ReqMdUserLogin(&reqMdUserLogin, ++requestId_);
 }
 void MdSpiImpl::ReqUserLogout()
 {
 	ReqMdUserLogoutField reqMdUserLogout;
 	memset(&reqMdUserLogout, 0, sizeof(ReqMdUserLogoutField));
 	Utility::Strcpy(reqMdUserLogout.UserId, Config::GetInstance().MdUser.c_str());
-	m_MdApi->ReqMdUserLogout(&reqMdUserLogout, ++m_RequestID);
+	mdApi_->ReqMdUserLogout(&reqMdUserLogout, ++requestId_);
 }
 void MdSpiImpl::ReqSubscribeMd()
 {
 	for (auto instrument : Config::GetInstance().SubscribeInstruments)
 	{
-        Utility::Strcpy(m_ReqSubMarketData->ExchangeId, instrument->ExchangeId.c_str());
-        Utility::Strcpy(m_ReqSubMarketData->InstrumentId, instrument->InstrumentId.c_str());
-		m_MdApi->ReqSubMarketData(m_ReqSubMarketData, ++m_RequestID);
+        Utility::Strcpy(reqSubMarketData_->ExchangeId, instrument->ExchangeId.c_str());
+        Utility::Strcpy(reqSubMarketData_->InstrumentId, instrument->InstrumentId.c_str());
+		mdApi_->ReqSubMarketData(reqSubMarketData_, ++requestId_);
 	}
 }
 }

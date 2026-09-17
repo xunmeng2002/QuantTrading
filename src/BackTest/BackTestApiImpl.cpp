@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "BackTestApiImpl.h"
 #include "SimExchange.h"
 #include "Config/Config.h"
@@ -57,24 +57,24 @@ void BackTestApiImpl::RegisterSpi(BackTestSpi* pSpi)
 	simExchange_->RegisterSpi(pSpi);
 }
 
-int BackTestApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
+int BackTestApiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId)
 {
-	return simExchange_->ReqSubMarketData(reqSubMarketData, requestID);
+	return simExchange_->ReqSubMarketData(reqSubMarketData, requestId);
 }
-int BackTestApiImpl::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
+int BackTestApiImpl::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestId)
 {
-	return simExchange_->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestID);
+	return simExchange_->ReqSubMarketDataFinished(reqSubMarketDataFinished, requestId);
 }
-int BackTestApiImpl::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
+int BackTestApiImpl::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestId)
 {
-	return simExchange_->ReqRegisterAccount(reqRegisterAccount, requestID);
+	return simExchange_->ReqRegisterAccount(reqRegisterAccount, requestId);
 }
-int BackTestApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
+int BackTestApiImpl::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId)
 {
-	return simExchange_->ReqInsertOrder(reqInsertOrder, requestID);
+	return simExchange_->ReqInsertOrder(reqInsertOrder, requestId);
 }
-int BackTestApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
+int BackTestApiImpl::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId)
 {
-	return simExchange_->ReqCancelOrder(reqCancelOrder, requestID);
+	return simExchange_->ReqCancelOrder(reqCancelOrder, requestId);
 }
 }

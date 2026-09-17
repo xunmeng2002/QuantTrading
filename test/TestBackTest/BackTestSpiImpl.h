@@ -11,14 +11,14 @@ public:
 
 	virtual void OnConnected() override;
 	virtual void OnDisConnected() override;
-	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast) override;
 	virtual void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) override;
 	virtual void OnRtnBarMarketData(const BarMarketDataField* barMarketData) override;
 	virtual void OnRtnSessionBegin(const SessionBeginField* sessionBegin) override;
 	virtual void OnRtnSessionEnd(const SessionEndField* sessionEnd) override;
 	virtual void OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd) override;
-	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast) override;
+	virtual void OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast) override;
 	virtual void OnRtnOrder(const OrderField* order) override;
 	virtual void OnRtnTrade(const TradeField* trade) override;
 
@@ -29,13 +29,13 @@ private:
 	void ReqInsertOrder(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId, const double& price, DirectionType direction);
 
 private:
-	BackTestApi* m_BackTestApi;
-	DepthMarketDataField* m_LastOrderTickMd;
-	BarMarketDataField* m_LastOrderBarMd;
-	AccountIdType m_AccountID;
-	ExchangeIdType m_ExchangeID;
-	InstrumentIdType m_InstrumentID;
-	int m_MaxRequestID;
-	int m_MaxClientOrderID;
+	BackTestApi* backTestApi_;
+	DepthMarketDataField* lastOrderTickMd_;
+	BarMarketDataField* lastOrderBarMd_;
+	AccountIdType accountId_;
+	ExchangeIdType exchangeId_;
+	InstrumentIdType instrumentId_;
+	int maxRequestId_;
+	int maxClientOrderId_;
 };
 }

@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Api/SpiWrap.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/SpiWrap.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "SimExchangeSpiWrap.h"
 
 
@@ -23,53 +23,53 @@ void SimExchangeSpiWrap::OnDisConnected()
 	}
 }
 
-void SimExchangeSpiWrap::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiWrap::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (simExchangeCSpi_ != nullptr)
 	{
-		simExchangeCSpi_->OnRspAccountLogin(rspAccountLogin, rspInfo, requestID, isLast);
+		simExchangeCSpi_->OnRspAccountLogin(rspAccountLogin, rspInfo, requestId, isLast);
 	}
 }
-void SimExchangeSpiWrap::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiWrap::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (simExchangeCSpi_ != nullptr)
 	{
-		simExchangeCSpi_->OnRspAccountLogout(rspAccountLogout, rspInfo, requestID, isLast);
+		simExchangeCSpi_->OnRspAccountLogout(rspAccountLogout, rspInfo, requestId, isLast);
 	}
 }
-void SimExchangeSpiWrap::OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiWrap::OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (simExchangeCSpi_ != nullptr)
 	{
-		simExchangeCSpi_->OnRspQryOrder(order, rspInfo, requestID, isLast);
+		simExchangeCSpi_->OnRspQryOrder(order, rspInfo, requestId, isLast);
 	}
 }
-void SimExchangeSpiWrap::OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiWrap::OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (simExchangeCSpi_ != nullptr)
 	{
-		simExchangeCSpi_->OnRspQryTrade(trade, rspInfo, requestID, isLast);
+		simExchangeCSpi_->OnRspQryTrade(trade, rspInfo, requestId, isLast);
 	}
 }
-void SimExchangeSpiWrap::OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiWrap::OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (simExchangeCSpi_ != nullptr)
 	{
-		simExchangeCSpi_->OnRspQryInstrument(instrument, rspInfo, requestID, isLast);
+		simExchangeCSpi_->OnRspQryInstrument(instrument, rspInfo, requestId, isLast);
 	}
 }
-void SimExchangeSpiWrap::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiWrap::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (simExchangeCSpi_ != nullptr)
 	{
-		simExchangeCSpi_->OnRspInsertOrder(reqInsertOrder, rspInfo, requestID, isLast);
+		simExchangeCSpi_->OnRspInsertOrder(reqInsertOrder, rspInfo, requestId, isLast);
 	}
 }
-void SimExchangeSpiWrap::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiWrap::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (simExchangeCSpi_ != nullptr)
 	{
-		simExchangeCSpi_->OnRspCancelOrder(reqCancelOrder, rspInfo, requestID, isLast);
+		simExchangeCSpi_->OnRspCancelOrder(reqCancelOrder, rspInfo, requestId, isLast);
 	}
 }
 void SimExchangeSpiWrap::OnRtnOrder(const OrderField* order)

@@ -197,7 +197,7 @@ void SimExchange::RegisterSpi(BackTestSpi* pSpi)
 {
 	backTestSpi_ = pSpi;
 }
-int SimExchange::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
+int SimExchange::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId)
 {
 	ReqSubMarketDataField* reqSubMd = ::Allocate<ReqSubMarketDataField>();
 	memcpy(reqSubMd, reqSubMarketData, sizeof(ReqSubMarketDataField));
@@ -207,10 +207,10 @@ int SimExchange::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData,
 	}
 	return 0;
 }
-int SimExchange::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID)
+int SimExchange::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestId)
 {
 	ReqSubMarketDataFinishedPackage* reqPackage = ReqSubMarketDataFinishedPackage::Allocate();
-	reqPackage->Prepare(0LL, false, requestID);
+	reqPackage->Prepare(0LL, false, requestId);
 	reqPackage->ReqSubMarketDataFinished = ::Allocate<ReqSubMarketDataFinishedField>();
 	memcpy(reqPackage->ReqSubMarketDataFinished, reqSubMarketDataFinished, sizeof(ReqSubMarketDataFinishedField));
 
@@ -220,10 +220,10 @@ int SimExchange::ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* r
 	}
 	return 0;
 }
-int SimExchange::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID)
+int SimExchange::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestId)
 {
 	ReqRegisterAccountPackage* reqPackage = ReqRegisterAccountPackage::Allocate();
-	reqPackage->Prepare(0LL, false, requestID);
+	reqPackage->Prepare(0LL, false, requestId);
 	reqPackage->ReqRegisterAccount = ::Allocate<ReqRegisterAccountField>();
 	memcpy(reqPackage->ReqRegisterAccount, reqRegisterAccount, sizeof(ReqRegisterAccountField));
 
@@ -233,10 +233,10 @@ int SimExchange::ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAc
 	}
 	return 0;
 }
-int SimExchange::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
+int SimExchange::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId)
 {
 	ReqInsertOrderPackage* reqPackage = ReqInsertOrderPackage::Allocate();
-	reqPackage->Prepare(0LL, false, requestID);
+	reqPackage->Prepare(0LL, false, requestId);
 	reqPackage->ReqInsertOrder = ::Allocate<ReqInsertOrderField>();
 	memcpy(reqPackage->ReqInsertOrder, reqInsertOrder, sizeof(ReqInsertOrderField));
 
@@ -246,10 +246,10 @@ int SimExchange::ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int r
 	}
 	return 0;
 }
-int SimExchange::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
+int SimExchange::ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId)
 {
 	ReqCancelOrderPackage* reqPackage = ReqCancelOrderPackage::Allocate();
-	reqPackage->Prepare(0LL, false, requestID);
+	reqPackage->Prepare(0LL, false, requestId);
 	reqPackage->ReqCancelOrder = ::Allocate<ReqCancelOrderField>();
 	memcpy(reqPackage->ReqCancelOrder, reqCancelOrder, sizeof(ReqCancelOrderField));
 

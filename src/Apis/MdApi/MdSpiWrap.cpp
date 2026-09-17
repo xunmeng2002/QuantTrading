@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Api/SpiWrap.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/SpiWrap.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdSpiWrap.h"
 
 
@@ -23,32 +23,32 @@ void MdSpiWrap::OnDisConnected()
 	}
 }
 
-void MdSpiWrap::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiWrap::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi_->OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestID, isLast);
+		mdCSpi_->OnRspMdUserLogin(rspMdUserLogin, rspInfo, requestId, isLast);
 	}
 }
-void MdSpiWrap::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiWrap::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi_->OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestID, isLast);
+		mdCSpi_->OnRspMdUserLogout(rspMdUserLogout, rspInfo, requestId, isLast);
 	}
 }
-void MdSpiWrap::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiWrap::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi_->OnRspSubMarketData(rspSubMarketData, rspInfo, requestID, isLast);
+		mdCSpi_->OnRspSubMarketData(rspSubMarketData, rspInfo, requestId, isLast);
 	}
 }
-void MdSpiWrap::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiWrap::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (mdCSpi_ != nullptr)
 	{
-		mdCSpi_->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, requestID, isLast);
+		mdCSpi_->OnRspUnSubMarketData(rspUnSubMarketData, rspInfo, requestId, isLast);
 	}
 }
 void MdSpiWrap::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)

@@ -32,13 +32,13 @@ namespace QuantTrading::MdOffer
         void ReqUserLogin();
 
     private:
-        CThostFtdcMdApi* m_MdApi;
-        MdKernel* m_MdKernel;
-        std::atomic<bool> m_IsLogged;
-        int m_RequestID;
-        AccountInfo* m_AccountInfo;
+        CThostFtdcMdApi* mdApi_;
+        MdKernel* mdKernel_;
+        std::atomic<bool> isLogged_;
+        int requestId_;
+        AccountInfo* accountInfo_;
         std::map<std::string, const ReqSubMarketDataField*> reqSubMds_;
-        std::vector<const char*> m_ReqSubInstruments;
-        std::mutex m_Mutex;
+        std::vector<const char*> reqSubInstruments_;
+        std::mutex mutex_;
     };
 }

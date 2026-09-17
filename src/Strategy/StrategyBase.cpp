@@ -11,15 +11,15 @@ using namespace Spark::Core;
 namespace QuantTrading::strategy
 {
 StrategyBase::StrategyBase(QuantTrading::BackTestApi* backTestApi, const char* accountId)
-	:m_BackTestApi(backTestApi), m_AccountID(accountId)
+	:backTestApi_(backTestApi), accountId_(accountId)
 {
 }
 StrategyBase::~StrategyBase() = default;
 
 bool StrategyBase::Start()
 {
-	m_BackTestApi->RegisterSpi(this);
-	if (!m_BackTestApi->Init())
+	backTestApi_->RegisterSpi(this);
+	if (!backTestApi_->Init())
 	{
 		WriteLog(LogLevel::Error, "StrategyBase::Start: api init failed");
 		return false;
@@ -27,14 +27,14 @@ bool StrategyBase::Start()
 	// 账户注册先于 OnStart 的行情订阅：引擎账户表按需自建，注册与下单同队列 FIFO，撮合检查账户时必已存在
 	ReqRegisterAccountField reqRegisterAccount;
 	memset(&reqRegisterAccount, 0, sizeof(ReqRegisterAccountField));
-	Utility::Strcpy(reqRegisterAccount.AccountId, m_AccountID.c_str());
-	m_BackTestApi->ReqRegisterAccount(&reqRegisterAccount, ++m_NextRequestID);
+	Utility::Strcpy(reqRegisterAccount.AccountId, accountId_.c_str());
+	backTestApi_->ReqRegisterAccount(&reqRegisterAccount, ++nextRequestId_);
 	OnStart();
 	return true;
 }
 void StrategyBase::WaitForEnd()
 {
-	m_BackTestApi->Join();
+	backTestApi_->Join();
 }
 
 void StrategyBase::SubscribeMarketData(const char* exchangeId, const char* instrumentId)
@@ -43,13 +43,13 @@ void StrategyBase::SubscribeMarketData(const char* exchangeId, const char* instr
 	memset(&reqSubMarketData, 0, sizeof(ReqSubMarketDataField));
 	Utility::Strcpy(reqSubMarketData.ExchangeId, exchangeId);
 	Utility::Strcpy(reqSubMarketData.InstrumentId, instrumentId);
-	reqSubMarketData.BarPreces = m_DeclaredBarPreces;
-	reqSubMarketData.BarPeriod = m_DeclaredBarPeriod;
-	m_BackTestApi->ReqSubMarketData(&reqSubMarketData, ++m_NextRequestID);
+	reqSubMarketData.BarPreces = declaredBarPreces_;
+	reqSubMarketData.BarPeriod = declaredBarPeriod_;
+	backTestApi_->ReqSubMarketData(&reqSubMarketData, ++nextRequestId_);
 
 	ReqSubMarketDataFinishedField reqSubMarketDataFinished;
 	memset(&reqSubMarketDataFinished, 0, sizeof(ReqSubMarketDataFinishedField));
-	m_BackTestApi->ReqSubMarketDataFinished(&reqSubMarketDataFinished, ++m_NextRequestID);
+	backTestApi_->ReqSubMarketDataFinished(&reqSubMarketDataFinished, ++nextRequestId_);
 }
 void StrategyBase::SubscribeTick(const char* exchangeId, const char* instrumentId)
 {
@@ -73,15 +73,15 @@ void StrategyBase::DeclareBarPeriod(const char* barPreces)
 		WriteLog(LogLevel::Error, "DeclareBarPeriod: BarPreces:%s can not be a target, expect <n><m|h|d> e.g. 5m", barPreces != nullptr ? barPreces : "");
 		throw std::logic_error("StrategyBase::DeclareBarPeriod: barPreces can not be a target");
 	}
-	m_DeclaredBarPreces = barPrecesType;
-	m_DeclaredBarPeriod = barPeriod;
+	declaredBarPreces_ = barPrecesType;
+	declaredBarPeriod_ = barPeriod;
 }
 
 ClientOrderIdType StrategyBase::InsertLimitOrder(const char* exchangeId, const char* instrumentId, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume)
 {
 	ReqInsertOrderField reqInsertOrder;
 	memset(&reqInsertOrder, 0, sizeof(ReqInsertOrderField));
-	Utility::Strcpy(reqInsertOrder.AccountId, m_AccountID.c_str());
+	Utility::Strcpy(reqInsertOrder.AccountId, accountId_.c_str());
 	Utility::Strcpy(reqInsertOrder.ExchangeId, exchangeId);
 	Utility::Strcpy(reqInsertOrder.InstrumentId, instrumentId);
 	reqInsertOrder.Direction = direction;
@@ -89,13 +89,13 @@ ClientOrderIdType StrategyBase::InsertLimitOrder(const char* exchangeId, const c
 	reqInsertOrder.OrderPriceType = OrderPriceTypeType::LimitPrice;
 	reqInsertOrder.Price = price;
 	reqInsertOrder.Volume = volume;
-	reqInsertOrder.ClientOrderId = ++m_NextClientOrderID;
-	m_BackTestApi->ReqInsertOrder(&reqInsertOrder, ++m_NextRequestID);
+	reqInsertOrder.ClientOrderId = ++nextClientOrderId_;
+	backTestApi_->ReqInsertOrder(&reqInsertOrder, ++nextRequestId_);
 
 	OrderContext orderContext;
 	orderContext.ExchangeId = exchangeId;
 	orderContext.InstrumentId = instrumentId;
-	m_OrderContexts[reqInsertOrder.ClientOrderId] = orderContext;
+	orderContexts_[reqInsertOrder.ClientOrderId] = orderContext;
 	return reqInsertOrder.ClientOrderId;
 }
 ClientOrderIdType StrategyBase::BuyOpen(const char* exchangeId, const char* instrumentId, PriceType price, VolumeType volume)
@@ -117,42 +117,42 @@ ClientOrderIdType StrategyBase::SellClose(const char* exchangeId, const char* in
 
 bool StrategyBase::CancelOrder(ClientOrderIdType clientOrderID)
 {
-	auto orderContextIt = m_OrderContexts.find(clientOrderID);
-	if (orderContextIt == m_OrderContexts.end())
+	auto orderContextIt = orderContexts_.find(clientOrderID);
+	if (orderContextIt == orderContexts_.end())
 	{
 		WriteLog(LogLevel::Error, "CancelOrder: ClientOrderId:%d was not inserted by this strategy", clientOrderID);
 		return false;
 	}
 	ReqCancelOrderField reqCancelOrder;
 	memset(&reqCancelOrder, 0, sizeof(ReqCancelOrderField));
-	Utility::Strcpy(reqCancelOrder.AccountId, m_AccountID.c_str());
+	Utility::Strcpy(reqCancelOrder.AccountId, accountId_.c_str());
 	Utility::Strcpy(reqCancelOrder.ExchangeId, orderContextIt->second.ExchangeId.c_str());
 	Utility::Strcpy(reqCancelOrder.InstrumentId, orderContextIt->second.InstrumentId.c_str());
 	reqCancelOrder.ClientOrderId = clientOrderID;
-	reqCancelOrder.ClientCancelOrderId = ++m_NextClientCancelOrderID;
-	auto orderIt = m_Orders.find(clientOrderID);
-	if (orderIt != m_Orders.end())
+	reqCancelOrder.ClientCancelOrderId = ++nextClientCancelOrderId_;
+	auto orderIt = orders_.find(clientOrderID);
+	if (orderIt != orders_.end())
 	{
 		reqCancelOrder.OrderId = orderIt->second.OrderId;
 	}
-	m_BackTestApi->ReqCancelOrder(&reqCancelOrder, ++m_NextRequestID);
+	backTestApi_->ReqCancelOrder(&reqCancelOrder, ++nextRequestId_);
 	return true;
 }
 
 VolumeType StrategyBase::GetLongPosition(const char* instrumentId) const
 {
-	auto instrumentStateIt = m_InstrumentStates.find(instrumentId);
-	return instrumentStateIt != m_InstrumentStates.end() ? instrumentStateIt->second.LongVolume : 0;
+	auto instrumentStateIt = instrumentStates_.find(instrumentId);
+	return instrumentStateIt != instrumentStates_.end() ? instrumentStateIt->second.LongVolume : 0;
 }
 VolumeType StrategyBase::GetShortPosition(const char* instrumentId) const
 {
-	auto instrumentStateIt = m_InstrumentStates.find(instrumentId);
-	return instrumentStateIt != m_InstrumentStates.end() ? instrumentStateIt->second.ShortVolume : 0;
+	auto instrumentStateIt = instrumentStates_.find(instrumentId);
+	return instrumentStateIt != instrumentStates_.end() ? instrumentStateIt->second.ShortVolume : 0;
 }
 PriceType StrategyBase::GetLastPrice(const char* instrumentId) const
 {
-	auto instrumentStateIt = m_InstrumentStates.find(instrumentId);
-	return instrumentStateIt != m_InstrumentStates.end() ? instrumentStateIt->second.LastPrice : 0;
+	auto instrumentStateIt = instrumentStates_.find(instrumentId);
+	return instrumentStateIt != instrumentStates_.end() ? instrumentStateIt->second.LastPrice : 0;
 }
 
 void StrategyBase::OnConnected()
@@ -163,14 +163,14 @@ void StrategyBase::OnDisConnected()
 {
 	WriteLog(LogLevel::Info, "StrategyBase: disconnected");
 }
-void StrategyBase::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
+void StrategyBase::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (rspInfo != nullptr && rspInfo->ErrorId != 0)
 	{
 		WriteLog(LogLevel::Error, "SubscribeMarketData failed: ErrorId:%d ErrorMsg:%s", rspInfo->ErrorId, rspInfo->ErrorMsg);
 	}
 }
-void StrategyBase::OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast)
+void StrategyBase::OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (rspInfo != nullptr && rspInfo->ErrorId != 0)
 	{
@@ -180,7 +180,7 @@ void StrategyBase::OnRspRegisterAccount(const RspRegisterAccountField* rspRegist
 }
 void StrategyBase::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
-	m_InstrumentStates[depthMarketData->InstrumentId].LastPrice = depthMarketData->LastPrice;
+	instrumentStates_[depthMarketData->InstrumentId].LastPrice = depthMarketData->LastPrice;
 	OnTick(depthMarketData);
 }
 void StrategyBase::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
@@ -199,14 +199,14 @@ void StrategyBase::OnRtnSessionEnd(const SessionEndField* sessionEnd)
 }
 void StrategyBase::OnRtnMarketDataEnd(const MarketDataEndField* marketDataEnd)
 {
-	if (!m_IsMdEnded)
+	if (!isMdEnded_)
 	{
-		m_IsMdEnded = true;
+		isMdEnded_ = true;
 		OnEnd();
-		m_BackTestApi->Release();
+		backTestApi_->Release();
 	}
 }
-void StrategyBase::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
+void StrategyBase::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (rspInfo != nullptr && rspInfo->ErrorId != 0)
 	{
@@ -215,7 +215,7 @@ void StrategyBase::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, c
 	}
 	OnInsertOrderRsp(reqInsertOrder, rspInfo);
 }
-void StrategyBase::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
+void StrategyBase::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
 	if (rspInfo != nullptr && rspInfo->ErrorId != 0)
 	{
@@ -226,10 +226,10 @@ void StrategyBase::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, c
 }
 void StrategyBase::OnRtnOrder(const OrderField* order)
 {
-	m_Orders[order->ClientOrderId] = *order;
+	orders_[order->ClientOrderId] = *order;
 	if (order->OrderId != 0)
 	{
-		m_EngineOrderIDs[order->OrderId] = order->ClientOrderId;
+		engineOrderIds_[order->OrderId] = order->ClientOrderId;
 	}
 	WriteLog(LogLevel::Info, "OnRtnOrder ClientOrderId:%d OrderId:%d Status:%d Price:%f Traded:%lld Total:%lld",
 		order->ClientOrderId, order->OrderId, (int)order->OrderStatus, order->Price, order->VolumeTraded, order->VolumeTotal);
@@ -237,7 +237,7 @@ void StrategyBase::OnRtnOrder(const OrderField* order)
 }
 void StrategyBase::OnRtnTrade(const TradeField* trade)
 {
-	auto& instrumentState = m_InstrumentStates[trade->InstrumentId];
+	auto& instrumentState = instrumentStates_[trade->InstrumentId];
 	bool isOpenTrade = trade->OffsetFlag == OffsetFlagType::Open;
 	if (trade->Direction == DirectionType::Buy && isOpenTrade)
 	{
@@ -256,8 +256,8 @@ void StrategyBase::OnRtnTrade(const TradeField* trade)
 		instrumentState.LongVolume -= trade->Volume;
 	}
 	ClientOrderIdType clientOrderID = 0;
-	auto engineOrderIDIt = m_EngineOrderIDs.find(trade->OrderId);
-	if (engineOrderIDIt != m_EngineOrderIDs.end())
+	auto engineOrderIDIt = engineOrderIds_.find(trade->OrderId);
+	if (engineOrderIDIt != engineOrderIds_.end())
 	{
 		clientOrderID = engineOrderIDIt->second;
 	}

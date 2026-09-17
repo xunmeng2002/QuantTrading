@@ -13,6 +13,6 @@ public:
     static bool IsRequested();
 
 private:
-    inline static std::atomic<bool> s_Requested{false};
+    inline static std::atomic<bool> requested_{false};
 };
 }

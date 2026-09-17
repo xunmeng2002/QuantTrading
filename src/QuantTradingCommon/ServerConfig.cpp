@@ -9,14 +9,14 @@ using namespace std;
 
 namespace QuantTrading
 {
-    ServerConfig ServerConfig::m_Instance;
+    ServerConfig ServerConfig::instance_;
     ServerConfig::ServerConfig()
     {
 
     }
     ServerConfig& ServerConfig::GetInstance()
     {
-        return m_Instance;
+        return instance_;
     }
     void ServerConfig::Load(const char* fileName)
     {

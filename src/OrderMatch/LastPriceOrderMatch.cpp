@@ -7,8 +7,8 @@ using namespace Spark::Core;
 
 namespace QuantTrading::ordermatch
 {
-    LastPriceOrderMatch::LastPriceOrderMatch(const DateType& tradingDay, int maxTradeID)
-        :OrderMatch(tradingDay, maxTradeID)
+    LastPriceOrderMatch::LastPriceOrderMatch(const DateType& tradingDay, int tradeId)
+        :OrderMatch(tradingDay, tradeId)
     {
 
     }
@@ -32,20 +32,20 @@ namespace QuantTrading::ordermatch
 
     void LastPriceOrderMatch::CheckMatch(QuantTrading::DepthMarketData* mdTick)
     {
-        auto& marketBuyQueueOrders = m_MarketBuyOrders[mdTick->InstrumentId];
+        auto& marketBuyQueueOrders = marketBuyOrders_[mdTick->InstrumentId];
         for (auto& marketBuyQueueOrder : marketBuyQueueOrders)
         {
             MatchMarketOrderAtPrice(marketBuyQueueOrder, mdTick->LastPrice, mdTick->AskPrice1);
         }
-        m_MarketBuyOrders.erase(mdTick->InstrumentId);
-        auto& marketSellQueueOrders = m_MarketSellOrders[mdTick->InstrumentId];
+        marketBuyOrders_.erase(mdTick->InstrumentId);
+        auto& marketSellQueueOrders = marketSellOrders_[mdTick->InstrumentId];
         for (auto& marketSellQueueOrder : marketSellQueueOrders)
         {
             MatchMarketOrderAtPrice(marketSellQueueOrder, mdTick->LastPrice, mdTick->BidPrice1);
         }
-        m_MarketSellOrders.erase(mdTick->InstrumentId);
+        marketSellOrders_.erase(mdTick->InstrumentId);
 
-        auto& buyQueueOrders = m_BuyOrders[mdTick->InstrumentId];
+        auto& buyQueueOrders = buyOrders_[mdTick->InstrumentId];
         for (auto& buyQueueOrder : buyQueueOrders)
         {
             if (!CheckMatchForOrder(mdTick, buyQueueOrder))
@@ -56,7 +56,7 @@ namespace QuantTrading::ordermatch
         CancelUnfilledImmediateOrders(buyQueueOrders);
         std::erase_if(buyQueueOrders, [](QuantTrading::Order* order) {return order->VolumeTotal == 0; });
 
-        auto& sellQueueOrders = m_SellOrders[mdTick->InstrumentId];
+        auto& sellQueueOrders = sellOrders_[mdTick->InstrumentId];
         for (auto& sellQueueOrder : sellQueueOrders)
         {
             if (!CheckMatchForOrder(mdTick, sellQueueOrder))
@@ -74,8 +74,8 @@ namespace QuantTrading::ordermatch
         else if (order->Direction == DirectionType::Sell && DoubleUtility::DoubleGreat(order->Price, mdTick->LastPrice))
             return false;
 
-        GetNextTradeID(m_TradeID);
-        Match(order, mdTick->LastPrice, order->VolumeTotal, m_TradeID);
+        GetNextTradeID(tradeId_);
+        Match(order, mdTick->LastPrice, order->VolumeTotal, tradeId_);
         return true;
     }
 }

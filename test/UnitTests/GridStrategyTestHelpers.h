@@ -27,12 +27,12 @@ namespace QuantTrading::UnitTest
     };
 
     // 造引擎日终撤单回报（值类型，OrderStatus/成交量按撤单场景填充）
-    inline OrderField MakeCanceledOrderField(const char* instrument_id, int order_id, int client_order_id,
-        OrderStatusType order_status, long long volume_traded)
+    inline OrderField MakeCanceledOrderField(const char* instrumentId, int OrderId, int clientOrderId,
+        OrderStatusType OrderStatus, long long VolumeTraded)
     {
-        OrderField order = MakeOrderField(instrument_id, order_id, client_order_id);
-        order.OrderStatus = order_status;
-        order.VolumeTraded = volume_traded;
+        OrderField order = MakeOrderField(instrumentId, OrderId, clientOrderId);
+        order.OrderStatus = OrderStatus;
+        order.VolumeTraded = VolumeTraded;
         order.VolumeTotal = 0;
         return order;
     }

@@ -6,8 +6,8 @@ using namespace Spark::Core;
 
 namespace QuantTrading::ordermatch
 {
-    OrderBookOrderMatch::OrderBookOrderMatch(const DateType& tradingDay, int maxTradeID)
-        :OrderMatch(tradingDay, maxTradeID)
+    OrderBookOrderMatch::OrderBookOrderMatch(const DateType& tradingDay, int tradeId)
+        :OrderMatch(tradingDay, tradeId)
     {
 
     }
@@ -54,7 +54,7 @@ namespace QuantTrading::ordermatch
         CheckMatch(order);
         if (order->VolumeTraded == 0)
         {
-            m_OrderMatchSubscriber->OnOrder(order);
+            orderMatchSubscriber_->OnOrder(order);
         }
         if (order->VolumeTotal > 0)
         {
@@ -73,7 +73,7 @@ namespace QuantTrading::ordermatch
     {
         if (order->Direction == DirectionType::Buy)
         {
-            auto& queueOrders = m_SellOrders[order->InstrumentId];
+            auto& queueOrders = sellOrders_[order->InstrumentId];
             for (auto queueOrder : queueOrders)
             {
                 if (!CheckMatchForTwoOrder(order, queueOrder))
@@ -84,7 +84,7 @@ namespace QuantTrading::ordermatch
         }
         else
         {
-            auto& queueOrders = m_BuyOrders[order->InstrumentId];
+            auto& queueOrders = buyOrders_[order->InstrumentId];
             for (auto queueOrder : queueOrders)
             {
                 if (!CheckMatchForTwoOrder(order, queueOrder))
@@ -113,9 +113,9 @@ namespace QuantTrading::ordermatch
         matchVolume = min(order->VolumeTotal, queueOrder->VolumeTotal);
         matchPrice = queueOrder->Price;
 
-        GetNextTradeID(m_TradeID);
-        Match(queueOrder, matchPrice, matchVolume, m_TradeID);
-        Match(order, matchPrice, matchVolume, m_TradeID);
+        GetNextTradeID(tradeId_);
+        Match(queueOrder, matchPrice, matchVolume, tradeId_);
+        Match(order, matchPrice, matchVolume, tradeId_);
         return true;
     }
 }

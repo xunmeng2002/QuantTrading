@@ -13,12 +13,12 @@ using namespace Spark::Core;
 namespace QuantTrading::SimExchange
 {
 MdSpiImpl::MdSpiImpl(MdApi* mdApi, const std::string& mdUser, const std::string& mdPassword)
-	:m_MdApi(mdApi), m_SimExchange(nullptr), m_MdUser(mdUser), m_MdPassword(mdPassword), m_RequestID(0)
+	:mdApi_(mdApi), simExchange_(nullptr), mdUser_(mdUser), mdPassword_(mdPassword), requestId_(0)
 {
 }
 void MdSpiImpl::SetSimExchange(SimExchange* simExchange)
 {
-	m_SimExchange = simExchange;
+	simExchange_ = simExchange;
 }
 void MdSpiImpl::OnConnected()
 {
@@ -28,12 +28,12 @@ void MdSpiImpl::OnConnected()
 void MdSpiImpl::OnDisConnected()
 {
 	WriteLog(LogLevel::Info, "OnDisConnected");
-	m_SimExchange->OnMdDisConnected();
+	simExchange_->OnMdDisConnected();
 }
 
-void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspMdUserLogin: RequestId:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspMdUserLogin: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspMdUserLogin != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspMdUserLoginField:UserId:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]",
@@ -63,11 +63,11 @@ void MdSpiImpl::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, cons
 	{
 		memcpy(package->RspInfo, rspInfo, sizeof(RspInfoField));
 	}
-	m_SimExchange->OnMessage(package);
+	simExchange_->OnMessage(package);
 }
-void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestId:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspMdUserLogout != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspMdUserLogoutField:UserId:[%s]",
@@ -98,11 +98,11 @@ void MdSpiImpl::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, c
 	{
 		memcpy(package->RspInfo, rspInfo, sizeof(RspInfoField));
 	}
-	m_SimExchange->OnMessage(package);
+	simExchange_->OnMessage(package);
 }
-void MdSpiImpl::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestId:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s]",
@@ -122,9 +122,9 @@ void MdSpiImpl::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void MdSpiImpl::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
+void MdSpiImpl::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspUnSubMarketData: RequestId:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspUnSubMarketData: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspUnSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspUnSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s]",
@@ -162,7 +162,7 @@ void MdSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData
 	package->Prepare(0, false, 0);
 	package->DepthMarketData = ::Allocate<DepthMarketDataField>();
 	memcpy(package->DepthMarketData, depthMarketData, sizeof(DepthMarketDataField));
-	m_SimExchange->OnMessage(package);
+	simExchange_->OnMessage(package);
 }
 void MdSpiImpl::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
@@ -182,19 +182,19 @@ void MdSpiImpl::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 	package->Prepare(0, false, 0);
 	package->BarMarketData = ::Allocate<BarMarketDataField>();
 	memcpy(package->BarMarketData, barMarketData, sizeof(BarMarketDataField));
-	m_SimExchange->OnMessage(package);
+	simExchange_->OnMessage(package);
 }
 
 void MdSpiImpl::ReqMdUserLogin()
 {
 	ReqMdUserLoginField reqMdUserLogin;
 	memset(&reqMdUserLogin, 0, sizeof(ReqMdUserLoginField));
-    Utility::Strcpy(reqMdUserLogin.UserId, m_MdUser.c_str());
-    Utility::Strcpy(reqMdUserLogin.Password, m_MdPassword.c_str());
-	m_MdApi->ReqMdUserLogin(&reqMdUserLogin, ++m_RequestID);
+    Utility::Strcpy(reqMdUserLogin.UserId, mdUser_.c_str());
+    Utility::Strcpy(reqMdUserLogin.Password, mdPassword_.c_str());
+	mdApi_->ReqMdUserLogin(&reqMdUserLogin, ++requestId_);
 }
 void MdSpiImpl::ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData)
 {
-	m_MdApi->ReqSubMarketData(reqSubMarketData, ++m_RequestID);
+	mdApi_->ReqSubMarketData(reqSubMarketData, ++requestId_);
 }
 }

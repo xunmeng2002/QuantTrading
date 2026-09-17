@@ -33,19 +33,19 @@ public:
     std::vector<BarMarketDataField> bars;
 };
 
-DepthMarketDataField MakeTick(const char* instrument_id, long long update_ts, double last_price,
-    double high_price, double low_price, long long volume, long long curr_volume, long long turnover)
+DepthMarketDataField MakeTick(const char* instrumentId, long long updateTs, double lastPrice,
+    double highPrice, double lowPrice, long long volume, long long curr_volume, long long turnover)
 {
     DepthMarketDataField tick{};
     CopyString(tick.TradingDay, "20240301");
     CopyString(tick.ExchangeId, "SHFE");
-    CopyString(tick.InstrumentId, instrument_id);
-    tick.UpdateTs = update_ts;
-    tick.LastPrice = last_price;
+    CopyString(tick.InstrumentId, instrumentId);
+    tick.UpdateTs = updateTs;
+    tick.LastPrice = lastPrice;
     tick.PreClosePrice = 100.0;
     tick.PreSettlementPrice = 100.0;
-    tick.HighestPrice = high_price;
-    tick.LowestPrice = low_price;
+    tick.HighestPrice = highPrice;
+    tick.LowestPrice = lowPrice;
     tick.Volume = volume;
     tick.CurrVolume = curr_volume;
     tick.Turnover = static_cast<double>(turnover);
@@ -57,14 +57,14 @@ DepthMarketDataField MakeTick(const char* instrument_id, long long update_ts, do
 class MinuteBarEnvironment
 {
 public:
-    MinuteBarEnvironment(const char* exchange_id, const char* instrument_id)
+    MinuteBarEnvironment(const char* exchange_id, const char* instrumentId)
         :minute_bar_(trade_sessions_)
     {
         REQUIRE(LoadTradeSessionJson(trade_sessions_, kBarSessionJson));
         ExchangeIdType exchange_id_buffer{};
         InstrumentIdType instrument_id_buffer{};
         CopyString(exchange_id_buffer, exchange_id);
-        CopyString(instrument_id_buffer, instrument_id);
+        CopyString(instrument_id_buffer, instrumentId);
         minute_bar_.Subscribe(&subscriber_);
         minute_bar_.ReqSubMarketData(exchange_id_buffer, instrument_id_buffer);
     }

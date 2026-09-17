@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Api/CApi.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/CApi.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include <QuantTrading/MdCApi.h>
 #include <QuantTrading/MdApi.h>
 #include "MdSpiWrap.h"
@@ -54,20 +54,20 @@ MDAPI_EXPORTS void MDAPI_CALL RegisterSpi(MdCSpi* spi)
 	MdSpiWrapInstance->RegisterSpi(spi);
 }
 
-MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID)
+MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestId)
 {
-	return MdApiInstance->ReqMdUserLogin(reqMdUserLogin, requestID);
+	return MdApiInstance->ReqMdUserLogin(reqMdUserLogin, requestId);
 }
-MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID)
+MDAPI_EXPORTS int MDAPI_CALL ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestId)
 {
-	return MdApiInstance->ReqMdUserLogout(reqMdUserLogout, requestID);
+	return MdApiInstance->ReqMdUserLogout(reqMdUserLogout, requestId);
 }
-MDAPI_EXPORTS int MDAPI_CALL ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID)
+MDAPI_EXPORTS int MDAPI_CALL ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId)
 {
-	return MdApiInstance->ReqSubMarketData(reqSubMarketData, requestID);
+	return MdApiInstance->ReqSubMarketData(reqSubMarketData, requestId);
 }
-MDAPI_EXPORTS int MDAPI_CALL ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID)
+MDAPI_EXPORTS int MDAPI_CALL ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestId)
 {
-	return MdApiInstance->ReqUnSubMarketData(reqUnSubMarketData, requestID);
+	return MdApiInstance->ReqUnSubMarketData(reqUnSubMarketData, requestId);
 }
 

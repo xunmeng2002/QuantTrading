@@ -48,11 +48,11 @@ public:
 	void OnBarMarketData(BarMarketDataField* bar) override;
 
 	void RegisterSpi(BackTestSpi* pSpi);
-	int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID);
-	int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestID);
-	int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestID);
-	int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID);
-	int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID);
+	int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId);
+	int ReqSubMarketDataFinished(const ReqSubMarketDataFinishedField* reqSubMarketDataFinished, int requestId);
+	int ReqRegisterAccount(const ReqRegisterAccountField* reqRegisterAccount, int requestId);
+	int ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId);
+	int ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId);
 
 protected:
 	virtual void Run() override;

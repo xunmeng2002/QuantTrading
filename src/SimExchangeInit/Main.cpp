@@ -97,12 +97,12 @@ int main(int argc, char* argv[])
 	// 免得进程永久挂起——超时后仍走正常收尾，只是种子库可能不完整，故记 ERROR
 	constexpr int QueryWaitTimeoutSeconds = 600;
 	int waitedSeconds = 0;
-	while (!traderSpi->m_QryFinished && waitedSeconds < QueryWaitTimeoutSeconds)
+	while (!traderSpi->qryFinished_ && waitedSeconds < QueryWaitTimeoutSeconds)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		++waitedSeconds;
 	}
-	if (!traderSpi->m_QryFinished)
+	if (!traderSpi->qryFinished_)
 	{
 		WriteLog(LogLevel::Error, "Query not finished in %d seconds, seed database may be incomplete. Check front reachability and account.", QueryWaitTimeoutSeconds);
 	}

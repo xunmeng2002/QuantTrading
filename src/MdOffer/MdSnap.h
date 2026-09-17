@@ -18,7 +18,7 @@ namespace QuantTrading::MdOffer
         RtnDepthMarketDataPackage* AddDepthMd(RtnDepthMarketDataPackage* depthMd);
 
     private:
-        static MdSnap m_Instance;
-        std::map<std::string, std::map<std::string, RtnDepthMarketDataPackage*>> m_ExchangeDepthMds;
+        static MdSnap instance_;
+        std::map<std::string, std::map<std::string, RtnDepthMarketDataPackage*>> exchangeDepthMds_;
     };
 }

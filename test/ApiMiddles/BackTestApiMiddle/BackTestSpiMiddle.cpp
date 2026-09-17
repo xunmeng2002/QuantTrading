@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "BackTestSpiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
@@ -25,9 +25,9 @@ void BackTestSpiMiddle::OnDisConnected()
 	WriteLog(LogLevel::Info, "OnDisConnected");
 }
 
-void BackTestSpiMiddle::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiMiddle::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (rspSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s]",
@@ -112,9 +112,9 @@ void BackTestSpiMiddle::OnRtnMarketDataEnd(const MarketDataEndField* marketDataE
 		WriteLog(LogLevel::Info, "marketDataEnd is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiMiddle::OnRspRegisterAccount(const RspRegisterAccountField* rspRegisterAccount, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspRegisterAccount: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspRegisterAccount: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (rspRegisterAccount != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspRegisterAccountField:AccountId:[%s]",
@@ -134,9 +134,9 @@ void BackTestSpiMiddle::OnRspRegisterAccount(const RspRegisterAccountField* rspR
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (reqInsertOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
@@ -156,9 +156,9 @@ void BackTestSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrd
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void BackTestSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
+void BackTestSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (reqCancelOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",

@@ -27,11 +27,11 @@ TEST_CASE("SeedNextOrderIDFromOrders从订单表最大OrderId续接(H17回归)")
 {
     QuantTrading::OrderTable order_table;
     PoolRecordGuard<QuantTrading::Order> order_pool;
-    for (int order_id : {7, 3, 9999999})
+    for (int OrderId : {7, 3, 9999999})
     {
         auto* order = order_pool.Create();
-        order->OrderId = order_id;
-        order->ClientOrderId = order_id;
+        order->OrderId = OrderId;
+        order->ClientOrderId = OrderId;
         REQUIRE(order_table.Insert(order));
     }
 

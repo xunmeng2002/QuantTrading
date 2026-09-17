@@ -3,16 +3,16 @@
 
 namespace QuantTrading::MdOffer
 {
-    MdSnap MdSnap::m_Instance;
+    MdSnap MdSnap::instance_;
     MdSnap::MdSnap()
     {}
     MdSnap& MdSnap::GetInstance()
     {
-        return m_Instance;
+        return instance_;
     }
     RtnDepthMarketDataPackage* MdSnap::GetDepthMd(const char* exchangeId, const char* instrumentId)
     {
-        auto& depthMds = m_ExchangeDepthMds[exchangeId];
+        auto& depthMds = exchangeDepthMds_[exchangeId];
         auto depthMdIt = depthMds.find(instrumentId);
         if (depthMdIt == depthMds.end())
         {
@@ -22,7 +22,7 @@ namespace QuantTrading::MdOffer
     }
     RtnDepthMarketDataPackage* MdSnap::AddDepthMd(RtnDepthMarketDataPackage* depthMd)
     {
-        auto& depthMds = m_ExchangeDepthMds[depthMd->DepthMarketData->ExchangeId];
+        auto& depthMds = exchangeDepthMds_[depthMd->DepthMarketData->ExchangeId];
         auto it = depthMds.find(depthMd->DepthMarketData->InstrumentId);
         if (it == depthMds.end())
         {

@@ -6,7 +6,7 @@ namespace QuantTrading::ordermatch
     class OppositePriceOrderMatch : public OrderMatch
     {
     public:
-        OppositePriceOrderMatch(const DateType& tradingDay, int maxTradeID = 0);
+        OppositePriceOrderMatch(const DateType& tradingDay, int tradeId = 0);
         virtual ~OppositePriceOrderMatch();
 
         virtual void OnTick(QuantTrading::DepthMarketData* mdTick) override;

@@ -17,31 +17,31 @@ public:
 	void SetAccountInfo(AccountInfo* accountInfo);
 
 	virtual void OnConnected() override;
-	virtual void OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqSEInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast) override;
-	virtual void OnRspQryInstrument(const InstrumentField* sEInstrument, const RspInfoField* rspInfo, int requestID, bool isLast) override;
+	virtual void OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestId, bool isLast) override;
+	virtual void OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestId, bool isLast) override;
+	virtual void OnRspInsertOrder(const ReqInsertOrderField* reqSEInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast) override;
+	virtual void OnRspQryInstrument(const InstrumentField* sEInstrument, const RspInfoField* rspInfo, int requestId, bool isLast) override;
 
 	virtual void OnRtnOrder(const OrderField* order) override;
 
 	void ReqQryOrder();
 	void ReqInsertOrders();
+
+    bool InitStatus;
+    bool Finished;
 private:
 	void ReqAccountLogin();
 	void ReqQryInstrument();
 	void ReqInsertOrder(DirectionType direction, OffsetFlagType offsetFlag, OrderPriceTypeType orderPriceType, PriceType price, VolumeType volume);
 	void ReqCancelOrder(const OrderField* order);
 
-public:
-	bool m_InitStatus;
-	bool m_Finished;
 private:
-	TraderApi* m_TraderApi;
-	AccountInfo* m_AccountInfo;
-	InstrumentField m_Instrument;
-	bool m_HasInstrument;
-	int m_MaxRequestID;
-	int m_MaxClientOrderID;
-	int m_OrderCount;
+	TraderApi* traderApi_;
+	AccountInfo* accountInfo_;
+	InstrumentField instrument_;
+	bool hasInstrument_;
+	int maxRequestId_;
+	int maxClientOrderId_;
+	int orderCount_;
 };
 }

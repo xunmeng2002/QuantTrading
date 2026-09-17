@@ -19,23 +19,23 @@ namespace QuantTrading::MdOffer
 {
     MdKernel::MdKernel(QuantTrading::Mdb* mdb, const TradeSessions& tradeSessions,
         const std::list<Spark::Core::SubscribeInstrument*>& startupSubscribeInstruments)
-        :ThreadBase("MdKernel"), mdb_(mdb), m_MdFront(nullptr), m_MdSpi(nullptr), m_StartupSubscribeInstruments(startupSubscribeInstruments)
+        :ThreadBase("MdKernel"), mdb_(mdb), mdFront_(nullptr), mdSpi_(nullptr), startupSubscribeInstruments_(startupSubscribeInstruments)
     {
-        m_MinuteBar = new MinuteBar(tradeSessions);
-        m_MinuteBar->Subscribe(this);
+        minuteBar_ = new MinuteBar(tradeSessions);
+        minuteBar_->Subscribe(this);
         // 复用为查询键（仅 ExchangeId/InstrumentId 参与比较），零初始化以免未参与赋值的字段带出随机值
-        m_ReqSubMarketData = new ReqSubMarketDataField();
-        memset(m_ReqSubMarketData, 0, sizeof(ReqSubMarketDataField));
-        m_BarMdPackage = new RtnBarMarketDataPackage();
+        reqSubMarketData_ = new ReqSubMarketDataField();
+        memset(reqSubMarketData_, 0, sizeof(ReqSubMarketDataField));
+        barMdPackage_ = new RtnBarMarketDataPackage();
     }
     void MdKernel::SetMdFront(MdFront* mdFront)
     {
-        m_MdFront = mdFront;
-        m_MdFront->Subscribe(this);
+        mdFront_ = mdFront;
+        mdFront_->Subscribe(this);
     }
     void MdKernel::SetMdSpi(CThostFtdcMdSpiImpl* mdSpi)
     {
-        m_MdSpi = mdSpi;
+        mdSpi_ = mdSpi;
     }
     void MdKernel::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
     {
@@ -57,10 +57,10 @@ namespace QuantTrading::MdOffer
     void MdKernel::OnMessage(Package* package)
     {
         {
-            std::lock_guard<std::mutex> guard(m_Mutex);
-            m_RecvPackages.push_back(package);
+            std::lock_guard<std::mutex> guard(mutex_);
+            recvPackages_.push_back(package);
         }
-        m_ConditionVariable.notify_one();
+        conditionVariable_.notify_one();
     }
     void MdKernel::OnBarMarketData(BarMarketDataField* bar)
     {
@@ -76,11 +76,11 @@ namespace QuantTrading::MdOffer
             mdb_->BarMarketData->Update(oldBarMarketData, barMarketData);
         }
 
-        m_BarMdPackage->BarMarketData = bar;
+        barMdPackage_->BarMarketData = bar;
 
-        Utility::Strcpy(m_ReqSubMarketData->ExchangeId, bar->ExchangeId);
-        Utility::Strcpy(m_ReqSubMarketData->InstrumentId, bar->InstrumentId);
-        PushToAllSubscribed(m_ReqSubMarketData, m_BarMdPackage);
+        Utility::Strcpy(reqSubMarketData_->ExchangeId, bar->ExchangeId);
+        Utility::Strcpy(reqSubMarketData_->InstrumentId, bar->InstrumentId);
+        PushToAllSubscribed(reqSubMarketData_, barMdPackage_);
     }
 
     void MdKernel::OnDbConnected()
@@ -110,8 +110,8 @@ namespace QuantTrading::MdOffer
 
     void MdKernel::CheckEvent()
     {
-        std::unique_lock<std::mutex> guard(m_Mutex);
-        m_ConditionVariable.wait_for(guard, timeOut_, [&] {return (!m_RecvPackages.empty()); });
+        std::unique_lock<std::mutex> guard(mutex_);
+        conditionVariable_.wait_for(guard, timeOut_, [&] {return (!recvPackages_.empty()); });
     }
     int MdKernel::HandlePackage()
     {
@@ -134,7 +134,7 @@ namespace QuantTrading::MdOffer
             WriteLog(LogLevel::Warning, "HandleNotifyDisConnect: missing field zone. SessionId:%lld", package->SessionId);
             return 0;
         }
-        m_SessionSubscribeInstruments.erase(package->NotifyDisConnect->SessionId);
+        sessionSubscribeInstruments_.erase(package->NotifyDisConnect->SessionId);
 
         // 同步清理持久化会话记录，否则同 SessionId 重连会命中 ErrorSessionAlreadyLogin。
         mdb_->MdUserLoginSession->EraseBySessionIdIndex(package->NotifyDisConnect->SessionId);
@@ -144,7 +144,7 @@ namespace QuantTrading::MdOffer
     {
         mdb_->InitDb();
         list<const ReqSubMarketDataField*> reqSubMds;
-        for (auto startupSubscribeInstrument : m_StartupSubscribeInstruments)
+        for (auto startupSubscribeInstrument : startupSubscribeInstruments_)
         {
             // 启动订阅复用全局注册表：重复合约自动去重，且消除此前的裸分配泄漏。
             // 启动订阅不对 bar 周期提要求，BarPreces/BarPeriod 置 0
@@ -152,16 +152,16 @@ namespace QuantTrading::MdOffer
             memset(&field, 0, sizeof(ReqSubMarketDataField));
             Utility::Strcpy(field.ExchangeId, startupSubscribeInstrument->ExchangeId.c_str());
             Utility::Strcpy(field.InstrumentId, startupSubscribeInstrument->InstrumentId.c_str());
-            auto [fieldIt, isNew] = m_SubscribeInstruments.insert(field);
+            auto [fieldIt, isNew] = subscribeInstruments_.insert(field);
             if (isNew)
             {
-                m_MinuteBar->ReqSubMarketData(fieldIt->ExchangeId, fieldIt->InstrumentId);
+                minuteBar_->ReqSubMarketData(fieldIt->ExchangeId, fieldIt->InstrumentId);
                 reqSubMds.push_back(&*fieldIt);
             }
         }
-        if (m_MdSpi != nullptr)
+        if (mdSpi_ != nullptr)
         {
-            m_MdSpi->SubscribeMds(reqSubMds);
+            mdSpi_->SubscribeMds(reqSubMds);
         }
         return 0;
     }
@@ -237,13 +237,13 @@ namespace QuantTrading::MdOffer
 
         WriteLog(LogLevel::Info, "HandleReqMdUserLogin: ReqMdUserLoginPackage:%s, RspMdUserLoginPackage:%s", package->GetDebugString(), rspPackage->GetDebugString());
 
-        m_MdFront->Send(rspPackage);
+        mdFront_->Send(rspPackage);
         rspPackage->Deallocate();
         return 0;
     }
     int MdKernel::HandleReqMdUserLogout(ReqMdUserLogoutPackage* package)
     {
-        m_SessionSubscribeInstruments.erase(package->SessionId);
+        sessionSubscribeInstruments_.erase(package->SessionId);
 
         // 同步清理持久化会话记录，否则同 SessionId 重登会命中 ErrorSessionAlreadyLogin。
         mdb_->MdUserLoginSession->EraseBySessionIdIndex(package->SessionId);
@@ -271,7 +271,7 @@ namespace QuantTrading::MdOffer
 
         WriteLog(LogLevel::Info, "HandleReqMdUserLogout: ReqMdUserLogoutPackage:%s, RspMdUserLogoutPackage:%s", package->GetDebugString(), rspPackage->GetDebugString());
 
-        m_MdFront->Send(rspPackage);
+        mdFront_->Send(rspPackage);
         rspPackage->Deallocate();
         return 0;
     }
@@ -295,14 +295,14 @@ namespace QuantTrading::MdOffer
         {
             // 值语义：集合持有合约键的拷贝，全局注册表负责 CTP 去重（进程级），
             // 会话集合每会话一份、断开即整行移除；包析构释放自己的字段互不影响。
-            auto [canonicalIt, isNew] = m_SubscribeInstruments.insert(*reqSubMarketData);
+            auto [canonicalIt, isNew] = subscribeInstruments_.insert(*reqSubMarketData);
             if (isNew)
             {
                 // set 节点地址在进程生命周期内稳定，MdSpi 以此反查 ExchangeId。
-                m_MinuteBar->ReqSubMarketData(canonicalIt->ExchangeId, canonicalIt->InstrumentId);
-                m_MdSpi->SubscribeMd(&*canonicalIt);
+                minuteBar_->ReqSubMarketData(canonicalIt->ExchangeId, canonicalIt->InstrumentId);
+                mdSpi_->SubscribeMd(&*canonicalIt);
             }
-            m_SessionSubscribeInstruments[package->SessionId].insert(*reqSubMarketData);
+            sessionSubscribeInstruments_[package->SessionId].insert(*reqSubMarketData);
         }
 
         RspSubMarketDataPackage* rspPackage = RspSubMarketDataPackage::Allocate();
@@ -316,7 +316,7 @@ namespace QuantTrading::MdOffer
             Utility::Strcpy(rspPackage->RspSubMarketData->ExchangeId, reqSubMarketData->ExchangeId);
             Utility::Strcpy(rspPackage->RspSubMarketData->InstrumentId, reqSubMarketData->InstrumentId);
         }
-        m_MdFront->Send(rspPackage);
+        mdFront_->Send(rspPackage);
         rspPackage->Deallocate();
 
         if (reqSubMarketData != nullptr)
@@ -325,7 +325,7 @@ namespace QuantTrading::MdOffer
             if (rtnDepthMdPackage != nullptr)
             {
                 rtnDepthMdPackage->Prepare(package->SessionId, false, package->Head.MsgSeqNum);
-                m_MdFront->Send(rtnDepthMdPackage);
+                mdFront_->Send(rtnDepthMdPackage);
             }
         }
         return 0;
@@ -340,7 +340,7 @@ namespace QuantTrading::MdOffer
             package->Deallocate();
             return 0;
         }
-        m_MinuteBar->OnDepthMarketData(package->DepthMarketData);
+        minuteBar_->OnDepthMarketData(package->DepthMarketData);
 
         DepthMarketData* depthMarketData = ::Allocate<DepthMarketData>();
         FieldToMdb(package->DepthMarketData, depthMarketData);
@@ -355,9 +355,9 @@ namespace QuantTrading::MdOffer
         }
 
         package = MdSnap::GetInstance().AddDepthMd(package);
-        Utility::Strcpy(m_ReqSubMarketData->ExchangeId, package->DepthMarketData->ExchangeId);
-        Utility::Strcpy(m_ReqSubMarketData->InstrumentId, package->DepthMarketData->InstrumentId);
-        PushToAllSubscribed(m_ReqSubMarketData, package);
+        Utility::Strcpy(reqSubMarketData_->ExchangeId, package->DepthMarketData->ExchangeId);
+        Utility::Strcpy(reqSubMarketData_->InstrumentId, package->DepthMarketData->InstrumentId);
+        PushToAllSubscribed(reqSubMarketData_, package);
         return 0;
     }
 
@@ -369,21 +369,21 @@ namespace QuantTrading::MdOffer
 
     Package* MdKernel::GetPackage()
     {
-        std::lock_guard<std::mutex> guard(m_Mutex);
-        if (m_RecvPackages.empty())
+        std::lock_guard<std::mutex> guard(mutex_);
+        if (recvPackages_.empty())
         {
             return nullptr;
         }
-        auto package = m_RecvPackages.front();
-        m_RecvPackages.pop_front();
+        auto package = recvPackages_.front();
+        recvPackages_.pop_front();
         return package;
     }
     void MdKernel::PushToAll(Package* package)
     {
-        for (auto& item : m_SessionSubscribeInstruments)
+        for (auto& item : sessionSubscribeInstruments_)
         {
             package->Prepare(item.first, false, 0);
-            if (!m_MdFront->Send(package))
+            if (!mdFront_->Send(package))
             {
                 WriteLog(LogLevel::Error, "PushToAll MdFront->Send Failed. SessionId:%lld, Package:%s", item.first, package->GetDebugString());
             }
@@ -391,13 +391,13 @@ namespace QuantTrading::MdOffer
     }
     void MdKernel::PushToAllSubscribed(ReqSubMarketDataField* reqSubMarketData, Package* package)
     {
-        for (auto& item : m_SessionSubscribeInstruments)
+        for (auto& item : sessionSubscribeInstruments_)
         {
             auto& instruments = item.second;
             if (instruments.find(*reqSubMarketData) != instruments.end())
             {
                 package->Prepare(item.first, false, 0);
-                if (!m_MdFront->Send(package))
+                if (!mdFront_->Send(package))
                 {
                     WriteLog(LogLevel::Error, "PushToAllSubscribed MdFront->Send Failed. SessionId:%lld, Package:%s", item.first, package->GetDebugString());
                 }

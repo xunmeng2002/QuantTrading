@@ -6,7 +6,7 @@ namespace QuantTrading::ordermatch
     class BarOrderMatch : public OrderMatch
     {
     public:
-        BarOrderMatch(const DateType& tradingDay, int maxTradeID = 0);
+        BarOrderMatch(const DateType& tradingDay, int tradeId = 0);
         virtual ~BarOrderMatch();
 
         virtual void OnTick(QuantTrading::DepthMarketData* mdTick) override;

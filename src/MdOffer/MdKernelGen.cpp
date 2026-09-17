@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Protocol/Kernel/KernelGen.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdKernel.h"
 
 #include "Error.h"
@@ -34,7 +34,7 @@ bool MdKernel::DispatchPackage(Package* package)
 		auto reqPackage = static_cast<ReqMdUserLoginPackage*>(package);
 		if (reqPackage->ReqMdUserLogin == nullptr)
 		{
-			ReplyPackageParseFailed<RspMdUserLoginPackage>(m_MdFront, reqPackage->SessionId, reqPackage->Head.MsgSeqNum);
+			ReplyPackageParseFailed<RspMdUserLoginPackage>(mdFront_, reqPackage->SessionId, reqPackage->Head.MsgSeqNum);
 			return true;
 		}
 		HandleReqMdUserLogin(reqPackage);
@@ -45,7 +45,7 @@ bool MdKernel::DispatchPackage(Package* package)
 		auto reqPackage = static_cast<ReqMdUserLogoutPackage*>(package);
 		if (reqPackage->ReqMdUserLogout == nullptr)
 		{
-			ReplyPackageParseFailed<RspMdUserLogoutPackage>(m_MdFront, reqPackage->SessionId, reqPackage->Head.MsgSeqNum);
+			ReplyPackageParseFailed<RspMdUserLogoutPackage>(mdFront_, reqPackage->SessionId, reqPackage->Head.MsgSeqNum);
 			return true;
 		}
 		HandleReqMdUserLogout(reqPackage);
@@ -56,7 +56,7 @@ bool MdKernel::DispatchPackage(Package* package)
 		auto reqPackage = static_cast<ReqSubMarketDataPackage*>(package);
 		if (reqPackage->ReqSubMarketData == nullptr)
 		{
-			ReplyPackageParseFailed<RspSubMarketDataPackage>(m_MdFront, reqPackage->SessionId, reqPackage->Head.MsgSeqNum);
+			ReplyPackageParseFailed<RspSubMarketDataPackage>(mdFront_, reqPackage->SessionId, reqPackage->Head.MsgSeqNum);
 			return true;
 		}
 		HandleReqSubMarketData(reqPackage);

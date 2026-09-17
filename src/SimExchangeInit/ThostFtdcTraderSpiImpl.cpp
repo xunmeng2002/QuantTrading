@@ -14,11 +14,11 @@ using namespace Spark::Serialization;
 namespace QuantTrading::SimExchangeInit
 {
 CThostFtdcTraderSpiImpl::CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, QuantTrading::Mdb* mdb)
-	:m_TraderApi(traderApi), mdb_(mdb), m_RequestID(0), m_AccountInfo(nullptr), m_QryFinished(false)
+	:traderApi_(traderApi), mdb_(mdb), requestId_(0), accountInfo_(nullptr), qryFinished_(false)
 {
-	m_Exchanges = new vector<Exchange*>();
-	m_Products = new vector< Product*>();
-	m_Instruments = new vector<Instrument*>();
+	exchanges_ = new vector<Exchange*>();
+	products_ = new vector< Product*>();
+	instruments_ = new vector<Instrument*>();
 }
 void CThostFtdcTraderSpiImpl::OnFrontConnected()
 {
@@ -32,7 +32,7 @@ void CThostFtdcTraderSpiImpl::OnFrontDisconnected(int nReason)
 void CThostFtdcTraderSpiImpl::OnRspAuthenticate(CThostFtdcRspAuthenticateField* pRspAuthenticateField, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
 	CThostFtdcTraderSpiMiddle::OnRspAuthenticate(pRspAuthenticateField, pRspInfo, nRequestID, bIsLast);
-	if (m_NewPassword.length() > 0)
+	if (newPassword_.length() > 0)
 	{
 		ReqUserPasswordUpdate();
 	}
@@ -56,10 +56,10 @@ void CThostFtdcTraderSpiImpl::OnRspQryExchange(CThostFtdcExchangeField* pExchang
 	Exchange* exchange = Exchange::Allocate();
 	Utility::Strcpy(exchange->ExchangeId, pExchange->ExchangeID);
     Utility::Strcpy(exchange->ExchangeName, GbkToUtf8(pExchange->ExchangeName).c_str());
-	m_Exchanges->push_back(exchange);
+	exchanges_->push_back(exchange);
 	if (bIsLast)
 	{
-		mdb_->Exchange->BatchInsert(m_Exchanges);
+		mdb_->Exchange->BatchInsert(exchanges_);
 		ReqQryProduct();
 	}
 }
@@ -107,10 +107,10 @@ void CThostFtdcTraderSpiImpl::OnRspQryProduct(CThostFtdcProductField* pProduct, 
 	product->MaxLimitOrderVolume = pProduct->MaxLimitOrderVolume;
 	product->MinLimitOrderVolume = pProduct->MinLimitOrderVolume;
 	memset(product->SessionName, 0, sizeof(product->SessionName));
-	m_Products->push_back(product);
+	products_->push_back(product);
 	if (bIsLast)
 	{
-		mdb_->Product->BatchInsert(m_Products);
+		mdb_->Product->BatchInsert(products_);
 		ReqQryInstrument();
 	}
 }
@@ -163,10 +163,10 @@ void CThostFtdcTraderSpiImpl::OnRspQryInstrument(CThostFtdcInstrumentField* pIns
 	instrument->MaxLimitOrderVolume = pInstrument->MaxLimitOrderVolume;
 	instrument->MinLimitOrderVolume = pInstrument->MinLimitOrderVolume;
 	memset(instrument->SessionName, 0, sizeof(instrument->SessionName));
-	m_Instruments->push_back(instrument);
+	instruments_->push_back(instrument);
 	if (bIsLast)
 	{
-		mdb_->Instrument->BatchInsert(m_Instruments);
+		mdb_->Instrument->BatchInsert(instruments_);
 		ReqQryTradingAccount();
 	}
 }
@@ -196,30 +196,30 @@ void CThostFtdcTraderSpiImpl::OnRspQryTrade(CThostFtdcTradeField* pTrade, CThost
 	CThostFtdcTraderSpiMiddle::OnRspQryTrade(pTrade, pRspInfo, nRequestID, bIsLast);
 	if (bIsLast)
 	{
-        m_QryFinished = true;
+        qryFinished_ = true;
 	}
 }
 
 void CThostFtdcTraderSpiImpl::SetAccountInfo(AccountInfo* accountInfo)
 {
-	m_AccountInfo = accountInfo;
+	accountInfo_ = accountInfo;
 }
 void CThostFtdcTraderSpiImpl::SetNewPassword(const std::string& newPassword)
 {
-	m_NewPassword = newPassword;
+	newPassword_ = newPassword;
 }
 
 void CThostFtdcTraderSpiImpl::ReqAuthenticate()
 {
 	CThostFtdcReqAuthenticateField authenticate;
 	::memset(&authenticate, 0, sizeof(authenticate));
-	Utility::Strcpy(authenticate.BrokerID, m_AccountInfo->BrokerId);
-	Utility::Strcpy(authenticate.UserID, m_AccountInfo->InvestorId);
-	Utility::Strcpy(authenticate.UserProductInfo, m_AccountInfo->UserProductInfo);
-	Utility::Strcpy(authenticate.AuthCode, m_AccountInfo->AuthCode);
-	Utility::Strcpy(authenticate.AppID, m_AccountInfo->AppId);
+	Utility::Strcpy(authenticate.BrokerID, accountInfo_->BrokerId);
+	Utility::Strcpy(authenticate.UserID, accountInfo_->InvestorId);
+	Utility::Strcpy(authenticate.UserProductInfo, accountInfo_->UserProductInfo);
+	Utility::Strcpy(authenticate.AuthCode, accountInfo_->AuthCode);
+	Utility::Strcpy(authenticate.AppID, accountInfo_->AppId);
 
-	int ret = m_TraderApi->ReqAuthenticate(&authenticate, m_RequestID++);
+	int ret = traderApi_->ReqAuthenticate(&authenticate, requestId_++);
 	WriteLog(LogLevel::Info, "ReqAuthenticate: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqUserLogin()
@@ -227,72 +227,72 @@ void CThostFtdcTraderSpiImpl::ReqUserLogin()
 	CThostFtdcReqUserLoginField userLogin;
 	::memset(&userLogin, 0, sizeof(userLogin));
 	Utility::Strcpy(userLogin.TradingDay, "");
-	Utility::Strcpy(userLogin.BrokerID, m_AccountInfo->BrokerId);
-	Utility::Strcpy(userLogin.UserID, m_AccountInfo->InvestorId);
-	Utility::Strcpy(userLogin.Password, m_AccountInfo->Password);
-	Utility::Strcpy(userLogin.UserProductInfo, m_AccountInfo->UserProductInfo);
+	Utility::Strcpy(userLogin.BrokerID, accountInfo_->BrokerId);
+	Utility::Strcpy(userLogin.UserID, accountInfo_->InvestorId);
+	Utility::Strcpy(userLogin.Password, accountInfo_->Password);
+	Utility::Strcpy(userLogin.UserProductInfo, accountInfo_->UserProductInfo);
 
-	int ret = m_TraderApi->ReqUserLogin(&userLogin, m_RequestID++);
+	int ret = traderApi_->ReqUserLogin(&userLogin, requestId_++);
 	WriteLog(LogLevel::Info, "ReqUserLogin: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqUserPasswordUpdate()
 {
 	CThostFtdcUserPasswordUpdateField userPasswordUpdate;
 	::memset(&userPasswordUpdate, 0, sizeof(userPasswordUpdate));
-	Utility::Strcpy(userPasswordUpdate.BrokerID, m_AccountInfo->BrokerId);
-	Utility::Strcpy(userPasswordUpdate.UserID, m_AccountInfo->InvestorId);
-	Utility::Strcpy(userPasswordUpdate.OldPassword, m_AccountInfo->Password);
-	Utility::Strcpy(userPasswordUpdate.NewPassword, m_NewPassword.c_str());
+	Utility::Strcpy(userPasswordUpdate.BrokerID, accountInfo_->BrokerId);
+	Utility::Strcpy(userPasswordUpdate.UserID, accountInfo_->InvestorId);
+	Utility::Strcpy(userPasswordUpdate.OldPassword, accountInfo_->Password);
+	Utility::Strcpy(userPasswordUpdate.NewPassword, newPassword_.c_str());
 
-	int ret = m_TraderApi->ReqUserPasswordUpdate(&userPasswordUpdate, m_RequestID++);
+	int ret = traderApi_->ReqUserPasswordUpdate(&userPasswordUpdate, requestId_++);
 	WriteLog(LogLevel::Info, "ReqUserPasswordUpdate: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqQryExchange()
 {
 	CThostFtdcQryExchangeField qryExchange;
 	::memset(&qryExchange, 0, sizeof(qryExchange));
-	int ret = m_TraderApi->ReqQryExchange(&qryExchange, m_RequestID++);
+	int ret = traderApi_->ReqQryExchange(&qryExchange, requestId_++);
 	WriteLog(LogLevel::Info, "ReqQryExchange: ret[%d]", ret);
 }void CThostFtdcTraderSpiImpl::ReqQryProduct()
 {
 	CThostFtdcQryProductField qryProduct;
 	::memset(&qryProduct, 0, sizeof(qryProduct));
-	int ret = m_TraderApi->ReqQryProduct(&qryProduct, m_RequestID++);
+	int ret = traderApi_->ReqQryProduct(&qryProduct, requestId_++);
 	WriteLog(LogLevel::Info, "ReqQryProduct: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqQryInstrument()
 {
 	CThostFtdcQryInstrumentField qryInstrument;
 	::memset(&qryInstrument, 0, sizeof(qryInstrument));
-	int ret = m_TraderApi->ReqQryInstrument(&qryInstrument, m_RequestID++);
+	int ret = traderApi_->ReqQryInstrument(&qryInstrument, requestId_++);
 	WriteLog(LogLevel::Info, "ReqQryInstrument: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqQryTradingAccount()
 {
 	CThostFtdcQryTradingAccountField qryTradingAccount;
 	::memset(&qryTradingAccount, 0, sizeof(qryTradingAccount));
-	int ret = m_TraderApi->ReqQryTradingAccount(&qryTradingAccount, m_RequestID++);
+	int ret = traderApi_->ReqQryTradingAccount(&qryTradingAccount, requestId_++);
 	WriteLog(LogLevel::Info, "ReqQryTradingAccount: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqQryInvestorPosition()
 {
 	CThostFtdcQryInvestorPositionField qryInvestorPosition;
 	::memset(&qryInvestorPosition, 0, sizeof(qryInvestorPosition));
-	int ret = m_TraderApi->ReqQryInvestorPosition(&qryInvestorPosition, m_RequestID++);
+	int ret = traderApi_->ReqQryInvestorPosition(&qryInvestorPosition, requestId_++);
 	WriteLog(LogLevel::Info, "ReqQryInvestorPosition: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqQryOrder()
 {
 	CThostFtdcQryOrderField qryOrder;
 	::memset(&qryOrder, 0, sizeof(qryOrder));
-	int ret = m_TraderApi->ReqQryOrder(&qryOrder, m_RequestID++);
+	int ret = traderApi_->ReqQryOrder(&qryOrder, requestId_++);
 	WriteLog(LogLevel::Info, "ReqQryOrder: ret[%d]", ret);
 }
 void CThostFtdcTraderSpiImpl::ReqQryTrade()
 {
 	CThostFtdcQryTradeField qryTrade;
 	::memset(&qryTrade, 0, sizeof(qryTrade));
-	int ret = m_TraderApi->ReqQryTrade(&qryTrade, m_RequestID++);
+	int ret = traderApi_->ReqQryTrade(&qryTrade, requestId_++);
 	WriteLog(LogLevel::Info, "ReqQryTrade: ret[%d]", ret);
 }
 }

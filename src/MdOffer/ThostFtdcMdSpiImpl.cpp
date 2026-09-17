@@ -14,7 +14,7 @@ using namespace QuantTrading::Packages;
 namespace QuantTrading::MdOffer
 {
     CThostFtdcMdSpiImpl::CThostFtdcMdSpiImpl(CThostFtdcMdApi* MdApi, MdKernel* mdKernel)
-        :m_MdApi(MdApi), m_MdKernel(mdKernel), m_IsLogged(false), m_RequestID(0), m_AccountInfo(nullptr)
+        :mdApi_(MdApi), mdKernel_(mdKernel), isLogged_(false), requestId_(0), accountInfo_(nullptr)
     {}
     void CThostFtdcMdSpiImpl::OnFrontConnected()
     {
@@ -24,7 +24,7 @@ namespace QuantTrading::MdOffer
     void CThostFtdcMdSpiImpl::OnFrontDisconnected(int nReason)
     {
         CThostFtdcMdSpiMiddle::OnFrontDisconnected(nReason);
-        m_IsLogged = false;
+        isLogged_ = false;
     }
     void CThostFtdcMdSpiImpl::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
     {
@@ -32,20 +32,20 @@ namespace QuantTrading::MdOffer
         if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
         {
             WriteLog(LogLevel::Error, "OnRspUserLogin Failed: ErrorID:%d, ErrorMsg:%s", pRspInfo->ErrorID, pRspInfo->ErrorMsg);
-            m_IsLogged = false;
+            isLogged_ = false;
             return;
         }
         if (!bIsLast)
         {
             return;
         }
-        m_IsLogged = true;
+        isLogged_ = true;
         {
             // CTP API 非线程安全：回调线程与内核线程（SubscribeMd/SubscribeMds）须经同一把锁串行调用。
-            std::lock_guard<std::mutex> guard(m_Mutex);
-            if (!m_ReqSubInstruments.empty())
+            std::lock_guard<std::mutex> guard(mutex_);
+            if (!reqSubInstruments_.empty())
             {
-                m_MdApi->SubscribeMarketData(const_cast<char**>(m_ReqSubInstruments.data()), (int)m_ReqSubInstruments.size());
+                mdApi_->SubscribeMarketData(const_cast<char**>(reqSubInstruments_.data()), (int)reqSubInstruments_.size());
             }
         }
     }
@@ -73,7 +73,7 @@ namespace QuantTrading::MdOffer
         }
         else
         {
-            std::lock_guard<std::mutex> guard(m_Mutex);
+            std::lock_guard<std::mutex> guard(mutex_);
             auto reqSubMdIt = reqSubMds_.find(package->DepthMarketData->InstrumentId);
             if (reqSubMdIt != reqSubMds_.end())
             {
@@ -121,32 +121,32 @@ namespace QuantTrading::MdOffer
         package->DepthMarketData->BidVolume4 = pDepthMarketData->BidVolume4;
         package->DepthMarketData->BidVolume5 = pDepthMarketData->BidVolume5;
 
-        m_MdKernel->OnMessage(package);
+        mdKernel_->OnMessage(package);
     }
 
     void CThostFtdcMdSpiImpl::SetAccountInfo(AccountInfo* accountInfo)
     {
-        m_AccountInfo = accountInfo;
+        accountInfo_ = accountInfo;
     }
     void CThostFtdcMdSpiImpl::SubscribeMd(const ReqSubMarketDataField* reqSubMd)
     {
         WriteLog(LogLevel::Info, "SubscribeMd: ExchangeID:%s, InstrumentID:%s", reqSubMd->ExchangeId, reqSubMd->InstrumentId);
-        lock_guard<mutex> gurad(m_Mutex);
+        lock_guard<mutex> gurad(mutex_);
         if (!reqSubMds_.try_emplace(reqSubMd->InstrumentId, reqSubMd).second)
         {
             return;
         }
-        m_ReqSubInstruments.push_back(reqSubMd->InstrumentId);
-        if (m_IsLogged)
+        reqSubInstruments_.push_back(reqSubMd->InstrumentId);
+        if (isLogged_)
         {
             char* instrument[1] = { const_cast<char*>(reqSubMd->InstrumentId) };
-            m_MdApi->SubscribeMarketData(instrument, 1);
+            mdApi_->SubscribeMarketData(instrument, 1);
         }
     }
     void CThostFtdcMdSpiImpl::SubscribeMds(const std::list<const ReqSubMarketDataField*>& reqSubMds)
     {
         WriteLog(LogLevel::Info, "SubscribeMds: Size:%d", reqSubMds.size());
-        lock_guard<mutex> gurad(m_Mutex);
+        lock_guard<mutex> gurad(mutex_);
         // 本次新增合约，已登录时增量发送；累积清单仅用于重连全量补订。
         std::vector<const char*> newInstruments;
         for (auto reqSubMd : reqSubMds)
@@ -155,18 +155,18 @@ namespace QuantTrading::MdOffer
             {
                 continue;
             }
-            m_ReqSubInstruments.push_back(reqSubMd->InstrumentId);
+            reqSubInstruments_.push_back(reqSubMd->InstrumentId);
             newInstruments.push_back(reqSubMd->InstrumentId);
         }
-        if (m_IsLogged && !newInstruments.empty())
+        if (isLogged_ && !newInstruments.empty())
         {
-            m_MdApi->SubscribeMarketData(const_cast<char**>(newInstruments.data()), (int)newInstruments.size());
+            mdApi_->SubscribeMarketData(const_cast<char**>(newInstruments.data()), (int)newInstruments.size());
         }
     }
 
     void CThostFtdcMdSpiImpl::ReqUserLogin()
     {
-        if (m_AccountInfo == nullptr)
+        if (accountInfo_ == nullptr)
         {
             WriteLog(LogLevel::Error, "ReqUserLogin Failed: AccountInfo is nullptr, call SetAccountInfo first.");
             return;
@@ -174,12 +174,12 @@ namespace QuantTrading::MdOffer
         CThostFtdcReqUserLoginField userLogin;
         ::memset(&userLogin, 0, sizeof(userLogin));
         Utility::Strcpy(userLogin.TradingDay, "");
-        Utility::Strcpy(userLogin.BrokerID, m_AccountInfo->BrokerId);
-        Utility::Strcpy(userLogin.UserID, m_AccountInfo->InvestorId);
-        Utility::Strcpy(userLogin.Password, m_AccountInfo->Password);
-        Utility::Strcpy(userLogin.UserProductInfo, m_AccountInfo->UserProductInfo);
+        Utility::Strcpy(userLogin.BrokerID, accountInfo_->BrokerId);
+        Utility::Strcpy(userLogin.UserID, accountInfo_->InvestorId);
+        Utility::Strcpy(userLogin.Password, accountInfo_->Password);
+        Utility::Strcpy(userLogin.UserProductInfo, accountInfo_->UserProductInfo);
 
-        int ret = m_MdApi->ReqUserLogin(&userLogin, m_RequestID++);
+        int ret = mdApi_->ReqUserLogin(&userLogin, requestId_++);
         WriteLog(LogLevel::Info, "ReqUserLogin: ret[%d]", ret);
     }
 }

@@ -46,11 +46,11 @@ void ShutdownSignal::InstallHandlers()
 
 void ShutdownSignal::Request()
 {
-    s_Requested.store(true);
+    requested_.store(true);
 }
 
 bool ShutdownSignal::IsRequested()
 {
-    return s_Requested.load();
+    return requested_.load();
 }
 }

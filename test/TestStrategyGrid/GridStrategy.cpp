@@ -7,28 +7,28 @@ using namespace Spark::Core;
 namespace QuantTrading::TestStrategyGrid
 {
 GridStrategy::GridStrategy(QuantTrading::BackTestApi* backTestApi, const char* accountId, const GridParams& gridParams)
-	:StrategyBase(backTestApi, accountId), m_Params(gridParams)
+	:StrategyBase(backTestApi, accountId), params_(gridParams)
 {
-	if (!m_Params.BarPreces.empty())
+	if (!params_.BarPreces.empty())
 	{
-		DeclareBarPeriod(m_Params.BarPreces.c_str());
+		DeclareBarPeriod(params_.BarPreces.c_str());
 	}
-	m_Slots.resize(gridParams.GridCount * 2);
+	slots_.resize(gridParams.GridCount * 2);
 	for (int level = 0; level < gridParams.GridCount; ++level)
 	{
-		m_Slots[level].Direction = DirectionType::Buy;
-		m_Slots[gridParams.GridCount + level].Direction = DirectionType::Sell;
+		slots_[level].Direction = DirectionType::Buy;
+		slots_[gridParams.GridCount + level].Direction = DirectionType::Sell;
 	}
 }
 
 void GridStrategy::OnStart()
 {
-	SubscribeTick(m_Params.ExchangeId.c_str(), m_Params.InstrumentId.c_str());
+	SubscribeTick(params_.ExchangeId.c_str(), params_.InstrumentId.c_str());
 }
 
 void GridStrategy::OnTick(const DepthMarketDataField* depthMarketData)
 {
-	if (!m_AwaitingAnchor)
+	if (!awaitingAnchor_)
 	{
 		return;
 	}
@@ -38,7 +38,7 @@ void GridStrategy::OnTick(const DepthMarketDataField* depthMarketData)
 	{
 		return;
 	}
-	m_AwaitingAnchor = false;
+	awaitingAnchor_ = false;
 	WriteLog(LogLevel::Info, "Anchor price: %f", anchorPrice);
 	PlaceLadder(anchorPrice);
 }
@@ -46,7 +46,7 @@ void GridStrategy::OnTick(const DepthMarketDataField* depthMarketData)
 // Bar 回放模式（MatchMode=Bar）无 tick 回调，以首根有效 bar 的 Close 为锚价；与 OnTick 先到先锚
 void GridStrategy::OnBar(const BarMarketDataField* barMarketData)
 {
-	if (!m_AwaitingAnchor || barMarketData == nullptr)
+	if (!awaitingAnchor_ || barMarketData == nullptr)
 	{
 		return;
 	}
@@ -55,25 +55,25 @@ void GridStrategy::OnBar(const BarMarketDataField* barMarketData)
 	{
 		return;
 	}
-	m_AwaitingAnchor = false;
+	awaitingAnchor_ = false;
 	WriteLog(LogLevel::Info, "Anchor price: %f", anchorPrice);
 	PlaceLadder(anchorPrice);
 }
 
 void GridStrategy::PlaceLadder(PriceType anchorPrice)
 {
-	for (int level = 0; level < m_Params.GridCount; ++level)
+	for (int level = 0; level < params_.GridCount; ++level)
 	{
-		GridSlot& buySlot = m_Slots[level];
+		GridSlot& buySlot = slots_[level];
 		if (buySlot.State == GridSlotState::Empty)
 		{
-			buySlot.OpenPrice = anchorPrice - m_Params.GridStep * (level + 1);
+			buySlot.OpenPrice = anchorPrice - params_.GridStep * (level + 1);
 			PlaceOpenOrder(buySlot);
 		}
-		GridSlot& sellSlot = m_Slots[m_Params.GridCount + level];
+		GridSlot& sellSlot = slots_[params_.GridCount + level];
 		if (sellSlot.State == GridSlotState::Empty)
 		{
-			sellSlot.OpenPrice = anchorPrice + m_Params.GridStep * (level + 1);
+			sellSlot.OpenPrice = anchorPrice + params_.GridStep * (level + 1);
 			PlaceOpenOrder(sellSlot);
 		}
 	}
@@ -84,11 +84,11 @@ void GridStrategy::PlaceOpenOrder(GridSlot& gridSlot)
 	gridSlot.OpenFilledVolume = 0;
 	if (gridSlot.Direction == DirectionType::Buy)
 	{
-		gridSlot.OpenClientOrderID = BuyOpen(m_Params.ExchangeId.c_str(), m_Params.InstrumentId.c_str(), gridSlot.OpenPrice, m_Params.VolumePerGrid);
+		gridSlot.OpenClientOrderID = BuyOpen(params_.ExchangeId.c_str(), params_.InstrumentId.c_str(), gridSlot.OpenPrice, params_.VolumePerGrid);
 	}
 	else
 	{
-		gridSlot.OpenClientOrderID = SellOpen(m_Params.ExchangeId.c_str(), m_Params.InstrumentId.c_str(), gridSlot.OpenPrice, m_Params.VolumePerGrid);
+		gridSlot.OpenClientOrderID = SellOpen(params_.ExchangeId.c_str(), params_.InstrumentId.c_str(), gridSlot.OpenPrice, params_.VolumePerGrid);
 	}
 	gridSlot.State = GridSlotState::OpenPending;
 	WriteLog(LogLevel::Info, "Place open order, ClientOrderId:%d Direction:%d Price:%f", gridSlot.OpenClientOrderID, (int)gridSlot.Direction, gridSlot.OpenPrice);
@@ -98,11 +98,11 @@ void GridStrategy::PlaceCloseOrder(GridSlot& gridSlot, VolumeType volume)
 {
 	if (gridSlot.Direction == DirectionType::Buy)
 	{
-		gridSlot.CloseClientOrderID = SellClose(m_Params.ExchangeId.c_str(), m_Params.InstrumentId.c_str(), gridSlot.ClosePrice, volume);
+		gridSlot.CloseClientOrderID = SellClose(params_.ExchangeId.c_str(), params_.InstrumentId.c_str(), gridSlot.ClosePrice, volume);
 	}
 	else
 	{
-		gridSlot.CloseClientOrderID = BuyClose(m_Params.ExchangeId.c_str(), m_Params.InstrumentId.c_str(), gridSlot.ClosePrice, volume);
+		gridSlot.CloseClientOrderID = BuyClose(params_.ExchangeId.c_str(), params_.InstrumentId.c_str(), gridSlot.ClosePrice, volume);
 	}
 	gridSlot.State = GridSlotState::ClosePending;
 	WriteLog(LogLevel::Info, "Place close order, ClientOrderId:%d Price:%f Volume:%lld", gridSlot.CloseClientOrderID, gridSlot.ClosePrice, volume);
@@ -148,7 +148,7 @@ void GridStrategy::HandleOpenTrade(const TradeField* trade, GridSlot* gridSlot)
 	}
 	gridSlot->OpenFillPrice = trade->Price;
 	gridSlot->OpenFilledVolume += trade->Volume;
-	if (gridSlot->OpenFilledVolume < m_Params.VolumePerGrid)
+	if (gridSlot->OpenFilledVolume < params_.VolumePerGrid)
 	{
 		return;
 	}
@@ -177,9 +177,9 @@ void GridStrategy::HandleCloseTrade(const TradeField* trade, GridSlot* gridSlot)
 		profitPerUnit = gridSlot->OpenFillPrice - trade->Price;
 	}
 	double pairProfit = profitPerUnit * trade->Volume * trade->VolumeMultiple - trade->Commission;
-	m_RealizedProfit += pairProfit;
-	m_TotalCommission += trade->Commission;
-	++m_ClosedPairCount;
+	realizedProfit_ += pairProfit;
+	totalCommission_ += trade->Commission;
+	++closedPairCount_;
 	gridSlot->State = GridSlotState::Closed;
 	WriteLog(LogLevel::Info, "Pair closed, open:%f close:%f profit:%f", gridSlot->OpenFillPrice, trade->Price, pairProfit);
 }
@@ -188,11 +188,11 @@ void GridStrategy::UpdateClosePrice(GridSlot& gridSlot)
 {
 	if (gridSlot.Direction == DirectionType::Buy)
 	{
-		gridSlot.ClosePrice = gridSlot.OpenFillPrice + m_Params.GridStep;
+		gridSlot.ClosePrice = gridSlot.OpenFillPrice + params_.GridStep;
 	}
 	else
 	{
-		gridSlot.ClosePrice = gridSlot.OpenFillPrice - m_Params.GridStep;
+		gridSlot.ClosePrice = gridSlot.OpenFillPrice - params_.GridStep;
 	}
 }
 
@@ -268,14 +268,14 @@ void GridStrategy::OnSessionBegin(const SessionBeginField* sessionBegin)
 {
 	// 引擎已在结算时统一撤单（撤单回报先于 SessionEnd）：OpenPending 格位已经撤单回报复位 Empty
 	// 或转换为 ClosePending，此处仅需复位 Closed 格等待重锚
-	for (auto& gridSlot : m_Slots)
+	for (auto& gridSlot : slots_)
 	{
 		if (gridSlot.State == GridSlotState::Closed)
 		{
 			ResetSlotToEmpty(gridSlot);
 		}
 	}
-	m_AwaitingAnchor = true;
+	awaitingAnchor_ = true;
 }
 
 void GridStrategy::OnSessionEnd(const SessionEndField* sessionEnd)
@@ -283,7 +283,7 @@ void GridStrategy::OnSessionEnd(const SessionEndField* sessionEnd)
 	// 引擎日切结算已撤销全部未成交挂单（撤单回报先于本回调）：OpenPending 格位已在 OnOrder 中
 	// 复位/转换，此处统计的是转换后仍带平仓单、次一交易日继续工作的格位
 	int closePendingCount = 0;
-	for (auto& gridSlot : m_Slots)
+	for (auto& gridSlot : slots_)
 	{
 		if (gridSlot.State == GridSlotState::ClosePending)
 		{
@@ -296,13 +296,13 @@ void GridStrategy::OnSessionEnd(const SessionEndField* sessionEnd)
 void GridStrategy::OnEnd()
 {
 	WriteLog(LogLevel::Info, "Grid strategy end: closedPairs:%d realizedProfit:%f totalCommission:%f longPosition:%lld shortPosition:%lld",
-		m_ClosedPairCount, m_RealizedProfit, m_TotalCommission,
-		GetLongPosition(m_Params.InstrumentId.c_str()), GetShortPosition(m_Params.InstrumentId.c_str()));
+		closedPairCount_, realizedProfit_, totalCommission_,
+		GetLongPosition(params_.InstrumentId.c_str()), GetShortPosition(params_.InstrumentId.c_str()));
 }
 
-GridStrategy::GridSlot* GridStrategy::FindSlotByOpenOrder(ClientOrderIdType clientOrderID)
+GridSlot* GridStrategy::FindSlotByOpenOrder(ClientOrderIdType clientOrderID)
 {
-	for (auto& gridSlot : m_Slots)
+	for (auto& gridSlot : slots_)
 	{
 		if (gridSlot.OpenClientOrderID == clientOrderID)
 		{
@@ -311,9 +311,9 @@ GridStrategy::GridSlot* GridStrategy::FindSlotByOpenOrder(ClientOrderIdType clie
 	}
 	return nullptr;
 }
-GridStrategy::GridSlot* GridStrategy::FindSlotByCloseOrder(ClientOrderIdType clientOrderID)
+GridSlot* GridStrategy::FindSlotByCloseOrder(ClientOrderIdType clientOrderID)
 {
-	for (auto& gridSlot : m_Slots)
+	for (auto& gridSlot : slots_)
 	{
 		if (gridSlot.CloseClientOrderID == clientOrderID)
 		{

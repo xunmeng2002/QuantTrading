@@ -62,19 +62,19 @@ namespace QuantTrading::MdOffer
 
     private:
         QuantTrading::Mdb* mdb_;
-        MdFront* m_MdFront;
-        CThostFtdcMdSpiImpl* m_MdSpi;
-        MinuteBar* m_MinuteBar;
-        std::list<Spark::Core::SubscribeInstrument*> m_StartupSubscribeInstruments;
+        MdFront* mdFront_;
+        CThostFtdcMdSpiImpl* mdSpi_;
+        MinuteBar* minuteBar_;
+        std::list<Spark::Core::SubscribeInstrument*> startupSubscribeInstruments_;
 
-        std::mutex m_Mutex;
-        std::condition_variable m_ConditionVariable;
+        std::mutex mutex_;
+        std::condition_variable conditionVariable_;
 
-        std::set<ReqSubMarketDataField> m_SubscribeInstruments;
-        std::map<SessionIdType, std::set<ReqSubMarketDataField>> m_SessionSubscribeInstruments;
-        std::list<Package*> m_RecvPackages;
+        std::set<ReqSubMarketDataField> subscribeInstruments_;
+        std::map<SessionIdType, std::set<ReqSubMarketDataField>> sessionSubscribeInstruments_;
+        std::list<Package*> recvPackages_;
 
-        ReqSubMarketDataField* m_ReqSubMarketData;
-        RtnBarMarketDataPackage* m_BarMdPackage;
+        ReqSubMarketDataField* reqSubMarketData_;
+        RtnBarMarketDataPackage* barMdPackage_;
     };
 }

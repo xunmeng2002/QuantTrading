@@ -79,31 +79,31 @@ private:
 	void ReqSubMarketData(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId);
 
 protected:
-	MdFront* m_MdFront;
-	TradeFront* m_TradeFront;
-	MdSpiImpl* m_MdSpi;
+	MdFront* mdFront_;
+	TradeFront* tradeFront_;
+	MdSpiImpl* mdSpi_;
 	QuantTrading::Mdb* mdb_;
     QuantTrading::ordermatch::OrderMatch* orderMatch_;
 	QuantTrading::Settlement::PositionMaintenance* positionMaintenance_;
-	std::mutex m_Mutex;
-	std::condition_variable m_ConditionVariable;
+	std::mutex mutex_;
+	std::condition_variable conditionVariable_;
 
 	DateType tradingDay_;
 	DateType currDate_;
 	TimeType currTime_;
 
-	std::set<ReqSubMarketDataField> m_SubscribeInstruments;
-	std::atomic<bool> m_IsMdLogged;
+	std::set<ReqSubMarketDataField> subscribeInstruments_;
+	std::atomic<bool> isMdLogged_;
 
 	std::list<Package*> packages_;
-	RspAccountLoginPackage* m_RspAccountLoginPackage;
-	RspAccountLogoutPackage* m_RspAccountLogoutPackage;
-	RspInsertOrderPackage* m_RspInsertOrderPackage;
-	RspCancelOrderPackage* m_RspCancelOrderPackage;
-	RspQryOrderPackage* m_RspQryOrderPackage;
-	RspQryTradePackage* m_RspQryTradePackage;
-	RspQryInstrumentPackage* m_RspQryInstrumentPackage;
-	RtnOrderPackage* m_RtnOrderPackage;
-	RtnTradePackage* m_RtnTradePackage;
+	RspAccountLoginPackage* rspAccountLoginPackage_;
+	RspAccountLogoutPackage* rspAccountLogoutPackage_;
+	RspInsertOrderPackage* rspInsertOrderPackage_;
+	RspCancelOrderPackage* rspCancelOrderPackage_;
+	RspQryOrderPackage* rspQryOrderPackage_;
+	RspQryTradePackage* rspQryTradePackage_;
+	RspQryInstrumentPackage* rspQryInstrumentPackage_;
+	RtnOrderPackage* rtnOrderPackage_;
+	RtnTradePackage* rtnTradePackage_;
 };
 }

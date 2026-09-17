@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "SimExchangeSpiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
@@ -25,9 +25,9 @@ void SimExchangeSpiMiddle::OnDisConnected()
 	WriteLog(LogLevel::Info, "OnDisConnected");
 }
 
-void SimExchangeSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspAccountLogin: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspAccountLogin: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (rspAccountLogin != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspAccountLoginField:AccountId:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]",
@@ -47,9 +47,9 @@ void SimExchangeSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAcco
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspAccountLogout: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspAccountLogout: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (rspAccountLogout != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspAccountLogoutField:AccountId:[%s]",
@@ -69,9 +69,9 @@ void SimExchangeSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAc
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryOrder: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryOrder: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (order != nullptr)
 	{
 		WriteLog(LogLevel::Info, "OrderField:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionId:[%lld], ClientOrderId:[%d], RequestId:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]",
@@ -91,9 +91,9 @@ void SimExchangeSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoF
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryTrade: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryTrade: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (trade != nullptr)
 	{
 		WriteLog(LogLevel::Info, "TradeField:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], TradeId:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
@@ -113,9 +113,9 @@ void SimExchangeSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoF
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryInstrument: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryInstrument: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (instrument != nullptr)
 	{
 		WriteLog(LogLevel::Info, "InstrumentField:ExchangeId:[%s], InstrumentId:[%s], ExchangeInstId:[%s], InstrumentName:[%s], ProductId:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]",
@@ -135,9 +135,9 @@ void SimExchangeSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument,
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (reqInsertOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
@@ -157,9 +157,9 @@ void SimExchangeSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsert
 		WriteLog(LogLevel::Info, "rspInfo is nullptr");
 	}
 }
-void SimExchangeSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestID, bool isLast)
+void SimExchangeSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestID, isLast);
+	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestId, isLast);
 	if (reqCancelOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",

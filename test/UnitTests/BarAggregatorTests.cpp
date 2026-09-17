@@ -60,24 +60,24 @@ private:
 
 // 造 BarMarketDataField 值类型：BarTime=UpdateTs=barMinute×100000（与回放/实时聚合约定一致），
 // CurrTurnover/Turnover 取量×10、OpenInterest=量，便于账目断言
-BarMarketDataField MakeBarField(const char* instrument_id, const char* trading_day, long long bar_minute,
-    BarPrecesType bar_preces, int bar_period, double open_price, double high_price, double low_price, double close_price,
+BarMarketDataField MakeBarField(const char* instrumentId, const char* trading_day, long long bar_minute,
+    BarPrecesType bar_preces, int bar_period, double openPrice, double highPrice, double lowPrice, double close_price,
     long long curr_volume, long long volume)
 {
     BarMarketDataField bar{};
     CopyString(bar.TradingDay, trading_day);
     CopyString(bar.ExchangeId, "SSE");
-    CopyString(bar.InstrumentId, instrument_id);
+    CopyString(bar.InstrumentId, instrumentId);
     bar.BarPreces = bar_preces;
     bar.BarPeriod = bar_period;
     bar.BarTime = bar_minute * 100000;
     bar.UpdateTs = bar_minute * 100000;
-    bar.Open = open_price;
-    bar.High = high_price;
-    bar.Low = low_price;
+    bar.Open = openPrice;
+    bar.High = highPrice;
+    bar.Low = lowPrice;
     bar.Close = close_price;
-    bar.HighestPrice = high_price;
-    bar.LowestPrice = low_price;
+    bar.HighestPrice = highPrice;
+    bar.LowestPrice = lowPrice;
     bar.CurrVolume = curr_volume;
     bar.Volume = volume;
     bar.CurrTurnover = static_cast<double>(curr_volume) * 10.0;
@@ -87,20 +87,20 @@ BarMarketDataField MakeBarField(const char* instrument_id, const char* trading_d
 }
 
 // 造带交易所的 1m 输入 bar（MakeBarField 固定 SSE，交易节匹配需要真实交易所），每根当根量 1
-BarMarketDataField MakeSessionBar(const char* exchange_id, const char* instrument_id, const char* trading_day, long long bar_minute)
+BarMarketDataField MakeSessionBar(const char* exchange_id, const char* instrumentId, const char* trading_day, long long bar_minute)
 {
-    auto bar = MakeBarField(instrument_id, trading_day, bar_minute, BarPrecesType::Minute, 1, 100.0, 100.0, 100.0, 100.0, 1, 1);
+    auto bar = MakeBarField(instrumentId, trading_day, bar_minute, BarPrecesType::Minute, 1, 100.0, 100.0, 100.0, 100.0, 1, 1);
     CopyString(bar.ExchangeId, exchange_id);
     return bar;
 }
 
 // 逐分钟喂入 [begin_minute, end_minute]（分钟进位与跨日由 MinuteAdd 承担）
-void FeedMinuteBars(BarAggregator& aggregator, const char* exchange_id, const char* instrument_id, const char* trading_day,
+void FeedMinuteBars(BarAggregator& aggregator, const char* exchange_id, const char* instrumentId, const char* trading_day,
     long long begin_minute, long long end_minute)
 {
     for (long long bar_minute = begin_minute; bar_minute <= end_minute; bar_minute = Spark::Core::TimeUtility::MinuteAdd(bar_minute, 1))
     {
-        auto bar = MakeSessionBar(exchange_id, instrument_id, trading_day, bar_minute);
+        auto bar = MakeSessionBar(exchange_id, instrumentId, trading_day, bar_minute);
         aggregator.OnBarMarketData(&bar);
     }
 }
@@ -138,7 +138,7 @@ TEST_CASE("未声明周期时OnBar原样透传引擎推送的bar")
     REQUIRE(strategy.Start());
 
     auto bar = MakeBarField("600000", "20240301", 202403010935LL, BarPrecesType::Minute, 5, 100.0, 101.0, 99.0, 100.5, 3, 3);
-    fake_api.registered_spi->OnRtnBarMarketData(&bar);
+    fake_api.RegisteredSpi->OnRtnBarMarketData(&bar);
 
     REQUIRE(strategy.bars.size() == 1);
     CHECK(strategy.bars[0].BarTime == 202403010935LL * 100000);
@@ -147,8 +147,8 @@ TEST_CASE("未声明周期时OnBar原样透传引擎推送的bar")
     CHECK(strategy.bars[0].Close == 100.5);
 
     MarketDataEndField market_data_end{};
-    fake_api.registered_spi->OnRtnMarketDataEnd(&market_data_end);
-    CHECK(fake_api.release_count == 1);
+    fake_api.RegisteredSpi->OnRtnMarketDataEnd(&market_data_end);
+    CHECK(fake_api.ReleaseCount == 1);
 }
 
 TEST_CASE("等周期输入直发透传不建桶")
@@ -386,25 +386,25 @@ TEST_CASE("声明的周期随订阅请求上报引擎")
 
     // 未声明 → BarPeriod 0，引擎按数据集精度推送
     strategy.SubscribeBar("SSE", "600000");
-    REQUIRE(fake_api.subscribe_requests.size() == 1);
-    CHECK(std::string(fake_api.subscribe_requests[0].ExchangeId) == "SSE");
-    CHECK(std::string(fake_api.subscribe_requests[0].InstrumentId) == "600000");
-    CHECK(fake_api.subscribe_requests[0].BarPeriod == 0);
+    REQUIRE(fake_api.SubscribeRequests.size() == 1);
+    CHECK(std::string(fake_api.SubscribeRequests[0].ExchangeId) == "SSE");
+    CHECK(std::string(fake_api.SubscribeRequests[0].InstrumentId) == "600000");
+    CHECK(fake_api.SubscribeRequests[0].BarPeriod == 0);
 
     // 声明后每次订阅都带上目标周期，引擎据此为合约挂聚合器
     strategy.DeclareBarPeriod("5m");
     strategy.SubscribeBar("SSE", "000001");
-    REQUIRE(fake_api.subscribe_requests.size() == 2);
-    CHECK(fake_api.subscribe_requests[1].BarPreces == BarPrecesType::Minute);
-    CHECK(fake_api.subscribe_requests[1].BarPeriod == 5);
-    CHECK(std::string(fake_api.subscribe_requests[1].InstrumentId) == "000001");
+    REQUIRE(fake_api.SubscribeRequests.size() == 2);
+    CHECK(fake_api.SubscribeRequests[1].BarPreces == BarPrecesType::Minute);
+    CHECK(fake_api.SubscribeRequests[1].BarPeriod == 5);
+    CHECK(std::string(fake_api.SubscribeRequests[1].InstrumentId) == "000001");
 
     // 小时以上按分钟折算：60m → Minute×60
     strategy.DeclareBarPeriod("60m");
     strategy.SubscribeBar("SSE", "000002");
-    REQUIRE(fake_api.subscribe_requests.size() == 3);
-    CHECK(fake_api.subscribe_requests[2].BarPreces == BarPrecesType::Minute);
-    CHECK(fake_api.subscribe_requests[2].BarPeriod == 60);
+    REQUIRE(fake_api.SubscribeRequests.size() == 3);
+    CHECK(fake_api.SubscribeRequests[2].BarPreces == BarPrecesType::Minute);
+    CHECK(fake_api.SubscribeRequests[2].BarPeriod == 60);
 }
 
 TEST_CASE("无交易节时墙钟回退的桶尾按60进制折算")

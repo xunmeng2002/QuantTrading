@@ -7,7 +7,7 @@ namespace QuantTrading::ordermatch
     class OrderBookOrderMatch : public OrderMatch
     {
     public:
-        OrderBookOrderMatch(const DateType& tradingDay, int maxTradeID = 0);
+        OrderBookOrderMatch(const DateType& tradingDay, int tradeId = 0);
         virtual ~OrderBookOrderMatch();
 
         virtual void OnTick(QuantTrading::DepthMarketData* mdTick) override;

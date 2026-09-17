@@ -32,25 +32,25 @@ int main(int argc, char* argv[])
 	api->Init();
 
 	int waitSeconds = 0;
-	while (spi->m_RtnMdCount == 0 && waitSeconds < 120)
+	while (spi->RtnMdCount == 0 && waitSeconds < 120)
 	{
 		std::this_thread::sleep_for(chrono::seconds(1));
 		++waitSeconds;
 	}
-	if (spi->m_RtnMdCount == 0)
+	if (spi->RtnMdCount == 0)
 	{
 		cout << "Timeout waiting for market data." << endl;
 	}
-	if (spi->m_RspMdUserLoginCount > 0)
+	if (spi->RspMdUserLoginCount > 0)
 	{
 		spi->ReqUserLogout();
 		int waitLogoutSeconds = 0;
-		while ((spi->m_RspMdUserLogoutCount == 0 || spi->m_RspMdUserLoginCount < 2) && waitLogoutSeconds < 30)
+		while ((spi->RspMdUserLogoutCount == 0 || spi->RspMdUserLoginCount < 2) && waitLogoutSeconds < 30)
 		{
 			std::this_thread::sleep_for(chrono::seconds(1));
 			++waitLogoutSeconds;
 		}
-		cout << "Logout Rsp:" << spi->m_RspMdUserLogoutCount << ", Re-login Rsp:" << spi->m_RspMdUserLoginCount << " (expect 1 and 2)" << endl;
+		cout << "Logout Rsp:" << spi->RspMdUserLogoutCount << ", Re-login Rsp:" << spi->RspMdUserLoginCount << " (expect 1 and 2)" << endl;
 	}
 	api->Release();
 	std::this_thread::sleep_for(chrono::seconds(1));

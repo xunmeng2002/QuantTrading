@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Api/CApi.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/CApi.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include <QuantTrading/SimExchangeCApi.h>
 #include <QuantTrading/SimExchangeApi.h>
 #include "SimExchangeSpiWrap.h"
@@ -54,32 +54,32 @@ SIMEXCHANGEAPI_EXPORTS void SIMEXCHANGEAPI_CALL RegisterSpi(SimExchangeCSpi* spi
 	SimExchangeSpiWrapInstance->RegisterSpi(spi);
 }
 
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestId)
 {
-	return SimExchangeApiInstance->ReqAccountLogin(reqAccountLogin, requestID);
+	return SimExchangeApiInstance->ReqAccountLogin(reqAccountLogin, requestId);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestId)
 {
-	return SimExchangeApiInstance->ReqAccountLogout(reqAccountLogout, requestID);
+	return SimExchangeApiInstance->ReqAccountLogout(reqAccountLogout, requestId);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestId)
 {
-	return SimExchangeApiInstance->ReqQryOrder(reqQryOrder, requestID);
+	return SimExchangeApiInstance->ReqQryOrder(reqQryOrder, requestId);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestId)
 {
-	return SimExchangeApiInstance->ReqQryTrade(reqQryTrade, requestID);
+	return SimExchangeApiInstance->ReqQryTrade(reqQryTrade, requestId);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestId)
 {
-	return SimExchangeApiInstance->ReqQryInstrument(reqQryInstrument, requestID);
+	return SimExchangeApiInstance->ReqQryInstrument(reqQryInstrument, requestId);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId)
 {
-	return SimExchangeApiInstance->ReqInsertOrder(reqInsertOrder, requestID);
+	return SimExchangeApiInstance->ReqInsertOrder(reqInsertOrder, requestId);
 }
-SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestID)
+SIMEXCHANGEAPI_EXPORTS int SIMEXCHANGEAPI_CALL ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId)
 {
-	return SimExchangeApiInstance->ReqCancelOrder(reqCancelOrder, requestID);
+	return SimExchangeApiInstance->ReqCancelOrder(reqCancelOrder, requestId);
 }
 

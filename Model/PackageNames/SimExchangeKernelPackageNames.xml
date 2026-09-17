@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<kernelpackages project="QuantTrading" module="SimExchange" kernelClass="SimExchange" replyVia="m_TradeFront">
+<kernelpackages project="QuantTrading" module="SimExchange" kernelClass="SimExchange" replyVia="tradeFront_">
 	<package name="RspMdUserLogin"/>
 	<package name="RspMdUserLogout"/>
 	<package name="RtnDepthMarketData"/>

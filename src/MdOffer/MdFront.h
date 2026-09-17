@@ -14,7 +14,6 @@ namespace QuantTrading::MdOffer
 
 
     private:
-        std::string m_Address;
         Spark::Network::IoThread* ioThread_;
     };
 }

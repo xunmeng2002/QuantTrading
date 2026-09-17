@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Api/Api.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/Api.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include "Fields.h"
 #include <QuantTrading/MdApi/MdApiExport.h>
@@ -10,10 +10,10 @@ class MdSpi
 public:
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
-	virtual void OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast) {}
-	virtual void OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestID, bool isLast) {}
+	virtual void OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestId, bool isLast) {}
+	virtual void OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestId, bool isLast) {}
+	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast) {}
+	virtual void OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast) {}
 	virtual void OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData) {}
 	virtual void OnRtnBarMarketData(const BarMarketDataField* barMarketData) {}
 };
@@ -29,9 +29,9 @@ public:
 	virtual void RegisterFront(const char* address) = 0;
 	virtual void RegisterSpi(MdSpi* pSpi) = 0;
 	
-	virtual int ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestID) = 0;
-	virtual int ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestID) = 0;
-	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestID) = 0;
-	virtual int ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestID) = 0;
+	virtual int ReqMdUserLogin(const ReqMdUserLoginField* reqMdUserLogin, int requestId) = 0;
+	virtual int ReqMdUserLogout(const ReqMdUserLogoutField* reqMdUserLogout, int requestId) = 0;
+	virtual int ReqSubMarketData(const ReqSubMarketDataField* reqSubMarketData, int requestId) = 0;
+	virtual int ReqUnSubMarketData(const ReqUnSubMarketDataField* reqUnSubMarketData, int requestId) = 0;
 };
 }

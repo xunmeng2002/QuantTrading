@@ -6,7 +6,7 @@ namespace QuantTrading::ordermatch
     class LastPriceOrderMatch : public OrderMatch
     {
     public:
-        LastPriceOrderMatch(const DateType& tradingDay, int maxTradeID = 0);
+        LastPriceOrderMatch(const DateType& tradingDay, int tradeId = 0);
         virtual ~LastPriceOrderMatch();
 
         virtual void OnTick(QuantTrading::DepthMarketData* mdTick) override;

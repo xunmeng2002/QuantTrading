@@ -232,7 +232,7 @@ public:
     {
         ReqInsertOrderField req;
         std::memset(&req, 0, sizeof(req));
-        std::strcpy(req.AccountId, m_AccountID);
+        std::strcpy(req.AccountId, accountId_);
         std::strcpy(req.InstrumentId, depthMarketData->InstrumentId);
         req.Direction = DirectionType::Buy;
         req.OffsetFlag = OffsetFlagType::Open;
@@ -242,10 +242,10 @@ public:
     }
     void OnRtnMarketDataEnd(const MarketDataEndField*) override
     {
-        m_BackTestApi->Release();   // backtest finished, release
+        backTestApi_->Release();   // backtest finished, release
     }
-    BackTestApi* m_BackTestApi;
-    char m_AccountID[32];
+    BackTestApi* backTestApi_;
+    char accountId_[32];
 };
 
 int main(int argc, char* argv[])
@@ -255,8 +255,8 @@ int main(int argc, char* argv[])
 
     auto api = BackTestApi::CreateBackTestApi();   // internally loads BackTest.json
     DemoBackTestSpi spi;
-    spi.m_BackTestApi = api;
-    std::strcpy(spi.m_AccountID, "test");
+    spi.backTestApi_ = api;
+    std::strcpy(spi.accountId_, "test");
     api->RegisterSpi(&spi);
     api->Init();
 
