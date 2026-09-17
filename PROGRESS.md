@@ -11,55 +11,13 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 > `PROGRESS.md` 只保留活内容：🔄 进行中、❓ 未决、最近 3 批 ✅。已关闭与已了结的条目**原文**在 [`PROGRESS-archive.md`](PROGRESS-archive.md)（2026-09-13 拆分，不删不改）。
 
 - 检索：`grep "关键词" PROGRESS-archive.md`（例：`grep "TradeSessions" PROGRESS-archive.md`）。
-- 条目 ID：`D.*` = 原 ✅ 已完成（`D.00`–`D.41` 已归档）；`Q.*` = 原 ❓ 待讨论；`R.*` = 原 🔄 进行中。ID 取自 2026-09-13 拆分时的文档顺序，此后新归档条目按 `D.42`、`D.43`… 递增。
+- 条目 ID：`D.*` = 原 ✅ 已完成（`D.00`–`D.43` 已归档）；`Q.*` = 原 ❓ 待讨论；`R.*` = 原 🔄 进行中。ID 取自 2026-09-13 拆分时的文档顺序，此后新归档条目按 `D.44`、`D.45`… 递增。
 - 必须查归档的时机：引用 2026-09-12 及更早的结论时；复审某个已关闭事项时；主文件某条写明"见归档 `Q.xx` / `R.xx`"时。
 - 滚动规矩：已完成区超过 5 批时，把最旧的整条**原样**移入归档（主文件目标 ≤ 50 KB）。
 
 ## ✅ 已完成
 
-> 更早的 42 条（`D.00`–`D.41`，2026-08-08 ~ 2026-09-12）已归档，见 [`PROGRESS-archive.md`](PROGRESS-archive.md)。本批起滚动一次：第七批（`D.41`，2026-09-14 搬入）。
-
-- **2026-09-12（第八批）MdOffer 移除 MdOfferInit：种子用户改配置项，启动订阅改配置清单**：
-  - **需求**（用户口头）：「设计有点问题了，我之前刚把 BackTestInit 给干掉了，把初始化放到 BackTest 内部了。这里的 MdOffer 也这样做吧，完全移除 MdOfferInit 相关的内容。主要看看种子用户怎么提供，是使用简单的配置项，还是提供一个 List？」→ 两个子问题经 `AskUserQuestion` 定稿为「单配置项」+「改为配置订阅清单」。**范围仅 MdOffer**；`SimExchange` 仍保留同款 `SimExchangeInit`/`DbInitHost` 模式（用户未点名，未动）。
-  - **问题根因（为什么原来跑不通）**：`DbInitHost` 指向的种子库 `MdOfferInit.db` 是 0 字节、0 张表，且**仓库内无任何生产者**——`InitMdbFromDB::LoadMdUserTable/LoadExchangeTable/LoadInstrumentTable` 三个装载全部 `no such table`（对应此前"怎么没有用户表"的排查）。同时 `HandleNotifyDBConnect` 的"全市场订阅"遍历 `t_Instrument->m_PrimaryKey->SelectAll()`，种子库没表 → 空集 → **启动订阅静默失效**，一根 bar 都不会落库，除非客户端逐个 `ReqSubMarketData`。第一版还有一处死代码 `ExchangeIdType exchangeId = "SHFE";`（赋值后从未使用）与逐合约裸分配泄漏（每一行 `Allocate` 的 `ReqSubMarketDataField` 都不释放、也不入注册表）。
-  - **移除**（`src/MdOffer/` 侧已无任何 `MdOfferInit`/`DbInitHost`/`t_Instrument` 残留，grep 复核为"无"）：`Main.cpp` 的 `#include "InitMdbFromDB.h"`、种子库常量 `./MdOfferInit.db`、整个 `SqliteWrapper* initDB = new SqliteWrapper(config.DbInitHost.empty() ? ... : ...)` + 三次 `Load*Table` + `DisConnect/delete` 块；`Model/Configs/MdOffer.xml` 与 `Configs/MdOffer.json` 的 `DbInitHost`；`MdKernel.cpp` 的 `SelectAll` 遍历与死变量。
-  - **替代（种子用户=单配置项）**：**该路径本就存在、本批一字未改**——`Main.cpp:102-109` 在 `config.MdUserId` 非空时构造一条 `MdUser`（`MdUserName` 置空、密码取 `config.MdPassword`）插入 `mdb->t_MdUser`，此前一直被上面三条失败的 `Load*Table` 挡在噪声之下（`git diff` 中该块为上下文行，非新增）。故"单配置项"的落地成本为零：只删 `DbInitHost`、不新增配置键、`MdUserId`/`MdPassword` 原样复用。空 `MdUserId` 则完全不插（保持"无用户则无法登录"的语义，不静默造默认账号）。表本身由 Mdb 的 `CreateTables()` 在 DB 连接后自动建（数据库路径），不再依赖外部种子库。
-  - **替代（启动订阅=配置清单）**：`Model/Configs/MdOffer.xml` 新增 `SubscribeInstruments`（`type="list"` + 标量 `modeltype="SubscribeInstrument"` → 生成 `std::list<SubscribeInstrument*>`），复用 Spark `ConfigStructs.h` 里既有的 `SubscribeInstrument`；`Configs/MdOffer.json` 填 CFFEX/IF2603、SHFE/rb2603、DCE/jd2603、CZCE/AP605（与 `Configs/TestMdApi.json` 同四个，**均为已到期月份，属占位**）。`Config.{h,cpp}` 由仓库根 `python pumpall.py` 重生成（本次仅这两个文件变化）。清单以构造参数注入 `MdKernel`（照 `TradeSessions` 注入的先例，而非在 kernel 里读配置单例）：`HandleNotifyDBConnect` 改为遍历该清单，逐项 `subscribeInstruments_.insert`（全局注册表去重、复用 set 节点地址）、新合约才 `minuteBar_->ReqSubMarketData` 并收集，最后一次性 `mdSpi_->SubscribeMds(reqSubMds)`。DB 重连会重跑该流程，靠注册表幂等，不会重复订阅 CTP。
-  - **测试 I/O 示例**（重编 `MdOffer` 后）：
-
-    ```text
-    启动（不含任何客户端连接）：
-      旧：SqliteWrapper: SELECT failed. Table:t_MdUser, Error:no such table: t_MdUser
-      新：无该行；改为 4 条 SubscribeMd: ExchangeId:..., InstrumentId:...
-           + SubscribeMarketData: nCount[1]（每合约一条）
-    MdOffer.db：7 张表照建（DB 连接后 CreateTables），t_MdUser 内有 1 行
-    客户端登录（正确口令）→ RspInfoField:ErrorId:[0]（第七批修好后）
-    清单留空 → 启动零订阅、零报错，订阅完全由客户端驱动
-    ```
-
-  - **风险（§7）**：① 清单项是从配置单例 `new` 出来并被 `MdKernel` 以裸指针持有的（模板生成规则：list + 非标量 → `std::list<SubscribeInstrument*>`，逐条 `new` 且模板不生成释放），生命周期与进程同长，无悬垂、亦不免泄漏——与 `Config` 现有全部 list 字段同款，未单独处理。② `SubscribeInstrument` 只有 `ExchangeId`/`InstrumentId` 两个字段，**无 bar 周期**，故启动订阅按既有约定把 `BarPreces/BarPeriod` 置 0（与客户端 `ReqSubMarketData` 的周期语义不同，落库的前两者恒为 0，若后续要用 bar 表需再扩字段）。③ 空清单 = 服务端不订阅任何合约 → `t_MinuteBar` 只在客户端订阅后才产生数据，非故障但需知晓。④ JSON 里四个合约已到期，验证时须换成活跃月份，否则依旧无 tick（见第七批同项）。⑤ `Main.cpp` 的 `#include <DBAdapters/DBInterface/TypedTable.h>` 改动后已无直接使用点，**刻意保留**以免造成无法验证的编译中断。
-  - **注释披露（§4）**：本批新增/改写注释两处——`MdKernel.h` 构造函数注释补一句「启动订阅清单项指向配置单例，生命周期同进程」（即风险①的契约）；`MdKernel.cpp` 原有两行注释里的「全市场订阅」改为「启动订阅」（遍历对象已变，不写清会误导）。其余为删除，未新增。
-  - **未验证**：编译与运行仍由用户在 VS 侧执行（按约定）。本批仅静态改动 + `pumpall.py` 生成；`bin/Release/MdOffer.json` 待下次构建经 `copy_config_file`（`CMakeLists.txt:145`）刷新后生效。
-- **2026-09-13 入站包方向过滤（第九批，方案乙）**：第六批把方向纪律做进了内核分发（**内核侧"少认"**），本批补上网络侧的"不收"——**对端在本协议角色下不可能发出的包，在包对象创建之前即被拒绝**。用户决策走乙（代价最小），方向表来源取 (c) 生成期按类名前缀推导（乙 方案自带的实现选择）。
-  - **Spark 侧（新增公开 API，Harness §3.1 确认点在用户）**：`PackageFactoryBase` 增 `virtual bool IsInboundPackageAccepted(UShortType packageID) { return true; }`——默认全放行为**纯增量**，任何既有实现不覆写即维持原语义（本仓唯一子类已覆写）。`PackageReader` 在 Xtp/Step **两条解析路径**的校验和之后、`CreatePackage` 之前插入判定：不通过则记 Error 日志 `Inbound Package Not Accepted. PackageID:%d, SessionId:%lld, IP:%s` 后 `Reset(); return false;`，复用既有的"解析失败 → `m_IOBase->DisConnect(sessionId)`"路径断 TCP。选在 `CreatePackage` 之前是乙的核心价值——**被拒的 ID 一个包对象都不会被分配**，不存在"先造出来再丢"的浪费，也不牵动对象池的 `Deallocate` 漏点。
-  - **Templates 侧（外部仓 `D:\Gitee\Templates`，待用户提交）**：`Cpp/Protocol/Packages/PackageFactory.{h,cpp}.tpl`——头文件加 `ServerTypeType` 构造参数与 override 声明，实现加构造定义与方向开关：`Notify*` → `false`；`Req*` → `m_ServerType == ServerTypeType::Server`；`Rsp*`/`Rtn*` → `m_ServerType == ServerTypeType::Client`；`else` 与 `default` → `false`。方向用 DSL 的 `@name.startswith(...)` 在**生成期**算成常数，运行期无字符串操作、无查表。
-  - **QuantTrading 侧**：`pumpall.py` 再生 `src/Packages/PackageFactory.{h,cpp}`（仅此二文件变化，重跑幂等）。核对：52 个 `case` = 20 个 Server + 28 个 Client + 4 个 `false`（Notify），加尾部 `default: break; return false;`，**每个包都被分类，无 fail-open 分支**。4 个构造点补角色实参：`src/Apis/ApiBase/ApiBase.cpp:13`（10 个客户端 `Api*Impl` 共用的唯一 Protocol，`Client`）、`src/MdOffer/MdFront.cpp:9`、`src/SimExchange/TradeFront.cpp:10`、`src/SimExchange/MdFront.cpp:11`（三者 `Server`；末者是死对象，但代码确实构造，故必须传参）。
-  - **语义边界（本批不是"鉴权修好了"）**：内部/自造包（`MdKernel.cpp:47` 与 `SimExchange.cpp:82` 的 `NotifyDisConnect`、CTP SPI tick、`DbSubscriber`）都**直调 `OnMessage`、不经 reader**，故"`Notify*` 一律拒"不会误伤它们；同一原因，**方向合法 ≠ 会话合法**——`NotifyDisConnect` 取的是报文体里的 `SessionId`、可指定他人会话这个病灶与本批**正交，仍未修**（等用户定的会话登录检查）。`Model/PackageNames/*.xml` 未动（仍无运行期读者）；方案 (a) 由 `PackageNames` 生成运行期查表、(b) `Packages.xml` 加 `direction` 列，均未做。
-  - **测试建议（§7）**：
-
-    ```text
-    TestMdApi（客户端角色）：登录 → 订阅 → RtnDepthMarketData 照常到达（Rtn 在 Client 侧放行）
-    伪造：向 MdOffer 的 MdFront 发字段区合法的 RtnDepthMarketDataPackage（0x100A = 4106）
-        旧：FieldToMdb 落库 + MdSnap 改写快照 + PushToAllSubscribed 广播给所有订阅者
-        新：MdOffer 记 `Inbound Package Not Accepted. PackageID:4106, ...`，连接被断，
-            零落库、零广播
-    伪造：客户端发 NotifyDisConnectPackage → 同上被拒，不再能借报文体 SessionId 清他人会话
-    反向：服务端误发 Req* 给客户端 → 客户端侧同样拒绝（此前客户端实例完全不设防）
-    ```
-
-  - **风险（§7）**：① **构建顺序有硬约束**——生成代码对 `IsInboundPackageAccepted` 用了 `override`，故 **Spark 必须先重编并重装到 `Libs`，QuantTrading 之后才能编译**（Spark 头文件 1 处 + `PackageReader.cpp` 2 处）。② 拒绝即断 TCP：以往"未知 PackageID"经 `CreatePackage == nullptr` 也是断，但**"已知包、方向不对"此前是被正常收下的**，现在变为拒绝 + 断连——这是本批的意图，属可观测行为变化；已逐一核对本仓 4 个 Protocol 实例 / 10 个订阅者无此情形（6 个客户端 `Api*Impl` 只分派 `Rsp*`/`Rtn*`；两个内核只处理 `Req*` 与内部自造包；`ReqSubMarketDataFinished` 只在进程内回测）。③ 拒绝时记 Error 级日志且无限流，一次伪造一条，沿用既有解析失败路径的做法未加限流。④ `default: return false` 对未知 ID fail-closed，与既有 `CreatePackage` 返回 `nullptr` 的结局等价（都断连），无新增暴露面。
-  - **注释披露（§4）**：本批新增注释 2 处，均属"外部前提"性质、命名无法表达者——`PackageFactoryBase.h` 新虚函数上方一行（默认全放行 + 由应用侧按自己协议收紧的契约）；模板 `PackageFactory.cpp.tpl` 中新函数体首行（方向族由包名前缀推导——这条映射不写下来，看生成结果会以为那些常数是手工维护的）。其余改动未加注释。
-  - **未验证**：编译与运行仍由用户在 VS 侧执行（按约定）。本批为 6 个文件静态改动（含 2 个生成文件）+ 生成文件再生，无新增运行期验证。**已提交**：本仓 `407509c` + Spark 仓 `50b5e31`；`D:\Gitee\Templates` 的两处模板改动待用户提交。
+> 更早的 44 条（`D.00`–`D.43`，2026-08-08 ~ 2026-09-12）已归档，见 [`PROGRESS-archive.md`](PROGRESS-archive.md)。本批起滚动一次：第九批（`D.43`，2026-09-17 搬入）。
 
 - **2026-09-13 PROGRESS.md 分层归档（活文件 + 归档层）**：主文件 168.6 KB → 23.8 KB（−86%），每次会话开头通读的体积随之下降；已关闭与已了结的条目**原文**移入新增的 `PROGRESS-archive.md`（152.9 KB，按 `D.*` / `Q.*` / `R.*` 分三段倒序）。
   - **完整性**：69 条逐条断言"原文逐字出现在目标文件"，**0 条失败**；唯一丢弃的是 🔄 段那句 `- 无。` 占位符（3 字节，无信息）。两文件合计 176.7 KB 对原始 168.6 KB，多出的约 8 KB 是标题与索引脚手架。
@@ -104,9 +62,46 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
   - **保留的未提交改动**：`DBAdapters/test/TestDB/MdbStructs.h` 的两处 `IntType → Int32Type` 与 `QuantTrading/src/Mdb/MdbPrimaryKeyComp.cpp` 均属本批同一件事，**刻意保留**。`README.md`/`README.en.md` 的示例字段名同步改名。
   - **未验证**：Mysql/Mariadb 两条支路无往返测试（本地无服务器）；`D:\Gitee\Templates` 按用户指示**仍不提交**。**AI 未推送**。
 
+- **2026-09-17（第十三批）回测平台化定案 + RunId 改为可配置注入（第一步）**：
+  - **背景**：回测今天每次运行导出一个独立库（`MakeRunId()` 生成 `BackTest_<RunID>.db`，`DeriveRunDbHost()` 在扩展名前插 RunID）。用户计划做云端 Web 回测平台，"一运行一库"对平台的展示与分析不便，故先议形态再动手。**本轮以讨论与定案为主**，代码只动第一步。
+  - **定案（用户拍板，三条）**：① **运行形态 = 一次性进程 + 常驻调度层**——Web 后端收请求 → 落 run 记录 → 队列 → worker 拉起回测进程 → 跑完退出。回测**不常驻**，两者以"文件 + 退出码"通信，不走 RPC。② **RunId 由调度侧指定**（经配置注入），不再由引擎自生成——产物身份从"按文件名猜"变成"调度侧给定"。③ **放弃"单库 + RunId 列"**：用户判定给结果表加 RunId 对 `SimExchange` 完全冗余，改走**目录区分**（每 job 独立工作目录），产物继续每运行一个文件。
+  - **被否决的备选及理由（留档，避免重提）**：
+    - **单库 + `RunId` 列**：不止是加列——`Order` 主键是 (TradingDay, AccountId, ExchangeId, InstrumentId, OrderId)（`Model/Tables/Tables.xml` 的 `<primarykey>` 段）、`<uniquekeys>` 的 ClientOrderId 亦然，**均不含 RunId**，两次运行必撞，RunId 必须进主键；且撞主键**不会响亮报错**（项目既有模式是"已存在就 Update"，见 `SimExchange.cpp:74-83` 的 `InsertInstrumentOrUpdate`），可能表现为**静默覆盖上一次运行的数据**。改动面 = 全部结果侧表 + 重 pump + 各 Insert 站点。
+    - **切 MySQL**：技术可行（InnoDB 并发写本身没问题），但撞上三条——(a) `DbHost` 语义重载：SQLite 下是文件路径，MySQL 下是连接 URI（`MysqlWrapper` 直接 `mysqlx::Session(host)`，`MysqlWrapper.cpp:231`），而 `DbUser`/`DbPassword` 只传给 `MariadbWrapper`（`SimExchange.cpp:40` vs `:44`），MySQL 分支只能把凭据写在 URI 里；(b) `DeriveRunDbHost()` 对 URI 做 `rfind('.')` 会**把 RunId 插进主机名中间**拼出坏字符串（`SimExchange.cpp:62-70`）；(c) **密码经 `DbHost` 泄漏**——`Config::Print()` 打印 `DbHost`（`Config.cpp:66`）与 `DbUser`（`:65`）但不打印 `DbPassword`（模板按 `endswith('password')` 过滤），URI 内嵌密码后这一条会进 stdout 及 `SimExchange.cpp:107` 的日志，再经调度侧配置快照进平台库与 Web。
+    - **"一运行一个 MySQL database"**：判为最不划算的中间态——等于用 schema 名当 RunId，付出每次一套 15 表 DDL、schema 膨胀、清理策略、产物失去自包含（不能下载/归档/离线分析），换来的只是"InnoDB 处理并发"，而并发在目录区分下本就不存在。
+    - **"RunId 走 API 入参而非配置"（2026-09-17 复议后否决）**：切入点是 `BackTestApi::CreateBackTestApi()` **无参**（`include/QuantTrading/BackTestApi.h:31`；模板 `Cpp/BackTestApi/BackTestApi.h.tpl:44` 的 `Create!!$prefix!!Api()`），且配置文件名为硬编码常量 `ConfigName = "BackTest.json"`（`BackTestApiImpl.cpp:10`）——故"运行参数"这条信道在 BackTest 上**根本不存在**，加它要动公开头（生成文件）与 `D:\Gitee\Templates`（该仓按用户指示不提交），属 Harness §3.1 确认点，成本远高于收益。
+    - **"纯目录即身份"（引擎完全不碰 RunId，身份只由调度侧目录名承载）（同次否决）**：它**并不消除冗余**——只是把"调度侧给的**有意义** RunId"换成"引擎自生成的**无意义** id"，`runs/<RunId>/BackTest_<引擎自生成id>.db` 里两个 id 照样并存而其中一个是废的；且引擎不知道 RunId 后，`SimExchange.cpp:107` 的 `RunID:` 日志与将来的 `result.json` 都带不上真 RunId。**配置注入的收益正在于此**：日志、产物文件名、`result.json` 三处携带的是**同一个**真 RunId，运行目录因此自描述。调度侧同时写目录名与配置项，是**一个来源表达在两处**，非两个竞争来源（唯一约束是二者必须同值，这本由调度侧一次生成保证）。
+    - **本地直跑不受影响**：`RunId` 留空即回落 `MakeRunId()`，且**不切工作目录**（仍在 `bin/` 下），`DeriveRunDbHost()` 照旧给出 `BackTest_<id>.db`——本地路径一行未变，无需为本地引入工作目录机制。
+  - **并发结论（用户提问，已核）**：SQLite 是 single writer / multiple readers，多进程**可以**写同一个库但只能**串行排队**；且 `SqliteWrapper` **未设 `busy_timeout`/`journal_mode`/`synchronous`**（`DBAdapters/src/DbAdapters/SqliteWrapper/SqliteWrapper.cpp` 全零命中，仅有 `PRAGMA encoding`，`:207`），故第二个写者会**立即失败**而非排队。目录区分形态下这条不适用（各自一个文件）。平台侧真正的并发点在**读**：读已完成的产物是纯只读、SHARED 锁可共存；只有"边跑边读同一个文件"才会 `SQLITE_BUSY`，而完成信号已定为进程退出码，天然避开。
+  - **本批落地（第一步，全部为增量改动）**：
+    - `Model/Configs/BackTest.xml` 新增 `<item name="RunId" type="string"></item>`（置于首位），`python pumpall.py` 重生成 `src/BackTest/Config/Config.{h,cpp}`——**新增 3 行、零删除**（`.h` 一行成员、`.cpp` 一行 `Load`、一行 `Print`）；pump 只跑了这两个文件，无连带改动。
+    - `src/BackTest/SimExchange.cpp:100-101` 由 `runId_ = MakeRunId();` 改为 `runId_ = config.RunId.empty() ? MakeRunId() : config.RunId;`。**产物命名规则不变**（文件名仍带 RunId，保持自标识；调度侧另有独立工作目录隔离，派生规则不构成耦合），仅修掉 `DeriveRunDbHost()` 内部的定位缺陷，见下条。
+    - `Configs/BackTest.json` 新增 `"RunId": ""`。
+    - **`DeriveRunDbHost()` 修复（2026-09-17 追加，原报于"切 MySQL"备选理由中的同一类缺陷）**：原实现用 `rfind('.')` 取**全串最后一个点**当扩展名分界，未校验该点是否位于**最后一个路径分隔符之后**。当"整串里有点、而文件名部分没有点"时定位错误，RunId 被插进错误位置。新实现先取 `find_last_of("/\\")`，仅当 `lastDot > lastSeparator`（或全串无分隔符）才认作扩展名，否则走"无扩展名则追加"分支。手工字符串切割，**未改用 `std::filesystem::path`**——Windows 下 `.string()` 会做 ACP 转换，与 UTF-8 的 `dbHost` 冲突；且 `(parent / filename)` 会把分隔符统一成 `\`，改变被记录/打印的路径形态（`SimExchange.cpp:107` 日志）。
+    - **`DeriveRunDbHost()` 修复的验证**（无 C++ 编译器可用，`g++`/`clang++`/`cl` 均不在 PATH，改用同构 Python 镜像对 11 条路径输入逐一比对新旧实现）：**8 条完全一致**（`./BackTest.db`、`runs/BackTest.db`、`/abs/BackTest.db`、`BackTest.db`、`BackTest`、`runs/BackTest`、`/abs/runs.v2/results`、`..\\BackTest.db`）；**3 条发生变化，且全部是修复**——目标案例 `./runs.v2/results`、`runs.v2/results`（旧 `runs_job0001.v2/results` → 新 `runs.v2/results_job0001`），以及**本次比对中额外发现的第二处、更易踩到的缺陷**：`./BackTest`（以 `./` 开头、无扩展名，旧 `rfind('.')` 命中 `./` 里的点，连"无扩展名"分支都进不去，产出整个坏掉的 `_job0001./BackTest` → 新 `./BackTest_job0001`）。即 `DbHost` 写成 `"./backtest_result"` 这类无扩展名相对路径时，**改动前产物路径是完全错误的**。
+  - **向后兼容**：`RunId` 为空即回落 `MakeRunId()`，本地直跑（`TestBackTest`）的行为与产物命名**完全不变**；旧配置不含该键时 `root["RunId"].asString()` 对 null 返回 `""`，同样回落。两条路径都无需改既有配置。
+  - **测试 I/O 示例**（重编 `BackTest` 后）：
+    ```text
+    "RunId": ""（或不写该键）：console 打印 RunId:<引擎自生成>，产物 BackTest_<该RunID>.db，与改动前一致
+    "RunId": "20260917_job0001"：console 打印 RunId:20260917_job0001
+                                  产物 BackTest_20260917_job0001.db、Dump/20260917_job0001/
+    ```
+  - **风险（§7）**：无多线程/内存管理改动。唯一契约变化是"RunId 可由外部指定"——调度侧若给出**重复** RunId 且共用工作目录，产物会互相覆盖；隔离责任在调度侧（每 job 独立工作目录），本批**未加去重守卫**。
+  - **注释披露（§4）**：`SimExchange.cpp:100` 新增一行注释，说明 RunId 的外部注入契约——"调度侧可注入、留空则引擎自生成"属外部前提，命名无法表达，故按 §4 例外保留并在此披露。`DeriveRunDbHost()` 内另加一行注释说明"扩展名的点须落在最后一个路径分隔符之后"——这是从旧实现的缺陷反推出来的前提（旧代码正是漏了它），函数名 `DeriveRunDbHost` 无法表达该字形约束，同按 §4 例外保留并披露。
+  - **未验证（`DeriveRunDbHost()` 部分）**：以 Python 镜像验证算法等价性与新旧差异，**非编译验证**；实际编译与运行仍需用户在 VS 侧执行。
+  - **未验证**：编译与运行仍由用户在 VS 侧执行（按约定）。本批为 3 个源文件静态改动 + 2 个生成文件再生。
+
 ## 🔄 进行中
 
-- 无。实时行情周期那条（原本条唯一内容）2026-09-13 已定案：**实时链路恒出 1m、不聚合是有意设计**，剩余的前置约束记入下方备注。⚠️ 曾提议的"`FieldsCompare` 比较器补齐 `BarPreces`/`BarPeriod`"**已撤回**——该比较器是"合约身份键"，补齐周期会让 `PushToAllSubscribed` 的 0 周期探针匹配不到带周期入集的会话，**直接中断行情推送**；撤回证据见归档 `R.01` 与归档 `D.36`。
+- **回测平台化（2026-09-17 起；第一步已落地，见 ✅ 第十三批）**：形态、RunId 归属、产物布局三条已定案，**剩余步骤按此顺序**：
+  1. **初始资金与手续费率变真参数**（建议排第一位）：今天 `Account.CommissionGroupId` 硬编码 1（`SimExchange.cpp:644`）、`trade->Commission = 0`（`src/OrderMatch/OrderMatch.cpp:141`）、账户按需自建且 `Balance = 0`，全链路无费率计算——**平台最想要的对比维度目前根本不存在**，不做这条则 catalog 里的"对比"没有可变的维度。
+  2. **`result.json`**：引擎退出前把 RunId + 产物路径写到一个调度侧已知的位置。这是"调度侧无需预测产物名"的正解，也顺带承载指标。
+  3. **catalog 由调度侧写**：参数（是它自己写的配置）+ RunId + 产物 URI + 退出码 + 耗时 + 引擎回报的指标。**引擎不碰 catalog**，回测侧零改动。
+  4. **跨运行对比**：**暂不做**。多数对比只需 catalog 的指标行；真要做时再决定导 Parquet（`read_parquet('runs/*/order.parquet', filename = true)`，RunId 由**读侧**从路径派生，写入侧不加字段）还是 SQLite `ATTACH`（`SQLITE_MAX_ATTACHED` **默认上限 10**，比 20 次运行就得改编译期上限或应用层循环）。
+  5. **运行契约文档**：形态 1 的全部隔离机制是"cwd 相对路径"，这是一条**没人写下来的假设**——谁把 `BackTest.json` 里任一路径写成绝对路径（或引擎内改成绝对路径），隔离就**静默失效**（两个并发 job 写同一个库，且不报错）。建议落 `docs/backtest-run-contract.md`，或至少在启动时对绝对路径发 Warning。
+  - **未决**：调度层跑在本机还是云上；产物是否上传对象存储（SQLite 不能 range-read、且需要本地文件系统与可靠文件锁，Parquet 可以）；并发上限由谁定（每个回测进程都要读 parquet、建 mdb、跑撮合，CPU 密集）。
+
+- **（保留的已关闭条目，非待办）实时行情周期**：2026-09-13 已定案：**实时链路恒出 1m、不聚合是有意设计**，剩余的前置约束记入下方备注。⚠️ 曾提议的"`FieldsCompare` 比较器补齐 `BarPreces`/`BarPeriod`"**已撤回**——该比较器是"合约身份键"，补齐周期会让 `PushToAllSubscribed` 的 0 周期探针匹配不到带周期入集的会话，**直接中断行情推送**；撤回证据见归档 `R.01` 与归档 `D.36`。
 
 ## ❓ 待讨论 / 待决策
 

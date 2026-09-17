@@ -1,5 +1,6 @@
 <config project="QuantTrading" module="BackTest">
 	<items>
+		<item name="RunId" type="string"></item>
 		<item name="MatchMode" type="int"></item>
 		<item name="BarPreces" type="string"></item>
 		<item name="MdDataPath" type="string"></item>

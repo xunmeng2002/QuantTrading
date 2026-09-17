@@ -11,6 +11,53 @@
 
 ## ✅ 已完成（历史，倒序）
 
+### D.43 · 2026-09-13 （第九批） 入站包方向过滤（方案乙）
+
+- **2026-09-13 入站包方向过滤（第九批，方案乙）**：第六批把方向纪律做进了内核分发（**内核侧"少认"**），本批补上网络侧的"不收"——**对端在本协议角色下不可能发出的包，在包对象创建之前即被拒绝**。用户决策走乙（代价最小），方向表来源取 (c) 生成期按类名前缀推导（乙 方案自带的实现选择）。
+  - **Spark 侧（新增公开 API，Harness §3.1 确认点在用户）**：`PackageFactoryBase` 增 `virtual bool IsInboundPackageAccepted(UShortType packageID) { return true; }`——默认全放行为**纯增量**，任何既有实现不覆写即维持原语义（本仓唯一子类已覆写）。`PackageReader` 在 Xtp/Step **两条解析路径**的校验和之后、`CreatePackage` 之前插入判定：不通过则记 Error 日志 `Inbound Package Not Accepted. PackageID:%d, SessionId:%lld, IP:%s` 后 `Reset(); return false;`，复用既有的"解析失败 → `m_IOBase->DisConnect(sessionId)`"路径断 TCP。选在 `CreatePackage` 之前是乙的核心价值——**被拒的 ID 一个包对象都不会被分配**，不存在"先造出来再丢"的浪费，也不牵动对象池的 `Deallocate` 漏点。
+  - **Templates 侧（外部仓 `D:\Gitee\Templates`，待用户提交）**：`Cpp/Protocol/Packages/PackageFactory.{h,cpp}.tpl`——头文件加 `ServerTypeType` 构造参数与 override 声明，实现加构造定义与方向开关：`Notify*` → `false`；`Req*` → `m_ServerType == ServerTypeType::Server`；`Rsp*`/`Rtn*` → `m_ServerType == ServerTypeType::Client`；`else` 与 `default` → `false`。方向用 DSL 的 `@name.startswith(...)` 在**生成期**算成常数，运行期无字符串操作、无查表。
+  - **QuantTrading 侧**：`pumpall.py` 再生 `src/Packages/PackageFactory.{h,cpp}`（仅此二文件变化，重跑幂等）。核对：52 个 `case` = 20 个 Server + 28 个 Client + 4 个 `false`（Notify），加尾部 `default: break; return false;`，**每个包都被分类，无 fail-open 分支**。4 个构造点补角色实参：`src/Apis/ApiBase/ApiBase.cpp:13`（10 个客户端 `Api*Impl` 共用的唯一 Protocol，`Client`）、`src/MdOffer/MdFront.cpp:9`、`src/SimExchange/TradeFront.cpp:10`、`src/SimExchange/MdFront.cpp:11`（三者 `Server`；末者是死对象，但代码确实构造，故必须传参）。
+  - **语义边界（本批不是"鉴权修好了"）**：内部/自造包（`MdKernel.cpp:47` 与 `SimExchange.cpp:82` 的 `NotifyDisConnect`、CTP SPI tick、`DbSubscriber`）都**直调 `OnMessage`、不经 reader**，故"`Notify*` 一律拒"不会误伤它们；同一原因，**方向合法 ≠ 会话合法**——`NotifyDisConnect` 取的是报文体里的 `SessionId`、可指定他人会话这个病灶与本批**正交，仍未修**（等用户定的会话登录检查）。`Model/PackageNames/*.xml` 未动（仍无运行期读者）；方案 (a) 由 `PackageNames` 生成运行期查表、(b) `Packages.xml` 加 `direction` 列，均未做。
+  - **测试建议（§7）**：
+
+    ```text
+    TestMdApi（客户端角色）：登录 → 订阅 → RtnDepthMarketData 照常到达（Rtn 在 Client 侧放行）
+    伪造：向 MdOffer 的 MdFront 发字段区合法的 RtnDepthMarketDataPackage（0x100A = 4106）
+        旧：FieldToMdb 落库 + MdSnap 改写快照 + PushToAllSubscribed 广播给所有订阅者
+        新：MdOffer 记 `Inbound Package Not Accepted. PackageID:4106, ...`，连接被断，
+            零落库、零广播
+    伪造：客户端发 NotifyDisConnectPackage → 同上被拒，不再能借报文体 SessionId 清他人会话
+    反向：服务端误发 Req* 给客户端 → 客户端侧同样拒绝（此前客户端实例完全不设防）
+    ```
+
+  - **风险（§7）**：① **构建顺序有硬约束**——生成代码对 `IsInboundPackageAccepted` 用了 `override`，故 **Spark 必须先重编并重装到 `Libs`，QuantTrading 之后才能编译**（Spark 头文件 1 处 + `PackageReader.cpp` 2 处）。② 拒绝即断 TCP：以往"未知 PackageID"经 `CreatePackage == nullptr` 也是断，但**"已知包、方向不对"此前是被正常收下的**，现在变为拒绝 + 断连——这是本批的意图，属可观测行为变化；已逐一核对本仓 4 个 Protocol 实例 / 10 个订阅者无此情形（6 个客户端 `Api*Impl` 只分派 `Rsp*`/`Rtn*`；两个内核只处理 `Req*` 与内部自造包；`ReqSubMarketDataFinished` 只在进程内回测）。③ 拒绝时记 Error 级日志且无限流，一次伪造一条，沿用既有解析失败路径的做法未加限流。④ `default: return false` 对未知 ID fail-closed，与既有 `CreatePackage` 返回 `nullptr` 的结局等价（都断连），无新增暴露面。
+  - **注释披露（§4）**：本批新增注释 2 处，均属"外部前提"性质、命名无法表达者——`PackageFactoryBase.h` 新虚函数上方一行（默认全放行 + 由应用侧按自己协议收紧的契约）；模板 `PackageFactory.cpp.tpl` 中新函数体首行（方向族由包名前缀推导——这条映射不写下来，看生成结果会以为那些常数是手工维护的）。其余改动未加注释。
+  - **未验证**：编译与运行仍由用户在 VS 侧执行（按约定）。本批为 6 个文件静态改动（含 2 个生成文件）+ 生成文件再生，无新增运行期验证。**已提交**：本仓 `407509c` + Spark 仓 `50b5e31`；`D:\Gitee\Templates` 的两处模板改动待用户提交。
+
+### D.42 · 2026-09-12 （第八批） MdOffer 移除 MdOfferInit
+
+- **2026-09-12（第八批）MdOffer 移除 MdOfferInit：种子用户改配置项，启动订阅改配置清单**：
+  - **需求**（用户口头）：「设计有点问题了，我之前刚把 BackTestInit 给干掉了，把初始化放到 BackTest 内部了。这里的 MdOffer 也这样做吧，完全移除 MdOfferInit 相关的内容。主要看看种子用户怎么提供，是使用简单的配置项，还是提供一个 List？」→ 两个子问题经 `AskUserQuestion` 定稿为「单配置项」+「改为配置订阅清单」。**范围仅 MdOffer**；`SimExchange` 仍保留同款 `SimExchangeInit`/`DbInitHost` 模式（用户未点名，未动）。
+  - **问题根因（为什么原来跑不通）**：`DbInitHost` 指向的种子库 `MdOfferInit.db` 是 0 字节、0 张表，且**仓库内无任何生产者**——`InitMdbFromDB::LoadMdUserTable/LoadExchangeTable/LoadInstrumentTable` 三个装载全部 `no such table`（对应此前"怎么没有用户表"的排查）。同时 `HandleNotifyDBConnect` 的"全市场订阅"遍历 `t_Instrument->m_PrimaryKey->SelectAll()`，种子库没表 → 空集 → **启动订阅静默失效**，一根 bar 都不会落库，除非客户端逐个 `ReqSubMarketData`。第一版还有一处死代码 `ExchangeIdType exchangeId = "SHFE";`（赋值后从未使用）与逐合约裸分配泄漏（每一行 `Allocate` 的 `ReqSubMarketDataField` 都不释放、也不入注册表）。
+  - **移除**（`src/MdOffer/` 侧已无任何 `MdOfferInit`/`DbInitHost`/`t_Instrument` 残留，grep 复核为"无"）：`Main.cpp` 的 `#include "InitMdbFromDB.h"`、种子库常量 `./MdOfferInit.db`、整个 `SqliteWrapper* initDB = new SqliteWrapper(config.DbInitHost.empty() ? ... : ...)` + 三次 `Load*Table` + `DisConnect/delete` 块；`Model/Configs/MdOffer.xml` 与 `Configs/MdOffer.json` 的 `DbInitHost`；`MdKernel.cpp` 的 `SelectAll` 遍历与死变量。
+  - **替代（种子用户=单配置项）**：**该路径本就存在、本批一字未改**——`Main.cpp:102-109` 在 `config.MdUserId` 非空时构造一条 `MdUser`（`MdUserName` 置空、密码取 `config.MdPassword`）插入 `mdb->t_MdUser`，此前一直被上面三条失败的 `Load*Table` 挡在噪声之下（`git diff` 中该块为上下文行，非新增）。故"单配置项"的落地成本为零：只删 `DbInitHost`、不新增配置键、`MdUserId`/`MdPassword` 原样复用。空 `MdUserId` 则完全不插（保持"无用户则无法登录"的语义，不静默造默认账号）。表本身由 Mdb 的 `CreateTables()` 在 DB 连接后自动建（数据库路径），不再依赖外部种子库。
+  - **替代（启动订阅=配置清单）**：`Model/Configs/MdOffer.xml` 新增 `SubscribeInstruments`（`type="list"` + 标量 `modeltype="SubscribeInstrument"` → 生成 `std::list<SubscribeInstrument*>`），复用 Spark `ConfigStructs.h` 里既有的 `SubscribeInstrument`；`Configs/MdOffer.json` 填 CFFEX/IF2603、SHFE/rb2603、DCE/jd2603、CZCE/AP605（与 `Configs/TestMdApi.json` 同四个，**均为已到期月份，属占位**）。`Config.{h,cpp}` 由仓库根 `python pumpall.py` 重生成（本次仅这两个文件变化）。清单以构造参数注入 `MdKernel`（照 `TradeSessions` 注入的先例，而非在 kernel 里读配置单例）：`HandleNotifyDBConnect` 改为遍历该清单，逐项 `subscribeInstruments_.insert`（全局注册表去重、复用 set 节点地址）、新合约才 `minuteBar_->ReqSubMarketData` 并收集，最后一次性 `mdSpi_->SubscribeMds(reqSubMds)`。DB 重连会重跑该流程，靠注册表幂等，不会重复订阅 CTP。
+  - **测试 I/O 示例**（重编 `MdOffer` 后）：
+
+    ```text
+    启动（不含任何客户端连接）：
+      旧：SqliteWrapper: SELECT failed. Table:t_MdUser, Error:no such table: t_MdUser
+      新：无该行；改为 4 条 SubscribeMd: ExchangeId:..., InstrumentId:...
+           + SubscribeMarketData: nCount[1]（每合约一条）
+    MdOffer.db：7 张表照建（DB 连接后 CreateTables），t_MdUser 内有 1 行
+    客户端登录（正确口令）→ RspInfoField:ErrorId:[0]（第七批修好后）
+    清单留空 → 启动零订阅、零报错，订阅完全由客户端驱动
+    ```
+
+  - **风险（§7）**：① 清单项是从配置单例 `new` 出来并被 `MdKernel` 以裸指针持有的（模板生成规则：list + 非标量 → `std::list<SubscribeInstrument*>`，逐条 `new` 且模板不生成释放），生命周期与进程同长，无悬垂、亦不免泄漏——与 `Config` 现有全部 list 字段同款，未单独处理。② `SubscribeInstrument` 只有 `ExchangeId`/`InstrumentId` 两个字段，**无 bar 周期**，故启动订阅按既有约定把 `BarPreces/BarPeriod` 置 0（与客户端 `ReqSubMarketData` 的周期语义不同，落库的前两者恒为 0，若后续要用 bar 表需再扩字段）。③ 空清单 = 服务端不订阅任何合约 → `t_MinuteBar` 只在客户端订阅后才产生数据，非故障但需知晓。④ JSON 里四个合约已到期，验证时须换成活跃月份，否则依旧无 tick（见第七批同项）。⑤ `Main.cpp` 的 `#include <DBAdapters/DBInterface/TypedTable.h>` 改动后已无直接使用点，**刻意保留**以免造成无法验证的编译中断。
+  - **注释披露（§4）**：本批新增/改写注释两处——`MdKernel.h` 构造函数注释补一句「启动订阅清单项指向配置单例，生命周期同进程」（即风险①的契约）；`MdKernel.cpp` 原有两行注释里的「全市场订阅」改为「启动订阅」（遍历对象已变，不写清会误导）。其余为删除，未新增。
+  - **未验证**：编译与运行仍由用户在 VS 侧执行（按约定）。本批仅静态改动 + `pumpall.py` 生成；`bin/Release/MdOffer.json` 待下次构建经 `copy_config_file`（`CMakeLists.txt:145`）刷新后生效。
+
 ### D.41 · 2026-09-12 （第七批） 修登录成功仍回「用户不存在」
 
 - **2026-09-12（第七批）修 `HandleReqMdUserLogin` 成功登录仍回「用户不存在」（第五批 C3 引入的回归）**：

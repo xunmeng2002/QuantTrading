@@ -59,14 +59,17 @@ static std::string MakeRunId()
 }
 
 // 输出库文件名派生：在扩展名前插入 _<RunID>（./BackTest.db → ./BackTest_<RunID>.db）
+// 扩展名的点须落在最后一个路径分隔符之后：整串里有点、而文件名部分没有点时（./BackTest、./runs.v2/results）会把 RunId 插错位置
 static std::string DeriveRunDbHost(const std::string& dbHost, const std::string& runId)
 {
-    auto extensionPos = dbHost.rfind('.');
-    if (extensionPos == std::string::npos)
+    const auto lastSeparatorPos = dbHost.find_last_of("/\\");
+    const auto lastDotPos = dbHost.find_last_of('.');
+    const bool hasExtension = lastDotPos != std::string::npos && (lastSeparatorPos == std::string::npos || lastDotPos > lastSeparatorPos);
+    if (!hasExtension)
     {
         return dbHost + "_" + runId;
     }
-    return dbHost.substr(0, extensionPos) + "_" + runId + dbHost.substr(extensionPos);
+    return dbHost.substr(0, lastDotPos) + "_" + runId + dbHost.substr(lastDotPos);
 }
 
 // 合约落库：主键已存在则就地更新，否则插入。
@@ -97,7 +100,8 @@ SimExchange::SimExchange(const Config& config)
 	memset(&pushMdTick_, 0, sizeof(DepthMarketDataField));
 	memset(&pushMdBar_, 0, sizeof(BarMarketDataField));
 	mdReader_ = new MdReader(config);
-	runId_ = MakeRunId();
+	// RunId 由调度侧经配置注入，用于固定本次运行的身份与产物名；留空则引擎自生成
+	runId_ = config.RunId.empty() ? MakeRunId() : config.RunId;
 	// Dump 以 fopen(dir//t_Xxx.csv) 落盘，目录缺失时静默失败，按 RunID 隔离前须先建目录
 	dumpPath_ = config.DumpPath + "/" + runId_;
 	std::error_code dumpDirError;

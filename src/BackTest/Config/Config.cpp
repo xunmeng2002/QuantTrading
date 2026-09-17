@@ -36,6 +36,7 @@ void Config::Load(const char* fileName)
 	}
 	inFile.close();
 	
+	RunId = root["RunId"].asString();
 	MatchMode = root["MatchMode"].asInt();
 	BarPreces = root["BarPreces"].asString();
 	MdDataPath = root["MdDataPath"].asString();
@@ -54,6 +55,7 @@ void Config::Load(const char* fileName)
 
 void Config::Print()
 {
+	printf("RunId:%s\n", RunId.c_str());
 	printf("MatchMode:%d\n", MatchMode);
 	printf("BarPreces:%s\n", BarPreces.c_str());
 	printf("MdDataPath:%s\n", MdDataPath.c_str());

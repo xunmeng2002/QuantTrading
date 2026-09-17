@@ -18,6 +18,7 @@ public:
 	void Print();
 	
 public:
+	string RunId;
 	int MatchMode;
 	string BarPreces;
 	string MdDataPath;
