@@ -33,6 +33,6 @@ public:
 	std::list<SubscribeInstrument*> SubscribeInstruments;
 	
 private:
-	static Config instance;
+	static Config instance_;
 };
 }

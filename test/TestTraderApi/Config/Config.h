@@ -25,6 +25,6 @@ public:
 	string EnvironmentName24;
 	
 private:
-	static Config instance;
+	static Config instance_;
 };
 }

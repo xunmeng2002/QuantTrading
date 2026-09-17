@@ -47,26 +47,26 @@ static Db* CreateDataDb(const std::string dbType, const std::string dbHost, cons
 }
 
 // RunID：本地时间到毫秒，作为本次回测输出库/快照目录的隔离后缀，多次回测互不覆盖
-static std::string MakeRunID()
+static std::string MakeRunId()
 {
     std::tm* localTm = TimeUtility::GetLocalTm();
     auto milliSecond = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 1000;
-    char runID[32] = { 0 };
-    snprintf(runID, sizeof(runID), "%04d%02d%02d_%02d%02d%02d_%03lld",
+    char runId[32] = { 0 };
+    snprintf(runId, sizeof(runId), "%04d%02d%02d_%02d%02d%02d_%03lld",
         localTm->tm_year + 1900, localTm->tm_mon + 1, localTm->tm_mday,
         localTm->tm_hour, localTm->tm_min, localTm->tm_sec, static_cast<long long>(milliSecond));
-    return runID;
+    return runId;
 }
 
 // 输出库文件名派生：在扩展名前插入 _<RunID>（./BackTest.db → ./BackTest_<RunID>.db）
-static std::string DeriveRunDbHost(const std::string& dbHost, const std::string& runID)
+static std::string DeriveRunDbHost(const std::string& dbHost, const std::string& runId)
 {
     auto extensionPos = dbHost.rfind('.');
     if (extensionPos == std::string::npos)
     {
-        return dbHost + "_" + runID;
+        return dbHost + "_" + runId;
     }
-    return dbHost.substr(0, extensionPos) + "_" + runID + dbHost.substr(extensionPos);
+    return dbHost.substr(0, extensionPos) + "_" + runId + dbHost.substr(extensionPos);
 }
 
 // 合约落库：主键已存在则就地更新，否则插入。
@@ -97,7 +97,7 @@ SimExchange::SimExchange(const Config& config)
 	memset(&pushMdTick_, 0, sizeof(DepthMarketDataField));
 	memset(&pushMdBar_, 0, sizeof(BarMarketDataField));
 	mdReader_ = new MdReader(config);
-	runId_ = MakeRunID();
+	runId_ = MakeRunId();
 	// Dump 以 fopen(dir//t_Xxx.csv) 落盘，目录缺失时静默失败，按 RunID 隔离前须先建目录
 	dumpPath_ = config.DumpPath + "/" + runId_;
 	std::error_code dumpDirError;

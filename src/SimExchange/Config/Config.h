@@ -30,6 +30,6 @@ public:
 	string MdPassword;
 	
 private:
-	static Config instance;
+	static Config instance_;
 };
 }

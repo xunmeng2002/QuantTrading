@@ -24,6 +24,6 @@ public:
 	string InstrumentId;
 	
 private:
-	static Config instance;
+	static Config instance_;
 };
 }

@@ -10,14 +10,14 @@
 
 namespace QuantTrading::SimExchangeInit
 {
-Config Config::instance;
+Config Config::instance_;
 Config::Config()
 {
 
 }
 Config& Config::GetInstance()
 {
-	return instance;
+	return instance_;
 }
 void Config::Load(const char* fileName)
 {
