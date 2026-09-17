@@ -26,9 +26,9 @@ TEST_CASE("市价买卖单被首个有效tick全额成交于最新价")
 
     REQUIRE(subscriber.Trades.size() == 2);
     CHECK(subscriber.Trades[0].OrderId == 1);
-    CHECK(subscriber.Trades[0].price == 100.0);
+    CHECK(subscriber.Trades[0].Price == 100.0);
     CHECK(subscriber.Trades[1].OrderId == 2);
-    CHECK(subscriber.Trades[1].price == 100.0);
+    CHECK(subscriber.Trades[1].Price == 100.0);
     REQUIRE(subscriber.OrderUpdates.size() == 2);
     CHECK(subscriber.OrderUpdates[0].OrderStatus == OrderStatusType::AllTraded);
 
@@ -51,13 +51,13 @@ TEST_CASE("限价买单按最新价成交且低于最新价不追价")
 
     REQUIRE(subscriber.Trades.size() == 1);
     CHECK(subscriber.Trades[0].OrderId == 1);
-    CHECK(subscriber.Trades[0].price == 101.0);
+    CHECK(subscriber.Trades[0].Price == 101.0);
 
     // 最新价回落到 98 后,挂着的 99 买单被成交
     order_match.OnTick(MakeMdTick(tick_pool, MakeUpdateTs(20240301, 90100, 0), 98.0, 10, 97.0, 10, 99.0, 10));
     REQUIRE(subscriber.Trades.size() == 2);
     CHECK(subscriber.Trades[1].OrderId == 2);
-    CHECK(subscriber.Trades[1].price == 98.0);
+    CHECK(subscriber.Trades[1].Price == 98.0);
 }
 
 TEST_CASE("限价卖单不高于最新价时按最新价成交")
@@ -75,12 +75,12 @@ TEST_CASE("限价卖单不高于最新价时按最新价成交")
 
     REQUIRE(subscriber.Trades.size() == 1);
     CHECK(subscriber.Trades[0].OrderId == 1);
-    CHECK(subscriber.Trades[0].price == 101.0);
+    CHECK(subscriber.Trades[0].Price == 101.0);
 
     order_match.OnTick(MakeMdTick(tick_pool, MakeUpdateTs(20240301, 90100, 0), 106.0, 10, 105.0, 10, 107.0, 10));
     REQUIRE(subscriber.Trades.size() == 2);
     CHECK(subscriber.Trades[1].OrderId == 2);
-    CHECK(subscriber.Trades[1].price == 106.0);
+    CHECK(subscriber.Trades[1].Price == 106.0);
 }
 
 TEST_CASE("无效tick与OnBar不触发撮合")

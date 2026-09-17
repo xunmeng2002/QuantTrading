@@ -27,9 +27,9 @@ TEST_CASE("市价FAK吃满对手簿全成")
 
     REQUIRE(subscriber.Trades.size() == 2);
     CHECK(subscriber.Trades[0].OrderId == 1);
-    CHECK(subscriber.Trades[0].price == 100.0);
+    CHECK(subscriber.Trades[0].Price == 100.0);
     CHECK(subscriber.Trades[1].OrderId == 2);
-    CHECK(subscriber.Trades[1].price == 100.0);
+    CHECK(subscriber.Trades[1].Price == 100.0);
     CHECK(subscriber.OrderUpdates.back().OrderId == 2);
     CHECK(subscriber.OrderUpdates.back().OrderStatus == OrderStatusType::AllTraded);
     CHECK(subscriber.RestingOrderIds == std::vector<int>{1});
@@ -47,9 +47,9 @@ TEST_CASE("市价FAK部成剩余撤销且不滞留队列(H15回归)")
     order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::AnyPriceFAK));
 
     REQUIRE(subscriber.Trades.size() == 2);
-    CHECK(subscriber.Trades[0].volume == 4);
+    CHECK(subscriber.Trades[0].Volume == 4);
     CHECK(subscriber.Trades[1].OrderId == 2);
-    CHECK(subscriber.Trades[1].volume == 4);
+    CHECK(subscriber.Trades[1].Volume == 4);
     REQUIRE(subscriber.OrderUpdates.size() == 3);
     CHECK(subscriber.OrderUpdates[1].OrderId == 2);
     CHECK(subscriber.OrderUpdates[1].OrderStatus == OrderStatusType::PartTraded);
@@ -93,11 +93,11 @@ TEST_CASE("市价FOK足量逐档全成")
 
     REQUIRE(subscriber.Trades.size() == 4);
     CHECK(subscriber.Trades[1].OrderId == 3);
-    CHECK(subscriber.Trades[1].price == 100.0);
-    CHECK(subscriber.Trades[1].volume == 4);
+    CHECK(subscriber.Trades[1].Price == 100.0);
+    CHECK(subscriber.Trades[1].Volume == 4);
     CHECK(subscriber.Trades[3].OrderId == 3);
-    CHECK(subscriber.Trades[3].price == 101.0);
-    CHECK(subscriber.Trades[3].volume == 6);
+    CHECK(subscriber.Trades[3].Price == 101.0);
+    CHECK(subscriber.Trades[3].Volume == 6);
     CHECK(subscriber.OrderUpdates.back().OrderId == 3);
     CHECK(subscriber.OrderUpdates.back().OrderStatus == OrderStatusType::AllTraded);
 }
@@ -154,7 +154,7 @@ TEST_CASE("限价FAK部成剩余撤销且后续对手单不再成交")
 
     REQUIRE(subscriber.Trades.size() == 2);
     CHECK(subscriber.Trades[1].OrderId == 2);
-    CHECK(subscriber.Trades[1].volume == 4);
+    CHECK(subscriber.Trades[1].Volume == 4);
     REQUIRE(subscriber.OrderUpdates.size() == 3);
     CHECK(subscriber.OrderUpdates[1].OrderId == 2);
     CHECK(subscriber.OrderUpdates[1].OrderStatus == OrderStatusType::PartTraded);
@@ -199,9 +199,9 @@ TEST_CASE("本方最优按本方簿最优价入簿排队")
     order_match.InsertOrder(order_pool.MakeOrder(4, DirectionType::Sell, 100.0, 20));
     REQUIRE(subscriber.Trades.size() == 4);
     CHECK(subscriber.Trades[0].OrderId == 2);
-    CHECK(subscriber.Trades[0].price == 100.0);
+    CHECK(subscriber.Trades[0].Price == 100.0);
     CHECK(subscriber.Trades[2].OrderId == 3);
-    CHECK(subscriber.Trades[2].price == 100.0);
+    CHECK(subscriber.Trades[2].Price == 100.0);
 }
 
 TEST_CASE("本方最优空簿接受后撤销")
@@ -231,8 +231,8 @@ TEST_CASE("对方最优按对手最优价成交且剩余挂该价")
     order_match.InsertOrder(order_pool.MakeOrder(2, DirectionType::Buy, 0.0, 10, OrderPriceTypeType::BestOppoPrice));
 
     REQUIRE(subscriber.Trades.size() == 2);
-    CHECK(subscriber.Trades[0].price == 100.0);
-    CHECK(subscriber.Trades[0].volume == 4);
+    CHECK(subscriber.Trades[0].Price == 100.0);
+    CHECK(subscriber.Trades[0].Volume == 4);
     CHECK(subscriber.Trades[1].OrderId == 2);
     REQUIRE(subscriber.OrderUpdates.size() == 2);
     CHECK(subscriber.OrderUpdates[1].OrderId == 2);
@@ -243,8 +243,8 @@ TEST_CASE("对方最优按对手最优价成交且剩余挂该价")
     order_match.InsertOrder(order_pool.MakeOrder(3, DirectionType::Sell, 100.0, 6));
     REQUIRE(subscriber.Trades.size() == 4);
     CHECK(subscriber.Trades[2].OrderId == 2);
-    CHECK(subscriber.Trades[2].price == 100.0);
-    CHECK(subscriber.Trades[2].volume == 6);
+    CHECK(subscriber.Trades[2].Price == 100.0);
+    CHECK(subscriber.Trades[2].Volume == 6);
     REQUIRE(subscriber.OrderUpdates.size() == 4);
     CHECK(subscriber.OrderUpdates[2].OrderId == 2);
     CHECK(subscriber.OrderUpdates[2].OrderStatus == OrderStatusType::AllTraded);

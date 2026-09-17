@@ -29,7 +29,7 @@ TEST_CASE("同价买单按先到先成交(H14回归)")
 
     REQUIRE(subscriber.Trades.size() == 2);
     CHECK(subscriber.Trades[0].OrderId == 1);
-    CHECK(subscriber.Trades[0].price == 100.0);
+    CHECK(subscriber.Trades[0].Price == 100.0);
     CHECK(subscriber.Trades[1].OrderId == 3);
     CHECK(subscriber.RestingOrderIds == std::vector<int>{1, 2});
     REQUIRE(subscriber.OrderUpdates.size() == 2);
@@ -78,10 +78,10 @@ TEST_CASE("价格优先并吃穿多档深度")
     order_match.InsertOrder(sell);
 
     REQUIRE(subscriber.Trades.size() == 4);
-    CHECK(subscriber.Trades[0].price == 101.0);
-    CHECK(subscriber.Trades[0].volume == 10);
-    CHECK(subscriber.Trades[2].price == 100.0);
-    CHECK(subscriber.Trades[2].volume == 2);
+    CHECK(subscriber.Trades[0].Price == 101.0);
+    CHECK(subscriber.Trades[0].Volume == 10);
+    CHECK(subscriber.Trades[2].Price == 100.0);
+    CHECK(subscriber.Trades[2].Volume == 2);
     CHECK(subscriber.OrderUpdates.size() == 4);
     CHECK(subscriber.OrderUpdates[2].OrderId == 2);
     CHECK(subscriber.OrderUpdates[2].VolumeTraded == 2);
@@ -130,8 +130,8 @@ TEST_CASE("限价单不越过限价成交")
     order_match.InsertOrder(equal_buy);
     REQUIRE(subscriber.Trades.size() == 2);
     CHECK(subscriber.Trades[0].OrderId == 1);
-    CHECK(subscriber.Trades[0].price == 100.0);
-    CHECK(subscriber.Trades[0].volume == 1);
+    CHECK(subscriber.Trades[0].Price == 100.0);
+    CHECK(subscriber.Trades[0].Volume == 1);
     CHECK(subscriber.RestingOrderIds == std::vector<int>{1, 2});
 }
 

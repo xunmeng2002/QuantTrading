@@ -67,9 +67,9 @@ namespace QuantTrading::UnitTest
         struct TradeRecord
         {
             int OrderId;
-            DirectionType direction;
-            double price;
-            long long volume;
+            DirectionType Direction;
+            double Price;
+            long long Volume;
         };
 
         void OnOrder(QuantTrading::Order* order) override
