@@ -5,7 +5,7 @@ using namespace std;
 using namespace QuantTrading;
 using namespace Spark::Core;
 
-namespace QuantTrading::ordermatch
+namespace QuantTrading::OrderMatch
 {
     LastPriceOrderMatch::LastPriceOrderMatch(const DateType& tradingDay, int tradeId)
         :OrderMatch(tradingDay, tradeId)

@@ -13,7 +13,7 @@ using namespace std;
 using namespace QuantTrading;
 using namespace Spark;
 using namespace Spark::Core;
-using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::OrderMatch;
 
 
 namespace QuantTrading::SimExchange
@@ -27,7 +27,7 @@ SimExchange::SimExchange(QuantTrading::Mdb* mdb, TradeFront* tradeFront, MdFront
 		strcpy(tradingDay_, tradingDay->CurrTradingDay);
 	}
 
-	orderMatch_ = OrderMatch::CreateOrderMatch(matchMode, tradingDay_);
+	orderMatch_ = QuantTrading::OrderMatch::OrderMatch::CreateOrderMatch(matchMode, tradingDay_);
 	orderMatch_->Subscribe(this);
 	positionMaintenance_ = new QuantTrading::Settlement::PositionMaintenance(mdb_);
 

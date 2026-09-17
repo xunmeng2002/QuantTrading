@@ -11,10 +11,29 @@ namespace QuantTrading
 		{
 			unsigned int tableId = tableList.TableIds[i];
 			tableIds_.push_back(tableId);
-			schemas_.push_back(GetSchemaByID(tableId));
+			schemas_.push_back(GetSchemaById(tableId));
 		}
 	}
-	const TableSchema* MdbTableRegistry::GetSchemaByID(unsigned int tableId)
+	const TableSchema* MdbTableRegistry::GetSchema(unsigned int tableId) const
+	{
+		for (size_t i = 0; i < tableIds_.size(); ++i)
+		{
+			if (tableIds_[i] == tableId)
+			{
+				return schemas_[i];
+			}
+		}
+		return nullptr;
+	}
+	const TableSchema* const* MdbTableRegistry::GetAllSchemas() const
+	{
+		return schemas_.data();
+	}
+	int MdbTableRegistry::GetTableCount() const
+	{
+		return static_cast<int>(tableIds_.size());
+	}
+	const TableSchema* MdbTableRegistry::GetSchemaById(unsigned int tableId)
 	{
 		switch (tableId)
 		{
@@ -39,24 +58,5 @@ namespace QuantTrading
 		case PrimaryAccountLoginSession::TableId: return &PrimaryAccountLoginSession::GetSchema();
 		default: return nullptr;
 		}
-	}
-	const TableSchema* MdbTableRegistry::GetSchema(unsigned int tableId) const
-	{
-		for (size_t i = 0; i < tableIds_.size(); ++i)
-		{
-			if (tableIds_[i] == tableId)
-			{
-				return schemas_[i];
-			}
-		}
-		return nullptr;
-	}
-	const TableSchema* const* MdbTableRegistry::GetAllSchemas() const
-	{
-		return schemas_.data();
-	}
-	int MdbTableRegistry::GetTableCount() const
-	{
-		return static_cast<int>(tableIds_.size());
 	}
 }

@@ -28,7 +28,6 @@ public:
 private:
 	void ReqInsertOrder(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId, const double& price, DirectionType direction);
 
-private:
 	BackTestApi* backTestApi_;
 	DepthMarketDataField* lastOrderTickMd_;
 	BarMarketDataField* lastOrderBarMd_;

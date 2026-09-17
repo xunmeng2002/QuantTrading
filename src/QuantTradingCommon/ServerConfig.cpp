@@ -10,10 +10,6 @@ using namespace std;
 namespace QuantTrading
 {
     ServerConfig ServerConfig::instance_;
-    ServerConfig::ServerConfig()
-    {
-
-    }
     ServerConfig& ServerConfig::GetInstance()
     {
         return instance_;

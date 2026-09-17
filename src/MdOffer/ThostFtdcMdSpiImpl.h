@@ -31,7 +31,6 @@ namespace QuantTrading::MdOffer
     private:
         void ReqUserLogin();
 
-    private:
         CThostFtdcMdApi* mdApi_;
         MdKernel* mdKernel_;
         std::atomic<bool> isLogged_;

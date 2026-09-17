@@ -7,13 +7,11 @@ namespace QuantTrading
 {
     class ServerConfig
     {
-        ServerConfig();
     public:
         static ServerConfig& GetInstance();
         void Load(const char* fileName);
         void Print();
 
-    public:
         string SEMdOfferAddress;
         string SETradeFrontAddress;
         string MdOfferAddress;
@@ -29,6 +27,7 @@ namespace QuantTrading
         string DBPasswd;
 
     private:
+        ServerConfig() = default;
         static ServerConfig instance_;
     };
 }

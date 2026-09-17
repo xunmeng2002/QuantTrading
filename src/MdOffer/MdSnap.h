@@ -8,9 +8,6 @@ namespace QuantTrading::MdOffer
 {
     class MdSnap
     {
-        MdSnap();
-        MdSnap(const MdSnap&) = delete;
-        MdSnap& operator=(const MdSnap&) = delete;
     public:
         static MdSnap& GetInstance();
 
@@ -18,6 +15,10 @@ namespace QuantTrading::MdOffer
         RtnDepthMarketDataPackage* AddDepthMd(RtnDepthMarketDataPackage* depthMd);
 
     private:
+        MdSnap() = default;
+        MdSnap(const MdSnap&) = delete;
+        MdSnap& operator=(const MdSnap&) = delete;
+
         static MdSnap instance_;
         std::map<std::string, std::map<std::string, RtnDepthMarketDataPackage*>> exchangeDepthMds_;
     };

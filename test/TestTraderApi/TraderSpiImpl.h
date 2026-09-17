@@ -35,7 +35,6 @@ private:
 	void ReqInsertOrder(DirectionType direction, OffsetFlagType offsetFlag, OrderPriceTypeType orderPriceType, PriceType price, VolumeType volume);
 	void ReqCancelOrder(const OrderField* order);
 
-private:
 	TraderApi* traderApi_;
 	AccountInfo* accountInfo_;
 	InstrumentField instrument_;

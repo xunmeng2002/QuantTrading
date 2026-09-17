@@ -26,7 +26,7 @@
 
 namespace QuantTrading::BackTest
 {
-class SimExchange : public Spark::Core::ThreadBase, public DbAdapters::DbSubscriber, public QuantTrading::ordermatch::OrderMatchSubscriber, private QuantTrading::Bar::BarSubscriber
+class SimExchange : public Spark::Core::ThreadBase, public DbAdapters::DbSubscriber, public QuantTrading::OrderMatch::OrderMatchSubscriber, private QuantTrading::Bar::BarSubscriber
 {
 public:
 	SimExchange(const Config& config);
@@ -105,7 +105,7 @@ private:
 	std::list<ReqSubMarketDataField*> reqSubMds_;
 	std::list<Package*> packages_;
 	BackTestSpi* backTestSpi_;
-    QuantTrading::ordermatch::OrderMatch* orderMatch_;
+    QuantTrading::OrderMatch::OrderMatch* orderMatch_;
 	QuantTrading::Settlement::PositionMaintenance* positionMaintenance_;
 	QuantTrading::Settlement::Settlement* settlement_;
 	QuantTrading::Settlement::SettlementPriceSource* settlementPriceSource_;

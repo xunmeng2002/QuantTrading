@@ -27,8 +27,7 @@ namespace QuantTrading::MdOffer
     public:
         // tradeSessions 须长于本对象（转交 MinuteBar 持有），且须在首个订阅到达前装载完成；
         // 启动订阅清单项指向配置单例，生命周期同进程
-        MdKernel(QuantTrading::Mdb* mdb, const TradeSessions& tradeSessions,
-            const std::list<Spark::Core::SubscribeInstrument*>& startupSubscribeInstruments);
+        MdKernel(QuantTrading::Mdb* mdb, const TradeSessions& tradeSessions, const std::list<Spark::Core::SubscribeInstrument*>& startupSubscribeInstruments);
         void SetMdFront(MdFront* mdFront);
         void SetMdSpi(CThostFtdcMdSpiImpl* mdSpi);
 

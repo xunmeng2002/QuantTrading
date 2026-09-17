@@ -10,7 +10,7 @@ using namespace QuantTrading;
 using namespace Spark::Core;
 using namespace QuantTrading::Packages;
 
-namespace QuantTrading::ordermatch
+namespace QuantTrading::OrderMatch
 {
     static OrderIdType g_MaxOrderID = 0;
 

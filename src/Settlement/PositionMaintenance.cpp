@@ -10,7 +10,7 @@ using namespace QuantTrading;
 using namespace Spark;
 using namespace Spark::Core;
 using namespace QuantTrading;
-using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::OrderMatch;
 
 namespace QuantTrading::Settlement
 {
@@ -35,7 +35,7 @@ namespace QuantTrading::Settlement
 		auto position = mdb_->Position->PrimaryKey->Select(trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, posiDirection);
 		if (position == nullptr)
 		{
-			position = QuantTrading::ordermatch::CreatePosition(trade, posiDirection);
+			position = QuantTrading::OrderMatch::CreatePosition(trade, posiDirection);
 			mdb_->Position->Insert(position);
 		}
 		else
@@ -56,7 +56,7 @@ namespace QuantTrading::Settlement
 
 		if (trade->OffsetFlag == OffsetFlagType::Open)
 		{
-			auto positionDetail = QuantTrading::ordermatch::CreatePositionDetail(trade, posiDirection);
+			auto positionDetail = QuantTrading::OrderMatch::CreatePositionDetail(trade, posiDirection);
 			mdb_->PositionDetail->Insert(positionDetail);
 		}
 		else

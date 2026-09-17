@@ -129,9 +129,9 @@ namespace QuantTrading
 		{"Rank", FieldType::Int32, offsetof(HotInstrument, Rank), 0},
 	};
 	static const int HotInstrumentPKIndices[] = { 0, 1, 2, 11 };
-	static const int kHotInstrumentIdxTradingDay[] = { 1, 2, 11, 0 };
+	static const int HotInstrumentIdxTradingDay[] = { 1, 2, 11, 0 };
 	static const IndexDefinition HotInstrumentIndices[] = {
-		{HotInstrumentIndexTradingDay::IndexID, kHotInstrumentIdxTradingDay, 4},
+		{HotInstrumentIndexTradingDay::IndexID, HotInstrumentIdxTradingDay, 4},
 	};
 	HotInstrument* HotInstrument::Allocate()
 	{
@@ -177,9 +177,9 @@ namespace QuantTrading
 		{"SessionName", FieldType::Char, offsetof(Instrument, SessionName), sizeof(Instrument::SessionName)},
 	};
 	static const int InstrumentPKIndices[] = { 0, 1 };
-	static const int kInstrumentIdxExchangeId[] = { 0 };
+	static const int InstrumentIdxExchangeId[] = { 0 };
 	static const IndexDefinition InstrumentIndices[] = {
-		{InstrumentIndexExchangeId::IndexID, kInstrumentIdxExchangeId, 1},
+		{InstrumentIndexExchangeId::IndexID, InstrumentIdxExchangeId, 1},
 	};
 	Instrument* Instrument::Allocate()
 	{
@@ -420,11 +420,11 @@ namespace QuantTrading
 		{"IpAddress", FieldType::Char, offsetof(MdUserLoginSession, IpAddress), sizeof(MdUserLoginSession::IpAddress)},
 	};
 	static const int MdUserLoginSessionPKIndices[] = { 0, 1 };
-	static const int kMdUserLoginSessionIdxSessionId[] = { 1 };
-	static const int kMdUserLoginSessionIdxMdUserId[] = { 0 };
+	static const int MdUserLoginSessionIdxSessionId[] = { 1 };
+	static const int MdUserLoginSessionIdxMdUserId[] = { 0 };
 	static const IndexDefinition MdUserLoginSessionIndices[] = {
-		{MdUserLoginSessionIndexSessionId::IndexID, kMdUserLoginSessionIdxSessionId, 1},
-		{MdUserLoginSessionIndexMdUserId::IndexID, kMdUserLoginSessionIdxMdUserId, 1},
+		{MdUserLoginSessionIndexSessionId::IndexID, MdUserLoginSessionIdxSessionId, 1},
+		{MdUserLoginSessionIndexMdUserId::IndexID, MdUserLoginSessionIdxMdUserId, 1},
 	};
 	MdUserLoginSession* MdUserLoginSession::Allocate()
 	{
@@ -464,9 +464,9 @@ namespace QuantTrading
 		{"InitStatus", FieldType::Int32, offsetof(PrimaryAccount, InitStatus), 0},
 	};
 	static const int PrimaryAccountPKIndices[] = { 0 };
-	static const int kPrimaryAccountIdxOfferId[] = { 4 };
+	static const int PrimaryAccountIdxOfferId[] = { 4 };
 	static const IndexDefinition PrimaryAccountIndices[] = {
-		{PrimaryAccountIndexOfferId::IndexID, kPrimaryAccountIdxOfferId, 1},
+		{PrimaryAccountIndexOfferId::IndexID, PrimaryAccountIdxOfferId, 1},
 	};
 	PrimaryAccount* PrimaryAccount::Allocate()
 	{
@@ -554,9 +554,9 @@ namespace QuantTrading
 		{"Withdraw", FieldType::Double, offsetof(Capital, Withdraw), 0},
 	};
 	static const int CapitalPKIndices[] = { 0, 1 };
-	static const int kCapitalIdxTradingDay[] = { 0 };
+	static const int CapitalIdxTradingDay[] = { 0 };
 	static const IndexDefinition CapitalIndices[] = {
-		{CapitalIndexTradingDay::IndexID, kCapitalIdxTradingDay, 1},
+		{CapitalIndexTradingDay::IndexID, CapitalIdxTradingDay, 1},
 	};
 	Capital* Capital::Allocate()
 	{
@@ -612,11 +612,11 @@ namespace QuantTrading
 		{"PreSettlementPrice", FieldType::Double, offsetof(Position, PreSettlementPrice), 0},
 	};
 	static const int PositionPKIndices[] = { 0, 1, 3, 4, 6 };
-	static const int kPositionIdxAccount[] = { 0, 1 };
-	static const int kPositionIdxTradingDay[] = { 0 };
+	static const int PositionIdxAccount[] = { 0, 1 };
+	static const int PositionIdxTradingDay[] = { 0 };
 	static const IndexDefinition PositionIndices[] = {
-		{PositionIndexAccount::IndexID, kPositionIdxAccount, 2},
-		{PositionIndexTradingDay::IndexID, kPositionIdxTradingDay, 1},
+		{PositionIndexAccount::IndexID, PositionIdxAccount, 2},
+		{PositionIndexTradingDay::IndexID, PositionIdxTradingDay, 1},
 	};
 	Position* Position::Allocate()
 	{
@@ -672,11 +672,11 @@ namespace QuantTrading
 		{"CloseAmount", FieldType::Double, offsetof(PositionDetail, CloseAmount), 0},
 	};
 	static const int PositionDetailPKIndices[] = { 0, 1, 3, 4, 6, 7, 8 };
-	static const int kPositionDetailIdxTradeMatch[] = { 0, 1, 3, 4, 6 };
-	static const int kPositionDetailIdxTradingDay[] = { 0 };
+	static const int PositionDetailIdxTradeMatch[] = { 0, 1, 3, 4, 6 };
+	static const int PositionDetailIdxTradingDay[] = { 0 };
 	static const IndexDefinition PositionDetailIndices[] = {
-		{PositionDetailIndexTradeMatch::IndexID, kPositionDetailIdxTradeMatch, 5},
-		{PositionDetailIndexTradingDay::IndexID, kPositionDetailIdxTradingDay, 1},
+		{PositionDetailIndexTradeMatch::IndexID, PositionDetailIdxTradeMatch, 5},
+		{PositionDetailIndexTradingDay::IndexID, PositionDetailIdxTradingDay, 1},
 	};
 	PositionDetail* PositionDetail::Allocate()
 	{
@@ -740,9 +740,9 @@ namespace QuantTrading
 		{"IsForceClose", FieldType::Bool, offsetof(Order, IsForceClose), 0},
 	};
 	static const int OrderPKIndices[] = { 0, 1, 3, 4, 6 };
-	static const int kOrderIdxAccountId[] = { 0, 1 };
+	static const int OrderIdxAccountId[] = { 0, 1 };
 	static const IndexDefinition OrderIndices[] = {
-		{OrderIndexAccountId::IndexID, kOrderIdxAccountId, 2},
+		{OrderIndexAccountId::IndexID, OrderIdxAccountId, 2},
 	};
 	Order* Order::Allocate()
 	{
@@ -791,9 +791,9 @@ namespace QuantTrading
 		{"TradeTime", FieldType::Char, offsetof(Trade, TradeTime), sizeof(Trade::TradeTime)},
 	};
 	static const int TradePKIndices[] = { 0, 3, 8, 9 };
-	static const int kTradeIdxAccountId[] = { 0, 1 };
+	static const int TradeIdxAccountId[] = { 0, 1 };
 	static const IndexDefinition TradeIndices[] = {
-		{TradeIndexAccountId::IndexID, kTradeIdxAccountId, 2},
+		{TradeIndexAccountId::IndexID, TradeIdxAccountId, 2},
 	};
 	Trade* Trade::Allocate()
 	{
@@ -827,11 +827,11 @@ namespace QuantTrading
 		{"IpAddress", FieldType::Char, offsetof(AccountLoginSession, IpAddress), sizeof(AccountLoginSession::IpAddress)},
 	};
 	static const int AccountLoginSessionPKIndices[] = { 0, 1 };
-	static const int kAccountLoginSessionIdxSessionId[] = { 1 };
-	static const int kAccountLoginSessionIdxAccountId[] = { 0 };
+	static const int AccountLoginSessionIdxSessionId[] = { 1 };
+	static const int AccountLoginSessionIdxAccountId[] = { 0 };
 	static const IndexDefinition AccountLoginSessionIndices[] = {
-		{AccountLoginSessionIndexSessionId::IndexID, kAccountLoginSessionIdxSessionId, 1},
-		{AccountLoginSessionIndexAccountId::IndexID, kAccountLoginSessionIdxAccountId, 1},
+		{AccountLoginSessionIndexSessionId::IndexID, AccountLoginSessionIdxSessionId, 1},
+		{AccountLoginSessionIndexAccountId::IndexID, AccountLoginSessionIdxAccountId, 1},
 	};
 	AccountLoginSession* AccountLoginSession::Allocate()
 	{
@@ -865,11 +865,11 @@ namespace QuantTrading
 		{"IpAddress", FieldType::Char, offsetof(PrimaryAccountLoginSession, IpAddress), sizeof(PrimaryAccountLoginSession::IpAddress)},
 	};
 	static const int PrimaryAccountLoginSessionPKIndices[] = { 0, 1 };
-	static const int kPrimaryAccountLoginSessionIdxSessionId[] = { 1 };
-	static const int kPrimaryAccountLoginSessionIdxPrimaryAccountId[] = { 0 };
+	static const int PrimaryAccountLoginSessionIdxSessionId[] = { 1 };
+	static const int PrimaryAccountLoginSessionIdxPrimaryAccountId[] = { 0 };
 	static const IndexDefinition PrimaryAccountLoginSessionIndices[] = {
-		{PrimaryAccountLoginSessionIndexSessionId::IndexID, kPrimaryAccountLoginSessionIdxSessionId, 1},
-		{PrimaryAccountLoginSessionIndexPrimaryAccountId::IndexID, kPrimaryAccountLoginSessionIdxPrimaryAccountId, 1},
+		{PrimaryAccountLoginSessionIndexSessionId::IndexID, PrimaryAccountLoginSessionIdxSessionId, 1},
+		{PrimaryAccountLoginSessionIndexPrimaryAccountId::IndexID, PrimaryAccountLoginSessionIdxPrimaryAccountId, 1},
 	};
 	PrimaryAccountLoginSession* PrimaryAccountLoginSession::Allocate()
 	{

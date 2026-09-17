@@ -4,8 +4,6 @@
 namespace QuantTrading::MdOffer
 {
     MdSnap MdSnap::instance_;
-    MdSnap::MdSnap()
-    {}
     MdSnap& MdSnap::GetInstance()
     {
         return instance_;

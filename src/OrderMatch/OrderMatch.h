@@ -5,7 +5,7 @@
 #include <map>
 #include <set>
 
-namespace QuantTrading::ordermatch
+namespace QuantTrading::OrderMatch
 {
     class OrderMatchSubscriber
     {

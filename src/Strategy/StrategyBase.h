@@ -61,6 +61,19 @@ protected:
 	PriceType GetLastPrice(const char* instrumentId) const;
 
 private:
+    struct InstrumentState
+    {
+        VolumeType LongVolume = 0;
+        VolumeType ShortVolume = 0;
+        PriceType LastPrice = 0;
+    };
+    struct OrderContext
+    {
+        std::string ExchangeId;
+        std::string InstrumentId;
+    };
+
+
 	void OnConnected() override;
 	void OnDisConnected() override;
 	void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast) override;
@@ -78,17 +91,6 @@ private:
 	void SubscribeMarketData(const char* exchangeId, const char* instrumentId);
 	ClientOrderIdType InsertLimitOrder(const char* exchangeId, const char* instrumentId, DirectionType direction, OffsetFlagType offsetFlag, PriceType price, VolumeType volume);
 
-	struct InstrumentState
-	{
-		VolumeType LongVolume = 0;
-		VolumeType ShortVolume = 0;
-		PriceType LastPrice = 0;
-	};
-	struct OrderContext
-	{
-		std::string ExchangeId;
-		std::string InstrumentId;
-	};
 
 	std::map<std::string, InstrumentState> instrumentStates_;
 	std::map<ClientOrderIdType, OrderContext> orderContexts_;   // 下单时记录，撤单时取 ExchangeId/InstrumentId

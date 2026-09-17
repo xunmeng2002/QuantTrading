@@ -2,7 +2,7 @@
 #include "OrderMatch.h"
 
 
-namespace QuantTrading::ordermatch
+namespace QuantTrading::OrderMatch
 {
     class OrderBookOrderMatch : public OrderMatch
     {

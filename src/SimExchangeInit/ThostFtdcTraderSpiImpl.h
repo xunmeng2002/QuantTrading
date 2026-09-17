@@ -28,9 +28,10 @@ public:
 	virtual void OnRspQryOrder(CThostFtdcOrderField* pOrder, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast) override;
 	virtual void OnRspQryTrade(CThostFtdcTradeField* pTrade, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast) override;
 
-public:
 	void SetAccountInfo(AccountInfo* accountInfo);
 	void SetNewPassword(const std::string& newPassword);
+
+    std::atomic<bool> qryFinished_;
 
 private:
 	void ReqAuthenticate();
@@ -44,10 +45,8 @@ private:
 	void ReqQryOrder();
 	void ReqQryTrade();
 
-public:
-	std::atomic<bool> qryFinished_;
-private:
-	CThostFtdcTraderApi* traderApi_;
+
+    CThostFtdcTraderApi* traderApi_;
 	QuantTrading::Mdb* mdb_;
 	int requestId_;
 

@@ -20,7 +20,7 @@ using namespace QuantTrading::Packages;
 
 namespace QuantTrading::SimExchange
 {
-class SimExchange : public Spark::Core::ThreadBase, public Spark::Network::ProtocolSubscriber, public QuantTrading::ordermatch::OrderMatchSubscriber
+class SimExchange : public Spark::Core::ThreadBase, public Spark::Network::ProtocolSubscriber, public QuantTrading::OrderMatch::OrderMatchSubscriber
 {
 public:
 	SimExchange(QuantTrading::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* mdSpi, MatchModeType matchMode);
@@ -78,12 +78,11 @@ private:
 	Package* GetNextPackage();
 	void ReqSubMarketData(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId);
 
-protected:
 	MdFront* mdFront_;
 	TradeFront* tradeFront_;
 	MdSpiImpl* mdSpi_;
 	QuantTrading::Mdb* mdb_;
-    QuantTrading::ordermatch::OrderMatch* orderMatch_;
+    QuantTrading::OrderMatch::OrderMatch* orderMatch_;
 	QuantTrading::Settlement::PositionMaintenance* positionMaintenance_;
 	std::mutex mutex_;
 	std::condition_variable conditionVariable_;

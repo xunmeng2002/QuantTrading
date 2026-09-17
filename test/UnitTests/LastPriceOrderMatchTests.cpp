@@ -5,7 +5,7 @@
 
 #include <limits>
 
-using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::OrderMatch;
 using namespace QuantTrading::UnitTest;
 
 TEST_SUITE("LastPriceOrderMatch")

@@ -9,9 +9,8 @@ namespace QuantTrading
 	class TradingDayTable;
 	class TradingDayPrimaryKey
 	{
-		using iterator = std::unordered_set<TradingDay*, TradingDayHashForTradingDayPrimaryKey, TradingDayEqualForTradingDayPrimaryKey>::iterator;
-		friend class TradingDayTable;
 	public:
+		using iterator = std::unordered_set<TradingDay*, TradingDayHashForTradingDayPrimaryKey, TradingDayEqualForTradingDayPrimaryKey>::iterator;
 		TradingDayPrimaryKey(TradingDayTable* tableOwner, size_t buckets = 1000);
 		TradingDay* Select(const Int32Type& Pk);
 		std::pair<iterator, iterator> SelectAll();
@@ -23,15 +22,16 @@ namespace QuantTrading
 		bool CheckUpdate(const TradingDay* const oldRecord, const TradingDay* const newRecord);
 
 	private:
+		friend class TradingDayTable;
+		
 		TradingDayTable* table_;
 		std::unordered_set<TradingDay*, TradingDayHashForTradingDayPrimaryKey, TradingDayEqualForTradingDayPrimaryKey> index_;
 	};
 	class ExchangeTable;
 	class ExchangePrimaryKey
 	{
-		using iterator = std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey>::iterator;
-		friend class ExchangeTable;
 	public:
+		using iterator = std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey>::iterator;
 		ExchangePrimaryKey(ExchangeTable* tableOwner, size_t buckets = 1000);
 		Exchange* Select(const ExchangeIdType& ExchangeId);
 		std::pair<iterator, iterator> SelectAll();
@@ -43,15 +43,16 @@ namespace QuantTrading
 		bool CheckUpdate(const Exchange* const oldRecord, const Exchange* const newRecord);
 
 	private:
+		friend class ExchangeTable;
+		
 		ExchangeTable* table_;
 		std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey> index_;
 	};
 	class ProductTable;
 	class ProductPrimaryKey
 	{
-		using iterator = std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey>::iterator;
-		friend class ProductTable;
 	public:
+		using iterator = std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey>::iterator;
 		ProductPrimaryKey(ProductTable* tableOwner, size_t buckets = 1000);
 		Product* Select(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId);
 		std::pair<iterator, iterator> SelectAll();
@@ -63,15 +64,16 @@ namespace QuantTrading
 		bool CheckUpdate(const Product* const oldRecord, const Product* const newRecord);
 
 	private:
+		friend class ProductTable;
+		
 		ProductTable* table_;
 		std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey> index_;
 	};
 	class HotInstrumentTable;
 	class HotInstrumentPrimaryKey
 	{
-		using iterator = std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey>::iterator;
-		friend class HotInstrumentTable;
 	public:
+		using iterator = std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey>::iterator;
 		HotInstrumentPrimaryKey(HotInstrumentTable* tableOwner, size_t buckets = 1000);
 		HotInstrument* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank);
 		std::pair<iterator, iterator> SelectAll();
@@ -83,15 +85,16 @@ namespace QuantTrading
 		bool CheckUpdate(const HotInstrument* const oldRecord, const HotInstrument* const newRecord);
 
 	private:
+		friend class HotInstrumentTable;
+		
 		HotInstrumentTable* table_;
 		std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey> index_;
 	};
 	class InstrumentTable;
 	class InstrumentPrimaryKey
 	{
-		using iterator = std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey>::iterator;
-		friend class InstrumentTable;
 	public:
+		using iterator = std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey>::iterator;
 		InstrumentPrimaryKey(InstrumentTable* tableOwner, size_t buckets = 1000);
 		Instrument* Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId);
 		std::pair<iterator, iterator> SelectAll();
@@ -103,15 +106,16 @@ namespace QuantTrading
 		bool CheckUpdate(const Instrument* const oldRecord, const Instrument* const newRecord);
 
 	private:
+		friend class InstrumentTable;
+		
 		InstrumentTable* table_;
 		std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey> index_;
 	};
 	class DepthMarketDataTable;
 	class DepthMarketDataPrimaryKey
 	{
-		using iterator = std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey>::iterator;
-		friend class DepthMarketDataTable;
 	public:
+		using iterator = std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey>::iterator;
 		DepthMarketDataPrimaryKey(DepthMarketDataTable* tableOwner, size_t buckets = 1000);
 		DepthMarketData* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId);
 		std::pair<iterator, iterator> SelectAll();
@@ -123,15 +127,16 @@ namespace QuantTrading
 		bool CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord);
 
 	private:
+		friend class DepthMarketDataTable;
+		
 		DepthMarketDataTable* table_;
 		std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey> index_;
 	};
 	class BarMarketDataTable;
 	class BarMarketDataPrimaryKey
 	{
-		using iterator = std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey>::iterator;
-		friend class BarMarketDataTable;
 	public:
+		using iterator = std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey>::iterator;
 		BarMarketDataPrimaryKey(BarMarketDataTable* tableOwner, size_t buckets = 1000);
 		BarMarketData* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const BarPrecesType& BarPreces, const Int32Type& BarPeriod, const Int64Type& BarTime);
 		std::pair<iterator, iterator> SelectAll();
@@ -143,15 +148,16 @@ namespace QuantTrading
 		bool CheckUpdate(const BarMarketData* const oldRecord, const BarMarketData* const newRecord);
 
 	private:
+		friend class BarMarketDataTable;
+		
 		BarMarketDataTable* table_;
 		std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey> index_;
 	};
 	class MdSubscribeTable;
 	class MdSubscribePrimaryKey
 	{
-		using iterator = std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey>::iterator;
-		friend class MdSubscribeTable;
 	public:
+		using iterator = std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey>::iterator;
 		MdSubscribePrimaryKey(MdSubscribeTable* tableOwner, size_t buckets = 1000);
 		MdSubscribe* Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DateType& StartTradingDay);
 		std::pair<iterator, iterator> SelectAll();
@@ -163,15 +169,16 @@ namespace QuantTrading
 		bool CheckUpdate(const MdSubscribe* const oldRecord, const MdSubscribe* const newRecord);
 
 	private:
+		friend class MdSubscribeTable;
+		
 		MdSubscribeTable* table_;
 		std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey> index_;
 	};
 	class MdUserTable;
 	class MdUserPrimaryKey
 	{
-		using iterator = std::unordered_set<MdUser*, MdUserHashForMdUserPrimaryKey, MdUserEqualForMdUserPrimaryKey>::iterator;
-		friend class MdUserTable;
 	public:
+		using iterator = std::unordered_set<MdUser*, MdUserHashForMdUserPrimaryKey, MdUserEqualForMdUserPrimaryKey>::iterator;
 		MdUserPrimaryKey(MdUserTable* tableOwner, size_t buckets = 1000);
 		MdUser* Select(const UserIdType& MdUserId);
 		std::pair<iterator, iterator> SelectAll();
@@ -183,15 +190,16 @@ namespace QuantTrading
 		bool CheckUpdate(const MdUser* const oldRecord, const MdUser* const newRecord);
 
 	private:
+		friend class MdUserTable;
+		
 		MdUserTable* table_;
 		std::unordered_set<MdUser*, MdUserHashForMdUserPrimaryKey, MdUserEqualForMdUserPrimaryKey> index_;
 	};
 	class MdUserLoginSessionTable;
 	class MdUserLoginSessionPrimaryKey
 	{
-		using iterator = std::unordered_set<MdUserLoginSession*, MdUserLoginSessionHashForMdUserLoginSessionPrimaryKey, MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey>::iterator;
-		friend class MdUserLoginSessionTable;
 	public:
+		using iterator = std::unordered_set<MdUserLoginSession*, MdUserLoginSessionHashForMdUserLoginSessionPrimaryKey, MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey>::iterator;
 		MdUserLoginSessionPrimaryKey(MdUserLoginSessionTable* tableOwner, size_t buckets = 1000);
 		MdUserLoginSession* Select(const UserIdType& MdUserId, const SessionIdType& SessionId);
 		std::pair<iterator, iterator> SelectAll();
@@ -203,15 +211,16 @@ namespace QuantTrading
 		bool CheckUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord);
 
 	private:
+		friend class MdUserLoginSessionTable;
+		
 		MdUserLoginSessionTable* table_;
 		std::unordered_set<MdUserLoginSession*, MdUserLoginSessionHashForMdUserLoginSessionPrimaryKey, MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey> index_;
 	};
 	class PrimaryAccountTable;
 	class PrimaryAccountPrimaryKey
 	{
-		using iterator = std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey>::iterator;
-		friend class PrimaryAccountTable;
 	public:
+		using iterator = std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey>::iterator;
 		PrimaryAccountPrimaryKey(PrimaryAccountTable* tableOwner, size_t buckets = 1000);
 		PrimaryAccount* Select(const AccountIdType& PrimaryAccountId);
 		std::pair<iterator, iterator> SelectAll();
@@ -223,15 +232,16 @@ namespace QuantTrading
 		bool CheckUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord);
 
 	private:
+		friend class PrimaryAccountTable;
+		
 		PrimaryAccountTable* table_;
 		std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey> index_;
 	};
 	class AccountTable;
 	class AccountPrimaryKey
 	{
-		using iterator = std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey>::iterator;
-		friend class AccountTable;
 	public:
+		using iterator = std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey>::iterator;
 		AccountPrimaryKey(AccountTable* tableOwner, size_t buckets = 1000);
 		Account* Select(const AccountIdType& AccountId);
 		std::pair<iterator, iterator> SelectAll();
@@ -243,15 +253,16 @@ namespace QuantTrading
 		bool CheckUpdate(const Account* const oldRecord, const Account* const newRecord);
 
 	private:
+		friend class AccountTable;
+		
 		AccountTable* table_;
 		std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey> index_;
 	};
 	class CapitalTable;
 	class CapitalPrimaryKey
 	{
-		using iterator = std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey>::iterator;
-		friend class CapitalTable;
 	public:
+		using iterator = std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey>::iterator;
 		CapitalPrimaryKey(CapitalTable* tableOwner, size_t buckets = 1000);
 		Capital* Select(const DateType& TradingDay, const AccountIdType& AccountId);
 		std::pair<iterator, iterator> SelectAll();
@@ -263,15 +274,16 @@ namespace QuantTrading
 		bool CheckUpdate(const Capital* const oldRecord, const Capital* const newRecord);
 
 	private:
+		friend class CapitalTable;
+		
 		CapitalTable* table_;
 		std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey> index_;
 	};
 	class PositionTable;
 	class PositionPrimaryKey
 	{
-		using iterator = std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey>::iterator;
-		friend class PositionTable;
 	public:
+		using iterator = std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey>::iterator;
 		PositionPrimaryKey(PositionTable* tableOwner, size_t buckets = 1000);
 		Position* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
 		std::pair<iterator, iterator> SelectAll();
@@ -283,15 +295,16 @@ namespace QuantTrading
 		bool CheckUpdate(const Position* const oldRecord, const Position* const newRecord);
 
 	private:
+		friend class PositionTable;
+		
 		PositionTable* table_;
 		std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey> index_;
 	};
 	class PositionDetailTable;
 	class PositionDetailPrimaryKey
 	{
-		using iterator = std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey>::iterator;
-		friend class PositionDetailTable;
 	public:
+		using iterator = std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey>::iterator;
 		PositionDetailPrimaryKey(PositionDetailTable* tableOwner, size_t buckets = 1000);
 		PositionDetail* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIdType& TradeId);
 		std::pair<iterator, iterator> SelectAll();
@@ -303,15 +316,16 @@ namespace QuantTrading
 		bool CheckUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord);
 
 	private:
+		friend class PositionDetailTable;
+		
 		PositionDetailTable* table_;
 		std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey> index_;
 	};
 	class OrderTable;
 	class OrderPrimaryKey
 	{
-		using iterator = std::unordered_set<Order*, OrderHashForOrderPrimaryKey, OrderEqualForOrderPrimaryKey>::iterator;
-		friend class OrderTable;
 	public:
+		using iterator = std::unordered_set<Order*, OrderHashForOrderPrimaryKey, OrderEqualForOrderPrimaryKey>::iterator;
 		OrderPrimaryKey(OrderTable* tableOwner, size_t buckets = 1000);
 		Order* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const OrderIdType& OrderId);
 		std::pair<iterator, iterator> SelectAll();
@@ -323,12 +337,13 @@ namespace QuantTrading
 		bool CheckUpdate(const Order* const oldRecord, const Order* const newRecord);
 
 	private:
+		friend class OrderTable;
+		
 		OrderTable* table_;
 		std::unordered_set<Order*, OrderHashForOrderPrimaryKey, OrderEqualForOrderPrimaryKey> index_;
 	};
 	class OrderUniqueKeyClientOrderId
 	{
-		friend class OrderTable;
 	public:
 		OrderUniqueKeyClientOrderId(OrderTable* tableOwner, size_t buckets = 1000);
 		Order* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const SessionIdType& SessionId, const ClientOrderIdType& ClientOrderId);
@@ -340,6 +355,8 @@ namespace QuantTrading
 		bool CheckUpdate(const Order* const oldRecord, const Order* const newRecord);
 
 	private:
+		friend class OrderTable;
+	
 		OrderTable* table_;
 		std::unordered_set<Order*, OrderHashForClientOrderIdUniqueKey, OrderEqualForClientOrderIdUniqueKey> index_;
 	};
@@ -347,9 +364,8 @@ namespace QuantTrading
 	class TradeTable;
 	class TradePrimaryKey
 	{
-		using iterator = std::unordered_set<Trade*, TradeHashForTradePrimaryKey, TradeEqualForTradePrimaryKey>::iterator;
-		friend class TradeTable;
 	public:
+		using iterator = std::unordered_set<Trade*, TradeHashForTradePrimaryKey, TradeEqualForTradePrimaryKey>::iterator;
 		TradePrimaryKey(TradeTable* tableOwner, size_t buckets = 1000);
 		Trade* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const TradeIdType& TradeId, const DirectionType& Direction);
 		std::pair<iterator, iterator> SelectAll();
@@ -361,15 +377,16 @@ namespace QuantTrading
 		bool CheckUpdate(const Trade* const oldRecord, const Trade* const newRecord);
 
 	private:
+		friend class TradeTable;
+		
 		TradeTable* table_;
 		std::unordered_set<Trade*, TradeHashForTradePrimaryKey, TradeEqualForTradePrimaryKey> index_;
 	};
 	class AccountLoginSessionTable;
 	class AccountLoginSessionPrimaryKey
 	{
-		using iterator = std::unordered_set<AccountLoginSession*, AccountLoginSessionHashForAccountLoginSessionPrimaryKey, AccountLoginSessionEqualForAccountLoginSessionPrimaryKey>::iterator;
-		friend class AccountLoginSessionTable;
 	public:
+		using iterator = std::unordered_set<AccountLoginSession*, AccountLoginSessionHashForAccountLoginSessionPrimaryKey, AccountLoginSessionEqualForAccountLoginSessionPrimaryKey>::iterator;
 		AccountLoginSessionPrimaryKey(AccountLoginSessionTable* tableOwner, size_t buckets = 1000);
 		AccountLoginSession* Select(const AccountIdType& AccountId, const SessionIdType& SessionId);
 		std::pair<iterator, iterator> SelectAll();
@@ -381,15 +398,16 @@ namespace QuantTrading
 		bool CheckUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord);
 
 	private:
+		friend class AccountLoginSessionTable;
+		
 		AccountLoginSessionTable* table_;
 		std::unordered_set<AccountLoginSession*, AccountLoginSessionHashForAccountLoginSessionPrimaryKey, AccountLoginSessionEqualForAccountLoginSessionPrimaryKey> index_;
 	};
 	class PrimaryAccountLoginSessionTable;
 	class PrimaryAccountLoginSessionPrimaryKey
 	{
-		using iterator = std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey>::iterator;
-		friend class PrimaryAccountLoginSessionTable;
 	public:
+		using iterator = std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey>::iterator;
 		PrimaryAccountLoginSessionPrimaryKey(PrimaryAccountLoginSessionTable* tableOwner, size_t buckets = 1000);
 		PrimaryAccountLoginSession* Select(const AccountIdType& PrimaryAccountId, const SessionIdType& SessionId);
 		std::pair<iterator, iterator> SelectAll();
@@ -401,6 +419,8 @@ namespace QuantTrading
 		bool CheckUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord);
 
 	private:
+		friend class PrimaryAccountLoginSessionTable;
+		
 		PrimaryAccountLoginSessionTable* table_;
 		std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey> index_;
 	};

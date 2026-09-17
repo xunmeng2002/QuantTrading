@@ -354,7 +354,7 @@ int main(int argc, char* argv[])
 ## 九、补充说明
 
 - **包含路径**：头文件统一使用 `#include <QuantTrading/XxxApi.h>` 风格；模块内部使用 `#include <Module/Xxx.h>`
-- **命名空间**：公共 API 位于 `QuantTrading`，各模块分别位于 `QuantTrading::MdOffer`、`QuantTrading::SimExchange`、`QuantTrading::BackTest`、`QuantTrading::ordermatch` 等
+- **命名空间**：公共 API 位于 `QuantTrading`，各模块分别位于 `QuantTrading::MdOffer`、`QuantTrading::SimExchange`、`QuantTrading::BackTest`、`QuantTrading::OrderMatch` 等
 - **依赖链**：`Spark`（线程 / 日志 / 网络）→ `DBAdapters`（四库统一访问）→ `QuantTrading`
 - **版本**：CTP API v6.7.9（`MdOffer` 启动日志可见 `API Version`）
 - **编码变体**：MdApi / TraderApi / SimExchangeApi 各提供 **UTF-8**（`MdApi` 等）与 **GBK**（`MdGbkApi` 等）两套动态库

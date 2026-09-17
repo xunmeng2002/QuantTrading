@@ -26,7 +26,6 @@ namespace QuantTrading
 		virtual void OnDbConnected() override;
 		virtual void OnDbDisConnected() override;
 
-	public:
 		TradingDayTable* TradingDay = nullptr;
 		ExchangeTable* Exchange = nullptr;
 		ProductTable* Product = nullptr;
@@ -46,6 +45,7 @@ namespace QuantTrading
 		TradeTable* Trade = nullptr;
 		AccountLoginSessionTable* AccountLoginSession = nullptr;
 		PrimaryAccountLoginSessionTable* PrimaryAccountLoginSession = nullptr;
+
 	private:
 		MdbSubscriber* mdbSubscriber_;
 		std::vector<MdbTableBase*> tables_;

@@ -26,7 +26,7 @@ using namespace Spark;
 using namespace Spark::Core;
 using namespace DbAdapters;
 using namespace QuantTrading;
-using namespace QuantTrading::ordermatch;
+using namespace QuantTrading::OrderMatch;
 using namespace QuantTrading::Packages;
 
 static Db* CreateDataDb(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
@@ -108,7 +108,7 @@ SimExchange::SimExchange(const Config& config)
     dbWriter_ = new AsyncDbWriter(db_, &registry_);
 	dbWriter_->Subscribe(this);
 	mdb_ = new Mdb(BackTestTableList);
-	orderMatch_ = OrderMatch::CreateOrderMatch(matchMode, tradingDay_);
+	orderMatch_ = QuantTrading::OrderMatch::OrderMatch::CreateOrderMatch(matchMode, tradingDay_);
 	orderMatch_->Subscribe(this);
 	positionMaintenance_ = new QuantTrading::Settlement::PositionMaintenance(mdb_);
 	barSettlementPriceSource_.lastMdBars_ = &lastMdBars_;

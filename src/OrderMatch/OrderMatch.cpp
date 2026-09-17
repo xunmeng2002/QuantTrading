@@ -13,7 +13,7 @@ using namespace std;
 using namespace QuantTrading;
 using namespace Spark::Core;
 
-namespace QuantTrading::ordermatch
+namespace QuantTrading::OrderMatch
 {
     namespace
     {

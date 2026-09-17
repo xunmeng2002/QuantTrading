@@ -4,7 +4,7 @@
 using namespace std;
 using namespace Spark::Core;
 
-namespace QuantTrading::ordermatch
+namespace QuantTrading::OrderMatch
 {
     OrderBookOrderMatch::OrderBookOrderMatch(const DateType& tradingDay, int tradeId)
         :OrderMatch(tradingDay, tradeId)

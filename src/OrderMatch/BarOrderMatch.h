@@ -1,7 +1,7 @@
 #pragma once
 #include "OrderMatch.h"
 
-namespace QuantTrading::ordermatch
+namespace QuantTrading::OrderMatch
 {
     class BarOrderMatch : public OrderMatch
     {

@@ -9,7 +9,7 @@ namespace QuantTrading
     class OrderTable;
 }
 
-namespace QuantTrading::ordermatch
+namespace QuantTrading::OrderMatch
 {
     struct OrderLessForPrice
     {
