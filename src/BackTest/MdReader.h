@@ -35,7 +35,6 @@ private:
 	std::string GetTickSqlString(QuantTrading::MdSubscribe* mdSubscribe) const;
 	std::string GetBarSqlString(QuantTrading::MdSubscribe* mdSubscribe) const;
 
-private:
 	std::string mdDataPath_;
 	std::string barPreces_;
 	BarPrecesType barPrecesType_ = BarPrecesType::Minute;

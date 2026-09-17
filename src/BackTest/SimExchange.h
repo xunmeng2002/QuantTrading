@@ -61,6 +61,13 @@ protected:
 	void OnMdEnd();
 
 private:
+    // Bar 撮合模式无逐笔行情表，结算价取各合约当日末根 bar 收盘价（嵌套类不持有外围实例，经指针访问引擎末根 bar 表）
+    struct BarSettlementPriceSource : QuantTrading::Settlement::SettlementPriceSource
+    {
+        std::map<std::string, QuantTrading::BarMarketData*>* lastMdBars_;
+        PriceType GetSettlementPrice(const QuantTrading::PositionDetail* positionDetail) override;
+    };
+
 	void PushNextTick(QuantTrading::DepthMarketData* mdTick);
 	void PushNextBar(QuantTrading::BarMarketData* mdBar);
 	// bar 出口：该合约声明了目标周期则送入聚合器（闭桶时经 OnBarMarketData 推送），否则透传数据集精度 bar
@@ -81,12 +88,7 @@ private:
 	void Settlement();
 	void Init(const DateType& nextTradingDay);
 
-	// Bar 撮合模式无逐笔行情表，结算价取各合约当日末根 bar 收盘价（嵌套类不持有外围实例，经指针访问引擎末根 bar 表）
-	struct BarSettlementPriceSource : QuantTrading::Settlement::SettlementPriceSource
-	{
-		std::map<std::string, QuantTrading::BarMarketData*>* lastMdBars_;
-		PriceType GetSettlementPrice(const QuantTrading::PositionDetail* positionDetail) override;
-	};
+
 
 	void SendRspRegisterAccount(QuantTrading::Packages::ReqRegisterAccountPackage* reqPackage, int errorId);
 	void SendRspOrderInsert(QuantTrading::Packages::ReqInsertOrderPackage* reqPackage, int errorId);
@@ -98,8 +100,8 @@ private:
 	void SendRtnSessionBegin(const DateType& tradingDay);
 	void SendRtnSessionEnd(const DateType& tradingDay);
 
-private:
-	std::mutex queueMutex_;
+
+    std::mutex queueMutex_;
 	std::list<ReqSubMarketDataField*> reqSubMds_;
 	std::list<Package*> packages_;
 	BackTestSpi* backTestSpi_;

@@ -12,7 +12,6 @@ namespace QuantTrading::Bar
     class MinuteBar
     {
     public:
-        // tradeSessions 须长于本对象，且装载后不得再装载（见 TradeSessions）
         explicit MinuteBar(const TradeSessions& tradeSessions);
         void Subscribe(BarSubscriber* barSubscriber);
         void ReqSubMarketData(const ExchangeIdType& exchangeId, const InstrumentIdType& instrumentId);
@@ -30,7 +29,7 @@ namespace QuantTrading::Bar
         void EndLostBars();
         void EndBar(BarMarketDataField* preBar, BarMarketDataField* bar);
 
-    private:
+    
         const TradeSessions& tradeSessions_;
         BarSubscriber* barSubscriber_;
         std::map<std::string, const TradeSession*> instrumentTradeSessions_;
