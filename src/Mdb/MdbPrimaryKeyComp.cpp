@@ -490,4 +490,48 @@ namespace QuantTrading
 	{
 		return std::hash<string>()(record->PrimaryAccountId) + std::hash<SessionIdType>()(record->SessionId);
 	}
+	bool CommissionGroupEqualForCommissionGroupPrimaryKey::operator()(const CommissionGroup* const left, const CommissionGroup* const right) const
+	{
+		return left->CommissionGroupId == right->CommissionGroupId;
+	}
+	bool CommissionGroupLessForCommissionGroupPrimaryKey::operator()(const CommissionGroup* const left, const CommissionGroup* const right) const
+	{
+		if (left->CommissionGroupId < right->CommissionGroupId)
+			return true;
+		else if (left->CommissionGroupId > right->CommissionGroupId)
+			return false;
+		return false;
+	}
+	size_t CommissionGroupHashForCommissionGroupPrimaryKey::operator()(const CommissionGroup* const record) const
+	{
+		return std::hash<GroupIdType>()(record->CommissionGroupId);
+	}
+	bool BaseCommissionEqualForBaseCommissionPrimaryKey::operator()(const BaseCommission* const left, const BaseCommission* const right) const
+	{
+		return left->CommissionGroupId == right->CommissionGroupId && strcmp(left->ExchangeId, right->ExchangeId) == 0 && strcmp(left->InstrumentId, right->InstrumentId) == 0 && left->Direction == right->Direction;
+	}
+	bool BaseCommissionLessForBaseCommissionPrimaryKey::operator()(const BaseCommission* const left, const BaseCommission* const right) const
+	{
+		if (left->CommissionGroupId < right->CommissionGroupId)
+			return true;
+		else if (left->CommissionGroupId > right->CommissionGroupId)
+			return false;
+		if (strcmp(left->ExchangeId, right->ExchangeId) < 0)
+			return true;
+		else if (strcmp(left->ExchangeId, right->ExchangeId) > 0)
+			return false;
+		if (strcmp(left->InstrumentId, right->InstrumentId) < 0)
+			return true;
+		else if (strcmp(left->InstrumentId, right->InstrumentId) > 0)
+			return false;
+		if (left->Direction < right->Direction)
+			return true;
+		else if (left->Direction > right->Direction)
+			return false;
+		return false;
+	}
+	size_t BaseCommissionHashForBaseCommissionPrimaryKey::operator()(const BaseCommission* const record) const
+	{
+		return std::hash<GroupIdType>()(record->CommissionGroupId) + std::hash<string>()(record->ExchangeId) + std::hash<string>()(record->InstrumentId) + std::hash<DirectionType>()(record->Direction);
+	}
 }

@@ -424,4 +424,46 @@ namespace QuantTrading
 		PrimaryAccountLoginSessionTable* table_;
 		std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey> index_;
 	};
+	class CommissionGroupTable;
+	class CommissionGroupPrimaryKey
+	{
+	public:
+		using iterator = std::unordered_set<CommissionGroup*, CommissionGroupHashForCommissionGroupPrimaryKey, CommissionGroupEqualForCommissionGroupPrimaryKey>::iterator;
+		CommissionGroupPrimaryKey(CommissionGroupTable* tableOwner, size_t buckets = 1000);
+		CommissionGroup* Select(const GroupIdType& CommissionGroupId);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(CommissionGroup* const record);
+		void Erase(CommissionGroup* const record);
+		bool CheckInsert(CommissionGroup* const record);
+		bool CheckUpdate(const CommissionGroup* const oldRecord, const CommissionGroup* const newRecord);
+
+	private:
+		friend class CommissionGroupTable;
+		
+		CommissionGroupTable* table_;
+		std::unordered_set<CommissionGroup*, CommissionGroupHashForCommissionGroupPrimaryKey, CommissionGroupEqualForCommissionGroupPrimaryKey> index_;
+	};
+	class BaseCommissionTable;
+	class BaseCommissionPrimaryKey
+	{
+	public:
+		using iterator = std::unordered_set<BaseCommission*, BaseCommissionHashForBaseCommissionPrimaryKey, BaseCommissionEqualForBaseCommissionPrimaryKey>::iterator;
+		BaseCommissionPrimaryKey(BaseCommissionTable* tableOwner, size_t buckets = 1000);
+		BaseCommission* Select(const GroupIdType& CommissionGroupId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DirectionType& Direction);
+		std::pair<iterator, iterator> SelectAll();
+		
+	protected:
+		bool Insert(BaseCommission* const record);
+		void Erase(BaseCommission* const record);
+		bool CheckInsert(BaseCommission* const record);
+		bool CheckUpdate(const BaseCommission* const oldRecord, const BaseCommission* const newRecord);
+
+	private:
+		friend class BaseCommissionTable;
+		
+		BaseCommissionTable* table_;
+		std::unordered_set<BaseCommission*, BaseCommissionHashForBaseCommissionPrimaryKey, BaseCommissionEqualForBaseCommissionPrimaryKey> index_;
+	};
 }

@@ -2658,7 +2658,7 @@ namespace QuantTrading
 			return;
 		}
 
-		fprintf(dumpFile, "TradingDay,AccountId,AccountType,Balance,PreBalance,Available,MarketValue,CashIn,CashOut,Margin,Commission,FrozenCash,FrozenMargin,FrozenCommission,CloseProfitByDate,CloseProfitByTrade,PositionProfitByDate,PositionProfitByTrade,Deposit,Withdraw\n");
+		fprintf(dumpFile, "TradingDay,AccountId,AccountType,Balance,PreBalance,Available,MarketValue,CashIn,CashOut,Margin,Commission,FrozenCash,FrozenMargin,FrozenCommission,CloseProfitByDate,CloseProfitByTrade,PositionProfitByDate,PositionProfitByTrade,Deposit,Withdraw,StampTax,TransferFee\n");
 		char buff[4096] = { 0 };
 		set<Capital*, CapitalLessForCapitalPrimaryKey> records;
 		std::shared_lock guard(SharedMutex);
@@ -2927,7 +2927,7 @@ namespace QuantTrading
 			return;
 		}
 
-		fprintf(dumpFile, "TradingDay,AccountId,AccountType,ExchangeId,InstrumentId,ProductClass,PosiDirection,TotalPosition,PositionFrozen,TodayPosition,MarketValue,CashIn,CashOut,Margin,Commission,FrozenCash,FrozenMargin,FrozenCommission,VolumeMultiple,CloseProfitByDate,CloseProfitByTrade,PositionProfitByDate,PositionProfitByTrade,SettlementPrice,PreSettlementPrice\n");
+		fprintf(dumpFile, "TradingDay,AccountId,AccountType,ExchangeId,InstrumentId,ProductClass,PosiDirection,TotalPosition,PositionFrozen,TodayPosition,MarketValue,CashIn,CashOut,Margin,Commission,FrozenCash,FrozenMargin,FrozenCommission,VolumeMultiple,CloseProfitByDate,CloseProfitByTrade,PositionProfitByDate,PositionProfitByTrade,SettlementPrice,PreSettlementPrice,StampTax,TransferFee\n");
 		char buff[4096] = { 0 };
 		set<Position*, PositionLessForPositionPrimaryKey> records;
 		std::shared_lock guard(SharedMutex);
@@ -3197,7 +3197,7 @@ namespace QuantTrading
 			return;
 		}
 
-		fprintf(dumpFile, "TradingDay,AccountId,AccountType,ExchangeId,InstrumentId,ProductClass,PosiDirection,OpenDate,TradeId,Volume,OpenPrice,MarketValue,CashIn,CashOut,Margin,Commission,VolumeMultiple,CloseProfitByDate,CloseProfitByTrade,PositionProfitByDate,PositionProfitByTrade,SettlementPrice,PreSettlementPrice,CloseVolume,CloseAmount\n");
+		fprintf(dumpFile, "TradingDay,AccountId,AccountType,ExchangeId,InstrumentId,ProductClass,PosiDirection,OpenDate,TradeId,Volume,OpenPrice,MarketValue,CashIn,CashOut,Margin,Commission,VolumeMultiple,CloseProfitByDate,CloseProfitByTrade,PositionProfitByDate,PositionProfitByTrade,SettlementPrice,PreSettlementPrice,CloseVolume,CloseAmount,StampTax,TransferFee\n");
 		char buff[4096] = { 0 };
 		set<PositionDetail*, PositionDetailLessForPositionDetailPrimaryKey> records;
 		std::shared_lock guard(SharedMutex);
@@ -3662,7 +3662,7 @@ namespace QuantTrading
 			return;
 		}
 
-		fprintf(dumpFile, "TradingDay,AccountId,AccountType,ExchangeId,InstrumentId,ProductClass,OrderId,OrderSysId,TradeId,Direction,OffsetFlag,Price,Volume,VolumeMultiple,TradeAmount,Commission,TradeDate,TradeTime\n");
+		fprintf(dumpFile, "TradingDay,AccountId,AccountType,ExchangeId,InstrumentId,ProductClass,OrderId,OrderSysId,TradeId,Direction,OffsetFlag,Price,Volume,VolumeMultiple,TradeAmount,Commission,TradeDate,TradeTime,StampTax,TransferFee\n");
 		char buff[4096] = { 0 };
 		set<Trade*, TradeLessForTradePrimaryKey> records;
 		std::shared_lock guard(SharedMutex);
@@ -4224,6 +4224,378 @@ namespace QuantTrading
 	{
 		SessionIdIndex->Erase(record);
 		PrimaryAccountIdIndex->Erase(record);
+	}
+
+	CommissionGroupTable::CommissionGroupTable()
+	{
+		mdbSubscriber_ = nullptr;
+		PrimaryKey = new CommissionGroupPrimaryKey(this);
+	}
+	CommissionGroupTable::~CommissionGroupTable()
+	{
+		delete PrimaryKey;
+		PrimaryKey = nullptr;
+	}
+	void CommissionGroupTable::Subscribe(MdbSubscriber* subscriber)
+	{
+		mdbSubscriber_ = subscriber;
+	}
+	void CommissionGroupTable::UnSubscribe()
+	{
+		mdbSubscriber_ = nullptr;
+	}
+	void CommissionGroupTable::LockShared()
+	{
+		SharedMutex.lock_shared();
+	}
+	void CommissionGroupTable::UnlockShared()
+	{
+		SharedMutex.unlock_shared();
+	}
+	void CommissionGroupTable::InitDb()
+	{
+		if (mdbSubscriber_ == nullptr)
+		{
+			DbInited = true;
+			return;
+		}
+		mdbSubscriber_->OnRecordTruncate(CommissionGroup::TableId);
+
+		auto records = new std::vector<const void*>();
+		{
+			std::shared_lock guard(SharedMutex);
+			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
+			{
+				auto record = CommissionGroup::Allocate();
+				memcpy(record, *it, sizeof(CommissionGroup));
+				records->push_back(record);
+			}
+		}
+		if (!records->empty())
+		{
+			mdbSubscriber_->OnRecordBatchInsert(CommissionGroup::TableId, records);
+		}
+		else
+		{
+			delete records;
+		}
+		DbInited = true;
+	}
+	bool CommissionGroupTable::Insert(CommissionGroup* record)
+	{
+		std::lock_guard guard(SharedMutex);
+		if (!PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for CommissionGroup:[%s]", record->GetString());
+			record->Deallocate();
+			return false;
+		}
+
+		PrimaryKey->Insert(record);
+
+		
+		if (mdbSubscriber_ != nullptr && DbInited)
+		{
+			mdbSubscriber_->OnRecordInsert(CommissionGroup::TableId, record);
+		}
+		return true;
+	}
+	void CommissionGroupTable::BatchInsert(std::vector<CommissionGroup*>* records)
+	{
+		{
+			std::lock_guard guard(SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = CommissionGroup::Allocate();
+				memcpy(newRecord, record, sizeof(CommissionGroup));
+				PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (mdbSubscriber_ != nullptr && DbInited)
+		{
+			auto dbRecords = new std::vector<const void*>();
+			dbRecords->reserve(records->size());
+			for (auto* r : *records) dbRecords->push_back(r);
+			mdbSubscriber_->OnRecordBatchInsert(CommissionGroup::TableId, dbRecords);
+		}
+		delete records;
+	}
+	void CommissionGroupTable::Erase(CommissionGroup* record)
+	{
+		std::lock_guard guard(SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (mdbSubscriber_ != nullptr && DbInited)
+		{
+			mdbSubscriber_->OnRecordErase(CommissionGroup::TableId, record);
+		}
+		else
+		{
+			record->Deallocate();
+		}
+	}
+	bool CommissionGroupTable::Update(CommissionGroup* const oldRecord, CommissionGroup* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(SharedMutex);
+		if (!PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for CommissionGroup:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New CommissionGroup:[%s]", newRecord->GetString());
+			newRecord->Deallocate();
+			return false;
+		}
+
+		::memcpy(oldRecord, newRecord, sizeof(CommissionGroup));
+
+		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
+		{
+			mdbSubscriber_->OnRecordUpdate(CommissionGroup::TableId, newRecord);
+		}
+		else
+		{
+			newRecord->Deallocate();
+		}
+		return true;
+	}
+	void CommissionGroupTable::TruncateTables()
+	{
+		std::lock_guard guard(SharedMutex);
+		for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
+		{
+			(*it)->Deallocate();
+		}
+		PrimaryKey->index_.clear();
+	}
+	void CommissionGroupTable::TruncateTable()
+	{
+		std::lock_guard guard(SharedMutex);
+		for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
+		{
+			(*it)->Deallocate();
+		}
+		PrimaryKey->index_.clear();
+		if (mdbSubscriber_ != nullptr && DbInited)
+		{
+			mdbSubscriber_->OnRecordTruncate(CommissionGroup::TableId);
+		}
+	}
+	void CommissionGroupTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_CommissionGroup.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "CommissionGroupId,CommissionGroupName\n");
+		char buff[4096] = { 0 };
+		set<CommissionGroup*, CommissionGroupLessForCommissionGroupPrimaryKey> records;
+		std::shared_lock guard(SharedMutex);
+		for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void CommissionGroupTable::EraseUniqueKey(CommissionGroup* record)
+	{
+		PrimaryKey->Erase(record);
+	}
+	void CommissionGroupTable::EraseIndex(CommissionGroup* record)
+	{
+	}
+
+	BaseCommissionTable::BaseCommissionTable()
+	{
+		mdbSubscriber_ = nullptr;
+		PrimaryKey = new BaseCommissionPrimaryKey(this);
+	}
+	BaseCommissionTable::~BaseCommissionTable()
+	{
+		delete PrimaryKey;
+		PrimaryKey = nullptr;
+	}
+	void BaseCommissionTable::Subscribe(MdbSubscriber* subscriber)
+	{
+		mdbSubscriber_ = subscriber;
+	}
+	void BaseCommissionTable::UnSubscribe()
+	{
+		mdbSubscriber_ = nullptr;
+	}
+	void BaseCommissionTable::LockShared()
+	{
+		SharedMutex.lock_shared();
+	}
+	void BaseCommissionTable::UnlockShared()
+	{
+		SharedMutex.unlock_shared();
+	}
+	void BaseCommissionTable::InitDb()
+	{
+		if (mdbSubscriber_ == nullptr)
+		{
+			DbInited = true;
+			return;
+		}
+		mdbSubscriber_->OnRecordTruncate(BaseCommission::TableId);
+
+		auto records = new std::vector<const void*>();
+		{
+			std::shared_lock guard(SharedMutex);
+			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
+			{
+				auto record = BaseCommission::Allocate();
+				memcpy(record, *it, sizeof(BaseCommission));
+				records->push_back(record);
+			}
+		}
+		if (!records->empty())
+		{
+			mdbSubscriber_->OnRecordBatchInsert(BaseCommission::TableId, records);
+		}
+		else
+		{
+			delete records;
+		}
+		DbInited = true;
+	}
+	bool BaseCommissionTable::Insert(BaseCommission* record)
+	{
+		std::lock_guard guard(SharedMutex);
+		if (!PrimaryKey->CheckInsert(record))
+		{
+			WriteLog(LogLevel::Warning, "Insert Failed for BaseCommission:[%s]", record->GetString());
+			record->Deallocate();
+			return false;
+		}
+
+		PrimaryKey->Insert(record);
+
+		
+		if (mdbSubscriber_ != nullptr && DbInited)
+		{
+			mdbSubscriber_->OnRecordInsert(BaseCommission::TableId, record);
+		}
+		return true;
+	}
+	void BaseCommissionTable::BatchInsert(std::vector<BaseCommission*>* records)
+	{
+		{
+			std::lock_guard guard(SharedMutex);
+			for (auto record : *records)
+			{
+				auto newRecord = BaseCommission::Allocate();
+				memcpy(newRecord, record, sizeof(BaseCommission));
+				PrimaryKey->Insert(newRecord);
+
+			}
+		}
+		if (mdbSubscriber_ != nullptr && DbInited)
+		{
+			auto dbRecords = new std::vector<const void*>();
+			dbRecords->reserve(records->size());
+			for (auto* r : *records) dbRecords->push_back(r);
+			mdbSubscriber_->OnRecordBatchInsert(BaseCommission::TableId, dbRecords);
+		}
+		delete records;
+	}
+	void BaseCommissionTable::Erase(BaseCommission* record)
+	{
+		std::lock_guard guard(SharedMutex);
+		EraseUniqueKey(record);
+		EraseIndex(record);
+		if (mdbSubscriber_ != nullptr && DbInited)
+		{
+			mdbSubscriber_->OnRecordErase(BaseCommission::TableId, record);
+		}
+		else
+		{
+			record->Deallocate();
+		}
+	}
+	bool BaseCommissionTable::Update(BaseCommission* const oldRecord, BaseCommission* const newRecord, bool updateDB)
+	{
+		std::lock_guard guard(SharedMutex);
+		if (!PrimaryKey->CheckUpdate(oldRecord, newRecord))
+		{
+			WriteLog(LogLevel::Warning, "Update Failed for BaseCommission:[%s]", oldRecord->GetString());
+			WriteLog(LogLevel::Warning, "              New BaseCommission:[%s]", newRecord->GetString());
+			newRecord->Deallocate();
+			return false;
+		}
+
+		::memcpy(oldRecord, newRecord, sizeof(BaseCommission));
+
+		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
+		{
+			mdbSubscriber_->OnRecordUpdate(BaseCommission::TableId, newRecord);
+		}
+		else
+		{
+			newRecord->Deallocate();
+		}
+		return true;
+	}
+	void BaseCommissionTable::TruncateTables()
+	{
+		std::lock_guard guard(SharedMutex);
+		for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
+		{
+			(*it)->Deallocate();
+		}
+		PrimaryKey->index_.clear();
+	}
+	void BaseCommissionTable::TruncateTable()
+	{
+		std::lock_guard guard(SharedMutex);
+		for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
+		{
+			(*it)->Deallocate();
+		}
+		PrimaryKey->index_.clear();
+		if (mdbSubscriber_ != nullptr && DbInited)
+		{
+			mdbSubscriber_->OnRecordTruncate(BaseCommission::TableId);
+		}
+	}
+	void BaseCommissionTable::Dump(const char* dir)
+	{
+		string fileName = string(dir) + "//t_BaseCommission.csv";
+		FILE* dumpFile = fopen(fileName.c_str(), "w");
+		if (dumpFile == nullptr)
+		{
+			return;
+		}
+
+		fprintf(dumpFile, "CommissionGroupId,ExchangeId,InstrumentId,Direction,OpenByMoney,CloseByMoney,OpenByVolume,CloseByVolume,OpenStampTaxByMoney,CloseStampTaxByMoney,OpenTransferFeeByMoney,CloseTransferFeeByMoney,MinCommission,MaxCommission\n");
+		char buff[4096] = { 0 };
+		set<BaseCommission*, BaseCommissionLessForBaseCommissionPrimaryKey> records;
+		std::shared_lock guard(SharedMutex);
+		for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
+		{
+			records.insert(*it);
+		}
+		for (auto record : records)
+		{
+			fprintf(dumpFile, "%s\n", record->GetString());
+		}
+		records.clear();
+		fclose(dumpFile);
+	}
+	void BaseCommissionTable::EraseUniqueKey(BaseCommission* record)
+	{
+		PrimaryKey->Erase(record);
+	}
+	void BaseCommissionTable::EraseIndex(BaseCommission* record)
+	{
 	}
 
 }

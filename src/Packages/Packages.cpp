@@ -116,7 +116,11 @@ bool NotifyConnectPackage::FromStepStream(char* buff, int startIndex, int endInd
 							break;
 						case Items::SessionId:
 						{
-							NotifyConnect->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, NotifyConnect->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::IpAddress:
@@ -127,7 +131,11 @@ bool NotifyConnectPackage::FromStepStream(char* buff, int startIndex, int endInd
 						}
 						case Items::Port:
 						{
-							NotifyConnect->Port = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, NotifyConnect->Port))
+							{
+								WriteLog(LogLevel::Warning, "Port Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -284,7 +292,11 @@ bool NotifyDisConnectPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						case Items::SessionId:
 						{
-							NotifyDisConnect->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, NotifyDisConnect->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::IpAddress:
@@ -295,7 +307,11 @@ bool NotifyDisConnectPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::Port:
 						{
-							NotifyDisConnect->Port = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, NotifyDisConnect->Port))
+							{
+								WriteLog(LogLevel::Warning, "Port Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -974,7 +990,11 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::SessionId:
 						{
-							RspMdUserLogin->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspMdUserLogin->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -1009,7 +1029,11 @@ bool RspMdUserLoginPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -1401,7 +1425,11 @@ bool RspMdUserLogoutPackage::FromStepStream(char* buff, int startIndex, int endI
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -1609,7 +1637,11 @@ bool ReqSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::BarPeriod:
 						{
-							ReqSubMarketData->BarPeriod = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqSubMarketData->BarPeriod))
+							{
+								WriteLog(LogLevel::Warning, "BarPeriod Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -1827,7 +1859,11 @@ bool RspSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -2241,7 +2277,11 @@ bool RspUnSubMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -2421,7 +2461,11 @@ bool ReqSubMarketDataFinishedPackage::FromStepStream(char* buff, int startIndex,
 							break;
 						case Items::SessionId:
 						{
-							ReqSubMarketDataFinished->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqSubMarketDataFinished->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -2662,7 +2706,11 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						}
 						case Items::UpdateTs:
 						{
-							DepthMarketData->UpdateTs = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->UpdateTs))
+							{
+								WriteLog(LogLevel::Warning, "UpdateTs Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::LastPrice:
@@ -2707,12 +2755,20 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						}
 						case Items::CurrVolume:
 						{
-							DepthMarketData->CurrVolume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->CurrVolume))
+							{
+								WriteLog(LogLevel::Warning, "CurrVolume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::Volume:
 						{
-							DepthMarketData->Volume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->Volume))
+							{
+								WriteLog(LogLevel::Warning, "Volume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::CurrTurnover:
@@ -2802,52 +2858,92 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						}
 						case Items::AskVolume1:
 						{
-							DepthMarketData->AskVolume1 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume1))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume1 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume2:
 						{
-							DepthMarketData->AskVolume2 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume2))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume2 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume3:
 						{
-							DepthMarketData->AskVolume3 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume3))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume3 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume4:
 						{
-							DepthMarketData->AskVolume4 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume4))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume4 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume5:
 						{
-							DepthMarketData->AskVolume5 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume5))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume5 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume6:
 						{
-							DepthMarketData->AskVolume6 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume6))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume6 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume7:
 						{
-							DepthMarketData->AskVolume7 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume7))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume7 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume8:
 						{
-							DepthMarketData->AskVolume8 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume8))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume8 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume9:
 						{
-							DepthMarketData->AskVolume9 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume9))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume9 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AskVolume10:
 						{
-							DepthMarketData->AskVolume10 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->AskVolume10))
+							{
+								WriteLog(LogLevel::Warning, "AskVolume10 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidPrice1:
@@ -2902,52 +2998,92 @@ bool RtnDepthMarketDataPackage::FromStepStream(char* buff, int startIndex, int e
 						}
 						case Items::BidVolume1:
 						{
-							DepthMarketData->BidVolume1 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume1))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume1 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume2:
 						{
-							DepthMarketData->BidVolume2 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume2))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume2 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume3:
 						{
-							DepthMarketData->BidVolume3 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume3))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume3 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume4:
 						{
-							DepthMarketData->BidVolume4 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume4))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume4 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume5:
 						{
-							DepthMarketData->BidVolume5 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume5))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume5 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume6:
 						{
-							DepthMarketData->BidVolume6 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume6))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume6 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume7:
 						{
-							DepthMarketData->BidVolume7 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume7))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume7 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume8:
 						{
-							DepthMarketData->BidVolume8 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume8))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume8 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume9:
 						{
-							DepthMarketData->BidVolume9 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume9))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume9 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BidVolume10:
 						{
-							DepthMarketData->BidVolume10 = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, DepthMarketData->BidVolume10))
+							{
+								WriteLog(LogLevel::Warning, "BidVolume10 Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -3152,17 +3288,29 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::BarPeriod:
 						{
-							BarMarketData->BarPeriod = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, BarMarketData->BarPeriod))
+							{
+								WriteLog(LogLevel::Warning, "BarPeriod Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::BarTime:
 						{
-							BarMarketData->BarTime = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, BarMarketData->BarTime))
+							{
+								WriteLog(LogLevel::Warning, "BarTime Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::UpdateTs:
 						{
-							BarMarketData->UpdateTs = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, BarMarketData->UpdateTs))
+							{
+								WriteLog(LogLevel::Warning, "UpdateTs Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::PreSettlementPrice:
@@ -3207,12 +3355,20 @@ bool RtnBarMarketDataPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::CurrVolume:
 						{
-							BarMarketData->CurrVolume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, BarMarketData->CurrVolume))
+							{
+								WriteLog(LogLevel::Warning, "CurrVolume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::Volume:
 						{
-							BarMarketData->Volume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, BarMarketData->Volume))
+							{
+								WriteLog(LogLevel::Warning, "Volume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::CurrTurnover:
@@ -4058,7 +4214,11 @@ bool RspRegisterAccountPackage::FromStepStream(char* buff, int startIndex, int e
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -4454,7 +4614,11 @@ bool RspAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 						}
 						case Items::SessionId:
 						{
-							RspAccountLogin->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspAccountLogin->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -4489,7 +4653,11 @@ bool RspAccountLoginPackage::FromStepStream(char* buff, int startIndex, int endI
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -4881,7 +5049,11 @@ bool RspAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -5258,17 +5430,29 @@ bool RspQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 						}
 						case Items::TradeGroupId:
 						{
-							Account->TradeGroupId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Account->TradeGroupId))
+							{
+								WriteLog(LogLevel::Warning, "TradeGroupId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::RiskGroupId:
 						{
-							Account->RiskGroupId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Account->RiskGroupId))
+							{
+								WriteLog(LogLevel::Warning, "RiskGroupId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::CommissionGroupId:
 						{
-							Account->CommissionGroupId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Account->CommissionGroupId))
+							{
+								WriteLog(LogLevel::Warning, "CommissionGroupId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -5303,7 +5487,11 @@ bool RspQryAccountPackage::FromStepStream(char* buff, int startIndex, int endInd
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -5712,7 +5900,11 @@ bool RspQryHolderAccountPackage::FromStepStream(char* buff, int startIndex, int 
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -6223,7 +6415,11 @@ bool RspQryCapitalPackage::FromStepStream(char* buff, int startIndex, int endInd
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -6651,17 +6847,29 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::TotalPosition:
 						{
-							Position->TotalPosition = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Position->TotalPosition))
+							{
+								WriteLog(LogLevel::Warning, "TotalPosition Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::PositionFrozen:
 						{
-							Position->PositionFrozen = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Position->PositionFrozen))
+							{
+								WriteLog(LogLevel::Warning, "PositionFrozen Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::TodayPosition:
 						{
-							Position->TodayPosition = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Position->TodayPosition))
+							{
+								WriteLog(LogLevel::Warning, "TodayPosition Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::MarketValue:
@@ -6691,7 +6899,11 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::VolumeMultiple:
 						{
-							Position->VolumeMultiple = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Position->VolumeMultiple))
+							{
+								WriteLog(LogLevel::Warning, "VolumeMultiple Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::CloseProfitByDate:
@@ -6756,7 +6968,11 @@ bool RspQryPositionPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -7198,7 +7414,11 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::OrderId:
 						{
-							Order->OrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->OrderId))
+							{
+								WriteLog(LogLevel::Warning, "OrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderSysId:
@@ -7229,22 +7449,38 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::Volume:
 						{
-							Order->Volume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->Volume))
+							{
+								WriteLog(LogLevel::Warning, "Volume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::VolumeTotal:
 						{
-							Order->VolumeTotal = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->VolumeTotal))
+							{
+								WriteLog(LogLevel::Warning, "VolumeTotal Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::VolumeTraded:
 						{
-							Order->VolumeTraded = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->VolumeTraded))
+							{
+								WriteLog(LogLevel::Warning, "VolumeTraded Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::VolumeMultiple:
 						{
-							Order->VolumeMultiple = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->VolumeMultiple))
+							{
+								WriteLog(LogLevel::Warning, "VolumeMultiple Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderStatus:
@@ -7278,17 +7514,29 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::SessionId:
 						{
-							Order->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ClientOrderId:
 						{
-							Order->ClientOrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->ClientOrderId))
+							{
+								WriteLog(LogLevel::Warning, "ClientOrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::RequestId:
 						{
-							Order->RequestId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->RequestId))
+							{
+								WriteLog(LogLevel::Warning, "RequestId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::FrozenCash:
@@ -7338,7 +7586,11 @@ bool RspQryOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -7767,7 +8019,11 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::OrderId:
 						{
-							Trade->OrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Trade->OrderId))
+							{
+								WriteLog(LogLevel::Warning, "OrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderSysId:
@@ -7799,12 +8055,20 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 						}
 						case Items::Volume:
 						{
-							Trade->Volume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Trade->Volume))
+							{
+								WriteLog(LogLevel::Warning, "Volume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::VolumeMultiple:
 						{
-							Trade->VolumeMultiple = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Trade->VolumeMultiple))
+							{
+								WriteLog(LogLevel::Warning, "VolumeMultiple Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::TradeAmount:
@@ -7861,7 +8125,11 @@ bool RspQryTradePackage::FromStepStream(char* buff, int startIndex, int endIndex
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -8295,7 +8563,11 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::VolumeMultiple:
 						{
-							Instrument->VolumeMultiple = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Instrument->VolumeMultiple))
+							{
+								WriteLog(LogLevel::Warning, "VolumeMultiple Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::PriceTick:
@@ -8305,22 +8577,38 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::MaxMarketOrderVolume:
 						{
-							Instrument->MaxMarketOrderVolume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Instrument->MaxMarketOrderVolume))
+							{
+								WriteLog(LogLevel::Warning, "MaxMarketOrderVolume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::MinMarketOrderVolume:
 						{
-							Instrument->MinMarketOrderVolume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Instrument->MinMarketOrderVolume))
+							{
+								WriteLog(LogLevel::Warning, "MinMarketOrderVolume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::MaxLimitOrderVolume:
 						{
-							Instrument->MaxLimitOrderVolume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Instrument->MaxLimitOrderVolume))
+							{
+								WriteLog(LogLevel::Warning, "MaxLimitOrderVolume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::MinLimitOrderVolume:
 						{
-							Instrument->MinLimitOrderVolume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Instrument->MinLimitOrderVolume))
+							{
+								WriteLog(LogLevel::Warning, "MinLimitOrderVolume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::SessionName:
@@ -8361,7 +8649,11 @@ bool RspQryInstrumentPackage::FromStepStream(char* buff, int startIndex, int end
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -8784,7 +9076,11 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 						}
 						case Items::VolumeMultiple:
 						{
-							OptionInstrument->VolumeMultiple = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, OptionInstrument->VolumeMultiple))
+							{
+								WriteLog(LogLevel::Warning, "VolumeMultiple Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OptionType:
@@ -8815,12 +9111,20 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 						}
 						case Items::MaxLimitOrderVolume:
 						{
-							OptionInstrument->MaxLimitOrderVolume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, OptionInstrument->MaxLimitOrderVolume))
+							{
+								WriteLog(LogLevel::Warning, "MaxLimitOrderVolume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::MaxMarketOrderVolume:
 						{
-							OptionInstrument->MaxMarketOrderVolume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, OptionInstrument->MaxMarketOrderVolume))
+							{
+								WriteLog(LogLevel::Warning, "MaxMarketOrderVolume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ExpiringDate:
@@ -8861,7 +9165,11 @@ bool RspQryOptionInstrumentPackage::FromStepStream(char* buff, int startIndex, i
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -9191,14 +9499,14 @@ int RspQryCommissionRatePackage::ToStepStream(char* buff, int size) const
 		}
 		StepUtility::WriteString(cursor, Items::ExchangeId, CommissionRate->ExchangeId);
 		StepUtility::WriteString(cursor, Items::ProductClass, static_cast<int>(CommissionRate->ProductClass));
-		StepUtility::WriteString(cursor, Items::OpenBuyByMoney, CommissionRate->OpenBuyByMoney);
-		StepUtility::WriteString(cursor, Items::OpenSellByMoney, CommissionRate->OpenSellByMoney);
-		StepUtility::WriteString(cursor, Items::CloseBuyByMoney, CommissionRate->CloseBuyByMoney);
-		StepUtility::WriteString(cursor, Items::CloseSellByMoney, CommissionRate->CloseSellByMoney);
-		StepUtility::WriteString(cursor, Items::OpenBuyByVolume, CommissionRate->OpenBuyByVolume);
-		StepUtility::WriteString(cursor, Items::OpenSellByVolume, CommissionRate->OpenSellByVolume);
-		StepUtility::WriteString(cursor, Items::CloseBuyByVolume, CommissionRate->CloseBuyByVolume);
-		StepUtility::WriteString(cursor, Items::CloseSellByVolume, CommissionRate->CloseSellByVolume);
+		StepUtility::WriteString(cursor, Items::OpenByMoney, CommissionRate->OpenByMoney);
+		StepUtility::WriteString(cursor, Items::CloseByMoney, CommissionRate->CloseByMoney);
+		StepUtility::WriteString(cursor, Items::OpenByVolume, CommissionRate->OpenByVolume);
+		StepUtility::WriteString(cursor, Items::CloseByVolume, CommissionRate->CloseByVolume);
+		StepUtility::WriteString(cursor, Items::OpenStampTaxByMoney, CommissionRate->OpenStampTaxByMoney);
+		StepUtility::WriteString(cursor, Items::CloseStampTaxByMoney, CommissionRate->CloseStampTaxByMoney);
+		StepUtility::WriteString(cursor, Items::OpenTransferFeeByMoney, CommissionRate->OpenTransferFeeByMoney);
+		StepUtility::WriteString(cursor, Items::CloseTransferFeeByMoney, CommissionRate->CloseTransferFeeByMoney);
 		StepUtility::WriteString(cursor, Items::MinCommission, CommissionRate->MinCommission);
 		StepUtility::WriteString(cursor, Items::MaxCommission, CommissionRate->MaxCommission);
 		StepUtility::WriteHexString(cursor, Items::FieldEnd, CommissionRateField::FieldId);
@@ -9265,44 +9573,44 @@ bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 							CommissionRate->ProductClass = static_cast<ProductClassType>(atoi(value.c_str()));
 							break;
 						}
-						case Items::OpenBuyByMoney:
+						case Items::OpenByMoney:
 						{
-							CommissionRate->OpenBuyByMoney = atof(value.c_str());
+							CommissionRate->OpenByMoney = atof(value.c_str());
 							break;
 						}
-						case Items::OpenSellByMoney:
+						case Items::CloseByMoney:
 						{
-							CommissionRate->OpenSellByMoney = atof(value.c_str());
+							CommissionRate->CloseByMoney = atof(value.c_str());
 							break;
 						}
-						case Items::CloseBuyByMoney:
+						case Items::OpenByVolume:
 						{
-							CommissionRate->CloseBuyByMoney = atof(value.c_str());
+							CommissionRate->OpenByVolume = atof(value.c_str());
 							break;
 						}
-						case Items::CloseSellByMoney:
+						case Items::CloseByVolume:
 						{
-							CommissionRate->CloseSellByMoney = atof(value.c_str());
+							CommissionRate->CloseByVolume = atof(value.c_str());
 							break;
 						}
-						case Items::OpenBuyByVolume:
+						case Items::OpenStampTaxByMoney:
 						{
-							CommissionRate->OpenBuyByVolume = atof(value.c_str());
+							CommissionRate->OpenStampTaxByMoney = atof(value.c_str());
 							break;
 						}
-						case Items::OpenSellByVolume:
+						case Items::CloseStampTaxByMoney:
 						{
-							CommissionRate->OpenSellByVolume = atof(value.c_str());
+							CommissionRate->CloseStampTaxByMoney = atof(value.c_str());
 							break;
 						}
-						case Items::CloseBuyByVolume:
+						case Items::OpenTransferFeeByMoney:
 						{
-							CommissionRate->CloseBuyByVolume = atof(value.c_str());
+							CommissionRate->OpenTransferFeeByMoney = atof(value.c_str());
 							break;
 						}
-						case Items::CloseSellByVolume:
+						case Items::CloseTransferFeeByMoney:
 						{
-							CommissionRate->CloseSellByVolume = atof(value.c_str());
+							CommissionRate->CloseTransferFeeByMoney = atof(value.c_str());
 							break;
 						}
 						case Items::MinCommission:
@@ -9347,7 +9655,11 @@ bool RspQryCommissionRatePackage::FromStepStream(char* buff, int startIndex, int
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -9448,7 +9760,7 @@ const char* RspQryCommissionRatePackage::GetDebugString() const
 	int offset = 0;
 	if (CommissionRate != nullptr)
 	{
-		offset = AppendDebugString(offset, "CommissionRate:AccountId:[%s], ExchangeId:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountId, CommissionRate->ExchangeId, static_cast<int>(CommissionRate->ProductClass), CommissionRate->OpenBuyByMoney, CommissionRate->OpenSellByMoney, CommissionRate->CloseBuyByMoney, CommissionRate->CloseSellByMoney, CommissionRate->OpenBuyByVolume, CommissionRate->OpenSellByVolume, CommissionRate->CloseBuyByVolume, CommissionRate->CloseSellByVolume, CommissionRate->MinCommission, CommissionRate->MaxCommission);
+		offset = AppendDebugString(offset, "CommissionRate:AccountId:[%s], ExchangeId:[%s], ProductClass:[%d], OpenByMoney:[%f], CloseByMoney:[%f], OpenByVolume:[%f], CloseByVolume:[%f], OpenStampTaxByMoney:[%f], CloseStampTaxByMoney:[%f], OpenTransferFeeByMoney:[%f], CloseTransferFeeByMoney:[%f], MinCommission:[%f], MaxCommission:[%f]", CommissionRate->AccountId, CommissionRate->ExchangeId, static_cast<int>(CommissionRate->ProductClass), CommissionRate->OpenByMoney, CommissionRate->CloseByMoney, CommissionRate->OpenByVolume, CommissionRate->CloseByVolume, CommissionRate->OpenStampTaxByMoney, CommissionRate->CloseStampTaxByMoney, CommissionRate->OpenTransferFeeByMoney, CommissionRate->CloseTransferFeeByMoney, CommissionRate->MinCommission, CommissionRate->MaxCommission);
 	}
 	if (RspInfo != nullptr)
 	{
@@ -9744,7 +10056,11 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 						}
 						case Items::MoneyTransferId:
 						{
-							MoneyTransfer->MoneyTransferId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, MoneyTransfer->MoneyTransferId))
+							{
+								WriteLog(LogLevel::Warning, "MoneyTransferId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AccountType:
@@ -9818,7 +10134,11 @@ bool RspQryMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int 
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -10056,12 +10376,20 @@ bool ReqInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::Volume:
 						{
-							ReqInsertOrder->Volume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqInsertOrder->Volume))
+							{
+								WriteLog(LogLevel::Warning, "Volume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ClientOrderId:
 						{
-							ReqInsertOrder->ClientOrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqInsertOrder->ClientOrderId))
+							{
+								WriteLog(LogLevel::Warning, "ClientOrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -10286,12 +10614,20 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::Volume:
 						{
-							ReqInsertOrder->Volume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqInsertOrder->Volume))
+							{
+								WriteLog(LogLevel::Warning, "Volume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ClientOrderId:
 						{
-							ReqInsertOrder->ClientOrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqInsertOrder->ClientOrderId))
+							{
+								WriteLog(LogLevel::Warning, "ClientOrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -10326,7 +10662,11 @@ bool RspInsertOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -10547,12 +10887,20 @@ bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::ClientCancelOrderId:
 						{
-							ReqCancelOrder->ClientCancelOrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqCancelOrder->ClientCancelOrderId))
+							{
+								WriteLog(LogLevel::Warning, "ClientCancelOrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderId:
 						{
-							ReqCancelOrder->OrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqCancelOrder->OrderId))
+							{
+								WriteLog(LogLevel::Warning, "OrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderSysId:
@@ -10563,12 +10911,20 @@ bool ReqCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::SessionId:
 						{
-							ReqCancelOrder->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqCancelOrder->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ClientOrderId:
 						{
-							ReqCancelOrder->ClientOrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqCancelOrder->ClientOrderId))
+							{
+								WriteLog(LogLevel::Warning, "ClientOrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -10776,12 +11132,20 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::ClientCancelOrderId:
 						{
-							ReqCancelOrder->ClientCancelOrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqCancelOrder->ClientCancelOrderId))
+							{
+								WriteLog(LogLevel::Warning, "ClientCancelOrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderId:
 						{
-							ReqCancelOrder->OrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqCancelOrder->OrderId))
+							{
+								WriteLog(LogLevel::Warning, "OrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderSysId:
@@ -10792,12 +11156,20 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 						}
 						case Items::SessionId:
 						{
-							ReqCancelOrder->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqCancelOrder->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ClientOrderId:
 						{
-							ReqCancelOrder->ClientOrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, ReqCancelOrder->ClientOrderId))
+							{
+								WriteLog(LogLevel::Warning, "ClientOrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						default:
@@ -10832,7 +11204,11 @@ bool RspCancelOrderPackage::FromStepStream(char* buff, int startIndex, int endIn
 							break;
 						case Items::ErrorId:
 						{
-							RspInfo->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, RspInfo->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:
@@ -11102,7 +11478,11 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::OrderId:
 						{
-							Order->OrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->OrderId))
+							{
+								WriteLog(LogLevel::Warning, "OrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderSysId:
@@ -11133,22 +11513,38 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::Volume:
 						{
-							Order->Volume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->Volume))
+							{
+								WriteLog(LogLevel::Warning, "Volume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::VolumeTotal:
 						{
-							Order->VolumeTotal = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->VolumeTotal))
+							{
+								WriteLog(LogLevel::Warning, "VolumeTotal Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::VolumeTraded:
 						{
-							Order->VolumeTraded = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->VolumeTraded))
+							{
+								WriteLog(LogLevel::Warning, "VolumeTraded Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::VolumeMultiple:
 						{
-							Order->VolumeMultiple = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->VolumeMultiple))
+							{
+								WriteLog(LogLevel::Warning, "VolumeMultiple Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderStatus:
@@ -11182,17 +11578,29 @@ bool RtnOrderPackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::SessionId:
 						{
-							Order->SessionId = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->SessionId))
+							{
+								WriteLog(LogLevel::Warning, "SessionId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ClientOrderId:
 						{
-							Order->ClientOrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->ClientOrderId))
+							{
+								WriteLog(LogLevel::Warning, "ClientOrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::RequestId:
 						{
-							Order->RequestId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Order->RequestId))
+							{
+								WriteLog(LogLevel::Warning, "RequestId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::FrozenCash:
@@ -11435,7 +11843,11 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::OrderId:
 						{
-							Trade->OrderId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Trade->OrderId))
+							{
+								WriteLog(LogLevel::Warning, "OrderId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::OrderSysId:
@@ -11467,12 +11879,20 @@ bool RtnTradePackage::FromStepStream(char* buff, int startIndex, int endIndex)
 						}
 						case Items::Volume:
 						{
-							Trade->Volume = atoll(value.c_str());
+							if (!StepUtility::ParseInteger(value, Trade->Volume))
+							{
+								WriteLog(LogLevel::Warning, "Volume Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::VolumeMultiple:
 						{
-							Trade->VolumeMultiple = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, Trade->VolumeMultiple))
+							{
+								WriteLog(LogLevel::Warning, "VolumeMultiple Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::TradeAmount:
@@ -11690,7 +12110,11 @@ bool RtnMoneyTransferPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::MoneyTransferId:
 						{
-							MoneyTransfer->MoneyTransferId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, MoneyTransfer->MoneyTransferId))
+							{
+								WriteLog(LogLevel::Warning, "MoneyTransferId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::AccountType:
@@ -11896,7 +12320,11 @@ bool RtnAccountLogoutPackage::FromStepStream(char* buff, int startIndex, int end
 						}
 						case Items::ErrorId:
 						{
-							AccountLogout->ErrorId = atoi(value.c_str());
+							if (!StepUtility::ParseInteger(value, AccountLogout->ErrorId))
+							{
+								WriteLog(LogLevel::Warning, "ErrorId Out Of Range. Value:%s", value.c_str());
+								return false;
+							}
 							break;
 						}
 						case Items::ErrorMsg:

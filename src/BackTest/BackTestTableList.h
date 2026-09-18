@@ -23,6 +23,8 @@ namespace QuantTrading::BackTest
 		DepthMarketData::TableId,
 		BarMarketData::TableId,
 		MdSubscribe::TableId,
+		CommissionGroup::TableId,
+		BaseCommission::TableId,
 	};
 	inline const TableList BackTestTableList = { "BackTest", BackTestTableIds, static_cast<int>(sizeof(BackTestTableIds) / sizeof(BackTestTableIds[0])) };
 }

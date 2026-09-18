@@ -323,6 +323,8 @@
 			<item name="PositionProfitByTrade"/>
 			<item name="Deposit"/>
 			<item name="Withdraw"/>
+			<item name="StampTax"/>
+			<item name="TransferFee"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay"/>
@@ -362,6 +364,8 @@
 			<item name="PositionProfitByTrade"/>
 			<item name="SettlementPrice"/>
 			<item name="PreSettlementPrice"/>
+			<item name="StampTax"/>
+			<item name="TransferFee"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay"/>
@@ -408,6 +412,8 @@
 			<item name="PreSettlementPrice"/>
 			<item name="CloseVolume"/>
 			<item name="CloseAmount"/>
+			<item name="StampTax"/>
+			<item name="TransferFee"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay"/>
@@ -512,6 +518,8 @@
 			<item name="Commission"/>
 			<item name="TradeDate"/>
 			<item name="TradeTime"/>
+			<item name="StampTax"/>
+			<item name="TransferFee"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay"/>
@@ -568,5 +576,42 @@
                 <item name="PrimaryAccountId"/>
             </index>
         </indexes>
+    </table>
+    <table name="CommissionGroup" id="0x300A" desc="手续费组">
+        <items>
+            <item name="CommissionGroupId"/>
+            <item name="CommissionGroupName"/>
+        </items>
+        <primarykey>
+            <item name="CommissionGroupId"/>
+        </primarykey>
+        <uniquekeys></uniquekeys>
+        <indexes></indexes>
+    </table>
+    <table name="BaseCommission" id="0x300B" desc="基础手续费">
+        <items>
+            <item name="CommissionGroupId"/>
+            <item name="ExchangeId"/>
+            <item name="InstrumentId"/>
+            <item name="Direction"/>
+            <item name="OpenByMoney"/>
+            <item name="CloseByMoney"/>
+            <item name="OpenByVolume"/>
+            <item name="CloseByVolume"/>
+            <item name="OpenStampTaxByMoney"/>
+            <item name="CloseStampTaxByMoney"/>
+            <item name="OpenTransferFeeByMoney"/>
+            <item name="CloseTransferFeeByMoney"/>
+            <item name="MinCommission"/>
+            <item name="MaxCommission"/>
+        </items>
+        <primarykey>
+            <item name="CommissionGroupId"/>
+            <item name="ExchangeId"/>
+            <item name="InstrumentId"/>
+            <item name="Direction"/>
+        </primarykey>
+        <uniquekeys></uniquekeys>
+        <indexes></indexes>
     </table>
 </tables>

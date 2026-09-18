@@ -45,6 +45,8 @@ namespace QuantTrading
 		TradeTable* Trade = nullptr;
 		AccountLoginSessionTable* AccountLoginSession = nullptr;
 		PrimaryAccountLoginSessionTable* PrimaryAccountLoginSession = nullptr;
+		CommissionGroupTable* CommissionGroup = nullptr;
+		BaseCommissionTable* BaseCommission = nullptr;
 
 	private:
 		MdbSubscriber* mdbSubscriber_;

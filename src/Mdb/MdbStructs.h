@@ -491,6 +491,10 @@ namespace QuantTrading
 		MoneyType Deposit;
 		//出金
 		MoneyType Withdraw;
+		//印花税
+		MoneyType StampTax;
+		//过户费
+		MoneyType TransferFee;
 		
 		static Capital* Allocate();
 		void Deallocate();
@@ -552,6 +556,10 @@ namespace QuantTrading
 		PriceType SettlementPrice;
 		//昨结算价
 		PriceType PreSettlementPrice;
+		//印花税
+		MoneyType StampTax;
+		//过户费
+		MoneyType TransferFee;
 		
 		static Position* Allocate();
 		void Deallocate();
@@ -613,6 +621,10 @@ namespace QuantTrading
 		VolumeType CloseVolume;
 		//平仓金额
 		MoneyType CloseAmount;
+		//印花税
+		MoneyType StampTax;
+		//过户费
+		MoneyType TransferFee;
 		
 		static PositionDetail* Allocate();
 		void Deallocate();
@@ -737,6 +749,10 @@ namespace QuantTrading
 		DateType TradeDate;
 		//成交时间
 		TimeType TradeTime;
+		//印花税
+		MoneyType StampTax;
+		//过户费
+		MoneyType TransferFee;
 		
 		static Trade* Allocate();
 		void Deallocate();
@@ -778,6 +794,60 @@ namespace QuantTrading
 		const char* GetDebugString() const;
 		static const TableSchema& GetSchema();
 	};
+	struct CommissionGroup
+	{
+	public:
+		static constexpr unsigned int TableId = 0x300A;
+		//交易组代码
+		GroupIdType CommissionGroupId;
+		//手续费组名称
+		GroupNameType CommissionGroupName;
+		
+		static CommissionGroup* Allocate();
+		void Deallocate();
+		const char* GetString() const;
+		const char* GetDebugString() const;
+		static const TableSchema& GetSchema();
+	};
+	struct BaseCommission
+	{
+	public:
+		static constexpr unsigned int TableId = 0x300B;
+		//交易组代码
+		GroupIdType CommissionGroupId;
+		//交易所代码
+		ExchangeIdType ExchangeId;
+		//合约代码
+		InstrumentIdType InstrumentId;
+		//买卖方向
+		DirectionType Direction;
+		//开仓费率
+		RateType OpenByMoney;
+		//平仓费率
+		RateType CloseByMoney;
+		//每手开仓费用
+		RateType OpenByVolume;
+		//每手平仓费用
+		RateType CloseByVolume;
+		//开仓印花税率
+		RateType OpenStampTaxByMoney;
+		//平仓印花税率
+		RateType CloseStampTaxByMoney;
+		//开仓过户费率
+		RateType OpenTransferFeeByMoney;
+		//平仓过户费率
+		RateType CloseTransferFeeByMoney;
+		//最低手续费
+		MoneyType MinCommission;
+		//最高手续费
+		MoneyType MaxCommission;
+		
+		static BaseCommission* Allocate();
+		void Deallocate();
+		const char* GetString() const;
+		const char* GetDebugString() const;
+		static const TableSchema& GetSchema();
+	};
 
 	extern thread_local TradingDay CompareTradingDay;
 	extern thread_local Exchange CompareExchange;
@@ -798,6 +868,8 @@ namespace QuantTrading
 	extern thread_local Trade CompareTrade;
 	extern thread_local AccountLoginSession CompareAccountLoginSession;
 	extern thread_local PrimaryAccountLoginSession ComparePrimaryAccountLoginSession;
+	extern thread_local CommissionGroup CompareCommissionGroup;
+	extern thread_local BaseCommission CompareBaseCommission;
 
 }
 

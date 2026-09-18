@@ -241,10 +241,34 @@ class GridStrategy(qt.StrategyBase):
         return None
 
 
+RESULT_FILE_NAME = "result.json"
+
+# 退出码契约（与 src/BackTest/RunResult.h 同源）：
+# 0 成功 / 1 宿主启动失败 / 2 结果文件缺失或不可解析 / 3 引擎报告失败
+EXIT_CODE_HOST_INIT_FAILED = 1
+EXIT_CODE_RESULT_FILE_UNREADABLE = 2
+EXIT_CODE_ENGINE_FAILED = 3
+
+
+def read_exit_code(result_file_path):
+    """按结果契约把 result.json 映射成退出码；文件缺失或坏掉一律算「本轮没走完收尾」。"""
+    try:
+        with open(result_file_path, encoding="utf-8") as result_file:
+            run_result = json.load(result_file)
+    except (OSError, ValueError):
+        return EXIT_CODE_RESULT_FILE_UNREADABLE
+    return 0 if run_result.get("Success", False) else EXIT_CODE_ENGINE_FAILED
+
+
 def main():
     with open("TestStrategyGrid.json", encoding="utf-8") as config_file:
         config = json.load(config_file)
     qt.init_logger(sys.argv[0], config["LogLevel"])
+    # 启动前先删陈旧结果，让「文件不存在」等价于「本轮没走完收尾」
+    try:
+        os.remove(RESULT_FILE_NAME)
+    except FileNotFoundError:
+        pass
     api = qt.create_backtest_api()
     params = GridParams(
         grid_step=config["GridStep"],
@@ -256,10 +280,10 @@ def main():
     strategy = GridStrategy(api, config["AccountId"], params)
     if not strategy.start():
         qt.shutdown_logger()
-        return 1
+        return EXIT_CODE_HOST_INIT_FAILED
     strategy.wait_for_end()
     qt.shutdown_logger()
-    return 0
+    return read_exit_code(RESULT_FILE_NAME)
 
 
 if __name__ == "__main__":

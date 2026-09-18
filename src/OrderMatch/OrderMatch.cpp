@@ -137,7 +137,7 @@ namespace QuantTrading::OrderMatch
         trade->Price = price;
         trade->Volume = volume;
         trade->VolumeMultiple = order->VolumeMultiple;
-        trade->TradeAmount = price * volume * order->VolumeMultiple;;
+        trade->TradeAmount = price * volume * order->VolumeMultiple;
         trade->Commission = 0;
         strcpy(trade->TradeDate, currDate_);
         strcpy(trade->TradeTime, currTime_);

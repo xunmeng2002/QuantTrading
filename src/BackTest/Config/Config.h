@@ -30,6 +30,9 @@ public:
 	string DbUser;
 	string DbPassword;
 	string DbHost;
+	string DbInitHost;
+	double InitialCapital;
+	int CommissionGroupId;
 	
 private:
 	static Config instance_;

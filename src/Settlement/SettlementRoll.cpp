@@ -30,6 +30,8 @@ namespace QuantTrading::Settlement
 			newCapital->CashIn = 0.0;
 			newCapital->CashOut = 0.0;
 			newCapital->Commission = 0.0;
+			newCapital->StampTax = 0.0;
+			newCapital->TransferFee = 0.0;
 			newCapital->FrozenCash = 0.0;
 			newCapital->FrozenMargin = 0.0;
 			newCapital->FrozenCommission = 0.0;
@@ -61,6 +63,8 @@ namespace QuantTrading::Settlement
 			newPosition->CashIn = 0;
 			newPosition->CashOut = 0;
 			newPosition->Commission = 0.0;
+			newPosition->StampTax = 0.0;
+			newPosition->TransferFee = 0.0;
 			newPosition->FrozenCash = 0;
 			newPosition->FrozenMargin = 0;
 			newPosition->FrozenCommission = 0;
@@ -90,6 +94,8 @@ namespace QuantTrading::Settlement
 			newPositionDetail->CashIn = 0;
 			newPositionDetail->CashOut = 0;
 			newPositionDetail->Commission = 0;
+			newPositionDetail->StampTax = 0;
+			newPositionDetail->TransferFee = 0;
 			newPositionDetail->CloseProfitByDate = 0.0;
 			newPositionDetail->CloseProfitByTrade = 0.0;
 			newPositionDetail->PositionProfitByDate = 0.0;

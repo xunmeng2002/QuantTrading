@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/BackTestApi/BackTestApiImpl.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "BackTestApiImpl.h"
 #include "SimExchange.h"
 #include "Config/Config.h"

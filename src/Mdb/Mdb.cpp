@@ -29,6 +29,8 @@ namespace QuantTrading
 			case Trade::TableId:  Trade = new TradeTable(); tables_.push_back(Trade); break;
 			case AccountLoginSession::TableId:  AccountLoginSession = new AccountLoginSessionTable(); tables_.push_back(AccountLoginSession); break;
 			case PrimaryAccountLoginSession::TableId:  PrimaryAccountLoginSession = new PrimaryAccountLoginSessionTable(); tables_.push_back(PrimaryAccountLoginSession); break;
+			case CommissionGroup::TableId:  CommissionGroup = new CommissionGroupTable(); tables_.push_back(CommissionGroup); break;
+			case BaseCommission::TableId:  BaseCommission = new BaseCommissionTable(); tables_.push_back(BaseCommission); break;
 			default: break;
 			}
 		}

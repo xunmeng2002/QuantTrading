@@ -183,6 +183,8 @@ namespace QuantTrading::OrderMatch
         position->PositionFrozen = 0;
         position->TodayPosition = trade->Volume;
         position->Commission = trade->Commission;
+        position->StampTax = trade->StampTax;
+        position->TransferFee = trade->TransferFee;
         position->VolumeMultiple = trade->VolumeMultiple;
         position->PreSettlementPrice = trade->Price;
         position->SettlementPrice = trade->Price;
@@ -204,6 +206,8 @@ namespace QuantTrading::OrderMatch
         positionDetail->Volume = trade->Volume;
         positionDetail->OpenPrice = trade->Price;
         positionDetail->Commission = trade->Commission;
+        positionDetail->StampTax = trade->StampTax;
+        positionDetail->TransferFee = trade->TransferFee;
         positionDetail->VolumeMultiple = trade->VolumeMultiple;
         positionDetail->CloseVolume = 0;
         positionDetail->CloseAmount = 0.0;

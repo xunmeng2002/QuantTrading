@@ -1,10 +1,13 @@
 #include "BackTestApiMiddle.h"
 #include "GridStrategy.h"
+#include "RunResult.h"
 #include "Config/Config.h"
 #include <Spark/Core/Logger/Logger.h>
+#include <cstdio>
 
 using namespace QuantTrading;
 using namespace QuantTrading::TestStrategyGrid;
+using namespace QuantTrading::BackTest;
 
 const char* ConfigName = "TestStrategyGrid.json";
 
@@ -15,6 +18,9 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Init(argv[0]);
 	Logger::GetInstance().SetLogLevel(LogLevel(config.LogLevel), LogLevel::Info);
 	Logger::GetInstance().Start();
+
+	// 启动前先删陈旧结果，让「文件不存在」等价于「本轮没走完收尾」
+	std::remove(ResultFileName);
 
 	// 交易节由 BackTest.dll 内的回测引擎自己装载（BackTest.json 的 SessionFile），
 	// 策略宿主只声明期望的 bar 周期，聚合与桶对齐全部发生在引擎侧，本进程不再持有交易节
@@ -31,11 +37,11 @@ int main(int argc, char* argv[])
 	{
 		Logger::GetInstance().Stop();
 		Logger::GetInstance().Join();
-		return 1;
+		return ExitCodeHostInitFailed;
 	}
 	gridStrategy.WaitForEnd();
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();
-	return 0;
+	return ExitCodeFromRunResultFile(ResultFileName);
 }

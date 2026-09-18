@@ -12,5 +12,8 @@
 		<item name="DbUser" type="string"></item>
 		<item name="DbPassword" type="string"></item>
 		<item name="DbHost" type="string"></item>
+		<item name="DbInitHost" type="string"></item>
+		<item name="InitialCapital" type="double"></item>
+		<item name="CommissionGroupId" type="int"></item>
 	</items>
 </config>

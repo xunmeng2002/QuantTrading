@@ -246,5 +246,29 @@ namespace QuantTrading
 	{
 		size_t operator()(const PrimaryAccountLoginSession* const record) const;
 	};
+	struct CommissionGroupEqualForCommissionGroupPrimaryKey
+	{
+		bool operator()(const CommissionGroup* const left, const CommissionGroup* const right) const;
+	};
+	struct CommissionGroupLessForCommissionGroupPrimaryKey
+	{
+		bool operator()(const CommissionGroup* const left, const CommissionGroup* const right) const;
+	};
+	struct CommissionGroupHashForCommissionGroupPrimaryKey
+	{
+		size_t operator()(const CommissionGroup* const record) const;
+	};
+	struct BaseCommissionEqualForBaseCommissionPrimaryKey
+	{
+		bool operator()(const BaseCommission* const left, const BaseCommission* const right) const;
+	};
+	struct BaseCommissionLessForBaseCommissionPrimaryKey
+	{
+		bool operator()(const BaseCommission* const left, const BaseCommission* const right) const;
+	};
+	struct BaseCommissionHashForBaseCommissionPrimaryKey
+	{
+		size_t operator()(const BaseCommission* const record) const;
+	};
 }
 

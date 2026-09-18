@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "TraderSpiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
@@ -27,7 +27,7 @@ void TraderSpiMiddle::OnDisConnected()
 
 void TraderSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspAccountLogin: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspAccountLogin: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspAccountLogin != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspAccountLoginField:AccountId:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]",
@@ -49,7 +49,7 @@ void TraderSpiMiddle::OnRspAccountLogin(const RspAccountLoginField* rspAccountLo
 }
 void TraderSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspAccountLogout: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspAccountLogout: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspAccountLogout != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspAccountLogoutField:AccountId:[%s]",
@@ -71,7 +71,7 @@ void TraderSpiMiddle::OnRspAccountLogout(const RspAccountLogoutField* rspAccount
 }
 void TraderSpiMiddle::OnRspQryHolderAccount(const HolderAccountField* holderAccount, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryHolderAccount: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryHolderAccount: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (holderAccount != nullptr)
 	{
 		WriteLog(LogLevel::Info, "HolderAccountField:ExchangeId:[%s], HolderAccountId:[%s], PrimaryFlag:[%d]",
@@ -93,7 +93,7 @@ void TraderSpiMiddle::OnRspQryHolderAccount(const HolderAccountField* holderAcco
 }
 void TraderSpiMiddle::OnRspQryCapital(const CapitalField* capital, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryCapital: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryCapital: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (capital != nullptr)
 	{
 		WriteLog(LogLevel::Info, "CapitalField:TradingDay:[%s], AccountId:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]",
@@ -115,7 +115,7 @@ void TraderSpiMiddle::OnRspQryCapital(const CapitalField* capital, const RspInfo
 }
 void TraderSpiMiddle::OnRspQryPosition(const PositionField* position, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryPosition: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryPosition: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (position != nullptr)
 	{
 		WriteLog(LogLevel::Info, "PositionField:TradingDay:[%s], AccountId:[%s], AccountType:[%d], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], LastPrice:[%f], PreSettlementPrice:[%f]",
@@ -137,7 +137,7 @@ void TraderSpiMiddle::OnRspQryPosition(const PositionField* position, const RspI
 }
 void TraderSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryOrder: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryOrder: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (order != nullptr)
 	{
 		WriteLog(LogLevel::Info, "OrderField:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], VolumeTotal:[%lld], VolumeTraded:[%lld], VolumeMultiple:[%d], OrderStatus:[%d], OrderDate:[%s], OrderTime:[%s], CancelDate:[%s], CancelTime:[%s], SessionId:[%lld], ClientOrderId:[%d], RequestId:[%d], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f]",
@@ -159,7 +159,7 @@ void TraderSpiMiddle::OnRspQryOrder(const OrderField* order, const RspInfoField*
 }
 void TraderSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryTrade: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryTrade: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (trade != nullptr)
 	{
 		WriteLog(LogLevel::Info, "TradeField:TradingDay:[%s], AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], TradeId:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
@@ -181,7 +181,7 @@ void TraderSpiMiddle::OnRspQryTrade(const TradeField* trade, const RspInfoField*
 }
 void TraderSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryInstrument: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryInstrument: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (instrument != nullptr)
 	{
 		WriteLog(LogLevel::Info, "InstrumentField:ExchangeId:[%s], InstrumentId:[%s], ExchangeInstId:[%s], InstrumentName:[%s], ProductId:[%s], ProductClass:[%d], VolumeMultiple:[%d], PriceTick:[%f], MaxMarketOrderVolume:[%lld], MinMarketOrderVolume:[%lld], MaxLimitOrderVolume:[%lld], MinLimitOrderVolume:[%lld], SessionName:[%s]",
@@ -203,7 +203,7 @@ void TraderSpiMiddle::OnRspQryInstrument(const InstrumentField* instrument, cons
 }
 void TraderSpiMiddle::OnRspQryOptionInstrument(const OptionInstrumentField* optionInstrument, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryOptionInstrument: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryOptionInstrument: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (optionInstrument != nullptr)
 	{
 		WriteLog(LogLevel::Info, "OptionInstrumentField:ExchangeId:[%s], InstrumentId:[%s], ExchangeInstId:[%s], InstrumentName:[%s], VolumeMultiple:[%d], OptionType:[%d], UnderlyingInstrumentId:[%s], ExecutePrice:[%f], UnitMargin:[%f], PriceTick:[%f], MaxLimitOrderVolume:[%lld], MaxMarketOrderVolume:[%lld], ExpiringDate:[%s]",
@@ -225,11 +225,11 @@ void TraderSpiMiddle::OnRspQryOptionInstrument(const OptionInstrumentField* opti
 }
 void TraderSpiMiddle::OnRspQryCommissionRate(const CommissionRateField* commissionRate, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryCommissionRate: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryCommissionRate: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (commissionRate != nullptr)
 	{
-		WriteLog(LogLevel::Info, "CommissionRateField:AccountId:[%s], ExchangeId:[%s], ProductClass:[%d], OpenBuyByMoney:[%f], OpenSellByMoney:[%f], CloseBuyByMoney:[%f], CloseSellByMoney:[%f], OpenBuyByVolume:[%f], OpenSellByVolume:[%f], CloseBuyByVolume:[%f], CloseSellByVolume:[%f], MinCommission:[%f], MaxCommission:[%f]",
-			commissionRate->AccountId, commissionRate->ExchangeId, static_cast<int>(commissionRate->ProductClass), GetDoubleValue(commissionRate->OpenBuyByMoney), GetDoubleValue(commissionRate->OpenSellByMoney), GetDoubleValue(commissionRate->CloseBuyByMoney), GetDoubleValue(commissionRate->CloseSellByMoney), GetDoubleValue(commissionRate->OpenBuyByVolume), GetDoubleValue(commissionRate->OpenSellByVolume), GetDoubleValue(commissionRate->CloseBuyByVolume), GetDoubleValue(commissionRate->CloseSellByVolume), GetDoubleValue(commissionRate->MinCommission), GetDoubleValue(commissionRate->MaxCommission));
+		WriteLog(LogLevel::Info, "CommissionRateField:AccountId:[%s], ExchangeId:[%s], ProductClass:[%d], OpenByMoney:[%f], CloseByMoney:[%f], OpenByVolume:[%f], CloseByVolume:[%f], OpenStampTaxByMoney:[%f], CloseStampTaxByMoney:[%f], OpenTransferFeeByMoney:[%f], CloseTransferFeeByMoney:[%f], MinCommission:[%f], MaxCommission:[%f]",
+			commissionRate->AccountId, commissionRate->ExchangeId, static_cast<int>(commissionRate->ProductClass), GetDoubleValue(commissionRate->OpenByMoney), GetDoubleValue(commissionRate->CloseByMoney), GetDoubleValue(commissionRate->OpenByVolume), GetDoubleValue(commissionRate->CloseByVolume), GetDoubleValue(commissionRate->OpenStampTaxByMoney), GetDoubleValue(commissionRate->CloseStampTaxByMoney), GetDoubleValue(commissionRate->OpenTransferFeeByMoney), GetDoubleValue(commissionRate->CloseTransferFeeByMoney), GetDoubleValue(commissionRate->MinCommission), GetDoubleValue(commissionRate->MaxCommission));
 	}
 	else
 	{
@@ -247,7 +247,7 @@ void TraderSpiMiddle::OnRspQryCommissionRate(const CommissionRateField* commissi
 }
 void TraderSpiMiddle::OnRspQryMoneyTransfer(const MoneyTransferField* moneyTransfer, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspQryMoneyTransfer: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspQryMoneyTransfer: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (moneyTransfer != nullptr)
 	{
 		WriteLog(LogLevel::Info, "MoneyTransferField:TradingDay:[%s], AccountId:[%s], MoneyTransferId:[%d], AccountType:[%d], TransferDirection:[%d], TransferAmount:[%f], InfoMessage:[%s], UserId:[%s], TransferDate:[%s], TransferTime:[%s]",
@@ -269,7 +269,7 @@ void TraderSpiMiddle::OnRspQryMoneyTransfer(const MoneyTransferField* moneyTrans
 }
 void TraderSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspInsertOrder: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (reqInsertOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqInsertOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OffsetFlag:[%d], OrderPriceType:[%d], Price:[%f], Volume:[%lld], ClientOrderId:[%d]",
@@ -291,7 +291,7 @@ void TraderSpiMiddle::OnRspInsertOrder(const ReqInsertOrderField* reqInsertOrder
 }
 void TraderSpiMiddle::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspCancelOrder: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (reqCancelOrder != nullptr)
 	{
 		WriteLog(LogLevel::Info, "ReqCancelOrderField:AccountId:[%s], ExchangeId:[%s], InstrumentId:[%s], ClientCancelOrderId:[%d], OrderId:[%d], OrderSysId:[%s], SessionId:[%lld], ClientOrderId:[%d]",

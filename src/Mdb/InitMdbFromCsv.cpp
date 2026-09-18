@@ -36,6 +36,8 @@ namespace QuantTrading
 			case PositionDetail::TableId:  LoadPositionDetailTable(mdb, dir); break;
 			case Order::TableId:  LoadOrderTable(mdb, dir); break;
 			case Trade::TableId:  LoadTradeTable(mdb, dir); break;
+			case CommissionGroup::TableId:  LoadCommissionGroupTable(mdb, dir); break;
+			case BaseCommission::TableId:  LoadBaseCommissionTable(mdb, dir); break;
 			default: break;
 			}
 		}
@@ -592,6 +594,8 @@ namespace QuantTrading
 			record->PositionProfitByTrade = csvRecord.GetFieldAsDouble("PositionProfitByTrade");
 			record->Deposit = csvRecord.GetFieldAsDouble("Deposit");
 			record->Withdraw = csvRecord.GetFieldAsDouble("Withdraw");
+			record->StampTax = csvRecord.GetFieldAsDouble("StampTax");
+			record->TransferFee = csvRecord.GetFieldAsDouble("TransferFee");
 			mdb->Capital->Insert(record);
 		}
 		file.close();
@@ -649,6 +653,8 @@ namespace QuantTrading
 			record->PositionProfitByTrade = csvRecord.GetFieldAsDouble("PositionProfitByTrade");
 			record->SettlementPrice = csvRecord.GetFieldAsDouble("SettlementPrice");
 			record->PreSettlementPrice = csvRecord.GetFieldAsDouble("PreSettlementPrice");
+			record->StampTax = csvRecord.GetFieldAsDouble("StampTax");
+			record->TransferFee = csvRecord.GetFieldAsDouble("TransferFee");
 			mdb->Position->Insert(record);
 		}
 		file.close();
@@ -706,6 +712,8 @@ namespace QuantTrading
 			record->PreSettlementPrice = csvRecord.GetFieldAsDouble("PreSettlementPrice");
 			record->CloseVolume = csvRecord.GetFieldAsInt64("CloseVolume");
 			record->CloseAmount = csvRecord.GetFieldAsDouble("CloseAmount");
+			record->StampTax = csvRecord.GetFieldAsDouble("StampTax");
+			record->TransferFee = csvRecord.GetFieldAsDouble("TransferFee");
 			mdb->PositionDetail->Insert(record);
 		}
 		file.close();
@@ -821,7 +829,89 @@ namespace QuantTrading
 			record->Commission = csvRecord.GetFieldAsDouble("Commission");
 			Utility::Strcpy(record->TradeDate, csvRecord.GetFieldAsString("TradeDate"));
 			Utility::Strcpy(record->TradeTime, csvRecord.GetFieldAsString("TradeTime"));
+			record->StampTax = csvRecord.GetFieldAsDouble("StampTax");
+			record->TransferFee = csvRecord.GetFieldAsDouble("TransferFee");
 			mdb->Trade->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadCommissionGroupTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		snprintf(fullPath, sizeof(fullPath), "%s/t_CommissionGroup.csv", dir);
+		std::fstream file(fullPath, std::fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CsvRecord csvRecord;
+		if (!csvRecord.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_CommissionGroup.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csvRecord.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_CommissionGroup.csv failed");
+			}
+
+			auto record = CommissionGroup::Allocate();
+			record->CommissionGroupId = csvRecord.GetFieldAsInt("CommissionGroupId");
+			Utility::Strcpy(record->CommissionGroupName, csvRecord.GetFieldAsString("CommissionGroupName"));
+			mdb->CommissionGroup->Insert(record);
+		}
+		file.close();
+	}
+	void InitMdbFromCsv::LoadBaseCommissionTable(Mdb* mdb, const char* dir)
+	{
+		char fullPath[260];
+		snprintf(fullPath, sizeof(fullPath), "%s/t_BaseCommission.csv", dir);
+		std::fstream file(fullPath, std::fstream::in);
+		if (!file)
+		{
+			throw std::string(fullPath) + " Open Failed.";
+		}
+
+		file.getline(HeaderBuffer, sizeof(HeaderBuffer), '\n');
+		CsvRecord csvRecord;
+		if (!csvRecord.AnalysisFieldName(HeaderBuffer))
+		{
+			throw std::string("AnalysisFieldName t_BaseCommission.csv failed");
+		}
+		while (!file.eof())
+		{
+			::memset(ContentBuffer, 0, sizeof(ContentBuffer));
+			file.getline(ContentBuffer, sizeof(ContentBuffer), '\n');
+			if (ContentBuffer[0] == '\0')
+				break;
+			if (!csvRecord.AnalysisFieldContent(ContentBuffer))
+			{
+				throw std::string("AnalysisFieldContent t_BaseCommission.csv failed");
+			}
+
+			auto record = BaseCommission::Allocate();
+			record->CommissionGroupId = csvRecord.GetFieldAsInt("CommissionGroupId");
+			Utility::Strcpy(record->ExchangeId, csvRecord.GetFieldAsString("ExchangeId"));
+			Utility::Strcpy(record->InstrumentId, csvRecord.GetFieldAsString("InstrumentId"));
+			record->Direction = static_cast<DirectionType>(csvRecord.GetFieldAsInt("Direction"));
+			record->OpenByMoney = csvRecord.GetFieldAsDouble("OpenByMoney");
+			record->CloseByMoney = csvRecord.GetFieldAsDouble("CloseByMoney");
+			record->OpenByVolume = csvRecord.GetFieldAsDouble("OpenByVolume");
+			record->CloseByVolume = csvRecord.GetFieldAsDouble("CloseByVolume");
+			record->OpenStampTaxByMoney = csvRecord.GetFieldAsDouble("OpenStampTaxByMoney");
+			record->CloseStampTaxByMoney = csvRecord.GetFieldAsDouble("CloseStampTaxByMoney");
+			record->OpenTransferFeeByMoney = csvRecord.GetFieldAsDouble("OpenTransferFeeByMoney");
+			record->CloseTransferFeeByMoney = csvRecord.GetFieldAsDouble("CloseTransferFeeByMoney");
+			record->MinCommission = csvRecord.GetFieldAsDouble("MinCommission");
+			record->MaxCommission = csvRecord.GetFieldAsDouble("MaxCommission");
+			mdb->BaseCommission->Insert(record);
 		}
 		file.close();
 	}

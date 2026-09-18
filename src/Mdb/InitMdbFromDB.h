@@ -28,5 +28,7 @@ namespace QuantTrading
 		static void LoadPositionDetailTable(Mdb* mdb, Db* db);
 		static void LoadOrderTable(Mdb* mdb, Db* db);
 		static void LoadTradeTable(Mdb* mdb, Db* db);
+		static void LoadCommissionGroupTable(Mdb* mdb, Db* db);
+		static void LoadBaseCommissionTable(Mdb* mdb, Db* db);
 	};
 }

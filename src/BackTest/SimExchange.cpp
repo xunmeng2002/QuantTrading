@@ -6,7 +6,9 @@
 #include "Error.h"
 #include "QuantUtility.h"
 #include "OrderUtility.h"
+#include "BackTestInitDbTableList.h"
 #include "InitMdbFromCsv.h"
+#include "InitMdbFromDB.h"
 #include "MdbFieldConverter.h"
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Logger/Logger.h>
@@ -18,6 +20,8 @@
 #include <chrono>
 #include <cmath>
 #include <filesystem>
+#include <iterator>
+#include <memory>
 #include <stdexcept>
 
 using namespace std;
@@ -85,12 +89,38 @@ static void InsertInstrumentOrUpdate(InstrumentTable* instrumentTable, Instrumen
     instrumentTable->Update(oldInstrument, instrument);
 }
 
+// 行数一律取自内存表：dbWriter_ 是异步的，去查输出库会读到本轮尚未写完的产物
+template <typename TableType>
+static int CountTableRows(TableType* table)
+{
+	if (table == nullptr)
+	{
+		return 0;
+	}
+	auto itPair = table->PrimaryKey->SelectAll();
+	return static_cast<int>(std::distance(itPair.first, itPair.second));
+}
+
+static const char* GetErrorReason(unsigned int errorId)
+{
+	switch (errorId)
+	{
+	case ErrorMarketDataNotExist:
+		return "MarketData Not Exist Or Not Subscribed";
+	default:
+		return "Unknown";
+	}
+}
+
 
 namespace QuantTrading::BackTest
 {
 SimExchange::SimExchange(const Config& config)
 	:ThreadBase("SimExchange"), backTestSpi_(nullptr), hasSubMd_(false), isMdEnd_(false),
-	registry_(BackTestTableList), currDate_(""), currTime_(""), sessionFile_(config.SessionFile)
+	registry_(BackTestTableList), currDate_(""), currTime_(""), sessionFile_(config.SessionFile),
+	mdb_(new Mdb(BackTestTableList)), commissionCalculator_(mdb_),
+	errorId_(ErrorNone), dbInitHost_(config.DbInitHost), initialCapital_(config.InitialCapital),
+	commissionGroupId_(config.CommissionGroupId), basicDataLoaded_(false), volumeMultipleFallbackProductCount_(0)
 {
 	auto matchMode = (MatchModeType)config.MatchMode;
 	strcpy(tradingDay_, config.StartTradingDay.c_str());
@@ -99,6 +129,7 @@ SimExchange::SimExchange(const Config& config)
 	marketDataType_ = matchMode == MatchModeType::Bar ? MarketDataTypeType::Bar : MarketDataTypeType::Tick;
 	memset(&pushMdTick_, 0, sizeof(DepthMarketDataField));
 	memset(&pushMdBar_, 0, sizeof(BarMarketDataField));
+	memset(accountId_, 0, sizeof(accountId_));
 	mdReader_ = new MdReader(config);
 	// RunId 由调度侧经配置注入，用于固定本次运行的身份与产物名；留空则引擎自生成
 	runId_ = config.RunId.empty() ? MakeRunId() : config.RunId;
@@ -106,12 +137,13 @@ SimExchange::SimExchange(const Config& config)
 	dumpPath_ = config.DumpPath + "/" + runId_;
 	std::error_code dumpDirError;
 	std::filesystem::create_directories(dumpPath_, dumpDirError);
-	auto runDbHost = DeriveRunDbHost(config.DbHost, runId_);
-	db_ = CreateDataDb(config.DbType, runDbHost, config.DbUser, config.DbPassword);
-	WriteLog(LogLevel::Info, "RunID:%s, DbHost:%s, DumpPath:%s", runId_.c_str(), runDbHost.c_str(), dumpPath_.c_str());
+	runDbHost_ = DeriveRunDbHost(config.DbHost, runId_);
+	db_ = CreateDataDb(config.DbType, runDbHost_, config.DbUser, config.DbPassword);
+	WriteLog(LogLevel::Info, "RunID:%s, DbHost:%s, DumpPath:%s", runId_.c_str(), runDbHost_.c_str(), dumpPath_.c_str());
+	// 种子必须在 Subscribe 之前灌：种子行不逐行入队，避免与收尾 mdb_->InitDb() 的批量入队重复写库
+	basicDataLoaded_ = LoadBasicDataFromInitDb(config);
     dbWriter_ = new AsyncDbWriter(db_, &registry_);
 	dbWriter_->Subscribe(this);
-	mdb_ = new Mdb(BackTestTableList);
 	orderMatch_ = QuantTrading::OrderMatch::OrderMatch::CreateOrderMatch(matchMode, tradingDay_);
 	orderMatch_->Subscribe(this);
 	positionMaintenance_ = new QuantTrading::Settlement::PositionMaintenance(mdb_);
@@ -191,6 +223,8 @@ void SimExchange::OnOrderUpdate(QuantTrading::Order* order, QuantTrading::Order*
 }
 void SimExchange::OnTrade(QuantTrading::Trade* trade)
 {
+	// 计费必须早于 SendRtnTrade（策略的 on_trade 要看到本次费用）与 UpdateOnTrade（开仓明细抄 trade->Commission）
+	commissionCalculator_.Apply(trade);
     mdb_->Trade->Insert(trade);
 	SendRtnTrade(trade);
 	positionMaintenance_->UpdateOnTrade(trade);
@@ -347,9 +381,103 @@ void SimExchange::OnMdEnd()
 	Settlement();
 	mdb_->Dump(dumpPath_.c_str());
 	WriteLog(LogLevel::Info, "Dump Completed\n");
-	
+
+	// 订阅成功但行情零行：这种「本轮无意义」与正常跑完在日志上完全不可区分，只能由派生判据兜住
+	if (errorId_ == ErrorNone && CountTableRows(mdb_->BarMarketData) == 0 && CountTableRows(mdb_->DepthMarketData) == 0)
+	{
+		SetError(ErrorMarketDataNotExist);
+	}
+	WriteRunResult();
 	mdb_->InitDb();
     SendRtnMarketDataEnd();
+}
+
+void SimExchange::SetError(unsigned int errorId)
+{
+	if (errorId_ != ErrorNone)
+	{
+		return;
+	}
+	errorId_ = errorId;
+	errorMessage_ = GetErrorReason(errorId);
+	WriteLog(LogLevel::Warning, "RunError Set, ErrorId:0x%X, ErrorMsg:%s", errorId, errorMessage_.c_str());
+}
+
+RunResult SimExchange::BuildRunResult() const
+{
+	RunResult runResult;
+	runResult.RunId = runId_;
+	runResult.Success = errorId_ == ErrorNone;
+	runResult.ErrorId = static_cast<int>(errorId_);
+	runResult.ErrorMsg = errorMessage_;
+	runResult.DumpPath = dumpPath_;
+	runResult.DbPath = runDbHost_;
+	runResult.StartTradingDay = startTradingDay_;
+	runResult.EndTradingDay = endTradingDay_;
+	runResult.LastTradingDay = tradingDay_;
+	runResult.AccountId = accountId_;
+	runResult.BasicDataLoaded = basicDataLoaded_;
+	runResult.MdSubscribeCount = CountTableRows(mdb_->MdSubscribe);
+	runResult.BarMarketDataCount = CountTableRows(mdb_->BarMarketData);
+	runResult.DepthMarketDataCount = CountTableRows(mdb_->DepthMarketData);
+	runResult.InstrumentCount = CountTableRows(mdb_->Instrument);
+	runResult.OrderCount = CountTableRows(mdb_->Order);
+	runResult.TradeCount = CountTableRows(mdb_->Trade);
+	auto capital = mdb_->Capital->PrimaryKey->Select(tradingDay_, accountId_);
+	runResult.HasCapital = capital != nullptr;
+	if (capital != nullptr)
+	{
+		runResult.Balance = capital->Balance;
+		runResult.Available = capital->Available;
+		runResult.Commission = capital->Commission;
+		runResult.StampTax = capital->StampTax;
+		runResult.TransferFee = capital->TransferFee;
+	}
+	runResult.CommissionMissingCount = static_cast<int>(commissionCalculator_.GetMissingRateCount());
+	runResult.CommissionZeroRateKeyCount = static_cast<int>(commissionCalculator_.GetZeroRateKeyCount());
+	runResult.MissingRateKeys = commissionCalculator_.GetMissingRateKeys();
+	runResult.VolumeMultipleFallbackProductCount = volumeMultipleFallbackProductCount_;
+	return runResult;
+}
+
+void SimExchange::WriteRunResult() const
+{
+	const auto runResult = BuildRunResult();
+	const bool isWritten = WriteRunResultFile(ResultFileName, runResult);
+	if (!isWritten)
+	{
+		WriteLog(LogLevel::Error, "WriteRunResultFile Failed, Path:%s", ResultFileName);
+		return;
+	}
+	WriteLog(LogLevel::Info, "RunResult Written, Path:%s, Success:%d, ErrorId:0x%X, TradeCount:%d, Balance:%f",
+		ResultFileName, runResult.Success, runResult.ErrorId, runResult.TradeCount, runResult.Balance);
+}
+
+bool SimExchange::LoadBasicDataFromInitDb(const Config& config)
+{
+	if (dbInitHost_.empty())
+	{
+		WriteLog(LogLevel::Warning, "DbInitHost is Empty, BasicData Not Loaded");
+		return false;
+	}
+	// SQLite/DuckDB 对不存在的路径会静默建空库，故缺库只能靠文件存在性判断，不能靠 Connect 失败
+	if (!std::filesystem::exists(dbInitHost_))
+	{
+		WriteLog(LogLevel::Warning, "InitDb File Not Exist, BasicData Not Loaded, DbInitHost:%s", dbInitHost_.c_str());
+		return false;
+	}
+	std::unique_ptr<Db> initDb(CreateDataDb(config.DbType, dbInitHost_, config.DbUser, config.DbPassword));
+	if (!initDb->Connect())
+	{
+		WriteLog(LogLevel::Error, "InitDb Connect Failed, BasicData Not Loaded, DbInitHost:%s", dbInitHost_.c_str());
+		return false;
+	}
+	// 开库→抽干→关库全在本函数作用域内完成，不设成员：成员化会引入一处必须记得 delete 的所有权
+	InitMdbFromDb::LoadTables(mdb_, initDb.get(), BackTestInitDbTableList);
+	initDb->DisConnect();
+	WriteLog(LogLevel::Info, "BasicData Loaded, DbInitHost:%s, ProductCount:%d, BaseCommissionCount:%d", dbInitHost_.c_str(),
+		CountTableRows(mdb_->Product), CountTableRows(mdb_->BaseCommission));
+	return true;
 }
 
 void SimExchange::PushNextTick(QuantTrading::DepthMarketData* mdTick)
@@ -582,6 +710,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 	}
 	if (hasRejectedBarPeriod)
 	{
+		SetError(ErrorMarketDataNotExist);
 		OnMdEnd();
 		return;
 	}
@@ -604,6 +733,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 	if (yearMdSubscribes.empty())
 	{
 		WriteLog(LogLevel::Warning, "MdSubscribes is Empty.");
+		SetError(ErrorMarketDataNotExist);
 		OnMdEnd();
 		return;
 	}
@@ -633,10 +763,11 @@ void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 {
 	WriteLog(LogLevel::Info, "HandleRegisterAccount %s", reqPackage->GetDebugString());
 	auto reqRegisterAccount = reqPackage->ReqRegisterAccount;
+	strcpy(accountId_, reqRegisterAccount->AccountId);
 	auto account = mdb_->Account->PrimaryKey->Select(reqRegisterAccount->AccountId);
 	if (account == nullptr)
 	{
-		// 回测账户按需自建（同 BackTestInit 种子语义）：Balance=0，资金账目由日终结算按日滚动
+		// 回测账户按需自建：资金账目由日终结算按日滚动，首日以 InitialCapital 开局
 		account = QuantTrading::Account::Allocate();
 		memset(account, 0, sizeof(QuantTrading::Account));
 		strcpy(account->AccountId, reqRegisterAccount->AccountId);
@@ -645,7 +776,7 @@ void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 		account->AccountStatus = AccountStatusType::Normal;
 		account->TradeGroupId = 1;
 		account->RiskGroupId = 1;
-		account->CommissionGroupId = 1;
+		account->CommissionGroupId = commissionGroupId_;
 		mdb_->Account->Insert(account);
 
 		auto capital = QuantTrading::Capital::Allocate();
@@ -653,8 +784,13 @@ void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 		strcpy(capital->TradingDay, tradingDay_);
 		strcpy(capital->AccountId, account->AccountId);
 		capital->AccountType = AccountTypeType::Primary;
+		// 结算链以 PreBalance 为起点：Balance = PreBalance + 盈亏 - 三项费用，故四项同置为初始资金
+		capital->PreBalance = initialCapital_;
+		capital->Balance = initialCapital_;
+		capital->Available = initialCapital_;
+		capital->Deposit = initialCapital_;
 		mdb_->Capital->Insert(capital);
-		WriteLog(LogLevel::Info, "Account registered, AccountId:%s, TradingDay:%s", account->AccountId, tradingDay_);
+		WriteLog(LogLevel::Info, "Account registered, AccountId:%s, TradingDay:%s, InitialCapital:%f", account->AccountId, tradingDay_, initialCapital_);
 	}
 	else
 	{
@@ -756,6 +892,11 @@ void SimExchange::InitMdInstrument()
 		}
 		else
 		{
+			// 品种未登记时 VolumeMultiple 兜底为 1：股票口径下这本来就是对的，故不判失败；
+			// 但期货口径会静默算错成交金额与费用，按 (交易所, 品种) 告警并计数进 result.json
+			++volumeMultipleFallbackProductCount_;
+			WriteLog(LogLevel::Warning, "Product Not Exist, VolumeMultiple Fallback To 1, ExchangeId:%s, ProductId:%s, InstrumentCount:%d",
+				exchangeId, it.first.c_str(), static_cast<int>(it.second.size()));
 			for (auto instrument : it.second)
 			{
 				strcpy(instrument->ExchangeInstId, instrument->InstrumentId);

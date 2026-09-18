@@ -6,6 +6,7 @@
 #include "TradeFront.h"
 #include "OrderMatch.h"
 #include "PositionMaintenance.h"
+#include "CommissionCalculator.h"
 #include "FieldsCompare.h"
 #include "MdSpiImpl.h"
 #include <Spark/Core/Thread/ThreadBase.h>
@@ -82,6 +83,8 @@ private:
 	TradeFront* tradeFront_;
 	MdSpiImpl* mdSpi_;
 	QuantTrading::Mdb* mdb_;
+	// 成交计费器：实盘清单不含 BaseCommission，Apply 走空守卫直接返回，实盘三列费用保持 0
+	QuantTrading::Settlement::CommissionCalculator commissionCalculator_;
     QuantTrading::OrderMatch::OrderMatch* orderMatch_;
 	QuantTrading::Settlement::PositionMaintenance* positionMaintenance_;
 	std::mutex mutex_;

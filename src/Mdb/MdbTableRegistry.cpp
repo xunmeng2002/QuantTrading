@@ -56,6 +56,8 @@ namespace QuantTrading
 		case Trade::TableId: return &Trade::GetSchema();
 		case AccountLoginSession::TableId: return &AccountLoginSession::GetSchema();
 		case PrimaryAccountLoginSession::TableId: return &PrimaryAccountLoginSession::GetSchema();
+		case CommissionGroup::TableId: return &CommissionGroup::GetSchema();
+		case BaseCommission::TableId: return &BaseCommission::GetSchema();
 		default: return nullptr;
 		}
 	}

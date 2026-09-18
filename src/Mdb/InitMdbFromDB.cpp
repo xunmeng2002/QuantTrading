@@ -30,6 +30,8 @@ namespace QuantTrading
 			case PositionDetail::TableId:  LoadPositionDetailTable(mdb, db); break;
 			case Order::TableId:  LoadOrderTable(mdb, db); break;
 			case Trade::TableId:  LoadTradeTable(mdb, db); break;
+			case CommissionGroup::TableId:  LoadCommissionGroupTable(mdb, db); break;
+			case BaseCommission::TableId:  LoadBaseCommissionTable(mdb, db); break;
 			default: break;
 			}
 		}
@@ -193,6 +195,26 @@ namespace QuantTrading
 		for (auto record : records)
 		{
 			mdb->Trade->Insert(record);
+		}
+	}
+	void InitMdbFromDb::LoadCommissionGroupTable(Mdb* mdb, Db* db)
+	{
+		TypedTable<CommissionGroup> table(db);
+		std::vector<CommissionGroup*> records;
+		table.SelectAll(records);
+		for (auto record : records)
+		{
+			mdb->CommissionGroup->Insert(record);
+		}
+	}
+	void InitMdbFromDb::LoadBaseCommissionTable(Mdb* mdb, Db* db)
+	{
+		TypedTable<BaseCommission> table(db);
+		std::vector<BaseCommission*> records;
+		table.SelectAll(records);
+		for (auto record : records)
+		{
+			mdb->BaseCommission->Insert(record);
 		}
 	}
 }

@@ -6,7 +6,9 @@
 #include "PositionMaintenance.h"
 #include "Settlement.h"
 #include "SettlementPriceSource.h"
+#include "CommissionCalculator.h"
 #include "MdReader.h"
+#include "RunResult.h"
 #include "Mdb.h"
 #include "MdbTableRegistry.h"
 #include "BarAggregator.h"
@@ -82,6 +84,8 @@ private:
 	void HandleInsertOrder(QuantTrading::Packages::ReqInsertOrderPackage* reqPackage);
 	void HandleCancelOrder(QuantTrading::Packages::ReqCancelOrderPackage* reqPackage);
 
+	// 装载基本数据种子（Product/CommissionGroup/BaseCommission）；种子缺失或读不到只降级告警，绝不阻断回测
+	bool LoadBasicDataFromInitDb(const Config& config);
 	void InitMdInstrument();
 	void InitMainInstrument();
 	void ChangeTradingDay(const DateType& nextTradingDay);
@@ -100,6 +104,12 @@ private:
 	void SendRtnSessionBegin(const DateType& tradingDay);
 	void SendRtnSessionEnd(const DateType& tradingDay);
 
+	// 幂等置位：首个错误留下，后来的不覆盖。OnMdEnd 里多条判据依次执行，不幂等会被后面的判据改写成因
+	void SetError(unsigned int errorId);
+	RunResult BuildRunResult() const;
+	// 结果落在 <cwd>/result.json：宿主拿不到 RunId，落 dumpPath_ 下需要它算一个算不出来的路径
+	void WriteRunResult() const;
+
 
     std::mutex queueMutex_;
 	std::list<ReqSubMarketDataField*> reqSubMds_;
@@ -111,6 +121,8 @@ private:
 	QuantTrading::Settlement::SettlementPriceSource* settlementPriceSource_;
 	BarSettlementPriceSource barSettlementPriceSource_;
 	QuantTrading::Mdb* mdb_;
+	// 成交计费器：声明在 mdb_ 之后，构造初始化列表按声明序取到已建好的 mdb_
+	QuantTrading::Settlement::CommissionCalculator commissionCalculator_;
     DbAdapters::Db* db_;
 	QuantTrading::MdbTableRegistry registry_;
     DbAdapters::AsyncDbWriter* dbWriter_;
@@ -125,6 +137,21 @@ private:
 	MarketDataTypeType marketDataType_;
 	std::string runId_;
 	std::string dumpPath_;
+	// 输出库实际路径：收尾写 result.json 时要报出来，构造函数里派生后得留到那一刻（局部变量活不到收尾）
+	std::string runDbHost_;
+
+	// A3 结果契约：errorId_ 首个置位者胜，errorMessage_ 只作为成因说明
+	unsigned int errorId_;
+	std::string errorMessage_;
+	// 取 Capital 行要按 AccountId 索引，故存成 char[32] 原类型而非 std::string（主键 Select 收的是 const char(&)[32]）
+	AccountIdType accountId_;
+
+	// A5 基本数据种子与初始资金
+	std::string dbInitHost_;
+	MoneyType initialCapital_;
+	GroupIdType commissionGroupId_;
+	bool basicDataLoaded_;
+	int volumeMultipleFallbackProductCount_;
 
 	MdReader* mdReader_;
 	std::list<QuantTrading::DepthMarketData*> mdTicks_;

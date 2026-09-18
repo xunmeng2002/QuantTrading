@@ -182,6 +182,8 @@ target_link_libraries(SimExchangeApiMiddleStatic PUBLIC SimExchangeApi Spark::Co
 
 add_application(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/test/TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/test/TestBackTest)
 target_link_libraries(TestBackTest PRIVATE QuantTradingCommonStatic PackagesStatic BackTestApiMiddleStatic Spark::Core Spark::Serialization)
+# BackTest 是 add_shared_module，其 src_dir 只是 PRIVATE，宿主读 RunResult.h 要自己加这条
+target_include_directories(TestBackTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestBackTest.json)
 copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
 # 交易节由 BackTest.dll 内的引擎按 BackTest.json 的 SessionFile 装载
@@ -189,6 +191,7 @@ copy_config_file(TestBackTest ${CMAKE_CURRENT_SOURCE_DIR}/Configs/Sessions.json)
 
 add_application(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid)
 target_link_libraries(TestStrategyGrid PRIVATE QuantTradingCommonStatic PackagesStatic StrategyStatic BackTestApiMiddleStatic Spark::Core Spark::Serialization)
+target_include_directories(TestStrategyGrid PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
 copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestStrategyGrid.json)
 copy_config_file(TestStrategyGrid ${CMAKE_CURRENT_SOURCE_DIR}/Configs/BackTest.json)
 # 交易节由 BackTest.dll 内的引擎按 BackTest.json 的 SessionFile 装载，缺失会让引擎 Init 直接失败
@@ -215,6 +218,8 @@ target_sources(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGr
 target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid)
 # 结算单测复用模拟盘表清单构造 Mdb
 target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange)
+# 计费单测断言回测表清单已注册费率表（BackTest 的 src_dir 只是 PRIVATE，读 BackTestTableList.h 要自己加这条）
+target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
 # 单测的 FakeBackTestApi 继承 BackTestApi 但不链接 BackTest DLL，去掉 dllimport 装饰
 target_compile_definitions(UnitTests PRIVATE BACKTEST_STATIC_DEFINE)
 copy_dll_file(UnitTests)

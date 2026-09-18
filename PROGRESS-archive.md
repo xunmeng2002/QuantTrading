@@ -10,6 +10,88 @@
 ---
 
 ## ✅ 已完成（历史，倒序）
+### D.48 · 2026-09-17 （第十三批） 回测平台化定案 + RunId 改为可配置注入（第一步）
+
+- **2026-09-17（第十三批）回测平台化定案 + RunId 改为可配置注入（第一步）**：
+  - **背景**：回测今天每次运行导出一个独立库（`MakeRunId()` 生成 `BackTest_<RunID>.db`，`DeriveRunDbHost()` 在扩展名前插 RunID）。用户计划做云端 Web 回测平台，"一运行一库"对平台的展示与分析不便，故先议形态再动手。**本轮以讨论与定案为主**，代码只动第一步。
+  - **定案（用户拍板，三条）**：① **运行形态 = 一次性进程 + 常驻调度层**——Web 后端收请求 → 落 run 记录 → 队列 → worker 拉起回测进程 → 跑完退出。回测**不常驻**，两者以"文件 + 退出码"通信，不走 RPC。② **RunId 由调度侧指定**（经配置注入），不再由引擎自生成——产物身份从"按文件名猜"变成"调度侧给定"。③ **放弃"单库 + RunId 列"**：用户判定给结果表加 RunId 对 `SimExchange` 完全冗余，改走**目录区分**（每 job 独立工作目录），产物继续每运行一个文件。
+  - **被否决的备选及理由（留档，避免重提）**：
+    - **单库 + `RunId` 列**：不止是加列——`Order` 主键是 (TradingDay, AccountId, ExchangeId, InstrumentId, OrderId)（`Model/Tables/Tables.xml` 的 `<primarykey>` 段）、`<uniquekeys>` 的 ClientOrderId 亦然，**均不含 RunId**，两次运行必撞，RunId 必须进主键；且撞主键**不会响亮报错**（项目既有模式是"已存在就 Update"，见 `SimExchange.cpp:74-83` 的 `InsertInstrumentOrUpdate`），可能表现为**静默覆盖上一次运行的数据**。改动面 = 全部结果侧表 + 重 pump + 各 Insert 站点。
+    - **切 MySQL**：技术可行（InnoDB 并发写本身没问题），但撞上三条——(a) `DbHost` 语义重载：SQLite 下是文件路径，MySQL 下是连接 URI（`MysqlWrapper` 直接 `mysqlx::Session(host)`，`MysqlWrapper.cpp:231`），而 `DbUser`/`DbPassword` 只传给 `MariadbWrapper`（`SimExchange.cpp:40` vs `:44`），MySQL 分支只能把凭据写在 URI 里；(b) `DeriveRunDbHost()` 对 URI 做 `rfind('.')` 会**把 RunId 插进主机名中间**拼出坏字符串（`SimExchange.cpp:62-70`）；(c) **密码经 `DbHost` 泄漏**——`Config::Print()` 打印 `DbHost`（`Config.cpp:66`）与 `DbUser`（`:65`）但不打印 `DbPassword`（模板按 `endswith('password')` 过滤），URI 内嵌密码后这一条会进 stdout 及 `SimExchange.cpp:107` 的日志，再经调度侧配置快照进平台库与 Web。
+    - **"一运行一个 MySQL database"**：判为最不划算的中间态——等于用 schema 名当 RunId，付出每次一套 15 表 DDL、schema 膨胀、清理策略、产物失去自包含（不能下载/归档/离线分析），换来的只是"InnoDB 处理并发"，而并发在目录区分下本就不存在。
+    - **"RunId 走 API 入参而非配置"（2026-09-17 复议后否决）**：切入点是 `BackTestApi::CreateBackTestApi()` **无参**（`include/QuantTrading/BackTestApi.h:31`；模板 `Cpp/BackTestApi/BackTestApi.h.tpl:44` 的 `Create!!$prefix!!Api()`），且配置文件名为硬编码常量 `ConfigName = "BackTest.json"`（`BackTestApiImpl.cpp:10`）——故"运行参数"这条信道在 BackTest 上**根本不存在**，加它要动公开头（生成文件）与 `D:\Gitee\Templates`（该仓按用户指示不提交），属 Harness §3.1 确认点，成本远高于收益。
+    - **"纯目录即身份"（引擎完全不碰 RunId，身份只由调度侧目录名承载）（同次否决）**：它**并不消除冗余**——只是把"调度侧给的**有意义** RunId"换成"引擎自生成的**无意义** id"，`runs/<RunId>/BackTest_<引擎自生成id>.db` 里两个 id 照样并存而其中一个是废的；且引擎不知道 RunId 后，`SimExchange.cpp:107` 的 `RunID:` 日志与将来的 `result.json` 都带不上真 RunId。**配置注入的收益正在于此**：日志、产物文件名、`result.json` 三处携带的是**同一个**真 RunId，运行目录因此自描述。调度侧同时写目录名与配置项，是**一个来源表达在两处**，非两个竞争来源（唯一约束是二者必须同值，这本由调度侧一次生成保证）。
+    - **本地直跑不受影响**：`RunId` 留空即回落 `MakeRunId()`，且**不切工作目录**（仍在 `bin/` 下），`DeriveRunDbHost()` 照旧给出 `BackTest_<id>.db`——本地路径一行未变，无需为本地引入工作目录机制。
+  - **并发结论（用户提问，已核）**：SQLite 是 single writer / multiple readers，多进程**可以**写同一个库但只能**串行排队**；且 `SqliteWrapper` **未设 `busy_timeout`/`journal_mode`/`synchronous`**（`DBAdapters/src/DbAdapters/SqliteWrapper/SqliteWrapper.cpp` 全零命中，仅有 `PRAGMA encoding`，`:207`），故第二个写者会**立即失败**而非排队。目录区分形态下这条不适用（各自一个文件）。平台侧真正的并发点在**读**：读已完成的产物是纯只读、SHARED 锁可共存；只有"边跑边读同一个文件"才会 `SQLITE_BUSY`，而完成信号已定为进程退出码，天然避开。
+  - **本批落地（第一步，全部为增量改动）**：
+    - `Model/Configs/BackTest.xml` 新增 `<item name="RunId" type="string"></item>`（置于首位），`python pumpall.py` 重生成 `src/BackTest/Config/Config.{h,cpp}`——**新增 3 行、零删除**（`.h` 一行成员、`.cpp` 一行 `Load`、一行 `Print`）；pump 只跑了这两个文件，无连带改动。
+    - `src/BackTest/SimExchange.cpp:100-101` 由 `runId_ = MakeRunId();` 改为 `runId_ = config.RunId.empty() ? MakeRunId() : config.RunId;`。**产物命名规则不变**（文件名仍带 RunId，保持自标识；调度侧另有独立工作目录隔离，派生规则不构成耦合），仅修掉 `DeriveRunDbHost()` 内部的定位缺陷，见下条。
+    - `Configs/BackTest.json` 新增 `"RunId": ""`。
+    - **`DeriveRunDbHost()` 修复（2026-09-17 追加，原报于"切 MySQL"备选理由中的同一类缺陷）**：原实现用 `rfind('.')` 取**全串最后一个点**当扩展名分界，未校验该点是否位于**最后一个路径分隔符之后**。当"整串里有点、而文件名部分没有点"时定位错误，RunId 被插进错误位置。新实现先取 `find_last_of("/\\")`，仅当 `lastDot > lastSeparator`（或全串无分隔符）才认作扩展名，否则走"无扩展名则追加"分支。手工字符串切割，**未改用 `std::filesystem::path`**——Windows 下 `.string()` 会做 ACP 转换，与 UTF-8 的 `dbHost` 冲突；且 `(parent / filename)` 会把分隔符统一成 `\`，改变被记录/打印的路径形态（`SimExchange.cpp:107` 日志）。
+    - **`DeriveRunDbHost()` 修复的验证**（无 C++ 编译器可用，`g++`/`clang++`/`cl` 均不在 PATH，改用同构 Python 镜像对 11 条路径输入逐一比对新旧实现）：**8 条完全一致**（`./BackTest.db`、`runs/BackTest.db`、`/abs/BackTest.db`、`BackTest.db`、`BackTest`、`runs/BackTest`、`/abs/runs.v2/results`、`..\\BackTest.db`）；**3 条发生变化，且全部是修复**——目标案例 `./runs.v2/results`、`runs.v2/results`（旧 `runs_job0001.v2/results` → 新 `runs.v2/results_job0001`），以及**本次比对中额外发现的第二处、更易踩到的缺陷**：`./BackTest`（以 `./` 开头、无扩展名，旧 `rfind('.')` 命中 `./` 里的点，连"无扩展名"分支都进不去，产出整个坏掉的 `_job0001./BackTest` → 新 `./BackTest_job0001`）。即 `DbHost` 写成 `"./backtest_result"` 这类无扩展名相对路径时，**改动前产物路径是完全错误的**。
+  - **向后兼容**：`RunId` 为空即回落 `MakeRunId()`，本地直跑（`TestBackTest`）的行为与产物命名**完全不变**；旧配置不含该键时 `root["RunId"].asString()` 对 null 返回 `""`，同样回落。两条路径都无需改既有配置。
+  - **测试 I/O 示例**（重编 `BackTest` 后）：
+    ```text
+    "RunId": ""（或不写该键）：console 打印 RunId:<引擎自生成>，产物 BackTest_<该RunID>.db，与改动前一致
+    "RunId": "20260917_job0001"：console 打印 RunId:20260917_job0001
+                                  产物 BackTest_20260917_job0001.db、Dump/20260917_job0001/
+    ```
+  - **风险（§7）**：无多线程/内存管理改动。唯一契约变化是"RunId 可由外部指定"——调度侧若给出**重复** RunId 且共用工作目录，产物会互相覆盖；隔离责任在调度侧（每 job 独立工作目录），本批**未加去重守卫**。
+  - **注释披露（§4）**：`SimExchange.cpp:100` 新增一行注释，说明 RunId 的外部注入契约——"调度侧可注入、留空则引擎自生成"属外部前提，命名无法表达，故按 §4 例外保留并在此披露。`DeriveRunDbHost()` 内另加一行注释说明"扩展名的点须落在最后一个路径分隔符之后"——这是从旧实现的缺陷反推出来的前提（旧代码正是漏了它），函数名 `DeriveRunDbHost` 无法表达该字形约束，同按 §4 例外保留并披露。
+  - **未验证（`DeriveRunDbHost()` 部分）**：以 Python 镜像验证算法等价性与新旧差异，**非编译验证**；实际编译与运行仍需用户在 VS 侧执行。
+  - **未验证**：编译与运行仍由用户在 VS 侧执行（按约定）。本批为 3 个源文件静态改动 + 2 个生成文件再生。
+
+
+### D.47 · 2026-09-14 （第十二批） 扩展 FieldType：窄整数与无符号整数可落库（消除模板里潜伏的踩内存路径）
+
+- **2026-09-14（第十二批）扩展 `FieldType`：窄整数与无符号整数可落库（消除模板里潜伏的踩内存路径）**：
+  - **根因**：`Templates/Cpp/Mdb/MdbStructs.cpp.tpl:107` 生成 `FieldDescriptor` 时把 12 个类型 label 塞进 5 个 `FieldType`——`bool→Bool`、`int64→Int64`、`double→Double`、`string→Char`，**其余一律 `else→Int`**（囊括 `uint8_t/int8_t/uint16_t/int16_t/uint32_t/int32_t/uint64_t/enum`）。而 `FieldType` 不是"DB 列宽"、是**对内存 record 的带类型视图**：四个 wrapper 都先 `const char* data = (const char*)record + field.offset;` 再定长 `reinterpret_cast`，**两个方向都是 4 字节**。故 `else→Int` 对 1/2 字节成员是"越界读 + 回写踩烂相邻成员"，对 `uint64_t` 是截断。今天无患（三仓模型都没用这些类型，281 条描述符 0 错配），但这是潜伏的踩内存路径。
+  - **已排除的三条替代方案**：加大 DB 列宽无用（指针运算在内存侧）；用 `Bool` 顶 1 字节会把值域塌成 0/1 且是 UB；用 `Char`+`arraySize` 顶则列变 `char(N)`、丢数值语义。
+  - **四条决策（用户拍板）**：① `FieldType::Int` **改名 `Int32`**，新增 `Int8/UInt8/Int16/UInt16/UInt32/UInt64`，新值**一律追加在末尾**、`Int32` 占原第 0 位故无数值位移；② 读取方向窄化越界**饱和 + Warn**；③ 验证**只用测试夹具**，不给真实模型加窄字段；④ `Mdb`/`DataBase` 的 `type="Int"` **顺带修好**。
+  - **Phase 0（前置修复，无此步两仓是红的）**：`Mdb/Model/Tables/Tables.xml` 与 `DataBase/Model/Tables/Tables.xml` 各 3 处 `type="Int"` → `type="Int32"`（`PK`×2、`Rank`×1）。`Model/Types.xml` 只有 `<int32 name="Int32"/>`、**无 `name="Int"`**，而 `MdbStructs.cpp.tpl:105` 的 `!!itemtype = types[@type]!!` 是真字典下标 → KeyError → `pump.py:322-324` 的 `os.remove(out_file_name)` **直接删掉 `src/Mdb/MdbStructs.cpp`**；同时这两仓已提交的 `MdbStructs.h` 还是 `IntType`，而 `IntType` 已从 `Spark/Types.h` 消失，故它们此前既不能重新生成也不能编译。修完 pump 通过，两仓 `MdbStructs.cpp` 除本次改名外零差异。
+  - **Phase 1｜`include/DBAdapters/DBInterface/Schema.h`**：枚举 11 值（`Int32` 占原位 + 5 个新值 + 6 个旧值）。同头文件补一对收窄漏斗 `TryWriteInt<TDest>` / `TryWriteUInt<TDest>`（越界则写 `lowest()/max()` 并返回 `false`，否则精确写入返回 `true`；用 `static_assert` 挡住"无符号目标比 `long long` 还窄"的误用）、`SaturatingToInt64`、`SaturatingToUInt64(long long, bool&)`，以及两个调度漏斗 `TryWriteIntegerFromSigned/FromUnsigned`。宽度契约与它的执行同居一处；`Schema.h` 原只有 `<cstddef>`，补了 `<limits>`/`<cstdint>`。**不**复用 `FailureLogThrottle`（见下日志约定）。**未删除任何导出符号**（`Int` 是改名，四仓同步）。
+  - **Phase 2｜`DuckdbWrapper.cpp`（设计难点集中于此，五个站点）**：绑定改原生 `duckdb_bind_int8/uint8/int16/uint16/int32/uint32/int64/uint64`；chunk 读新增 `ReadCellAsUInt64`（`ReadCellAsInt64` 的无符号镜像，有符号源为负时置 0 并标记越界），`BindChunkToRecords` 的 `UInt64` 走它；**结果级读不用 `duckdb_value_int8` 一类**（`duckdb.h` 注明越界时静默返回 0），改为 `duckdb_column_type` 判源符号后按源选 `duckdb_value_int64`/`duckdb_value_uint64` 再进漏斗；`WriteNullSentinel` 补新 case 写 0；DDL 补 `TINYINT/UTINYINT/SMALLINT/USMALLINT/INTEGER/UINTEGER/BIGINT/UBIGINT`。
+  - **Phase 3｜`SqliteWrapper.cpp`（三个站点）**：绑定一律 `sqlite3_bind_int64`（**不用 `sqlite3_bind_int`**，`UInt32` 的 4e9 会被截断），按成员真实宽度取值；读取 `sqlite3_column_int64` → 漏斗；DDL 保持现状语义（窄类型写 `int`、64 位写 `bigint`），只补 case——**没有 case 会生成 `CREATE TABLE t(a , b int)` 这种语法错误**。`UInt64` 已知限制留档：SQLite 的 8 字节整数是二补数，位模式可保真往返，但 ≥2⁶³ 的值在 SQL 语义层以负数存在（`WHERE`/`ORDER BY`/聚合皆错），按决策 ② 饱和到 `INT64_MAX` + Warn 并在代码处说明。
+  - **Phase 4｜`MysqlWrapper.cpp` / `MariadbWrapper.cpp`**：Mysql 用 `mysqlx::Value(int64_t)`（`UInt64` 用 `Value(uint64_t)`），读取走 `get<int64_t>()`/`get<uint64_t>()` + 漏斗，DDL 补 `tinyint/smallint/int/bigint`（含 ` unsigned`）；Mariadb 用原生 `setByte/setShort/setInt/setUInt/setUInt64`（`UInt8`→`setShort`、`UInt16`→`setInt` 两处带防御性说明），读取 `getInt64`/`getUInt64` + 漏斗。**明确记录：这两支本地无服务器，本批只做编译覆盖，没有往返测试。**
+  - **Phase 5｜模板**：新增 `!!fieldtypes = {}!!`（与既有 `types`/`formats` 同风格），12 个 section 各声明一次；旧第 107 行的 5 分支 `if/else` 链塌成 `FieldType::!!$fieldtype!!`，`arraySize` 判据原样不动。**踩过的坑**：`!!fieldtypes[@type]!!` 写成裸下标会被 transpile 成"被丢弃的 Python 表达式"（不产出任何文本），必须仿照既有 `format = formats[@type]` 的写法两步走；`!!entry types!!` 只是容器、其后第一个 `!!travel!!` 属于 `!!entry bools!!`，故"默认 Int32"的赋值会落到布尔段上、把 4 个 `bool` 字段变成 `Int32`——本批已修正为 `'Bool'`。**字典必须对 12 段全覆盖**，任何 KeyError 都是删生成文件。
+  - **Phase 6｜测试夹具 `DBAdapters/test/TestDB/TestDB.cpp`**（沿用文件既有风格：手写 struct + 手写描述符表 + `GetSchema()`，对 Sqlite 与 Duckdb 各开独立 `":memory:"`）：新增 `TestNarrowRow`（`int8_t/uint8_t/int16_t/uint16_t/uint32_t/uint64_t` 相邻，外加 3 个 guard 成员），`Allocate()` 一次性 `memset 0xAB` 使 NULL 与"池化复用脏值"可区分；覆盖五点——① 相邻成员回归（值取 `UInt8=200`、`INT8_MIN`、`UINT16_MAX`、`UINT32_MAX`、`0xFFFFFFFFFFFFFFFFULL`，断言逐列精确相等**且 guard 未被踩**）；② Duckdb 两条读路径都测（照 `TestDuckdbVectorized` 的结构补一份，否则 `BindChunkToRecords` 与 `WriteNullSentinel` 的新分支一行都没被覆盖）；③ NULL 哨兵（含 NULL 列期望该字段为 0）；④ 饱和用例（手工建**宽列**再 INSERT 大数——用新 DDL 会把列建成 `TINYINT`、INSERT 直接失败）；⑤ DDL 映射断言（往返测试验不出列类型，用 `SELECT typeof(C)` 直接断言 `UTINYINT` 等）。**注**：`Char` 字段**不可与窄整数相邻**——`SqliteWrapper.cpp` 的 `sqlite3_bind_text(..., -1, ...)` 依赖 NUL 终止，会让"邻居未被踩"的断言出现难以解释的失败（独立的历史缺陷，见 ❓）。
+  - **日志约定（读路径）**：`ReadRow`/`SelectAll`/`SelectWithSql`/`SelectWithSqlVectorized` 加一个 `int* clampedCount` 出参，逐格累加，函数末尾发**一条** Warning（`Table:%s, ClampedCells:%d/%d`）。不逐格打日志、也不借 `FailureLogThrottle`（它是自由函数拿不到 `Impl`，且会污染 `BatchInsert` 用 `FailureCount()` 算出的失败计数）。全是文件内改动，不动头文件。
+  - **验证（六步全做）**：① Phase 0 后两仓 pump 通过、`MdbStructs.cpp` 零差异；② 每改一个 wrapper 就跑 `out/build/build_testdb.bat` 构建 TestDB 并跑夹具——`Sqlite NarrowInteger/NarrowNullSentinel/NarrowSaturation`、`Duckdb NarrowInteger/NarrowSaturation/NarrowColumnTypes`、`DuckdbVectorized NarrowInteger/NarrowNullSentinel` 全 PASS，四条既有回归（`TestSqlite`/`TestDuckdb`/`TestDuckdbVectorized`/`TestDuckdbVectorizedMultiChunk`）同 PASS，exit 0；Warn 实测为 `SqliteWrapper: INSERT narrowed out-of-range values. Table:t_test_narrow, ClampedCells:1/9`（即 `UInt64` 绑定饱和）与 SELECT 侧 `ClampedCells:6/9`；③ **枚举覆盖**：`CMakeCommon.cmake` 没开 `/W4`、编译器不会帮拦，故临时 `/Wall` 重编 14 处 switch——**零 C4062**（每个 `switch(FieldType)` 都处理了全部 11 个枚举值），残留 C4061 均已逐一确认为良性（`DuckdbWrapper.cpp` 5 处是 `duckdb_type` 上的 switch、`Schema.h` 2 处是新漏斗的 `default:`、`SqliteWrapper.cpp` 1 处是 `ReadIntegerFieldForBind` 的 `default: return 0;`）。**控制实验**：另写 `enum class E{A,B,C}` 缺 `E::C` 的 switch 验证——`/W4` **一条不报**，C4062 只在 `/Wall` 下出现，故最初的 `/W4` 检查是空的、已重做；④ 三仓各跑 `pumpall.py`，`exit 0` 且 diff **只含 `FieldType::Int → FieldType::Int32` 的机械替换**（用 `git diff -U0 \| grep -E '^[+-]' \| grep -v 'FieldType::Int[32]\{0,1\}, offsetof'` 过滤后为空）：Mdb 45 行、DataBase 45 行、QuantTrading 50 行；⑤ `audit_fieldtype.py` 仍 281 条描述符 / 19 个结构体 / **0 错配 / 0 未查明 / 0 未收录**（脚本的 `FIELD_TYPE_SIZE` 已同步 11 值并新增"未收录"桶，否则改名后它会静默跳过每一条 `Int32`、把"0 错配"变成无意义的数字）；⑥ **在岸消费方**：`QuantTrading/CMakeLists.txt:52` 的 DBAdapters 取自发布的 `../Libs/DBAdapters/x64-windows`，其安装版 `Schema.h` 仍写着 `Int`，故**真跑 `MdbStatic` 会失败，除非重新发布该共享库**——本批未擅自发布，改用非破坏性代理：从 `out/build/x64-Debug` 取 11 个 `MdbStatic` TU 的 ninja 编译命令，把 `/I D:\Gitee\DBAdapters\include` 插在 `/nologo /TP` 之后（**必须排在最前**，早先插在 `/DWIN32` 前的那版被 `-external:I …Libs\DBAdapters…` 抢先、102 个 `C2838/C2065 "Int32": 未声明的标识符` 全是假警报），重编得 **11/11 TU、0 error 0 warning**，`/showIncludes` 证实解析来源是源码树 `D:\Gitee\DBAdapters\include\DBAdapters/DBInterface/Schema.h`。
+  - **风险（§7）**：① **纯扩展**——新枚举值不改现有值语义，`FieldDescriptor` 布局不变（底层仍是 `unsigned char`），`FieldType` 无任何序列化/持久化点（已全量核查）。② 最高危的是"**漏改站点**"，失败模式分两档：DDL 漏 case → 语法错误（响亮）；**读取方向漏 case → 目标内存保持池化复用值（静默）**；Sqlite 绑定漏 case → 未绑定参数按 NULL 落库；Mysql 漏 case → 命中兜底绑 NULL；Duckdb `WriteNullSentinel` 漏 case → NULL 变脏值。验证第 ③ 步专治这个。③ **行为变更两点**（须写进提交说明）：读侧越界由"静默截断"变为"饱和 + Warn"；读取函数签名多了一个出参。④ **回滚的安全边界是数据库文件本身**：一旦用窄列建过表，回退代码版本会让旧代码把 4 字节写进 1 字节成员，故回滚方案必须包含"重建含窄类型字段的表"。⑤ **存量表列宽漂移**：`CREATE TABLE IF NOT EXISTS` 永不改列，旧表是 `int`、新描述符是 `tinyint` 会长期共存；写入走隐式转换（越界时 MySQL/Duckdb 都响亮报错），读取走新漏斗。⑥ 回滚点：DBAdapters 六个文件 + 模板一个文件 `git checkout` 可回；测试用例是新增代码块、可单独摘掉；Phase 0 的模型改动是纯文本。
+  - **保留的未提交改动**：`DBAdapters/test/TestDB/MdbStructs.h` 的两处 `IntType → Int32Type` 与 `QuantTrading/src/Mdb/MdbPrimaryKeyComp.cpp` 均属本批同一件事，**刻意保留**。`README.md`/`README.en.md` 的示例字段名同步改名。
+  - **未验证**：Mysql/Mariadb 两条支路无往返测试（本地无服务器）；`D:\Gitee\Templates` 按用户指示**仍不提交**。**AI 未推送**。
+
+### D.46 · 2026-09-13 （第十一批） InitMdbFromCsv 同步会话表过滤 + 账号登录错误码修正
+
+- **2026-09-13（第十一批）`InitMdbFromCsv` 同步会话表过滤 + 账号登录错误码修正**：
+  - **`InitMdbFromCsv` 套用同一过滤**（第十批只改了 `InitMdbFromDB` 这条活路径，本项即当时记下的 ❓）。`Templates` 仓 `Cpp/Mdb/InitMdbFromCsv.{h,cpp}.tpl` 三处——`LoadTables` 的 switch 分支、`Load<Table>Table` 函数定义、`.h` 的函数声明——条件由 `@name in tables` 改为 `@name in tables and @session != 'true'`，并配同款模板注释（只进 pump 脚本、不入生成文件）。重 pump 后生成物 **111 行纯删除、0 新增**，`MdUserLoginSession` / `AccountLoginSession` / `PrimaryAccountLoginSession` 三张表的 `case` 与函数体全部消失。
+  - **核对（静态）**：生成文件内 `LoginSession` 零残留；`switch` 内 `case` 数 16 = 19 张表 − 3 张会话表；`Load<Table>Table` 函数名集合与 `InitMdbFromDB` **逐名 diff 一致**；被删的三个函数全仓无调用者；复跑 `pumpall.py` 无待生成项（树自洽）。该路径今天仍**零调用者**（全仓除自身外只有 `src/BackTest/SimExchange.cpp:9`、`src/SimExchange/SimExchange.cpp:4` 两处 `#include`，无一处调 `LoadTables`），故**无运行期行为变化**，目的是使两条播种路径语义一致、消除"将来改用 CSV 播种会把上个进程残留会话载入内存"的隐患。
+  - **登录错误码改回 `ErrorPrimaryAccountNotExist`**（第十批复核记下的 ❓ ①，用户自行改）：`SimExchange::HandleReqAccountLogin` 主账号未命中原回 `ErrorBrokerNotExist`（`Error.h:42` = 0x101F，券商级语义），现回专用码 `ErrorPrimaryAccountNotExist`（`Error.h:12` = 0x1001）。**核对**：`ErrorBrokerNotExist` 改动后全仓已无使用点；客户端（`test/ApiMiddles/*`）对 `ErrorId` 一律只打日志、无按码分支，换码不打断任何既有路径。
+  - **测试 I/O 示例**（重编后）：
+    ```text
+    登录请求 AccountId 填不存在的账号 → RspInfoField:ErrorId:[4097](0x1001), ErrorMsg:[主账户不存在]
+                                        旧：ErrorId:[4127](0x101F), ErrorMsg:[经纪商不存在]
+    ```
+  - **风险（§7）**：无。模板改动跨仓、全局生效（其他项目下次跑各自 `pumpall.py` 时其 `InitMdbFromCsv.cpp` 亦按同规则过滤，正合原意）；生成物纯删除，不改任何表的 schema 或写入行为；错误码为单行改值，不涉锁/所有权。**未验证**：编译与运行仍由用户在 VS 侧执行。
+  - **提交**：本仓 `81740c0`（生成物）+ `329de62`（错误码），`Templates` 仓 `80ae12e`。
+
+### D.45 · 2026-09-13 （第十批） 会话登录改造落地（交易所按主账号、MdOffer 按 MdUser）
+
+- **2026-09-13 会话登录改造落地（第十批）：交易所按主账号、MdOffer 按 MdUser，会话状态一律以 mdb 会话表为准**：
+  - **模型 / 清单**：`Model/TableNames/SimExchangeTableNames.xml:14` 把 `AccountLoginSession` 换成 `PrimaryAccountLoginSession`，跑 `pumpall.py` 后 `src/SimExchange/SimExchangeTableList.h` 与 `src/SimExchangeInit/SimExchangeTableList.h` 各一行随之换名（三张会话表均由用户改成联合主键 + SessionId 索引，模型与生成提交见 `deb32af`/`c143df5`）。
+  - **SimExchange（交易所 = 主账号层，只认 `t_PrimaryAccount`）**：`CheckSessionLogin` 拆两重载——无账号报文（`HandleReqQryInstrument`）只查 `t_PrimaryAccountLoginSession->m_SessionIDIndex`；有账号报文（下单/撤单/查委托/查成交）查 `(PrimaryAccountId, SessionId)` 联合主键，未命中**直接回 `ErrorAccountNotLogin`**（用户改法：登录记录找不到就回，不再多查一次）。登录/登出/断开三处全部改走 `PrimaryAccountLoginSession`，断开以 `EraseBySessionIdIndex` 一行替换"Select 后 Erase"，推送侧索引变量随表改名；顺带删除 `SendRspAccountLogin` 里未使用的包分配。业务字段仍取自 `t_Account`（`OrderUtility.cpp:142/163-165` 的 `AccountType`/`TradeGroupId` 只挂在 Account 上），故双表同 ID 是设计而非巧合。
+  - **MdOffer（行情 = `MdUser` 层）**：删除 `std::set<SessionIdType> m_LoggedSessions` 及其 4 处使用（成员、断开与登出清理、登录成功写入、订阅守卫），改为 `bool IsSessionLoggedIn(const SessionIdType&)`（`MdKernel.h:61` / `MdKernel.cpp:364`）查 `t_MdUserLoginSession->m_SessionIDIndex->EqualRange`；订阅守卫保持原 if/else-if 形状（`if (!IsSessionLoggedIn(package->SessionId))`），零结构改动。登录重复仍回 `ErrorSessionAlreadyLogin`，登出/断开仍按传输层会话清理。
+  - **验证**：静态为主——`m_LoggedSessions` 全仓仅剩 PROGRESS 历史文本；`MdUserLoginSessionTable::m_SessionIDIndex`（`src/Mdb/MdbTables.h:299`）与 `MdUserLoginSessionIndexSessionID::EqualRange(const SessionIdType&)`（`src/Mdb/MdbIndexes.h:69`）均为 public；`#include <set>` 仍被 `subscribeInstruments_` 需要，未动。**编译与运行仍在用户 VS 侧执行；本批已提交**（模板侧的会话表过滤落在 `D:\Gitee\Templates` 的 `fe01756`）。
+  - **`session="true"` 过滤落地（用户选方案 a，`Templates` 仓 + 重 pump）**：起因是核到该标记**只被传递、无一处消费**——① 全 `D:\Gitee` 搜读取方，只有 `ParseTableModel.py` 自己的 `:19` 初始化 / `:53` 读 / `:93` 写三行命中（`DataBase`、`DBPerformance`、`Libs`、`LibTest`、`Mdb`、`Python`、`QuantTrading` 七个副本皆然）；② `D:\Gitee\Templates\Cpp\Mdb\*.tpl` 共 23 个模板里 `session` **零命中**；③ 生成的 `InitMdbFromDB::LoadTables` 对清单内每张表无条件发 `case <Table>::TableID: Load<Table>Table(...)`（`Load<Table>Table` 即 `SelectAll` → `Insert`）。而 `src/SimExchange/Main.cpp:78/84/88-89` 是完整闭环：`AsyncDBWriter` 按清单建 schema 并双向订阅（登录行落运行时库）→ 重启后 `LoadTables` 把会话行读回内存 → `CheckSessionLogin` 认定该 `(账号, SessionId)` 已登录。**改动**：`Templates/Cpp/Mdb/InitMdbFromDB.{h,cpp}.tpl` 的 `!!if @name in tables:!!` 追加 `and @session != 'true'`（模板引擎将 `@session` 译作 `get_attr(curr_node, "session")`，属性缺失回 `""`，故非会话表一律放行，无 fail-closed 风险；两处 `!!#...!!` 注释写在模板里、只进 pump 脚本不入生成文件），随后 `pump.py` 重 pump 得 `src/Mdb/InitMdbFromDB.{h,cpp}`：三张会话表既无 `case` 也无 `LoadXxxTable` 定义，其余表全部保留（36 行纯删除，0 新增）；复跑 `pumpall.py` 无待生成项，证明树自洽。**效果**：启动不再把上个进程的残留会话读回内存，进程重启后一律要求重新登录；会话表仍在 schema 里（`AsyncDBWriter` 按清单建表）并照旧被写入，只是不再被读回。**可达性注**：原问题的现实可利用性本就有限（`IOBase::GetSessionID()` 为 `GetMilliSecondTimeStamp() * 100 + (++m_LastSessionIndex) % 100`，`Spark/src/Network/IO/IOBase.cpp:107`，残留行需客户端恰在同一毫秒被 accept 才命中），成立的是"重启后旧会话仍算已登录""鉴权结论取决于库内容"两点；**批注**：非本批引入——换表前 `AccountLoginSession`（同样 `session="true"`）就在交易所清单里，同样被载入。**当时未决（已闭环）**：`InitMdbFromCsv` 同一改法未套用——已于第十一批套用，见下 ✅ 第十一批。
+  - **风险（§7）**：登录/登出/断开同在内核线程（`MdKernel::HandlePackage`）里串行处理，无新增锁与共享可变状态；会话判定改读表后，"内存集合 vs 会话表"两份状态合一。模板改动是跨仓（`D:\Gitee\Templates`）且全局生效的，其他项目下次跑各自的 `pumpall.py` 时其 `InitMdbFromDB.cpp` 也会按同一规则过滤会话表——这正是原意图，但需知悉其波及面；该仓原有两笔本批之外的 `.tpl` 改动（`PackageFactory.cpp/h.tpl`，即第九批入站包方向过滤的生成侧，生成物早已提交在本仓 `407509c`），按用户指示已一并提交为该仓 `726fad4`。
+
+### D.44 · 2026-09-13 PROGRESS.md 分层归档（活文件 + 归档层）
+
+- **2026-09-13 PROGRESS.md 分层归档（活文件 + 归档层）**：主文件 168.6 KB → 23.8 KB（−86%），每次会话开头通读的体积随之下降；已关闭与已了结的条目**原文**移入新增的 `PROGRESS-archive.md`（152.9 KB，按 `D.*` / `Q.*` / `R.*` 分三段倒序）。
+  - **完整性**：69 条逐条断言"原文逐字出现在目标文件"，**0 条失败**；唯一丢弃的是 🔄 段那句 `- 无。` 占位符（3 字节，无信息）。两文件合计 176.7 KB 对原始 168.6 KB，多出的约 8 KB 是标题与索引脚手架。
+  - **四条承接条目**（半关闭条目的尾巴不能随归档一起埋掉）：入站包方向留"① 已落地 / ② 会话合法性未决 + 候选 (a)(b) 仍在"；实时行情不消费 bar 周期的短版**带上撤回警告**（`FieldsCompare` 比较器补齐周期会中断行情推送，不留在主文件里下次可能被重新提议）；另新增两条——`ReqSubMarketDataField` 未绑定到 Python（原 `Q.19` 尾巴）、解析失败路径上已分配的 package 未回收（原 `R.03` 尾巴；2026-09-13 复核：`PackageReader.cpp:35`、`Protocol.cpp:131` 两处 `Deallocate` 都只回收 `PackageReader` 自身，无一处回收 package，原记录成立）。
+  - **规则**：`C:\Users\15031\.claude\CLAUDE.md` 新增 §8.1——活文件/归档层分工、只移动不删改、半关闭条目的未决部分必须留下、滚动（已完成区超 5 批移最旧、主文件 ≤ 50 KB）、引用主文件不载的结论前先 grep 归档。拆分脚本为一次性转换（按条目边界搬移，原文取自 `407509c:PROGRESS.md`，从 git HEAD 读故可重入），放在 `%TEMP%`、未入仓。
+  - **验证**：无代码改动，故无编译/运行验证；等价校验即上述 69 条完整性断言与两文件体积统计。
 
 ### D.43 · 2026-09-13 （第九批） 入站包方向过滤（方案乙）
 
@@ -480,6 +562,17 @@
 ---
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
+### Q.21 · 模板漂移：requestID 改名与生成文件 BOM
+
+- **模板漂移：`requestID` 改名与生成文件 BOM（2026-09-18 第十五批发现，待用户裁定）**：重 pump 把两处**与功能无关**的漂移带进本仓——① `D:\Gitee\Templates` 的 7 个模板里 `requestId` 被改成 `requestID`（缩写处理方式变化），波及 **18 个生成文件**；② `pump.py` 写文件用 `UTF-8-SIG`，使约 **35 个生成文件**带 BOM。本批已逐文件核对并在必要处 `git checkout --` 回滚，但**根因未除**：下次重 pump 会再次带进来。**两条路**：① **源头修 + 重 pump**——改 Templates 的 7 个模板恢复 `requestId`、改 `pump.py` 去掉 `UTF-8-SIG`，重 pump 后核对 `git diff --stat` 只含本次相关行；代价是 Templates 仓（按用户指示不提交）要再动一次，且 BOM 若已是既定约定则去掉会让全部生成文件产生一次全量 diff。② **接受现状**——把新拼写与 BOM 当作当前约定，本次漂移即"正常重生成"，代价是生成文件与仓内手写代码的 `requestId` 拼写永久不一致。**未定前不做任何一侧动作。**
+
+> **2026-09-18 了结**：命名漂移由用户在源头修复——`D:\Gitee\Templates` 的 7 个 Cpp 模板 `requestID → requestId`，本仓已核对零残留；BOM 经查为**既定约定**而非漂移（`pump.py:174` 生成产物即用 `UTF-8-SIG` 写、仓根另有专职的 `ConvertToUtf8Bom.py`，HEAD 的生成侧 `.h/.cpp` 本就有 45/87 带 BOM）。**用户裁定：18 个纯 BOM 文件原样提交。**
+
+
+### Q.20 · 股票回测的费用口径：印花税 / 过户费未启用
+
+- **股票回测的费用口径：印花税 / 过户费未启用（2026-09-17 记录，与"当前在跑股票回测"直接相关）**：第十四批的 `BaseCommission` 只有**佣金**口径（8 个 `Rate` 列 + `MinCommission`/`MaxCommission`，后者正好覆盖券商"每笔最低 5 元"），**印花税与过户费未纳入**——`D:\Gitee\Model\Items.xml` 的 `0x5002`–`0x5005`（`StampTax` 卖出单边、`TransferFee` 双向）已预留但刻意未启用，当时理由是"期货无此两项"。**A 股下不可忽略**：印花税按卖出金额单边征收、量级大于佣金本身，漏掉会**系统性高估卖出侧策略收益**。**待决策**：① 是否补这 4 列（条目已存在，零新增 id）；② 单边/双向不对称是否要在取列规则里表达。**注**：平今分档（第十四批缓办项）对股票**天然不适用**（T+1 无 `CloseToday`），故那条缓办在股票场景零代价。
+
 
 ### Q.19 · Python 绑定未暴露 bar 周期字段
 

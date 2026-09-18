@@ -110,6 +110,8 @@ void InitCapital(Mdb* mdb, Account* account, const std::string& currTradingDay)
 	capital->PositionProfitByTrade = 0;
 	capital->Deposit = 0;
 	capital->Withdraw = 0;
+	capital->StampTax = 0;
+	capital->TransferFee = 0;
 	mdb->Capital->Insert(capital);
 }
 void InitPosition(Mdb* mdb, Account* account)

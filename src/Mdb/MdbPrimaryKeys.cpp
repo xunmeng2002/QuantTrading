@@ -785,4 +785,81 @@ namespace QuantTrading
 	{
 		return PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey()(oldRecord, newRecord);
 	}
+	CommissionGroupPrimaryKey::CommissionGroupPrimaryKey(CommissionGroupTable* tableOwner, size_t buckets)
+		:table_(tableOwner), index_(buckets)
+	{
+	}
+	CommissionGroup* CommissionGroupPrimaryKey::Select(const GroupIdType& CommissionGroupId)
+	{
+		CompareCommissionGroup.CommissionGroupId = CommissionGroupId;
+		
+		std::shared_lock guard(table_->SharedMutex);
+		auto it = index_.find(&CompareCommissionGroup);
+		if (it == index_.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<CommissionGroupPrimaryKey::iterator, CommissionGroupPrimaryKey::iterator> CommissionGroupPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(table_->SharedMutex);
+		return std::pair<iterator, iterator>(index_.begin(), index_.end());
+	}
+	bool CommissionGroupPrimaryKey::Insert(CommissionGroup* const record)
+	{
+		return index_.insert(record).second;
+	}
+	void CommissionGroupPrimaryKey::Erase(CommissionGroup* const  record)
+	{
+		index_.erase(record);
+	}
+	bool CommissionGroupPrimaryKey::CheckInsert(CommissionGroup* const record)
+	{
+		return index_.find(record) == index_.end();
+	}
+	bool CommissionGroupPrimaryKey::CheckUpdate(const CommissionGroup* const oldRecord, const CommissionGroup* const newRecord)
+	{
+		return CommissionGroupEqualForCommissionGroupPrimaryKey()(oldRecord, newRecord);
+	}
+	BaseCommissionPrimaryKey::BaseCommissionPrimaryKey(BaseCommissionTable* tableOwner, size_t buckets)
+		:table_(tableOwner), index_(buckets)
+	{
+	}
+	BaseCommission* BaseCommissionPrimaryKey::Select(const GroupIdType& CommissionGroupId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DirectionType& Direction)
+	{
+		CompareBaseCommission.CommissionGroupId = CommissionGroupId;
+		Utility::Strcpy(CompareBaseCommission.ExchangeId, ExchangeId);
+		Utility::Strcpy(CompareBaseCommission.InstrumentId, InstrumentId);
+		CompareBaseCommission.Direction = Direction;
+		
+		std::shared_lock guard(table_->SharedMutex);
+		auto it = index_.find(&CompareBaseCommission);
+		if (it == index_.end())
+		{
+			return nullptr;
+		}
+		return *it;
+	}
+	std::pair<BaseCommissionPrimaryKey::iterator, BaseCommissionPrimaryKey::iterator> BaseCommissionPrimaryKey::SelectAll()
+	{
+		std::shared_lock guard(table_->SharedMutex);
+		return std::pair<iterator, iterator>(index_.begin(), index_.end());
+	}
+	bool BaseCommissionPrimaryKey::Insert(BaseCommission* const record)
+	{
+		return index_.insert(record).second;
+	}
+	void BaseCommissionPrimaryKey::Erase(BaseCommission* const  record)
+	{
+		index_.erase(record);
+	}
+	bool BaseCommissionPrimaryKey::CheckInsert(BaseCommission* const record)
+	{
+		return index_.find(record) == index_.end();
+	}
+	bool BaseCommissionPrimaryKey::CheckUpdate(const BaseCommission* const oldRecord, const BaseCommission* const newRecord)
+	{
+		return BaseCommissionEqualForBaseCommissionPrimaryKey()(oldRecord, newRecord);
+	}
 }

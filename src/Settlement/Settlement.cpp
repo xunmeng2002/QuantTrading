@@ -33,6 +33,8 @@ namespace QuantTrading::Settlement
 			capital->CashOut = 0;
 			capital->Margin = 0;
 			capital->Commission = 0;
+			capital->StampTax = 0;
+			capital->TransferFee = 0;
 			capital->CloseProfitByDate = 0;
 			capital->CloseProfitByTrade = 0;
 			capital->PositionProfitByDate = 0;
@@ -46,6 +48,8 @@ namespace QuantTrading::Settlement
 				capital->CashOut += position->CashOut;
 				capital->Margin += position->Margin;
 				capital->Commission += position->Commission;
+				capital->StampTax += position->StampTax;
+				capital->TransferFee += position->TransferFee;
 				capital->CloseProfitByDate += position->CloseProfitByDate;
 				capital->CloseProfitByTrade += position->CloseProfitByTrade;
 				capital->PositionProfitByDate += position->PositionProfitByDate;
@@ -71,6 +75,8 @@ namespace QuantTrading::Settlement
 			position->CashOut = 0;
 			position->Margin = 0;
 			position->Commission = 0;
+			position->StampTax = 0;
+			position->TransferFee = 0;
 			position->CloseProfitByDate = 0;
 			position->CloseProfitByTrade = 0;
 			position->PositionProfitByDate = 0;
@@ -85,6 +91,8 @@ namespace QuantTrading::Settlement
 				position->CashOut += positionDetail->CashOut;
 				position->Margin += positionDetail->Margin;
 				position->Commission += positionDetail->Commission;
+				position->StampTax += positionDetail->StampTax;
+				position->TransferFee += positionDetail->TransferFee;
 				position->CloseProfitByDate += positionDetail->CloseProfitByDate;
 				position->CloseProfitByTrade += positionDetail->CloseProfitByTrade;
 				position->PositionProfitByDate += positionDetail->PositionProfitByDate;
@@ -124,7 +132,9 @@ namespace QuantTrading::Settlement
 
 	void Settlement::CalcCapital(QuantTrading::Capital* capital)
 	{
-		capital->Balance = capital->PreBalance + capital->CloseProfitByDate + capital->PositionProfitByDate - capital->Commission;
+		// 三项费用各自成立、各自扣减：Commission 只装佣金，印花税与过户费不并入它
+		capital->Balance = capital->PreBalance + capital->CloseProfitByDate + capital->PositionProfitByDate
+			- capital->Commission - capital->StampTax - capital->TransferFee;
 		capital->Available = capital->Balance - capital->MarketValue - capital->Margin - capital->FrozenCash - capital->FrozenMargin - capital->FrozenCommission;
 	}
 }

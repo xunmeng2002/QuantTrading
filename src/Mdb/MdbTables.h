@@ -578,4 +578,60 @@ namespace QuantTrading
 		void EraseIndex(PrimaryAccountLoginSession* record);
 	};
 
+	class CommissionGroupTable : public MdbTableBase
+	{
+	public:
+		CommissionGroupTable();
+		~CommissionGroupTable() override;
+		virtual void Subscribe(MdbSubscriber* subscriber) override;
+		virtual void UnSubscribe() override;
+		void LockShared();
+		void UnlockShared();
+		virtual void InitDb() override;
+		bool Insert(CommissionGroup* record);
+		void BatchInsert(std::vector<CommissionGroup*>* records);
+		void Erase(CommissionGroup* record);
+		bool Update(CommissionGroup* const oldRecord, CommissionGroup* const newRecord, bool updateDB = true);
+		virtual void TruncateTables() override;
+		void TruncateTable();
+		virtual void Dump(const char* dir) override;
+
+		std::shared_mutex SharedMutex;
+		CommissionGroupPrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
+
+	private:
+		void EraseUniqueKey(CommissionGroup* record);
+		void EraseIndex(CommissionGroup* record);
+	};
+
+	class BaseCommissionTable : public MdbTableBase
+	{
+	public:
+		BaseCommissionTable();
+		~BaseCommissionTable() override;
+		virtual void Subscribe(MdbSubscriber* subscriber) override;
+		virtual void UnSubscribe() override;
+		void LockShared();
+		void UnlockShared();
+		virtual void InitDb() override;
+		bool Insert(BaseCommission* record);
+		void BatchInsert(std::vector<BaseCommission*>* records);
+		void Erase(BaseCommission* record);
+		bool Update(BaseCommission* const oldRecord, BaseCommission* const newRecord, bool updateDB = true);
+		virtual void TruncateTables() override;
+		void TruncateTable();
+		virtual void Dump(const char* dir) override;
+
+		std::shared_mutex SharedMutex;
+		BaseCommissionPrimaryKey* PrimaryKey;
+	protected:
+		MdbSubscriber* mdbSubscriber_;
+
+	private:
+		void EraseUniqueKey(BaseCommission* record);
+		void EraseIndex(BaseCommission* record);
+	};
+
 }

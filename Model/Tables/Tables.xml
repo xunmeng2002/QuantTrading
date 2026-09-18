@@ -321,6 +321,8 @@
 			<item name="PositionProfitByTrade" id="0x700E" type="Money" desc="逐笔持仓盈亏"/>
 			<item name="Deposit" id="0x7012" type="Money" desc="入金"/>
 			<item name="Withdraw" id="0x7013" type="Money" desc="出金"/>
+			<item name="StampTax" id="0x7018" type="Money" desc="印花税"/>
+			<item name="TransferFee" id="0x701A" type="Money" desc="过户费"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
@@ -360,6 +362,8 @@
 			<item name="PositionProfitByTrade" id="0x700E" type="Money" desc="逐笔持仓盈亏"/>
 			<item name="SettlementPrice" id="0x601F" type="Price" desc="结算价"/>
 			<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
+			<item name="StampTax" id="0x7018" type="Money" desc="印花税"/>
+			<item name="TransferFee" id="0x701A" type="Money" desc="过户费"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
@@ -406,6 +410,8 @@
 			<item name="PreSettlementPrice" id="0x6022" type="Price" desc="昨结算价"/>
 			<item name="CloseVolume" id="0x4022" type="Volume" desc="平仓数量"/>
 			<item name="CloseAmount" id="0x7026" type="Money" desc="平仓金额"/>
+			<item name="StampTax" id="0x7018" type="Money" desc="印花税"/>
+			<item name="TransferFee" id="0x701A" type="Money" desc="过户费"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
@@ -510,6 +516,8 @@
 			<item name="Commission" id="0x700A" type="Money" desc="手续费"/>
 			<item name="TradeDate" id="0x3005" type="Date" desc="成交日期"/>
 			<item name="TradeTime" id="0x3804" type="Time" desc="成交时间"/>
+			<item name="StampTax" id="0x7018" type="Money" desc="印花税"/>
+			<item name="TransferFee" id="0x701A" type="Money" desc="过户费"/>
 		</items>
 		<primarykey>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
@@ -564,5 +572,42 @@
 				<item name="PrimaryAccountId" id="0x1014" type="AccountId" desc="主账户代码"/>
 			</index>
 		</indexes>
+	</table>
+	<table name="CommissionGroup" id="0x300A" desc="手续费组" batch="" session="">
+		<items>
+			<item name="CommissionGroupId" id="0x1007" type="GroupId" desc="交易组代码"/>
+			<item name="CommissionGroupName" id="0x2003" type="GroupName" desc="手续费组名称"/>
+		</items>
+		<primarykey>
+			<item name="CommissionGroupId" id="0x1007" type="GroupId" desc="交易组代码"/>
+		</primarykey>
+		<uniquekeys/>
+		<indexes/>
+	</table>
+	<table name="BaseCommission" id="0x300B" desc="基础手续费" batch="" session="">
+		<items>
+			<item name="CommissionGroupId" id="0x1007" type="GroupId" desc="交易组代码"/>
+			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+			<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
+			<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
+			<item name="OpenByMoney" id="0x5002" type="Rate" desc="开仓费率"/>
+			<item name="CloseByMoney" id="0x5003" type="Rate" desc="平仓费率"/>
+			<item name="OpenByVolume" id="0x5004" type="Rate" desc="每手开仓费用"/>
+			<item name="CloseByVolume" id="0x5005" type="Rate" desc="每手平仓费用"/>
+			<item name="OpenStampTaxByMoney" id="0x5006" type="Rate" desc="开仓印花税率"/>
+			<item name="CloseStampTaxByMoney" id="0x5007" type="Rate" desc="平仓印花税率"/>
+			<item name="OpenTransferFeeByMoney" id="0x5008" type="Rate" desc="开仓过户费率"/>
+			<item name="CloseTransferFeeByMoney" id="0x5009" type="Rate" desc="平仓过户费率"/>
+			<item name="MinCommission" id="0x700C" type="Money" desc="最低手续费"/>
+			<item name="MaxCommission" id="0x700D" type="Money" desc="最高手续费"/>
+		</items>
+		<primarykey>
+			<item name="CommissionGroupId" id="0x1007" type="GroupId" desc="交易组代码"/>
+			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
+			<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
+			<item name="Direction" id="0x9005" type="Direction" desc="买卖方向"/>
+		</primarykey>
+		<uniquekeys/>
+		<indexes/>
 	</table>
 </tables>

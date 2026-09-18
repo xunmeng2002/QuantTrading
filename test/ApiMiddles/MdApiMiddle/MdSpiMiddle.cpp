@@ -1,4 +1,4 @@
-// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+﻿// 本文件由 ../Templates/Cpp/ApiTest/SpiMiddle.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdSpiMiddle.h"
 #include <Spark/Core/Logger/Logger.h>
 
@@ -27,7 +27,7 @@ void MdSpiMiddle::OnDisConnected()
 
 void MdSpiMiddle::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspMdUserLogin: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspMdUserLogin: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspMdUserLogin != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspMdUserLoginField:UserId:[%s], LoginDate:[%s], LoginTime:[%s], SessionId:[%lld]",
@@ -49,7 +49,7 @@ void MdSpiMiddle::OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, co
 }
 void MdSpiMiddle::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspMdUserLogout: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspMdUserLogout != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspMdUserLogoutField:UserId:[%s]",
@@ -71,7 +71,7 @@ void MdSpiMiddle::OnRspMdUserLogout(const RspMdUserLogoutField* rspMdUserLogout,
 }
 void MdSpiMiddle::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspSubMarketData: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s]",
@@ -93,7 +93,7 @@ void MdSpiMiddle::OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketDa
 }
 void MdSpiMiddle::OnRspUnSubMarketData(const RspUnSubMarketDataField* rspUnSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast)
 {
-	WriteLog(LogLevel::Info, "OnRspUnSubMarketData: RequestID:%d, IsLast:%d", requestId, isLast);
+	WriteLog(LogLevel::Info, "OnRspUnSubMarketData: RequestId:%d, IsLast:%d", requestId, isLast);
 	if (rspUnSubMarketData != nullptr)
 	{
 		WriteLog(LogLevel::Info, "RspUnSubMarketDataField:ExchangeId:[%s], InstrumentId:[%s]",

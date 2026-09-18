@@ -552,6 +552,8 @@ namespace QuantTrading
 		{"PositionProfitByTrade", FieldType::Double, offsetof(Capital, PositionProfitByTrade), 0},
 		{"Deposit", FieldType::Double, offsetof(Capital, Deposit), 0},
 		{"Withdraw", FieldType::Double, offsetof(Capital, Withdraw), 0},
+		{"StampTax", FieldType::Double, offsetof(Capital, StampTax), 0},
+		{"TransferFee", FieldType::Double, offsetof(Capital, TransferFee), 0},
 	};
 	static const int CapitalPKIndices[] = { 0, 1 };
 	static const int CapitalIdxTradingDay[] = { 0 };
@@ -568,20 +570,20 @@ namespace QuantTrading
 	}
 	const char* Capital::GetString() const
 	{
-		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%s,%s,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
-			TradingDay, AccountId, static_cast<int>(AccountType), Balance, PreBalance, Available, MarketValue, CashIn, CashOut, Margin, Commission, FrozenCash, FrozenMargin, FrozenCommission, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, Deposit, Withdraw);
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%s,%s,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+			TradingDay, AccountId, static_cast<int>(AccountType), Balance, PreBalance, Available, MarketValue, CashIn, CashOut, Margin, Commission, FrozenCash, FrozenMargin, FrozenCommission, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, Deposit, Withdraw, StampTax, TransferFee);
 		return MdbDataStringBuffer;
 	}
 	const char* Capital::GetDebugString() const
 	{
-		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "Capital:TradingDay:[%s], AccountId:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f]",
-			TradingDay, AccountId, static_cast<int>(AccountType), Balance, PreBalance, Available, MarketValue, CashIn, CashOut, Margin, Commission, FrozenCash, FrozenMargin, FrozenCommission, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, Deposit, Withdraw);
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "Capital:TradingDay:[%s], AccountId:[%s], AccountType:[%d], Balance:[%f], PreBalance:[%f], Available:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], Deposit:[%f], Withdraw:[%f], StampTax:[%f], TransferFee:[%f]",
+			TradingDay, AccountId, static_cast<int>(AccountType), Balance, PreBalance, Available, MarketValue, CashIn, CashOut, Margin, Commission, FrozenCash, FrozenMargin, FrozenCommission, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, Deposit, Withdraw, StampTax, TransferFee);
 		return MdbDataStringBuffer;
 	}
 	static void DeallocateCapital(void* r) { static_cast<Capital*>(r)->Deallocate(); }
 	const TableSchema& Capital::GetSchema()
 	{
-		static const TableSchema schema = {"Capital", CapitalFields, 20, CapitalPKIndices, 2, DeallocateCapital, CapitalIndices, 1};
+		static const TableSchema schema = {"Capital", CapitalFields, 22, CapitalPKIndices, 2, DeallocateCapital, CapitalIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor PositionFields[] = {
@@ -610,6 +612,8 @@ namespace QuantTrading
 		{"PositionProfitByTrade", FieldType::Double, offsetof(Position, PositionProfitByTrade), 0},
 		{"SettlementPrice", FieldType::Double, offsetof(Position, SettlementPrice), 0},
 		{"PreSettlementPrice", FieldType::Double, offsetof(Position, PreSettlementPrice), 0},
+		{"StampTax", FieldType::Double, offsetof(Position, StampTax), 0},
+		{"TransferFee", FieldType::Double, offsetof(Position, TransferFee), 0},
 	};
 	static const int PositionPKIndices[] = { 0, 1, 3, 4, 6 };
 	static const int PositionIdxAccount[] = { 0, 1 };
@@ -628,20 +632,20 @@ namespace QuantTrading
 	}
 	const char* Position::GetString() const
 	{
-		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%s,%s,%d,%s,%s,%d,%d,%lld,%lld,%lld,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f",
-			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), static_cast<int>(PosiDirection), TotalPosition, PositionFrozen, TodayPosition, MarketValue, CashIn, CashOut, Margin, Commission, FrozenCash, FrozenMargin, FrozenCommission, VolumeMultiple, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, SettlementPrice, PreSettlementPrice);
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%s,%s,%d,%s,%s,%d,%d,%lld,%lld,%lld,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%f,%f",
+			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), static_cast<int>(PosiDirection), TotalPosition, PositionFrozen, TodayPosition, MarketValue, CashIn, CashOut, Margin, Commission, FrozenCash, FrozenMargin, FrozenCommission, VolumeMultiple, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, SettlementPrice, PreSettlementPrice, StampTax, TransferFee);
 		return MdbDataStringBuffer;
 	}
 	const char* Position::GetDebugString() const
 	{
-		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "Position:TradingDay:[%s], AccountId:[%s], AccountType:[%d], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], SettlementPrice:[%f], PreSettlementPrice:[%f]",
-			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), static_cast<int>(PosiDirection), TotalPosition, PositionFrozen, TodayPosition, MarketValue, CashIn, CashOut, Margin, Commission, FrozenCash, FrozenMargin, FrozenCommission, VolumeMultiple, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, SettlementPrice, PreSettlementPrice);
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "Position:TradingDay:[%s], AccountId:[%s], AccountType:[%d], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], PosiDirection:[%d], TotalPosition:[%lld], PositionFrozen:[%lld], TodayPosition:[%lld], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], FrozenCash:[%f], FrozenMargin:[%f], FrozenCommission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], SettlementPrice:[%f], PreSettlementPrice:[%f], StampTax:[%f], TransferFee:[%f]",
+			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), static_cast<int>(PosiDirection), TotalPosition, PositionFrozen, TodayPosition, MarketValue, CashIn, CashOut, Margin, Commission, FrozenCash, FrozenMargin, FrozenCommission, VolumeMultiple, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, SettlementPrice, PreSettlementPrice, StampTax, TransferFee);
 		return MdbDataStringBuffer;
 	}
 	static void DeallocatePosition(void* r) { static_cast<Position*>(r)->Deallocate(); }
 	const TableSchema& Position::GetSchema()
 	{
-		static const TableSchema schema = {"Position", PositionFields, 25, PositionPKIndices, 5, DeallocatePosition, PositionIndices, 2};
+		static const TableSchema schema = {"Position", PositionFields, 27, PositionPKIndices, 5, DeallocatePosition, PositionIndices, 2};
 		return schema;
 	}
 	static const FieldDescriptor PositionDetailFields[] = {
@@ -670,6 +674,8 @@ namespace QuantTrading
 		{"PreSettlementPrice", FieldType::Double, offsetof(PositionDetail, PreSettlementPrice), 0},
 		{"CloseVolume", FieldType::Int64, offsetof(PositionDetail, CloseVolume), 0},
 		{"CloseAmount", FieldType::Double, offsetof(PositionDetail, CloseAmount), 0},
+		{"StampTax", FieldType::Double, offsetof(PositionDetail, StampTax), 0},
+		{"TransferFee", FieldType::Double, offsetof(PositionDetail, TransferFee), 0},
 	};
 	static const int PositionDetailPKIndices[] = { 0, 1, 3, 4, 6, 7, 8 };
 	static const int PositionDetailIdxTradeMatch[] = { 0, 1, 3, 4, 6 };
@@ -688,20 +694,20 @@ namespace QuantTrading
 	}
 	const char* PositionDetail::GetString() const
 	{
-		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%s,%s,%d,%s,%s,%d,%d,%s,%s,%lld,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%lld,%f",
-			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), static_cast<int>(PosiDirection), OpenDate, TradeId, Volume, OpenPrice, MarketValue, CashIn, CashOut, Margin, Commission, VolumeMultiple, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, SettlementPrice, PreSettlementPrice, CloseVolume, CloseAmount);
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%s,%s,%d,%s,%s,%d,%d,%s,%s,%lld,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%lld,%f,%f,%f",
+			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), static_cast<int>(PosiDirection), OpenDate, TradeId, Volume, OpenPrice, MarketValue, CashIn, CashOut, Margin, Commission, VolumeMultiple, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, SettlementPrice, PreSettlementPrice, CloseVolume, CloseAmount, StampTax, TransferFee);
 		return MdbDataStringBuffer;
 	}
 	const char* PositionDetail::GetDebugString() const
 	{
-		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "PositionDetail:TradingDay:[%s], AccountId:[%s], AccountType:[%d], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], PosiDirection:[%d], OpenDate:[%s], TradeId:[%s], Volume:[%lld], OpenPrice:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], SettlementPrice:[%f], PreSettlementPrice:[%f], CloseVolume:[%lld], CloseAmount:[%f]",
-			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), static_cast<int>(PosiDirection), OpenDate, TradeId, Volume, OpenPrice, MarketValue, CashIn, CashOut, Margin, Commission, VolumeMultiple, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, SettlementPrice, PreSettlementPrice, CloseVolume, CloseAmount);
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "PositionDetail:TradingDay:[%s], AccountId:[%s], AccountType:[%d], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], PosiDirection:[%d], OpenDate:[%s], TradeId:[%s], Volume:[%lld], OpenPrice:[%f], MarketValue:[%f], CashIn:[%f], CashOut:[%f], Margin:[%f], Commission:[%f], VolumeMultiple:[%d], CloseProfitByDate:[%f], CloseProfitByTrade:[%f], PositionProfitByDate:[%f], PositionProfitByTrade:[%f], SettlementPrice:[%f], PreSettlementPrice:[%f], CloseVolume:[%lld], CloseAmount:[%f], StampTax:[%f], TransferFee:[%f]",
+			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), static_cast<int>(PosiDirection), OpenDate, TradeId, Volume, OpenPrice, MarketValue, CashIn, CashOut, Margin, Commission, VolumeMultiple, CloseProfitByDate, CloseProfitByTrade, PositionProfitByDate, PositionProfitByTrade, SettlementPrice, PreSettlementPrice, CloseVolume, CloseAmount, StampTax, TransferFee);
 		return MdbDataStringBuffer;
 	}
 	static void DeallocatePositionDetail(void* r) { static_cast<PositionDetail*>(r)->Deallocate(); }
 	const TableSchema& PositionDetail::GetSchema()
 	{
-		static const TableSchema schema = {"PositionDetail", PositionDetailFields, 25, PositionDetailPKIndices, 7, DeallocatePositionDetail, PositionDetailIndices, 2};
+		static const TableSchema schema = {"PositionDetail", PositionDetailFields, 27, PositionDetailPKIndices, 7, DeallocatePositionDetail, PositionDetailIndices, 2};
 		return schema;
 	}
 	static const FieldDescriptor OrderFields[] = {
@@ -789,6 +795,8 @@ namespace QuantTrading
 		{"Commission", FieldType::Double, offsetof(Trade, Commission), 0},
 		{"TradeDate", FieldType::Char, offsetof(Trade, TradeDate), sizeof(Trade::TradeDate)},
 		{"TradeTime", FieldType::Char, offsetof(Trade, TradeTime), sizeof(Trade::TradeTime)},
+		{"StampTax", FieldType::Double, offsetof(Trade, StampTax), 0},
+		{"TransferFee", FieldType::Double, offsetof(Trade, TransferFee), 0},
 	};
 	static const int TradePKIndices[] = { 0, 3, 8, 9 };
 	static const int TradeIdxAccountId[] = { 0, 1 };
@@ -805,20 +813,20 @@ namespace QuantTrading
 	}
 	const char* Trade::GetString() const
 	{
-		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%s,%s,%d,%s,%s,%d,%d,%s,%s,%d,%d,%f,%lld,%d,%f,%f,%s,%s",
-			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), OrderId, OrderSysId, TradeId, static_cast<int>(Direction), static_cast<int>(OffsetFlag), Price, Volume, VolumeMultiple, TradeAmount, Commission, TradeDate, TradeTime);
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%s,%s,%d,%s,%s,%d,%d,%s,%s,%d,%d,%f,%lld,%d,%f,%f,%s,%s,%f,%f",
+			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), OrderId, OrderSysId, TradeId, static_cast<int>(Direction), static_cast<int>(OffsetFlag), Price, Volume, VolumeMultiple, TradeAmount, Commission, TradeDate, TradeTime, StampTax, TransferFee);
 		return MdbDataStringBuffer;
 	}
 	const char* Trade::GetDebugString() const
 	{
-		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "Trade:TradingDay:[%s], AccountId:[%s], AccountType:[%d], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], TradeId:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s]",
-			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), OrderId, OrderSysId, TradeId, static_cast<int>(Direction), static_cast<int>(OffsetFlag), Price, Volume, VolumeMultiple, TradeAmount, Commission, TradeDate, TradeTime);
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "Trade:TradingDay:[%s], AccountId:[%s], AccountType:[%d], ExchangeId:[%s], InstrumentId:[%s], ProductClass:[%d], OrderId:[%d], OrderSysId:[%s], TradeId:[%s], Direction:[%d], OffsetFlag:[%d], Price:[%f], Volume:[%lld], VolumeMultiple:[%d], TradeAmount:[%f], Commission:[%f], TradeDate:[%s], TradeTime:[%s], StampTax:[%f], TransferFee:[%f]",
+			TradingDay, AccountId, static_cast<int>(AccountType), ExchangeId, InstrumentId, static_cast<int>(ProductClass), OrderId, OrderSysId, TradeId, static_cast<int>(Direction), static_cast<int>(OffsetFlag), Price, Volume, VolumeMultiple, TradeAmount, Commission, TradeDate, TradeTime, StampTax, TransferFee);
 		return MdbDataStringBuffer;
 	}
 	static void DeallocateTrade(void* r) { static_cast<Trade*>(r)->Deallocate(); }
 	const TableSchema& Trade::GetSchema()
 	{
-		static const TableSchema schema = {"Trade", TradeFields, 18, TradePKIndices, 4, DeallocateTrade, TradeIndices, 1};
+		static const TableSchema schema = {"Trade", TradeFields, 20, TradePKIndices, 4, DeallocateTrade, TradeIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor AccountLoginSessionFields[] = {
@@ -897,6 +905,80 @@ namespace QuantTrading
 		static const TableSchema schema = {"PrimaryAccountLoginSession", PrimaryAccountLoginSessionFields, 3, PrimaryAccountLoginSessionPKIndices, 2, DeallocatePrimaryAccountLoginSession, PrimaryAccountLoginSessionIndices, 2};
 		return schema;
 	}
+	static const FieldDescriptor CommissionGroupFields[] = {
+		{"CommissionGroupId", FieldType::Int32, offsetof(CommissionGroup, CommissionGroupId), 0},
+		{"CommissionGroupName", FieldType::Char, offsetof(CommissionGroup, CommissionGroupName), sizeof(CommissionGroup::CommissionGroupName)},
+	};
+	static const int CommissionGroupPKIndices[] = { 0 };
+	CommissionGroup* CommissionGroup::Allocate()
+	{
+		return ObjectPool<CommissionGroup>::GetInstance().Allocate();
+	}
+	void CommissionGroup::Deallocate()
+	{
+		ObjectPool<CommissionGroup>::GetInstance().Deallocate(this);
+	}
+	const char* CommissionGroup::GetString() const
+	{
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%d,%s",
+			CommissionGroupId, CommissionGroupName);
+		return MdbDataStringBuffer;
+	}
+	const char* CommissionGroup::GetDebugString() const
+	{
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "CommissionGroup:CommissionGroupId:[%d], CommissionGroupName:[%s]",
+			CommissionGroupId, CommissionGroupName);
+		return MdbDataStringBuffer;
+	}
+	static void DeallocateCommissionGroup(void* r) { static_cast<CommissionGroup*>(r)->Deallocate(); }
+	const TableSchema& CommissionGroup::GetSchema()
+	{
+		static const TableSchema schema = {"CommissionGroup", CommissionGroupFields, 2, CommissionGroupPKIndices, 1, DeallocateCommissionGroup, nullptr, 0};
+		return schema;
+	}
+	static const FieldDescriptor BaseCommissionFields[] = {
+		{"CommissionGroupId", FieldType::Int32, offsetof(BaseCommission, CommissionGroupId), 0},
+		{"ExchangeId", FieldType::Char, offsetof(BaseCommission, ExchangeId), sizeof(BaseCommission::ExchangeId)},
+		{"InstrumentId", FieldType::Char, offsetof(BaseCommission, InstrumentId), sizeof(BaseCommission::InstrumentId)},
+		{"Direction", FieldType::Int32, offsetof(BaseCommission, Direction), 0},
+		{"OpenByMoney", FieldType::Double, offsetof(BaseCommission, OpenByMoney), 0},
+		{"CloseByMoney", FieldType::Double, offsetof(BaseCommission, CloseByMoney), 0},
+		{"OpenByVolume", FieldType::Double, offsetof(BaseCommission, OpenByVolume), 0},
+		{"CloseByVolume", FieldType::Double, offsetof(BaseCommission, CloseByVolume), 0},
+		{"OpenStampTaxByMoney", FieldType::Double, offsetof(BaseCommission, OpenStampTaxByMoney), 0},
+		{"CloseStampTaxByMoney", FieldType::Double, offsetof(BaseCommission, CloseStampTaxByMoney), 0},
+		{"OpenTransferFeeByMoney", FieldType::Double, offsetof(BaseCommission, OpenTransferFeeByMoney), 0},
+		{"CloseTransferFeeByMoney", FieldType::Double, offsetof(BaseCommission, CloseTransferFeeByMoney), 0},
+		{"MinCommission", FieldType::Double, offsetof(BaseCommission, MinCommission), 0},
+		{"MaxCommission", FieldType::Double, offsetof(BaseCommission, MaxCommission), 0},
+	};
+	static const int BaseCommissionPKIndices[] = { 0, 1, 2, 3 };
+	BaseCommission* BaseCommission::Allocate()
+	{
+		return ObjectPool<BaseCommission>::GetInstance().Allocate();
+	}
+	void BaseCommission::Deallocate()
+	{
+		ObjectPool<BaseCommission>::GetInstance().Deallocate(this);
+	}
+	const char* BaseCommission::GetString() const
+	{
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "%d,%s,%s,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+			CommissionGroupId, ExchangeId, InstrumentId, static_cast<int>(Direction), OpenByMoney, CloseByMoney, OpenByVolume, CloseByVolume, OpenStampTaxByMoney, CloseStampTaxByMoney, OpenTransferFeeByMoney, CloseTransferFeeByMoney, MinCommission, MaxCommission);
+		return MdbDataStringBuffer;
+	}
+	const char* BaseCommission::GetDebugString() const
+	{
+		snprintf(MdbDataStringBuffer, sizeof(MdbDataStringBuffer), "BaseCommission:CommissionGroupId:[%d], ExchangeId:[%s], InstrumentId:[%s], Direction:[%d], OpenByMoney:[%f], CloseByMoney:[%f], OpenByVolume:[%f], CloseByVolume:[%f], OpenStampTaxByMoney:[%f], CloseStampTaxByMoney:[%f], OpenTransferFeeByMoney:[%f], CloseTransferFeeByMoney:[%f], MinCommission:[%f], MaxCommission:[%f]",
+			CommissionGroupId, ExchangeId, InstrumentId, static_cast<int>(Direction), OpenByMoney, CloseByMoney, OpenByVolume, CloseByVolume, OpenStampTaxByMoney, CloseStampTaxByMoney, OpenTransferFeeByMoney, CloseTransferFeeByMoney, MinCommission, MaxCommission);
+		return MdbDataStringBuffer;
+	}
+	static void DeallocateBaseCommission(void* r) { static_cast<BaseCommission*>(r)->Deallocate(); }
+	const TableSchema& BaseCommission::GetSchema()
+	{
+		static const TableSchema schema = {"BaseCommission", BaseCommissionFields, 14, BaseCommissionPKIndices, 4, DeallocateBaseCommission, nullptr, 0};
+		return schema;
+	}
 
 	thread_local TradingDay CompareTradingDay;
 	thread_local Exchange CompareExchange;
@@ -917,5 +999,7 @@ namespace QuantTrading
 	thread_local Trade CompareTrade;
 	thread_local AccountLoginSession CompareAccountLoginSession;
 	thread_local PrimaryAccountLoginSession ComparePrimaryAccountLoginSession;
+	thread_local CommissionGroup CompareCommissionGroup;
+	thread_local BaseCommission CompareBaseCommission;
 
 }

@@ -19,7 +19,7 @@ using namespace QuantTrading::OrderMatch;
 namespace QuantTrading::SimExchange
 {
 SimExchange::SimExchange(QuantTrading::Mdb* mdb, TradeFront* tradeFront, MdFront* mdFront, MdSpiImpl* mdSpi, MatchModeType matchMode)
-	:ThreadBase("SimExchange"), mdb_(mdb), tradeFront_(tradeFront), mdFront_(mdFront), mdSpi_(mdSpi), tradingDay_(""), currDate_(""), currTime_(""), isMdLogged_(false)
+	:ThreadBase("SimExchange"), mdb_(mdb), commissionCalculator_(mdb), tradeFront_(tradeFront), mdFront_(mdFront), mdSpi_(mdSpi), tradingDay_(""), currDate_(""), currTime_(""), isMdLogged_(false)
 {
 	auto tradingDay = mdb_->TradingDay->PrimaryKey->Select(1);
 	if (tradingDay != nullptr)
@@ -112,6 +112,8 @@ void SimExchange::OnOrderUpdate(QuantTrading::Order* order, QuantTrading::Order*
 }
 void SimExchange::OnTrade(QuantTrading::Trade* trade)
 {
+	// 与回测侧同构：计费必须早于 SendRtnTrade 与 UpdateOnTrade
+	commissionCalculator_.Apply(trade);
     mdb_->Trade->Insert(trade);
 	SendRtnTrade(trade);
 	positionMaintenance_->UpdateOnTrade(trade);
