@@ -12,7 +12,11 @@
 namespace QuantTrading::BackTest
 {
 	inline constexpr const char* ResultFileName = "result.json";
-	inline constexpr int ResultSchemaVersion = 1;
+	inline constexpr int ResultSchemaVersion = 2;
+
+	// 决定 BarMarketDataCount 与 DepthMarketDataCount 哪个有意义（口径见 docs/backtest-run-contract.md 注二）
+	inline constexpr const char* MarketDataTypeBar = "Bar";
+	inline constexpr const char* MarketDataTypeTick = "Tick";
 
 	// 退出码契约。已知歧义：MSVC 下 abort()/未捕获异常也返回 3，与「引擎报告失败」同码，
 	// 消歧只能靠文件——码 3 且有可解析的 result.json 即引擎报告失败，码 3 且无文件即崩溃。
@@ -35,6 +39,7 @@ namespace QuantTrading::BackTest
 		std::string LastTradingDay;
 		std::string AccountId;
 		bool BasicDataLoaded = false;
+		std::string MarketDataType;
 		int MdSubscribeCount = 0;
 		int BarMarketDataCount = 0;
 		int DepthMarketDataCount = 0;
@@ -42,11 +47,13 @@ namespace QuantTrading::BackTest
 		int OrderCount = 0;
 		int TradeCount = 0;
 		bool HasCapital = false;
+		// 期末值：LastTradingDay 当日的资金行
 		double Balance = 0;
 		double Available = 0;
-		double Commission = 0;
-		double StampTax = 0;
-		double TransferFee = 0;
+		// 整轮累计：Capital 逐日清零重算，三项须把该账户全部资金行相加才是整轮值
+		double TotalCommission = 0;
+		double TotalStampTax = 0;
+		double TotalTransferFee = 0;
 		int CommissionMissingCount = 0;
 		int CommissionZeroRateKeyCount = 0;
 		std::vector<std::string> MissingRateKeys;
@@ -69,6 +76,7 @@ namespace QuantTrading::BackTest
 		root["LastTradingDay"] = runResult.LastTradingDay;
 		root["AccountId"] = runResult.AccountId;
 		root["BasicDataLoaded"] = runResult.BasicDataLoaded;
+		root["MarketDataType"] = runResult.MarketDataType;
 		root["MdSubscribeCount"] = runResult.MdSubscribeCount;
 		root["BarMarketDataCount"] = runResult.BarMarketDataCount;
 		root["DepthMarketDataCount"] = runResult.DepthMarketDataCount;
@@ -78,9 +86,9 @@ namespace QuantTrading::BackTest
 		root["HasCapital"] = runResult.HasCapital;
 		root["Balance"] = runResult.Balance;
 		root["Available"] = runResult.Available;
-		root["Commission"] = runResult.Commission;
-		root["StampTax"] = runResult.StampTax;
-		root["TransferFee"] = runResult.TransferFee;
+		root["TotalCommission"] = runResult.TotalCommission;
+		root["TotalStampTax"] = runResult.TotalStampTax;
+		root["TotalTransferFee"] = runResult.TotalTransferFee;
 		root["CommissionMissingCount"] = runResult.CommissionMissingCount;
 		root["CommissionZeroRateKeyCount"] = runResult.CommissionZeroRateKeyCount;
 		root["VolumeMultipleFallbackProductCount"] = runResult.VolumeMultipleFallbackProductCount;

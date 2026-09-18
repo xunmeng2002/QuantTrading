@@ -80,6 +80,17 @@ class GridStrategy(qt.StrategyBase):
         print("Anchor price: %f" % anchor_price)
         self.place_ladder(anchor_price)
 
+    def on_bar(self, bar_data):
+        """Bar 回放模式无 tick 回调，以首根有效 bar 的 Close 为锚价；与 on_tick 先到先锚。"""
+        if not self.awaiting_anchor:
+            return
+        anchor_price = bar_data.close
+        if anchor_price <= 0:
+            return
+        self.awaiting_anchor = False
+        print("Anchor price: %f" % anchor_price)
+        self.place_ladder(anchor_price)
+
     def place_ladder(self, anchor_price):
         for level in range(self.params.grid_count):
             buy_slot = self.slots[level]

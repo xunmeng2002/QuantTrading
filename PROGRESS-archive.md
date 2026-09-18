@@ -10,6 +10,34 @@
 ---
 
 ## ✅ 已完成（历史，倒序）
+### D.49 · 2026-09-17 （第十四批） 手续费组表设计落地（模型层两张表）+ 回测产物现状实测
+
+- **2026-09-17（第十四批）手续费组表设计落地（模型层两张表）+ 回测产物现状实测**：
+  - **背景**：回测平台化的可变维度里"手续费率"这条链路今天**完全不存在**——`Trade.Commission` 唯一写入点是 `src/OrderMatch/OrderMatch.cpp:141` 的硬编码 `= 0`；`Account.CommissionGroupId` 在 `src/BackTest/SimExchange.cpp:648` 硬编码 1；`src/Settlement/Settlement.cpp:127` 的权益公式 `Balance = PreBalance + 逐日盈亏 − Commission` 本身正确，但因上游恒 0 而永远不起作用。项目其实预留过这套设计却从未接线：`Account.CommissionGroupId`（`Model/Tables/Tables.xml:294`）→ `Order.CommissionGroupId`（`src/OrderMatch/OrderUtility.cpp:165`）已打通，`Model/Error/Error.xml:19-20,45-46` 的 `BaseCommissionNotExist` / `CommissionGroupNotExist` 等四个错误码至今是死代码，`include/QuantTrading/Fields.h:479-496` 的 `CommissionRateField` 已把 8 个费率字段写好。本批**不发明新 schema，只用项目自己预留的字段把表补齐**。
+  - **表设计（用户拍板：做成完整 `CommissionGroup` 表 + 两种计费方式都支持、按合约选择）**：两张表，与预留错误码命名一一对应。
+    - **表 A `CommissionGroup`（`0x300A`，手续费组头）**：`CommissionGroupId`（主键，`GroupId`，条目 `0x1007`）+ `CommissionGroupName`（`GroupName`，条目 `0x2003`）。
+    - **表 B `BaseCommission`（`0x300B`，组 × 合约 的费率明细）**：主键 `(CommissionGroupId, ExchangeId, InstrumentId)`；12 个费率/限额列——`OpenBuy`/`OpenSell`/`CloseBuy`/`CloseSell` × `ByMoney`（条目 `0x5006`–`0x5009`）/ `ByVolume`（`0x500A`–`0x500D`），各 `Rate` 类型（=`double`，`D:\Gitee\Model\Types.xml:55`）；`MinCommission`（`0x700C`）/ `MaxCommission`（`0x700D`），各 `Money`。
+    - **13 个字段条目 id 全部已存在于仓库外的 `D:\Gitee\Model\Items.xml`，本批零新增字段 id；两表的表 id `0x300A`/`0x300B` 此前空闲（原 19 张表最大到 `0x3009`）。**
+    - **计费公式（相加；不加 `ChargeMode` 选择列）**：`手续费 = TradeAmount × (该方向该开平的 ByMoney 费率) + Volume × (该方向该开平的 ByVolume 费率)`，再按 `MinCommission` / `MaxCommission` 封底封顶（`<= 0` 视为不限）。"按合约选择计费方式"由**填哪一列**自然表达：纯按金额只填 `*ByMoney`，纯按手数只填 `*ByVolume`，两者兼有则都填——预留 schema 原样保留，日后要显式化再加枚举列即可，不影响现有行。取列规则：`OffsetFlag = Open` 取 `OpenBuy*`/`OpenSell*`，`Close` / `CloseToday` 取 `CloseBuy*`/`CloseSell*`。
+  - **为什么按合约而不按品种建键**：按品种更贴近交易所实际、更省行数，且预留的 `CommissionRateField` 正是品种粒度。但 `Order` 表**没有 `ProductId` 字段**（`src/Mdb/MdbStructs.cpp:758`）且 `OrderMatch::Match()` 内**拿不到 `Mdb*`**，按品种建键必须把 `Mdb*` 注进撮合层再回查 `Instrument` 表——为一个键把撮合层与存储层焊死，代价过大。反之 `order->InstrumentId`、`order->VolumeMultiple`、`order->CommissionGroupId` 在 `Match()` 内**全部直接可得**，查表所需的键与被乘数都现成。
+  - **表 id 与文件位置（一个踩到又退回的坑，留档）**：`ParseTableModel.py:44-50` 的 id 规则是"显式 `id=` 则 `lastId = 该值`，缺省则 `lastId + 1`"。最初打算把两张表插在 `Capital` 之后，实测会把 `lastId` 抬到 `0x300B`，使其后的 `Position`/`PositionDetail`/`Order`/`Trade`… **全部顺移到 `0x300C`+**——既有表 id 位移属破坏性改动。**改为追加在 `ShortTables.xml` 文件末尾**（4 空格缩进，与相邻表一致）。改后逐条核对：19 张既有表 id **全部未变**。
+  - **本批改动**：① `Model/Tables/ShortTables.xml`（手改源）追加两表；② `python parseall.py` 重生成 `Model/Tables/Tables.xml` / `TableNames.xml`（纯增量 35 行 / 2 行）；③ `python pumpall.py` 重生成 `src/Mdb/*` 共 15 个文件。
+  - **生成物抽查（静态）**：`src/Mdb/MdbStructs.h:781-795` `struct CommissionGroup { static constexpr unsigned int TableId = 0x300A; ... }`、`:796+` `struct BaseCommission { TableId = 0x300B; ... }`；`src/Mdb/MdbStructs.cpp:968-972` `BaseCommission::GetSchema()` 为 13 字段 / 3 主键；`src/Mdb/Mdb.h:48-49` 两个表指针成员就位。
+  - **顺手回滚的模板漂移（18 个文件）**：`pumpall.py` 把未提交的 `D:\Gitee\Templates` 仓的两处改动一并带进了本仓生成物——`requestId → requestID` 改名 + UTF-8 BOM 添加。这 18 个文件**已按显式列出的路径逐一 `git checkout --` 回滚到 HEAD**（前一次尝试用 `git diff --name-only` + BOM 启发式在运行期挑目标，因目标集无法预先核验被权限层拒绝）。**注**：该 `requestID` 写法与 `rules/cpp-style.md` §1「缩写 PascalCase 按普通单词处理，只首字母大写」**冲突**（应为 `requestId`），用户提交 `Templates` 时值得先处理。
+  - **未做（用户明确缓办）**：① **平今不分档**——预留 schema 只有"平仓"一档，`OffsetFlagType` 三值里 `CloseToday` 暂落 `Close*` 费率；要分档需在**仓库外**的 `D:\Gitee\Model\Items.xml` 新增 4 个条目（如 `0x500E`–`0x5011`）+ 表 B 加 4 列。② **费率行的装载路径**——用户将另行做"基础数据导入"，故本批不接运行期装载。③ **`Model/TableNames/BackTestTableNames.xml` 未改**，故这两张表**尚未在回测的 mdb 中实例化**，`src/BackTest/BackTestTableList.h` 仍是 15 个表 id。
+  - **测试 I/O 示例**：本批**无运行期行为变化**（只加了两张表定义，无一处读写代码），故无输入/输出可示。等价的验证是生成物核对——表 id `0x300A`/`0x300B`、`BaseCommission::GetSchema()` 的 13 字段 / 3 主键、19 张既有表 id 零位移，均已逐条核对通过。
+  - **实测发现（只读 sqlite3 查询 `bin/Release/BackTest_20260917_170540_296.db`；这些是费率真正生效前必须先解决的现实）**：
+    ```text
+    Product 行数=0                Instrument 行数=3
+    Instrument.VolumeMultiple 分布: [(1, 3)]      Trade.VolumeMultiple 分布: [(1, 84)]
+    Trade.Commission 合计: 0.0                    Margin 合计: 0.0
+    TradeAmount 合计 == sum(Price*Volume*VolumeMultiple)   (两者均 134195.85)
+    Capital: 62 行, Balance 合计 = -42022.78
+    ```
+    即在今天的回测里：**`Product` 表是空的**；每个合约与每笔成交的 `VolumeMultiple` 都是 1（`src/BackTest/SimExchange.cpp:764` 的 `else` 分支兜底），故 `TradeAmount` 对任何真实合约都是错的；手续费恒 0、保证金永不计算、权益可以跑到负数而**无任何风控**。**费率若挂在错误的 `TradeAmount` 上，收费结果同样无意义**——这条与费率是同一批要解决的事。
+  - **风险（§7）**：无多线程/锁/内存管理改动。表定义纯增量、零删除、零改名，生成物为机械追加。唯一需留意的是新增的 12 个 `Rate`(double) 列会进 `AsyncDBWriter` 的建表/写入路径，但当前**无任何代码写入这两张表**，故落库行为无变化。
+  - **提交状态**：当时**未提交**——工作树含 18 个改动文件（3 个模型 + 15 个 `src/Mdb/*`）；**2026-09-18 补记：已与第十五批一并提交为 `4fab69c`**。**AI 未编译、未运行、未推送**（按约定）。
+
 ### D.48 · 2026-09-17 （第十三批） 回测平台化定案 + RunId 改为可配置注入（第一步）
 
 - **2026-09-17（第十三批）回测平台化定案 + RunId 改为可配置注入（第一步）**：

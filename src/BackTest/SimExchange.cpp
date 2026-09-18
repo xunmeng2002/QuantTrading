@@ -403,6 +403,23 @@ void SimExchange::SetError(unsigned int errorId)
 	WriteLog(LogLevel::Warning, "RunError Set, ErrorId:0x%X, ErrorMsg:%s", errorId, errorMessage_.c_str());
 }
 
+QuantTrading::Settlement::TradeFee SimExchange::AccumulateAccountFee() const
+{
+	QuantTrading::Settlement::TradeFee feeTotal;
+	auto itPair = mdb_->Capital->PrimaryKey->SelectAll();
+	for (auto it = itPair.first; it != itPair.second; ++it)
+	{
+		auto capital = *it;
+		if (strcmp(capital->AccountId, accountId_) != 0)
+		{
+			continue;
+		}
+		feeTotal = QuantTrading::Settlement::AddTradeFee(feeTotal,
+			QuantTrading::Settlement::TradeFee{ capital->Commission, capital->StampTax, capital->TransferFee });
+	}
+	return feeTotal;
+}
+
 RunResult SimExchange::BuildRunResult() const
 {
 	RunResult runResult;
@@ -417,6 +434,7 @@ RunResult SimExchange::BuildRunResult() const
 	runResult.LastTradingDay = tradingDay_;
 	runResult.AccountId = accountId_;
 	runResult.BasicDataLoaded = basicDataLoaded_;
+	runResult.MarketDataType = marketDataType_ == MarketDataTypeType::Bar ? MarketDataTypeBar : MarketDataTypeTick;
 	runResult.MdSubscribeCount = CountTableRows(mdb_->MdSubscribe);
 	runResult.BarMarketDataCount = CountTableRows(mdb_->BarMarketData);
 	runResult.DepthMarketDataCount = CountTableRows(mdb_->DepthMarketData);
@@ -429,10 +447,11 @@ RunResult SimExchange::BuildRunResult() const
 	{
 		runResult.Balance = capital->Balance;
 		runResult.Available = capital->Available;
-		runResult.Commission = capital->Commission;
-		runResult.StampTax = capital->StampTax;
-		runResult.TransferFee = capital->TransferFee;
 	}
+	const auto feeTotal = AccumulateAccountFee();
+	runResult.TotalCommission = feeTotal.Commission;
+	runResult.TotalStampTax = feeTotal.StampTax;
+	runResult.TotalTransferFee = feeTotal.TransferFee;
 	runResult.CommissionMissingCount = static_cast<int>(commissionCalculator_.GetMissingRateCount());
 	runResult.CommissionZeroRateKeyCount = static_cast<int>(commissionCalculator_.GetZeroRateKeyCount());
 	runResult.MissingRateKeys = commissionCalculator_.GetMissingRateKeys();

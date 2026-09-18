@@ -106,6 +106,7 @@ private:
 
 	// 幂等置位：首个错误留下，后来的不覆盖。OnMdEnd 里多条判据依次执行，不幂等会被后面的判据改写成因
 	void SetError(unsigned int errorId);
+	QuantTrading::Settlement::TradeFee AccumulateAccountFee() const;
 	RunResult BuildRunResult() const;
 	// 结果落在 <cwd>/result.json：宿主拿不到 RunId，落 dumpPath_ 下需要它算一个算不出来的路径
 	void WriteRunResult() const;

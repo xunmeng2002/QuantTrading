@@ -25,7 +25,7 @@
 **行数一律取自内存表**，不是输出库——输出库由异步写线程落盘，收尾时并不完整。
 
 键名一律 PascalCase，与 `src/BackTest/RunResult.h` 的 `RunResult` 成员名一一对应。
-契约只在该结构体里定义一次。`SchemaVersion` 目前为 `1`。
+契约只在该结构体里定义一次。`SchemaVersion` 目前为 `2`（`1` 里三项费用读的是最后一日，已废弃）。
 
 | 键 | 类型 | 说明 |
 | ---- | ---- | ---- |
@@ -41,22 +41,34 @@
 | `LastTradingDay` | string | 实际走到的最后交易日 |
 | `AccountId` | string | 注册的账户 |
 | `BasicDataLoaded` | bool | 种子库是否装载成功 |
+| `MarketDataType` | string | 消费的行情类型：`Bar` / `Tick` |
 | `MdSubscribeCount` | int | 行情订阅表行数 |
 | `BarMarketDataCount` | int | bar 行情表行数 |
-| `DepthMarketDataCount` | int | tick 行情表行数 |
+| `DepthMarketDataCount` | int | tick 快照表行数（见注二） |
 | `InstrumentCount` | int | 合约表行数 |
 | `OrderCount` | int | 委托表行数 |
 | `TradeCount` | int | 成交表行数 |
 | `HasCapital` | bool | 是否取到资金行 |
-| `Balance` | double | 权益 |
-| `Available` | double | 可用资金 |
-| `Commission` | double | 佣金合计 |
-| `StampTax` | double | 印花税合计 |
-| `TransferFee` | double | 过户费合计 |
-| `CommissionMissingCount` | int | 未命中费率的成交笔数 |
+| `Balance` | double | 期末权益 |
+| `Available` | double | 期末可用资金 |
+| `TotalCommission` | double | 整轮佣金累计 |
+| `TotalStampTax` | double | 整轮印花税累计 |
+| `TotalTransferFee` | double | 整轮过户费累计 |
+| `CommissionMissingCount` | int | 未命中费率的成交笔数（见注三） |
 | `CommissionZeroRateKeyCount` | int | 未命中费率的去重键数 |
 | `MissingRateKeys` | string[] | 缺失的费率键，上限 200 条 |
 | `VolumeMultipleFallbackProductCount` | int | 乘数兜底为 1 的品种数 |
+
+> **注一（口径）**：`Balance` / `Available` 是**状态值**，取 `LastTradingDay` 当日的资金行；
+> `Total*` 与各 `*Count` 是**整轮累计值**。资金表本身是**逐日流量**——引擎每天把它清零后只装当日数，
+> 所以整轮费用必须跨行相加，**不能读最后一行**（那不是缺陷，是结算表的设计）。
+
+> **注二（两个行情计数互斥非零）**：引擎按 `MatchMode` 只消费一种行情，由 `MarketDataType` 指明是哪种。
+> `Bar` 模式下引擎不写 tick 表，故 `DepthMarketDataCount` 恒为 0；`Tick` 模式下 `BarMarketDataCount` 为 0。
+> 另注意 tick 表按 `(交易日, 交易所, 合约)` 主键就地更新，它是**每日每合约一条快照**，不是 tick 条数。
+
+> **注三（零成交时费率缺口是真空的）**：`CommissionMissingCount` 与 `MissingRateKeys` 只在
+> `TradeCount > 0` 时有意义——零成交时它们为 0 与空数组，**不代表费率齐全**，只代表一笔都没查过。
 
 ### 2.1 `ErrorId` 取值
 
