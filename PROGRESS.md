@@ -44,7 +44,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
     ```
     即在今天的回测里：**`Product` 表是空的**；每个合约与每笔成交的 `VolumeMultiple` 都是 1（`src/BackTest/SimExchange.cpp:764` 的 `else` 分支兜底），故 `TradeAmount` 对任何真实合约都是错的；手续费恒 0、保证金永不计算、权益可以跑到负数而**无任何风控**。**费率若挂在错误的 `TradeAmount` 上，收费结果同样无意义**——这条与费率是同一批要解决的事。
   - **风险（§7）**：无多线程/锁/内存管理改动。表定义纯增量、零删除、零改名，生成物为机械追加。唯一需留意的是新增的 12 个 `Rate`(double) 列会进 `AsyncDBWriter` 的建表/写入路径，但当前**无任何代码写入这两张表**，故落库行为无变化。
-  - **提交状态**：**未提交**。工作树含 18 个改动文件（3 个模型 + 15 个 `src/Mdb/*`）。**AI 未编译、未运行、未推送**（按约定）。
+  - **提交状态**：当时**未提交**——工作树含 18 个改动文件（3 个模型 + 15 个 `src/Mdb/*`）；**2026-09-18 补记：已与第十五批一并提交为 `4fab69c`**。**AI 未编译、未运行、未推送**（按约定）。
 
 - **2026-09-18（第十五批）回测运行契约 + 手续费全链路分列 + 基本数据 InitDb（A3 / A4 / A5 一次性落地）**：
   - **背景与授权**：平台化的三个缺口——① **拿不到结果**（`test/TestBackTest/Main.cpp:31` 无条件 `return 0`，且 `api->Init()` 的返回值在 `:24` 被丢弃，"初始化失败"被伪装成"成功"）；② **费用恒 0**（`Trade.Commission` 唯一写入点是 `OrderMatch.cpp:141` 的硬编码 `= 0`，而 `Settlement.cpp:127` 的权益公式本身是对的，只因上游恒 0 而永不起作用）；③ **无基本数据**（`Product` 空表 → `VolumeMultiple` 兜底 1，第十四批已实测）。用户 2026-09-17 授权三块一起做（"A3、A4、A5 都开始做吧"，并指示**实现语言优先 Python**——宿主与种子脚本走 Python，引擎侧仍是 C++）。前置的仓外字典与两张表定义见 ✅ 第十四批。
@@ -77,7 +77,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
   - **风险（§7）**：无多线程/锁/内存管理改动。四条契约级变化——① `Trade`/`Capital` 的 `Commission` **语义变更**（从"唯一费用"变为"只装佣金"），本批产物与既有产物**不可直接比较**（刻意如此，为的是不让名字撒谎）；② 计费进入 `OnTrade` 首行与结算汇总路径，属撮合→结算的**性能敏感路径**（每笔成交多一次主键查表 + 三次乘加，规模可忽略）；③ 缺种子/缺费率行**不再有任何响亮失败**，全靠 `result.json` 的计数与 `MissingRateKeys` 现形——**这是本批最需要盯的静默面**；④ A5 会让股票回测的 `ProductClass` 从兜底的 `Future(0)` 变为真值 `Stock(6)`，`PositionMaintenance` 的 `CashIn`/`CashOut` 分支**首次生效**（`Balance` 公式不含这两项，故权益数值不受影响，只影响那几个 CSV 列从 0 变成真值——算修正而非回归）。
   - **注释披露（§4）**：本批新增约 12 处注释，均为"命名无法表达的外部前提或历史成因"，逐条披露：`CommissionCalculator.cpp` 4 处（Min/Max `<=0` 视为不限且只封佣金、实盘未注册费率表故空守卫、方向不参与取列而由数据表达、两列相加非相乘）、`PositionMaintenance.cpp` 3 处（平仓腿才落费用、末笔取余额保证逐位闭合、持仓不足时余额落末条并指出该情形已有告警）、`SimExchange.cpp` 3 处（InitDb 清单为何不含 Account/Capital、费率表缺失不判失败、派生判据兜零行情）、`BackTestInitDbTableList.h` 1 处（手写非生成 + 清单取舍理由，含 `Instrument` 会被整行覆盖）、`makeseeddb.py`/`docs` 若干（列序即字段序、`ProductClass` 必须为 Stock）。**如需删除或改写请指出。**
   - **未验证**：**AI 未编译、未运行任何 C++ 代码**（按约定，构建在 VS 侧）；单测 10 个用例是**静态编写、未编译未跑**，其中"三条明细分摊逐位闭合"的浮点结论已用 Python 同构验证（1/3 与 1/5 两种分摊的三项之和严格 `== trade`），但 C++ 侧的执行顺序/优化差异未经验证。`makeseeddb.py` **已实跑**（种子库已生成并核对，CSV 往返与拒绝路径已验），产物在 `bin/Release/BackTestInit.db`。
-  - **提交状态**：**未提交**。AI 未推送（按约定）。
+  - **提交状态**：**已提交** `4fab69c`（2026-09-18，与本批并含第十四批的 18 个文件；共 71 个文件、+3165/−338）。`Model/TableNames/SimExchangeTableNames.xml` 刻意未改。**AI 未推送**（按约定）。
 
 ## 🔄 进行中
 
@@ -124,7 +124,7 @@ CTP 期货量化交易系统（C++20），当前处于**前期整理阶段**：�
 
 - **种子库行数与计划不符（2026-09-18 第十五批核对说明，非缺陷）**：计划 §验证 写「新增 `dumpPath_/t_BaseCommission.csv`（4 行）」，实际内置种子是 **6 行**（3 只标的 × 买卖两向），`t_CommissionGroup.csv` 1 行、`Product` 2 行。差异源于计划拟定时的口径（按 2 只标的估），非实现偏差。
 - **实时链路恒出 1m、不消费订阅声明的周期（2026-09-13 定案：有意设计，非缺陷；剩余项为将来实盘宿主的前置约束）**：`MinuteBar` 恒定产出 `Minute/1`（`src/Bar/MinuteBar.cpp:116-117` 与 `:151-152` 硬编码；`test/UnitTests/MinuteBarTests.cpp:103-104` 已把 1m 断言成契约），`MdKernel::HandleReqSubMarketData` 不读包里的周期（`src/MdOffer/MdKernel.cpp:302` 只取 `ExchangeId`/`InstrumentId`，`MinuteBar::ReqSubMarketData` 签名也不含周期，`src/Bar/MinuteBar.h:18`），而 `ReqSubMarketDataField` 本身是带 `BarPreces`/`BarPeriod` 的（`include/QuantTrading/Fields.h:73-74`）——故这两个字段在**实时侧无效**。**今天不可达**：全仓唯一给它们赋非零值的是 `StrategyBase::SubscribeMarketData`（`src/Strategy/StrategyBase.cpp:46-47`），而 `StrategyBase` 硬绑 `BackTestApi`（`src/Strategy/StrategyBase.h:19/98`，:10 注释写明"实盘路径（MdApi+TraderApi）"尚未落地），走的是回测侧——那侧才读周期并绑 `BarAggregator`；实时侧两个调用者都发 0（`test/TestMdApi/MdSpiImpl.cpp:11-12` 的 `memset`、`src/SimExchange/SimExchange.cpp:522` 的 `reqSubMd{0}`）。**前置约束**：将来给 `StrategyBase` 接 MdApi 宿主时须先定——要么约定实时只支持 1m 并在 `SubscribeMarketData` 处拒绝/告警非零周期（否则声明 5m 会被静默丢弃、仍回 `ErrorNone`），要么把聚合放到宿主侧。**已否决**：让 MdOffer 自己做多周期聚合（须重做 `PushToAllSubscribed` 的 0 周期探针匹配，风险见本文件 🔄 段的撤回记录）。
-- **待推送（按约定 AI 不推送，由用户执行）**：2026-09-14 复核，`QuantTrading` master 领先 `origin/master` 2 笔、`D:\Gitee\Templates` master 领先 4 笔（含方向过滤、会话表过滤、CSV 会话表过滤三份模板，现又加归档 `D.47`（第十二批）的 `MdbStructs.cpp.tpl` 改动，**该仓仍按用户指示不提交**）。
+- **待推送（按约定 AI 不推送，由用户执行）**：**2026-09-18 复核，`QuantTrading` master 领先 `origin/master` 3 笔**（`a25d4c1` 回测 RunId 改为配置注入、`4fab69c` 回测平台化 A3/A4/A5、其后一笔为本次 PROGRESS.md 补记）。2026-09-14 复核时，`QuantTrading` 领先 `origin/master` 2 笔、`D:\Gitee\Templates` master 领先 4 笔（含方向过滤、会话表过滤、CSV 会话表过滤三份模板，现又加归档 `D.47`（第十二批）的 `MdbStructs.cpp.tpl` 改动，**该仓仍按用户指示不提交**）。
 - 提交信息历史多为 `1`，建议后续写描述性提交信息。
 - `D:\Gitee\Templates` 仓库的模板改动（S1/S3/H10/H12 对应 `.tpl`）已提交（`6d12e3d`）。
 - `rules/cpp-style.md` 成员命名要求 snake_case，现有代码为 `m_` + PascalCase，项目自洽但与规范不一致（待统一）。
