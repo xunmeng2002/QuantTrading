@@ -1,6 +1,7 @@
 #include "GridStrategy.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <limits>
+#include <stdexcept>
 
 using namespace Spark::Core;
 
@@ -9,6 +10,20 @@ namespace QuantTrading::TestStrategyGrid
 GridStrategy::GridStrategy(QuantTrading::BackTestApi* backTestApi, const char* accountId, const GridParams& gridParams)
 	:StrategyBase(backTestApi, accountId), params_(gridParams)
 {
+	// GridStep 是比例：最远一档的档位比例 = GridStep × GridCount，到 1 时档位价落到 <= 0；
+	// 判据与 Python 孪生 test/PythonStrategyGrid/grid_strategy.py 的 GridParams 校验同源
+	if (params_.GridCount < 1)
+	{
+		WriteLog(LogLevel::Error, "GridStrategy rejected: GridCount:%d, need >= 1", params_.GridCount);
+		throw std::logic_error("GridCount must be at least 1");
+	}
+	const double deepestBuyLevelRatio = params_.GridStep * params_.GridCount;
+	if (deepestBuyLevelRatio <= 0.0 || deepestBuyLevelRatio >= 1.0)
+	{
+		WriteLog(LogLevel::Error, "GridStrategy rejected: GridStep:%f GridCount:%d, GridStep * GridCount must be in (0, 1)",
+			params_.GridStep, params_.GridCount);
+		throw std::logic_error("GridStep is a ratio: GridStep * GridCount must be in (0, 1)");
+	}
 	if (!params_.BarPreces.empty())
 	{
 		DeclareBarPeriod(params_.BarPreces.c_str());
@@ -64,16 +79,17 @@ void GridStrategy::PlaceLadder(PriceType anchorPrice)
 {
 	for (int level = 0; level < params_.GridCount; ++level)
 	{
+		const double levelRatio = params_.GridStep * (level + 1);
 		GridSlot& buySlot = slots_[level];
 		if (buySlot.State == GridSlotState::Empty)
 		{
-			buySlot.OpenPrice = anchorPrice - params_.GridStep * (level + 1);
+			buySlot.OpenPrice = anchorPrice * (1.0 - levelRatio);
 			PlaceOpenOrder(buySlot);
 		}
 		GridSlot& sellSlot = slots_[params_.GridCount + level];
 		if (sellSlot.State == GridSlotState::Empty)
 		{
-			sellSlot.OpenPrice = anchorPrice + params_.GridStep * (level + 1);
+			sellSlot.OpenPrice = anchorPrice * (1.0 + levelRatio);
 			PlaceOpenOrder(sellSlot);
 		}
 	}
@@ -188,11 +204,11 @@ void GridStrategy::UpdateClosePrice(GridSlot& gridSlot)
 {
 	if (gridSlot.Direction == DirectionType::Buy)
 	{
-		gridSlot.ClosePrice = gridSlot.OpenFillPrice + params_.GridStep;
+		gridSlot.ClosePrice = gridSlot.OpenFillPrice * (1.0 + params_.GridStep);
 	}
 	else
 	{
-		gridSlot.ClosePrice = gridSlot.OpenFillPrice - params_.GridStep;
+		gridSlot.ClosePrice = gridSlot.OpenFillPrice * (1.0 - params_.GridStep);
 	}
 }
 

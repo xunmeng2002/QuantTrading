@@ -2,12 +2,37 @@
 
 #include "doctest/doctest.h"
 
+#include <stdexcept>
+
 using namespace QuantTrading::UnitTest;
+
+// GridStep 是比例：GridStep × GridCount 到 1 时最远一档档位价落到 <= 0，构造期拒启
+// （旧口径的绝对步长如 10.0 在新口径下就是越界值，正是这条用例钉住的坑）
+TEST_CASE("GridStrategy rejects grid step ratio out of range at construction")
+{
+    FakeBackTestApi fake_api;
+    auto zero_step = MakeGridParams(0.0, 2);
+    REQUIRE_THROWS_AS(GridStrategyProbe(&fake_api, "accountA", zero_step), std::logic_error);
+
+    auto absolute_style_step = MakeGridParams(10.0, 2);
+    REQUIRE_THROWS_AS(GridStrategyProbe(&fake_api, "accountA", absolute_style_step), std::logic_error);
+
+    auto boundary_step = MakeGridParams(0.5, 2);
+    REQUIRE_THROWS_AS(GridStrategyProbe(&fake_api, "accountA", boundary_step), std::logic_error);
+
+    auto zero_count = MakeGridParams(TestGridStepRatio, 0);
+    REQUIRE_THROWS_AS(GridStrategyProbe(&fake_api, "accountA", zero_count), std::logic_error);
+
+    // 比值恰在界内的合法参数照常起跑（0.2 × 4 = 0.8 < 1）
+    auto inside_range_params = MakeGridParams(0.2, 4);
+    GridStrategyProbe inside_range_strategy(&fake_api, "accountA", inside_range_params);
+    REQUIRE(inside_range_strategy.Start());
+}
 
 TEST_CASE("GridStrategy places ladder around first tick anchor")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
 
     auto md_tick = MakeMdTickField("IF2503", 4000.0);
@@ -34,7 +59,7 @@ TEST_CASE("GridStrategy places ladder around first tick anchor")
 TEST_CASE("GridStrategy places close order once after open fill and ignores duplicate fill")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
     auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
@@ -49,7 +74,7 @@ TEST_CASE("GridStrategy places close order once after open fill and ignores dupl
     REQUIRE(fake_api.InsertRequests.size() == 5);
     CHECK(fake_api.InsertRequests[4].Direction == DirectionType::Sell);
     CHECK(fake_api.InsertRequests[4].OffsetFlag == OffsetFlagType::Close);
-    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(4000.0));
+    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(3999.975));
     CHECK(strategy.GetLongPosition("IF2503") == 1);
 
     // 格位已转入 ClosePending：同一开仓单的重复成交不得再次补平仓单
@@ -61,7 +86,7 @@ TEST_CASE("GridStrategy places close order once after open fill and ignores dupl
 TEST_CASE("GridStrategy pair closes flat after close fill")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
     auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
@@ -85,7 +110,7 @@ TEST_CASE("GridStrategy pair closes flat after close fill")
 TEST_CASE("GridStrategy re-places rejected level at next session anchor")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
     auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
@@ -111,13 +136,13 @@ TEST_CASE("GridStrategy re-places rejected level at next session anchor")
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&next_day_tick);
     REQUIRE(fake_api.InsertRequests.size() == 5);
     CHECK(fake_api.InsertRequests[4].Direction == DirectionType::Sell);
-    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(4060.0));
+    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(4060.125));
 }
 
 TEST_CASE("GridStrategy keeps pending close orders working across session end")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
     auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
@@ -144,7 +169,7 @@ TEST_CASE("GridStrategy keeps pending close orders working across session end")
 TEST_CASE("GridStrategy re-arms closed level at next session anchor")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
     auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
@@ -169,5 +194,5 @@ TEST_CASE("GridStrategy re-arms closed level at next session anchor")
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&next_day_tick);
     REQUIRE(fake_api.InsertRequests.size() == 6);
     CHECK(fake_api.InsertRequests[5].Direction == DirectionType::Buy);
-    CHECK(fake_api.InsertRequests[5].Price == doctest::Approx(4040.0));
+    CHECK(fake_api.InsertRequests[5].Price == doctest::Approx(4039.875));
 }

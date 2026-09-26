@@ -10,12 +10,12 @@ using namespace QuantTrading::UnitTest;
 TEST_CASE("GridStrategy declares bar period from params and rejects invalid preces at construction")
 {
     FakeBackTestApi fake_api;
-    auto fine_params = MakeGridParams(10.0, 2);
+    auto fine_params = MakeGridParams(TestGridStepRatio, 2);
     fine_params.BarPreces = "5m";
     GridStrategyProbe fine_strategy(&fake_api, "accountA", fine_params);
     REQUIRE(fine_strategy.Start());
 
-    auto bad_params = MakeGridParams(10.0, 2);
+    auto bad_params = MakeGridParams(TestGridStepRatio, 2);
     bad_params.BarPreces = "5x";
     REQUIRE_THROWS_AS(GridStrategyProbe(&fake_api, "accountA", bad_params), std::logic_error);
 }
@@ -24,7 +24,7 @@ TEST_CASE("GridStrategy declares bar period from params and rejects invalid prec
 TEST_CASE("GridStrategy anchors ladder from first bar when replay delivers bars instead of ticks")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
 
     auto anchor_bar = MakeMdBarField("IF2503", 202410010935LL, 4000.0);
@@ -44,7 +44,7 @@ TEST_CASE("GridStrategy anchors ladder from first bar when replay delivers bars 
 TEST_CASE("GridStrategy resets unfilled open slot on day-end cancel and re-places at next anchor")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
     auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
@@ -55,7 +55,7 @@ TEST_CASE("GridStrategy resets unfilled open slot on day-end cancel and re-place
     fake_api.RegisteredSpi->OnRtnOrder(&canceled_open_order);
     CHECK(fake_api.InsertRequests.size() == 4);
 
-    // 次日重锚（4050）：仅复位的买格重挂（4050-10=4040），其余三格未回放撤单保持原状
+    // 次日重锚（4050）：仅复位的买格重挂（4050×(1-0.0025)=4039.875），其余三格未回放撤单保持原状
     SessionBeginField session_begin;
     fake_api.RegisteredSpi->OnRtnSessionBegin(&session_begin);
     auto next_day_tick = MakeMdTickField("IF2503", 4050.0);
@@ -63,13 +63,13 @@ TEST_CASE("GridStrategy resets unfilled open slot on day-end cancel and re-place
     REQUIRE(fake_api.InsertRequests.size() == 5);
     CHECK(fake_api.InsertRequests[4].Direction == DirectionType::Buy);
     CHECK(fake_api.InsertRequests[4].OffsetFlag == OffsetFlagType::Open);
-    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(4040.0));
+    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(4039.875));
 }
 
 TEST_CASE("GridStrategy places close for filled volume when partially filled open order is canceled")
 {
     FakeBackTestApi fake_api;
-    auto grid_params = MakeGridParams(10.0, 2);
+    auto grid_params = MakeGridParams(TestGridStepRatio, 2);
     grid_params.VolumePerGrid = 2;
     GridStrategyProbe strategy(&fake_api, "accountA", grid_params);
     strategy.Start();
@@ -85,13 +85,13 @@ TEST_CASE("GridStrategy places close for filled volume when partially filled ope
     CHECK(fake_api.InsertRequests.size() == 4);
     CHECK(strategy.GetLongPosition("IF2503") == 1);
 
-    // 日终部成撤单：按已成交 1 手即时补平仓单（3990+10=4000）
+    // 日终部成撤单：按已成交 1 手即时补平仓单（3990×(1+0.0025)=3999.975）
     auto canceled_open_order = MakeCanceledOrderField("IF2503", 42, 1, OrderStatusType::PartTradedCanceled, 1);
     fake_api.RegisteredSpi->OnRtnOrder(&canceled_open_order);
     REQUIRE(fake_api.InsertRequests.size() == 5);
     CHECK(fake_api.InsertRequests[4].Direction == DirectionType::Sell);
     CHECK(fake_api.InsertRequests[4].OffsetFlag == OffsetFlagType::Close);
-    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(4000.0));
+    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(3999.975));
     CHECK(fake_api.InsertRequests[4].Volume == 1);
 
     // 次日平仓成交：持仓归零
@@ -105,7 +105,7 @@ TEST_CASE("GridStrategy places close for filled volume when partially filled ope
 TEST_CASE("GridStrategy re-places close order for remaining volume when close order is canceled")
 {
     FakeBackTestApi fake_api;
-    auto grid_params = MakeGridParams(10.0, 2);
+    auto grid_params = MakeGridParams(TestGridStepRatio, 2);
     grid_params.VolumePerGrid = 2;
     GridStrategyProbe strategy(&fake_api, "accountA", grid_params);
     strategy.Start();
@@ -133,7 +133,7 @@ TEST_CASE("GridStrategy re-places close order for remaining volume when close or
     REQUIRE(fake_api.InsertRequests.size() == 6);
     CHECK(fake_api.InsertRequests[5].Direction == DirectionType::Sell);
     CHECK(fake_api.InsertRequests[5].OffsetFlag == OffsetFlagType::Close);
-    CHECK(fake_api.InsertRequests[5].Price == doctest::Approx(4000.0));
+    CHECK(fake_api.InsertRequests[5].Price == doctest::Approx(3999.975));
     CHECK(fake_api.InsertRequests[5].Volume == 1);
 
     // 重下平仓单成交：配对结清、持仓归零
@@ -147,7 +147,7 @@ TEST_CASE("GridStrategy re-places close order for remaining volume when close or
 TEST_CASE("GridStrategy re-places close after day-end cancel when slot cycles through completed pair")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
     auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
@@ -165,7 +165,7 @@ TEST_CASE("GridStrategy re-places close after day-end cancel when slot cycles th
     REQUIRE(fake_api.InsertRequests.size() == 5);
     CHECK(strategy.GetLongPosition("IF2503") == 0);
 
-    // 次日 SessionBegin：Closed 格复位 Empty（须清净上周期成交量），重锚仅重挂该格（4050-10=4040）
+    // 次日 SessionBegin：Closed 格复位 Empty（须清净上周期成交量），重锚仅重挂该格（4050×(1-0.0025)=4039.875）
     SessionBeginField session_begin;
     fake_api.RegisteredSpi->OnRtnSessionBegin(&session_begin);
     auto next_day_tick = MakeMdTickField("IF2503", 4050.0);
@@ -173,9 +173,9 @@ TEST_CASE("GridStrategy re-places close after day-end cancel when slot cycles th
     REQUIRE(fake_api.InsertRequests.size() == 6);
     CHECK(fake_api.InsertRequests[5].Direction == DirectionType::Buy);
     CHECK(fake_api.InsertRequests[5].OffsetFlag == OffsetFlagType::Open);
-    CHECK(fake_api.InsertRequests[5].Price == doctest::Approx(4040.0));
+    CHECK(fake_api.InsertRequests[5].Price == doctest::Approx(4039.875));
 
-    // 新周期：买开 4040 成交 → 补平仓 4050
+    // 新周期：买开 4040 成交 → 补平仓 4040×(1+0.0025)=4050.1
     auto open_order2 = MakeOrderField("IF2503", 52, 6);
     fake_api.RegisteredSpi->OnRtnOrder(&open_order2);
     auto open_trade2 = MakeTradeField("IF2503", 52, DirectionType::Buy, OffsetFlagType::Open, 4040.0, 1, 300, 8.5);
@@ -183,7 +183,7 @@ TEST_CASE("GridStrategy re-places close after day-end cancel when slot cycles th
     REQUIRE(fake_api.InsertRequests.size() == 7);
     CHECK(fake_api.InsertRequests[6].Direction == DirectionType::Sell);
     CHECK(fake_api.InsertRequests[6].OffsetFlag == OffsetFlagType::Close);
-    CHECK(fake_api.InsertRequests[6].Price == doctest::Approx(4050.0));
+    CHECK(fake_api.InsertRequests[6].Price == doctest::Approx(4050.1));
 
     // 关键回归：上周期残留的 CloseFilledVolume 不得污染剩余量——平仓单日终零成交被撤后须重下 1 手
     auto canceled_close_order = MakeCanceledOrderField("IF2503", 53, 7, OrderStatusType::Canceled, 0);
@@ -191,7 +191,7 @@ TEST_CASE("GridStrategy re-places close after day-end cancel when slot cycles th
     REQUIRE(fake_api.InsertRequests.size() == 8);
     CHECK(fake_api.InsertRequests[7].Direction == DirectionType::Sell);
     CHECK(fake_api.InsertRequests[7].OffsetFlag == OffsetFlagType::Close);
-    CHECK(fake_api.InsertRequests[7].Price == doctest::Approx(4050.0));
+    CHECK(fake_api.InsertRequests[7].Price == doctest::Approx(4050.1));
     CHECK(fake_api.InsertRequests[7].Volume == 1);
 
     // 重下平仓单成交：新周期配对结清、持仓归零
@@ -205,7 +205,7 @@ TEST_CASE("GridStrategy re-places close after day-end cancel when slot cycles th
 TEST_CASE("GridStrategy full day-end cancel sweep resets all open slots and re-places ladder next day")
 {
     FakeBackTestApi fake_api;
-    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(10.0, 2));
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
     strategy.Start();
     auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
@@ -229,9 +229,9 @@ TEST_CASE("GridStrategy full day-end cancel sweep resets all open slots and re-p
     fake_api.RegisteredSpi->OnRtnDepthMarketData(&next_day_tick);
     REQUIRE(fake_api.InsertRequests.size() == 8);
     CHECK(fake_api.InsertRequests[4].Direction == DirectionType::Buy);
-    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(4040.0));
+    CHECK(fake_api.InsertRequests[4].Price == doctest::Approx(4039.875));
     CHECK(fake_api.InsertRequests[5].Direction == DirectionType::Sell);
-    CHECK(fake_api.InsertRequests[5].Price == doctest::Approx(4060.0));
-    CHECK(fake_api.InsertRequests[6].Price == doctest::Approx(4030.0));
-    CHECK(fake_api.InsertRequests[7].Price == doctest::Approx(4070.0));
+    CHECK(fake_api.InsertRequests[5].Price == doctest::Approx(4060.125));
+    CHECK(fake_api.InsertRequests[6].Price == doctest::Approx(4029.75));
+    CHECK(fake_api.InsertRequests[7].Price == doctest::Approx(4070.25));
 }

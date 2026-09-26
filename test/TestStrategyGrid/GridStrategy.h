@@ -7,7 +7,7 @@ namespace QuantTrading::TestStrategyGrid
 {
 struct GridParams
 {
-	double GridStep = 0.0;
+	double GridStep = 0.0;   // 网格步长**比例**（0.01 = 1%）：档位价与平仓价都由它乘算，不是绝对价格
 	int GridCount = 0;
 	int VolumePerGrid = 0;
 	std::string ExchangeId;
@@ -35,13 +35,14 @@ struct GridSlot
     VolumeType CloseFilledVolume = 0;
 };
 
-// 成对网格：每格一开一平，利润 = 步长 × 乘数 × 手数，仓位天然有界（≤ GridCount 手/向）。
+// 成对网格：每格一开一平，利润 ≈ 开仓成交价 × 步长比例 × 乘数 × 手数，仓位天然有界（≤ GridCount 手/向）。
 // 格位状态机：Empty → OpenPending → OpenFilled → ClosePending → Closed。
 // 日级重锚：SessionBegin 复位 Closed 格为 Empty，首笔 tick LastPrice 或首根 bar Close（Bar 回放模式无 tick）
 // 为新中枢补挂阶梯，两者先到先锚；
 // 引擎日切结算统一撤销全部未成交挂单（撤单回报先于 SessionEnd 推送）：零成交开仓格经撤单
 // 回报复位 Empty 等次日重锚重挂；部分成交开仓格与被撤平仓格按已成交/剩余量即时补平仓单，
-// 新平仓单经引擎队列在次一交易日撮合。平仓单价格取自开仓成交价 ∓ 步长，与锚点无关。
+// 新平仓单经引擎队列在次一交易日撮合。平仓单价格取自开仓成交价 ∓ 步长比例，与锚点无关。
+// 步长是比例而非绝对价格：档位间距随锚价缩放，同一套参数在 10 元与 1500 元的标的上等效。
 class GridStrategy : public QuantTrading::strategy::StrategyBase
 {
 public:

@@ -39,7 +39,7 @@ class GridSlot:
 
 @dataclass
 class GridParams:
-    grid_step: float
+    grid_step: float       # 步长**比例**（0.01=1%），不是绝对价格：档位与平仓价都按乘算
     grid_count: int
     volume_per_grid: int
     exchange_id: str
@@ -50,13 +50,19 @@ class GridParams:
 class GridStrategy(qt.StrategyBase):
     """格位状态机 Empty → OpenPending → OpenFilled → ClosePending → Closed，日级重锚。
 
-    [0, GridCount) 为买开格，[GridCount, 2×GridCount) 为卖开格；平仓价取开仓成交价 ∓ 步长，与锚点无关。
+    [0, GridCount) 为买开格，[GridCount, 2×GridCount) 为卖开格；平仓价取开仓成交价 ∓ 步长比例，与锚点无关。
     引擎日切结算统一撤销全部未成交挂单：零成交开仓格复位 Empty 等次日重锚重挂；部分成交开仓格
     与被撤平仓格按已成交/剩余量即时补平仓单，新平仓单经引擎队列在次一交易日撮合。
     """
 
     def __init__(self, backtest_api, account_id, params):
         super().__init__(backtest_api=backtest_api, account_id=account_id)
+        # 比例上界是"最远一档仍为正价"：step×GridCount < 1。GridCount 先判，避免除零。
+        if params.grid_count < 1 or not 0.0 < params.grid_step < 1.0 / params.grid_count:
+            raise ValueError(
+                f"GridStep 是比例且须满足 0 < GridStep < 1/GridCount, "
+                f"否则档位价落到 0 以下: 当前 GridStep={params.grid_step:g}, "
+                f"GridCount={params.grid_count}")
         self.params = params
         if params.bar_preces:
             self.declare_bar_period(params.bar_preces)
@@ -93,13 +99,14 @@ class GridStrategy(qt.StrategyBase):
 
     def place_ladder(self, anchor_price):
         for level in range(self.params.grid_count):
+            level_ratio = self.params.grid_step * (level + 1)
             buy_slot = self.slots[level]
             if buy_slot.state == GridSlotState.Empty:
-                buy_slot.open_price = anchor_price - self.params.grid_step * (level + 1)
+                buy_slot.open_price = anchor_price * (1.0 - level_ratio)
                 self.place_open_order(buy_slot)
             sell_slot = self.slots[self.params.grid_count + level]
             if sell_slot.state == GridSlotState.Empty:
-                sell_slot.open_price = anchor_price + self.params.grid_step * (level + 1)
+                sell_slot.open_price = anchor_price * (1.0 + level_ratio)
                 self.place_open_order(sell_slot)
 
     def place_open_order(self, slot):
@@ -186,9 +193,9 @@ class GridStrategy(qt.StrategyBase):
 
     def update_close_price(self, slot):
         if slot.direction == qt.DirectionType.Buy:
-            slot.close_price = slot.open_fill_price + self.params.grid_step
+            slot.close_price = slot.open_fill_price * (1.0 + self.params.grid_step)
         else:
-            slot.close_price = slot.open_fill_price - self.params.grid_step
+            slot.close_price = slot.open_fill_price * (1.0 - self.params.grid_step)
 
     def reset_slot_to_empty(self, slot):
         # 清净周期态字段：格位跨周期复用，残留 CloseFilledVolume 会使平仓剩余量算成 0，格位困死

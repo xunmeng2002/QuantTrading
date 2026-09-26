@@ -4,6 +4,7 @@
 #include "Config/Config.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <cstdio>
+#include <exception>
 
 using namespace QuantTrading;
 using namespace QuantTrading::TestStrategyGrid;
@@ -32,16 +33,24 @@ int main(int argc, char* argv[])
 	gridParams.ExchangeId = config.ExchangeId;
 	gridParams.InstrumentId = config.InstrumentId;
 	gridParams.BarPreces = config.BarPreces;
-	GridStrategy gridStrategy(api, config.AccountId.c_str(), gridParams);
-	if (!gridStrategy.Start())
+	// 参数非法在构造期即抛（如 GridStep 比例越界）：与 Python 孪生同码 —— 异常一律算「宿主
+	// 启动失败」，不让它走 abort（MSVC 下 abort 与「引擎报告失败」同为码 3，只能靠结果文件消歧）
+	bool hostStarted = false;
+	try
 	{
-		Logger::GetInstance().Stop();
-		Logger::GetInstance().Join();
-		return ExitCodeHostInitFailed;
+		GridStrategy gridStrategy(api, config.AccountId.c_str(), gridParams);
+		hostStarted = gridStrategy.Start();
+		if (hostStarted)
+		{
+			gridStrategy.WaitForEnd();
+		}
 	}
-	gridStrategy.WaitForEnd();
+	catch (const std::exception& error)
+	{
+		std::fprintf(stderr, "Strategy start failed: %s\n", error.what());
+	}
 
 	Logger::GetInstance().Stop();
 	Logger::GetInstance().Join();
-	return ExitCodeFromRunResultFile(ResultFileName);
+	return hostStarted ? ExitCodeFromRunResultFile(ResultFileName) : ExitCodeHostInitFailed;
 }

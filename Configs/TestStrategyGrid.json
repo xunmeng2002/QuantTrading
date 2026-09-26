@@ -4,7 +4,7 @@
   "ExchangeId": "SSE",
   "InstrumentId": "600519",
   "BarPreces": "5m",
-  "GridStep": 10.0,
+  "GridStep": 0.01,
   "GridCount": 5,
   "VolumePerGrid": 1
 }

@@ -6,6 +6,10 @@ namespace QuantTrading::UnitTest
 {
     using QuantTrading::TestStrategyGrid::GridParams;
 
+    // 单测统一用的网格步长**比例**：0.0025 = 0.25%，在 4000 的锚价上恰好等于 10 个价格单位，
+    // 故档位价仍是 3990/4010 这类整数，只有平仓价带比例尾数（3990 × 1.0025 = 3999.975）
+    inline constexpr double TestGridStepRatio = 0.0025;
+
     inline QuantTrading::TestStrategyGrid::GridParams MakeGridParams(double grid_step, int grid_count)
     {
         GridParams grid_params;
