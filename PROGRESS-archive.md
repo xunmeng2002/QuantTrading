@@ -664,6 +664,15 @@
 ---
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
+
+### Q.23 · 2026-09-27 （第十八批） `out/build/WSL-GCC-Release` 构建树的“陈旧链接图”（**归因已推翻**）
+
+- **`out/build/WSL-GCC-Release` 这套 Linux 构建树的链接图已陈旧（2026-09-27 第十八批发现，待用户决定处置）**：在这棵树上重建 `MysqlWrapper` 会得到一份**装不起来的** `libMysqlWrapper.so`——实测 6,162,880 B，`DT_NEEDED` 里**缺 ssl/crypto**，且 `GENERAL_NAME_free` 是**未定义**符号（正常的应是 14,837,856 B、该符号有定义）。**这不是本批或上一批引入的**：已用一棵**全新配置**的树（`out/build/probe-fresh`）复现对照，新树产物正常，故成因是这棵老树的 CMake 缓存/链接图陈旧，与本仓代码无关。**已做的规避**：本批 Linux 侧的验证一律走 `probe-fresh` 树，其产物已装到 `Libs/DbAdapters/x64-linux`。**未做的**：没有对这棵老树跑 `cmake --fresh`——重配构建树属**破坏性**操作（清掉缓存与中间产物），按 Harness §1/§3 应由用户决定。**影响面**：只在这棵树上重建 `MysqlWrapper` 才会咬到，而 Linux 端到端默认走 `DbType="1"`，不碰它；但**若哪天在这棵树上重建整个 DBAdapters 并安装，就会把一份坏的 Linux 适配器装进 `Libs/`**，而失效表现是运行时装载失败而非编译失败。**候选处置**：(a) 对 `WSL-GCC-Release` 跑一次 `cmake --fresh` 后重建；(b) 直接删掉这棵树让下次重建从零开始；(c) 维持现状、只用 `probe-fresh`。**待用户决定**。
+
+### Q.22 · 2026-09-27 （第十八批） 数据库后端取不到时的收场口径（**两支裸 `new` 已收口**）
+
+- **数据库后端取不到时的收场口径（2026-09-27 第十八批已解决主项，剩一条既有的裸 `new` 路径未决）**：**原状**（第十七批验证中确认）——`CreateDatabaseAdapter` 的 **6 个调用点**（`src/BackTest/SimExchange.cpp:124,471`、`src/MdOffer/Main.cpp:74`、`src/SimExchange/Main.cpp:51,52`、`src/SimExchangeInit/Main.cpp:51`）**无一有 `try`/`catch`**，`MysqlWrapper` 构造函数连不上时 `throw`，异常逃出 `main` → `std::terminate`：Windows 上退出码 `0xC0000409`/127 且日志为空，Linux 上 exit 134（stderr 反而有 `terminate called after throwing...` 与 `what()`）。**第十八批已把这条主项收口**——工厂内部收住装载失败与未识别取值，改为"写 Error 日志 + 交出空指针"，由引擎既有的判空通路接管；据此补的三处判空见 ✅ 第十八批。**仍未决**：`Duckdb` 与 `Sqlite` 两支仍是**直连的 `new`**（`new DbAdapters::DuckdbWrapper(dbHost)` / `new DbAdapters::SqliteWrapper(dbHost)`），**它俩若将来也抛，同一条 `terminate` 路径即复现**——本批只覆盖了"配置选中却取不到"与"取值不认识"两类，没有给这两个构造加保护。**候选修法**：把这两支也收进同一个失败出口（`try` + `ReportDatabaseAdapterFailure`），属 Harness §3 的行为变更类，**AI 不擅自做，待用户决定**。**佐证**：第十七批 Linux 实测 `terminate ... what(): 数据库适配器加载失败: … 数据库后端构造失败 (libMysqlWrapper.so): USER option not defined; …`；第十八批探针 `DbType="9"` 退出码 `1` + 日志可读。
+
 ### Q.21 · 模板漂移：requestID 改名与生成文件 BOM
 
 - **模板漂移：`requestID` 改名与生成文件 BOM（2026-09-18 第十五批发现，待用户裁定）**：重 pump 把两处**与功能无关**的漂移带进本仓——① `D:\Gitee\Templates` 的 7 个模板里 `requestId` 被改成 `requestID`（缩写处理方式变化），波及 **18 个生成文件**；② `pump.py` 写文件用 `UTF-8-SIG`，使约 **35 个生成文件**带 BOM。本批已逐文件核对并在必要处 `git checkout --` 回滚，但**根因未除**：下次重 pump 会再次带进来。**两条路**：① **源头修 + 重 pump**——改 Templates 的 7 个模板恢复 `requestId`、改 `pump.py` 去掉 `UTF-8-SIG`，重 pump 后核对 `git diff --stat` 只含本次相关行；代价是 Templates 仓（按用户指示不提交）要再动一次，且 BOM 若已是既定约定则去掉会让全部生成文件产生一次全量 diff。② **接受现状**——把新拼写与 BOM 当作当前约定，本次漂移即"正常重生成"，代价是生成文件与仓内手写代码的 `requestId` 拼写永久不一致。**未定前不做任何一侧动作。**

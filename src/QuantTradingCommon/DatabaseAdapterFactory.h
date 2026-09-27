@@ -1,16 +1,17 @@
 #pragma once
 
-// 配置 DbType → Spark 的 DbTypeType → 适配器实例. 失败一律 "写日志 + 返回 nullptr", 不抛:
-// 适配器是在 SimExchange 构造函数里建的, 抛出点不在宿主的 try 作用域内, 异常会以
-// std::terminate 收场 —— 而 abort 既不 flush stdio 缓冲也不走日志器的 ThreadExit, 日志器那
-// 条后台线程缓冲的文案随之消失, 留下的是一份 0 字节日志 (实测 DbType="9": 退出码 0xC0000409,
-// 日志 0 字节). 返回 nullptr 则走引擎既有的判空通路, 进程正常退出, 文案落进日志.
-// 机制、查找次序与"为何 Sqlite/Duckdb 不装载"见 DBAdapters 仓的 docs/backend-runtime-loading.md.
+// 配置 DbType → 适配器实例. 四个后端走**同一条路** (DbAdapters::LoadDatabaseBackend), 本函数不写
+// "哪个后端怎么建"的知识 —— 哪个种类对应哪个模块、模块名的平台前后缀与调试后缀怎么拼, 都是
+// DBAdapters 的内部知识. 本仓某个模块与适配器有编译期依赖时, 那条依赖写在 CMakeLists 的链接行上,
+// 不写在这里 —— 依赖变了不必回来改这个函数.
+// 失败一律 "写日志 + 返回 nullptr", 不抛: 适配器是在 SimExchange 构造函数里建的, 抛出点不在宿主
+// 的 try 作用域内, 异常会以 std::terminate 收场 —— 而 abort 既不 flush stdio 缓冲也不走日志器的
+// ThreadExit, 日志器那条后台线程缓冲的文案随之消失, 留下的是一份 0 字节日志 (实测 DbType="9":
+// 退出码 0xC0000409, 日志 0 字节). 返回 nullptr 则走引擎既有的判空通路, 进程正常退出, 文案落进日志.
+// 装载机制、查找次序与"模块缺了怎么办"见 DBAdapters 仓的 docs/backend-runtime-loading.md.
 
 #include <DbAdapters/BackendLoader/DbBackendLoader.h>
 #include <DbAdapters/DbInterface/Db.h>
-#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <DbAdapters/SqliteWrapper/SqliteWrapper.h>
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Types.h>
 
@@ -53,6 +54,8 @@ namespace QuantTrading
         return nullptr;
     }
 
+    // 越界取值在这里就挡下 (这条文案列明四个合法取值), 不交给装载器 —— 后者只知道"种类越界",
+    // 说不出合法取值是哪几个.
     inline DbAdapters::Db* CreateDatabaseAdapter(
         int dbType,
         const std::string& dbHost,
@@ -63,17 +66,6 @@ namespace QuantTrading
         if (!databaseType.has_value())
         {
             return ReportDatabaseAdapterFailure(UnknownDatabaseTypeMessage(dbType));
-        }
-
-        // Duckdb 与 Sqlite 与本仓有编译期依赖 (MdReader 拿 DuckdbWrapper 当成员类型用), 故直连而不
-        // 装载; 另两个由配置选中时才装载. 两平台行为一致, 理由见上述文档 §七.
-        if (*databaseType == DbTypeType::DuckDb)
-        {
-            return new DbAdapters::DuckdbWrapper(dbHost);
-        }
-        if (*databaseType == DbTypeType::SqliteDb)
-        {
-            return new DbAdapters::SqliteWrapper(dbHost);
         }
 
         try

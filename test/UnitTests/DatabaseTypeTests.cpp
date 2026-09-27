@@ -40,9 +40,15 @@ TEST_CASE("越界的DbType一律解析失败而不静默退化成某个后端")
     CHECK(message.find("缺省") != std::string::npos);
 }
 
-// CreateDatabaseAdapter 本身的"失败即返回空指针而不抛"不在此处断言: 该函数体内含
-// new DuckdbWrapper/SqliteWrapper, 链接它会逼单测依赖两个 wrapper 的导入库. 这条契约由
-// 端到端探针覆盖 —— DbType=9 下宿主退出码为 ExitCodeHostInitFailed, 且日志里有一条
-// 列明合法取值的 ERROR.
+TEST_CASE("越界取值下工厂交出空指针而不是抛异常")
+{
+    // 越界在这条路上是确定性的: 查表那一步就挡下了, 一个模块都不会碰, 故不依赖 bin 下
+    // 摆了哪些适配器. WriteLog 是宏, 未设外部日志器时是空操作, 故也不依赖日志器已启动.
+    CHECK(CreateDatabaseAdapter(9, "", "", "") == nullptr);
+    CHECK(CreateDatabaseAdapter(-1, ":memory:", "", "") == nullptr);
+}
+
+// "装不到模块时交出空指针"那条同样只由端到端探针覆盖 —— 它取决于引擎目录里摆了哪些适配器,
+// 且要把两次尝试的原因都报出来, 不是单测该模拟的东西.
 
 }

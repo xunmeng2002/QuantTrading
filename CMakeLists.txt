@@ -60,11 +60,14 @@ else()
 endif()
 
 
-# 下面四个目标只链接 Sqlite 与 Duckdb; MySQL 与 MariaDB 由 DbAdapters::LoadDatabaseBackend
-# 在运行时按配置装载 (见 src/QuantTradingCommon/DatabaseAdapterFactory.h 与 DBAdapters 仓的
-# docs/backend-runtime-loading.md). 适配器的模块名与调试后缀由 DBAdapters 自己拼, 本仓不需要知道.
-# 代价: 这两个适配器不再随 $<TARGET_RUNTIME_DLLS> 拷进 bin/$<CONFIG> —— 已存在的文件不会消失,
-# 只有全新克隆后从头构建才会缺.
+# 四个后端一律由 DbAdapters::LoadDatabaseBackend 在运行时按配置装载 (见
+# src/QuantTradingCommon/DatabaseAdapterFactory.h 与 DBAdapters 仓的
+# docs/backend-runtime-loading.md); 适配器的模块名与调试后缀由 DBAdapters 自己拼, 本仓不需要知道.
+# 下面链接行里列出的适配器表达的是**另外两件事**, 都不是"怎么建":
+#   ① MdReader 拿 DbAdapters::DuckdbWrapper 当成员类型用, 那是本仓与它的编译期依赖;
+#   ② 链接进来的模块会随 $<TARGET_RUNTIME_DLLS> 拷进 bin/$<CONFIG>, 摆在引擎旁边 —— 引擎包要发运
+#      哪几个后端就列哪几个 (MySQL 与 MariaDB 有意不列, 它们"可以不随包发运").
+# 所以引擎自身的依赖变了, 改这里, 不必动那个工厂函数.
 
 
 add_library(QuantTradingInterface INTERFACE)
