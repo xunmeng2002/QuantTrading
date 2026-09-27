@@ -1,5 +1,6 @@
 
 #include "Config/Config.h"
+#include "DatabaseAdapterFactory.h"
 #include "ServerConfig.h"
 #include "Mdb.h"
 #include "InitMdbFromDb.h"
@@ -13,10 +14,7 @@
 #include <QuantTrading/MdApi.h>
 #include <Spark/Core/Logger/Logger.h>
 #include <DbAdapters/AsyncDbWriter/AsyncDbWriter.h>
-#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <DbAdapters/SqliteWrapper/SqliteWrapper.h>
-#include <DbAdapters/MysqlWrapper/MysqlWrapper.h>
-#include <DbAdapters/MariadbWrapper/MariadbWrapper.h>
+#include <DbAdapters/DbInterface/Db.h>
 #include <chrono>
 #include <string.h>
 #include <thread>
@@ -38,23 +36,6 @@ int Exit(int code = -1)
 	return code;
 }
 
-static Db* CreateDb(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
-{
-    if (dbType == "0")
-    {
-        return new DuckdbWrapper(dbHost);
-    }
-    if (dbType == "2")
-    {
-        return new MysqlWrapper(dbHost);
-    }
-    if (dbType == "3")
-    {
-        return new MariadbWrapper(dbHost, dbUser, dbPassword);
-    }
-    return new SqliteWrapper(dbHost);
-}
-
 int main(int argc, char* argv[])
 {
 	auto& config = Config::GetInstance();
@@ -67,8 +48,8 @@ int main(int argc, char* argv[])
 	Logger::GetInstance().Start();
 	ShutdownSignal::InstallHandlers();
 
-	Db* initDb = CreateDb(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
-	Db* db = CreateDb(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+	Db* initDb = QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
+	Db* db = QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
 	if (initDb == nullptr || db == nullptr)
 	{
 		return Exit();

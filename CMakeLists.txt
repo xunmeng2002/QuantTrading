@@ -59,11 +59,19 @@ else()
     find_package(CTP CONFIG REQUIRED PATHS "../Libs/Ctp/x64-linux")
 endif()
 
+
+# 下面四个目标只链接 Sqlite 与 Duckdb; MySQL 与 MariaDB 由 DbAdapters::LoadDatabaseBackend
+# 在运行时按配置装载 (见 src/QuantTradingCommon/DatabaseAdapterFactory.h 与 DBAdapters 仓的
+# docs/backend-runtime-loading.md). 适配器的模块名与调试后缀由 DBAdapters 自己拼, 本仓不需要知道.
+# 代价: 这两个适配器不再随 $<TARGET_RUNTIME_DLLS> 拷进 bin/$<CONFIG> —— 已存在的文件不会消失,
+# 只有全新克隆后从头构建才会缺.
+
+
 add_library(QuantTradingInterface INTERFACE)
 target_include_directories(QuantTradingInterface INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 add_static_md_module(QuantTradingCommon ${CMAKE_CURRENT_SOURCE_DIR}/src/QuantTradingCommon ${CMAKE_CURRENT_SOURCE_DIR}/src/QuantTradingCommon)
-target_link_libraries(QuantTradingCommonStatic PUBLIC QuantTradingInterface Spark::Core)
+target_link_libraries(QuantTradingCommonStatic PUBLIC QuantTradingInterface Spark::Core DbAdapters::BackendLoaderStatic)
 target_link_libraries(QuantTradingCommonStatic PRIVATE Spark::Serialization)
 
 add_static_md_module(Mdb ${CMAKE_CURRENT_SOURCE_DIR}/src/Mdb ${CMAKE_CURRENT_SOURCE_DIR}/src/Mdb)
@@ -140,7 +148,7 @@ target_compile_definitions(SimExchangeGbkApi PRIVATE SimExchangeApi_EXPORTS)
 add_application(MdOffer  ${CMAKE_CURRENT_SOURCE_DIR}/src/MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/src/MdOffer)
 target_link_libraries(MdOffer PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic CtpMdApiMiddleStatic
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
-    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper DbAdapters::MysqlWrapper DbAdapters::MariadbWrapper)
+    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper)
 copy_dll_file(MdOffer)
 copy_config_file(MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/MdOffer.json)
 copy_config_file(MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/CtpAccountInfo.json)
@@ -151,7 +159,7 @@ copy_config_file(MdOffer ${CMAKE_CURRENT_SOURCE_DIR}/Configs/ServerConfig.json)
 add_application(SimExchange  ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange)
 target_link_libraries(SimExchange PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic SettlementStatic MdApi
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
-    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper DbAdapters::MysqlWrapper DbAdapters::MariadbWrapper)
+    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper)
 copy_dll_file(SimExchange)
 copy_config_file(SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchange.json)
 
@@ -159,12 +167,12 @@ copy_config_file(SimExchange ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchange.jso
 add_shared_module(BackTest  ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src/BackTest)
 target_link_libraries(BackTest PRIVATE QuantTradingCommonStatic MdbStatic PackagesStatic OrderMatchStatic SettlementStatic BarStatic
     Spark::Core Spark::Serialization
-    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper DbAdapters::MysqlWrapper DbAdapters::MariadbWrapper)
+    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper)
 
 add_application(SimExchangeInit  ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchangeInit ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchangeInit)
 target_link_libraries(SimExchangeInit PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic CtpTraderApiMiddleStatic
     Spark::TemplateLib Spark::Core Spark::Network Spark::Serialization
-    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper DbAdapters::MysqlWrapper DbAdapters::MariadbWrapper)
+    DbAdapters::DbInterface DbAdapters::AsyncDbWriter DbAdapters::SqliteWrapper DbAdapters::DuckdbWrapper)
 copy_dll_file(SimExchangeInit)
 copy_config_file(SimExchangeInit ${CMAKE_CURRENT_SOURCE_DIR}/Configs/SimExchangeInit.json)
 

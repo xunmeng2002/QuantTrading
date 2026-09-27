@@ -26,7 +26,7 @@ public:
 	string SessionFile;
 	string StartTradingDay;
 	string EndTradingDay;
-	string DbType;
+	int DbType;
 	string DbUser;
 	string DbPassword;
 	string DbHost;

@@ -8,7 +8,7 @@
 		<item name="SessionFile" type="string"></item>
 		<item name="StartTradingDay" type="string"></item>
 		<item name="EndTradingDay" type="string"></item>
-		<item name="DbType" type="string"></item>
+		<item name="DbType" type="int"></item>
 		<item name="DbUser" type="string"></item>
 		<item name="DbPassword" type="string"></item>
 		<item name="DbHost" type="string"></item>

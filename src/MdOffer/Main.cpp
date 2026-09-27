@@ -3,6 +3,7 @@
 #include "ThostFtdcMdSpiImpl.h"
 #include <Spark/Core/Logger/Logger.h>
 #include "Config/Config.h"
+#include "DatabaseAdapterFactory.h"
 #include "ServerConfig.h"
 #include "Environment.h"
 #include <Spark/Core/Utility/TimeUtility.h>
@@ -14,10 +15,6 @@
 #include <DbAdapters/DbInterface/TypedTable.h>
 #include <DbAdapters/DbInterface/SchemaRegistry.h>
 #include <DbAdapters/AsyncDbWriter/AsyncDbWriter.h>
-#include <DbAdapters/SqliteWrapper/SqliteWrapper.h>
-#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <DbAdapters/MysqlWrapper/MysqlWrapper.h>
-#include <DbAdapters/MariadbWrapper/MariadbWrapper.h>
 #include "MdFront.h"
 #include "MdKernel.h"
 #include "ShutdownSignal.h"
@@ -36,23 +33,6 @@ using namespace QuantTrading::Bar;
 using namespace QuantTrading::MdOffer;
 
 const char* ConfigName = "MdOffer.json";
-
-static Db* CreateDataDb(const Config& config)
-{
-    if (config.DbType == "0")
-    {
-        return new DuckdbWrapper(config.DbHost);
-    }
-    if (config.DbType == "2")
-    {
-        return new MysqlWrapper(config.DbHost);
-    }
-    if (config.DbType == "3")
-    {
-        return new MariadbWrapper(config.DbHost, config.DbUser, config.DbPassword);
-    }
-    return new SqliteWrapper(config.DbHost);
-}
 
 
 int Exit(int code = -1)
@@ -91,7 +71,11 @@ int main(int argc, char* argv[])
 		return Exit();
 	}
 
-    Db* db = CreateDataDb(config);
+    Db* db = QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+    if (db == nullptr)
+    {
+        return Exit();
+    }
 
     Mdb* mdb = new Mdb(MdOfferTableList);
     QuantTrading::MdbTableRegistry schemaRegistry(MdOfferTableList);

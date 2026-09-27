@@ -3,23 +3,22 @@
 #include "MdbTableRegistry.h"
 #include "BackTestTableList.h"
 #include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
+#include "DatabaseAdapterFactory.h"
 #include "Error.h"
 #include "QuantUtility.h"
 #include "OrderUtility.h"
 #include "BackTestInitDbTableList.h"
 #include "InitMdbFromCsv.h"
-#include "InitMdbFromDB.h"
+#include "InitMdbFromDb.h"
 #include "MdbFieldConverter.h"
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Logger/Logger.h>
-#include <DbAdapters/SqliteWrapper/SqliteWrapper.h>
-#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <DbAdapters/MysqlWrapper/MysqlWrapper.h>
-#include <DbAdapters/MariadbWrapper/MariadbWrapper.h>
+#include <DbAdapters/DbInterface/Db.h>
 #include <assert.h>
 #include <chrono>
 #include <cmath>
 #include <filesystem>
+#include <format>
 #include <iterator>
 #include <memory>
 #include <stdexcept>
@@ -33,33 +32,17 @@ using namespace QuantTrading;
 using namespace QuantTrading::OrderMatch;
 using namespace QuantTrading::Packages;
 
-static Db* CreateDataDb(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
-{
-    if (dbType == "0")
-    {
-        return new DuckdbWrapper(dbHost);
-    }
-    if (dbType == "2")
-    {
-        return new MysqlWrapper(dbHost);
-    }
-    if (dbType == "3")
-    {
-        return new MariadbWrapper(dbHost, dbUser, dbPassword);
-    }
-    return new SqliteWrapper(dbHost);
-}
-
 // RunID：本地时间到毫秒，作为本次回测输出库/快照目录的隔离后缀，多次回测互不覆盖
 static std::string MakeRunId()
 {
-    std::tm* localTm = TimeUtility::GetLocalTm();
-    auto milliSecond = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 1000;
-    char runId[32] = { 0 };
-    snprintf(runId, sizeof(runId), "%04d%02d%02d_%02d%02d%02d_%03lld",
+    const auto now = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+    const long long milliSecondSinceEpoch = now.time_since_epoch().count();
+    // 毫秒取模在负纪元（系统时钟早于 1970）下得负值，补正后再格式化，避免 '-' 混入目录名
+    const long long milliSecondOfSecond = (milliSecondSinceEpoch % 1000 + 1000) % 1000;
+    const std::tm* localTm = TimeUtility::GetLocalTm();
+    return std::format("{:04}{:02}{:02}_{:02}{:02}{:02}_{:03}",
         localTm->tm_year + 1900, localTm->tm_mon + 1, localTm->tm_mday,
-        localTm->tm_hour, localTm->tm_min, localTm->tm_sec, static_cast<long long>(milliSecond));
-    return runId;
+        localTm->tm_hour, localTm->tm_min, localTm->tm_sec, milliSecondOfSecond);
 }
 
 // 输出库文件名派生：在扩展名前插入 _<RunID>（./BackTest.db → ./BackTest_<RunID>.db）
@@ -138,7 +121,7 @@ SimExchange::SimExchange(const Config& config)
 	std::error_code dumpDirError;
 	std::filesystem::create_directories(dumpPath_, dumpDirError);
 	runDbHost_ = DeriveRunDbHost(config.DbHost, runId_);
-	db_ = CreateDataDb(config.DbType, runDbHost_, config.DbUser, config.DbPassword);
+	db_ = QuantTrading::CreateDatabaseAdapter(config.DbType, runDbHost_, config.DbUser, config.DbPassword);
 	WriteLog(LogLevel::Info, "RunID:%s, DbHost:%s, DumpPath:%s", runId_.c_str(), runDbHost_.c_str(), dumpPath_.c_str());
 	// 种子必须在 Subscribe 之前灌：种子行不逐行入队，避免与收尾 mdb_->InitDb() 的批量入队重复写库
 	basicDataLoaded_ = LoadBasicDataFromInitDb(config);
@@ -485,7 +468,12 @@ bool SimExchange::LoadBasicDataFromInitDb(const Config& config)
 		WriteLog(LogLevel::Warning, "InitDb File Not Exist, BasicData Not Loaded, DbInitHost:%s", dbInitHost_.c_str());
 		return false;
 	}
-	std::unique_ptr<Db> initDb(CreateDataDb(config.DbType, dbInitHost_, config.DbUser, config.DbPassword));
+	std::unique_ptr<Db> initDb(QuantTrading::CreateDatabaseAdapter(config.DbType, dbInitHost_, config.DbUser, config.DbPassword));
+	if (initDb == nullptr)
+	{
+		WriteLog(LogLevel::Error, "InitDb Adapter Unavailable, BasicData Not Loaded, DbInitHost:%s", dbInitHost_.c_str());
+		return false;
+	}
 	if (!initDb->Connect())
 	{
 		WriteLog(LogLevel::Error, "InitDb Connect Failed, BasicData Not Loaded, DbInitHost:%s", dbInitHost_.c_str());

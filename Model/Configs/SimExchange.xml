@@ -3,7 +3,7 @@
 		<item name="LogLevel" type="int"></item>
 		<item name="ServerConfigPath" type="string"></item>
 		<item name="MatchMode" type="int"></item>
-		<item name="DbType" type="string"></item>
+		<item name="DbType" type="int"></item>
 		<item name="DbUser" type="string"></item>
 		<item name="DbPassword" type="string"></item>
 		<item name="DbHost" type="string"></item>

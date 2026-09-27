@@ -24,7 +24,7 @@ public:
 	string EnvironmentName;
 	string EnvironmentName24;
 	string TradingDay;
-	string DbType;
+	int DbType;
 	string DbUser;
 	string DbPassword;
 	string DbHost;

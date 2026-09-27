@@ -4,7 +4,7 @@
   "MatchModeType": "OrderBook:0, LastPrice:1, OppositePrice:2, Bar:3",
   "MatchMode": 0,
   "DBTypeType": "DuckDB:0, SqliteDB:1, MysqlDB:2, MariaDB:3",
-  "DbType": "1",
+  "DbType": 1,
   "DbUser": "",
   "DbPassword": "",
   "DbHost": "./SimExchange.db",

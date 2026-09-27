@@ -8,14 +8,11 @@
 #include "SimExchangeTableList.h"
 #include "Init.h"
 #include "Config/Config.h"
+#include "DatabaseAdapterFactory.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <DbAdapters/AsyncDbWriter/AsyncDbWriter.h>
 #include <DbAdapters/DbInterface/Db.h>
-#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <DbAdapters/SqliteWrapper/SqliteWrapper.h>
-#include <DbAdapters/MysqlWrapper/MysqlWrapper.h>
-#include <DbAdapters/MariadbWrapper/MariadbWrapper.h>
 #include <chrono>
 #include <iostream>
 #include <map>
@@ -31,24 +28,6 @@ using namespace QuantTrading::SimExchangeInit;
 using namespace QuantTrading;
 
 const char* ConfigName = "SimExchangeInit.json";
-
-static Db* CreateDb(const std::string dbType, const std::string dbHost, const std::string dbUser, const std::string dbPassword)
-{
-    if (dbType == "0")
-    {
-        return new DuckdbWrapper(dbHost);
-    }
-    if (dbType == "2")
-    {
-        return new MysqlWrapper(dbHost);
-    }
-    if (dbType == "3")
-    {
-        return new MariadbWrapper(dbHost, dbUser, dbPassword);
-    }
-    return new SqliteWrapper(dbHost);
-}
-
 
 int main(int argc, char* argv[])
 {
@@ -69,7 +48,13 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Db* db = CreateDb(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+	Db* db = QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
+	if (db == nullptr)
+	{
+		Logger::GetInstance().Stop();
+		Logger::GetInstance().Join();
+		return -1;
+	}
     QuantTrading::MdbTableRegistry registry(SimExchangeTableList);
 	AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &registry);
 	Mdb* mdb = new Mdb(SimExchangeTableList);

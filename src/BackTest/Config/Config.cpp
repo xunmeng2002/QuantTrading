@@ -44,7 +44,7 @@ void Config::Load(const char* fileName)
 	SessionFile = root["SessionFile"].asString();
 	StartTradingDay = root["StartTradingDay"].asString();
 	EndTradingDay = root["EndTradingDay"].asString();
-	DbType = root["DbType"].asString();
+	DbType = root["DbType"].asInt();
 	DbUser = root["DbUser"].asString();
 	DbPassword = root["DbPassword"].asString();
 	DbHost = root["DbHost"].asString();
@@ -66,7 +66,7 @@ void Config::Print()
 	printf("SessionFile:%s\n", SessionFile.c_str());
 	printf("StartTradingDay:%s\n", StartTradingDay.c_str());
 	printf("EndTradingDay:%s\n", EndTradingDay.c_str());
-	printf("DbType:%s\n", DbType.c_str());
+	printf("DbType:%d\n", DbType);
 	printf("DbUser:%s\n", DbUser.c_str());
 	printf("DbHost:%s\n", DbHost.c_str());
 	printf("DbInitHost:%s\n", DbInitHost.c_str());
