@@ -1,6 +1,6 @@
 #include "ApiBase.h"
 #include "PackageFactory.h"
-#include <Spark/Network/IO/IOFactory.h>
+#include <Spark/Network/Io/IoFactory.h>
 
 using namespace Spark::Network;
 

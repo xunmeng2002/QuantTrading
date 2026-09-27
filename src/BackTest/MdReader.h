@@ -1,5 +1,5 @@
 #pragma once
-#include <DBAdapters/DuckdbWrapper/DuckdbWrapper.h>
+#include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
 #include <Spark/Types.h>
 #include "MdbStructs.h"
 #include "Config/Config.h"
