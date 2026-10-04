@@ -3,7 +3,7 @@
 [![Build](https://img.shields.io/badge/Build-CMake3.20+-green.svg)]()
 [![CTP](https://img.shields.io/badge/CTP-v6.7.9_P1-blue.svg)]()
 
-**QuantTrading** 是一套基于 C++20 的 **CTP 期货量化交易系统**，覆盖行情采集（**MdOffer**）、模拟撮合（**SimExchange**）、历史回测（**BackTest**）三条业务链路，对外提供风格统一的 **MdApi / TraderApi / SimExchangeApi / BackTest** 四套客户端接口。系统以 **Spark** 提供线程 / 日志 / 网络基础能力，以 **DBAdapters** 提供 SQLite / DuckDB / MySQL / MariaDB 四库一致性读写，采用"**内存库 Mdb + AsyncDBWriter 异步落库**"的低时延架构。
+**QuantTrading** 是一套基于 C++20 的 **CTP 期货量化交易系统**，覆盖行情采集（**MdOffer**）、模拟撮合（**SimExchange**）、历史回测（**BackTest**）三条业务链路，对外提供风格统一的 **MdApi / TraderApi / SimExchangeApi / BackTest** 四套客户端接口。系统以 **Spark** 提供线程 / 日志 / 网络基础能力，以 **DbAdapters** 提供 SQLite / DuckDB / MySQL / MariaDB 四库一致性读写，采用"**内存库 Mdb + AsyncDBWriter 异步落库**"的低时延架构。
 
 Created by [xunmeng2002](https://gitee.com/xunmeng2002)
 
@@ -11,7 +11,7 @@ Created by [xunmeng2002](https://gitee.com/xunmeng2002)
 
 本项目为个人开源项目，聚焦"**一套行情服务 / 撮合引擎 / 回测框架，支撑从行情到回测的完整量化链路**"：实盘行情经 CTP 订阅后写入内存库并异步落盘，同时通过行情服务端广播给交易侧；模拟撮合在本地订单簿 / 最新价 / 对手价 / Bar 四种模式下完成撮合、持仓与结算；回测框架从 Parquet 历史数据重放 tick / Bar，复跑同一套撮合与结算逻辑。
 
-系统基于标准 C++20 开发，采用 CMake 跨平台构建，依赖 [Spark](https://gitee.com/xunmeng2002/Spark.git)（线程、日志、网络、对象池）与 [DBAdapters](https://gitee.com/xunmeng2002/DBAdapters.git)（数据库访问层），第三方驱动（SQLite / MySQL / MariaDB）经 vcpkg 管理，内置 CTP / SimExchange / BackTest 的测试客户端程序。
+系统基于标准 C++20 开发，采用 CMake 跨平台构建，依赖 [Spark](https://gitee.com/xunmeng2002/Spark.git)（线程、日志、网络、对象池）与 [DbAdapters](https://gitee.com/xunmeng2002/DbAdapters.git)（数据库访问层），第三方驱动（SQLite / MySQL / MariaDB）经 vcpkg 管理，内置 CTP / SimExchange / BackTest 的测试客户端程序。
 
 ## 二、核心功能模块
 
@@ -143,7 +143,7 @@ QuantTrading/
 | 依赖 | 安装位置 | 提供内容 |
 | --- | --- | --- |
 | **Spark** 基础库 | `../Libs/Spark/<triplet>` | `Spark::Core`（线程 / 日志 / 网络 / 对象池）、`Spark/Types.h` |
-| **DBAdapters** | `../Libs/DBAdapters/<triplet>` | 四库统一访问层（`DB::DBInterface` / `AsyncDBWriter` 等） |
+| **DbAdapters** | `../Libs/DbAdapters/<triplet>` | 四库统一访问层（`DB::DbInterface` / `AsyncDBWriter` 等） |
 | **DuckDB** | `../Libs/duckdb/<triplet>` | `duckdb::duckdb`（向量化读取所需头文件 + 运行时库） |
 | **CTP** | `../Libs/Ctp/<triplet>` | `CTP::mdapi` / `CTP::traderapi`（v6.7.9） |
 
@@ -180,7 +180,7 @@ UpdateSubmodule.bat
 
 ```bash
 # 确保 VCPKG_ROOT 已配置（Windows 设为系统环境变量，Linux 写入 ~/.bashrc）
-# 确保 Spark、DBAdapters、duckdb、CTP 已安装到 ../Libs/ 对应目录（见上文"预编译依赖"）
+# 确保 Spark、DbAdapters、duckdb、CTP 已安装到 ../Libs/ 对应目录（见上文"预编译依赖"）
 ```
 
 ### 4. CMake 编译（推荐使用 Presets）
@@ -355,7 +355,7 @@ int main(int argc, char* argv[])
 
 - **包含路径**：头文件统一使用 `#include <QuantTrading/XxxApi.h>` 风格；模块内部使用 `#include <Module/Xxx.h>`
 - **命名空间**：公共 API 位于 `QuantTrading`，各模块分别位于 `QuantTrading::MdOffer`、`QuantTrading::SimExchange`、`QuantTrading::BackTest`、`QuantTrading::OrderMatch` 等
-- **依赖链**：`Spark`（线程 / 日志 / 网络）→ `DBAdapters`（四库统一访问）→ `QuantTrading`
+- **依赖链**：`Spark`（线程 / 日志 / 网络）→ `DbAdapters`（四库统一访问）→ `QuantTrading`
 - **版本**：CTP API v6.7.9（`MdOffer` 启动日志可见 `API Version`）
 - **编码变体**：MdApi / TraderApi / SimExchangeApi 各提供 **UTF-8**（`MdApi` 等）与 **GBK**（`MdGbkApi` 等）两套动态库
 - **数据源适配**：`BackTest` 的 `MdReader` 当前 SQL 面向旧列名 parquet（如 `LastTraded` / `LastTurnover` / 数组盘口），缺失列以 NULL 占位；数据侧整理对齐 mdb schema 后可删除占位符，使 tick 涨跌停价等列真实可用

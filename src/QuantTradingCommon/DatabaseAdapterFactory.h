@@ -2,13 +2,13 @@
 
 // 配置 DbType → 适配器实例. 四个后端走**同一条路** (DbAdapters::LoadDatabaseBackend), 本函数不写
 // "哪个后端怎么建"的知识 —— 哪个种类对应哪个模块、模块名的平台前后缀与调试后缀怎么拼, 都是
-// DBAdapters 的内部知识. 本仓某个模块与适配器有编译期依赖时, 那条依赖写在 CMakeLists 的链接行上,
+// DbAdapters 的内部知识. 本仓某个模块与适配器有编译期依赖时, 那条依赖写在 CMakeLists 的链接行上,
 // 不写在这里 —— 依赖变了不必回来改这个函数.
 // 失败一律 "写日志 + 返回 nullptr", 不抛: 适配器是在 SimExchange 构造函数里建的, 抛出点不在宿主
 // 的 try 作用域内, 异常会以 std::terminate 收场 —— 而 abort 既不 flush stdio 缓冲也不走日志器的
 // ThreadExit, 日志器那条后台线程缓冲的文案随之消失, 留下的是一份 0 字节日志 (实测 DbType="9":
 // 退出码 0xC0000409, 日志 0 字节). 返回 nullptr 则走引擎既有的判空通路, 进程正常退出, 文案落进日志.
-// 装载机制、查找次序与"模块缺了怎么办"见 DBAdapters 仓的 docs/backend-runtime-loading.md.
+// 装载机制、查找次序与"模块缺了怎么办"见 DbAdapters 仓的 docs/backend-runtime-loading.md.
 
 #include <DbAdapters/BackendLoader/DbBackendLoader.h>
 #include <DbAdapters/DbInterface/Db.h>

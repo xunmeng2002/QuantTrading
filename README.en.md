@@ -3,7 +3,7 @@
 [![Build](https://img.shields.io/badge/Build-CMake3.20+-green.svg)]()
 [![CTP](https://img.shields.io/badge/CTP-v6.7.9_P1-blue.svg)]()
 
-**QuantTrading** is a **CTP futures quantitative trading system** written in C++20. It covers three business chains: live market data collection (**MdOffer**), simulated order matching (**SimExchange**), and historical backtesting (**BackTest**), and exposes four uniform client APIs — **MdApi / TraderApi / SimExchangeApi / BackTest**. The system builds on **Spark** for threading / logging / networking and on **DBAdapters** for consistent read/write across SQLite, DuckDB, MySQL, and MariaDB, following the low-latency "**in-memory database (Mdb) + async persistence (AsyncDBWriter)**" architecture.
+**QuantTrading** is a **CTP futures quantitative trading system** written in C++20. It covers three business chains: live market data collection (**MdOffer**), simulated order matching (**SimExchange**), and historical backtesting (**BackTest**), and exposes four uniform client APIs — **MdApi / TraderApi / SimExchangeApi / BackTest**. The system builds on **Spark** for threading / logging / networking and on **DbAdapters** for consistent read/write across SQLite, DuckDB, MySQL, and MariaDB, following the low-latency "**in-memory database (Mdb) + async persistence (AsyncDBWriter)**" architecture.
 
 Created by [xunmeng2002](https://gitee.com/xunmeng2002)
 
@@ -11,7 +11,7 @@ Created by [xunmeng2002](https://gitee.com/xunmeng2002)
 
 This is a personal open-source project focused on "**one market-data service / matching engine / backtest framework covering the whole chain from quotes to backtesting**". Live quotes are received from CTP, written into the in-memory database and persisted asynchronously, and broadcast to the trading side through the market-data front; the simulated exchange matches orders in four modes (order book / last price / opposite price / bar), tracks positions, and performs settlement; the backtest framework replays tick / bar data from Parquet history and re-runs the same matching and settlement logic.
 
-The system is developed in standard C++20 and built cross-platform with CMake. It depends on [Spark](https://gitee.com/xunmeng2002/Spark.git) (threading, logging, networking, object pool) and [DBAdapters](https://gitee.com/xunmeng2002/DBAdapters.git) (database access layer); third-party drivers (SQLite / MySQL / MariaDB) are managed via vcpkg, and test clients for CTP / SimExchange / BackTest are included.
+The system is developed in standard C++20 and built cross-platform with CMake. It depends on [Spark](https://gitee.com/xunmeng2002/Spark.git) (threading, logging, networking, object pool) and [DbAdapters](https://gitee.com/xunmeng2002/DbAdapters.git) (database access layer); third-party drivers (SQLite / MySQL / MariaDB) are managed via vcpkg, and test clients for CTP / SimExchange / BackTest are included.
 
 ## 2. Core Features
 
@@ -141,7 +141,7 @@ The build depends on four **prebuilt third-party libraries** that must first be 
 | Dependency | Install location | Provides |
 | --- | --- | --- |
 | **Spark** foundational library | `../Libs/Spark/<triplet>` | `Spark::Core` (threading / logging / networking / object pool), `Spark/Types.h` |
-| **DBAdapters** | `../Libs/DBAdapters/<triplet>` | Unified DB access layer (`DB::DBInterface` / `AsyncDBWriter`, etc.) |
+| **DbAdapters** | `../Libs/DbAdapters/<triplet>` | Unified DB access layer (`DB::DbInterface` / `AsyncDBWriter`, etc.) |
 | **DuckDB** | `../Libs/duckdb/<triplet>` | `duckdb::duckdb` (headers + runtime library for vectorized reads) |
 | **CTP** | `../Libs/Ctp/<triplet>` | `CTP::mdapi` / `CTP::traderapi` (v6.7.9) |
 
@@ -178,7 +178,7 @@ UpdateSubmodule.bat
 
 ```bash
 # Make sure VCPKG_ROOT is configured (system env var on Windows, ~/.bashrc on Linux)
-# Make sure Spark, DBAdapters, duckdb, CTP are installed under ../Libs/ (see "Prebuilt Dependencies" above)
+# Make sure Spark, DbAdapters, duckdb, CTP are installed under ../Libs/ (see "Prebuilt Dependencies" above)
 ```
 
 ### 5.4 Build with CMake (Presets Recommended)
@@ -352,7 +352,7 @@ Four test clients are shipped under `test/`:
 
 - **Include style**: public headers use `#include <QuantTrading/XxxApi.h>`; internal module headers use `#include <Module/Xxx.h>`
 - **Namespaces**: public APIs live in `QuantTrading`; modules use `QuantTrading::MdOffer`, `QuantTrading::SimExchange`, `QuantTrading::BackTest`, `QuantTrading::OrderMatch`, etc.
-- **Dependency chain**: `Spark` (threading / logging / networking) → `DBAdapters` (unified DB access) → `QuantTrading`
+- **Dependency chain**: `Spark` (threading / logging / networking) → `DbAdapters` (unified DB access) → `QuantTrading`
 - **Version**: CTP API v6.7.9 (see `API Version` in the MdOffer startup log)
 - **Encoding variants**: MdApi / TraderApi / SimExchangeApi each ship **UTF-8** (`MdApi` etc.) and **GBK** (`MdGbkApi` etc.) shared libraries
 - **Data-source adaptation**: `BackTest`'s `MdReader` SQL currently targets the legacy Parquet column names (e.g. `LastTraded` / `LastTurnover` / array order book), with NULL placeholders for missing columns; once the data is aligned to the mdb schema, the placeholders can be removed and tick price-limit columns become truly usable

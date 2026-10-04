@@ -61,8 +61,8 @@ endif()
 
 
 # 四个后端一律由 DbAdapters::LoadDatabaseBackend 在运行时按配置装载 (见
-# src/QuantTradingCommon/DatabaseAdapterFactory.h 与 DBAdapters 仓的
-# docs/backend-runtime-loading.md); 适配器的模块名与调试后缀由 DBAdapters 自己拼, 本仓不需要知道.
+# src/QuantTradingCommon/DatabaseAdapterFactory.h 与 DbAdapters 仓的
+# docs/backend-runtime-loading.md); 适配器的模块名与调试后缀由 DbAdapters 自己拼, 本仓不需要知道.
 # 下面链接行里列出的适配器表达的是**另外两件事**, 都不是"怎么建":
 #   ① MdReader 拿 DbAdapters::DuckdbWrapper 当成员类型用, 那是本仓与它的编译期依赖;
 #   ② 链接进来的模块会随 $<TARGET_RUNTIME_DLLS> 拷进 bin/$<CONFIG>, 摆在引擎旁边 —— 引擎包要发运
