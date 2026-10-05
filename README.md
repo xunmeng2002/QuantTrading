@@ -3,7 +3,7 @@
 [![Build](https://img.shields.io/badge/Build-CMake3.20+-green.svg)]()
 [![CTP](https://img.shields.io/badge/CTP-v6.7.9_P1-blue.svg)]()
 
-**QuantTrading** 是一套基于 C++20 的 **CTP 期货量化交易系统**，覆盖行情采集（**MdOffer**）、模拟撮合（**SimExchange**）、历史回测（**BackTest**）三条业务链路，对外提供风格统一的 **MdApi / TraderApi / SimExchangeApi / BackTest** 四套客户端接口。系统以 **Spark** 提供线程 / 日志 / 网络基础能力，以 **DbAdapters** 提供 SQLite / DuckDB / MySQL / MariaDB 四库一致性读写，采用"**内存库 Mdb + AsyncDBWriter 异步落库**"的低时延架构。
+**QuantTrading** 是一套基于 C++20 的 **CTP 期货量化交易系统**，覆盖行情采集（**MdOffer**）、模拟撮合（**SimExchange**）、历史回测（**BackTest**）三条业务链路，对外提供风格统一的 **MdApi / TraderApi / SimExchangeApi / BackTest** 四套客户端接口。系统以 **Spark** 提供线程 / 日志 / 网络基础能力，以 **DbAdapters** 提供 SQLite / DuckDB / MySQL / MariaDB 四库一致性读写，采用"**内存库 Mdb + AsyncDbWriter 异步落库**"的低时延架构。
 
 Created by [xunmeng2002](https://gitee.com/xunmeng2002)
 
@@ -19,7 +19,7 @@ Created by [xunmeng2002](https://gitee.com/xunmeng2002)
 
 ### 1. MdOffer —— 行情服务（可执行程序）
 
-CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线程事件循环 → `Mdb` 内存表 → `AsyncDBWriter` 异步落库 → `MdFront` 行情广播。
+CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线程事件循环 → `Mdb` 内存表 → `AsyncDbWriter` 异步落库 → `MdFront` 行情广播。
 
 - 交易日本归属修复：夜盘 `TradingDay` 采用交易所交易日，为空时回退 `ActionDay`
 - 订阅字段生命周期重构：全局 `std::set` 值集合持节点，会话集合每会话一份，断线整行 `erase`
@@ -47,7 +47,7 @@ CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线�
 
 - 表结构由 `MdbTables.h` 模板生成，每表继承 `MdbTableBase` 统一接口
 - **按需装配**：`Mdb(const TableList&)` 构造时只 `new` 本模块的表，`MdbTableRegistry` 按模块过滤 schema
-- `AsyncDBWriter` 只作用于本模块的表，机制上杜绝模块越界访问
+- `AsyncDbWriter` 只作用于本模块的表，机制上杜绝模块越界访问
 - 变更经 `MdbSubscriber` 广播，供撮合 / 落库 / 快照复用
 
 ### 5. Apis —— 对外客户端接口（动态库）
@@ -143,7 +143,7 @@ QuantTrading/
 | 依赖 | 安装位置 | 提供内容 |
 | --- | --- | --- |
 | **Spark** 基础库 | `../Libs/Spark/<triplet>` | `Spark::Core`（线程 / 日志 / 网络 / 对象池）、`Spark/Types.h` |
-| **DbAdapters** | `../Libs/DbAdapters/<triplet>` | 四库统一访问层（`DB::DbInterface` / `AsyncDBWriter` 等） |
+| **DbAdapters** | `../Libs/DbAdapters/<triplet>` | 四库统一访问层（`DB::DbInterface` / `AsyncDbWriter` 等） |
 | **DuckDB** | `../Libs/duckdb/<triplet>` | `duckdb::duckdb`（向量化读取所需头文件 + 运行时库） |
 | **CTP** | `../Libs/Ctp/<triplet>` | `CTP::mdapi` / `CTP::traderapi`（v6.7.9） |
 
