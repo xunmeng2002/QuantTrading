@@ -147,6 +147,13 @@ The build depends on four **prebuilt third-party libraries** that must first be 
 
 `<triplet>` is `x64-windows` on Windows and `x64-linux` on Linux / WSL.
 
+### Unit Test Dependency (doctest)
+
+The unit-test target additionally needs `../Libs/doctest` (the doctest single header, v2.5.3,
+**no triplet subdirectory**; placed on disk but not committed). See
+[Environment Setup 1.7](../DbAdapters/docs/environment-setup.en.md#17-doctest-unit-test-framework)
+in DbAdapters for the placement steps and the full `doctestConfig.cmake`.
+
 ### vcpkg Dependencies
 
 Dependencies declared in `vcpkg.json` (resolved automatically at build time):

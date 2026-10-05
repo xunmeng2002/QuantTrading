@@ -58,6 +58,8 @@ else()
     find_package(duckdb CONFIG REQUIRED PATHS "../Libs/duckdb/x64-linux")
     find_package(CTP CONFIG REQUIRED PATHS "../Libs/Ctp/x64-linux")
 endif()
+# doctest 是纯头文件, 无平台差异, 故不随上面的 triplet 分支走.
+find_package(doctest CONFIG REQUIRED PATHS "../Libs/doctest")
 
 
 # 四个后端一律由 DbAdapters::LoadDatabaseBackend 在运行时按配置装载 (见
@@ -223,7 +225,7 @@ copy_config_file(TestSimExchangeApi ${CMAKE_CURRENT_SOURCE_DIR}/Configs/TestSimE
 
 add_application(UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/test/UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/test/UnitTests)
 target_link_libraries(UnitTests PRIVATE QuantTradingInterface QuantTradingCommonStatic MdbStatic PackagesStatic BarStatic OrderMatchStatic StrategyStatic SettlementStatic
-    Spark::Core Spark::Serialization)
+    Spark::Core Spark::Serialization doctest::doctest)
 # GridStrategy 状态机直接进单测（不经 Config 生成代码，参数由 GridParams 注入）
 target_sources(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid/GridStrategy.cpp)
 target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid)

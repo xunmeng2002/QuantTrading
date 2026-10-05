@@ -149,6 +149,12 @@ QuantTrading/
 
 `<triplet>` 在 Windows 下为 `x64-windows`，Linux / WSL 下为 `x64-linux`。
 
+### 单元测试依赖（doctest）
+
+单元测试目标另需 `../Libs/doctest`（doctest 单头，v2.5.3，**无 triplet 子目录**，只落盘不入库）。
+放置方法与 `doctestConfig.cmake` 全文见
+[DbAdapters 环境准备指南 1.7](../DbAdapters/docs/environment-setup.md#17-doctest单元测试框架)。
+
 ### vcpkg 第三方依赖
 
 `vcpkg.json` 声明的依赖（构建时自动解析）：
