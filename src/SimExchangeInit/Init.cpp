@@ -10,7 +10,7 @@ namespace QuantTrading::SimExchangeInit
 {
 void InitTradingDay(Mdb* mdb, const std::string& currTradingDay)
 {
-	TradingDay* tradingDay = new TradingDay;
+	TradingDay* tradingDay = TradingDay::Allocate();
 	tradingDay->Pk = 1;
 	strcpy(tradingDay->CurrTradingDay, currTradingDay.c_str());
     TimeUtility::GetPreTradingDay(tradingDay->CurrTradingDay, tradingDay->PreTradingDay);
@@ -18,12 +18,12 @@ void InitTradingDay(Mdb* mdb, const std::string& currTradingDay)
 }
 void InitExchange(Mdb* mdb)
 {
-	Exchange* exchange1 = new Exchange();
-	Exchange* exchange2 = new Exchange();
-	Exchange* exchange3 = new Exchange();
-	Exchange* exchange4 = new Exchange();
-	Exchange* exchange5 = new Exchange();
-	Exchange* exchange6 = new Exchange();
+	Exchange* exchange1 = Exchange::Allocate();
+	Exchange* exchange2 = Exchange::Allocate();
+	Exchange* exchange3 = Exchange::Allocate();
+	Exchange* exchange4 = Exchange::Allocate();
+	Exchange* exchange5 = Exchange::Allocate();
+	Exchange* exchange6 = Exchange::Allocate();
 
 	strcpy(exchange1->ExchangeId, "CFFEX");
 	strcpy(exchange1->ExchangeName, (const char*)(u8"中国金融期货交易所"));
@@ -59,7 +59,7 @@ void InitInstrument(Mdb* mdb)
 }
 void InitPrimaryAccount(Mdb* mdb, AccountInfo* accountInfo)
 {
-	PrimaryAccount* record1 = new PrimaryAccount();
+	PrimaryAccount* record1 = PrimaryAccount::Allocate();
 	memset(record1, 0, sizeof(PrimaryAccount));
 	strcpy(record1->PrimaryAccountId, accountInfo->InvestorId);
 	strcpy(record1->PrimaryAccountName, accountInfo->Phone);
@@ -74,7 +74,7 @@ void InitPrimaryAccount(Mdb* mdb, AccountInfo* accountInfo)
 }
 Account* InitAccount(Mdb* mdb, AccountInfo* accountInfo)
 {
-	Account* account = new Account();
+	Account* account = Account::Allocate();
 	strcpy(account->AccountId, accountInfo->InvestorId);
 	strcpy(account->AccountName, accountInfo->Phone);
 	account->AccountType = AccountTypeType::Primary;
@@ -88,7 +88,7 @@ Account* InitAccount(Mdb* mdb, AccountInfo* accountInfo)
 }
 void InitCapital(Mdb* mdb, Account* account, const std::string& currTradingDay)
 {
-	Capital* capital = new Capital();
+	Capital* capital = Capital::Allocate();
 	memset(capital, 0, sizeof(Capital));
 	strcpy(capital->TradingDay, currTradingDay.c_str());
 	strcpy(capital->AccountId, account->AccountId);
