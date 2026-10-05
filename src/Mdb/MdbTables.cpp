@@ -1,14 +1,17 @@
 ﻿// 本文件由 ../Templates/Cpp/Mdb/MdbTables.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdbTables.h"
+#include <DbAdapters/DbInterface/RecordHandle.h>
 #include <Spark/Core/Logger/Logger.h>
 #include <string>
 #include <cstring>
 #include <set>
+#include <utility>
 #include <vector>
 
 using std::string;
 using std::set;
 using namespace Spark::Core;
+using namespace DbAdapters;
 
 namespace QuantTrading
 {
@@ -47,23 +50,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(TradingDay::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = TradingDay::Allocate();
 				memcpy(record, *it, sizeof(TradingDay));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(TradingDay::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(TradingDay::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -82,7 +82,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(TradingDay::TableId, record);
+			mdbSubscriber_->OnRecordInsert(TradingDay::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -100,10 +100,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(TradingDay::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(TradingDay::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -114,7 +117,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(TradingDay::TableId, record);
+			mdbSubscriber_->OnRecordErase(TradingDay::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -136,7 +139,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(TradingDay::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(TradingDay::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -233,23 +236,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(Exchange::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = Exchange::Allocate();
 				memcpy(record, *it, sizeof(Exchange));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(Exchange::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(Exchange::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -268,7 +268,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(Exchange::TableId, record);
+			mdbSubscriber_->OnRecordInsert(Exchange::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -286,10 +286,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(Exchange::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(Exchange::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -300,7 +303,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(Exchange::TableId, record);
+			mdbSubscriber_->OnRecordErase(Exchange::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -322,7 +325,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(Exchange::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(Exchange::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -419,23 +422,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(Product::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = Product::Allocate();
 				memcpy(record, *it, sizeof(Product));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(Product::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(Product::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -454,7 +454,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(Product::TableId, record);
+			mdbSubscriber_->OnRecordInsert(Product::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -472,10 +472,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(Product::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(Product::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -486,7 +489,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(Product::TableId, record);
+			mdbSubscriber_->OnRecordErase(Product::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -508,7 +511,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(Product::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(Product::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -608,23 +611,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(HotInstrument::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = HotInstrument::Allocate();
 				memcpy(record, *it, sizeof(HotInstrument));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(HotInstrument::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(HotInstrument::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -644,7 +644,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(HotInstrument::TableId, record);
+			mdbSubscriber_->OnRecordInsert(HotInstrument::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -663,10 +663,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(HotInstrument::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(HotInstrument::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -677,7 +680,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(HotInstrument::TableId, record);
+			mdbSubscriber_->OnRecordErase(HotInstrument::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -704,7 +707,7 @@ namespace QuantTrading
 		{
 			auto record = HotInstrument::Allocate();
 			memcpy(record, &CompareHotInstrument, sizeof(HotInstrument));
-			mdbSubscriber_->OnRecordEraseByIndex(HotInstrument::TableId, HotInstrumentIndexTradingDay::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(HotInstrument::TableId, HotInstrumentIndexTradingDay::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -733,7 +736,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(HotInstrument::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(HotInstrument::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -836,23 +839,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(Instrument::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = Instrument::Allocate();
 				memcpy(record, *it, sizeof(Instrument));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(Instrument::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(Instrument::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -872,7 +872,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(Instrument::TableId, record);
+			mdbSubscriber_->OnRecordInsert(Instrument::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -891,10 +891,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(Instrument::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(Instrument::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -905,7 +908,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(Instrument::TableId, record);
+			mdbSubscriber_->OnRecordErase(Instrument::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -932,7 +935,7 @@ namespace QuantTrading
 		{
 			auto record = Instrument::Allocate();
 			memcpy(record, &CompareInstrument, sizeof(Instrument));
-			mdbSubscriber_->OnRecordEraseByIndex(Instrument::TableId, InstrumentIndexExchangeId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(Instrument::TableId, InstrumentIndexExchangeId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -961,7 +964,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(Instrument::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(Instrument::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -1061,23 +1064,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(DepthMarketData::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = DepthMarketData::Allocate();
 				memcpy(record, *it, sizeof(DepthMarketData));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(DepthMarketData::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(DepthMarketData::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -1096,7 +1096,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(DepthMarketData::TableId, record);
+			mdbSubscriber_->OnRecordInsert(DepthMarketData::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -1114,10 +1114,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(DepthMarketData::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(DepthMarketData::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -1128,7 +1131,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(DepthMarketData::TableId, record);
+			mdbSubscriber_->OnRecordErase(DepthMarketData::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -1150,7 +1153,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(DepthMarketData::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(DepthMarketData::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -1247,23 +1250,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(BarMarketData::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = BarMarketData::Allocate();
 				memcpy(record, *it, sizeof(BarMarketData));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(BarMarketData::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(BarMarketData::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -1282,7 +1282,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(BarMarketData::TableId, record);
+			mdbSubscriber_->OnRecordInsert(BarMarketData::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -1300,10 +1300,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(BarMarketData::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(BarMarketData::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -1314,7 +1317,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(BarMarketData::TableId, record);
+			mdbSubscriber_->OnRecordErase(BarMarketData::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -1336,7 +1339,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(BarMarketData::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(BarMarketData::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -1433,23 +1436,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(MdSubscribe::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = MdSubscribe::Allocate();
 				memcpy(record, *it, sizeof(MdSubscribe));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(MdSubscribe::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(MdSubscribe::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -1468,7 +1468,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(MdSubscribe::TableId, record);
+			mdbSubscriber_->OnRecordInsert(MdSubscribe::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -1486,10 +1486,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(MdSubscribe::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(MdSubscribe::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -1500,7 +1503,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(MdSubscribe::TableId, record);
+			mdbSubscriber_->OnRecordErase(MdSubscribe::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -1522,7 +1525,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(MdSubscribe::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(MdSubscribe::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -1619,23 +1622,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(MdUser::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = MdUser::Allocate();
 				memcpy(record, *it, sizeof(MdUser));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(MdUser::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(MdUser::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -1654,7 +1654,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(MdUser::TableId, record);
+			mdbSubscriber_->OnRecordInsert(MdUser::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -1672,10 +1672,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(MdUser::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(MdUser::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -1686,7 +1689,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(MdUser::TableId, record);
+			mdbSubscriber_->OnRecordErase(MdUser::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -1708,7 +1711,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(MdUser::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(MdUser::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -1811,23 +1814,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(MdUserLoginSession::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = MdUserLoginSession::Allocate();
 				memcpy(record, *it, sizeof(MdUserLoginSession));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(MdUserLoginSession::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(MdUserLoginSession::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -1848,7 +1848,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(MdUserLoginSession::TableId, record);
+			mdbSubscriber_->OnRecordInsert(MdUserLoginSession::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -1868,10 +1868,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(MdUserLoginSession::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(MdUserLoginSession::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -1882,7 +1885,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(MdUserLoginSession::TableId, record);
+			mdbSubscriber_->OnRecordErase(MdUserLoginSession::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -1909,7 +1912,7 @@ namespace QuantTrading
 		{
 			auto record = MdUserLoginSession::Allocate();
 			memcpy(record, &CompareMdUserLoginSession, sizeof(MdUserLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(MdUserLoginSession::TableId, MdUserLoginSessionIndexSessionId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(MdUserLoginSession::TableId, MdUserLoginSessionIndexSessionId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -1933,7 +1936,7 @@ namespace QuantTrading
 		{
 			auto record = MdUserLoginSession::Allocate();
 			memcpy(record, &CompareMdUserLoginSession, sizeof(MdUserLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(MdUserLoginSession::TableId, MdUserLoginSessionIndexMdUserId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(MdUserLoginSession::TableId, MdUserLoginSessionIndexMdUserId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -1972,7 +1975,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(MdUserLoginSession::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(MdUserLoginSession::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -2078,23 +2081,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(PrimaryAccount::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = PrimaryAccount::Allocate();
 				memcpy(record, *it, sizeof(PrimaryAccount));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(PrimaryAccount::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(PrimaryAccount::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -2114,7 +2114,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(PrimaryAccount::TableId, record);
+			mdbSubscriber_->OnRecordInsert(PrimaryAccount::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -2133,10 +2133,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(PrimaryAccount::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(PrimaryAccount::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -2147,7 +2150,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(PrimaryAccount::TableId, record);
+			mdbSubscriber_->OnRecordErase(PrimaryAccount::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -2174,7 +2177,7 @@ namespace QuantTrading
 		{
 			auto record = PrimaryAccount::Allocate();
 			memcpy(record, &ComparePrimaryAccount, sizeof(PrimaryAccount));
-			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccount::TableId, PrimaryAccountIndexOfferId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccount::TableId, PrimaryAccountIndexOfferId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -2203,7 +2206,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(PrimaryAccount::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(PrimaryAccount::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -2303,23 +2306,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(Account::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = Account::Allocate();
 				memcpy(record, *it, sizeof(Account));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(Account::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(Account::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -2338,7 +2338,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(Account::TableId, record);
+			mdbSubscriber_->OnRecordInsert(Account::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -2356,10 +2356,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(Account::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(Account::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -2370,7 +2373,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(Account::TableId, record);
+			mdbSubscriber_->OnRecordErase(Account::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -2392,7 +2395,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(Account::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(Account::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -2492,23 +2495,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(Capital::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = Capital::Allocate();
 				memcpy(record, *it, sizeof(Capital));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(Capital::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(Capital::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -2528,7 +2528,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(Capital::TableId, record);
+			mdbSubscriber_->OnRecordInsert(Capital::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -2547,10 +2547,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(Capital::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(Capital::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -2561,7 +2564,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(Capital::TableId, record);
+			mdbSubscriber_->OnRecordErase(Capital::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -2588,7 +2591,7 @@ namespace QuantTrading
 		{
 			auto record = Capital::Allocate();
 			memcpy(record, &CompareCapital, sizeof(Capital));
-			mdbSubscriber_->OnRecordEraseByIndex(Capital::TableId, CapitalIndexTradingDay::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(Capital::TableId, CapitalIndexTradingDay::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -2617,7 +2620,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(Capital::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(Capital::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -2723,23 +2726,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(Position::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = Position::Allocate();
 				memcpy(record, *it, sizeof(Position));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(Position::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(Position::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -2760,7 +2760,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(Position::TableId, record);
+			mdbSubscriber_->OnRecordInsert(Position::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -2780,10 +2780,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(Position::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(Position::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -2794,7 +2797,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(Position::TableId, record);
+			mdbSubscriber_->OnRecordErase(Position::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -2821,7 +2824,7 @@ namespace QuantTrading
 		{
 			auto record = Position::Allocate();
 			memcpy(record, &ComparePosition, sizeof(Position));
-			mdbSubscriber_->OnRecordEraseByIndex(Position::TableId, PositionIndexAccount::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(Position::TableId, PositionIndexAccount::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -2845,7 +2848,7 @@ namespace QuantTrading
 		{
 			auto record = Position::Allocate();
 			memcpy(record, &ComparePosition, sizeof(Position));
-			mdbSubscriber_->OnRecordEraseByIndex(Position::TableId, PositionIndexTradingDay::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(Position::TableId, PositionIndexTradingDay::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -2884,7 +2887,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(Position::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(Position::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -2993,23 +2996,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(PositionDetail::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = PositionDetail::Allocate();
 				memcpy(record, *it, sizeof(PositionDetail));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(PositionDetail::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(PositionDetail::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -3030,7 +3030,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(PositionDetail::TableId, record);
+			mdbSubscriber_->OnRecordInsert(PositionDetail::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -3050,10 +3050,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(PositionDetail::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(PositionDetail::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -3064,7 +3067,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(PositionDetail::TableId, record);
+			mdbSubscriber_->OnRecordErase(PositionDetail::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -3091,7 +3094,7 @@ namespace QuantTrading
 		{
 			auto record = PositionDetail::Allocate();
 			memcpy(record, &ComparePositionDetail, sizeof(PositionDetail));
-			mdbSubscriber_->OnRecordEraseByIndex(PositionDetail::TableId, PositionDetailIndexTradeMatch::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(PositionDetail::TableId, PositionDetailIndexTradeMatch::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3115,7 +3118,7 @@ namespace QuantTrading
 		{
 			auto record = PositionDetail::Allocate();
 			memcpy(record, &ComparePositionDetail, sizeof(PositionDetail));
-			mdbSubscriber_->OnRecordEraseByIndex(PositionDetail::TableId, PositionDetailIndexTradingDay::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(PositionDetail::TableId, PositionDetailIndexTradingDay::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3154,7 +3157,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(PositionDetail::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(PositionDetail::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -3263,23 +3266,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(Order::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = Order::Allocate();
 				memcpy(record, *it, sizeof(Order));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(Order::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(Order::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -3300,7 +3300,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(Order::TableId, record);
+			mdbSubscriber_->OnRecordInsert(Order::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -3320,10 +3320,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(Order::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(Order::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -3334,7 +3337,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(Order::TableId, record);
+			mdbSubscriber_->OnRecordErase(Order::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -3361,7 +3364,7 @@ namespace QuantTrading
 		{
 			auto record = Order::Allocate();
 			memcpy(record, &CompareOrder, sizeof(Order));
-			mdbSubscriber_->OnRecordEraseByIndex(Order::TableId, OrderIndexAccountId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(Order::TableId, OrderIndexAccountId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3390,7 +3393,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(Order::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(Order::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -3496,23 +3499,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(Trade::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = Trade::Allocate();
 				memcpy(record, *it, sizeof(Trade));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(Trade::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(Trade::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -3532,7 +3532,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(Trade::TableId, record);
+			mdbSubscriber_->OnRecordInsert(Trade::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -3551,10 +3551,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(Trade::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(Trade::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -3565,7 +3568,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(Trade::TableId, record);
+			mdbSubscriber_->OnRecordErase(Trade::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -3592,7 +3595,7 @@ namespace QuantTrading
 		{
 			auto record = Trade::Allocate();
 			memcpy(record, &CompareTrade, sizeof(Trade));
-			mdbSubscriber_->OnRecordEraseByIndex(Trade::TableId, TradeIndexAccountId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(Trade::TableId, TradeIndexAccountId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3621,7 +3624,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(Trade::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(Trade::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -3727,23 +3730,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(AccountLoginSession::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = AccountLoginSession::Allocate();
 				memcpy(record, *it, sizeof(AccountLoginSession));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(AccountLoginSession::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(AccountLoginSession::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -3764,7 +3764,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(AccountLoginSession::TableId, record);
+			mdbSubscriber_->OnRecordInsert(AccountLoginSession::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -3784,10 +3784,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(AccountLoginSession::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(AccountLoginSession::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -3798,7 +3801,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(AccountLoginSession::TableId, record);
+			mdbSubscriber_->OnRecordErase(AccountLoginSession::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -3825,7 +3828,7 @@ namespace QuantTrading
 		{
 			auto record = AccountLoginSession::Allocate();
 			memcpy(record, &CompareAccountLoginSession, sizeof(AccountLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(AccountLoginSession::TableId, AccountLoginSessionIndexSessionId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(AccountLoginSession::TableId, AccountLoginSessionIndexSessionId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3849,7 +3852,7 @@ namespace QuantTrading
 		{
 			auto record = AccountLoginSession::Allocate();
 			memcpy(record, &CompareAccountLoginSession, sizeof(AccountLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(AccountLoginSession::TableId, AccountLoginSessionIndexAccountId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(AccountLoginSession::TableId, AccountLoginSessionIndexAccountId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3888,7 +3891,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(AccountLoginSession::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(AccountLoginSession::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -3997,23 +4000,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(PrimaryAccountLoginSession::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = PrimaryAccountLoginSession::Allocate();
 				memcpy(record, *it, sizeof(PrimaryAccountLoginSession));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(PrimaryAccountLoginSession::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(PrimaryAccountLoginSession::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -4034,7 +4034,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(PrimaryAccountLoginSession::TableId, record);
+			mdbSubscriber_->OnRecordInsert(PrimaryAccountLoginSession::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -4054,10 +4054,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(PrimaryAccountLoginSession::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(PrimaryAccountLoginSession::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -4068,7 +4071,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(PrimaryAccountLoginSession::TableId, record);
+			mdbSubscriber_->OnRecordErase(PrimaryAccountLoginSession::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -4095,7 +4098,7 @@ namespace QuantTrading
 		{
 			auto record = PrimaryAccountLoginSession::Allocate();
 			memcpy(record, &ComparePrimaryAccountLoginSession, sizeof(PrimaryAccountLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableId, PrimaryAccountLoginSessionIndexSessionId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableId, PrimaryAccountLoginSessionIndexSessionId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -4119,7 +4122,7 @@ namespace QuantTrading
 		{
 			auto record = PrimaryAccountLoginSession::Allocate();
 			memcpy(record, &ComparePrimaryAccountLoginSession, sizeof(PrimaryAccountLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableId, PrimaryAccountLoginSessionIndexPrimaryAccountId::IndexID, record);
+			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableId, PrimaryAccountLoginSessionIndexPrimaryAccountId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -4158,7 +4161,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(PrimaryAccountLoginSession::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(PrimaryAccountLoginSession::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -4261,23 +4264,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(CommissionGroup::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = CommissionGroup::Allocate();
 				memcpy(record, *it, sizeof(CommissionGroup));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(CommissionGroup::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(CommissionGroup::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -4296,7 +4296,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(CommissionGroup::TableId, record);
+			mdbSubscriber_->OnRecordInsert(CommissionGroup::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -4314,10 +4314,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(CommissionGroup::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(CommissionGroup::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -4328,7 +4331,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(CommissionGroup::TableId, record);
+			mdbSubscriber_->OnRecordErase(CommissionGroup::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -4350,7 +4353,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(CommissionGroup::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(CommissionGroup::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
@@ -4447,23 +4450,20 @@ namespace QuantTrading
 		}
 		mdbSubscriber_->OnRecordTruncate(BaseCommission::TableId);
 
-		auto records = new std::vector<const void*>();
+		std::vector<RecordHandle> records;
 		{
 			std::shared_lock guard(SharedMutex);
+			records.reserve(PrimaryKey->index_.size());
 			for (auto it = PrimaryKey->index_.begin(); it != PrimaryKey->index_.end(); ++it)
 			{
 				auto record = BaseCommission::Allocate();
 				memcpy(record, *it, sizeof(BaseCommission));
-				records->push_back(record);
+				records.push_back(AdoptRecord(record));
 			}
 		}
-		if (!records->empty())
+		if (!records.empty())
 		{
-			mdbSubscriber_->OnRecordBatchInsert(BaseCommission::TableId, records);
-		}
-		else
-		{
-			delete records;
+			mdbSubscriber_->OnRecordBatchInsert(BaseCommission::TableId, std::move(records));
 		}
 		DbInited = true;
 	}
@@ -4482,7 +4482,7 @@ namespace QuantTrading
 		
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordInsert(BaseCommission::TableId, record);
+			mdbSubscriber_->OnRecordInsert(BaseCommission::TableId, BorrowRecord(record));
 		}
 		return true;
 	}
@@ -4500,10 +4500,13 @@ namespace QuantTrading
 		}
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			auto dbRecords = new std::vector<const void*>();
-			dbRecords->reserve(records->size());
-			for (auto* r : *records) dbRecords->push_back(r);
-			mdbSubscriber_->OnRecordBatchInsert(BaseCommission::TableId, dbRecords);
+			std::vector<RecordHandle> dbRecords;
+			dbRecords.reserve(records->size());
+			for (auto* r : *records)
+			{
+				dbRecords.push_back(AdoptRecord(r));
+			}
+			mdbSubscriber_->OnRecordBatchInsert(BaseCommission::TableId, std::move(dbRecords));
 		}
 		delete records;
 	}
@@ -4514,7 +4517,7 @@ namespace QuantTrading
 		EraseIndex(record);
 		if (mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordErase(BaseCommission::TableId, record);
+			mdbSubscriber_->OnRecordErase(BaseCommission::TableId, AdoptRecord(record));
 		}
 		else
 		{
@@ -4536,7 +4539,7 @@ namespace QuantTrading
 
 		if (updateDB && mdbSubscriber_ != nullptr && DbInited)
 		{
-			mdbSubscriber_->OnRecordUpdate(BaseCommission::TableId, newRecord);
+			mdbSubscriber_->OnRecordUpdate(BaseCommission::TableId, AdoptRecord(newRecord));
 		}
 		else
 		{
