@@ -2,6 +2,7 @@
 #include "MdbTables.h"
 #include <DbAdapters/DbInterface/RecordHandle.h>
 #include <Spark/Core/Logger/Logger.h>
+#include <cassert>
 #include <string>
 #include <cstring>
 #include <set>
@@ -92,7 +93,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -276,7 +278,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -460,7 +463,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -648,7 +652,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				TradingDayIndex->Insert(record);
 			}
@@ -874,7 +879,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				ExchangeIdIndex->Insert(record);
 			}
@@ -1096,7 +1102,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -1280,7 +1287,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -1464,7 +1472,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -1648,7 +1657,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -1840,7 +1850,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				SessionIdIndex->Insert(record);
 				MdUserIdIndex->Insert(record);
@@ -2104,7 +2115,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				OfferIdIndex->Insert(record);
 			}
@@ -2326,7 +2338,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -2514,7 +2527,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				TradingDayIndex->Insert(record);
 			}
@@ -2744,7 +2758,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				AccountIndex->Insert(record);
 				TradingDayIndex->Insert(record);
@@ -3012,7 +3027,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				TradeMatchIndex->Insert(record);
 				TradingDayIndex->Insert(record);
@@ -3280,8 +3296,10 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
-				ClientOrderIdUniqueKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
+				[[maybe_unused]] const bool insertedIntoClientOrderIdUniqueKey = ClientOrderIdUniqueKey->Insert(record);
+				assert(insertedIntoClientOrderIdUniqueKey);
 
 				AccountIdIndex->Insert(record);
 			}
@@ -3510,7 +3528,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				AccountIdIndex->Insert(record);
 			}
@@ -3740,7 +3759,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				SessionIdIndex->Insert(record);
 				AccountIdIndex->Insert(record);
@@ -4008,7 +4028,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 				SessionIdIndex->Insert(record);
 				PrimaryAccountIdIndex->Insert(record);
@@ -4268,7 +4289,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
@@ -4452,7 +4474,8 @@ namespace QuantTrading
 			std::lock_guard guard(SharedMutex);
 			for (auto record : *records)
 			{
-				PrimaryKey->Insert(record);
+				[[maybe_unused]] const bool insertedIntoPrimaryKey = PrimaryKey->Insert(record);
+				assert(insertedIntoPrimaryKey);
 
 			}
 		}
