@@ -692,6 +692,45 @@
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
 
+### Q.27 · 2026-10-07 回测基础数据管理端: 由 QuantPlatform 承接
+
+**原文（2026-10-07，当日提出当日关闭）**：
+
+- **回测基础数据管理端（2026-10-07 用户提出，待决策）**：用户提议用 **QuantPlatform**（FastAPI + Vue 的回测作业平台）做管理端，维护费率/交易日/交易所/品种/账号，并作为回测的 InitDb 来源。**已查证的范围结论**：InitDb 装载清单只有三张表（`Product`/`CommissionGroup`/`BaseCommission`），且恰是**全项目无自动生产者**的三张——详见 `## 备注` 同日的查证条。费率**无任何自动来源**：`src/SimExchangeInit/` 从 CTP 拉数据但不产 `CommissionGroup`/`BaseCommission`，`Product` 亦只有 CTP 期货档，故费率只能人工维护。用户 2026-10-07 已独立确认 **Account 不应走 InitDb**（运行期按需自建 + 关联 `CommissionGroupId` 已实现于 `src/BackTest/SimExchange.cpp:774-800`）。平台侧现状：**基础数据一行都没有**，六张表全是作业域；但 `DbInitHost` 注入点已通（平台渲染每个 job 的 `BackTest.json`，其中 `CommissionGroupId` 与种子库的 `CommissionGroup` 行须一致，今天手写死为 1）。**待用户拍板两点**：① 种子库落在哪——保持 `settings.seed_database_path` 全局一份，还是改为 per-job 落在工作目录内（后者与冻结的 `BacktestConfigJson` 一致、历史 job 复现时费率不漂移）；② 平台侧把「费用三项恒 0 / `CommissionMissingCount` 恒 84 / `BasicDataLoaded` 恒 false」钉成断言（`docs/platform-plan.md:1196-1198`、`docs/job-workspace.md:221-246`）须重取基线的代价是否纳入本期。**方案未定前不动代码**。
+
+**结论（2026-10-07 当日拍板并落地，本仓零改动）**：用户裁定管理端**在 QuantPlatform 里做**，
+已随该平台「基础数据」页交付（见该仓 `PROGRESS.md` `D.31` 与 `docs/platform-plan.md` §14）。
+原「待用户拍板两点」的答案：① 种子库**全局共享一份**（沿用 `settings.seed_database_path`，
+不做 per-job）；② 「四条断言须重取基线」的代价**纳入本期**——那四条断言的期望值从「缺失」
+翻成「在位」，重取清单见该仓 `docs/acceptance-checklist.md` §16。另两条一并定了：**catalog 为准**
+（`makeseeddb.py` 与 `Configs/SeedCsv/` 退役为历史遗留，**文件保留、不再执行**；不再提供 CSV 导入
+入口），种子库落点跟引擎同目录、**不动 `.env`**。
+
+**本仓随之的变化**：`bin/*/BackTestInit.db` **从此归平台所有**——手工造的那份会在平台第一次保存
+时被整个重写（平台只在**文件缺失**时补生成，不覆写已存在的）；三张表的内容改由平台的
+`Products` / `CommissionGroups` / `BaseCommissions` 导出。引擎侧**零改动**，契约
+`docs/backtest-run-contract.md` §4.1 已加指针。
+
+> ⚠️ **订正（2026-10-07 同日，该仓 `D.32`）**：上面 ①「种子库**全局共享一份**（沿用
+> `settings.seed_database_path`，不做 per-job）」**已反转**——改为**每一轮开始前现生成到该轮作业
+> 目录里**（`runs/<RunId>/BackTestInit.db`），`settings.seed_database_path` /
+> `QUANT_SEED_DATABASE_PATH` 已删。随之「本仓随之的变化」那段里"归平台所有、第一次保存就整个
+> 重写"**不再成立**：本仓 `bin/*/BackTestInit.db` 自此是**无人维护的孤立文件**，在 WSL 里手工跑
+> `TestBackTest` 时需要它的场合得自己补一份。原文照留，以便看清这条决策当日被翻过一次。
+> ②（四条断言重取基线纳入本期）与上文**范围界定的第一性原理**不受影响；本期新增一条同源结论：
+> 费率三级（合约 / 品种 / 交易所）由平台在生成时摊平，**引擎仍只看 `(ExchangeId, InstrumentId)`
+> 两格**，故引擎零改动这条前提没变。
+
+> ⚠️ **再订正（2026-10-07 同日，该仓 `D.34`）**：原文结论里那句「平台渲染每个 job 的
+> `BackTest.json`，其中 `CommissionGroupId` 与种子库的 `CommissionGroup` 行须一致，**今天手写死为
+> 1**」**已过期** —— 组号现已成为**运行级字段**：新建回测页选组、随这一轮冻进 `BackTest.json`。
+> 上文「费率三级…引擎仍只看 `(ExchangeId, InstrumentId)` 两格」与这条**不相冲突**（三级与组号是
+> 两个正交的维度），引擎零改动这条前提**依旧成立**。另加一条平台侧的约定：被**配置模板**
+> 引用着的组**删不掉**（409），与「组下还挂着费率明细就删不掉」并列。
+
+**范围界定的第一性原理（原文结论，仍然成立）**：InitDb 的三张表恰是**全项目无自动生产者**
+的三张表 —— 管理端的正当范围就是它们。
+
 ### Q.26 · 2026-09-13 （第九批，后续多批补记） 入站包方向与鉴权校验缺失
 
 **原文（2026-09-13；含 2026-09-13 第十批复核）**：

@@ -87,7 +87,9 @@ tick 早于当前交易日、费率行缺失（后者由 `CommissionMissingCount
 <手续费组>|<交易所>|<合约>|<方向>
 ```
 
-`方向` 取 `DirectionType` 的数值（`Buy=0`、`Sell=1`），可直接抄进种子库的 `Direction` 列。
+`方向` 取 `DirectionType` 的数值（`Buy=0`、`Sell=1`），可直接抄进种子库的 `Direction` 列。**这里只会
+出现 0 与 1 两值**：平台侧那档"双向"（`-1`）在写种子库之前就被摊成了买、卖两行，引擎看不到它 ——
+于是缺费率时报出的也是具体方向，而不是"两侧都缺"这种含糊说法。
 
 ---
 
@@ -114,6 +116,18 @@ tick 早于当前交易日、费率行缺失（后者由 `CommissionMissingCount
 种子库缺失**不会**让回测失败，只会让费率全部按 0 计费并把缺口写进 `result.json`。
 
 ### 4.1 生成
+
+> ⚠️ **2026-10-07 起：种子库由 QuantPlatform 按轮生成，本节的手工路径退化为历史遗留**
+> （`makeseeddb.py` 与 `Configs/SeedCsv/` 文件保留、不再执行）。平台在**每一轮开始前**从它自己的
+> catalog 现造一份 `BackTestInit.db`，落在**该轮作业目录里**（与引擎同机，路径由该轮 `BackTest.json`
+> 的 `DbInitHost` 指向），且**只含该轮用到的合约**的行。费率的**合约 / 品种 / 交易所三级**规则、
+> 以及平台侧的**买卖双向**那一档（`Direction = -1`，"买卖共用这一套费率"）都在生成时被摊成具体
+> 合约 × 具体方向的行，故**引擎只看得到 `(ExchangeId, InstrumentId)` 两格、`Direction` 只有
+> 0 与 1**，下文那次精确查找无需任何改动。本机 `bin/*/BackTestInit.db` **从此无人维护**——在 WSL 里手工跑
+> `TestBackTest` 时要它的场合得自己补一份。
+> 契约不变——引擎侧零改动，本节以下的**列序与列名要求、以及缺失时的降级行为**仍然逐字适用，
+> 它们现在也是核对平台那份实现的依据。详见 QuantPlatform 仓的 `docs/platform-plan.md` §14 与
+> `docs/acceptance-checklist.md` §16。
 
 种子库是 SQLite 二进制产物，不进版本库（`/bin` 已被 `.gitignore` 覆盖）。按各配置手工执行一次：
 
@@ -157,6 +171,11 @@ SQLite 读取是 `SELECT *` 加按列下标绑定，列序错会静默错位。
 ```
 
 - 费率按 `(手续费组, 交易所, 合约, 方向)` 取行，**方向不参与取列**。
+- **手续费组号来自该轮的 `BackTest.json`**（`CommissionGroupId`），**引擎侧无需任何改动**：这个键本来
+  就由 `Config` 解析（`src/BackTest/Config/Config.cpp:53`）、由 `SimExchange` 记下
+  （`src/BackTest/SimExchange.cpp:106`）并在建账号时带上（`src/BackTest/SimExchange.cpp:786`）。
+  2026-10-07 起 QuantPlatform 把它当**运行级字段**逐轮写入（从前那里写死常量 `1`），于是"这一轮用
+  哪一套费率"与该轮的其它取值一样，在提交那一刻就冻结了。
 - 买卖差异由**数据**表达：A 股在 `Buy` 行填开仓侧、`Sell` 行填平仓侧与印花税；港股两行都填印花税。
 - `MinCommission` 与 `MaxCommission` 为 0 或负值表示不设限，且**只封佣金**。
 - 封底封顶**按每笔成交**执行，故 N 笔部分成交最多产生 `N × MinCommission`。
