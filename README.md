@@ -163,6 +163,51 @@ QuantTrading/
 - `mysql-connector-cpp` —— MySQL 驱动
 - `mariadb-connector-cpp` —— MariaDB 驱动
 
+### vcpkg 环境变量（构建期）
+
+以下变量供 CMake 的 vcpkg toolchain 与二进制缓存使用，**只在构建机需要**；部署二进制时一个都不涉及。
+
+| 变量 | 必需 | 说明 |
+| --- | --- | --- |
+| `VCPKG_ROOT` | 必需 | vcpkg 根目录，CMake 据此定位 toolchain |
+| `VCPKG_DOWNLOADS` | 可选 | 源码包下载缓存，多项目共用可免重复下载 |
+| `VCPKG_DEFAULT_BINARY_CACHE` | 可选 | 二进制缓存，命中后跳过重复编译 |
+
+```bash
+export VCPKG_ROOT=~/Github/vcpkg
+export VCPKG_DOWNLOADS=/mnt/d/Github/vcpkg/downloads
+export VCPKG_DEFAULT_BINARY_CACHE=~/Github/vcpkg/archives
+export PATH=$VCPKG_ROOT:$PATH
+```
+
+> **注意**：写入 `~/.profile` 时只有**登录 shell** 会加载。IDE、构建脚本、`wsl.exe -c` 这类非登录
+> shell 都读不到，表现为 vcpkg 落回默认空目录并**重新下载全部源码包**。可改写入 `~/.bashrc`，
+> 或显式用登录 shell 启动。
+
+### 运行期环境变量
+
+凭证与机器相关路径**不入库**，由系统环境变量提供；两者都只在运行期需要，与构建无关。
+
+**CTP 凭证** —— `Configs/CtpAccountInfo.json` 的 `Password` / `AuthCode` 字段留空，由环境变量补齐。
+键名为 `CTP_<环境名大写>_PASSWORD` 与 `CTP_<环境名大写>_AUTHCODE`，非空时覆盖（实现见
+`src/QuantTradingCommon/Environment.cpp`）。现有环境名 `SimNow` / `SimNow24`：
+
+```bash
+export CTP_SIMNOW_PASSWORD=<密码>
+export CTP_SIMNOW_AUTHCODE=<认证码>
+export CTP_SIMNOW24_PASSWORD=<密码>
+export CTP_SIMNOW24_AUTHCODE=<认证码>
+```
+
+> **警告**：本文只文档化**键名**。任何文档、脚本、配置都不得写入真实凭证值。
+
+仅 CTP 客户端需要（`TestMdApi` / `TestTraderApi` / `MdOffer` / `SimExchangeInit`）。回测
+`TestBackTest` 走内置 `SimExchange`，不做 CTP 登录，**不需要**这组变量。
+
+**行情数据根** —— `QT_MD_DATA_PATH` 指定回测读取历史 parquet 的根目录，非空时覆盖 `BackTest.json`
+的 `MdDataPath`。它是**只读输入**，不参与每 job 的工作目录隔离；详见
+[回测运行契约](docs/backtest-run-contract.md#1-工作目录假设)。未设该变量时仍取配置里的值。
+
 ## 五、快速构建 & 编译
 
 ### 1. 克隆代码（含子模块）

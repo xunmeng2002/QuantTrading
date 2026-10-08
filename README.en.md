@@ -162,6 +162,57 @@ Dependencies declared in `vcpkg.json` (resolved automatically at build time):
 - `mysql-connector-cpp` — MySQL driver
 - `mariadb-connector-cpp` — MariaDB driver
 
+### vcpkg Environment Variables (build time)
+
+These variables serve CMake's vcpkg toolchain and binary cache. They are **needed on build machines only**;
+deploying binaries involves none of them.
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `VCPKG_ROOT` | Yes | vcpkg root; CMake locates the toolchain from it |
+| `VCPKG_DOWNLOADS` | No | Source archive download cache, shared across projects |
+| `VCPKG_DEFAULT_BINARY_CACHE` | No | Binary cache; a hit skips a repeated compile |
+
+```bash
+export VCPKG_ROOT=~/Github/vcpkg
+export VCPKG_DOWNLOADS=/mnt/d/Github/vcpkg/downloads
+export VCPKG_DEFAULT_BINARY_CACHE=~/Github/vcpkg/archives
+export PATH=$VCPKG_ROOT:$PATH
+```
+
+> **Note**: Written into `~/.profile`, these load in **login shells only**. IDEs, build scripts and non-login
+> shells such as `wsl.exe -c` will not see them, which shows up as vcpkg falling back to an empty default
+> directory and **re-downloading every source archive**. Write them into `~/.bashrc` instead, or launch
+> explicitly through a login shell.
+
+### Runtime Environment Variables
+
+Credentials and machine-specific paths **are not committed**; they come from system environment variables.
+Both are needed at run time only, independently of the build.
+
+**CTP credentials** — the `Password` / `AuthCode` fields in `Configs/CtpAccountInfo.json` are left empty and
+filled in from environment variables. The keys are `CTP_<ENVIRONMENT NAME UPPERCASE>_PASSWORD` and
+`CTP_<ENVIRONMENT NAME UPPERCASE>_AUTHCODE`; a non-empty value overrides the field (see
+`src/QuantTradingCommon/Environment.cpp`). The current environment names are `SimNow` / `SimNow24`:
+
+```bash
+export CTP_SIMNOW_PASSWORD=<password>
+export CTP_SIMNOW_AUTHCODE=<auth-code>
+export CTP_SIMNOW24_PASSWORD=<password>
+export CTP_SIMNOW24_AUTHCODE=<auth-code>
+```
+
+> **Warning**: this document records **key names only**. No document, script or configuration may carry
+> real credential values.
+
+Only the CTP clients need these (`TestMdApi` / `TestTraderApi` / `MdOffer` / `SimExchangeInit`). The backtest
+`TestBackTest` uses the built-in `SimExchange` and performs no CTP login, so it does **not** need them.
+
+**Market data root** — `QT_MD_DATA_PATH` sets the root directory the backtest reads historical Parquet data
+from, overriding `MdDataPath` in `BackTest.json` when non-empty. It is a **read-only input** and takes no part
+in per-job working-directory isolation; see
+[Backtest Run Contract](docs/backtest-run-contract.md#1-工作目录假设). When unset, the configured value is used.
+
 ## 5. Quick Build & Compilation
 
 ### 5.1 Clone Repository (with Submodules)

@@ -17,6 +17,13 @@
 > 或把引擎改成绝对路径，隔离就会**静默失效**——两个并发 job 会写同一个库且不报错。
 > 调度侧必须为每个 job 分配独立的工作目录，并在其中放入 `BackTest.json` 与 `Sessions.json`。
 
+**唯一的例外是 `MdDataPath`。** 历史行情是**只读输入**，多个 job 共享同一份 parquet 是预期用法，
+不参与隔离；因此它可由系统环境变量 `QT_MD_DATA_PATH` 覆盖（非空时生效，实现见
+`src/BackTest/MdReader.cpp`），免得每台机器各改一次 `BackTest.json`。未设该变量时仍取配置里的值。
+
+> **豁免的边界**：本条**只**适用于只读输入。`DbHost`、`DbInitHost`、`DumpPath`、`result.json`
+> 等**产物**路径必须留在 CWD，任何绝对化都会让隔离静默失效。
+
 ---
 
 ## 2. 结果文件 `result.json`
