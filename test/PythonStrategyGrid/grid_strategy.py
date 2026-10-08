@@ -1,7 +1,14 @@
 """成对网格策略 Python 移植（对应 test/TestStrategyGrid/GridStrategy.cpp，经 QuantTrading.pyd 驱动回测引擎）。
 
-运行方式（脚本与配置由构建拷贝至 bin/Release，引擎从 CWD 读 BackTest.json 与 TestStrategyGrid.json）：
+运行方式（本地调试）：本脚本与策略配置随构建拷进 bin/<CONFIG>（`src/PythonBindings/CMakeLists.txt`），
+`QuantTrading.*.pyd` 与运行时 DLL 也在那里，CWD 即 import 的解析路径；引擎同样从 CWD 读
+BackTest.json 与 TestStrategyGrid.json：
     cd bin/Release && python grid_strategy.py
+
+在回测平台上运行时**不需要任何路径处理**：策略被复制进作业目录，平台把引擎根注入子进程的
+PYTHONPATH，`import QuantTrading` 由此解析。故这里不得按 `__file__` 反推仓根——那时 `__file__`
+指向作业目录，算出的是一条错误路径，而 `sys.path[0]` 的优先级高于 PYTHONPATH，一旦那条错误
+路径恰好存在就会静默盖掉平台指定的引擎根。
 """
 
 import json
@@ -9,9 +16,6 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import IntEnum
-
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.join(REPO_ROOT, "bin", "Release"))
 
 import QuantTrading as qt
 
