@@ -115,11 +115,13 @@ QuantTrading/
 ├── Model/                        # Model definitions for tables / packages / sessions (registered in pumplist.xml)
 ├── docs/                         # Design documents (backtest run contract, etc.)
 ├── submodules/CMakeCommon/       # Submodule: shared CMake macros
-├── bin/                          # Build outputs: executables (per config)
-├── lib/                          # Build outputs: libraries (per config)
+├── bin/                          # Executables and shared libraries
+├── lib/                          # Static / import libraries
+├── dist/                         # Linux release output directory (not tracked)
 ├── out/                          # CMake Presets build directory
 ├── CMakeLists.txt                # CMake main build configuration
 ├── CMakePresets.json             # CMake presets (VS / CLI)
+├── PackageLinuxRelease.sh        # Backtest release packaging script
 ├── vcpkg.json                    # vcpkg manifest (third-party drivers)
 ├── pump.py / pumpall.py          # Template code-generation scripts (model → code)
 └── PROGRESS.md                   # Project progress tracker
@@ -283,7 +285,10 @@ cmake --preset WSL-GCC-Debug
 cmake --build out/build/WSL-GCC-Debug
 ```
 
-After building, executables are output to `bin/<Config>` (e.g. `bin/Debug/MdOffer.exe`) and libraries to `lib/<Config>`.
+After building, executables and **shared libraries** are both output to `bin/<Config>` (e.g.
+`bin/Debug/MdOffer.exe`, `bin/Release/libBackTest.so`); `lib/<Config>` keeps only static / import
+libraries (`.a` / `.lib` / `.exp`), which are compile-time artifacts. Shared libraries sit next to the
+executables so a release package can locate them relatively via `$ORIGIN` (see "5.7" below).
 
 ### 5.5 Run the Test Clients
 
@@ -301,6 +306,34 @@ After building, executables are output to `bin/<Config>` (e.g. `bin/Debug/MdOffe
 ./bin/Debug/MdOffer.exe           # Market-data service (graceful exit on Ctrl+C / SIGTERM)
 ./bin/Debug/SimExchange.exe       # Simulated matching service
 ```
+
+### 5.7 Package a Linux Release
+
+Flatten the runtime `.so` files of all three repos plus the engine artifacts into a single directory,
+producing a directly distributable backtest package (output to `dist/linux-engine` by default). The
+full contract (12-file manifest and four self-checks) is in
+[Engine Linux Release Package Requirements](docs/engine-linux-release-package.md).
+
+```bash
+bash PackageLinuxRelease.sh                      # Release by default
+bash PackageLinuxRelease.sh --config Debug       # use Debug artifacts
+bash PackageLinuxRelease.sh --output /tmp/engine # custom output directory
+bash PackageLinuxRelease.sh --force              # clear a non-empty dir first
+```
+
+- **Prerequisite**: run it only inside a WSL / Linux build tree — artifacts are `.so`, and `../Libs`
+  must hold an `x64-linux` install tree.
+- **Selection**: files are taken by an explicit **whitelist**, never a directory scan; the six API
+  middle layers and the MySQL / MariaDB backends are excluded.
+- **Built-in self-checks**: right after packaging it runs four checks — package content (whitelist /
+  file count / no subdirectories), `ldd` with no missing entries, RUNPATH contains `$ORIGIN`, and the
+  interpreter `import` resolving inside the package; any failure exits non-zero. An unreadable
+  `engine-version.txt` aborts earlier (a precondition, not one of the four). Note these four differ in
+  numbering from the contract's acceptance items.
+- **Refuses to overwrite by default**: a non-empty output directory requires an explicit `--force`;
+  `--force`'s recursive delete affects only its own output directory, never any other path.
+- **Invocation**: every `.sh` in this repo is `100644` (`core.filemode=false`), so call it as
+  `bash <script>`.
 
 ## 6. Basic Usage Examples
 

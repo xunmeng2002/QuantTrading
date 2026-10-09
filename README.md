@@ -117,11 +117,13 @@ QuantTrading/
 ├── Model/                        # 表 / 包 / 会话的模型定义（pumplist.xml 登记）
 ├── docs/                         # 设计文档（回测运行契约等）
 ├── submodules/CMakeCommon/       # 子模块：公共 CMake 宏
-├── bin/                          # 构建产物：可执行文件（按配置分目录）
-├── lib/                          # 构建产物：库文件（按配置分目录）
+├── bin/                          # 构建产物：可执行文件与共享库（按配置分目录）
+├── lib/                          # 构建产物：静态库 / 导入库（按配置分目录）
+├── dist/                         # Linux 发布包输出目录（不入库）
 ├── out/                          # CMake Presets 构建目录
 ├── CMakeLists.txt                # CMake 主构建配置
 ├── CMakePresets.json             # CMake 预设配置（VS / 命令行）
+├── PackageLinuxRelease.sh        # Linux 回测发布包打包脚本
 ├── vcpkg.json                    # vcpkg 清单（第三方驱动）
 ├── pump.py / pumpall.py          # 模板代码生成脚本（模型 → 代码）
 └── PROGRESS.md                   # 项目进度跟踪
@@ -273,7 +275,9 @@ cmake --preset WSL-GCC-Debug
 cmake --build out/build/WSL-GCC-Debug
 ```
 
-编译完成后，可执行文件输出至 `bin/<Config>`（如 `bin/Debug/MdOffer.exe`），库文件输出至 `lib/<Config>`。
+编译完成后，可执行文件与**共享库**均输出至 `bin/<Config>`（如 `bin/Debug/MdOffer.exe`、
+`bin/Release/libBackTest.so`）；`lib/<Config>` 只留静态库 / 导入库（`.a` / `.lib` / `.exp`）
+这类编译期产物。共享库与可执行文件同处一室，是为了让发布包能用 `$ORIGIN` 相对定位（见下文"7. 打 Linux 发布包"）。
 
 ### 5. 运行测试客户端
 
@@ -291,6 +295,28 @@ cmake --build out/build/WSL-GCC-Debug
 ./bin/Debug/MdOffer.exe           # 行情服务（Ctrl+C / SIGTERM 优雅退出）
 ./bin/Debug/SimExchange.exe       # 模拟撮合服务
 ```
+
+### 7. 打 Linux 发布包
+
+把三个仓的运行时 `.so` 与引擎产物**平铺**进一个目录，产出可直接分发的回测包（默认输出到
+`dist/linux-engine`）。12 文件清单与自检四条的完整契约见
+[引擎 Linux 发布包要求](docs/engine-linux-release-package.md)。
+
+```bash
+bash PackageLinuxRelease.sh                      # 默认 Release
+bash PackageLinuxRelease.sh --config Debug       # 取 Debug 产物
+bash PackageLinuxRelease.sh --output /tmp/engine # 自定义输出目录
+bash PackageLinuxRelease.sh --force              # 目录非空时先清空再写
+```
+
+- **运行前提**：只能在 WSL / Linux 构建树里跑——产物是 `.so`，且 `../Libs` 下需有 `x64-linux` 安装树。
+- **取用方式**：按**白名单**逐条取文件，不做目录扫描；六个 API 中间层与 MySQL / MariaDB 后端不进包。
+- **自带自检**：打包后立即跑四条——包内容（白名单 / 文件数 / 无子目录）、`ldd` 无缺失、RUNPATH 含
+  `$ORIGIN`、解释器 `import` 落在包内；任一不过即非零退出。`engine-version.txt` 读不出会在自检**之前**
+  就中止（属前置校验，不在这四条内）。注意：脚本这四条与契约的验收项**编号不同**。
+- **默认拒绝覆盖**：输出目录已存在且非空时须显式 `--force`；`--force` 的递归删除只作用于它自己的
+  输出目录，脚本不碰任何其它路径。
+- **调用方式**：本仓 `.sh` 一律 `100644`（`core.filemode=false`），须用 `bash <脚本>` 显式调用。
 
 ## 六、基础使用示例
 
