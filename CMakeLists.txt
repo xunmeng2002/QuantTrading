@@ -9,6 +9,20 @@ message(STATUS "ENV{VCPKG_DEFAULT_BINARY_CACHE} = $ENV{VCPKG_DEFAULT_BINARY_CACH
 message(STATUS "CMAKE_TOOLCHAIN_FILE = ${CMAKE_TOOLCHAIN_FILE}")
 SET(PROJECT_NAME "QuantTrading")
 project(${PROJECT_NAME} VERSION 1.0.0 LANGUAGES CXX)
+
+# 版本号单一来源：vcpkg.json 的 version 与 project() VERSION 必须一致，否则两处会各自漂移。
+# 只读取、不修改 vcpkg 清单，不引入新依赖。
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg.json QUANTTRADING_VCPKG_MANIFEST)
+string(REGEX MATCH "\"version\"[^:]*: *\"([0-9]+\\.[0-9]+\\.[0-9]+)\"" QUANTTRADING_VCPKG_VERSION_LINE "${QUANTTRADING_VCPKG_MANIFEST}")
+set(QUANTTRADING_VCPKG_VERSION "${CMAKE_MATCH_1}")
+if(QUANTTRADING_VCPKG_VERSION STREQUAL "")
+    message(FATAL_ERROR "Cannot parse \"version\" from vcpkg.json (expected a 3-part semver like \"1.0.0\").")
+endif()
+if(NOT QUANTTRADING_VCPKG_VERSION STREQUAL PROJECT_VERSION)
+    message(FATAL_ERROR "Version mismatch: CMakeLists.txt project() VERSION=${PROJECT_VERSION}, vcpkg.json version=${QUANTTRADING_VCPKG_VERSION}. Keep both in sync.")
+endif()
+message(STATUS "Project version: ${PROJECT_VERSION}")
+
 include(GNUInstallDirs)
 include(GenerateExportHeader)
 

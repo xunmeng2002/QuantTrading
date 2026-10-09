@@ -636,6 +636,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			{
 				WriteLog(LogLevel::Warning, "Cannot Find HotInstrument While SubMarketData. ExchangeId:%s, ProductId:%s, Rank:%d, StartTradingDay:%s, EndTradingDay:%s",
 					instrument->ExchangeId, instrument->ProductId, instrument->Rank, startTradingDay_, endTradingDay_);
+				::Deallocate(reqSubMd);
 				continue;
 			}
 			MdSubscribe* mdSubscribe = MdSubscribe::Allocate();

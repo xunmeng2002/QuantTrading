@@ -74,7 +74,7 @@ CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线�
 
 ### 7. 典型场景
 
-```
+```text
 CTP 行情 ──► MdOffer（订阅→内存库→异步落库→广播）──► MdFront
                                                       │
                                                       ▼
@@ -86,7 +86,7 @@ CTP 行情 ──► MdOffer（订阅→内存库→异步落库→广播）─�
 
 ## 三、项目目录结构
 
-```
+```text
 QuantTrading/
 ├── include/QuantTrading/         # 对外公共头文件（API 定义 + Fields + 版本头模板）
 ├── src/                          # 源码
@@ -94,7 +94,8 @@ QuantTrading/
 │   ├── MdOffer/                  # 行情服务应用（Main.cpp + MdKernel + MdFront + ThostFtdcMdSpiImpl）
 │   ├── SimExchange/              # 模拟撮合应用（Main.cpp + SimExchange + TradeFront + MdSpiImpl）
 │   ├── BackTest/                 # 回测动态库（MdReader + SimExchange + BackTestApiImpl）
-│   ├── BackTestInit/             # 回测初始化工具（含 Init 库装载）
+│   ├── Strategy/                 # 策略基类（StrategyBase，C++ 与 Python 绑定共用）
+│   ├── PythonBindings/           # pybind11 绑定（产出 QuantTrading.pyd，非 Debug 构建）
 │   ├── SimExchangeInit/          # 撮合初始化工具（含 Init 库装载）
 │   ├── Mdb/                      # 内存数据库（表 / 索引 / 注册表 / 装配）
 │   ├── OrderMatch/               # 四模式撮合引擎
@@ -103,16 +104,19 @@ QuantTrading/
 │   ├── Packages/                 # 报文 / 数据结构包
 │   ├── QuantTradingCommon/       # 公共基础（Environment / ServerConfig / ShutdownSignal / 错误码）
 │   └── Ctp/                      # CTP 封装（MdApiMiddle / TraderApiMiddle / StructLogFunc）
-├── test/                         # 测试客户端
+├── test/                         # 测试客户端与单元测试
 │   ├── ApiMiddles/               # Md / Trader / SimExchange / BackTest 的 ApiMiddle + SpiMiddle 封装
 │   ├── TestMdApi/                # CTP 行情客户端测试
 │   ├── TestTraderApi/            # 交易客户端测试
 │   ├── TestSimExchangeApi/       # 模拟交易所客户端测试
-│   └── TestBackTest/             # 回测端到端测试
+│   ├── TestBackTest/             # 回测端到端测试
+│   ├── TestStrategyGrid/         # C++ 网格策略测试宿主
+│   ├── PythonStrategyGrid/       # Python 网格策略示例（grid_strategy.py）
+│   └── UnitTests/                # doctest 单元测试
 ├── Configs/                      # 各应用的 JSON 配置（MdOffer / SimExchange / BackTest / ServerConfig / 账户环境等）
 ├── Model/                        # 表 / 包 / 会话的模型定义（pumplist.xml 登记）
+├── docs/                         # 设计文档（回测运行契约等）
 ├── submodules/CMakeCommon/       # 子模块：公共 CMake 宏
-├── include/                      # 对外头文件目录（公共 API）
 ├── bin/                          # 构建产物：可执行文件（按配置分目录）
 ├── lib/                          # 构建产物：库文件（按配置分目录）
 ├── out/                          # CMake Presets 构建目录
@@ -203,6 +207,28 @@ export CTP_SIMNOW24_AUTHCODE=<认证码>
 
 仅 CTP 客户端需要（`TestMdApi` / `TestTraderApi` / `MdOffer` / `SimExchangeInit`）。回测
 `TestBackTest` 走内置 `SimExchange`，不做 CTP 登录，**不需要**这组变量。
+
+### Python 绑定（可选）
+
+`src/PythonBindings/` 产出 `QuantTrading.<abi>.pyd`（WSL / Linux 下为 `.so`），供 Python 侧策略使用。
+它**不进 Release 包**：`.pyd` 受 CPython **次版本 ABI 锁定**（3.11 编出的只能被 3.11 导入），
+打进通用包会把包锁死在某一个次版本上。按需自建：
+
+1. 给目标解释器安装 pybind11：`pip install pybind11`。缺失时配置阶段直接失败，报错文案以
+   `QUANTTRADING_ENABLE_PYTHON=ON requires pybind11` 开头。
+2. 构建**非 Debug** 配置。`Debug` 会自动跳过绑定（CPython 官方解释器用 Release CRT），
+   故 `bin/Debug` 下没有 `.pyd` 属预期。
+
+产物落在 `bin/<CONFIG>`，可用产物名自检解释器版本是否用对（下表为本仓开发机实测）：
+
+| 平台 | 预期产物名 | 对应解释器 |
+| --- | --- | --- |
+| Windows | `QuantTrading.cp311-win_amd64.pyd` | CPython 3.11 |
+| WSL / Linux | `QuantTrading.cpython-312-x86_64-linux-gnu.so` | CPython 3.12 |
+
+加载路径由 CWD 或宿主注入的 `PYTHONPATH` 解析——本地调试即 `cd bin/<CONFIG> && python grid_strategy.py`；
+由调度平台拉起时，平台会把引擎根前置进子进程的 `PYTHONPATH`。**不要**按 `__file__` 反推仓根：
+`sys.path[0]` 的优先级高于 `PYTHONPATH`，那条路径一旦存在就会静默盖掉宿主指定的引擎根。
 
 ## 五、快速构建 & 编译
 
@@ -376,30 +402,41 @@ int main(int argc, char* argv[])
 
 ## 七、集成测试
 
-项目内置四个测试客户端（`test/`）：
+项目内置以下测试目标（`test/`）：
 
 | 测试程序 | 说明 |
 | --- | --- |
+| `UnitTests` | 单元测试（doctest 2.5.3，覆盖撮合 / 结算 / 持仓 / Bar 聚合 / 网格策略 / 报文解析等） |
 | `TestBackTest` | 回测端到端：MdReader 读 parquet → 撮合 → 结算 → 落库（已跑通） |
+| `TestStrategyGrid` | C++ 网格策略宿主：按轮驱动、日切换 |
 | `TestMdApi` | CTP 行情客户端：订阅 / 行情回调（需 CTP 或 SimNow 行情前置） |
 | `TestTraderApi` | 交易客户端：登录 / 查询 / 下单（需交易前置） |
 | `TestSimExchangeApi` | 模拟交易所客户端：登录 / 下单 / 成交回报 |
+
+`test/PythonStrategyGrid/grid_strategy.py` 是对应的 Python 策略示例，直接由解释器运行，无需构建。
 
 ### 运行测试
 
 ```bash
 # Windows
+./bin/Debug/UnitTests.exe
 ./bin/Debug/TestBackTest.exe
+./bin/Debug/TestStrategyGrid.exe
 ./bin/Debug/TestMdApi.exe
 
 # Linux
+./bin/Debug/UnitTests
 ./bin/Debug/TestBackTest
+./bin/Debug/TestStrategyGrid
 ./bin/Debug/TestMdApi
 ```
 
+> `UnitTests` 未接入 CTest，需手工执行（退出码 0 且 `[doctest] Status: SUCCESS!` 即为通过）。
+> `Debug` 配置下不生成 Python 绑定，故 `PythonStrategyGrid` 需用 Release 产物运行。
+
 ## 八、许可证 & 声明
 
-- **开源协议**：**待定**（项目暂未添加 LICENSE 文件，发布前需确定协议）
+- **开源协议**：**MIT License**（全文见仓根 `LICENSE`，Copyright (c) 2026 xunmeng2002）
 - **适用范围**：本项目仅供个人学习、研究使用
 - **风险提示**：本项目为个人开源项目，涉及真实资金交易前请自行充分测试并评估风险；实盘账户、数据库口令等敏感信息应自行妥善管理
 

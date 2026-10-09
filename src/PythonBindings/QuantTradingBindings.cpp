@@ -5,6 +5,7 @@
 #include <pybind11/pybind11.h>
 
 #include <exception>
+#include <set>
 #include <string>
 
 namespace py = pybind11;
@@ -150,6 +151,10 @@ namespace
 				}
 				else
 				{
+					if (warnedHooks_.insert(hookName).second)
+					{
+						WriteLog(LogLevel::Warning, "Python hook not overridden: %s", hookName);
+					}
 					fallback();
 				}
 			});
@@ -168,6 +173,9 @@ namespace
 				WriteLog(LogLevel::Error, "Python strategy callback error: %s", error.what());
 			}
 		}
+
+		// 未覆写钩子只报一次：该集合仅在引擎线程、GIL 持有下访问（RunWithGil 内），无需加锁
+		std::set<std::string> warnedHooks_;
 	};
 }
 

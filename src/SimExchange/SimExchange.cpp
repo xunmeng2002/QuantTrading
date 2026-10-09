@@ -201,6 +201,10 @@ void SimExchange::HandleReqAccountLogin(ReqAccountLoginPackage* reqPackage)
 	{
 		errorId = ErrorIncorrectPassword;
 	}
+	else if (!primaryAccount->IsAllowLogin)
+	{
+		errorId = ErrorAccountForbidden;
+	}
 	else
 	{
 		auto primaryAccountLoginSession = mdb_->PrimaryAccountLoginSession->PrimaryKey->Select(reqPackage->ReqAccountLogin->AccountId, reqPackage->SessionId);

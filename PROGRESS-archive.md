@@ -11,6 +11,10 @@
 
 ## ✅ 已完成（历史，倒序）
 
+### D.62 · 2026-10-08（同日第二批）回测作业目录两处收口：脚本删「`__file__` 反推仓根」+ 平台 `DbInitHost` 改相对常量（跨仓）
+
+- **2026-10-08（同日第二批）回测作业目录两处收口：脚本删「`__file__` 反推仓根」+ 平台 `DbInitHost` 改相对常量（跨仓，平台侧见其 `D.35`）**：起因是用户看了一个真实作业目录（`QuantPlatform/runs/3d79c4b1…`）后问「里面没有 `.pyd`，而脚本靠 `__file__` 反推 `bin/Release` 找它，不是该 import 失败吗」。**查证两条**：① 平台侧**早已**用 `PYTHONPATH` 解决（`runner.py` 的 `_build_child_environment` 把引擎根前置进子进程环境），本文件 🔄 区那条「未开工·硬钉子」是**记录落后于事实**，已订正为已了结；② 真正要动的是**脚本里那两行**——作业目录里 `__file__` 指向作业目录，往上三层算出 `D:\Gitee\bin\Release`（不存在，眼下无害），但 `sys.path[0]` 优先级**高于** `PYTHONPATH`，那条路径一旦存在就会**静默盖掉平台指定的引擎根**（跑的是另一版 `.pyd`，症状是"数字不对、版本对不上"而无报错）。**本仓改动**：`test/PythonStrategyGrid/grid_strategy.py` 删掉 `REPO_ROOT` + `sys.path.insert` 两行（`os`/`sys` 两个 import **保留**：`sys.float_info.max`、`sys.argv[0]`、`os.remove`、`sys.exit` 仍在用），docstring 改为「本地调试在 `bin/<CONFIG>` 下跑（脚本与配置随构建拷过去，`src/PythonBindings/CMakeLists.txt:14` 的 `copy_config_file`）／平台上由平台注入 `PYTHONPATH`／不得再按 `__file__` 反推」。**未改契约**：`docs/backtest-run-contract.md` §1 本来就要求 `DbInitHost` 留 CWD，是平台侧原先写绝对路径踩了线（引擎自带模板 `bin/Release/BackTest.json` 也是 `./BackTestInit.db`），平台已改回相对，契约文字无需动。**验证**：本仓 `cd bin/Release && python -c "import grid_strategy"` → 解析到 `QuantTrading.cp311-win_amd64.pyd`、import 通过；平台侧非真引擎用例 **740 全过**、真引擎验收 **5 全过**，且 stdout 实证引擎按相对路径读到种子库（`BasicData Loaded, DbInitHost:./BackTestInit.db, ProductCount:2, BaseCommissionCount:2`）。**风险（§7）**：无多线程、无内存管理改动，未改公开 API / 导出符号（脚本删的是它私有的模块级常量），未引入依赖；唯一语义面是脚本不再自行改 `sys.path`，手动运行的入口是 `cd bin/<CONFIG>`（构建已把脚本与配置拷进去）。**代码审查**：`code-reviewer` 报 0 严重 / 1 高 / 2 中 / 4 可选，高与两条中全是**文档/记忆层未同步**（含本文件那条「硬钉子」、平台 `PROGRESS.md` 备注区「读路径允许绝对」、平台 `job-workspace.md` §2 的「唯一一个」），已逐条改掉。**顺带修掉一个既有红（与本批无关）**：平台真引擎验收的 `test_two_real_runs_at_once_keep_their_databases_apart` 自 2026-10-07（种子库改按轮生成并搬进作业目录）起必红，已为其定性并在平台仓修正。**未提交**（按惯例由用户执行）。
+
 ### D.61 · 2026-10-08 行情数据根改由环境变量 `QT_MD_DATA_PATH` 提供（回测路径跨机统一的收口）
 
 - **2026-10-08 行情数据根改由环境变量 `QT_MD_DATA_PATH` 提供（回测路径跨机统一的收口）**：`Configs/BackTest.json` 是版本控制内的跨机共享文件，`MdDataPath` 在 Windows 需 `D:\MdBaoStock`、在 WSL 需 `/mnt/d/MdBaoStock`，**没有任何单一字符串能同时表达两者**（用户判断「绝对或相对路径在 windows 和 linux 下都无法统一」，成立）。旧折中（只在 WSL 副本手改该行）已被证明不稳：`~/.vs/QuantTrading` 是从 Windows 工作副本 rsync 的整树，`rsync -a` 连原 mtime 一起带回，每次同步都抹回 `D:\`（实证：该文件 mtime 停在 2026-09-30 12:46，比 10-07 那次改动还早）。**改动**：`src/BackTest/MdReader.cpp` 新增文件级 `OverrideMdDataPathFromSystemEnvironment`——`QT_MD_DATA_PATH` **非空才覆盖**配置值、覆盖时记 Info、两者皆空时记 Warning；接入点选 `MdReader` 构造是因为 `MdDataPath` 全仓只有这一个消费者（`Config.cpp` 读与打印各一处），故 `TestBackTest` 与经 `libBackTest.so` 的 Python 宿主两条入口一并覆盖。**没放进 `Config`**：`Config.cpp`/`Config.h` 由仓外共享模板 `../Templates/Cpp/Config/Config.cpp.tpl` 生成（`pumplist.xml:46`，四目标共用），手改会被 `pumpall.py` 重跑抹掉。命名与语义照抄先例 `src/QuantTradingCommon/Environment.cpp` 的 `OverrideSecretsFromSystemEnvironment`。**验证（WSL-GCC-Release 实跑，两个方向）**：配置恢复为 Windows 原值且**不设**变量 → 复现原失败 `duckdb_query Error. IO Error: No files found ...`、无 `result.json`；同一构建**设** `QT_MD_DATA_PATH=/mnt/d/MdBaoStock` → 日志 `QT_MD_DATA_PATH applied, MdDataPath:/mnt/d/MdBaoStock`、`RunResult Written ... Success:1, TradeCount:2, Balance:999998.410000`、`result.json` 889 B。**文档（中英同步）**：README §四新增「vcpkg 环境变量（构建期）」与「运行期环境变量」两节（点明 vcpkg 三件套**只在构建机需要、部署二进制一个都不涉及**；CTP 凭证**只列键名，绝不写值**）；契约 §1 补 `MdDataPath` 的**只读输入豁免**及其边界（`DbHost`/`DbInitHost`/`DumpPath`/`result.json` 等产物路径仍必须留 CWD）——原文写的是「任一路径写成绝对路径，隔离就会静默失效」，不加豁免说明会把本条判成违规。**风险（§7）**：无多线程、无内存管理改动，未改公开 API 或导出符号、未引入新依赖，唯一共享状态是只读环境变量。**遗留**：`Config::Print()` 打印配置原值、与生效值可能不一致（已由紧随其后的 override 日志对齐），收口需改生成模板；`MdReader.cpp:5-6` 组间缺空行与第 14 行 `using namespace std;` 为**既有**违规，本次未动。**代码审查**：`code-reviewer` 报 0 严重 / 0 高 / 1 中（Harness §7 测试示例的落点——须进提交说明）/ 3 可选（均评估为不改）。**未提交**（按惯例由用户执行）。
@@ -720,6 +724,18 @@
 ---
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
+
+### Q.31 · 2026-09-13 `PrimaryAccount.IsAllowLogin` 只被写入、从未被读（**2026-10-09 已修**：登录路径补守卫，行为变更待用户确认）
+
+- **`PrimaryAccount.IsAllowLogin` 只被写入、从未被读（2026-09-13 记录；原"登录路径两个小缺口"的 ① 已修，见归档 `D.46`）**：`Model/Tables/Tables.xml:270` 的该字段全仓**只被写入、从未被读**——播种器 `src/SimExchangeInit/Init.cpp:69` 无条件置 `true`，生成代码只在字段注册与 `Dump` 里出现（`src/Mdb/MdbStructs.cpp:510/531/537/541`），没有任何一处参与登录判定，故 `IsAllowLogin = false` 的主账号**仍能登录成功**。**候选修法**：在密码校验后补一行 `if (!primaryAccount->IsAllowLogin) { errorId = ErrorAccountForbidden; }`（`ErrorAccountForbidden` = 0xA001，已存在），属登录路径上的一行守卫。用户 2026-09-13 指示暂缓。
+
+### Q.30 · 2026-09-18 Python 绑定层对「未覆写钩子」静默降级（**2026-10-09 已修**：按钩子名各报一次 Warning）
+
+- **Python 绑定层对"未覆写钩子"静默降级（2026-09-18 第十六批中发现，待决策）**：`src/PythonBindings/QuantTradingBindings.cpp:143` 的 `DispatchHookWithGil` 在 `py::get_overload` 返回空时**直接走基类空实现、不打任何日志**。这正是"Python 策略漏写 `on_bar`、在 `MatchMode: Bar` 下静默 0 成交"能潜伏数轮的原因（见归档 `D.51`「补记」）。建议按**钩子名只告警一次**（Bar 模式下 `on_bar` 会被调 2928 次，逐次告警会刷屏），或仅对"引擎确实投递了该钩子"的路径告警。属共享绑定层行为变更，需先定告警的触发条件与节流方式。
+
+### Q.29 · 2026-09-18 策略锚价的无效价哨兵可能在 `+inf` 上失效（**2026-10-09 已修**：两侧同源判据补 `isinf`）
+
+- **策略锚价的无效价哨兵可能在 `+inf` 上失效（2026-09-18 第十六批审查中发现，两侧同源，待决策）**：`GridStrategy`/`grid_strategy.py` 的锚价判据是——tick 路 `price <= 0 || price == std::numeric_limits<PriceType>::max()`（Python 侧 `== sys.float_info.max`），bar 路只判 `<= 0`。而 `MdReader` 的向量化读对 NULL 映射为 **`Double = +inf`**（`src/BackTest/MdReader.cpp:185-190` 注释明载），**`+inf` 与 `DBL_MAX` 不是同一个值**，故 tick 路那条 `== max` 判据对 NULL 来源的价格**无效**；bar 路的 `<= 0` 同样拦不住 `+inf`。后果：若某根 bar/tick 的价格真为 NULL，锚价被锚成 `+inf`，`place_ladder` 算出的挂单价全是 `inf ∓ step`，整日锁定错误中枢。**本轮数据未触发**（84 笔那轮锚定正常，`Close` 在 Bar SQL 里是 parquet 真实列而非占位 NULL）。补判据要**同步改 C++ 与 Python 两侧**，且该判据的归属（留在各调用点 vs 收进公共锚定函数）与已定案的"不抽函数"决定相扣，故留待决策。
 
 ### Q.28 · 2026-10-09 本机 Windows 侧的回测行情根怎么补（**当日关闭**：定案仓根方案，见下）
 

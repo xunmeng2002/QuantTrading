@@ -12,6 +12,7 @@ PYTHONPATH，`import QuantTrading` 由此解析。故这里不得按 `__file__` 
 """
 
 import json
+import math
 import os
 import sys
 from dataclasses import dataclass
@@ -84,7 +85,7 @@ class GridStrategy(qt.StrategyBase):
         if not self.awaiting_anchor:
             return
         anchor_price = market_data.last_price
-        if anchor_price <= 0 or anchor_price == sys.float_info.max:
+        if not _is_usable_anchor_price(anchor_price):
             return
         self.awaiting_anchor = False
         print("Anchor price: %f" % anchor_price)
@@ -95,7 +96,7 @@ class GridStrategy(qt.StrategyBase):
         if not self.awaiting_anchor:
             return
         anchor_price = bar_data.close
-        if anchor_price <= 0:
+        if not _is_usable_anchor_price(anchor_price):
             return
         self.awaiting_anchor = False
         print("Anchor price: %f" % anchor_price)
@@ -270,6 +271,14 @@ RESULT_FILE_NAME = "result.json"
 EXIT_CODE_HOST_INIT_FAILED = 1
 EXIT_CODE_RESULT_FILE_UNREADABLE = 2
 EXIT_CODE_ENGINE_FAILED = 3
+
+# 锚价无效的两处口径：DB 适配层把 NULL 价写成 +inf 哨兵，max() 是另一处占位值
+_INVALID_ANCHOR_PRICE = sys.float_info.max
+
+
+def _is_usable_anchor_price(anchor_price: float) -> bool:
+    """锚价可用性判据，与 C++ 孪生 GridStrategy::IsUsableAnchorPrice 同源。"""
+    return anchor_price > 0 and anchor_price != _INVALID_ANCHOR_PRICE and not math.isinf(anchor_price)
 
 
 def read_exit_code(result_file_path):

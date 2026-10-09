@@ -73,7 +73,7 @@ Uniform "request / callback" style, available in both **UTF-8** and **GBK** enco
 
 ### 2.7 Typical Scenario
 
-```
+```text
 CTP quotes ──► MdOffer (subscribe → in-memory → async persist → broadcast) ──► MdFront
                                                                                 │
                                                                                 ▼
@@ -85,7 +85,7 @@ CTP quotes ──► MdOffer (subscribe → in-memory → async persist → broa
 
 ## 3. Project Directory Structure
 
-```
+```text
 QuantTrading/
 ├── include/QuantTrading/         # Public headers (API definitions + Fields + version header template)
 ├── src/                          # Source code
@@ -93,7 +93,8 @@ QuantTrading/
 │   ├── MdOffer/                  # Market-data service app (Main.cpp + MdKernel + MdFront + ThostFtdcMdSpiImpl)
 │   ├── SimExchange/              # Simulated matching app (Main.cpp + SimExchange + TradeFront + MdSpiImpl)
 │   ├── BackTest/                 # Backtest shared library (MdReader + SimExchange + BackTestApiImpl)
-│   ├── BackTestInit/             # Backtest init tool (incl. Init DB loading)
+│   ├── Strategy/                 # Strategy base class (StrategyBase; shared by C++ and Python bindings)
+│   ├── PythonBindings/           # pybind11 bindings (produce QuantTrading.pyd; non-Debug builds)
 │   ├── SimExchangeInit/          # Matching init tool (incl. Init DB loading)
 │   ├── Mdb/                      # In-memory database (tables / indexes / registry / assembly)
 │   ├── OrderMatch/               # Four-mode matching engine
@@ -101,16 +102,19 @@ QuantTrading/
 │   ├── Packages/                 # Message / data-structure packages
 │   ├── QuantTradingCommon/       # Common base (Environment / ServerConfig / ShutdownSignal / error codes)
 │   └── Ctp/                      # CTP wrapper (MdApiMiddle / TraderApiMiddle / StructLogFunc)
-├── test/                         # Test clients
+├── test/                         # Test clients and unit tests
 │   ├── ApiMiddles/               # ApiMiddle + SpiMiddle wrappers for Md / Trader / SimExchange / BackTest
 │   ├── TestMdApi/                # CTP market-data client test
 │   ├── TestTraderApi/            # Trading client test
 │   ├── TestSimExchangeApi/       # Simulated-exchange client test
-│   └── TestBackTest/             # Backtest end-to-end test
+│   ├── TestBackTest/             # Backtest end-to-end test
+│   ├── TestStrategyGrid/         # C++ grid-strategy test host
+│   ├── PythonStrategyGrid/       # Python grid-strategy example (grid_strategy.py)
+│   └── UnitTests/                # doctest unit tests
 ├── Configs/                      # Per-app JSON configs (MdOffer / SimExchange / BackTest / ServerConfig / accounts, etc.)
 ├── Model/                        # Model definitions for tables / packages / sessions (registered in pumplist.xml)
+├── docs/                         # Design documents (backtest run contract, etc.)
 ├── submodules/CMakeCommon/       # Submodule: shared CMake macros
-├── include/                      # Public header directory (public APIs)
 ├── bin/                          # Build outputs: executables (per config)
 ├── lib/                          # Build outputs: libraries (per config)
 ├── out/                          # CMake Presets build directory
@@ -207,6 +211,32 @@ export CTP_SIMNOW24_AUTHCODE=<auth-code>
 
 Only the CTP clients need these (`TestMdApi` / `TestTraderApi` / `MdOffer` / `SimExchangeInit`). The backtest
 `TestBackTest` uses the built-in `SimExchange` and performs no CTP login, so it does **not** need them.
+
+### Python Bindings (Optional)
+
+`src/PythonBindings/` produces `QuantTrading.<abi>.pyd` (`.so` on WSL / Linux) for Python-side strategies.
+It is **not shipped in the Release package**: a `.pyd` is locked to the CPython **minor** ABI (one built
+for 3.11 can only be imported by 3.11), so bundling it would pin the package to a single minor version.
+Build it yourself when needed:
+
+1. Install pybind11 for the target interpreter: `pip install pybind11`. Without it the configure step
+   fails outright with a message starting `QUANTTRADING_ENABLE_PYTHON=ON requires pybind11`.
+2. Build a **non-Debug** configuration. `Debug` skips the bindings automatically (official CPython
+   builds use the Release CRT), so an absent `.pyd` under `bin/Debug` is expected.
+
+The artifact lands in `bin/<CONFIG>`; its name tells you whether the right interpreter was used
+(measured on this repo's development machines):
+
+| Platform | Expected artifact name | Interpreter |
+| --- | --- | --- |
+| Windows | `QuantTrading.cp311-win_amd64.pyd` | CPython 3.11 |
+| WSL / Linux | `QuantTrading.cpython-312-x86_64-linux-gnu.so` | CPython 3.12 |
+
+Loading resolves through the CWD or a `PYTHONPATH` injected by the host — for local debugging just
+`cd bin/<CONFIG> && python grid_strategy.py`; when a scheduling platform launches the engine it prepends
+the engine root to the child process's `PYTHONPATH`. Do **not** infer the repo root from `__file__`:
+`sys.path[0]` outranks `PYTHONPATH`, so once that path exists it silently shadows the engine root the
+host specified.
 
 ## 5. Quick Build & Compilation
 
@@ -381,30 +411,43 @@ int main(int argc, char* argv[])
 
 ## 7. Integration Tests
 
-Four test clients are shipped under `test/`:
+The following test targets ship under `test/`:
 
 | Test program | Description |
 | --- | --- |
+| `UnitTests` | Unit tests (doctest 2.5.3; matching / settlement / position / bar aggregation / grid strategy / message parsing) |
 | `TestBackTest` | Backtest end-to-end: MdReader reads Parquet → match → settlement → persist (verified) |
+| `TestStrategyGrid` | C++ grid-strategy host: round-driven, day switching |
 | `TestMdApi` | CTP market-data client: subscribe / quote callbacks (needs CTP or SimNow quote front) |
 | `TestTraderApi` | Trading client: login / query / order (needs a trading front) |
 | `TestSimExchangeApi` | Simulated-exchange client: login / order / trade callbacks |
+
+`test/PythonStrategyGrid/grid_strategy.py` is the matching Python strategy example; the interpreter runs
+it directly, with no build step.
 
 ### Run the Tests
 
 ```bash
 # Windows
+./bin/Debug/UnitTests.exe
 ./bin/Debug/TestBackTest.exe
+./bin/Debug/TestStrategyGrid.exe
 ./bin/Debug/TestMdApi.exe
 
 # Linux
+./bin/Debug/UnitTests
 ./bin/Debug/TestBackTest
+./bin/Debug/TestStrategyGrid
 ./bin/Debug/TestMdApi
 ```
 
+> `UnitTests` is not wired into CTest and must be run by hand (exit code 0 with
+> `[doctest] Status: SUCCESS!` means it passed). `Debug` builds produce no Python bindings, so
+> `PythonStrategyGrid` needs a Release build.
+
 ## 8. License & Disclaimer
 
-- **License**: **TBD** (no LICENSE file is present yet; it must be chosen before publishing)
+- **License**: **MIT License** (see `LICENSE` at the repo root; Copyright (c) 2026 xunmeng2002)
 - **Scope**: This project is for personal learning and research only
 - **Risk**: This is a personal open-source project — thoroughly test and assess risk before trading real money; keep sensitive information such as account and database credentials secure
 

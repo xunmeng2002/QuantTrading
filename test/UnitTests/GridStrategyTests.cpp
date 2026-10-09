@@ -2,6 +2,7 @@
 
 #include "doctest/doctest.h"
 
+#include <limits>
 #include <stdexcept>
 
 using namespace QuantTrading::UnitTest;
@@ -54,6 +55,41 @@ TEST_CASE("GridStrategy places ladder around first tick anchor")
         CHECK(insert_request.OrderPriceType == OrderPriceTypeType::LimitPrice);
         CHECK(insert_request.Volume == 1);
     }
+}
+
+// 锚价无效的两处口径都须拒锚：DB 适配层把 NULL 价写成 +inf 哨兵，max() 是另一处占位值；
+// 拒锚不消耗 awaitingAnchor_，随后的真实价仍能起锚
+TEST_CASE("GridStrategy rejects sentinel anchor prices on tick path")
+{
+    FakeBackTestApi fake_api;
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
+    strategy.Start();
+
+    auto null_sentinel_tick = MakeMdTickField("IF2503", std::numeric_limits<double>::infinity());
+    fake_api.RegisteredSpi->OnRtnDepthMarketData(&null_sentinel_tick);
+    auto max_placeholder_tick = MakeMdTickField("IF2503", std::numeric_limits<double>::max());
+    fake_api.RegisteredSpi->OnRtnDepthMarketData(&max_placeholder_tick);
+    CHECK(fake_api.InsertRequests.empty());
+
+    auto anchor_tick = MakeMdTickField("IF2503", 4000.0);
+    fake_api.RegisteredSpi->OnRtnDepthMarketData(&anchor_tick);
+    CHECK(fake_api.InsertRequests.size() == 4);
+}
+
+// Bar 回放路径的孪生判据：Close 为哨兵值同样不得起锚
+TEST_CASE("GridStrategy rejects sentinel anchor prices on bar path")
+{
+    FakeBackTestApi fake_api;
+    GridStrategyProbe strategy(&fake_api, "accountA", MakeGridParams(TestGridStepRatio, 2));
+    strategy.Start();
+
+    auto null_sentinel_bar = MakeMdBarField("IF2503", 202410010935LL, std::numeric_limits<double>::infinity());
+    fake_api.RegisteredSpi->OnRtnBarMarketData(&null_sentinel_bar);
+    CHECK(fake_api.InsertRequests.empty());
+
+    auto anchor_bar = MakeMdBarField("IF2503", 202410010940LL, 4000.0);
+    fake_api.RegisteredSpi->OnRtnBarMarketData(&anchor_bar);
+    CHECK(fake_api.InsertRequests.size() == 4);
 }
 
 TEST_CASE("GridStrategy places close order once after open fill and ignores duplicate fill")
