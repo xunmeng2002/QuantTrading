@@ -8,6 +8,7 @@ namespace QuantTrading
 class SimExchangeSpi
 {
 public:
+	virtual ~SimExchangeSpi() {}
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
 	virtual void OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestId, bool isLast) {}
@@ -24,6 +25,7 @@ public:
 class SIMEXCHANGEAPI_EXPORTS SimExchangeApi
 {
 public:
+	virtual ~SimExchangeApi() {}
 	static SimExchangeApi* CreateSimExchangeApi();
 	static const char* GetApiVersion();
 	virtual bool Init() = 0;

@@ -8,6 +8,7 @@ namespace QuantTrading
 class TraderSpi
 {
 public:
+	virtual ~TraderSpi() {}
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
 	virtual void OnRspAccountLogin(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestId, bool isLast) {}
@@ -32,6 +33,7 @@ public:
 class TRADERAPI_EXPORTS TraderApi
 {
 public:
+	virtual ~TraderApi() {}
 	static TraderApi* CreateTraderApi();
 	static const char* GetApiVersion();
 	virtual bool Init() = 0;

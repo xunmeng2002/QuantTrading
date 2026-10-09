@@ -8,6 +8,7 @@ namespace QuantTrading
 class BackTestSpi
 {
 public:
+	virtual ~BackTestSpi() {}
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
 	virtual void OnRspSubMarketData(const RspSubMarketDataField* rspSubMarketData, const RspInfoField* rspInfo, int requestId, bool isLast) {}
@@ -26,6 +27,7 @@ public:
 class BACKTEST_EXPORTS BackTestApi
 {
 public:
+	virtual ~BackTestApi() {}
 	static BackTestApi* CreateBackTestApi();
 	static const char* GetApiVersion();
 	virtual bool Init() = 0;

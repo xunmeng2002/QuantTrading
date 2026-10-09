@@ -8,6 +8,7 @@ namespace QuantTrading
 class MdSpi
 {
 public:
+	virtual ~MdSpi() {}
 	virtual void OnConnected() {}
 	virtual void OnDisConnected() {}
 	virtual void OnRspMdUserLogin(const RspMdUserLoginField* rspMdUserLogin, const RspInfoField* rspInfo, int requestId, bool isLast) {}
@@ -21,6 +22,7 @@ public:
 class MDAPI_EXPORTS MdApi
 {
 public:
+	virtual ~MdApi() {}
 	static MdApi* CreateMdApi();
 	static const char* GetApiVersion();
 	virtual bool Init() = 0;

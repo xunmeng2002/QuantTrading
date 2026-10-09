@@ -14,7 +14,7 @@ using namespace Spark::Serialization;
 namespace QuantTrading::SimExchangeInit
 {
 CThostFtdcTraderSpiImpl::CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, QuantTrading::Mdb* mdb)
-	:traderApi_(traderApi), mdb_(mdb), requestId_(0), accountInfo_(nullptr), qryFinished_(false)
+	:qryFinished_(false), traderApi_(traderApi), mdb_(mdb), requestId_(0), accountInfo_(nullptr)
 {
 }
 void CThostFtdcTraderSpiImpl::OnFrontConnected()

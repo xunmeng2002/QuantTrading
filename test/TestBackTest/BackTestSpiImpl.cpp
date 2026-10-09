@@ -50,6 +50,10 @@ void BackTestSpiImpl::OnRspSubMarketData(const RspSubMarketDataField* rspSubMark
 template <typename MdField, typename PriceReader>
 void BackTestSpiImpl::ApplyPriceTrigger(const MdField* currentFrame, MdField*& lastOrderFrame, PriceReader readPrice)
 {
+	if (currentFrame == nullptr)
+	{
+		return;
+	}
 	const PriceType currentPrice = readPrice(currentFrame);
 	if (lastOrderFrame == nullptr)
 	{
@@ -57,8 +61,7 @@ void BackTestSpiImpl::ApplyPriceTrigger(const MdField* currentFrame, MdField*& l
 		{
 			return;
 		}
-		lastOrderFrame = new MdField();
-		memcpy(lastOrderFrame, currentFrame, sizeof(MdField));
+		lastOrderFrame = new MdField(*currentFrame);
 		ReqInsertOrder(lastOrderFrame->ExchangeId, lastOrderFrame->InstrumentId, currentPrice, DirectionType::Buy);
 		return;
 	}
@@ -68,7 +71,7 @@ void BackTestSpiImpl::ApplyPriceTrigger(const MdField* currentFrame, MdField*& l
 		return;
 	}
 	ReqInsertOrder(currentFrame->ExchangeId, currentFrame->InstrumentId, currentPrice, direction);
-	memcpy(lastOrderFrame, currentFrame, sizeof(MdField));
+	*lastOrderFrame = *currentFrame;
 }
 void BackTestSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {

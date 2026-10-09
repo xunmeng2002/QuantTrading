@@ -180,6 +180,10 @@ void StrategyBase::OnRspRegisterAccount(const RspRegisterAccountField* rspRegist
 }
 void StrategyBase::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
+	if (depthMarketData == nullptr)
+	{
+		return;
+	}
 	instrumentStates_[depthMarketData->InstrumentId].LastPrice = depthMarketData->LastPrice;
 	OnTick(depthMarketData);
 }
