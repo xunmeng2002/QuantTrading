@@ -26,6 +26,12 @@ BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi, const BackTestSpiPara
 	strcpy(instrumentId_, params_.InstrumentId.c_str());
 }
 
+BackTestSpiImpl::~BackTestSpiImpl()
+{
+	delete lastOrderTickMd_;
+	delete lastOrderBarMd_;
+}
+
 void BackTestSpiImpl::OnConnected()
 {
 	BackTestSpiMiddle::OnConnected();

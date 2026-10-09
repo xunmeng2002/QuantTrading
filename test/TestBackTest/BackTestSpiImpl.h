@@ -19,6 +19,7 @@ class BackTestSpiImpl : public BackTestSpiMiddle
 {
 public:
 	BackTestSpiImpl(BackTestApi* backTestApi, const BackTestSpiParams& params);
+	~BackTestSpiImpl();
 
 	virtual void OnConnected() override;
 	virtual void OnDisConnected() override;

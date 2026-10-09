@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
 			api->Join();
 			hostStarted = true;
 		}
+		delete spi;
 	}
 	catch (const std::exception& error)
 	{
