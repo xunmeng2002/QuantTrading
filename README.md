@@ -1,4 +1,5 @@
 # QuantTrading
+[![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)]()
 [![Language](https://img.shields.io/badge/Language-C++20+-orange.svg)]()
 [![Build](https://img.shields.io/badge/Build-CMake3.20+-green.svg)]()
 [![CTP](https://img.shields.io/badge/CTP-v6.7.9_P1-blue.svg)]()
@@ -60,6 +61,13 @@ CTP 行情主流程：`ThostFtdcMdSpiImpl`（CTP 回调）→ `MdKernel` 单线�
 | `TraderApi` / `TraderGbkApi` | 交易客户端 | `ReqAccountLogin`、`ReqQryPosition`、`ReqInsertOrder`、`ReqCancelOrder`、`OnRtnOrder`、`OnRtnTrade` |
 | `SimExchangeApi` / `SimExchangeGbkApi` | 模拟交易所客户端 | `ReqInsertOrder`、`ReqQryOrder`、`OnRtnOrder`、`OnRtnTrade` |
 | `BackTest` | 回测接口 | `ReqSubMarketData`、`ReqInsertOrder`、`OnRtnDepthMarketData`、`OnRtnMarketDataEnd` |
+
+上表三套客户端接口各自另有 **C ABI** 变体，与 C++ 版由同一批模板生成：头文件 `MdCApi.h` /
+`TraderCApi.h` / `SimExchangeCApi.h`，`extern "C"` 入口 + 回调函数指针表（`MdCSpi` / `TraderCSpi` /
+`SimExchangeCSpi`），同样分 UTF-8 / GBK 两套，供非 C++ 调用方使用；`BackTest` 无 C ABI。
+
+> **注意**：除 `CreateXxxCApi` 之外，C ABI 的入口函数（`Init` / `Join` / `Release` / `GetApiVersion` …）
+> 都是**不带前缀的全局符号**，故一个可执行文件只应链接其中一套。
 
 ### 6. 基础设施
 
@@ -270,9 +278,17 @@ UpdateSubmodule.bat
 cmake --preset x64-Debug
 cmake --build out/build/x64-Debug
 
+# Windows Release（Python 绑定、发布产物用这个）
+cmake --preset x64-Release
+cmake --build out/build/x64-Release
+
 # Linux / WSL（GCC）
 cmake --preset WSL-GCC-Debug
 cmake --build out/build/WSL-GCC-Debug
+
+# Linux / WSL Release（打 Linux 发布包用这个）
+cmake --preset WSL-GCC-Release
+cmake --build out/build/WSL-GCC-Release
 ```
 
 编译完成后，可执行文件与**共享库**均输出至 `bin/<Config>`（如 `bin/Debug/MdOffer.exe`、
@@ -476,7 +492,8 @@ int main(int argc, char* argv[])
 - **包含路径**：头文件统一使用 `#include <QuantTrading/XxxApi.h>` 风格；模块内部使用 `#include <Module/Xxx.h>`
 - **命名空间**：公共 API 位于 `QuantTrading`，各模块分别位于 `QuantTrading::MdOffer`、`QuantTrading::SimExchange`、`QuantTrading::BackTest`、`QuantTrading::OrderMatch` 等
 - **依赖链**：`Spark`（线程 / 日志 / 网络）→ `DbAdapters`（四库统一访问）→ `QuantTrading`
-- **版本**：CTP API v6.7.9（`MdOffer` 启动日志可见 `API Version`）
+- **版本**：`1.0.0`。单一来源是 `vcpkg.json` 的 `version` 与 `CMakeLists.txt` 的 `project()` `VERSION`，CMake 配置期校验二者一致，不一致即 `FATAL_ERROR`；配置期由 `include/QuantTrading/Version.h.in` 生成 `QuantTrading/Version.h`，引擎根另有 `bin/<Config>/engine-version.txt`
+- **CTP API 版本**：v6.7.9（`MdOffer` 启动日志可见 `API Version`）
 - **编码变体**：MdApi / TraderApi / SimExchangeApi 各提供 **UTF-8**（`MdApi` 等）与 **GBK**（`MdGbkApi` 等）两套动态库
 - **数据源适配**：`BackTest` 的 `MdReader` 当前 SQL 面向旧列名 parquet（如 `LastTraded` / `LastTurnover` / 数组盘口），缺失列以 NULL 占位；数据侧整理对齐 mdb schema 后可删除占位符，使 tick 涨跌停价等列真实可用
 - **优雅退出**：MdOffer / SimExchange 支持 Ctrl+C / SIGTERM 按依赖序有序关停（`ShutdownSignal`）

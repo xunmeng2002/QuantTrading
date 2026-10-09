@@ -1,4 +1,5 @@
 # QuantTrading
+[![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)]()
 [![Language](https://img.shields.io/badge/Language-C++20+-orange.svg)]()
 [![Build](https://img.shields.io/badge/Build-CMake3.20+-green.svg)]()
 [![CTP](https://img.shields.io/badge/CTP-v6.7.9_P1-blue.svg)]()
@@ -60,6 +61,14 @@ Uniform "request / callback" style, available in both **UTF-8** and **GBK** enco
 | `TraderApi` / `TraderGbkApi` | Trading client | `ReqAccountLogin`, `ReqQryPosition`, `ReqInsertOrder`, `ReqCancelOrder`, `OnRtnOrder`, `OnRtnTrade` |
 | `SimExchangeApi` / `SimExchangeGbkApi` | Simulated-exchange client | `ReqInsertOrder`, `ReqQryOrder`, `OnRtnOrder`, `OnRtnTrade` |
 | `BackTest` | Backtest API | `ReqSubMarketData`, `ReqInsertOrder`, `OnRtnDepthMarketData`, `OnRtnMarketDataEnd` |
+
+The three client APIs above each also have a **C ABI** variant, generated from the same templates as
+their C++ counterparts: headers `MdCApi.h` / `TraderCApi.h` / `SimExchangeCApi.h`, with `extern "C"`
+entry points plus a callback function-pointer table (`MdCSpi` / `TraderCSpi` / `SimExchangeCSpi`),
+again in both UTF-8 and GBK flavours, for non-C++ callers; `BackTest` has no C ABI.
+
+> **Note**: apart from `CreateXxxCApi`, the C ABI entry points (`Init` / `Join` / `Release` /
+> `GetApiVersion`, …) are **unprefixed global symbols**, so an executable should link only one of them.
 
 ### 2.6 Infrastructure
 
@@ -280,9 +289,17 @@ UpdateSubmodule.bat
 cmake --preset x64-Debug
 cmake --build out/build/x64-Debug
 
+# Windows Release (Python bindings, release artifacts)
+cmake --preset x64-Release
+cmake --build out/build/x64-Release
+
 # Linux / WSL (GCC)
 cmake --preset WSL-GCC-Debug
 cmake --build out/build/WSL-GCC-Debug
+
+# Linux / WSL Release (for building the Linux release package)
+cmake --preset WSL-GCC-Release
+cmake --build out/build/WSL-GCC-Release
 ```
 
 After building, executables and **shared libraries** are both output to `bin/<Config>` (e.g.
@@ -496,7 +513,8 @@ it directly, with no build step.
 - **Include style**: public headers use `#include <QuantTrading/XxxApi.h>`; internal module headers use `#include <Module/Xxx.h>`
 - **Namespaces**: public APIs live in `QuantTrading`; modules use `QuantTrading::MdOffer`, `QuantTrading::SimExchange`, `QuantTrading::BackTest`, `QuantTrading::OrderMatch`, etc.
 - **Dependency chain**: `Spark` (threading / logging / networking) → `DbAdapters` (unified DB access) → `QuantTrading`
-- **Version**: CTP API v6.7.9 (see `API Version` in the MdOffer startup log)
+- **Version**: `1.0.0`. The single source of truth is `vcpkg.json`'s `version` together with `CMakeLists.txt`'s `project()` `VERSION`; CMake verifies they match at configure time and raises `FATAL_ERROR` on a mismatch. Configure time also generates `QuantTrading/Version.h` from `include/QuantTrading/Version.h.in`, and the engine root carries `bin/<Config>/engine-version.txt`
+- **CTP API version**: v6.7.9 (see `API Version` in the MdOffer startup log)
 - **Encoding variants**: MdApi / TraderApi / SimExchangeApi each ship **UTF-8** (`MdApi` etc.) and **GBK** (`MdGbkApi` etc.) shared libraries
 - **Data-source adaptation**: `BackTest`'s `MdReader` SQL currently targets the legacy Parquet column names (e.g. `LastTraded` / `LastTurnover` / array order book), with NULL placeholders for missing columns; once the data is aligned to the mdb schema, the placeholders can be removed and tick price-limit columns become truly usable
 - **Graceful shutdown**: MdOffer / SimExchange support ordered shutdown on Ctrl+C / SIGTERM (`ShutdownSignal`)
