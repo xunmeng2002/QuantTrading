@@ -187,8 +187,8 @@ export PATH=$VCPKG_ROOT:$PATH
 
 ### Runtime Environment Variables
 
-Credentials and machine-specific paths **are not committed**; they come from system environment variables.
-Both are needed at run time only, independently of the build.
+Credentials **are not committed**; they come from system environment variables, needed at run time only,
+independently of the build.
 
 **CTP credentials** — the `Password` / `AuthCode` fields in `Configs/CtpAccountInfo.json` are left empty and
 filled in from environment variables. The keys are `CTP_<ENVIRONMENT NAME UPPERCASE>_PASSWORD` and
@@ -207,11 +207,6 @@ export CTP_SIMNOW24_AUTHCODE=<auth-code>
 
 Only the CTP clients need these (`TestMdApi` / `TestTraderApi` / `MdOffer` / `SimExchangeInit`). The backtest
 `TestBackTest` uses the built-in `SimExchange` and performs no CTP login, so it does **not** need them.
-
-**Market data root** — `QT_MD_DATA_PATH` sets the root directory the backtest reads historical Parquet data
-from, overriding `MdDataPath` in `BackTest.json` when non-empty. It is a **read-only input** and takes no part
-in per-job working-directory isolation; see
-[Backtest Run Contract](docs/backtest-run-contract.md#1-工作目录假设). When unset, the configured value is used.
 
 ## 5. Quick Build & Compilation
 
@@ -331,7 +326,14 @@ int main(int argc, char* argv[])
 }
 ```
 
-> Prerequisite: `BackTest.json`'s `MdDataPath` must point to a Parquet data root containing `Tick/` and `Bar/` subdirectories, and `StartTradingDay` / `EndTradingDay` must cover the target range.
+> Prerequisite: `BackTest.json`'s `MdDataPath` must point to a Parquet data root containing `Tick/` and `Bar/`
+> subdirectories. Like every other path it is resolved against CWD (`bin/<Config>`): the default
+> `../../MdBaoStock` means **`MdBaoStock` at the repository root**, so every working copy needs a data
+> directory there (this repo keeps it out of version control via `/MdBaoStock` in `.gitignore`). Windows
+> only needs a real directory: when VS builds, its WSL source sync copies the Parquet files
+> **incrementally** into the same relative position of the copy under WSL, so nothing has to be copied by
+> hand there. An absolute path works too.
+> `StartTradingDay` / `EndTradingDay` must cover the target range.
 
 ### Example 2: Market-Data Client (MdApi)
 

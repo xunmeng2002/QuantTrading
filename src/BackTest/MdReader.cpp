@@ -5,7 +5,6 @@
 #include <Spark/Core/Logger/Logger.h>
 #include <chrono>
 #include <cstdarg>
-#include <cstdlib>
 #include <cstring>
 #include <stdexcept>
 #include <string>
@@ -64,30 +63,18 @@ namespace
         };
     }
 
-    // 行情数据根路径每台机器不同(D:\MdBaoStock 与 /mnt/d/MdBaoStock), 跨机共享的 BackTest.json
-    // 存不下物理根, 故键名 QT_MD_DATA_PATH 的系统环境变量非空时覆盖配置值; 配置值保留作单机默认.
-    std::string OverrideMdDataPathFromSystemEnvironment(const std::string& configuredMdDataPath)
-    {
-        const char* const environmentMdDataPath = std::getenv("QT_MD_DATA_PATH");
-        if (environmentMdDataPath != nullptr && environmentMdDataPath[0] != '\0')
-        {
-            WriteLog(LogLevel::Info, "OverrideMdDataPathFromSystemEnvironment: QT_MD_DATA_PATH applied, MdDataPath:%s", environmentMdDataPath);
-            return environmentMdDataPath;
-        }
-        if (configuredMdDataPath.empty())
-        {
-            WriteLog(LogLevel::Warning, "OverrideMdDataPathFromSystemEnvironment: MdDataPath empty, market data query will fail. Set QT_MD_DATA_PATH, or MdDataPath in BackTest.json.");
-        }
-        return configuredMdDataPath;
-    }
 }
 
 namespace QuantTrading::BackTest
 {
 MdReader::MdReader(const Config& config)
-    : mdDataPath_(OverrideMdDataPathFromSystemEnvironment(config.MdDataPath))
+    : mdDataPath_(config.MdDataPath)
     , barPreces_(config.BarPreces)
 {
+    if (mdDataPath_.empty())
+    {
+        WriteLog(LogLevel::Warning, "MdReader: MdDataPath empty in BackTest.json, market data query will fail.");
+    }
     strcpy(startTradingDay_, config.StartTradingDay.c_str());
     strcpy(endTradingDay_, config.EndTradingDay.c_str());
     if (!QuantTrading::ParseBarPreces(barPreces_, barPrecesType_, barPeriod_))

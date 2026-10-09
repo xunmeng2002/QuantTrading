@@ -3,7 +3,7 @@
   "MatchModeType": "OrderBook:0, LastPrice:1, OppositePrice:2, Bar:3",
   "MatchMode": 3,
   "BarPreces": "5m",
-  "MdDataPath": "D:\\MdBaoStock",
+  "MdDataPath": "../../MdBaoStock",
   "DumpPath": "./Dump",
   "SessionFile": "Sessions.json",
   "StartTradingDay": "20241001",

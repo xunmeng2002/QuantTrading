@@ -186,7 +186,7 @@ export PATH=$VCPKG_ROOT:$PATH
 
 ### 运行期环境变量
 
-凭证与机器相关路径**不入库**，由系统环境变量提供；两者都只在运行期需要，与构建无关。
+凭证**不入库**，由系统环境变量提供；只在运行期需要，与构建无关。
 
 **CTP 凭证** —— `Configs/CtpAccountInfo.json` 的 `Password` / `AuthCode` 字段留空，由环境变量补齐。
 键名为 `CTP_<环境名大写>_PASSWORD` 与 `CTP_<环境名大写>_AUTHCODE`，非空时覆盖（实现见
@@ -203,10 +203,6 @@ export CTP_SIMNOW24_AUTHCODE=<认证码>
 
 仅 CTP 客户端需要（`TestMdApi` / `TestTraderApi` / `MdOffer` / `SimExchangeInit`）。回测
 `TestBackTest` 走内置 `SimExchange`，不做 CTP 登录，**不需要**这组变量。
-
-**行情数据根** —— `QT_MD_DATA_PATH` 指定回测读取历史 parquet 的根目录，非空时覆盖 `BackTest.json`
-的 `MdDataPath`。它是**只读输入**，不参与每 job 的工作目录隔离；详见
-[回测运行契约](docs/backtest-run-contract.md#1-工作目录假设)。未设该变量时仍取配置里的值。
 
 ## 五、快速构建 & 编译
 
@@ -327,7 +323,12 @@ int main(int argc, char* argv[])
 }
 ```
 
-> 运行前提：`BackTest.json` 的 `MdDataPath` 指向含 `Tick/`、`Bar/` 子目录的 parquet 数据根目录，`StartTradingDay` / `EndTradingDay` 覆盖所需区间。
+> 运行前提：`BackTest.json` 的 `MdDataPath` 指向含 `Tick/`、`Bar/` 子目录的 parquet 数据根目录。
+> 它与其他路径一样相对 CWD（`bin/<Config>`）解析：默认值 `../../MdBaoStock` 即**仓根下的 `MdBaoStock`**，
+> 故每个工作副本的仓根都要有一份行情（本仓用 `.gitignore` 的 `/MdBaoStock` 把它挡在版本库外）——
+> Windows 侧放一个实体目录即可：VS 编译时的 WSL 源码同步会把 Parquet **增量同步**到副本的同一相对位置，
+> WSL 侧不需要手工拷贝；也可直接把 `MdDataPath` 写成绝对路径。
+> `StartTradingDay` / `EndTradingDay` 须覆盖所需区间。
 
 ### 示例 2：行情客户端（MdApi）
 

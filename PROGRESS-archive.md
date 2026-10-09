@@ -11,6 +11,17 @@
 
 ## ✅ 已完成（历史，倒序）
 
+### D.61 · 2026-10-08 行情数据根改由环境变量 `QT_MD_DATA_PATH` 提供（回测路径跨机统一的收口）
+
+- **2026-10-08 行情数据根改由环境变量 `QT_MD_DATA_PATH` 提供（回测路径跨机统一的收口）**：`Configs/BackTest.json` 是版本控制内的跨机共享文件，`MdDataPath` 在 Windows 需 `D:\MdBaoStock`、在 WSL 需 `/mnt/d/MdBaoStock`，**没有任何单一字符串能同时表达两者**（用户判断「绝对或相对路径在 windows 和 linux 下都无法统一」，成立）。旧折中（只在 WSL 副本手改该行）已被证明不稳：`~/.vs/QuantTrading` 是从 Windows 工作副本 rsync 的整树，`rsync -a` 连原 mtime 一起带回，每次同步都抹回 `D:\`（实证：该文件 mtime 停在 2026-09-30 12:46，比 10-07 那次改动还早）。**改动**：`src/BackTest/MdReader.cpp` 新增文件级 `OverrideMdDataPathFromSystemEnvironment`——`QT_MD_DATA_PATH` **非空才覆盖**配置值、覆盖时记 Info、两者皆空时记 Warning；接入点选 `MdReader` 构造是因为 `MdDataPath` 全仓只有这一个消费者（`Config.cpp` 读与打印各一处），故 `TestBackTest` 与经 `libBackTest.so` 的 Python 宿主两条入口一并覆盖。**没放进 `Config`**：`Config.cpp`/`Config.h` 由仓外共享模板 `../Templates/Cpp/Config/Config.cpp.tpl` 生成（`pumplist.xml:46`，四目标共用），手改会被 `pumpall.py` 重跑抹掉。命名与语义照抄先例 `src/QuantTradingCommon/Environment.cpp` 的 `OverrideSecretsFromSystemEnvironment`。**验证（WSL-GCC-Release 实跑，两个方向）**：配置恢复为 Windows 原值且**不设**变量 → 复现原失败 `duckdb_query Error. IO Error: No files found ...`、无 `result.json`；同一构建**设** `QT_MD_DATA_PATH=/mnt/d/MdBaoStock` → 日志 `QT_MD_DATA_PATH applied, MdDataPath:/mnt/d/MdBaoStock`、`RunResult Written ... Success:1, TradeCount:2, Balance:999998.410000`、`result.json` 889 B。**文档（中英同步）**：README §四新增「vcpkg 环境变量（构建期）」与「运行期环境变量」两节（点明 vcpkg 三件套**只在构建机需要、部署二进制一个都不涉及**；CTP 凭证**只列键名，绝不写值**）；契约 §1 补 `MdDataPath` 的**只读输入豁免**及其边界（`DbHost`/`DbInitHost`/`DumpPath`/`result.json` 等产物路径仍必须留 CWD）——原文写的是「任一路径写成绝对路径，隔离就会静默失效」，不加豁免说明会把本条判成违规。**风险（§7）**：无多线程、无内存管理改动，未改公开 API 或导出符号、未引入新依赖，唯一共享状态是只读环境变量。**遗留**：`Config::Print()` 打印配置原值、与生效值可能不一致（已由紧随其后的 override 日志对齐），收口需改生成模板；`MdReader.cpp:5-6` 组间缺空行与第 14 行 `using namespace std;` 为**既有**违规，本次未动。**代码审查**：`code-reviewer` 报 0 严重 / 0 高 / 1 中（Harness §7 测试示例的落点——须进提交说明）/ 3 可选（均评估为不改）。**未提交**（按惯例由用户执行）。
+
+> **⚠️ 2026-10-09 推翻（同日第二批）**：上面这套「环境变量覆盖 ＋ Windows 用户变量 ＋ `WSLENV`」的机制
+> **已整段移除**——用户裁定不该为测试环境塑形生产配置的读取策略，改把 `MdDataPath` 写成相对 CWD 的路径、
+> 各机器按需把行情放到该位置；那次改动的原文在主文件 ✅ 2026-10-09 第二批。上面其余结论**仍然成立**：
+> `Config.cpp`/`Config.h` 是生成物不可手改、`MdDataPath` 全仓只有 `MdReader` 一个消费者、验证方法
+> （设/不设环境变量对照）有效。那条「遗留：`Config::Print()` 打印原值与生效值可能不一致」随覆盖机制
+> 一起消失——现在两者恒等。
+
 ### D.60 · 2026-10-06 发布前清理批：❓ 区收缩 + 两批 ✅ 入归档
 
 - **2026-10-06 发布前清理批：❓ 区收缩 + 两批 ✅ 入归档**：上游 DbAdapters 仓发布前清理的连带批次（用户指令「现在主要目的就是全力清理问号区，发布 release 版本」）。**本仓改动**：① **❓ 区 18 → 13**——三条已了结项入归档（`Q.24` MySQL/MariaDB 分发口径、`Q.25` DBAdapters 构建产物写源码根、`Q.26` 入站包方向与鉴权校验），两条转为 `## 备注`（数据源对齐 mdb 属用户负责、Python 绑定 `.pyd` 分发口径）；② **✅ 区滚动**：最旧两批（第十八批 `DbType` 收成枚举、项目名统一）入归档为 `D.53`/`D.54`，主文件由 65,552 B 降到目标线内；③ 顺带确认本仓消费 DbAdapters 的构建无回归——DbAdapters 侧本批改了 `DbAdaptersConfig.cmake`（补 `find_dependency(Spark CONFIG)`）与 `SqliteWrapper.cpp` 空白，本仓 `cmake --preset x64-Debug` + 全量 `cmake --build` 均退出码 0、`UnitTests.exe` **115 用例 / 764 断言全过**（与切前基线逐字一致）。**风险（§7）**：纯文档改动，不涉代码、多线程、内存管理。**未提交**。
@@ -709,6 +720,17 @@
 ---
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
+
+### Q.28 · 2026-10-09 本机 Windows 侧的回测行情根怎么补（**当日关闭**：定案仓根方案，见下）
+
+- **本机 Windows 侧的回测行情根怎么补（2026-10-09 记录，待用户裁定）**：`MdDataPath` 改回相对路径后，同一字符串在 Windows 侧解析为 `D:\Gitee\QuantTrading\MdBaoStock`（不存在），而行情实际在 `D:\MdBaoStock`；WSL 侧解析为 `~/.vs/QuantTrading/MdBaoStock`（VS 源码副本，按计划拷一份即可）。三选一：① Windows 侧建目录联接 `mklink /J`（零拷贝；`exclusionList` 曾加 `MdBaoStock`——该排除项随后连同 B 方案一并回退，见下注）；② Windows 侧也放真实拷贝（占盘、会漂移）；③ 只在 WSL 跑、Windows 侧不管（该行对原生构建即坏，下次跑会误判成引擎 bug）。**两处待实测的边**：VS 的源码同步对 WSL 副本里**不在排除表**的外加目录是否 `--delete`（若是，拷进去的行情会被下次同步抹掉；`bin/`、`out/` 安全正是因为它们排在排除表里）；以及 `MdBaoStock` 未入 `.gitignore`、会以未跟踪出现在副本的 `git status`。
+
+> **✅ 2026-10-09 当日关闭**：用户裁定走**仓根方案**——`MdDataPath` = `../../MdBaoStock`（各平台**仓根**下的
+> `MdBaoStock`），上面三选一里的①②合成一条落地：Windows 侧在仓根放一份**实体目录**（非 junction），实测
+> VS 编译时的 WSL 源码同步**会把该目录增量 rsync 进副本的同一相对位置**，故 WSL 侧不需要手工拷贝。两条
+> 「待实测/决策的边」随之作废——同步**会**拷不在排除表里的外加目录；仓根的未跟踪噪音由 `.gitignore` 的
+> `/MdBaoStock` 挡住。选它而非「四级相对值 `../../../../MdBaoStock`」的理由是取值**与副本所在路径无关**，
+> 见主文件 ✅ 2026-10-09 第二批。
 
 ### Q.27 · 2026-10-07 回测基础数据管理端: 由 QuantPlatform 承接
 

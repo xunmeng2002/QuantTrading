@@ -18,8 +18,9 @@
 > 调度侧必须为每个 job 分配独立的工作目录，并在其中放入 `BackTest.json` 与 `Sessions.json`。
 
 **唯一的例外是 `MdDataPath`。** 历史行情是**只读输入**，多个 job 共享同一份 parquet 是预期用法，
-不参与隔离；因此它可由系统环境变量 `QT_MD_DATA_PATH` 覆盖（非空时生效，实现见
-`src/BackTest/MdReader.cpp`），免得每台机器各改一次 `BackTest.json`。未设该变量时仍取配置里的值。
+不参与隔离：调度侧可以把它写成指向共享行情根的**绝对路径**，也可留成相对 CWD 的路径（本仓开发用的
+`BackTest.json` 就是后者：`../../MdBaoStock` 即仓根下的 `MdBaoStock`，要求每个工作副本的仓根各备一份；
+VS WSL 源码副本的那一份由其源码同步带来）。引擎不为此做任何特殊处理，一律按 CWD 解析。
 
 > **豁免的边界**：本条**只**适用于只读输入。`DbHost`、`DbInitHost`、`DumpPath`、`result.json`
 > 等**产物**路径必须留在 CWD，任何绝对化都会让隔离静默失效。
