@@ -23,6 +23,10 @@ if(NOT QUANTTRADING_VCPKG_VERSION STREQUAL PROJECT_VERSION)
 endif()
 message(STATUS "Project version: ${PROJECT_VERSION}")
 
+# 引擎根版本标识：QuantPlatform 的 engine_probe.py 优先读本文件的首个非空行来记 Runs.EngineVersion，
+# 取不到才退化为「.pyd + 三个运行时 DLL 的内容摘要」。与 project() VERSION 同源，故每次 configure 重写。
+file(GENERATE OUTPUT ${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/engine-version.txt CONTENT "${PROJECT_VERSION}\n")
+
 include(GNUInstallDirs)
 include(GenerateExportHeader)
 
@@ -297,7 +301,14 @@ if(NOT QUANTTRADING_ENABLE_PYTHON)
 elseif(CMAKE_BUILD_TYPE MATCHES "[Dd]ebug")
 	message(STATUS "Python bindings: skipped for Debug (CPython official builds use Release CRT)")
 else()
-	find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+	# 解释器次版本必须钉死：.pyd/.so 受 CPython 次版本 ABI 锁定（3.11 编出的只能被 3.11 导入），
+	# 而解释器随机器漂移会让产物名与宿主对不上。取值由 CMakePresets.json 按平台给出
+	# （Windows 3.14 / WSL 3.12），不写本机路径，故两台机器同一平台得到同一个 ABI 标签。
+	if(NOT QUANTTRADING_PYTHON_VERSION)
+		message(FATAL_ERROR "QUANTTRADING_PYTHON_VERSION is not set: pass -DQUANTTRADING_PYTHON_VERSION=<major.minor> (CMakePresets.json supplies it).")
+	endif()
+	find_package(Python3 ${QUANTTRADING_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Interpreter Development.Module)
+	message(STATUS "Python3: ${Python3_VERSION} (${Python3_EXECUTABLE})")
 	# pybind11 由 pip 提供，用 `python -m pybind11 --cmakedir` 定位其 CMake 配置目录
 	execute_process(COMMAND "${Python3_EXECUTABLE}" -m pybind11 --cmakedir
 		RESULT_VARIABLE QUANTTRADING_PYBIND11_RC

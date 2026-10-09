@@ -11,7 +11,8 @@
         "CMAKE_CXX_COMPILER": "cl.exe",
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/../Libs/QuantTrading/x64-windows",
         "CMAKE_DISABLE_FIND_PACKAGE_ICU": "ON",
-        "CMAKE_BUILD_PARALLEL_LEVEL": "4"
+        "CMAKE_BUILD_PARALLEL_LEVEL": "4",
+        "QUANTTRADING_PYTHON_VERSION": "3.14"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
@@ -47,7 +48,8 @@
       "cmakeExecutable": "cmake",
       "cacheVariables": {
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/../Libs/QuantTrading/x64-linux",
-        "CMAKE_DISABLE_FIND_PACKAGE_ICU": "ON"
+        "CMAKE_DISABLE_FIND_PACKAGE_ICU": "ON",
+        "QUANTTRADING_PYTHON_VERSION": "3.12"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
       "vendor": {

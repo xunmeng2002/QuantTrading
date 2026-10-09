@@ -216,7 +216,7 @@ Only the CTP clients need these (`TestMdApi` / `TestTraderApi` / `MdOffer` / `Si
 
 `src/PythonBindings/` produces `QuantTrading.<abi>.pyd` (`.so` on WSL / Linux) for Python-side strategies.
 It is **not shipped in the Release package**: a `.pyd` is locked to the CPython **minor** ABI (one built
-for 3.11 can only be imported by 3.11), so bundling it would pin the package to a single minor version.
+for 3.14 can only be imported by 3.14), so bundling it would pin the package to a single minor version.
 Build it yourself when needed:
 
 1. Install pybind11 for the target interpreter: `pip install pybind11`. Without it the configure step
@@ -229,8 +229,15 @@ The artifact lands in `bin/<CONFIG>`; its name tells you whether the right inter
 
 | Platform | Expected artifact name | Interpreter |
 | --- | --- | --- |
-| Windows | `QuantTrading.cp311-win_amd64.pyd` | CPython 3.11 |
+| Windows | `QuantTrading.cp314-win_amd64.pyd` | CPython 3.14 |
 | WSL / Linux | `QuantTrading.cpython-312-x86_64-linux-gnu.so` | CPython 3.12 |
+
+The interpreter minor version is pinned per platform by `QUANTTRADING_PYTHON_VERSION` in
+`CMakePresets.json` (Windows `3.14`, WSL/Linux `3.12`); configure validates it with
+`find_package(Python3 <version> EXACT)` and logs the value actually found
+(`-- Python3: 3.14.7 (…)`). What the pin guarantees is **consistency within a platform**: two machines
+both produce a `.pyd` for Windows and a `.so` for WSL, under the same names. Artifact names differ
+across platforms by nature, so unifying them is neither needed nor possible.
 
 Loading resolves through the CWD or a `PYTHONPATH` injected by the host — for local debugging just
 `cd bin/<CONFIG> && python grid_strategy.py`; when a scheduling platform launches the engine it prepends

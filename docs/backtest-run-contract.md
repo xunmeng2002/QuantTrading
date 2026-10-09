@@ -25,6 +25,11 @@ VS WSL 源码副本的那一份由其源码同步带来）。引擎不为此做�
 > **豁免的边界**：本条**只**适用于只读输入。`DbHost`、`DbInitHost`、`DumpPath`、`result.json`
 > 等**产物**路径必须留在 CWD，任何绝对化都会让隔离静默失效。
 
+**引擎根与工作目录是两回事。** 扩展模块（Windows `QuantTrading.cp314-win_amd64.pyd`）、
+`BackTest.dll` 及其运行时 DLL 住在**引擎根**（本仓的 `bin/<CONFIG>`），由调度侧经 `PYTHONPATH`
+指向，**不**拷进 job 工作目录。引擎根里另有一份构建期生成的 `engine-version.txt`（首行即版本号，
+与 `CMakeLists.txt` 的 `project() VERSION` 同源），供调度侧记录「这一轮跑的是哪个引擎构建」。
+
 ---
 
 ## 2. 结果文件 `result.json`
