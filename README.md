@@ -322,6 +322,7 @@ cmake --build out/build/WSL-GCC-Release
 bash PackageLinuxRelease.sh                      # 默认 Release
 bash PackageLinuxRelease.sh --config Debug       # 取 Debug 产物
 bash PackageLinuxRelease.sh --output /tmp/engine # 自定义输出目录
+bash PackageLinuxRelease.sh --zip                # 自检通过后另打一个 zip 包
 bash PackageLinuxRelease.sh --force              # 目录非空时先清空再写
 ```
 
@@ -330,6 +331,11 @@ bash PackageLinuxRelease.sh --force              # 目录非空时先清空再�
 - **自带自检**：打包后立即跑四条——包内容（白名单 / 文件数 / 无子目录）、`ldd` 无缺失、RUNPATH 含
   `$ORIGIN`、解释器 `import` 落在包内；任一不过即非零退出。`engine-version.txt` 读不出会在自检**之前**
   就中止（属前置校验，不在这四条内）。注意：脚本这四条与契约的验收项**编号不同**。
+- **`--zip` 出包形态**：自检全过后，把发布目录打成 `QuantTrading-<版本>-linux-<架构>.zip`，落在发布
+  目录的**同级**（默认 `dist/`）；包内是**一个顶层目录**（同名去 `.zip`），12 个文件平铺其下——解压
+  即得一层可直接 `QUANT_ENGINE_ROOT` 指过去的目录，与平台侧「换版按版本留目录、不原地覆盖」的约定一致。
+  打包与包内校验只用解释器自带的 `zipfile`，不依赖 `zip(1)` / `unzip(1)`；失败即非零退出（不合格的包
+  不会被封装成"可交付的样子"）。
 - **默认拒绝覆盖**：输出目录已存在且非空时须显式 `--force`；`--force` 的递归删除只作用于它自己的
   输出目录，脚本不碰任何其它路径。
 - **调用方式**：本仓 `.sh` 一律 `100644`（`core.filemode=false`），须用 `bash <脚本>` 显式调用。

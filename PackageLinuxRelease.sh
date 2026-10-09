@@ -10,11 +10,17 @@
 #   --config <Release|Debug>  取哪套构建产物（默认 Release）
 #   --output <dir>            发布目录（默认 <仓根>/dist/linux-engine）
 #   --libs <dir>              Spark / DbAdapters 安装树根（默认 <仓根>/../Libs）
+#   --zip                     自检通过后，另打一个 zip 包（见下「zip 包形态」）
 #   --force                   输出目录已存在且非空时，先递归清空它
 #   -h, --help                打印本帮助
 #
 # 只能在 WSL / Linux 构建树里运行：产物是 .so，且 ../Libs 下需有 x64-linux 安装树。
 # --force 的递归删除**只作用于 --output 指定的那个目录**，脚本不删任何其它路径。
+#
+# zip 包形态（--zip）：落在发布目录的**同级**，名字 QuantTrading-<版本>-linux-<架构>.zip；
+# 包内是**一个顶层目录**（同名去 .zip），12 个文件平铺其下——与平台侧「换版按版本留目录、
+# 不原地覆盖」的约定一致（QuantPlatform docs/platform-plan.md）。解压后把 QUANT_ENGINE_ROOT
+# 指到那一层即可。打包与校验只用解释器自带的 zipfile，不依赖 zip(1) / unzip(1)。
 
 set -euo pipefail
 
@@ -24,7 +30,9 @@ ConfigName=Release
 OutputDirectory=
 LibsRoot=
 ForceOverwrite=0
+CreateZipArchive=0
 PythonExecutable=${PYTHON:-python3}
+ProjectName=QuantTrading
 
 # 白名单：逐条列名，不做目录扫描（契约 §7 的表）
 EngineBinRuntimeNames=(libBackTest.so)
@@ -232,6 +240,65 @@ SelfCheckPackageContent() {
     fi
 }
 
+# 把发布目录打成一个 zip：包内是**一个**顶层目录，12 个文件平铺其下（解压即得「按版本留」的那一层）。
+# 只用解释器自带的 zipfile：zip(1) / unzip(1) 不保证每台机器都有，而解释器是本引擎的硬要求。
+# 打完立刻重开校验（能读出、条目数一致、无嵌套目录）——包坏了要在脚本里就报出来，不能留到部署时。
+CreateReleaseZipArchive() {
+    local ArchiveRootName ArchivePath ArchiveResult
+    ArchiveRootName="$ProjectName-$EngineVersion-linux-$(uname -m)"
+    ArchivePath="$(dirname -- "$OutputDirectory")/$ArchiveRootName.zip"
+    if [ -e "$ArchivePath" ]; then
+        printf '覆盖既有 zip：%s\n' "$ArchivePath" >&2
+    fi
+    if ! ArchiveResult=$("$PythonExecutable" - "$ArchivePath" "$ArchiveRootName" "$OutputDirectory" <<'PYTHON_ARCHIVE_SCRIPT'
+import os
+import sys
+import zipfile
+
+archive_path = sys.argv[1]
+archive_root_name = sys.argv[2]
+source_directory = os.path.realpath(sys.argv[3])
+
+file_names = sorted(
+    name for name in os.listdir(source_directory)
+    if os.path.isfile(os.path.join(source_directory, name))
+)
+if not file_names:
+    sys.exit(f"发布目录里没有文件，拒绝打出空包：{source_directory}")
+
+with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
+    for file_name in file_names:
+        file_path = os.path.join(source_directory, file_name)
+        entry = zipfile.ZipInfo.from_file(file_path, f"{archive_root_name}/{file_name}")
+        entry.compress_type = zipfile.ZIP_DEFLATED
+        with open(file_path, "rb") as source_file, archive.open(entry, "w") as archived_file:
+            while chunk := source_file.read(1024 * 1024):
+                archived_file.write(chunk)
+
+with zipfile.ZipFile(archive_path) as archive:
+    broken_name = archive.testzip()
+    if broken_name is not None:
+        sys.exit(f"zip 校验失败，首个损坏条目：{broken_name}")
+    archived_names = [name for name in archive.namelist() if not name.endswith("/")]
+    if len(archived_names) != len(file_names):
+        sys.exit(f"zip 里条目数 {len(archived_names)} 与发布文件数 {len(file_names)} 不符")
+    stray_names = [
+        name for name in archived_names
+        if name.count("/") != 1 or name.split("/")[0] != archive_root_name
+    ]
+    if stray_names:
+        sys.exit(f"zip 里出现不在顶层目录下的条目：{stray_names}")
+
+print(f"zip 包：{archive_path}")
+print(f"包内顶层目录：{archive_root_name}/（{len(file_names)} 个文件）")
+print(f"zip 大小：{os.path.getsize(archive_path)} 字节")
+PYTHON_ARCHIVE_SCRIPT
+    ); then
+        Fail "打 zip 失败：$ArchiveResult" 5
+    fi
+    printf '\n%s\n' "$ArchiveResult"
+}
+
 while [ $# -gt 0 ]; do
     case "$1" in
         --config|--output|--libs)
@@ -257,6 +324,10 @@ while [ $# -gt 0 ]; do
             ;;
         --force)
             ForceOverwrite=1
+            shift
+            ;;
+        --zip)
+            CreateZipArchive=1
             shift
             ;;
         -h|--help)
@@ -377,6 +448,10 @@ ls -l -- "$OutputDirectory"
 if [ "$SelfCheckFailureCount" -gt 0 ]; then
     printf '\n自检未通过：%s 项（契约 §8）\n' "$SelfCheckFailureCount" >&2
     exit 4
+fi
+# 只在自检全过之后打 zip：不合格的包不该被封装成「可交付的样子」
+if [ "$CreateZipArchive" -eq 1 ]; then
+    CreateReleaseZipArchive
 fi
 if [ "$SelfCheckWarningCount" -gt 0 ]; then
     printf '\n自检四条全过（契约 §8），另有 %s 条警告（不阻断）\n' "$SelfCheckWarningCount"

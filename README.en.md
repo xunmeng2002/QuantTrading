@@ -335,6 +335,7 @@ full contract (12-file manifest and four self-checks) is in
 bash PackageLinuxRelease.sh                      # Release by default
 bash PackageLinuxRelease.sh --config Debug       # use Debug artifacts
 bash PackageLinuxRelease.sh --output /tmp/engine # custom output directory
+bash PackageLinuxRelease.sh --zip                # additionally emit a zip after the checks pass
 bash PackageLinuxRelease.sh --force              # clear a non-empty dir first
 ```
 
@@ -347,6 +348,14 @@ bash PackageLinuxRelease.sh --force              # clear a non-empty dir first
   interpreter `import` resolving inside the package; any failure exits non-zero. An unreadable
   `engine-version.txt` aborts earlier (a precondition, not one of the four). Note these four differ in
   numbering from the contract's acceptance items.
+- **`--zip` archive form**: once every self-check passes, the release directory is packed into
+  `QuantTrading-<version>-linux-<arch>.zip`, written **beside** the release directory (in `dist/` by
+  default). Inside the archive there is a **single top-level directory** (the same name minus `.zip`)
+  holding the 12 files flat — extracting it yields exactly one directory to point `QUANT_ENGINE_ROOT`
+  at, matching the platform's "keep one versioned directory per release, never overwrite in place"
+  convention. Packing and archive verification use only the interpreter's built-in `zipfile` (no
+  dependency on `zip(1)` / `unzip(1)`); any failure exits non-zero, so a bad package is never dressed
+  up as a deliverable.
 - **Refuses to overwrite by default**: a non-empty output directory requires an explicit `--force`;
   `--force`'s recursive delete affects only its own output directory, never any other path.
 - **Invocation**: every `.sh` in this repo is `100644` (`core.filemode=false`), so call it as

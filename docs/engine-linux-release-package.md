@@ -277,13 +277,21 @@ file(GENERATE OUTPUT ${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/engine-version.txt CONTEN
 - 排除：`*.a`、`*.pdb`、`include/`、`lib/cmake/`、任何 `.so.*` 调试拆分；
 - 排除：六个 API 中间层（§2.1）；
 - 排除：`libMysqlWrapper.so`、`libMariadbWrapper.so`（各 11–15 MB，按需另定）；
-- 输出：**一个目录**，无子目录；
+- 输出：**一个目录**，无子目录（这是**发布目录**的形态，即下面 `--zip` 解压出来的那一层）；
 - 白名单任一文件缺失即**非零退出并点名**，不得静默少文件；
 - 版本号只从 `engine-version.txt` 读，脚本不得手写（见 §6）。
 
-> 引擎侧实现：仓根 `PackageLinuxRelease.sh`（`--config` / `--output` / `--libs` / `--force`）。
+**归档形态（可选，`--zip`）**：把发布目录打成
+`QuantTrading-<版本>-linux-<架构>.zip`，包内是**一个**顶层目录（同名去 `.zip`），12 个文件平铺其下。
+本条不改变上面「一个目录、无子目录」的要求——zip 只是那一层目录的封装，解压后仍是扁平单目录。
+平台侧「换版按版本留目录、不原地覆盖」的约定因此天然满足：解压即得一层可直接
+`QUANT_ENGINE_ROOT` 指过去的目录（`QuantPlatform` 的 `docs/platform-plan.md`）。归档一律在 §8
+自检**全过之后**才产出。
+
+> 引擎侧实现：仓根 `PackageLinuxRelease.sh`（`--config` / `--output` / `--libs` / `--zip` / `--force`）。
 > 它把上表与「排除」两节逐条写成白名单，缺失即点名且非零退出，并内嵌 §8 的判据；
-> 默认拒绝写非空输出目录，`--force` 只清它自己那个输出目录。
+> 默认拒绝写非空输出目录，`--force` 只清它自己那个输出目录。`--zip` 的打包与包内校验（可读、
+> 条目数一致、无嵌套目录）只用解释器自带的 `zipfile`，不引入 `zip(1)` / `unzip(1)` 依赖。
 
 ## 8. 引擎侧自检（全过才算合格）
 
