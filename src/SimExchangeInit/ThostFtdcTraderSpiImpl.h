@@ -53,8 +53,8 @@ private:
 	AccountInfo* accountInfo_;
 	std::string newPassword_;
 
-	std::vector<QuantTrading::Exchange*>* exchanges_;
-	std::vector<QuantTrading::Product*>* products_;
-	std::vector<QuantTrading::Instrument*>* instruments_;
+	std::vector<QuantTrading::Exchange*> exchanges_;
+	std::vector<QuantTrading::Product*> products_;
+	std::vector<QuantTrading::Instrument*> instruments_;
 };
 }

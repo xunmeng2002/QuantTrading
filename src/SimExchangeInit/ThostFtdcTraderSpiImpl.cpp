@@ -16,9 +16,6 @@ namespace QuantTrading::SimExchangeInit
 CThostFtdcTraderSpiImpl::CThostFtdcTraderSpiImpl(CThostFtdcTraderApi* traderApi, QuantTrading::Mdb* mdb)
 	:traderApi_(traderApi), mdb_(mdb), requestId_(0), accountInfo_(nullptr), qryFinished_(false)
 {
-	exchanges_ = new vector<Exchange*>();
-	products_ = new vector< Product*>();
-	instruments_ = new vector<Instrument*>();
 }
 void CThostFtdcTraderSpiImpl::OnFrontConnected()
 {
@@ -56,7 +53,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryExchange(CThostFtdcExchangeField* pExchang
 	Exchange* exchange = Exchange::Allocate();
 	Utility::Strcpy(exchange->ExchangeId, pExchange->ExchangeID);
     Utility::Strcpy(exchange->ExchangeName, GbkToUtf8(pExchange->ExchangeName).c_str());
-	exchanges_->push_back(exchange);
+	exchanges_.push_back(exchange);
 	if (bIsLast)
 	{
 		mdb_->Exchange->BatchInsert(exchanges_);
@@ -107,7 +104,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryProduct(CThostFtdcProductField* pProduct, 
 	product->MaxLimitOrderVolume = pProduct->MaxLimitOrderVolume;
 	product->MinLimitOrderVolume = pProduct->MinLimitOrderVolume;
 	memset(product->SessionName, 0, sizeof(product->SessionName));
-	products_->push_back(product);
+	products_.push_back(product);
 	if (bIsLast)
 	{
 		mdb_->Product->BatchInsert(products_);
@@ -163,7 +160,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryInstrument(CThostFtdcInstrumentField* pIns
 	instrument->MaxLimitOrderVolume = pInstrument->MaxLimitOrderVolume;
 	instrument->MinLimitOrderVolume = pInstrument->MinLimitOrderVolume;
 	memset(instrument->SessionName, 0, sizeof(instrument->SessionName));
-	instruments_->push_back(instrument);
+	instruments_.push_back(instrument);
 	if (bIsLast)
 	{
 		mdb_->Instrument->BatchInsert(instruments_);

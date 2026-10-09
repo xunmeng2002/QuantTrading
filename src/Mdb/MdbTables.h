@@ -24,7 +24,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(TradingDay* record);
-		void BatchInsert(std::vector<TradingDay*>* records);
+		void BatchInsert(std::vector<TradingDay*>& records);
 		void Erase(TradingDay* record);
 		bool Update(TradingDay* const oldRecord, TradingDay* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -52,7 +52,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(Exchange* record);
-		void BatchInsert(std::vector<Exchange*>* records);
+		void BatchInsert(std::vector<Exchange*>& records);
 		void Erase(Exchange* record);
 		bool Update(Exchange* const oldRecord, Exchange* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -80,7 +80,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(Product* record);
-		void BatchInsert(std::vector<Product*>* records);
+		void BatchInsert(std::vector<Product*>& records);
 		void Erase(Product* record);
 		bool Update(Product* const oldRecord, Product* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -108,7 +108,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(HotInstrument* record);
-		void BatchInsert(std::vector<HotInstrument*>* records);
+		void BatchInsert(std::vector<HotInstrument*>& records);
 		void Erase(HotInstrument* record);
 		int EraseByTradingDayIndex(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay);
 		bool Update(HotInstrument* const oldRecord, HotInstrument* const newRecord, bool updateDB = true);
@@ -138,7 +138,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(Instrument* record);
-		void BatchInsert(std::vector<Instrument*>* records);
+		void BatchInsert(std::vector<Instrument*>& records);
 		void Erase(Instrument* record);
 		int EraseByExchangeIdIndex(const ExchangeIdType& ExchangeId);
 		bool Update(Instrument* const oldRecord, Instrument* const newRecord, bool updateDB = true);
@@ -168,7 +168,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(DepthMarketData* record);
-		void BatchInsert(std::vector<DepthMarketData*>* records);
+		void BatchInsert(std::vector<DepthMarketData*>& records);
 		void Erase(DepthMarketData* record);
 		bool Update(DepthMarketData* const oldRecord, DepthMarketData* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -196,7 +196,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(BarMarketData* record);
-		void BatchInsert(std::vector<BarMarketData*>* records);
+		void BatchInsert(std::vector<BarMarketData*>& records);
 		void Erase(BarMarketData* record);
 		bool Update(BarMarketData* const oldRecord, BarMarketData* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -224,7 +224,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(MdSubscribe* record);
-		void BatchInsert(std::vector<MdSubscribe*>* records);
+		void BatchInsert(std::vector<MdSubscribe*>& records);
 		void Erase(MdSubscribe* record);
 		bool Update(MdSubscribe* const oldRecord, MdSubscribe* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -252,7 +252,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(MdUser* record);
-		void BatchInsert(std::vector<MdUser*>* records);
+		void BatchInsert(std::vector<MdUser*>& records);
 		void Erase(MdUser* record);
 		bool Update(MdUser* const oldRecord, MdUser* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -280,7 +280,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(MdUserLoginSession* record);
-		void BatchInsert(std::vector<MdUserLoginSession*>* records);
+		void BatchInsert(std::vector<MdUserLoginSession*>& records);
 		void Erase(MdUserLoginSession* record);
 		int EraseBySessionIdIndex(const SessionIdType& SessionId);
 		int EraseByMdUserIdIndex(const UserIdType& MdUserId);
@@ -312,7 +312,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(PrimaryAccount* record);
-		void BatchInsert(std::vector<PrimaryAccount*>* records);
+		void BatchInsert(std::vector<PrimaryAccount*>& records);
 		void Erase(PrimaryAccount* record);
 		int EraseByOfferIdIndex(const OfferIdType& OfferId);
 		bool Update(PrimaryAccount* const oldRecord, PrimaryAccount* const newRecord, bool updateDB = true);
@@ -342,7 +342,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(Account* record);
-		void BatchInsert(std::vector<Account*>* records);
+		void BatchInsert(std::vector<Account*>& records);
 		void Erase(Account* record);
 		bool Update(Account* const oldRecord, Account* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -370,7 +370,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(Capital* record);
-		void BatchInsert(std::vector<Capital*>* records);
+		void BatchInsert(std::vector<Capital*>& records);
 		void Erase(Capital* record);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
 		bool Update(Capital* const oldRecord, Capital* const newRecord, bool updateDB = true);
@@ -400,7 +400,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(Position* record);
-		void BatchInsert(std::vector<Position*>* records);
+		void BatchInsert(std::vector<Position*>& records);
 		void Erase(Position* record);
 		int EraseByAccountIndex(const DateType& TradingDay, const AccountIdType& AccountId);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
@@ -432,7 +432,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(PositionDetail* record);
-		void BatchInsert(std::vector<PositionDetail*>* records);
+		void BatchInsert(std::vector<PositionDetail*>& records);
 		void Erase(PositionDetail* record);
 		int EraseByTradeMatchIndex(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
 		int EraseByTradingDayIndex(const DateType& TradingDay);
@@ -464,7 +464,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(Order* record);
-		void BatchInsert(std::vector<Order*>* records);
+		void BatchInsert(std::vector<Order*>& records);
 		void Erase(Order* record);
 		int EraseByAccountIdIndex(const DateType& TradingDay, const AccountIdType& AccountId);
 		bool Update(Order* const oldRecord, Order* const newRecord, bool updateDB = true);
@@ -495,7 +495,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(Trade* record);
-		void BatchInsert(std::vector<Trade*>* records);
+		void BatchInsert(std::vector<Trade*>& records);
 		void Erase(Trade* record);
 		int EraseByAccountIdIndex(const DateType& TradingDay, const AccountIdType& AccountId);
 		bool Update(Trade* const oldRecord, Trade* const newRecord, bool updateDB = true);
@@ -525,7 +525,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(AccountLoginSession* record);
-		void BatchInsert(std::vector<AccountLoginSession*>* records);
+		void BatchInsert(std::vector<AccountLoginSession*>& records);
 		void Erase(AccountLoginSession* record);
 		int EraseBySessionIdIndex(const SessionIdType& SessionId);
 		int EraseByAccountIdIndex(const AccountIdType& AccountId);
@@ -557,7 +557,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(PrimaryAccountLoginSession* record);
-		void BatchInsert(std::vector<PrimaryAccountLoginSession*>* records);
+		void BatchInsert(std::vector<PrimaryAccountLoginSession*>& records);
 		void Erase(PrimaryAccountLoginSession* record);
 		int EraseBySessionIdIndex(const SessionIdType& SessionId);
 		int EraseByPrimaryAccountIdIndex(const AccountIdType& PrimaryAccountId);
@@ -589,7 +589,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(CommissionGroup* record);
-		void BatchInsert(std::vector<CommissionGroup*>* records);
+		void BatchInsert(std::vector<CommissionGroup*>& records);
 		void Erase(CommissionGroup* record);
 		bool Update(CommissionGroup* const oldRecord, CommissionGroup* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
@@ -617,7 +617,7 @@ namespace QuantTrading
 		void UnlockShared();
 		virtual void InitDb() override;
 		bool Insert(BaseCommission* record);
-		void BatchInsert(std::vector<BaseCommission*>* records);
+		void BatchInsert(std::vector<BaseCommission*>& records);
 		void Erase(BaseCommission* record);
 		bool Update(BaseCommission* const oldRecord, BaseCommission* const newRecord, bool updateDB = true);
 		virtual void TruncateTables() override;
