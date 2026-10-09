@@ -43,6 +43,7 @@ pumptemp.py
 /bin
 /lib
 /build
+/dist
 /MdBaoStock
 *.bat
 __pycache__/
