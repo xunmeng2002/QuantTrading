@@ -741,6 +741,24 @@
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
 
+### Q.34 · 2026-09-13 （第九批复核，属生成层 + Spark 侧）解析失败路径上已分配的 package 未回收（**2026-10-09 结案：代码在 Spark 仓，`PackageReader` 失败路径实为已回收**）
+
+- **解析失败路径上已分配的 package 未回收（待决策，属生成层 + Spark 侧）**：`Protocol::OnRecv` 解析失败即断 TCP，但失败前已 `CreatePackage` 出来的对象无人释放，可耗对象池——2026-09-13 复核：`src/Network/Protocol/{PackageReader,Protocol}.cpp` 里 `Deallocate` 只用于 `PackageReader` 自身（`:35`、`Protocol.cpp:131`），**没有一处回收 package**，原记录成立。第九批的网络侧过滤只挡在 `CreatePackage` **之前**（被拒 ID 不分配），未触及这条失败路径。同类但不同源的**另一处已修，2026-10-09，见 ✅ 第三批**：`src/BackTest/SimExchange.cpp` 的 `HandleSubMarketDataFinished` 里「Cannot Find HotInstrument」分支原先 `continue` 跳过循环尾的 `::Deallocate(reqSubMd)`（原记 `:500`/`:535` 已漂移，实为 `:639` 与循环尾 `:674`；另两个 `continue` 早已有释放），已补 `::Deallocate(reqSubMd);`。**本条本体——`Protocol::OnRecv` 解析失败前已 `CreatePackage` 的对象无人回收——仍未修。**
+
+> ⚠️ **2026-10-09 结案（本仓零改动）**：原记录**归错了仓**——本仓根本没有 `src/Network/`（`D:\Gitee\QuantTrading\src\Network` 不存在），该路径属 **Spark** 仓。到 Spark 取第一手证据：`D:\Gitee\Spark\src\Network\Protocol\PackageReader.cpp` 的 `ParsePackage` 在 `CreatePackage`（`:140` / `:226`）之后的两条失败路径（`:157` 与 `:243`，各自 `FromXtpStream` / `FromStepStream` 返回 `false`）上**都调了 `package->Deallocate();` 再 `package = nullptr; return false;`**；`Protocol.cpp:170-174` 的失败分支随即 `ioBase_->DisConnect(sessionId); break;`。即**解析失败时该包确已被回收**，「无人释放」的前提被证伪。本仓侧零改动，条目关闭。
+
+### Q.33 · 2026-10-09 （第四批审查）`BackTestSpiImpl` 的两处行情基准由裸 `new` 分配、全程无 `delete`（**2026-10-09 第七批半关闭**：泄漏已修，余两小点留在主文件）
+
+- **`BackTestSpiImpl` 的两处行情基准由裸 `new` 分配、全程无 `delete`（2026-10-09 第四批审查发现，属既有行为，未改）**：`test/TestBackTest/BackTestSpiImpl.cpp` 的 `lastOrderTickMd_ = new DepthMarketDataField();` 与 `lastOrderBarMd_ = new BarMarketDataField();` 后无任何释放，类也无析构函数，每进程各泄漏一次（**非本批引入**）；且 `new T()` 的零初始化紧接 `memcpy` 覆盖，属冗余。同一函数族还缺入参判空（`GridStrategy::OnBar` 有 `barMarketData == nullptr` 校验，此处没有）。**未改的理由**：改值成员（`std::optional` / `std::unique_ptr`）或补析构属**内存管理改动**，按 Harness §3 须先经用户确认。
+
+> ⚠️ **2026-10-09 第七批半关闭**：泄漏一项**已修**——补 `~BackTestSpiImpl()` 回收两帧基准，`Main.cpp` 在 `api->Join()` 之后补 `delete spi;`（`RegisterSpi` 只存指针、不接管所有权；提交 `QuantTrading` `8237c0a`）。**余两小点（`new T()` 冗余零初始化、同类函数族缺入参判空）仍未决，留在主文件 ❓ 区。**
+
+### Q.32 · 2026-10-05 （第二十二批顺带发现）`ThostFtdcTraderSpiImpl` 的三个批插容器在 `BatchInsert` 之后悬垂（**2026-10-09 第七批已修**：成员改按值持有）
+
+- **`ThostFtdcTraderSpiImpl` 的三个批插容器在 `BatchInsert` 之后悬垂（2026-10-05 第二十二批中顺带发现，**既有缺陷**，未改）**：`src/SimExchangeInit/ThostFtdcTraderSpiImpl.cpp` 在 `:19-21` 各 `new` 一个 `std::vector<...>*` 存进成员 `exchanges_` / `products_` / `instruments_`，`:62`、`:113`、`:169` 分别交给 `mdb_->Exchange->BatchInsert(exchanges_)` 等；而 `BatchInsert` 的**最后一句是 `delete records;`**——容器所有权整个归表、用完即删。**旧实现与新实现都是这样**，故这不是本次归属统一引入的：但旧实现下 `BatchInsert` 会把元素拷成副本，调用方那批元素虽也随容器一起被删（同样悬垂），症状一模一样，属**同一类既有缺陷**。后果是那几个成员指针在第一次 `BatchInsert` 之后即失效，**重连或二次查询时再用它们就是 use-after-free**（显然的内存安全缺陷）。**本批未改**：修法有数种（成员改存对象而非指针、改用栈上局部容器、或 `BatchInsert` 交出容器所有权时同步清空成员），且涉及该类的重连流程语义，**需用户裁定后再动**。
+
+> ⚠️ **2026-10-09 第七批已修**：随 `BatchInsert` 契约改为「元素归表、容器由调用方按值自持」（形参由 `std::vector<T*>*` 改 `std::vector<T*>&`，末尾 `delete records;` 改 `records.clear();`），三个成员由 `new` 出的指针改为**按值 `std::vector<...>`**、构造函数里三行 `new` 删除。悬垂自此不存在。改动落在**模板**（`Templates/Cpp/Mdb/MdbTables.{h,cpp}.tpl`）并重灌两仓生成物。
+
 ### Q.31 · 2026-09-13 `PrimaryAccount.IsAllowLogin` 只被写入、从未被读（**2026-10-09 已修**：登录路径补守卫，行为变更待用户确认）
 
 - **`PrimaryAccount.IsAllowLogin` 只被写入、从未被读（2026-09-13 记录；原"登录路径两个小缺口"的 ① 已修，见归档 `D.46`）**：`Model/Tables/Tables.xml:270` 的该字段全仓**只被写入、从未被读**——播种器 `src/SimExchangeInit/Init.cpp:69` 无条件置 `true`，生成代码只在字段注册与 `Dump` 里出现（`src/Mdb/MdbStructs.cpp:510/531/537/541`），没有任何一处参与登录判定，故 `IsAllowLogin = false` 的主账号**仍能登录成功**。**候选修法**：在密码校验后补一行 `if (!primaryAccount->IsAllowLogin) { errorId = ErrorAccountForbidden; }`（`ErrorAccountForbidden` = 0xA001，已存在），属登录路径上的一行守卫。用户 2026-09-13 指示暂缓。
