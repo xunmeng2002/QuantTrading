@@ -230,6 +230,10 @@ void StrategyBase::OnRspCancelOrder(const ReqCancelOrderField* reqCancelOrder, c
 }
 void StrategyBase::OnRtnOrder(const OrderField* order)
 {
+	if (order == nullptr)
+	{
+		return;
+	}
 	orders_[order->ClientOrderId] = *order;
 	if (order->OrderId != 0)
 	{
@@ -241,6 +245,10 @@ void StrategyBase::OnRtnOrder(const OrderField* order)
 }
 void StrategyBase::OnRtnTrade(const TradeField* trade)
 {
+	if (trade == nullptr)
+	{
+		return;
+	}
 	auto& instrumentState = instrumentStates_[trade->InstrumentId];
 	bool isOpenTrade = trade->OffsetFlag == OffsetFlagType::Open;
 	if (trade->Direction == DirectionType::Buy && isOpenTrade)
