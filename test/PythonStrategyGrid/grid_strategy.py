@@ -277,7 +277,7 @@ _INVALID_ANCHOR_PRICE = sys.float_info.max
 
 
 def _is_usable_anchor_price(anchor_price: float) -> bool:
-    """锚价可用性判据，与 C++ 孪生 GridStrategy::IsUsableAnchorPrice 同源。"""
+    """锚价可用性判据，与 C++ 孪生 QuantTrading::IsUsablePrice（src/QuantTradingCommon/QuantUtility.h）同源。"""
     return anchor_price > 0 and anchor_price != _INVALID_ANCHOR_PRICE and not math.isinf(anchor_price)
 
 

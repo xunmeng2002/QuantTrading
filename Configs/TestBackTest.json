@@ -1,7 +1,9 @@
 {
-	"LogLevel": 2,
-	"AccountId": "18511899894",
-	"ExchangeId": "SZSE",
-	"InstrumentId": "000001"
+  "LogLevel": 2,
+  "AccountId": "18511899894",
+  "ExchangeId": "SSE",
+  "InstrumentId": "600519",
+  "OrderTriggerRatio": 0.05,
+  "OrderVolume": 1
 }
 

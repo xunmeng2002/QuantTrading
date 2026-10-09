@@ -40,6 +40,8 @@ void Config::Load(const char* fileName)
 	AccountId = root["AccountId"].asString();
 	ExchangeId = root["ExchangeId"].asString();
 	InstrumentId = root["InstrumentId"].asString();
+	OrderTriggerRatio = root["OrderTriggerRatio"].asDouble();
+	OrderVolume = root["OrderVolume"].asInt();
 	Print();
 }
 
@@ -51,6 +53,8 @@ void Config::Print()
 	printf("AccountId:%s\n", AccountId.c_str());
 	printf("ExchangeId:%s\n", ExchangeId.c_str());
 	printf("InstrumentId:%s\n", InstrumentId.c_str());
+	printf("OrderTriggerRatio:%f\n", OrderTriggerRatio);
+	printf("OrderVolume:%d\n", OrderVolume);
 }
 
 }

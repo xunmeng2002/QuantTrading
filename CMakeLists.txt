@@ -247,6 +247,12 @@ target_link_libraries(UnitTests PRIVATE QuantTradingInterface QuantTradingCommon
 # GridStrategy 状态机直接进单测（不经 Config 生成代码，参数由 GridParams 注入）
 target_sources(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid/GridStrategy.cpp)
 target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestStrategyGrid)
+# 回测宿主的行情触发逻辑直接进单测（同样不经 Config 生成代码，参数由 BackTestSpiParams 注入）；
+# BackTestSpiImpl 的多数回调是 BackTestSpiMiddle 的转发，基类实现须一并编译进来
+target_sources(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestBackTest/BackTestSpiImpl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/ApiMiddles/BackTestApiMiddle/BackTestSpiMiddle.cpp)
+target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test/TestBackTest
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/ApiMiddles/BackTestApiMiddle)
 # 结算单测复用模拟盘表清单构造 Mdb
 target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/SimExchange)
 # 计费单测断言回测表清单已注册费率表（BackTest 的 src_dir 只是 PRIVATE，读 BackTestTableList.h 要自己加这条）

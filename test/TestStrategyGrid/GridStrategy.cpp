@@ -1,26 +1,12 @@
 #include "GridStrategy.h"
+#include "QuantUtility.h"
 #include <Spark/Core/Logger/Logger.h>
-#include <cmath>
-#include <limits>
 #include <stdexcept>
 
 using namespace Spark::Core;
 
 namespace QuantTrading::TestStrategyGrid
 {
-namespace
-{
-// 锚价无效的两处口径：DB 适配层把 NULL 价写成 +inf 哨兵（DbAdapters DuckdbWrapper 的 WriteNullSentinel），
-// max() 是另一处占位值；两者都不是可用锚价
-constexpr PriceType InvalidAnchorPrice = std::numeric_limits<PriceType>::max();
-}
-
-// 判据与 Python 孪生 test/PythonStrategyGrid/grid_strategy.py 的 _is_usable_anchor_price 同源
-bool GridStrategy::IsUsableAnchorPrice(PriceType anchorPrice)
-{
-	return anchorPrice > 0 && anchorPrice != InvalidAnchorPrice && !std::isinf(anchorPrice);
-}
-
 GridStrategy::GridStrategy(QuantTrading::BackTestApi* backTestApi, const char* accountId, const GridParams& gridParams)
 	:StrategyBase(backTestApi, accountId), params_(gridParams)
 {
@@ -62,7 +48,7 @@ void GridStrategy::OnTick(const DepthMarketDataField* depthMarketData)
 		return;
 	}
 	PriceType anchorPrice = depthMarketData->LastPrice;
-	if (!IsUsableAnchorPrice(anchorPrice))
+	if (!QuantTrading::IsUsablePrice(anchorPrice))
 	{
 		return;
 	}
@@ -79,7 +65,7 @@ void GridStrategy::OnBar(const BarMarketDataField* barMarketData)
 		return;
 	}
 	PriceType anchorPrice = barMarketData->Close;
-	if (!IsUsableAnchorPrice(anchorPrice))
+	if (!QuantTrading::IsUsablePrice(anchorPrice))
 	{
 		return;
 	}

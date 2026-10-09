@@ -4,5 +4,7 @@
 		<item name="AccountId" type="string"></item>
 		<item name="ExchangeId" type="string"></item>
 		<item name="InstrumentId" type="string"></item>
+		<item name="OrderTriggerRatio" type="double"></item>
+		<item name="OrderVolume" type="int"></item>
 	</items>
 </config>

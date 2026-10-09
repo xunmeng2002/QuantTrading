@@ -1,15 +1,29 @@
 #include "BackTestSpiImpl.h"
+#include "QuantUtility.h"
 #include <Spark/Core/Logger/Logger.h>
+#include <stdexcept>
 #include <string.h>
+
+using namespace Spark::Core;
 
 namespace QuantTrading::TestBackTest
 {
-BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi, const Config& config)
-	:backTestApi_(backTestApi), lastOrderTickMd_(nullptr), lastOrderBarMd_(nullptr), maxRequestId_(0), maxClientOrderId_(0)
+BackTestSpiImpl::BackTestSpiImpl(BackTestApi* backTestApi, const BackTestSpiParams& params)
+	:params_(params), backTestApi_(backTestApi), lastOrderTickMd_(nullptr), lastOrderBarMd_(nullptr), maxRequestId_(0), maxClientOrderId_(0)
 {
-	strcpy(accountId_, config.AccountId.c_str());
-	strcpy(exchangeId_, config.ExchangeId.c_str());
-	strcpy(instrumentId_, config.InstrumentId.c_str());
+	if (params_.OrderTriggerRatio <= 0.0 || params_.OrderTriggerRatio >= 1.0)
+	{
+		WriteLog(LogLevel::Error, "BackTestSpiImpl rejected: OrderTriggerRatio:%f, must be in (0, 1)", params_.OrderTriggerRatio);
+		throw std::logic_error("OrderTriggerRatio must be in (0, 1)");
+	}
+	if (params_.OrderVolume < 1)
+	{
+		WriteLog(LogLevel::Error, "BackTestSpiImpl rejected: OrderVolume:%d, need >= 1", params_.OrderVolume);
+		throw std::logic_error("OrderVolume must be at least 1");
+	}
+	strcpy(accountId_, params_.AccountId.c_str());
+	strcpy(exchangeId_, params_.ExchangeId.c_str());
+	strcpy(instrumentId_, params_.InstrumentId.c_str());
 }
 
 void BackTestSpiImpl::OnConnected()
@@ -24,54 +38,40 @@ void BackTestSpiImpl::OnRspSubMarketData(const RspSubMarketDataField* rspSubMark
 {
 	BackTestSpiMiddle::OnRspSubMarketData(rspSubMarketData, rspInfo, requestId, isLast);
 }
+// 首帧只建基准并以本帧价开一手；此后与「上一笔下单时的价格」比较，越阈反向开单并重锚基准价。
+// 基准价始终是「上一笔下单时的价格」，故同向连续小幅波动不会累积成一次触发。
+// 价格不可用即不动作：不可用价既不得起基准、也不得覆盖基准（否则基准会落进不可用态）
+template <typename MdField, typename PriceReader>
+void BackTestSpiImpl::ApplyPriceTrigger(const MdField* currentFrame, MdField*& lastOrderFrame, PriceReader readPrice)
+{
+	const PriceType currentPrice = readPrice(currentFrame);
+	if (lastOrderFrame == nullptr)
+	{
+		if (!QuantTrading::IsUsablePrice(currentPrice))
+		{
+			return;
+		}
+		lastOrderFrame = new MdField();
+		memcpy(lastOrderFrame, currentFrame, sizeof(MdField));
+		ReqInsertOrder(lastOrderFrame->ExchangeId, lastOrderFrame->InstrumentId, currentPrice, DirectionType::Buy);
+		return;
+	}
+	DirectionType direction = DirectionType::Buy;
+	if (!TryDecideReversalDirection(readPrice(lastOrderFrame), currentPrice, direction))
+	{
+		return;
+	}
+	ReqInsertOrder(currentFrame->ExchangeId, currentFrame->InstrumentId, currentPrice, direction);
+	memcpy(lastOrderFrame, currentFrame, sizeof(MdField));
+}
 void BackTestSpiImpl::OnRtnDepthMarketData(const DepthMarketDataField* depthMarketData)
 {
-	//BackTestSpiMiddle::OnRtnDepthMarketData(depthMarketData);
-    
-	if (lastOrderTickMd_ == nullptr)
-	{
-		lastOrderTickMd_ = new DepthMarketDataField();
-		ReqInsertOrder(lastOrderTickMd_->ExchangeId, lastOrderTickMd_->InstrumentId, lastOrderTickMd_->LastPrice, DirectionType::Buy);
-		memcpy(lastOrderTickMd_, depthMarketData, sizeof(DepthMarketDataField));
-	}
-    else
-    {
-        auto percentChange = (depthMarketData->LastPrice - lastOrderTickMd_->LastPrice) / lastOrderTickMd_->LastPrice;
-        if (percentChange > 0.1)
-        {
-            ReqInsertOrder(depthMarketData->ExchangeId, depthMarketData->InstrumentId, depthMarketData->LastPrice, DirectionType::Sell);
-            memcpy(lastOrderTickMd_, depthMarketData, sizeof(DepthMarketDataField));
-        }
-        else if (percentChange < -0.1)
-        {
-            ReqInsertOrder(depthMarketData->ExchangeId, depthMarketData->InstrumentId, depthMarketData->LastPrice, DirectionType::Buy);
-            memcpy(lastOrderTickMd_, depthMarketData, sizeof(DepthMarketDataField));
-        }
-    }
+	ApplyPriceTrigger(depthMarketData, lastOrderTickMd_, [](const DepthMarketDataField* frame) { return frame->LastPrice; });
 }
+// 与 OnRtnDepthMarketData 同一口径，仅取价字段不同（Bar 回放模式无 tick，以 Close 为价）
 void BackTestSpiImpl::OnRtnBarMarketData(const BarMarketDataField* barMarketData)
 {
-	//BackTestSpiMiddle::OnRtnBarMarketData(barMarketData);
-	if (lastOrderBarMd_ == nullptr)
-	{
-		lastOrderBarMd_ = new BarMarketDataField();
-		memcpy(lastOrderBarMd_, barMarketData, sizeof(BarMarketDataField));
-		ReqInsertOrder(lastOrderBarMd_->ExchangeId, lastOrderBarMd_->InstrumentId, lastOrderBarMd_->Close, DirectionType::Buy);
-	}
-	else
-	{
-		auto percentChange = (barMarketData->Close - lastOrderBarMd_->Close) / lastOrderBarMd_->Close;
-		if (percentChange > 0.1)
-		{
-			memcpy(lastOrderBarMd_, barMarketData, sizeof(BarMarketDataField));
-			ReqInsertOrder(barMarketData->ExchangeId, barMarketData->InstrumentId, barMarketData->Close, DirectionType::Sell);
-		}
-		else if (percentChange < -0.1)
-		{
-			memcpy(lastOrderBarMd_, barMarketData, sizeof(BarMarketDataField));
-			ReqInsertOrder(barMarketData->ExchangeId, barMarketData->InstrumentId, barMarketData->Close, DirectionType::Buy);
-		}
-	}
+	ApplyPriceTrigger(barMarketData, lastOrderBarMd_, [](const BarMarketDataField* frame) { return frame->Close; });
 }
 void BackTestSpiImpl::OnRtnSessionBegin(const SessionBeginField* sessionBegin)
 {
@@ -135,8 +135,29 @@ void BackTestSpiImpl::ReqInsertOrder(const ExchangeIdType& exchangeId, const Ins
 	reqInsertOrder.OffsetFlag = OffsetFlagType::Open;
 	reqInsertOrder.OrderPriceType = OrderPriceTypeType::LimitPrice;
 	reqInsertOrder.Price = price;
-	reqInsertOrder.Volume = 1;
+	reqInsertOrder.Volume = params_.OrderVolume;
 	reqInsertOrder.ClientOrderId = ++maxClientOrderId_;
 	backTestApi_->ReqInsertOrder(&reqInsertOrder, ++maxRequestId_);
+}
+// Tick 与 Bar 回放共用的触发判据：涨幅越阈卖、跌幅越阈买，阈内不动作。
+// 两侧价格任一不可用即返回 false，除法只在此处发生（参考价为 0 会得到 inf，故先用判据收口）
+bool BackTestSpiImpl::TryDecideReversalDirection(PriceType lastOrderPrice, PriceType currentPrice, DirectionType& direction) const
+{
+	if (!QuantTrading::IsUsablePrice(lastOrderPrice) || !QuantTrading::IsUsablePrice(currentPrice))
+	{
+		return false;
+	}
+	const double priceChangeRatio = (currentPrice - lastOrderPrice) / lastOrderPrice;
+	if (priceChangeRatio > params_.OrderTriggerRatio)
+	{
+		direction = DirectionType::Sell;
+		return true;
+	}
+	if (priceChangeRatio < -params_.OrderTriggerRatio)
+	{
+		direction = DirectionType::Buy;
+		return true;
+	}
+	return false;
 }
 }

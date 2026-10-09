@@ -22,6 +22,8 @@ public:
 	string AccountId;
 	string ExchangeId;
 	string InstrumentId;
+	double OrderTriggerRatio;
+	int OrderVolume;
 	
 private:
 	static Config instance_;

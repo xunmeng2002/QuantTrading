@@ -72,7 +72,6 @@ private:
 	void HandleCloseOrderCanceled(GridSlot* gridSlot);
 	GridSlot* FindSlotByOpenOrder(ClientOrderIdType clientOrderID);
 	GridSlot* FindSlotByCloseOrder(ClientOrderIdType clientOrderID);
-	static bool IsUsableAnchorPrice(PriceType anchorPrice);
 
 	GridParams params_;
 	std::vector<GridSlot> slots_;   // [0, GridCount) 买开格；[GridCount, 2×GridCount) 卖开格

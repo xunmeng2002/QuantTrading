@@ -1,5 +1,7 @@
 #include "QuantUtility.h"
 
+#include <cmath>
+#include <limits>
 
 namespace QuantTrading
 {
@@ -66,5 +68,9 @@ namespace QuantTrading
     bool IsValidBarPrecesTarget(BarPrecesType barPrecesType, int barPeriod)
     {
         return barPrecesType != BarPrecesType::Second && barPeriod > 0;
+    }
+    bool IsUsablePrice(PriceType price)
+    {
+        return price > 0 && price != std::numeric_limits<PriceType>::max() && !std::isinf(price);
     }
 }
