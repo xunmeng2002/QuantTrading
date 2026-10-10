@@ -49,7 +49,7 @@
       "cacheVariables": {
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/../Libs/QuantTrading/x64-linux",
         "CMAKE_DISABLE_FIND_PACKAGE_ICU": "ON",
-        "QUANTTRADING_PYTHON_VERSION": "3.12"
+        "QUANTTRADING_PYTHON_VERSION": "3.14"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
       "vendor": {

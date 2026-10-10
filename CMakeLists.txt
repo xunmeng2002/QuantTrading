@@ -308,8 +308,8 @@ elseif(CMAKE_BUILD_TYPE MATCHES "[Dd]ebug")
 	message(STATUS "Python bindings: skipped for Debug (CPython official builds use Release CRT)")
 else()
 	# 解释器次版本必须钉死：.pyd/.so 受 CPython 次版本 ABI 锁定（3.11 编出的只能被 3.11 导入），
-	# 而解释器随机器漂移会让产物名与宿主对不上。取值由 CMakePresets.json 按平台给出
-	# （Windows 3.14 / WSL 3.12），不写本机路径，故两台机器同一平台得到同一个 ABI 标签。
+	# 而解释器随机器漂移会让产物名与宿主对不上。取值由 CMakePresets.json 的两个平台预设各自给出
+	# （当前 Windows 与 WSL/Linux 同为 3.14），不写本机路径，故两台机器在同一平台得到同一个 ABI 标签。
 	if(NOT QUANTTRADING_PYTHON_VERSION)
 		message(FATAL_ERROR "QUANTTRADING_PYTHON_VERSION is not set: pass -DQUANTTRADING_PYTHON_VERSION=<major.minor> (CMakePresets.json supplies it).")
 	endif()
