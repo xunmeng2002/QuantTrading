@@ -27,7 +27,7 @@ Linux Release 包长什么样、怎么打、怎么自检。满足本文的包，
 
 ```text
 engine/
-├── QuantTrading.cpython-312-x86_64-linux-gnu.so   ← 引擎
+├── QuantTrading.cpython-314-x86_64-linux-gnu.so   ← 引擎
 ├── libBackTest.so                                  ← 引擎
 ├── libCore.so                                      ← Spark
 ├── libNetwork.so                                   ← Spark
@@ -90,13 +90,13 @@ libTraderApi.so  libTraderGbkApi.so
 | 平台 | 后缀 |
 | :--- | :--- |
 | Windows | `.cp314-win_amd64.pyd` / `.pyd` |
-| Linux | `.cpython-312-x86_64-linux-gnu.so` / `.abi3.so` / `.so` |
+| Linux | `.cpython-314-x86_64-linux-gnu.so` / `.abi3.so` / `.so` |
 
 平台侧的判据与 import 机制同源，取 `importlib.machinery.EXTENSION_SUFFIXES`。
 引擎侧打包时按实际产物命名即可，平台会按当前解释器的后缀表去认。
 
 两个平台的次版本由 `CMakePresets.json` 的 `QUANTTRADING_PYTHON_VERSION` 钉死
-（Windows `3.14`、WSL/Linux `3.12`），表内示例即现状产物；改版本时以 preset 为唯一来源。
+（Windows `3.14`、WSL/Linux `3.14`），表内示例即现状产物；改版本时以 preset 为唯一来源。
 
 ## 3. 只有一类产物进发布包
 

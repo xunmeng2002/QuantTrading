@@ -241,10 +241,10 @@ The artifact lands in `bin/<CONFIG>`; its name tells you whether the right inter
 | Platform | Expected artifact name | Interpreter |
 | --- | --- | --- |
 | Windows | `QuantTrading.cp314-win_amd64.pyd` | CPython 3.14 |
-| WSL / Linux | `QuantTrading.cpython-312-x86_64-linux-gnu.so` | CPython 3.12 |
+| WSL / Linux | `QuantTrading.cpython-314-x86_64-linux-gnu.so` | CPython 3.14 |
 
 The interpreter minor version is pinned per platform by `QUANTTRADING_PYTHON_VERSION` in
-`CMakePresets.json` (Windows `3.14`, WSL/Linux `3.12`); configure validates it with
+`CMakePresets.json` (Windows `3.14`, WSL/Linux `3.14`); configure validates it with
 `find_package(Python3 <version> EXACT)` and logs the value actually found
 (`-- Python3: 3.14.7 (…)`). What the pin guarantees is **consistency within a platform**: two machines
 both produce a `.pyd` for Windows and a `.so` for WSL, under the same names. Artifact names differ

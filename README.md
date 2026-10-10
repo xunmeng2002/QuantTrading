@@ -234,10 +234,10 @@ export CTP_SIMNOW24_AUTHCODE=<认证码>
 | 平台 | 预期产物名 | 对应解释器 |
 | --- | --- | --- |
 | Windows | `QuantTrading.cp314-win_amd64.pyd` | CPython 3.14 |
-| WSL / Linux | `QuantTrading.cpython-312-x86_64-linux-gnu.so` | CPython 3.12 |
+| WSL / Linux | `QuantTrading.cpython-314-x86_64-linux-gnu.so` | CPython 3.14 |
 
 解释器次版本由 `CMakePresets.json` 的 `QUANTTRADING_PYTHON_VERSION` 按平台钉死（Windows `3.14`、
-WSL/Linux `3.12`），配置阶段以 `find_package(Python3 <版本> EXACT)` 校验并把实际取值打进日志
+WSL/Linux `3.14`），配置阶段以 `find_package(Python3 <版本> EXACT)` 校验并把实际取值打进日志
 （`-- Python3: 3.14.7 (…)`）。钉死的是**同一平台的一致性**：两台机器的 Windows 都编出 `.pyd`、
 WSL 都编出 `.so`，名字各自相同；跨平台的产物名本就不同，无需也没有办法统一。
 
