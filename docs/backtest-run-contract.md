@@ -142,20 +142,27 @@ tick 早于当前交易日、费率行缺失（后者由 `CommissionMissingCount
 > 它们现在也是核对平台那份实现的依据。详见 QuantPlatform 仓的 `docs/platform-plan.md` §14 与
 > `docs/acceptance-checklist.md` §16。
 
-种子库是 SQLite 二进制产物，不进版本库（`/bin` 已被 `.gitignore` 覆盖）。按各配置手工执行一次：
+种子库是 SQLite 二进制产物，不进版本库（`/bin` 已被 `.gitignore` 覆盖）。按各配置手工执行一次（**仅供手工补种，见上框**）：
 
 ```text
 python makeseeddb.py bin/Release/BackTestInit.db
 ```
 
-脚本只依赖标准库 `sqlite3`，写出内置最小种子（A 股三只标的）。要换一批标的时再给一个 CSV 目录：
+脚本只依赖标准库 `sqlite3`，写出**内置**最小种子（A 股三只标的：品种 2 行、费率组 1 行、费率 6 行）。要换一批标的时再给一个 CSV 目录：
 
 ```text
 python makeseeddb.py bin/Release/BackTestInit.db Configs/SeedCsv
 ```
 
-此时三张表的行取自 `<CSV 目录>/<表名>.csv`，**表头即列序**，与预期列序不符会被拒绝而不是静默错位。
-两种方式都只重建 `CommissionGroup` / `Product` / `BaseCommission` 三张表，其余表不受影响。
+> ⚠️ **上面这第二式是「取代」而非「叠加」，而这条命令本身会毁掉内置费率——别照抄。**
+> 给了目录就逐表读 `<CSV 目录>/<表名>.csv`，**内置行一行不留**；该目录还须**三张表齐备**，缺文件即报错退出。
+> 本仓 `Configs/SeedCsv/` 里 `Product.csv` 有 2 行，而 `CommissionGroup.csv` 与 `BaseCommission.csv`
+> **只有表头**（空表只能用有表头无数据行表达），故照抄这条会把内置的 1 行组与 6 行费率**清成 0 行**，
+> 费率随即全按 0 计（`result.json` 的 `CommissionMissingCount` 会当场报出来）。要换标的时，
+> 须自己准备一个**三表齐备**的目录再跑第二式。
+
+写入的行**表头即列序**，与预期列序不符会被拒绝而不是静默错位。两种方式都只重建
+`CommissionGroup` / `Product` / `BaseCommission` 三张表，其余表不受影响。
 
 **表名与列序必须严格对齐 `MdbStructs.cpp` 的字段序**——
 SQLite 读取是 `SELECT *` 加按列下标绑定，列序错会静默错位。
