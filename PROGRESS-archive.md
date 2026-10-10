@@ -771,6 +771,12 @@
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
 
+### Q.37 · 2026-10-10 （WSL 迁移批顺带发现）`src/Mdb/InitMdbFromDb.*` 的大小写改名会挡住「全新 clone 到 Linux 构建」（**2026-10-10 当日收口**：两仓各一笔重记路径名，内容零变化）
+
+- **`src/Mdb/InitMdbFromDb.*` 的大小写改名还没收口，会挡住「全新 clone 到 Linux 构建」（2026-10-10 实测，需你定）**：索引与 HEAD 里记的是 `InitMdbFromDB.cpp` / `.h`（大写 B），工作树与生成物里是小写 `…FromDb`——索引内容与磁盘内容**同字节**，纯名字记账问题，故 Windows 侧 `git status` 一声不吭。后果是实的：在 ext4 上实克隆一次，得到的是大写名，而**被跟踪的** `InitMdbFromDB.cpp` 头一行就写着 `#include "InitMdbFromDb.h"`（`src/BackTest/SimExchange.cpp:12` 同）——大小写敏感的文件系统上直接找不到头文件。本机至今没暴露，只因 WSL 那棵树是 VS 从 NTFS 同步过去的、磁盘名本就是小写。**两种收口**：① 在本仓把这条路径的大小写改名重记一次（`git mv` 走一次临时名再改回，内容零变化），让索引名与生成器实际产出的名字一致；② 若认定大写才是正名，就得改 **Templates 仓**的模板与全部 include 点。**2026-10-10 三仓已查完**：`Templates` 仓的模板名本就是小写（`Cpp/Mdb/InitMdbFromDb.cpp.tpl`），故**小写才是正名**；`Mdb` 仓有**同一条**漂移（`src/Mdb/InitMdbFromDB.{cpp,h}`；`InitMdbFromCsv.*` 不漂）。按「生成物一律改模板」的口径，① 只是把两仓的记账对齐现实、不动生成链，**推荐 ①**（两仓各一笔）。
+
+**收口记录（2026-10-10，用户裁定「去修复」后当日完成）**：按方案 ① 在 `QuantTrading` 与 `Mdb` 两仓各做一笔纯改名（`git mv` 大小写，blob 与内容零变化）——`QuantTrading` `ff509dd`、`Mdb` `bfe19c7`；`Templates` 仓的模板名本就是小写（`Cpp/Mdb/InitMdbFromDb.cpp.tpl`），故不动生成链。**验收**：两仓分别 clone 到 ext4 后，`src/Mdb/InitMdbFromDb.{cpp,h}` 的名字与内容一致、`#include "InitMdbFromDb.h"` 能按字面找到；再按「同目录存在同名的另一种大小写」扫全部被跟踪源文件，**两仓零命中**（顺带扫 `DbAdapters` / `Spark` / `CMakeCommon` / `Templates` / `Model` 五仓，同样为零）。两笔均未推送。
+
 ### Q.36 · 2026-10-09 （第七批代码审查发现，生成物）`BackTestSpi` / `*Api` 基类有虚函数却无虚析构函数（**2026-10-09 第八批已补**：改模板 `Api.h.tpl` / `BackTestApi.h.tpl` 并重灌四个生成头）
 
 `include/QuantTrading/BackTestApi.h` 的 `class BackTestSpi` 有 14 个虚函数、无 `virtual ~BackTestSpi()`，与 `rules/cpp-style.md` §6「非虚析构的基类继承」不符；源模板在 `Templates/Cpp/BackTestApi/BackTestApi.h.tpl`。**今天不咬人**：全仓无任何地方经 `BackTestSpi*` 删除该指针（`SimExchange::RegisterSpi` 只存进 `backTestSpi_`；`Main.cpp` 的 `delete spi;` 静态类型是派生类 `BackTestSpiImpl*`）。改它要再开一轮「改模板 + 重灌」，故**留待用户裁定**。
