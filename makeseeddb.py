@@ -10,14 +10,14 @@
     python makeseeddb.py bin/Release/BackTestInit.db
     python makeseeddb.py bin/Release/BackTestInit.db <CSV 目录>
 
-第一式写出**内置**最小种子（A 股三只标的：品种 2 行、费率组 1 行、费率 6 行）。
+第一式写出**内置**最小种子（A 股三只标的：品种 2 行、费率组 1 行、费率 6 行），本地
+跑 `TestBackTest` 要的就是这一份。
 
 第二式**取代**内置行、不叠加：给了目录就逐表读 `<表名>.csv`，内置行一行不留
-（见 `write_seed_database`）。该目录须**三张表齐备**，缺文件即报错退出。
-本仓 `Configs/SeedCsv/` 里 `Product.csv` 有 2 行，而 `CommissionGroup.csv` 与
-`BaseCommission.csv` **只有表头**（本脚本的空表只能用有表头无数据行表达，见
-`load_rows_from_csv`），故拿它跑第二式会把内置的 1 行组与 6 行费率清成 0 行、
-费率随即全按 0 计——要内置种子就别带这个目录。
+（见 `write_seed_database`）。该目录须**三张表齐备**，缺文件即报错退出；空表只能用
+「有表头无数据行」表达（见 `load_rows_from_csv`）。换标的时自备这样一个目录——
+本仓曾随附的 `Configs/SeedCsv/` 已于 2026-10-10 删除（平台用的是它自己的
+`backend/reference_seed/*.csv`），仓里不再有 CSV 样例。
 
 **列序即 `src/Mdb/MdbStructs.cpp` 的字段序，改这里之前先核对那边的 GetSchema。**
 引擎侧读库走 `SELECT *` 加列下标绑定，列序错会静默错位且不报错。

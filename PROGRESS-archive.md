@@ -11,6 +11,19 @@
 
 ## ✅ 已完成（历史，倒序）
 
+### D.75 · 2026-10-07 （原「备注」条目，2026-10-10 搬入存档）回测种子库的建立与同日四次口径变更（`Configs/SeedCsv/` 三文件 + `bin/Release/BackTestInit.db`）
+
+> `D.75` 是**追加**的 ID：本条取自原「备注」区，不属 §8.1 的 `D.*`/`Q.*`/`R.*` 三类，为便于索引仍按最大值续编。
+> **§8.1 半关闭**：历史部分（2026-10-07 的建立与平台侧 `D.31`–`D.34` 四次口径变更）整体入档；
+> **仍然成立的结论**（三条引擎侧规则）与**未决的期货前置项**留在主文件 `<备注>` 区，短版写明见归档 `D.75`。
+> **收口注记（2026-10-10）**：CSV 那半边已按用户裁定收口——`Configs/SeedCsv/` 三份 CSV **已删除**；
+> 理由是它唯一的读取者 `makeseeddb.py` 照它跑会把内置费率**清成 0 行**，而平台用的是自有的
+> `backend/reference_seed/*.csv`。`makeseeddb.py` **保留**为本地补种工具，原文里那句
+> 「生成命令 `python makeseeddb.py bin/Release/BackTestInit.db Configs/SeedCsv`」应读作历史记录。
+
+- **回测种子库已建立：`Configs/SeedCsv/` 三文件 + `bin/Release/BackTestInit.db`（2026-10-07，未提交）**：起因是 `Product` 缺行导致乘数兜底，且兜底分支（`SimExchange.cpp:900-921`）同时把 `PriceTick` 置 0、`SessionName` 写成 `"FD0900"`、`ProductClass` 留成 0（= `Future`），对股票三项全错。**新增** `Configs/SeedCsv/{Product,CommissionGroup,BaseCommission}.csv`：文件名取 `<表名>.csv`（`makeseeddb.py:127` 的约定，`t_` 前缀是 Dump 的、**不能用**）；`Product.csv` 两行 = `SSE,600` / `SZSE,000`，`ProductClass=6`（`Stock`）、`VolumeMultiple=1`、`PriceTick=0.01`、`SessionName` 留空；另两张**只留表头**——该脚本的 CSV 模式按目录整体生效（`:161`）、缺文件即抛错（`:129`），故"空表"只能用"有表头无数据行"表达。生成命令 `python makeseeddb.py bin/Release/BackTestInit.db Configs/SeedCsv`；`bin/` 被 `.gitignore` 覆盖，产物不入库；两份工作副本各生成一份。**验证（WSL 已跑）**：`VolumeMultipleFallbackProductCount` **2 → 0**、`BasicDataLoaded` **false → true**、`TradeCount` 2 与 `BarMarketDataCount` 2928 不变、退出码 0。**两条关键依据**：① `Product` 对股票用的是**3 位代码前缀**作 `ProductId`（`SimExchange.cpp:867-880` 按 `ProductId` 分组后再查 `Product`），故两行覆盖全部 A 股、不是每股一行；② `Instrument.SessionName` **全仓无消费方**（仅被抄写、转 GBK、序列化；交易节由 `Configs/Sessions.json` 按 `(ExchangeId, Products)` 匹配，SSE/SZSE 是 `["*"]` 通配），故留空无害，也解释了此前兜底值 `"FD0900"` 为何不影响交易节。**未提交**。**⚠️ 2026-10-07 同日更新：种子库改由 QuantPlatform 维护**（用户拍板，见归档 `Q.27` 与该仓 `PROGRESS.md` `D.31`）——上面这条手工路径（`makeseeddb.py` + `Configs/SeedCsv/`）**退化为历史遗留：文件保留、不再执行**。三条后果：① `bin/*/BackTestInit.db` **从此归平台所有**，平台第一次保存就会把它整个重写（平台只在**文件缺失**时补生成，不覆写已存在的），故手工造的那份不再有长期意义；② 三张表的内容改由平台的 `Products` / `CommissionGroups` / `BaseCommissions` 导出，平台侧没有 CSV 导入入口；③ 本仓**零代码改动**，下面的依据（3 位 `ProductId` 前缀、`SessionName` 无消费方、`ProductClass` 取值表）**全部仍然成立且更该照办**——它们现在是对着平台那份实现写的核对依据。**⚠️ 2026-10-07 再更新（该仓 `D.32`）：种子库落点改为「按轮生成」**——推翻同日 `D.31` 拍的"全局共享一份"。平台**不再维护** `bin/*/BackTestInit.db`，改为在**每一轮开始前**从 catalog 现造一份、落在**该轮作业目录里**（`runs/<RunId>/BackTestInit.db`，由该轮 `BackTest.json` 的 `DbInitHost` 指向），且只含该轮合约的行；费率可在管理端按**合约 / 品种 / 交易所三级**设置，生成时被摊平，**引擎仍只看得到 `(ExchangeId, InstrumentId)` 两格**。故上面 ① 说的"归平台所有、第一次保存就整个重写"**不再成立**：`bin/*/BackTestInit.db` 自此是**无人维护的孤立文件**，在 WSL 里手工跑 `TestBackTest` 时需要它的场合得自己补一份。②（内容改由平台 catalog 导出、无 CSV 导入入口）与 ③（本仓零代码改动）**不受影响**。**⚠️ 2026-10-07 三更新（该仓 `D.33`）：方向那一格也加了平台侧通配**——「双向」（`Direction = -1`）表示买卖共用这一套费率，展开时摊成 0 与 1 两行，故**引擎侧的 `Direction` 仍然只有 0 与 1**，`MissingRateKeys` 里报出的仍是具体方向，本仓照旧零改动。上面那句「费率可在管理端按合约 / 品种 / 交易所三级设置」应读成「**三级 + 买卖双向**」。**⚠️ 2026-10-07 四更新（该仓 `D.34`）：手续费组号改为「随轮冻结」**——此前平台侧把组号写死成模块常量 `1`，故管理端即使建了 2 号、3 号组也永远用不上；现改为**提交时在新建回测页选组**，该值随这一轮冻进 `BackTest.json` 的 `CommissionGroupId`（落库 `Runs.BacktestConfigJson`），提交期的费率校验与调度期按轮生成种子库读**同一个值**。**引擎侧零改动**：这个键本来就由 `Config` 解析（`src/BackTest/Config/Config.cpp:53`）、由 `SimExchange` 记下（`src/BackTest/SimExchange.cpp:106`）并在建账号时带上（`src/BackTest/SimExchange.cpp:786`），与早就是运行级字段的 `InitialCapital` 完全同构。故「这一轮用哪一套费率」现在也像其它取值一样在提交那一刻定死，而**引擎看到的仍只是「一个组号 + 一张摊平后的费率表」**，本仓照旧零改动（契约 §5 已补这一条）。上面那句「三级 + 买卖双向」再读成「**三级 + 双向 + 可选的组**」。**相关（2026-10-07 用户决定：暂不处置，留待做期货回测时再看）**：`Configs/t_Product.csv`（期货快照，`ProductClass` 列存的是 CTP 字符码 1/2/7，与 `ProductClassType`（`Future=0`…`Stock=6`）整体错位）与 3.7 MB 的 `Configs/t_HotInstrument.csv` 均为**已提交**的 Dump 产物，一并不动。**期货回测开工时须先解决三条**：① `ProductClass` 整列改写（`1`→`0`（`Future`）、`2`→`1`（`FutureOption`）、`7`→`0`（TAS）），否则 `InitMainInstrument` 一个合成合约都不造、且品种类型全错；② `ProductId` 必须**逐字匹配 `Configs/Sessions.json` 的写法（含大小写）**——交易节按 `(ExchangeId, Products)` 匹配，CZCE 用大写（`SR`/`CF`/…）、SHFE/DCE 用小写（`fu`/`rb`/…），不匹配则解析不到交易节；③ `InitMainInstrument` 会为**每个** `Future` 品种造 `.Hot`/`.Second`/`.Third` 三个合成合约，期货品种一多 `InstrumentCount` 会显著增长（设计如此，别当 bug）。**另记一处待核（未验证）**：`Sessions.json` 中 SHFE/DCE/CZCE/INE 同时落在 `FD0900` 的 `"*"` 与夜盘会话（`FD2300`/`FD0100`/`FD230`）的显式列表里，**解析顺序决定用哪个交易节**——若首个匹配命中 `FD0900` 的 `"*"`，夜盘时段将永不生效；做期货前需核会话解析实现（`MdKernel` / Bar 侧）。
+
+
 ### D.74 · 2026-10-07 （原「备注」条目，2026-10-10 搬入存档）本机 `Libs/doctest` 两侧补齐 + WSL 回测 `MdDataPath` 修正（其「环境变量覆盖」支线由 `D.61` 立、同日 `D.64` 撤，故本条整体已了结）
 
 > `D.74` 是**追加**的 ID：本条取自原「备注」区，不属 §8.1 的 `D.*`/`Q.*`/`R.*` 三类，为便于索引仍按最大值续编。主文件 `<备注>` 区留有一条短指针（写明两条仍然在用的结论：`Libs/doctest` 的配方、旧 Debug 产物与当前 DbAdapters 不配套），**引用以本段原文为准**。
@@ -777,6 +790,16 @@
 ---
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
+
+### Q.41 · 2026-10-10 （顺带发现）`makeseeddb.py` 的 CSV 模式与自带 docstring 不符（**同日已收口**：docstring 改按「取代」语义写，CSV 样例已删）
+
+> **收口注记（2026-10-10）**：取用户裁定的方案 ①——docstring 里那个「额外」改为「**取代**」，并写清第二式
+> 须**三表齐备**、空表只能用「有表头无数据行」表达（提交 `7c72718`，契约 §4.1 同日加了同款 ⚠️）。
+> 同日晚些时候 `Configs/SeedCsv/` 三份 CSV 整体删除（用户裁定「删 CSV、保留脚本」，见主文件 ✅ 第四批），
+> 于是本条剩下的那半截（「加 CSV 目录会把内置费率清零」）不再是可踩的坑，只是历史。
+
+- **`makeseeddb.py` 的 CSV 模式与自带 docstring 不符（2026-10-10 顺带发现）**：docstring 写「第二式**额外**从给定目录读 `<表名>.csv` 取行」，实现却是 `load_rows_from_csv(csv_dir, table) if csv_dir else table.default_rows`（`:161`）——**给了目录就完全取代内置行**。而仓里 `Configs/SeedCsv/{CommissionGroup,BaseCommission}.csv` **只有表头、零数据行**（那是 2026-10-07 立的约定：空表只能用「有表头无数据行」表达），于是「加 CSV 目录」那条命令会把内置 A 股费率 6 行抹成 0 行。两种收口：① 改 docstring 那个「额外」（承认取代语义，并把两份空 CSV 的用途写清）；② 改成真「额外」（CSV 行叠加/覆盖在内置行之上）。**当前口径**是不带目录生成；**本次没动代码**，等你定。
+
 
 ### Q.40 · 2026-10-10 3.11 残留待用户删（**同日用户已处置：目录已删，注册键仍在**）
 

@@ -131,7 +131,7 @@ tick 早于当前交易日、费率行缺失（后者由 `CommissionMissingCount
 ### 4.1 生成
 
 > ⚠️ **2026-10-07 起：种子库由 QuantPlatform 按轮生成，本节的手工路径退化为历史遗留**
-> （`makeseeddb.py` 与 `Configs/SeedCsv/` 文件保留、不再执行）。平台在**每一轮开始前**从它自己的
+> （`makeseeddb.py` 保留为手工补种工具、不再作为常规路径执行）。平台在**每一轮开始前**从它自己的
 > catalog 现造一份 `BackTestInit.db`，落在**该轮作业目录里**（与引擎同机，路径由该轮 `BackTest.json`
 > 的 `DbInitHost` 指向），且**只含该轮用到的合约**的行。费率的**合约 / 品种 / 交易所三级**规则、
 > 以及平台侧的**买卖双向**那一档（`Direction = -1`，"买卖共用这一套费率"）都在生成时被摊成具体
@@ -142,24 +142,22 @@ tick 早于当前交易日、费率行缺失（后者由 `CommissionMissingCount
 > 它们现在也是核对平台那份实现的依据。详见 QuantPlatform 仓的 `docs/platform-plan.md` §14 与
 > `docs/acceptance-checklist.md` §16。
 
-种子库是 SQLite 二进制产物，不进版本库（`/bin` 已被 `.gitignore` 覆盖）。按各配置手工执行一次（**仅供手工补种，见上框**）：
+种子库是 SQLite 二进制产物，不进版本库（`/bin` 已被 `.gitignore` 覆盖）。本地跑 `TestBackTest` / `TestStrategyGrid`
+要它时，按各配置手工执行一次（**仅供手工补种，见上框**）：
 
 ```text
 python makeseeddb.py bin/Release/BackTestInit.db
 ```
 
-脚本只依赖标准库 `sqlite3`，写出**内置**最小种子（A 股三只标的：品种 2 行、费率组 1 行、费率 6 行）。要换一批标的时再给一个 CSV 目录：
+脚本只依赖标准库 `sqlite3`，写出**内置**最小种子（A 股三只标的：品种 2 行、费率组 1 行、费率 6 行）——
+本地测试要的就是这一份。
 
-```text
-python makeseeddb.py bin/Release/BackTestInit.db Configs/SeedCsv
-```
-
-> ⚠️ **上面这第二式是「取代」而非「叠加」，而这条命令本身会毁掉内置费率——别照抄。**
-> 给了目录就逐表读 `<CSV 目录>/<表名>.csv`，**内置行一行不留**；该目录还须**三张表齐备**，缺文件即报错退出。
-> 本仓 `Configs/SeedCsv/` 里 `Product.csv` 有 2 行，而 `CommissionGroup.csv` 与 `BaseCommission.csv`
-> **只有表头**（空表只能用有表头无数据行表达），故照抄这条会把内置的 1 行组与 6 行费率**清成 0 行**，
-> 费率随即全按 0 计（`result.json` 的 `CommissionMissingCount` 会当场报出来）。要换标的时，
-> 须自己准备一个**三表齐备**的目录再跑第二式。
+要换一批标的时再给第二个参数 `<CSV 目录>`：那是**取代**而非叠加，给了目录就逐表读 `<表名>.csv`、
+**内置行一行不留**，且该目录须**三张表齐备**（缺文件即报错退出；空表只能用「有表头无数据行」表达）。
+本仓 2026-10-10 之前随附的 `Configs/SeedCsv/` **已删除**——它在手工补种路径上不但无用还是坑
+（`Product.csv` 2 行、另两张只有表头，照它跑会把内置的 1 行费率组与 6 行费率**清成 0 行**，费率随即
+全按 0 计，`result.json` 的 `CommissionMissingCount` 会当场报出来）；平台用的是它自己那份
+`backend/reference_seed/*.csv`，与本仓无关。
 
 写入的行**表头即列序**，与预期列序不符会被拒绝而不是静默错位。两种方式都只重建
 `CommissionGroup` / `Product` / `BaseCommission` 三张表，其余表不受影响。
