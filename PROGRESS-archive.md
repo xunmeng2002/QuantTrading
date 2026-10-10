@@ -778,6 +778,20 @@
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
 
+### Q.40 · 2026-10-10 3.11 残留待用户删（**同日用户已处置：目录已删，注册键仍在**）
+
+- **3.11 残留待用户删（2026-10-09）**：卸载器走 MSI 台账、只删自己装的文件——`C:\Python\Python311` 下 pip 装进 `site-packages` 的 427 个条目（约 2.0 GB）与 `HKLM\SOFTWARE\Python\PythonCore\3.11` 注册键都留着；已无 `python.exe`/核心 DLL、不在 PATH、`py -0p` 不列，**不影响解析**。属 git 之外路径的递归删除（§1 禁 AI 执行），由用户自行处理。
+
+**2026-10-10 收口注记**：`C:\Python\Python311` 目录已由用户删除（实测该目录不存在）；`HKLM\SOFTWARE\Python\PythonCore\3.11` 注册键**实测仍在**，另有一个更早的 `3.9` 键不属本条范围。两处都惰性（无 `python.exe`、不在 PATH、`py -0p` 不列、不影响解析），要清需 `reg delete`。残余问句留在主文件 ❓ 区，内容为「这个键要不要清」。
+
+
+### Q.39 · 2026-10-10 （WSL 迁移批排查时发现）`~/.vs` 下同名两目录并存：`DBAdapters` 与 `DbAdapters`（**用户已处置，但删的是当时在用的那份**）
+
+- **`~/.vs` 下同名两目录并存，需你处置（2026-10-10 排查时发现）**：WSL 的 ext4 大小写敏感，`~/.vs/DBAdapters` 与 `~/.vs/DbAdapters` 是**两个各约 1.1 G 的不同目录**——VS 实际构建与使用的都是**大写 B** 那份，小写那份装着一整套 13:0x–13:27 的陈旧树（含树内 Release 库），今天的 Debug/Release 误判就是先在它上面查错的。删它属 git 之外路径的递归删除（Harness §1 禁 AI 执行），删或留由你定。
+
+**2026-10-10 收口注记（实测）**：用户删掉的是 **大写 B** 的 `~/.vs/DBAdapters`，而它才是当时在用的那份——16:20 的 Debug 库安装（`libAsyncDbWriterd.so` 等）与 19:18 的 Release 库安装（`libAsyncDbWriter.so` 等）都出自它；剩下的小写 `~/.vs/DbAdapters` 两棵树（`WSL-GCC-Release` 停在 13:07、含一份 vcpkg 失败报告 `vcpkg_installed/vcpkg/issue_body.md`；`WSL-GCC-Release-gcc15` 停在 13:27）才是陈旧的那份，与删除意图正好相反。**无实际损失**：① QuantTrading 链接用的是安装前缀 `~/.vs/Libs/DbAdapters/x64-linux/lib/`（未动，19:18 那批 Release 库俱在）；② 发布包已自足（`$ORIGIN`、`ldd` 全在包内解析）；③ VS 下次构建 DbAdapters 会重新同步源码树并重配，vcpkg 依赖走本发行版的二进制缓存（`~/Github/vcpkg/archives`），不是首配那 854 秒。残余问句留在主文件 ❓ 区，内容为「小写那份要不要也删」。
+
+
 ### Q.38 · 2026-10-10 （WSL 迁移批遗留的未决项）gcc 15 下那两个 vcpkg 开关该落在哪（**2026-10-10 当晚收口**：取方案 ②，落成整体 triplet 覆盖并实测编过）
 
 - **gcc 15 下那两个 vcpkg 开关该落在哪（2026-10-10，需你定）**：现状是 `CFLAGS="-std=gnu17"` 与 `CXXFLAGS="-include cstdint"` 只写在我这次会话的 shell 里——**既没进仓、也没进 `~/.profile`**，而家里那台（同发行版、同 gcc 15.2、同 `builtin-baseline`）**必然同样卡住**。三选一：① 落进 `~/.profile`（零新文件、与既有的 `VCPKG_*` 导出同居；代价是它一并吃进本仓自己的编译选项，且对所有仓全局生效）；② 落成 vcpkg 的**整体 triplet 覆盖**（`VCPKG_OVERLAY_TRIPLETS` 指一个自定义 `x64-linux.cmake`，内设 `VCPKG_C_FLAGS` / `VCPKG_CXX_FLAGS`；作用域只在 port、标志进 ABI 哈希更诚实；代价是 ABI 变化要把那 15 个依赖重编一次）；③ 升 `vcpkg.json` 的 `builtin-baseline` 取上游已修好的 port 版本（最正规，动的面最大）。**推荐 ②**——`DbAdapters` 与 `Spark` 是另两个仓，仓内局部方案覆盖不到它们。本批已实测 ① 的两条导出能到达 port 编译行，故 ① 可作零成本过渡。**用户追问「生 vcpkg 的 baseline 可能也不能解决，如果原本人家的库就不兼容怎么办？」→ ③ 出局**（升基线不保证上游修过这两处）；**用户裁定「按合理的做就行」→ 取 ②**。
