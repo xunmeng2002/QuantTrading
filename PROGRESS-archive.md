@@ -791,6 +791,12 @@
 
 ## ❓ 待讨论（已关闭 / 已了结，倒序）
 
+### Q.42 · 2026-09-27 盘上遗留的临时探针脚本与构建树（**2026-10-13 关闭**：实测均已不在盘上）
+
+- **本批留在盘上的临时件（2026-09-27 起，2026-09-28 增补；均未跟踪，待用户决定去留）**：两仓 `out/build/` 下这批新建的探针/构建脚本——本仓 `run_probe_dbadapter.bat`、`wsl_build_dbadapters.sh`、`wsl_check_dbadapters.sh`、`wsl_build_fresh.sh`、`wsl_run_testdb.sh`、`wsl_build_quanttrading.sh`、`wsl_run_unittests.sh`；DBAdapters 仓 `wsl_build_dbadapters.sh`、`wsl_check_dbadapters.sh`、`wsl_build_fresh.sh`（2026-09-28 按其原委订正过一句归因注释）、`wsl_run_testdb.sh`；另有上一批留下的两个 `.bat`。**一个都没有删除**（`out/build/` 整体被 `.gitignore` 覆盖）。2026-09-28 的探针脚本写在系统临时目录（`%TEMP%`）而非仓内：`dba_mysql_linkprobe.sh`、`dba_connector_cfg.sh`、`dba_openssl_fix_verify.sh`、`dba_install_linux.sh`、`dba_rebuild_then_verify.sh`、`dba_undefined_survey.sh`、`dba_install_win.bat`、`qt_build_linux.sh`、`qt_verify_linux.sh`、`qt_log_probe.sh`、`qt_lddebug.sh`、`qt_dep_sweep.sh`、`qt_archive_close_q22_q23.py`。**还有一棵为排查老树问题而全新配置的构建树 `D:\Gitee\DBAdapters\out\build\probe-fresh`**——删除它属递归删除目录，按 Harness §1 AI 不做。本批探针在 `bin/Release` 留下的两份 Linux 结果库（`BackTest_20260928_014006_551.db` 空文件、`…_831.db` 带 DuckDB 魔数）已按**非递归** `rm -f` 清理；更早那个递归目录 `Dump/20260928_013037_811` 按 §1 仍留在盘上。**待用户决定**。
+
+**2026-10-13 关闭注记（实测）**：本条所列对象**已全部不在盘上**，无需再处置——① 两仓 `out/build/` 下那批探针/构建脚本：本仓 `out/` 现只剩 `Ubuntu-26.04/`（其下 `build/` 仅 `x64-Release/`），七个 `wsl_*.sh` / `run_probe_dbadapter.bat` 全仓 `find` 零命中；DbAdapters 仓 `D:\Gitee\DbAdapters\out\` **整棵树已不存在**（用户同日删仓重建），`probe-fresh` 与它那四个脚本一并消失。② `bin/Release` 里 9-28 那两份 Linux 结果库与递归目录 `Dump/20260928_013037_811` 同批已不在（`bin/Release/Dump/` 下现存的是 09-18 / 10-08 / 10-09 的例行回测产物）。③ 写在 `%TEMP%` 的那 13 个探针脚本在 git 之外，随系统临时目录清理，不属本仓跟踪对象。
+
 ### Q.41 · 2026-10-10 （顺带发现）`makeseeddb.py` 的 CSV 模式与自带 docstring 不符（**同日已收口**：docstring 改按「取代」语义写，CSV 样例已删）
 
 > **收口注记（2026-10-10）**：取用户裁定的方案 ①——docstring 里那个「额外」改为「**取代**」，并写清第二式
@@ -814,6 +820,8 @@
 
 **2026-10-10 收口注记（实测）**：用户删掉的是 **大写 B** 的 `~/.vs/DBAdapters`，而它才是当时在用的那份——16:20 的 Debug 库安装（`libAsyncDbWriterd.so` 等）与 19:18 的 Release 库安装（`libAsyncDbWriter.so` 等）都出自它；剩下的小写 `~/.vs/DbAdapters` 两棵树（`WSL-GCC-Release` 停在 13:07、含一份 vcpkg 失败报告 `vcpkg_installed/vcpkg/issue_body.md`；`WSL-GCC-Release-gcc15` 停在 13:27）才是陈旧的那份，与删除意图正好相反。**无实际损失**：① QuantTrading 链接用的是安装前缀 `~/.vs/Libs/DbAdapters/x64-linux/lib/`（未动，19:18 那批 Release 库俱在）；② 发布包已自足（`$ORIGIN`、`ldd` 全在包内解析）；③ VS 下次构建 DbAdapters 会重新同步源码树并重配，vcpkg 依赖走本发行版的二进制缓存（`~/Github/vcpkg/archives`），不是首配那 854 秒。残余问句留在主文件 ❓ 区，内容为「小写那份要不要也删」。
 
+
+**2026-10-13 收口注记（主文件残余项关闭）**：主文件留的那条残余「小写那份要不要也删」就此关闭，定 **留**。实测 `~/.vs` 下现只剩 `/home/xunmeng/.vs/DbAdapters` 一份（`ls -d ~/.vs/*` 只有它，无大写同名），且它已转为**活树**——缓存记着 2026-10-10 19:49–19:50 那次重配（含 overlay triplet 的 ABI 行）、HEAD `f57e9b8` 与 Windows 仓一致、工作区除账本文档外干净；即「陈旧」这个前提已随 VS 切换消失。删它属 git 之外路径的递归删除（Harness §1 AI 不执行），且换不来收益（VS 按需重同步，代价是重拷约 2 GB 并重配）。若只为腾盘可自行删，本仓不再跟踪。
 
 ### Q.38 · 2026-10-10 （WSL 迁移批遗留的未决项）gcc 15 下那两个 vcpkg 开关该落在哪（**2026-10-10 当晚收口**：取方案 ②，落成整体 triplet 覆盖并实测编过）
 
