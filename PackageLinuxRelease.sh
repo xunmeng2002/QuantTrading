@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 #
-# 打 Linux 回测发布包：把三个仓的运行时产物平铺进一个目录。
-# 契约见 docs/engine-linux-release-package.md（§2 清单 / §7 打包要求 / §8 自检四条）。
+# 打 Linux 发布包：把三个仓的运行时产物平铺进一个目录。
+# 契约见 docs/engine-linux-release-package.md（§2 清单 / §7 打包要求 / §8 自检）。
 #
-# 取用一律走**白名单**，绝不写成「取该目录下全部 .so」：拍平输出目录之后，
-# bin/$CONFIG 里同时装着六个 API 中间层，它们不在回测闭包、不进发布包（契约 §2.1）。
+# 取用一律走**白名单**，绝不写成「取该目录下全部 .so」：拍平输出目录之后，bin/$CONFIG 里
+# 还躺着测试程序、MySQL/MariaDB 后端与跑测留下的 *.db —— 目录扫描分不出取舍，白名单才分得
+# （契约 §7）。六个 API 中间层与两个应用自 2026-10-13 起进包（契约 §2.1、§2.3）。
 #
 # 用法：bash PackageLinuxRelease.sh [选项]（本仓 .sh 一律 100644，靠 bash 显式调用）
 #   --config <Release|Debug>  取哪套构建产物（默认 Release）
@@ -18,7 +19,7 @@
 # --force 的递归删除**只作用于 --output 指定的那个目录**，脚本不删任何其它路径。
 #
 # zip 包形态（--zip）：落在发布目录的**同级**，名字 QuantTrading-<版本>-linux-<架构>.zip；
-# 包内是**一个顶层目录**（同名去 .zip），12 个文件平铺其下——与平台侧「换版按版本留目录、
+# 包内是**一个顶层目录**（同名去 .zip），§2 清单的全部文件平铺其下——与平台侧「换版按版本留目录、
 # 不原地覆盖」的约定一致（QuantPlatform docs/platform-plan.md）。解压后把 QUANT_ENGINE_ROOT
 # 指到那一层即可。打包与校验只用解释器自带的 zipfile，不依赖 zip(1) / unzip(1)。
 
@@ -35,31 +36,46 @@ PythonExecutable=${PYTHON:-python3}
 ProjectName=QuantTrading
 
 # 白名单：逐条列名，不做目录扫描（契约 §7 的表）
-EngineBinRuntimeNames=(libBackTest.so)
+EngineBinRuntimeNames=(libBackTest.so
+    libMdApi.so libMdGbkApi.so libSimExchangeApi.so libSimExchangeGbkApi.so libTraderApi.so libTraderGbkApi.so)
 # 引擎自己的产物：缺 $ORIGIN 即不合格；其余 .so 来自 Spark / DbAdapters 安装树（见自检 §8 的判据）
-EngineOwnedLibraryNames=(libBackTest.so)
-EngineBinDataNames=(engine-version.txt BackTest.json Sessions.json)
+EngineOwnedLibraryNames=(libBackTest.so
+    libMdApi.so libMdGbkApi.so libSimExchangeApi.so libSimExchangeGbkApi.so libTraderApi.so libTraderGbkApi.so)
+# 引擎自己的应用（可执行文件）：与引擎自有库同档，只是名字不带 .so，故另列
+EngineBinExecutableNames=(MdOffer SimExchange)
+EngineBinDataNames=(engine-version.txt BackTest.json Sessions.json MdOffer.json SimExchange.json)
 SparkRuntimeNames=(libCore.so libNetwork.so libSerialization.so)
 DbAdaptersRuntimeNames=(libAsyncDbWriter.so libDuckdbWrapper.so libSqliteWrapper.so libduckdb.so)
 
-# 不该出现在发布目录里的库：六个 API 中间层（契约 §2.1）+ 按需另定的两个数据库后端（契约 §7）
-ForbiddenPackageNames=(libMdApi.so libMdGbkApi.so libSimExchangeApi.so libSimExchangeGbkApi.so
-    libTraderApi.so libTraderGbkApi.so libMysqlWrapper.so libMariadbWrapper.so)
+# 不该出现在发布目录里的库：MySQL / MariaDB 两个后端。2026-10-13 用户裁定「数据库只需要 sqlite
+# 和 duckdb」，故连「按需另定」的余地也不留（契约 §7）
+ForbiddenPackageNames=(libMysqlWrapper.so libMariadbWrapper.so)
 
-ExpectedPackageFileCount=12
+ExpectedPackageFileCount=22
+
+# 已知的绝对路径依赖（契约 §2.3，2026-10-13 实测）：CTP 的导入库没有 SONAME，链结期把完整路径
+# 写进了 DT_NEEDED，同机可跑、跨机不可用。逐条列名是为了让「记警告放行」只覆盖已知项——将来
+# 别的产物出现绝对路径，同一条检查照样抓得到并判不合格
+KnownAbsoluteNeededNames=(MdOffer)
 
 # 直接打印文件头部的注释块，用法文本只维护一处（表头内不得出现非 # 开头的行）
 PrintUsage() {
     awk 'NR > 1 { if ($0 !~ /^#/) exit; sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}"
 }
 
-# 发布目录里的每个 .so 依次交给回调（回调收到的参数是该 .so 的完整路径）。
-# 两条自检都要遍历同一批文件，骨架抽出来，免得改一处漏一处（Harness §5）
-ForEachPackageLibrary() {
-    local LibraryCallback=$1 LibraryFile
-    for LibraryFile in "$OutputDirectory"/*.so; do
-        if [ -f "$LibraryFile" ]; then
-            "$LibraryCallback" "$LibraryFile"
+# 发布目录里每个 .so，加上引擎自己的可执行文件，依次交给回调（回调收到的是完整路径）。
+# 几条自检都要遍历同一批产物，骨架抽出来，免得改一处漏一处（Harness §5）
+ForEachPackageArtifact() {
+    local ArtifactCallback=$1 ArtifactPath ExecutableName
+    for ArtifactPath in "$OutputDirectory"/*.so; do
+        if [ -f "$ArtifactPath" ]; then
+            "$ArtifactCallback" "$ArtifactPath"
+        fi
+    done
+    for ExecutableName in "${EngineBinExecutableNames[@]}"; do
+        ArtifactPath="$OutputDirectory/$ExecutableName"
+        if [ -f "$ArtifactPath" ]; then
+            "$ArtifactCallback" "$ArtifactPath"
         fi
     done
 }
@@ -92,10 +108,16 @@ ReportSelfCheckWarning() {
     SelfCheckWarningCount=$((SelfCheckWarningCount + 1))
 }
 
-IsEngineOwnedLibrary() {
-    local LibraryName=$1 CandidateName
-    for CandidateName in "${EngineOwnedLibraryNames[@]}"; do
-        if [ "$CandidateName" = "$LibraryName" ]; then
+# 「已知缺陷」单列一档：它不像「不通过」那样拦下交付，也不该混进不阻断的警告里被忽略
+ReportKnownDefectWarning() {
+    printf '  [已知缺陷] %s\n' "$1" >&2
+    KnownDefectWarningCount=$((KnownDefectWarningCount + 1))
+}
+
+IsEngineOwnedArtifact() {
+    local ArtifactName=$1 CandidateName
+    for CandidateName in "${EngineOwnedLibraryNames[@]}" "${EngineBinExecutableNames[@]}"; do
+        if [ "$CandidateName" = "$ArtifactName" ]; then
             return 0
         fi
     done
@@ -137,25 +159,25 @@ CollectExtensionModulePaths() {
 # 同目录的 libCore.so（它们无 RUNPATH），只记警告——真实加载时 libCore.so 由扩展模块先映射好，
 # 故第 3 条（解释器 import）才是决定性判据
 SelfCheckResolvableDependencies() {
-    ForEachPackageLibrary CheckLibraryDependenciesResolvable
+    ForEachPackageArtifact CheckArtifactDependenciesResolvable
 }
 
-CheckLibraryDependenciesResolvable() {
-    local LibraryFile=$1 LibraryName LddOutput NotFoundLibrary
-    LibraryName=$(basename -- "$LibraryFile")
+CheckArtifactDependenciesResolvable() {
+    local ArtifactPath=$1 ArtifactName LddOutput NotFoundLibrary
+    ArtifactName=$(basename -- "$ArtifactPath")
     # ldd 自身失败（非 ELF / 架构不符 / 文件损坏）不能算通过，须与「无缺失」区分开
-    if ! LddOutput=$(ldd -- "$LibraryFile" 2>&1); then
-        ReportSelfCheckFailure "$LibraryName 无法被 ldd 分析：$LddOutput"
+    if ! LddOutput=$(ldd -- "$ArtifactPath" 2>&1); then
+        ReportSelfCheckFailure "$ArtifactName 无法被 ldd 分析：$LddOutput"
         return 0
     fi
     NotFoundLibrary=$(printf '%s\n' "$LddOutput" | grep -i 'not found' || true)
     if [ -z "$NotFoundLibrary" ]; then
         return 0
     fi
-    if IsEngineOwnedLibrary "$LibraryName"; then
-        ReportSelfCheckFailure "$LibraryName 的依赖未解析：$NotFoundLibrary"
+    if IsEngineOwnedArtifact "$ArtifactName"; then
+        ReportSelfCheckFailure "$ArtifactName 的依赖未解析：$NotFoundLibrary"
     else
-        ReportSelfCheckWarning "$LibraryName 无 RUNPATH，单独分析时看不见同目录兄弟库：$NotFoundLibrary"
+        ReportSelfCheckWarning "$ArtifactName 无 RUNPATH，单独分析时看不见同目录兄弟库：$NotFoundLibrary"
     fi
 }
 
@@ -164,7 +186,7 @@ CheckLibraryDependenciesResolvable() {
 SelfCheckOriginRunpath() {
     WithAbsolutePathCount=0
     WithEmptyElementCount=0
-    ForEachPackageLibrary CheckLibraryOriginRunpath
+    ForEachPackageArtifact CheckArtifactOriginRunpath
     if [ "$WithAbsolutePathCount" -gt 0 ]; then
         printf '  [提示] %s 个产物保留了构建机绝对路径（$ORIGIN 在最前，目标机上不存在即跳过）\n' "$WithAbsolutePathCount"
     fi
@@ -173,17 +195,17 @@ SelfCheckOriginRunpath() {
     fi
 }
 
-CheckLibraryOriginRunpath() {
-    local LibraryFile=$1 LibraryName RunPath
-    LibraryName=$(basename -- "$LibraryFile")
-    RunPath=$(readelf -d -- "$LibraryFile" 2>/dev/null | grep -o 'RPATH.*\|RUNPATH.*' || true)
+CheckArtifactOriginRunpath() {
+    local ArtifactPath=$1 ArtifactName RunPath
+    ArtifactName=$(basename -- "$ArtifactPath")
+    RunPath=$(readelf -d -- "$ArtifactPath" 2>/dev/null | grep -o 'RPATH.*\|RUNPATH.*' || true)
     case "$RunPath" in
         *'$ORIGIN'*) ;;
         *)
-            if IsEngineOwnedLibrary "$LibraryName"; then
-                ReportSelfCheckFailure "$LibraryName 的 RUNPATH 未含 \$ORIGIN：${RunPath:-无 RPATH/RUNPATH}"
+            if IsEngineOwnedArtifact "$ArtifactName"; then
+                ReportSelfCheckFailure "$ArtifactName 的 RUNPATH 未含 \$ORIGIN：${RunPath:-无 RPATH/RUNPATH}"
             else
-                ReportSelfCheckWarning "$LibraryName 无 \$ORIGIN（三方 ship 库，本批次暂可接受）：${RunPath:-无 RPATH/RUNPATH}"
+                ReportSelfCheckWarning "$ArtifactName 无 \$ORIGIN（三方 ship 库，本批次暂可接受）：${RunPath:-无 RPATH/RUNPATH}"
             fi
             ;;
     esac
@@ -194,6 +216,38 @@ CheckLibraryOriginRunpath() {
     case "$RunPath" in
         *':]'*|*'::'*) WithEmptyElementCount=$((WithEmptyElementCount + 1)) ;;
     esac
+}
+
+# 契约 §2.3：CTP 的导入库没有 SONAME，链结期把绝对路径写进了 DT_NEEDED。带斜杠的 NEEDED 由
+# ld.so 按那条路径**直接**加载、不走 RUNPATH，所以往包目录里放一份同名库救不了它——只有目标机
+# 上那条路径真存在才能跑。已知项逐条列名后记警告放行，其余产物出现绝对路径一律不合格。
+IsKnownAbsoluteNeededName() {
+    local ArtifactName=$1 CandidateName
+    for CandidateName in "${KnownAbsoluteNeededNames[@]}"; do
+        if [ "$CandidateName" = "$ArtifactName" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+SelfCheckAbsoluteNeededPaths() {
+    ForEachPackageArtifact CheckArtifactAbsoluteNeededPaths
+}
+
+CheckArtifactAbsoluteNeededPaths() {
+    local ArtifactPath=$1 ArtifactName AbsoluteNeededPath
+    ArtifactName=$(basename -- "$ArtifactPath")
+    AbsoluteNeededPath=$(readelf -d -- "$ArtifactPath" 2>/dev/null |
+        sed -n 's/.*(NEEDED).*\[\([^]]*\/[^]]*\)\]$/\1/p' || true)
+    if [ -z "$AbsoluteNeededPath" ]; then
+        return 0
+    fi
+    if IsKnownAbsoluteNeededName "$ArtifactName"; then
+        ReportKnownDefectWarning "$ArtifactName 记着 CTP SDK 的绝对路径依赖（同机可跑，跨机不可用）：$AbsoluteNeededPath"
+    else
+        ReportSelfCheckFailure "$ArtifactName 的 DT_NEEDED 出现绝对路径（跨机不可用，须改成库名）：$AbsoluteNeededPath"
+    fi
 }
 
 # 决定性的一条：它同时验证扩展模块能找到 libBackTest.so、后者能找到它的兄弟（契约 §8）
@@ -398,6 +452,7 @@ MissingSourcePaths=()
 CopiedFileCount=0
 
 CopyWhitelistNames "$BinDirectory" "${EngineBinRuntimeNames[@]}"
+CopyWhitelistNames "$BinDirectory" "${EngineBinExecutableNames[@]}"
 CopyWhitelistNames "$BinDirectory" "${EngineBinDataNames[@]}"
 CopyWhitelistNames "$LibsRoot/Spark/x64-linux/lib" "${SparkRuntimeNames[@]}"
 CopyWhitelistNames "$LibsRoot/DbAdapters/x64-linux/lib" "${DbAdaptersRuntimeNames[@]}"
@@ -435,9 +490,11 @@ fi
 
 SelfCheckFailureCount=0
 SelfCheckWarningCount=0
+KnownDefectWarningCount=0
 SelfCheckPackageContent
 SelfCheckResolvableDependencies
 SelfCheckOriginRunpath
+SelfCheckAbsoluteNeededPaths
 SelfCheckInterpreterImport
 
 printf '\n发布目录：%s\n' "$OutputDirectory"
@@ -453,8 +510,11 @@ fi
 if [ "$CreateZipArchive" -eq 1 ]; then
     CreateReleaseZipArchive
 fi
-if [ "$SelfCheckWarningCount" -gt 0 ]; then
-    printf '\n自检四条全过（契约 §8），另有 %s 条警告（不阻断）\n' "$SelfCheckWarningCount"
-    exit 0
+printf '\n自检全过（契约 §8）'
+if [ "$KnownDefectWarningCount" -gt 0 ]; then
+    printf '，另有 %s 条已知缺陷（契约 §2.3，不阻断）' "$KnownDefectWarningCount"
 fi
-printf '\n自检四条全过（契约 §8）\n'
+if [ "$SelfCheckWarningCount" -gt 0 ]; then
+    printf '，另有 %s 条警告（不阻断）' "$SelfCheckWarningCount"
+fi
+printf '\n'
