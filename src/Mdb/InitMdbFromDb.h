@@ -12,23 +12,23 @@ namespace QuantTrading
 	public:
 		static void LoadTables(Mdb* mdb, Db* db, const TableList& tableList);
 
-		static void LoadTradingDayTable(Mdb* mdb, Db* db);
-		static void LoadExchangeTable(Mdb* mdb, Db* db);
-		static void LoadProductTable(Mdb* mdb, Db* db);
-		static void LoadHotInstrumentTable(Mdb* mdb, Db* db);
-		static void LoadInstrumentTable(Mdb* mdb, Db* db);
-		static void LoadDepthMarketDataTable(Mdb* mdb, Db* db);
-		static void LoadBarMarketDataTable(Mdb* mdb, Db* db);
-		static void LoadMdSubscribeTable(Mdb* mdb, Db* db);
-		static void LoadMdUserTable(Mdb* mdb, Db* db);
-		static void LoadPrimaryAccountTable(Mdb* mdb, Db* db);
-		static void LoadAccountTable(Mdb* mdb, Db* db);
-		static void LoadCapitalTable(Mdb* mdb, Db* db);
-		static void LoadPositionTable(Mdb* mdb, Db* db);
-		static void LoadPositionDetailTable(Mdb* mdb, Db* db);
-		static void LoadOrderTable(Mdb* mdb, Db* db);
-		static void LoadTradeTable(Mdb* mdb, Db* db);
-		static void LoadCommissionGroupTable(Mdb* mdb, Db* db);
-		static void LoadBaseCommissionTable(Mdb* mdb, Db* db);
+		static void LoadTradingDays(Mdb* mdb, Db* db);
+		static void LoadExchanges(Mdb* mdb, Db* db);
+		static void LoadProducts(Mdb* mdb, Db* db);
+		static void LoadHotInstruments(Mdb* mdb, Db* db);
+		static void LoadInstruments(Mdb* mdb, Db* db);
+		static void LoadDepthMarketDatas(Mdb* mdb, Db* db);
+		static void LoadBarMarketDatas(Mdb* mdb, Db* db);
+		static void LoadMdSubscribes(Mdb* mdb, Db* db);
+		static void LoadMdUsers(Mdb* mdb, Db* db);
+		static void LoadPrimaryAccounts(Mdb* mdb, Db* db);
+		static void LoadAccounts(Mdb* mdb, Db* db);
+		static void LoadCapitals(Mdb* mdb, Db* db);
+		static void LoadPositions(Mdb* mdb, Db* db);
+		static void LoadPositionDetails(Mdb* mdb, Db* db);
+		static void LoadOrders(Mdb* mdb, Db* db);
+		static void LoadTrades(Mdb* mdb, Db* db);
+		static void LoadCommissionGroups(Mdb* mdb, Db* db);
+		static void LoadBaseCommissions(Mdb* mdb, Db* db);
 	};
 }

@@ -32,7 +32,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		TradingDayPrimaryKey* PrimaryKey;
+		TradingDayTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -60,7 +60,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		ExchangePrimaryKey* PrimaryKey;
+		ExchangeTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -88,7 +88,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		ProductPrimaryKey* PrimaryKey;
+		ProductTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -117,8 +117,8 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		HotInstrumentPrimaryKey* PrimaryKey;
-		HotInstrumentIndexTradingDay* TradingDayIndex;
+		HotInstrumentTablePrimaryKey* PrimaryKey;
+		HotInstrumentTableIndexTradingDay* TradingDayIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -147,8 +147,8 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		InstrumentPrimaryKey* PrimaryKey;
-		InstrumentIndexExchangeId* ExchangeIdIndex;
+		InstrumentTablePrimaryKey* PrimaryKey;
+		InstrumentTableIndexExchangeId* ExchangeIdIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -176,7 +176,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		DepthMarketDataPrimaryKey* PrimaryKey;
+		DepthMarketDataTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -204,7 +204,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		BarMarketDataPrimaryKey* PrimaryKey;
+		BarMarketDataTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -232,7 +232,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		MdSubscribePrimaryKey* PrimaryKey;
+		MdSubscribeTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -260,7 +260,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		MdUserPrimaryKey* PrimaryKey;
+		MdUserTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -290,9 +290,9 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		MdUserLoginSessionPrimaryKey* PrimaryKey;
-		MdUserLoginSessionIndexSessionId* SessionIdIndex;
-		MdUserLoginSessionIndexMdUserId* MdUserIdIndex;
+		MdUserLoginSessionTablePrimaryKey* PrimaryKey;
+		MdUserLoginSessionTableIndexSessionId* SessionIdIndex;
+		MdUserLoginSessionTableIndexMdUserId* MdUserIdIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -321,8 +321,8 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		PrimaryAccountPrimaryKey* PrimaryKey;
-		PrimaryAccountIndexOfferId* OfferIdIndex;
+		PrimaryAccountTablePrimaryKey* PrimaryKey;
+		PrimaryAccountTableIndexOfferId* OfferIdIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -350,7 +350,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		AccountPrimaryKey* PrimaryKey;
+		AccountTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -379,8 +379,8 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		CapitalPrimaryKey* PrimaryKey;
-		CapitalIndexTradingDay* TradingDayIndex;
+		CapitalTablePrimaryKey* PrimaryKey;
+		CapitalTableIndexTradingDay* TradingDayIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -410,9 +410,9 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		PositionPrimaryKey* PrimaryKey;
-		PositionIndexAccount* AccountIndex;
-		PositionIndexTradingDay* TradingDayIndex;
+		PositionTablePrimaryKey* PrimaryKey;
+		PositionTableIndexAccount* AccountIndex;
+		PositionTableIndexTradingDay* TradingDayIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -442,9 +442,9 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		PositionDetailPrimaryKey* PrimaryKey;
-		PositionDetailIndexTradeMatch* TradeMatchIndex;
-		PositionDetailIndexTradingDay* TradingDayIndex;
+		PositionDetailTablePrimaryKey* PrimaryKey;
+		PositionDetailTableIndexTradeMatch* TradeMatchIndex;
+		PositionDetailTableIndexTradingDay* TradingDayIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -473,9 +473,9 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		OrderPrimaryKey* PrimaryKey;
-		OrderUniqueKeyClientOrderId* ClientOrderIdUniqueKey;
-		OrderIndexAccountId* AccountIdIndex;
+		OrderTablePrimaryKey* PrimaryKey;
+		OrderTableUniqueKeyClientOrderId* ClientOrderIdUniqueKey;
+		OrderTableIndexAccountId* AccountIdIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -504,8 +504,8 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		TradePrimaryKey* PrimaryKey;
-		TradeIndexAccountId* AccountIdIndex;
+		TradeTablePrimaryKey* PrimaryKey;
+		TradeTableIndexAccountId* AccountIdIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -535,9 +535,9 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		AccountLoginSessionPrimaryKey* PrimaryKey;
-		AccountLoginSessionIndexSessionId* SessionIdIndex;
-		AccountLoginSessionIndexAccountId* AccountIdIndex;
+		AccountLoginSessionTablePrimaryKey* PrimaryKey;
+		AccountLoginSessionTableIndexSessionId* SessionIdIndex;
+		AccountLoginSessionTableIndexAccountId* AccountIdIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -567,9 +567,9 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		PrimaryAccountLoginSessionPrimaryKey* PrimaryKey;
-		PrimaryAccountLoginSessionIndexSessionId* SessionIdIndex;
-		PrimaryAccountLoginSessionIndexPrimaryAccountId* PrimaryAccountIdIndex;
+		PrimaryAccountLoginSessionTablePrimaryKey* PrimaryKey;
+		PrimaryAccountLoginSessionTableIndexSessionId* SessionIdIndex;
+		PrimaryAccountLoginSessionTableIndexPrimaryAccountId* PrimaryAccountIdIndex;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -597,7 +597,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		CommissionGroupPrimaryKey* PrimaryKey;
+		CommissionGroupTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 
@@ -625,7 +625,7 @@ namespace QuantTrading
 		virtual void Dump(const char* dir) override;
 
 		std::shared_mutex SharedMutex;
-		BaseCommissionPrimaryKey* PrimaryKey;
+		BaseCommissionTablePrimaryKey* PrimaryKey;
 	protected:
 		MdbSubscriber* mdbSubscriber_;
 

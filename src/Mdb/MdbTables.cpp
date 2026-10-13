@@ -19,7 +19,7 @@ namespace QuantTrading
 	TradingDayTable::TradingDayTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new TradingDayPrimaryKey(this);
+		PrimaryKey = new TradingDayTablePrimaryKey(this);
 	}
 	TradingDayTable::~TradingDayTable()
 	{
@@ -171,7 +171,7 @@ namespace QuantTrading
 	}
 	void TradingDayTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_TradingDay.csv";
+		string fileName = string(dir) + "//TradingDays.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -204,7 +204,7 @@ namespace QuantTrading
 	ExchangeTable::ExchangeTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new ExchangePrimaryKey(this);
+		PrimaryKey = new ExchangeTablePrimaryKey(this);
 	}
 	ExchangeTable::~ExchangeTable()
 	{
@@ -356,7 +356,7 @@ namespace QuantTrading
 	}
 	void ExchangeTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_Exchange.csv";
+		string fileName = string(dir) + "//Exchanges.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -389,7 +389,7 @@ namespace QuantTrading
 	ProductTable::ProductTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new ProductPrimaryKey(this);
+		PrimaryKey = new ProductTablePrimaryKey(this);
 	}
 	ProductTable::~ProductTable()
 	{
@@ -541,7 +541,7 @@ namespace QuantTrading
 	}
 	void ProductTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_Product.csv";
+		string fileName = string(dir) + "//Products.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -574,8 +574,8 @@ namespace QuantTrading
 	HotInstrumentTable::HotInstrumentTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new HotInstrumentPrimaryKey(this);
-		TradingDayIndex = new HotInstrumentIndexTradingDay(this);
+		PrimaryKey = new HotInstrumentTablePrimaryKey(this);
+		TradingDayIndex = new HotInstrumentTableIndexTradingDay(this);
 	}
 	HotInstrumentTable::~HotInstrumentTable()
 	{
@@ -704,7 +704,7 @@ namespace QuantTrading
 		{
 			auto record = HotInstrument::Allocate();
 			memcpy(record, &CompareHotInstrument, sizeof(HotInstrument));
-			mdbSubscriber_->OnRecordEraseByIndex(HotInstrument::TableId, HotInstrumentIndexTradingDay::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(HotInstrument::TableId, HotInstrumentTableIndexTradingDay::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -720,7 +720,7 @@ namespace QuantTrading
 		}
 
 		bool TradingDayIndexUpdate = TradingDayIndex->NeedUpdate(oldRecord, newRecord);
-		HotInstrumentIndexTradingDay::iterator itTradingDay;
+		HotInstrumentTableIndexTradingDay::iterator itTradingDay;
 		if (TradingDayIndexUpdate)
 		{
 			itTradingDay = TradingDayIndex->FindNode(oldRecord);
@@ -767,7 +767,7 @@ namespace QuantTrading
 	}
 	void HotInstrumentTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_HotInstrument.csv";
+		string fileName = string(dir) + "//HotInstruments.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -801,8 +801,8 @@ namespace QuantTrading
 	InstrumentTable::InstrumentTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new InstrumentPrimaryKey(this);
-		ExchangeIdIndex = new InstrumentIndexExchangeId(this);
+		PrimaryKey = new InstrumentTablePrimaryKey(this);
+		ExchangeIdIndex = new InstrumentTableIndexExchangeId(this);
 	}
 	InstrumentTable::~InstrumentTable()
 	{
@@ -931,7 +931,7 @@ namespace QuantTrading
 		{
 			auto record = Instrument::Allocate();
 			memcpy(record, &CompareInstrument, sizeof(Instrument));
-			mdbSubscriber_->OnRecordEraseByIndex(Instrument::TableId, InstrumentIndexExchangeId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(Instrument::TableId, InstrumentTableIndexExchangeId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -947,7 +947,7 @@ namespace QuantTrading
 		}
 
 		bool ExchangeIdIndexUpdate = ExchangeIdIndex->NeedUpdate(oldRecord, newRecord);
-		InstrumentIndexExchangeId::iterator itExchangeId;
+		InstrumentTableIndexExchangeId::iterator itExchangeId;
 		if (ExchangeIdIndexUpdate)
 		{
 			itExchangeId = ExchangeIdIndex->FindNode(oldRecord);
@@ -994,7 +994,7 @@ namespace QuantTrading
 	}
 	void InstrumentTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_Instrument.csv";
+		string fileName = string(dir) + "//Instruments.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -1028,7 +1028,7 @@ namespace QuantTrading
 	DepthMarketDataTable::DepthMarketDataTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new DepthMarketDataPrimaryKey(this);
+		PrimaryKey = new DepthMarketDataTablePrimaryKey(this);
 	}
 	DepthMarketDataTable::~DepthMarketDataTable()
 	{
@@ -1180,7 +1180,7 @@ namespace QuantTrading
 	}
 	void DepthMarketDataTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_DepthMarketData.csv";
+		string fileName = string(dir) + "//DepthMarketDatas.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -1213,7 +1213,7 @@ namespace QuantTrading
 	BarMarketDataTable::BarMarketDataTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new BarMarketDataPrimaryKey(this);
+		PrimaryKey = new BarMarketDataTablePrimaryKey(this);
 	}
 	BarMarketDataTable::~BarMarketDataTable()
 	{
@@ -1365,7 +1365,7 @@ namespace QuantTrading
 	}
 	void BarMarketDataTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_BarMarketData.csv";
+		string fileName = string(dir) + "//BarMarketDatas.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -1398,7 +1398,7 @@ namespace QuantTrading
 	MdSubscribeTable::MdSubscribeTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new MdSubscribePrimaryKey(this);
+		PrimaryKey = new MdSubscribeTablePrimaryKey(this);
 	}
 	MdSubscribeTable::~MdSubscribeTable()
 	{
@@ -1550,7 +1550,7 @@ namespace QuantTrading
 	}
 	void MdSubscribeTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_MdSubscribe.csv";
+		string fileName = string(dir) + "//MdSubscribes.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -1583,7 +1583,7 @@ namespace QuantTrading
 	MdUserTable::MdUserTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new MdUserPrimaryKey(this);
+		PrimaryKey = new MdUserTablePrimaryKey(this);
 	}
 	MdUserTable::~MdUserTable()
 	{
@@ -1735,7 +1735,7 @@ namespace QuantTrading
 	}
 	void MdUserTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_MdUser.csv";
+		string fileName = string(dir) + "//MdUsers.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -1768,9 +1768,9 @@ namespace QuantTrading
 	MdUserLoginSessionTable::MdUserLoginSessionTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new MdUserLoginSessionPrimaryKey(this);
-		SessionIdIndex = new MdUserLoginSessionIndexSessionId(this);
-		MdUserIdIndex = new MdUserLoginSessionIndexMdUserId(this);
+		PrimaryKey = new MdUserLoginSessionTablePrimaryKey(this);
+		SessionIdIndex = new MdUserLoginSessionTableIndexSessionId(this);
+		MdUserIdIndex = new MdUserLoginSessionTableIndexMdUserId(this);
 	}
 	MdUserLoginSessionTable::~MdUserLoginSessionTable()
 	{
@@ -1903,7 +1903,7 @@ namespace QuantTrading
 		{
 			auto record = MdUserLoginSession::Allocate();
 			memcpy(record, &CompareMdUserLoginSession, sizeof(MdUserLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(MdUserLoginSession::TableId, MdUserLoginSessionIndexSessionId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(MdUserLoginSession::TableId, MdUserLoginSessionTableIndexSessionId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -1927,7 +1927,7 @@ namespace QuantTrading
 		{
 			auto record = MdUserLoginSession::Allocate();
 			memcpy(record, &CompareMdUserLoginSession, sizeof(MdUserLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(MdUserLoginSession::TableId, MdUserLoginSessionIndexMdUserId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(MdUserLoginSession::TableId, MdUserLoginSessionTableIndexMdUserId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -1943,13 +1943,13 @@ namespace QuantTrading
 		}
 
 		bool SessionIdIndexUpdate = SessionIdIndex->NeedUpdate(oldRecord, newRecord);
-		MdUserLoginSessionIndexSessionId::iterator itSessionId;
+		MdUserLoginSessionTableIndexSessionId::iterator itSessionId;
 		if (SessionIdIndexUpdate)
 		{
 			itSessionId = SessionIdIndex->FindNode(oldRecord);
 		}
 		bool MdUserIdIndexUpdate = MdUserIdIndex->NeedUpdate(oldRecord, newRecord);
-		MdUserLoginSessionIndexMdUserId::iterator itMdUserId;
+		MdUserLoginSessionTableIndexMdUserId::iterator itMdUserId;
 		if (MdUserIdIndexUpdate)
 		{
 			itMdUserId = MdUserIdIndex->FindNode(oldRecord);
@@ -2002,7 +2002,7 @@ namespace QuantTrading
 	}
 	void MdUserLoginSessionTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_MdUserLoginSession.csv";
+		string fileName = string(dir) + "//MdUserLoginSessions.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -2037,8 +2037,8 @@ namespace QuantTrading
 	PrimaryAccountTable::PrimaryAccountTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new PrimaryAccountPrimaryKey(this);
-		OfferIdIndex = new PrimaryAccountIndexOfferId(this);
+		PrimaryKey = new PrimaryAccountTablePrimaryKey(this);
+		OfferIdIndex = new PrimaryAccountTableIndexOfferId(this);
 	}
 	PrimaryAccountTable::~PrimaryAccountTable()
 	{
@@ -2167,7 +2167,7 @@ namespace QuantTrading
 		{
 			auto record = PrimaryAccount::Allocate();
 			memcpy(record, &ComparePrimaryAccount, sizeof(PrimaryAccount));
-			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccount::TableId, PrimaryAccountIndexOfferId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccount::TableId, PrimaryAccountTableIndexOfferId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -2183,7 +2183,7 @@ namespace QuantTrading
 		}
 
 		bool OfferIdIndexUpdate = OfferIdIndex->NeedUpdate(oldRecord, newRecord);
-		PrimaryAccountIndexOfferId::iterator itOfferId;
+		PrimaryAccountTableIndexOfferId::iterator itOfferId;
 		if (OfferIdIndexUpdate)
 		{
 			itOfferId = OfferIdIndex->FindNode(oldRecord);
@@ -2230,7 +2230,7 @@ namespace QuantTrading
 	}
 	void PrimaryAccountTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_PrimaryAccount.csv";
+		string fileName = string(dir) + "//PrimaryAccounts.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -2264,7 +2264,7 @@ namespace QuantTrading
 	AccountTable::AccountTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new AccountPrimaryKey(this);
+		PrimaryKey = new AccountTablePrimaryKey(this);
 	}
 	AccountTable::~AccountTable()
 	{
@@ -2416,7 +2416,7 @@ namespace QuantTrading
 	}
 	void AccountTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_Account.csv";
+		string fileName = string(dir) + "//Accounts.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -2449,8 +2449,8 @@ namespace QuantTrading
 	CapitalTable::CapitalTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new CapitalPrimaryKey(this);
-		TradingDayIndex = new CapitalIndexTradingDay(this);
+		PrimaryKey = new CapitalTablePrimaryKey(this);
+		TradingDayIndex = new CapitalTableIndexTradingDay(this);
 	}
 	CapitalTable::~CapitalTable()
 	{
@@ -2579,7 +2579,7 @@ namespace QuantTrading
 		{
 			auto record = Capital::Allocate();
 			memcpy(record, &CompareCapital, sizeof(Capital));
-			mdbSubscriber_->OnRecordEraseByIndex(Capital::TableId, CapitalIndexTradingDay::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(Capital::TableId, CapitalTableIndexTradingDay::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -2595,7 +2595,7 @@ namespace QuantTrading
 		}
 
 		bool TradingDayIndexUpdate = TradingDayIndex->NeedUpdate(oldRecord, newRecord);
-		CapitalIndexTradingDay::iterator itTradingDay;
+		CapitalTableIndexTradingDay::iterator itTradingDay;
 		if (TradingDayIndexUpdate)
 		{
 			itTradingDay = TradingDayIndex->FindNode(oldRecord);
@@ -2642,7 +2642,7 @@ namespace QuantTrading
 	}
 	void CapitalTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_Capital.csv";
+		string fileName = string(dir) + "//Capitals.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -2676,9 +2676,9 @@ namespace QuantTrading
 	PositionTable::PositionTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new PositionPrimaryKey(this);
-		AccountIndex = new PositionIndexAccount(this);
-		TradingDayIndex = new PositionIndexTradingDay(this);
+		PrimaryKey = new PositionTablePrimaryKey(this);
+		AccountIndex = new PositionTableIndexAccount(this);
+		TradingDayIndex = new PositionTableIndexTradingDay(this);
 	}
 	PositionTable::~PositionTable()
 	{
@@ -2811,7 +2811,7 @@ namespace QuantTrading
 		{
 			auto record = Position::Allocate();
 			memcpy(record, &ComparePosition, sizeof(Position));
-			mdbSubscriber_->OnRecordEraseByIndex(Position::TableId, PositionIndexAccount::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(Position::TableId, PositionTableIndexAccount::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -2835,7 +2835,7 @@ namespace QuantTrading
 		{
 			auto record = Position::Allocate();
 			memcpy(record, &ComparePosition, sizeof(Position));
-			mdbSubscriber_->OnRecordEraseByIndex(Position::TableId, PositionIndexTradingDay::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(Position::TableId, PositionTableIndexTradingDay::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -2851,13 +2851,13 @@ namespace QuantTrading
 		}
 
 		bool AccountIndexUpdate = AccountIndex->NeedUpdate(oldRecord, newRecord);
-		PositionIndexAccount::iterator itAccount;
+		PositionTableIndexAccount::iterator itAccount;
 		if (AccountIndexUpdate)
 		{
 			itAccount = AccountIndex->FindNode(oldRecord);
 		}
 		bool TradingDayIndexUpdate = TradingDayIndex->NeedUpdate(oldRecord, newRecord);
-		PositionIndexTradingDay::iterator itTradingDay;
+		PositionTableIndexTradingDay::iterator itTradingDay;
 		if (TradingDayIndexUpdate)
 		{
 			itTradingDay = TradingDayIndex->FindNode(oldRecord);
@@ -2910,7 +2910,7 @@ namespace QuantTrading
 	}
 	void PositionTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_Position.csv";
+		string fileName = string(dir) + "//Positions.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -2945,9 +2945,9 @@ namespace QuantTrading
 	PositionDetailTable::PositionDetailTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new PositionDetailPrimaryKey(this);
-		TradeMatchIndex = new PositionDetailIndexTradeMatch(this);
-		TradingDayIndex = new PositionDetailIndexTradingDay(this);
+		PrimaryKey = new PositionDetailTablePrimaryKey(this);
+		TradeMatchIndex = new PositionDetailTableIndexTradeMatch(this);
+		TradingDayIndex = new PositionDetailTableIndexTradingDay(this);
 	}
 	PositionDetailTable::~PositionDetailTable()
 	{
@@ -3080,7 +3080,7 @@ namespace QuantTrading
 		{
 			auto record = PositionDetail::Allocate();
 			memcpy(record, &ComparePositionDetail, sizeof(PositionDetail));
-			mdbSubscriber_->OnRecordEraseByIndex(PositionDetail::TableId, PositionDetailIndexTradeMatch::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(PositionDetail::TableId, PositionDetailTableIndexTradeMatch::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3104,7 +3104,7 @@ namespace QuantTrading
 		{
 			auto record = PositionDetail::Allocate();
 			memcpy(record, &ComparePositionDetail, sizeof(PositionDetail));
-			mdbSubscriber_->OnRecordEraseByIndex(PositionDetail::TableId, PositionDetailIndexTradingDay::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(PositionDetail::TableId, PositionDetailTableIndexTradingDay::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3120,13 +3120,13 @@ namespace QuantTrading
 		}
 
 		bool TradeMatchIndexUpdate = TradeMatchIndex->NeedUpdate(oldRecord, newRecord);
-		PositionDetailIndexTradeMatch::iterator itTradeMatch;
+		PositionDetailTableIndexTradeMatch::iterator itTradeMatch;
 		if (TradeMatchIndexUpdate)
 		{
 			itTradeMatch = TradeMatchIndex->FindNode(oldRecord);
 		}
 		bool TradingDayIndexUpdate = TradingDayIndex->NeedUpdate(oldRecord, newRecord);
-		PositionDetailIndexTradingDay::iterator itTradingDay;
+		PositionDetailTableIndexTradingDay::iterator itTradingDay;
 		if (TradingDayIndexUpdate)
 		{
 			itTradingDay = TradingDayIndex->FindNode(oldRecord);
@@ -3179,7 +3179,7 @@ namespace QuantTrading
 	}
 	void PositionDetailTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_PositionDetail.csv";
+		string fileName = string(dir) + "//PositionDetails.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -3214,9 +3214,9 @@ namespace QuantTrading
 	OrderTable::OrderTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new OrderPrimaryKey(this);
-		ClientOrderIdUniqueKey = new OrderUniqueKeyClientOrderId(this);
-		AccountIdIndex = new OrderIndexAccountId(this);
+		PrimaryKey = new OrderTablePrimaryKey(this);
+		ClientOrderIdUniqueKey = new OrderTableUniqueKeyClientOrderId(this);
+		AccountIdIndex = new OrderTableIndexAccountId(this);
 	}
 	OrderTable::~OrderTable()
 	{
@@ -3350,7 +3350,7 @@ namespace QuantTrading
 		{
 			auto record = Order::Allocate();
 			memcpy(record, &CompareOrder, sizeof(Order));
-			mdbSubscriber_->OnRecordEraseByIndex(Order::TableId, OrderIndexAccountId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(Order::TableId, OrderTableIndexAccountId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3366,7 +3366,7 @@ namespace QuantTrading
 		}
 
 		bool AccountIdIndexUpdate = AccountIdIndex->NeedUpdate(oldRecord, newRecord);
-		OrderIndexAccountId::iterator itAccountId;
+		OrderTableIndexAccountId::iterator itAccountId;
 		if (AccountIdIndexUpdate)
 		{
 			itAccountId = AccountIdIndex->FindNode(oldRecord);
@@ -3415,7 +3415,7 @@ namespace QuantTrading
 	}
 	void OrderTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_Order.csv";
+		string fileName = string(dir) + "//Orders.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -3450,8 +3450,8 @@ namespace QuantTrading
 	TradeTable::TradeTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new TradePrimaryKey(this);
-		AccountIdIndex = new TradeIndexAccountId(this);
+		PrimaryKey = new TradeTablePrimaryKey(this);
+		AccountIdIndex = new TradeTableIndexAccountId(this);
 	}
 	TradeTable::~TradeTable()
 	{
@@ -3580,7 +3580,7 @@ namespace QuantTrading
 		{
 			auto record = Trade::Allocate();
 			memcpy(record, &CompareTrade, sizeof(Trade));
-			mdbSubscriber_->OnRecordEraseByIndex(Trade::TableId, TradeIndexAccountId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(Trade::TableId, TradeTableIndexAccountId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3596,7 +3596,7 @@ namespace QuantTrading
 		}
 
 		bool AccountIdIndexUpdate = AccountIdIndex->NeedUpdate(oldRecord, newRecord);
-		TradeIndexAccountId::iterator itAccountId;
+		TradeTableIndexAccountId::iterator itAccountId;
 		if (AccountIdIndexUpdate)
 		{
 			itAccountId = AccountIdIndex->FindNode(oldRecord);
@@ -3643,7 +3643,7 @@ namespace QuantTrading
 	}
 	void TradeTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_Trade.csv";
+		string fileName = string(dir) + "//Trades.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -3677,9 +3677,9 @@ namespace QuantTrading
 	AccountLoginSessionTable::AccountLoginSessionTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new AccountLoginSessionPrimaryKey(this);
-		SessionIdIndex = new AccountLoginSessionIndexSessionId(this);
-		AccountIdIndex = new AccountLoginSessionIndexAccountId(this);
+		PrimaryKey = new AccountLoginSessionTablePrimaryKey(this);
+		SessionIdIndex = new AccountLoginSessionTableIndexSessionId(this);
+		AccountIdIndex = new AccountLoginSessionTableIndexAccountId(this);
 	}
 	AccountLoginSessionTable::~AccountLoginSessionTable()
 	{
@@ -3812,7 +3812,7 @@ namespace QuantTrading
 		{
 			auto record = AccountLoginSession::Allocate();
 			memcpy(record, &CompareAccountLoginSession, sizeof(AccountLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(AccountLoginSession::TableId, AccountLoginSessionIndexSessionId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(AccountLoginSession::TableId, AccountLoginSessionTableIndexSessionId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3836,7 +3836,7 @@ namespace QuantTrading
 		{
 			auto record = AccountLoginSession::Allocate();
 			memcpy(record, &CompareAccountLoginSession, sizeof(AccountLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(AccountLoginSession::TableId, AccountLoginSessionIndexAccountId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(AccountLoginSession::TableId, AccountLoginSessionTableIndexAccountId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -3852,13 +3852,13 @@ namespace QuantTrading
 		}
 
 		bool SessionIdIndexUpdate = SessionIdIndex->NeedUpdate(oldRecord, newRecord);
-		AccountLoginSessionIndexSessionId::iterator itSessionId;
+		AccountLoginSessionTableIndexSessionId::iterator itSessionId;
 		if (SessionIdIndexUpdate)
 		{
 			itSessionId = SessionIdIndex->FindNode(oldRecord);
 		}
 		bool AccountIdIndexUpdate = AccountIdIndex->NeedUpdate(oldRecord, newRecord);
-		AccountLoginSessionIndexAccountId::iterator itAccountId;
+		AccountLoginSessionTableIndexAccountId::iterator itAccountId;
 		if (AccountIdIndexUpdate)
 		{
 			itAccountId = AccountIdIndex->FindNode(oldRecord);
@@ -3911,7 +3911,7 @@ namespace QuantTrading
 	}
 	void AccountLoginSessionTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_AccountLoginSession.csv";
+		string fileName = string(dir) + "//AccountLoginSessions.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -3946,9 +3946,9 @@ namespace QuantTrading
 	PrimaryAccountLoginSessionTable::PrimaryAccountLoginSessionTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new PrimaryAccountLoginSessionPrimaryKey(this);
-		SessionIdIndex = new PrimaryAccountLoginSessionIndexSessionId(this);
-		PrimaryAccountIdIndex = new PrimaryAccountLoginSessionIndexPrimaryAccountId(this);
+		PrimaryKey = new PrimaryAccountLoginSessionTablePrimaryKey(this);
+		SessionIdIndex = new PrimaryAccountLoginSessionTableIndexSessionId(this);
+		PrimaryAccountIdIndex = new PrimaryAccountLoginSessionTableIndexPrimaryAccountId(this);
 	}
 	PrimaryAccountLoginSessionTable::~PrimaryAccountLoginSessionTable()
 	{
@@ -4081,7 +4081,7 @@ namespace QuantTrading
 		{
 			auto record = PrimaryAccountLoginSession::Allocate();
 			memcpy(record, &ComparePrimaryAccountLoginSession, sizeof(PrimaryAccountLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableId, PrimaryAccountLoginSessionIndexSessionId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableId, PrimaryAccountLoginSessionTableIndexSessionId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -4105,7 +4105,7 @@ namespace QuantTrading
 		{
 			auto record = PrimaryAccountLoginSession::Allocate();
 			memcpy(record, &ComparePrimaryAccountLoginSession, sizeof(PrimaryAccountLoginSession));
-			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableId, PrimaryAccountLoginSessionIndexPrimaryAccountId::IndexID, AdoptRecord(record));
+			mdbSubscriber_->OnRecordEraseByIndex(PrimaryAccountLoginSession::TableId, PrimaryAccountLoginSessionTableIndexPrimaryAccountId::IndexID, AdoptRecord(record));
 		}
 		return static_cast<int>(records.size());
 	}
@@ -4121,13 +4121,13 @@ namespace QuantTrading
 		}
 
 		bool SessionIdIndexUpdate = SessionIdIndex->NeedUpdate(oldRecord, newRecord);
-		PrimaryAccountLoginSessionIndexSessionId::iterator itSessionId;
+		PrimaryAccountLoginSessionTableIndexSessionId::iterator itSessionId;
 		if (SessionIdIndexUpdate)
 		{
 			itSessionId = SessionIdIndex->FindNode(oldRecord);
 		}
 		bool PrimaryAccountIdIndexUpdate = PrimaryAccountIdIndex->NeedUpdate(oldRecord, newRecord);
-		PrimaryAccountLoginSessionIndexPrimaryAccountId::iterator itPrimaryAccountId;
+		PrimaryAccountLoginSessionTableIndexPrimaryAccountId::iterator itPrimaryAccountId;
 		if (PrimaryAccountIdIndexUpdate)
 		{
 			itPrimaryAccountId = PrimaryAccountIdIndex->FindNode(oldRecord);
@@ -4180,7 +4180,7 @@ namespace QuantTrading
 	}
 	void PrimaryAccountLoginSessionTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_PrimaryAccountLoginSession.csv";
+		string fileName = string(dir) + "//PrimaryAccountLoginSessions.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -4215,7 +4215,7 @@ namespace QuantTrading
 	CommissionGroupTable::CommissionGroupTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new CommissionGroupPrimaryKey(this);
+		PrimaryKey = new CommissionGroupTablePrimaryKey(this);
 	}
 	CommissionGroupTable::~CommissionGroupTable()
 	{
@@ -4367,7 +4367,7 @@ namespace QuantTrading
 	}
 	void CommissionGroupTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_CommissionGroup.csv";
+		string fileName = string(dir) + "//CommissionGroups.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{
@@ -4400,7 +4400,7 @@ namespace QuantTrading
 	BaseCommissionTable::BaseCommissionTable()
 	{
 		mdbSubscriber_ = nullptr;
-		PrimaryKey = new BaseCommissionPrimaryKey(this);
+		PrimaryKey = new BaseCommissionTablePrimaryKey(this);
 	}
 	BaseCommissionTable::~BaseCommissionTable()
 	{
@@ -4552,7 +4552,7 @@ namespace QuantTrading
 	}
 	void BaseCommissionTable::Dump(const char* dir)
 	{
-		string fileName = string(dir) + "//t_BaseCommission.csv";
+		string fileName = string(dir) + "//BaseCommissions.csv";
 		FILE* dumpFile = fopen(fileName.c_str(), "w");
 		if (dumpFile == nullptr)
 		{

@@ -58,12 +58,12 @@ namespace QuantTrading::Settlement
 		}
 		// 实盘安装包未注册 BaseCommission（SimExchangeTableNames.xml 刻意不含费率表），此处即空守卫，
 		// 成交三列保持调用方置好的 0，实盘行为不因本类引入而改变。
-		if (mdb_->BaseCommission == nullptr)
+		if (mdb_->BaseCommissions == nullptr)
 		{
 			return;
 		}
 		const auto commissionGroupId = SelectCommissionGroupId(trade->AccountId);
-		auto rate = mdb_->BaseCommission->PrimaryKey->Select(commissionGroupId, trade->ExchangeId, trade->InstrumentId, trade->Direction);
+		auto rate = mdb_->BaseCommissions->PrimaryKey->Select(commissionGroupId, trade->ExchangeId, trade->InstrumentId, trade->Direction);
 		if (rate == nullptr)
 		{
 			RecordMissingRate(commissionGroupId, trade);
@@ -116,11 +116,11 @@ namespace QuantTrading::Settlement
 
 	GroupIdType CommissionCalculator::SelectCommissionGroupId(const AccountIdType& accountId) const
 	{
-		if (mdb_->Account == nullptr)
+		if (mdb_->Accounts == nullptr)
 		{
 			return 0;
 		}
-		auto account = mdb_->Account->PrimaryKey->Select(accountId);
+		auto account = mdb_->Accounts->PrimaryKey->Select(accountId);
 		return account == nullptr ? 0 : account->CommissionGroupId;
 	}
 

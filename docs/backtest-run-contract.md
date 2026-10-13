@@ -125,7 +125,7 @@ tick 早于当前交易日、费率行缺失（后者由 `CommissionMissingCount
 
 ## 4. 基本数据种子库
 
-`Product`、`CommissionGroup`、`BaseCommission` 三张表由种子库提供，其余表由引擎自建。
+`Products`、`CommissionGroups`、`BaseCommissions` 三张表由种子库提供，其余表由引擎自建。
 种子库缺失**不会**让回测失败，只会让费率全部按 0 计费并把缺口写进 `result.json`。
 
 ### 4.1 生成
@@ -141,6 +141,9 @@ tick 早于当前交易日、费率行缺失（后者由 `CommissionMissingCount
 > 契约不变——引擎侧零改动，本节以下的**列序与列名要求、以及缺失时的降级行为**仍然逐字适用，
 > 它们现在也是核对平台那份实现的依据。详见 QuantPlatform 仓的 `docs/platform-plan.md` §14 与
 > `docs/acceptance-checklist.md` §16。
+> **2026-10-13 起三张表名带复数 s**（`Products` / `CommissionGroups` / `BaseCommissions`，准据是
+> `MdbStructs.cpp` 的 `GetSchema`）——平台侧的 `seed_contract.py` 与 `reference_seed/*.csv` 文件名
+> **必须同步**，否则每轮生成的种子库都查不到这三张表、费率静默按 0 计（缺口只在 `result.json` 里现形）。
 
 种子库是 SQLite 二进制产物，不进版本库（`/bin` 已被 `.gitignore` 覆盖）。本地跑 `TestBackTest` / `TestStrategyGrid`
 要它时，按各配置手工执行一次（**仅供手工补种，见上框**）：
@@ -155,12 +158,12 @@ python makeseeddb.py bin/Release/BackTestInit.db
 要换一批标的时再给第二个参数 `<CSV 目录>`：那是**取代**而非叠加，给了目录就逐表读 `<表名>.csv`、
 **内置行一行不留**，且该目录须**三张表齐备**（缺文件即报错退出；空表只能用「有表头无数据行」表达）。
 本仓 2026-10-10 之前随附的 `Configs/SeedCsv/` **已删除**——它在手工补种路径上不但无用还是坑
-（`Product.csv` 2 行、另两张只有表头，照它跑会把内置的 1 行费率组与 6 行费率**清成 0 行**，费率随即
+（`Products.csv` 2 行、另两张只有表头，照它跑会把内置的 1 行费率组与 6 行费率**清成 0 行**，费率随即
 全按 0 计，`result.json` 的 `CommissionMissingCount` 会当场报出来）；平台用的是它自己那份
 `backend/reference_seed/*.csv`，与本仓无关。
 
 写入的行**表头即列序**，与预期列序不符会被拒绝而不是静默错位。两种方式都只重建
-`CommissionGroup` / `Product` / `BaseCommission` 三张表，其余表不受影响。
+`CommissionGroups` / `Products` / `BaseCommissions` 三张表，其余表不受影响。
 
 **表名与列序必须严格对齐 `MdbStructs.cpp` 的字段序**——
 SQLite 读取是 `SELECT *` 加按列下标绑定，列序错会静默错位。
@@ -178,7 +181,7 @@ SQLite 读取是 `SELECT *` 加按列下标绑定，列序错会静默错位。
 
 ## 5. 费用口径
 
-`Trade`、`Position`、`PositionDetail`、`Capital` 四张表各带三列费用，**互不合并**：
+`Trades`、`Positions`、`PositionDetails`、`Capitals` 四张表各带三列费用，**互不合并**：
 `Commission` 只装佣金，`StampTax` 与 `TransferFee` 各归各列。
 
 ```text

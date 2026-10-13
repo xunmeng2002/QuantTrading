@@ -15,7 +15,7 @@ namespace QuantTrading::Settlement
 	{
 		InitPosition(tradingDay, nextTradingDay);
 		std::vector<QuantTrading::Capital*> capitals;
-		auto capitalItPair = mdb_->Capital->TradingDayIndex->EqualRange(tradingDay);
+		auto capitalItPair = mdb_->Capitals->TradingDayIndex->EqualRange(tradingDay);
 		for (auto& capitalIt = capitalItPair.first; capitalIt != capitalItPair.second; ++capitalIt)
 		{
 			capitals.push_back(*capitalIt);
@@ -38,7 +38,7 @@ namespace QuantTrading::Settlement
 			newCapital->CloseProfitByDate = 0.0;
 			newCapital->PositionProfitByDate = 0.0;
 
-			mdb_->Capital->Insert(newCapital);
+			mdb_->Capitals->Insert(newCapital);
 		}
 	}
 
@@ -46,7 +46,7 @@ namespace QuantTrading::Settlement
 	{
 		InitPositionDetail(tradingDay, nextTradingDay);
 		std::vector<QuantTrading::Position*> positions;
-		auto positionItPair = mdb_->Position->TradingDayIndex->EqualRange(tradingDay);
+		auto positionItPair = mdb_->Positions->TradingDayIndex->EqualRange(tradingDay);
 		for (auto& positionIt = positionItPair.first; positionIt != positionItPair.second; ++positionIt)
 		{
 			positions.push_back(*positionIt);
@@ -72,14 +72,14 @@ namespace QuantTrading::Settlement
 			newPosition->CloseProfitByTrade = 0.0;
 			newPosition->PositionProfitByDate = 0.0;
 			newPosition->PreSettlementPrice = position->SettlementPrice;
-			mdb_->Position->Insert(newPosition);
+			mdb_->Positions->Insert(newPosition);
 		}
 	}
 
 	void Settlement::InitPositionDetail(const DateType& tradingDay, const DateType& nextTradingDay)
 	{
 		std::vector<QuantTrading::PositionDetail*> positionDetails;
-		auto positionDetailItPair = mdb_->PositionDetail->TradingDayIndex->EqualRange(tradingDay);
+		auto positionDetailItPair = mdb_->PositionDetails->TradingDayIndex->EqualRange(tradingDay);
 		for (auto& positionDetailIt = positionDetailItPair.first; positionDetailIt != positionDetailItPair.second; ++positionDetailIt)
 		{
 			positionDetails.push_back(*positionDetailIt);
@@ -100,7 +100,7 @@ namespace QuantTrading::Settlement
 			newPositionDetail->CloseProfitByTrade = 0.0;
 			newPositionDetail->PositionProfitByDate = 0.0;
 			newPositionDetail->PreSettlementPrice = positionDetail->SettlementPrice;
-			mdb_->PositionDetail->Insert(newPositionDetail);
+			mdb_->PositionDetails->Insert(newPositionDetail);
 		}
 	}
 }

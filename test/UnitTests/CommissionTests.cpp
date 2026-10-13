@@ -240,7 +240,7 @@ TEST_CASE("买卖方向参与取费率行")
 
 TEST_CASE("回测表清单已注册费率两张表")
 {
-    // 费率表不在回测清单里，mdb.BaseCommission 就是 nullptr，计费整条链路静默不生效。
+    // 费率表不在回测清单里，mdb.BaseCommissions 就是 nullptr，计费整条链路静默不生效。
     // 这条断言是"改了 BackTestTableNames.xml 却忘了重跑 pumpall.py"的唯一自动防线
     bool hasCommissionGroup = false;
     bool hasBaseCommission = false;

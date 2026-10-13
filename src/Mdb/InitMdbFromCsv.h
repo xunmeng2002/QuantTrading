@@ -10,23 +10,23 @@ namespace QuantTrading
 	public:
 		static void LoadTables(Mdb* mdb, const char* dir, const TableList& tableList);
 	private:
-		static void LoadTradingDayTable(Mdb* mdb, const char* dir);
-		static void LoadExchangeTable(Mdb* mdb, const char* dir);
-		static void LoadProductTable(Mdb* mdb, const char* dir);
-		static void LoadHotInstrumentTable(Mdb* mdb, const char* dir);
-		static void LoadInstrumentTable(Mdb* mdb, const char* dir);
-		static void LoadDepthMarketDataTable(Mdb* mdb, const char* dir);
-		static void LoadBarMarketDataTable(Mdb* mdb, const char* dir);
-		static void LoadMdSubscribeTable(Mdb* mdb, const char* dir);
-		static void LoadMdUserTable(Mdb* mdb, const char* dir);
-		static void LoadPrimaryAccountTable(Mdb* mdb, const char* dir);
-		static void LoadAccountTable(Mdb* mdb, const char* dir);
-		static void LoadCapitalTable(Mdb* mdb, const char* dir);
-		static void LoadPositionTable(Mdb* mdb, const char* dir);
-		static void LoadPositionDetailTable(Mdb* mdb, const char* dir);
-		static void LoadOrderTable(Mdb* mdb, const char* dir);
-		static void LoadTradeTable(Mdb* mdb, const char* dir);
-		static void LoadCommissionGroupTable(Mdb* mdb, const char* dir);
-		static void LoadBaseCommissionTable(Mdb* mdb, const char* dir);
+		static void LoadTradingDays(Mdb* mdb, const char* dir);
+		static void LoadExchanges(Mdb* mdb, const char* dir);
+		static void LoadProducts(Mdb* mdb, const char* dir);
+		static void LoadHotInstruments(Mdb* mdb, const char* dir);
+		static void LoadInstruments(Mdb* mdb, const char* dir);
+		static void LoadDepthMarketDatas(Mdb* mdb, const char* dir);
+		static void LoadBarMarketDatas(Mdb* mdb, const char* dir);
+		static void LoadMdSubscribes(Mdb* mdb, const char* dir);
+		static void LoadMdUsers(Mdb* mdb, const char* dir);
+		static void LoadPrimaryAccounts(Mdb* mdb, const char* dir);
+		static void LoadAccounts(Mdb* mdb, const char* dir);
+		static void LoadCapitals(Mdb* mdb, const char* dir);
+		static void LoadPositions(Mdb* mdb, const char* dir);
+		static void LoadPositionDetails(Mdb* mdb, const char* dir);
+		static void LoadOrders(Mdb* mdb, const char* dir);
+		static void LoadTrades(Mdb* mdb, const char* dir);
+		static void LoadCommissionGroups(Mdb* mdb, const char* dir);
+		static void LoadBaseCommissions(Mdb* mdb, const char* dir);
 	};
 }

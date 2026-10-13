@@ -39,7 +39,7 @@ namespace QuantTrading
 	}
 	const TableSchema& TradingDay::GetSchema()
 	{
-		static const TableSchema schema = {"TradingDay", TradingDayFields, 3, TradingDayPKIndices, 1, nullptr, 0};
+		static const TableSchema schema = {"TradingDays", TradingDayFields, 3, TradingDayPKIndices, 1, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor ExchangeFields[] = {
@@ -69,7 +69,7 @@ namespace QuantTrading
 	}
 	const TableSchema& Exchange::GetSchema()
 	{
-		static const TableSchema schema = {"Exchange", ExchangeFields, 2, ExchangePKIndices, 1, nullptr, 0};
+		static const TableSchema schema = {"Exchanges", ExchangeFields, 2, ExchangePKIndices, 1, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor ProductFields[] = {
@@ -108,7 +108,7 @@ namespace QuantTrading
 	}
 	const TableSchema& Product::GetSchema()
 	{
-		static const TableSchema schema = {"Product", ProductFields, 11, ProductPKIndices, 2, nullptr, 0};
+		static const TableSchema schema = {"Products", ProductFields, 11, ProductPKIndices, 2, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor HotInstrumentFields[] = {
@@ -128,7 +128,7 @@ namespace QuantTrading
 	static const int HotInstrumentPKIndices[] = { 0, 1, 2, 11 };
 	static const int HotInstrumentIdxTradingDay[] = { 1, 2, 11, 0 };
 	static const IndexDefinition HotInstrumentIndices[] = {
-		{HotInstrumentIndexTradingDay::IndexID, HotInstrumentIdxTradingDay, 4},
+		{HotInstrumentTableIndexTradingDay::IndexID, HotInstrumentIdxTradingDay, 4},
 	};
 	HotInstrument* HotInstrument::Allocate()
 	{
@@ -152,7 +152,7 @@ namespace QuantTrading
 	}
 	const TableSchema& HotInstrument::GetSchema()
 	{
-		static const TableSchema schema = {"HotInstrument", HotInstrumentFields, 12, HotInstrumentPKIndices, 4, HotInstrumentIndices, 1};
+		static const TableSchema schema = {"HotInstruments", HotInstrumentFields, 12, HotInstrumentPKIndices, 4, HotInstrumentIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor InstrumentFields[] = {
@@ -175,7 +175,7 @@ namespace QuantTrading
 	static const int InstrumentPKIndices[] = { 0, 1 };
 	static const int InstrumentIdxExchangeId[] = { 0 };
 	static const IndexDefinition InstrumentIndices[] = {
-		{InstrumentIndexExchangeId::IndexID, InstrumentIdxExchangeId, 1},
+		{InstrumentTableIndexExchangeId::IndexID, InstrumentIdxExchangeId, 1},
 	};
 	Instrument* Instrument::Allocate()
 	{
@@ -199,7 +199,7 @@ namespace QuantTrading
 	}
 	const TableSchema& Instrument::GetSchema()
 	{
-		static const TableSchema schema = {"Instrument", InstrumentFields, 15, InstrumentPKIndices, 2, InstrumentIndices, 1};
+		static const TableSchema schema = {"Instruments", InstrumentFields, 15, InstrumentPKIndices, 2, InstrumentIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor DepthMarketDataFields[] = {
@@ -288,7 +288,7 @@ namespace QuantTrading
 	}
 	const TableSchema& DepthMarketData::GetSchema()
 	{
-		static const TableSchema schema = {"DepthMarketData", DepthMarketDataFields, 61, DepthMarketDataPKIndices, 3, nullptr, 0};
+		static const TableSchema schema = {"DepthMarketDatas", DepthMarketDataFields, 61, DepthMarketDataPKIndices, 3, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor BarMarketDataFields[] = {
@@ -336,7 +336,7 @@ namespace QuantTrading
 	}
 	const TableSchema& BarMarketData::GetSchema()
 	{
-		static const TableSchema schema = {"BarMarketData", BarMarketDataFields, 20, BarMarketDataPKIndices, 6, nullptr, 0};
+		static const TableSchema schema = {"BarMarketDatas", BarMarketDataFields, 20, BarMarketDataPKIndices, 6, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor MdSubscribeFields[] = {
@@ -371,7 +371,7 @@ namespace QuantTrading
 	}
 	const TableSchema& MdSubscribe::GetSchema()
 	{
-		static const TableSchema schema = {"MdSubscribe", MdSubscribeFields, 7, MdSubscribePKIndices, 3, nullptr, 0};
+		static const TableSchema schema = {"MdSubscribes", MdSubscribeFields, 7, MdSubscribePKIndices, 3, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor MdUserFields[] = {
@@ -402,7 +402,7 @@ namespace QuantTrading
 	}
 	const TableSchema& MdUser::GetSchema()
 	{
-		static const TableSchema schema = {"MdUser", MdUserFields, 3, MdUserPKIndices, 1, nullptr, 0};
+		static const TableSchema schema = {"MdUsers", MdUserFields, 3, MdUserPKIndices, 1, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor MdUserLoginSessionFields[] = {
@@ -414,8 +414,8 @@ namespace QuantTrading
 	static const int MdUserLoginSessionIdxSessionId[] = { 1 };
 	static const int MdUserLoginSessionIdxMdUserId[] = { 0 };
 	static const IndexDefinition MdUserLoginSessionIndices[] = {
-		{MdUserLoginSessionIndexSessionId::IndexID, MdUserLoginSessionIdxSessionId, 1},
-		{MdUserLoginSessionIndexMdUserId::IndexID, MdUserLoginSessionIdxMdUserId, 1},
+		{MdUserLoginSessionTableIndexSessionId::IndexID, MdUserLoginSessionIdxSessionId, 1},
+		{MdUserLoginSessionTableIndexMdUserId::IndexID, MdUserLoginSessionIdxMdUserId, 1},
 	};
 	MdUserLoginSession* MdUserLoginSession::Allocate()
 	{
@@ -439,7 +439,7 @@ namespace QuantTrading
 	}
 	const TableSchema& MdUserLoginSession::GetSchema()
 	{
-		static const TableSchema schema = {"MdUserLoginSession", MdUserLoginSessionFields, 3, MdUserLoginSessionPKIndices, 2, MdUserLoginSessionIndices, 2};
+		static const TableSchema schema = {"MdUserLoginSessions", MdUserLoginSessionFields, 3, MdUserLoginSessionPKIndices, 2, MdUserLoginSessionIndices, 2};
 		return schema;
 	}
 	static const FieldDescriptor PrimaryAccountFields[] = {
@@ -456,7 +456,7 @@ namespace QuantTrading
 	static const int PrimaryAccountPKIndices[] = { 0 };
 	static const int PrimaryAccountIdxOfferId[] = { 4 };
 	static const IndexDefinition PrimaryAccountIndices[] = {
-		{PrimaryAccountIndexOfferId::IndexID, PrimaryAccountIdxOfferId, 1},
+		{PrimaryAccountTableIndexOfferId::IndexID, PrimaryAccountIdxOfferId, 1},
 	};
 	PrimaryAccount* PrimaryAccount::Allocate()
 	{
@@ -480,7 +480,7 @@ namespace QuantTrading
 	}
 	const TableSchema& PrimaryAccount::GetSchema()
 	{
-		static const TableSchema schema = {"PrimaryAccount", PrimaryAccountFields, 9, PrimaryAccountPKIndices, 1, PrimaryAccountIndices, 1};
+		static const TableSchema schema = {"PrimaryAccounts", PrimaryAccountFields, 9, PrimaryAccountPKIndices, 1, PrimaryAccountIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor AccountFields[] = {
@@ -516,7 +516,7 @@ namespace QuantTrading
 	}
 	const TableSchema& Account::GetSchema()
 	{
-		static const TableSchema schema = {"Account", AccountFields, 8, AccountPKIndices, 1, nullptr, 0};
+		static const TableSchema schema = {"Accounts", AccountFields, 8, AccountPKIndices, 1, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor CapitalFields[] = {
@@ -546,7 +546,7 @@ namespace QuantTrading
 	static const int CapitalPKIndices[] = { 0, 1 };
 	static const int CapitalIdxTradingDay[] = { 0 };
 	static const IndexDefinition CapitalIndices[] = {
-		{CapitalIndexTradingDay::IndexID, CapitalIdxTradingDay, 1},
+		{CapitalTableIndexTradingDay::IndexID, CapitalIdxTradingDay, 1},
 	};
 	Capital* Capital::Allocate()
 	{
@@ -570,7 +570,7 @@ namespace QuantTrading
 	}
 	const TableSchema& Capital::GetSchema()
 	{
-		static const TableSchema schema = {"Capital", CapitalFields, 22, CapitalPKIndices, 2, CapitalIndices, 1};
+		static const TableSchema schema = {"Capitals", CapitalFields, 22, CapitalPKIndices, 2, CapitalIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor PositionFields[] = {
@@ -606,8 +606,8 @@ namespace QuantTrading
 	static const int PositionIdxAccount[] = { 0, 1 };
 	static const int PositionIdxTradingDay[] = { 0 };
 	static const IndexDefinition PositionIndices[] = {
-		{PositionIndexAccount::IndexID, PositionIdxAccount, 2},
-		{PositionIndexTradingDay::IndexID, PositionIdxTradingDay, 1},
+		{PositionTableIndexAccount::IndexID, PositionIdxAccount, 2},
+		{PositionTableIndexTradingDay::IndexID, PositionIdxTradingDay, 1},
 	};
 	Position* Position::Allocate()
 	{
@@ -631,7 +631,7 @@ namespace QuantTrading
 	}
 	const TableSchema& Position::GetSchema()
 	{
-		static const TableSchema schema = {"Position", PositionFields, 27, PositionPKIndices, 5, PositionIndices, 2};
+		static const TableSchema schema = {"Positions", PositionFields, 27, PositionPKIndices, 5, PositionIndices, 2};
 		return schema;
 	}
 	static const FieldDescriptor PositionDetailFields[] = {
@@ -667,8 +667,8 @@ namespace QuantTrading
 	static const int PositionDetailIdxTradeMatch[] = { 0, 1, 3, 4, 6 };
 	static const int PositionDetailIdxTradingDay[] = { 0 };
 	static const IndexDefinition PositionDetailIndices[] = {
-		{PositionDetailIndexTradeMatch::IndexID, PositionDetailIdxTradeMatch, 5},
-		{PositionDetailIndexTradingDay::IndexID, PositionDetailIdxTradingDay, 1},
+		{PositionDetailTableIndexTradeMatch::IndexID, PositionDetailIdxTradeMatch, 5},
+		{PositionDetailTableIndexTradingDay::IndexID, PositionDetailIdxTradingDay, 1},
 	};
 	PositionDetail* PositionDetail::Allocate()
 	{
@@ -692,7 +692,7 @@ namespace QuantTrading
 	}
 	const TableSchema& PositionDetail::GetSchema()
 	{
-		static const TableSchema schema = {"PositionDetail", PositionDetailFields, 27, PositionDetailPKIndices, 7, PositionDetailIndices, 2};
+		static const TableSchema schema = {"PositionDetails", PositionDetailFields, 27, PositionDetailPKIndices, 7, PositionDetailIndices, 2};
 		return schema;
 	}
 	static const FieldDescriptor OrderFields[] = {
@@ -733,7 +733,7 @@ namespace QuantTrading
 	static const int OrderPKIndices[] = { 0, 1, 3, 4, 6 };
 	static const int OrderIdxAccountId[] = { 0, 1 };
 	static const IndexDefinition OrderIndices[] = {
-		{OrderIndexAccountId::IndexID, OrderIdxAccountId, 2},
+		{OrderTableIndexAccountId::IndexID, OrderIdxAccountId, 2},
 	};
 	Order* Order::Allocate()
 	{
@@ -757,7 +757,7 @@ namespace QuantTrading
 	}
 	const TableSchema& Order::GetSchema()
 	{
-		static const TableSchema schema = {"Order", OrderFields, 33, OrderPKIndices, 5, OrderIndices, 1};
+		static const TableSchema schema = {"Orders", OrderFields, 33, OrderPKIndices, 5, OrderIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor TradeFields[] = {
@@ -785,7 +785,7 @@ namespace QuantTrading
 	static const int TradePKIndices[] = { 0, 3, 8, 9 };
 	static const int TradeIdxAccountId[] = { 0, 1 };
 	static const IndexDefinition TradeIndices[] = {
-		{TradeIndexAccountId::IndexID, TradeIdxAccountId, 2},
+		{TradeTableIndexAccountId::IndexID, TradeIdxAccountId, 2},
 	};
 	Trade* Trade::Allocate()
 	{
@@ -809,7 +809,7 @@ namespace QuantTrading
 	}
 	const TableSchema& Trade::GetSchema()
 	{
-		static const TableSchema schema = {"Trade", TradeFields, 20, TradePKIndices, 4, TradeIndices, 1};
+		static const TableSchema schema = {"Trades", TradeFields, 20, TradePKIndices, 4, TradeIndices, 1};
 		return schema;
 	}
 	static const FieldDescriptor AccountLoginSessionFields[] = {
@@ -821,8 +821,8 @@ namespace QuantTrading
 	static const int AccountLoginSessionIdxSessionId[] = { 1 };
 	static const int AccountLoginSessionIdxAccountId[] = { 0 };
 	static const IndexDefinition AccountLoginSessionIndices[] = {
-		{AccountLoginSessionIndexSessionId::IndexID, AccountLoginSessionIdxSessionId, 1},
-		{AccountLoginSessionIndexAccountId::IndexID, AccountLoginSessionIdxAccountId, 1},
+		{AccountLoginSessionTableIndexSessionId::IndexID, AccountLoginSessionIdxSessionId, 1},
+		{AccountLoginSessionTableIndexAccountId::IndexID, AccountLoginSessionIdxAccountId, 1},
 	};
 	AccountLoginSession* AccountLoginSession::Allocate()
 	{
@@ -846,7 +846,7 @@ namespace QuantTrading
 	}
 	const TableSchema& AccountLoginSession::GetSchema()
 	{
-		static const TableSchema schema = {"AccountLoginSession", AccountLoginSessionFields, 3, AccountLoginSessionPKIndices, 2, AccountLoginSessionIndices, 2};
+		static const TableSchema schema = {"AccountLoginSessions", AccountLoginSessionFields, 3, AccountLoginSessionPKIndices, 2, AccountLoginSessionIndices, 2};
 		return schema;
 	}
 	static const FieldDescriptor PrimaryAccountLoginSessionFields[] = {
@@ -858,8 +858,8 @@ namespace QuantTrading
 	static const int PrimaryAccountLoginSessionIdxSessionId[] = { 1 };
 	static const int PrimaryAccountLoginSessionIdxPrimaryAccountId[] = { 0 };
 	static const IndexDefinition PrimaryAccountLoginSessionIndices[] = {
-		{PrimaryAccountLoginSessionIndexSessionId::IndexID, PrimaryAccountLoginSessionIdxSessionId, 1},
-		{PrimaryAccountLoginSessionIndexPrimaryAccountId::IndexID, PrimaryAccountLoginSessionIdxPrimaryAccountId, 1},
+		{PrimaryAccountLoginSessionTableIndexSessionId::IndexID, PrimaryAccountLoginSessionIdxSessionId, 1},
+		{PrimaryAccountLoginSessionTableIndexPrimaryAccountId::IndexID, PrimaryAccountLoginSessionIdxPrimaryAccountId, 1},
 	};
 	PrimaryAccountLoginSession* PrimaryAccountLoginSession::Allocate()
 	{
@@ -883,7 +883,7 @@ namespace QuantTrading
 	}
 	const TableSchema& PrimaryAccountLoginSession::GetSchema()
 	{
-		static const TableSchema schema = {"PrimaryAccountLoginSession", PrimaryAccountLoginSessionFields, 3, PrimaryAccountLoginSessionPKIndices, 2, PrimaryAccountLoginSessionIndices, 2};
+		static const TableSchema schema = {"PrimaryAccountLoginSessions", PrimaryAccountLoginSessionFields, 3, PrimaryAccountLoginSessionPKIndices, 2, PrimaryAccountLoginSessionIndices, 2};
 		return schema;
 	}
 	static const FieldDescriptor CommissionGroupFields[] = {
@@ -913,7 +913,7 @@ namespace QuantTrading
 	}
 	const TableSchema& CommissionGroup::GetSchema()
 	{
-		static const TableSchema schema = {"CommissionGroup", CommissionGroupFields, 2, CommissionGroupPKIndices, 1, nullptr, 0};
+		static const TableSchema schema = {"CommissionGroups", CommissionGroupFields, 2, CommissionGroupPKIndices, 1, nullptr, 0};
 		return schema;
 	}
 	static const FieldDescriptor BaseCommissionFields[] = {
@@ -955,7 +955,7 @@ namespace QuantTrading
 	}
 	const TableSchema& BaseCommission::GetSchema()
 	{
-		static const TableSchema schema = {"BaseCommission", BaseCommissionFields, 14, BaseCommissionPKIndices, 4, nullptr, 0};
+		static const TableSchema schema = {"BaseCommissions", BaseCommissionFields, 14, BaseCommissionPKIndices, 4, nullptr, 0};
 		return schema;
 	}
 

@@ -26,27 +26,27 @@ namespace QuantTrading
 		virtual void OnDbConnected() override;
 		virtual void OnDbDisConnected() override;
 
-		TradingDayTable* TradingDay = nullptr;
-		ExchangeTable* Exchange = nullptr;
-		ProductTable* Product = nullptr;
-		HotInstrumentTable* HotInstrument = nullptr;
-		InstrumentTable* Instrument = nullptr;
-		DepthMarketDataTable* DepthMarketData = nullptr;
-		BarMarketDataTable* BarMarketData = nullptr;
-		MdSubscribeTable* MdSubscribe = nullptr;
-		MdUserTable* MdUser = nullptr;
-		MdUserLoginSessionTable* MdUserLoginSession = nullptr;
-		PrimaryAccountTable* PrimaryAccount = nullptr;
-		AccountTable* Account = nullptr;
-		CapitalTable* Capital = nullptr;
-		PositionTable* Position = nullptr;
-		PositionDetailTable* PositionDetail = nullptr;
-		OrderTable* Order = nullptr;
-		TradeTable* Trade = nullptr;
-		AccountLoginSessionTable* AccountLoginSession = nullptr;
-		PrimaryAccountLoginSessionTable* PrimaryAccountLoginSession = nullptr;
-		CommissionGroupTable* CommissionGroup = nullptr;
-		BaseCommissionTable* BaseCommission = nullptr;
+		TradingDayTable* TradingDays = nullptr;
+		ExchangeTable* Exchanges = nullptr;
+		ProductTable* Products = nullptr;
+		HotInstrumentTable* HotInstruments = nullptr;
+		InstrumentTable* Instruments = nullptr;
+		DepthMarketDataTable* DepthMarketDatas = nullptr;
+		BarMarketDataTable* BarMarketDatas = nullptr;
+		MdSubscribeTable* MdSubscribes = nullptr;
+		MdUserTable* MdUsers = nullptr;
+		MdUserLoginSessionTable* MdUserLoginSessions = nullptr;
+		PrimaryAccountTable* PrimaryAccounts = nullptr;
+		AccountTable* Accounts = nullptr;
+		CapitalTable* Capitals = nullptr;
+		PositionTable* Positions = nullptr;
+		PositionDetailTable* PositionDetails = nullptr;
+		OrderTable* Orders = nullptr;
+		TradeTable* Trades = nullptr;
+		AccountLoginSessionTable* AccountLoginSessions = nullptr;
+		PrimaryAccountLoginSessionTable* PrimaryAccountLoginSessions = nullptr;
+		CommissionGroupTable* CommissionGroups = nullptr;
+		BaseCommissionTable* BaseCommissions = nullptr;
 
 	private:
 		MdbSubscriber* mdbSubscriber_;

@@ -56,7 +56,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryExchange(CThostFtdcExchangeField* pExchang
 	exchanges_.push_back(exchange);
 	if (bIsLast)
 	{
-		mdb_->Exchange->BatchInsert(exchanges_);
+		mdb_->Exchanges->BatchInsert(exchanges_);
 		ReqQryProduct();
 	}
 }
@@ -107,7 +107,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryProduct(CThostFtdcProductField* pProduct, 
 	products_.push_back(product);
 	if (bIsLast)
 	{
-		mdb_->Product->BatchInsert(products_);
+		mdb_->Products->BatchInsert(products_);
 		ReqQryInstrument();
 	}
 }
@@ -163,7 +163,7 @@ void CThostFtdcTraderSpiImpl::OnRspQryInstrument(CThostFtdcInstrumentField* pIns
 	instruments_.push_back(instrument);
 	if (bIsLast)
 	{
-		mdb_->Instrument->BatchInsert(instruments_);
+		mdb_->Instruments->BatchInsert(instruments_);
 		ReqQryTradingAccount();
 	}
 }

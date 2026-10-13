@@ -7,11 +7,11 @@
 namespace QuantTrading
 {
 	class TradingDayTable;
-	class TradingDayPrimaryKey
+	class TradingDayTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<TradingDay*, TradingDayHashForTradingDayPrimaryKey, TradingDayEqualForTradingDayPrimaryKey>::iterator;
-		TradingDayPrimaryKey(TradingDayTable* tableOwner, size_t buckets = 1000);
+		TradingDayTablePrimaryKey(TradingDayTable* tableOwner, size_t buckets = 1000);
 		TradingDay* Select(const Int32Type& Pk);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -28,11 +28,11 @@ namespace QuantTrading
 		std::unordered_set<TradingDay*, TradingDayHashForTradingDayPrimaryKey, TradingDayEqualForTradingDayPrimaryKey> index_;
 	};
 	class ExchangeTable;
-	class ExchangePrimaryKey
+	class ExchangeTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey>::iterator;
-		ExchangePrimaryKey(ExchangeTable* tableOwner, size_t buckets = 1000);
+		ExchangeTablePrimaryKey(ExchangeTable* tableOwner, size_t buckets = 1000);
 		Exchange* Select(const ExchangeIdType& ExchangeId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -49,11 +49,11 @@ namespace QuantTrading
 		std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey> index_;
 	};
 	class ProductTable;
-	class ProductPrimaryKey
+	class ProductTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey>::iterator;
-		ProductPrimaryKey(ProductTable* tableOwner, size_t buckets = 1000);
+		ProductTablePrimaryKey(ProductTable* tableOwner, size_t buckets = 1000);
 		Product* Select(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -70,11 +70,11 @@ namespace QuantTrading
 		std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey> index_;
 	};
 	class HotInstrumentTable;
-	class HotInstrumentPrimaryKey
+	class HotInstrumentTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey>::iterator;
-		HotInstrumentPrimaryKey(HotInstrumentTable* tableOwner, size_t buckets = 1000);
+		HotInstrumentTablePrimaryKey(HotInstrumentTable* tableOwner, size_t buckets = 1000);
 		HotInstrument* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -91,11 +91,11 @@ namespace QuantTrading
 		std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey> index_;
 	};
 	class InstrumentTable;
-	class InstrumentPrimaryKey
+	class InstrumentTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey>::iterator;
-		InstrumentPrimaryKey(InstrumentTable* tableOwner, size_t buckets = 1000);
+		InstrumentTablePrimaryKey(InstrumentTable* tableOwner, size_t buckets = 1000);
 		Instrument* Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -112,11 +112,11 @@ namespace QuantTrading
 		std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey> index_;
 	};
 	class DepthMarketDataTable;
-	class DepthMarketDataPrimaryKey
+	class DepthMarketDataTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey>::iterator;
-		DepthMarketDataPrimaryKey(DepthMarketDataTable* tableOwner, size_t buckets = 1000);
+		DepthMarketDataTablePrimaryKey(DepthMarketDataTable* tableOwner, size_t buckets = 1000);
 		DepthMarketData* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -133,11 +133,11 @@ namespace QuantTrading
 		std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey> index_;
 	};
 	class BarMarketDataTable;
-	class BarMarketDataPrimaryKey
+	class BarMarketDataTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey>::iterator;
-		BarMarketDataPrimaryKey(BarMarketDataTable* tableOwner, size_t buckets = 1000);
+		BarMarketDataTablePrimaryKey(BarMarketDataTable* tableOwner, size_t buckets = 1000);
 		BarMarketData* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const BarPrecesType& BarPreces, const Int32Type& BarPeriod, const Int64Type& BarTime);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -154,11 +154,11 @@ namespace QuantTrading
 		std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey> index_;
 	};
 	class MdSubscribeTable;
-	class MdSubscribePrimaryKey
+	class MdSubscribeTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey>::iterator;
-		MdSubscribePrimaryKey(MdSubscribeTable* tableOwner, size_t buckets = 1000);
+		MdSubscribeTablePrimaryKey(MdSubscribeTable* tableOwner, size_t buckets = 1000);
 		MdSubscribe* Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DateType& StartTradingDay);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -175,11 +175,11 @@ namespace QuantTrading
 		std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey> index_;
 	};
 	class MdUserTable;
-	class MdUserPrimaryKey
+	class MdUserTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<MdUser*, MdUserHashForMdUserPrimaryKey, MdUserEqualForMdUserPrimaryKey>::iterator;
-		MdUserPrimaryKey(MdUserTable* tableOwner, size_t buckets = 1000);
+		MdUserTablePrimaryKey(MdUserTable* tableOwner, size_t buckets = 1000);
 		MdUser* Select(const UserIdType& MdUserId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -196,11 +196,11 @@ namespace QuantTrading
 		std::unordered_set<MdUser*, MdUserHashForMdUserPrimaryKey, MdUserEqualForMdUserPrimaryKey> index_;
 	};
 	class MdUserLoginSessionTable;
-	class MdUserLoginSessionPrimaryKey
+	class MdUserLoginSessionTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<MdUserLoginSession*, MdUserLoginSessionHashForMdUserLoginSessionPrimaryKey, MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey>::iterator;
-		MdUserLoginSessionPrimaryKey(MdUserLoginSessionTable* tableOwner, size_t buckets = 1000);
+		MdUserLoginSessionTablePrimaryKey(MdUserLoginSessionTable* tableOwner, size_t buckets = 1000);
 		MdUserLoginSession* Select(const UserIdType& MdUserId, const SessionIdType& SessionId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -217,11 +217,11 @@ namespace QuantTrading
 		std::unordered_set<MdUserLoginSession*, MdUserLoginSessionHashForMdUserLoginSessionPrimaryKey, MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey> index_;
 	};
 	class PrimaryAccountTable;
-	class PrimaryAccountPrimaryKey
+	class PrimaryAccountTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey>::iterator;
-		PrimaryAccountPrimaryKey(PrimaryAccountTable* tableOwner, size_t buckets = 1000);
+		PrimaryAccountTablePrimaryKey(PrimaryAccountTable* tableOwner, size_t buckets = 1000);
 		PrimaryAccount* Select(const AccountIdType& PrimaryAccountId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -238,11 +238,11 @@ namespace QuantTrading
 		std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey> index_;
 	};
 	class AccountTable;
-	class AccountPrimaryKey
+	class AccountTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey>::iterator;
-		AccountPrimaryKey(AccountTable* tableOwner, size_t buckets = 1000);
+		AccountTablePrimaryKey(AccountTable* tableOwner, size_t buckets = 1000);
 		Account* Select(const AccountIdType& AccountId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -259,11 +259,11 @@ namespace QuantTrading
 		std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey> index_;
 	};
 	class CapitalTable;
-	class CapitalPrimaryKey
+	class CapitalTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey>::iterator;
-		CapitalPrimaryKey(CapitalTable* tableOwner, size_t buckets = 1000);
+		CapitalTablePrimaryKey(CapitalTable* tableOwner, size_t buckets = 1000);
 		Capital* Select(const DateType& TradingDay, const AccountIdType& AccountId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -280,11 +280,11 @@ namespace QuantTrading
 		std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey> index_;
 	};
 	class PositionTable;
-	class PositionPrimaryKey
+	class PositionTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey>::iterator;
-		PositionPrimaryKey(PositionTable* tableOwner, size_t buckets = 1000);
+		PositionTablePrimaryKey(PositionTable* tableOwner, size_t buckets = 1000);
 		Position* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -301,11 +301,11 @@ namespace QuantTrading
 		std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey> index_;
 	};
 	class PositionDetailTable;
-	class PositionDetailPrimaryKey
+	class PositionDetailTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey>::iterator;
-		PositionDetailPrimaryKey(PositionDetailTable* tableOwner, size_t buckets = 1000);
+		PositionDetailTablePrimaryKey(PositionDetailTable* tableOwner, size_t buckets = 1000);
 		PositionDetail* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIdType& TradeId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -322,11 +322,11 @@ namespace QuantTrading
 		std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey> index_;
 	};
 	class OrderTable;
-	class OrderPrimaryKey
+	class OrderTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<Order*, OrderHashForOrderPrimaryKey, OrderEqualForOrderPrimaryKey>::iterator;
-		OrderPrimaryKey(OrderTable* tableOwner, size_t buckets = 1000);
+		OrderTablePrimaryKey(OrderTable* tableOwner, size_t buckets = 1000);
 		Order* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const OrderIdType& OrderId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -342,10 +342,10 @@ namespace QuantTrading
 		OrderTable* table_;
 		std::unordered_set<Order*, OrderHashForOrderPrimaryKey, OrderEqualForOrderPrimaryKey> index_;
 	};
-	class OrderUniqueKeyClientOrderId
+	class OrderTableUniqueKeyClientOrderId
 	{
 	public:
-		OrderUniqueKeyClientOrderId(OrderTable* tableOwner, size_t buckets = 1000);
+		OrderTableUniqueKeyClientOrderId(OrderTable* tableOwner, size_t buckets = 1000);
 		Order* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const SessionIdType& SessionId, const ClientOrderIdType& ClientOrderId);
 		
 	protected:
@@ -362,11 +362,11 @@ namespace QuantTrading
 	};
 	
 	class TradeTable;
-	class TradePrimaryKey
+	class TradeTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<Trade*, TradeHashForTradePrimaryKey, TradeEqualForTradePrimaryKey>::iterator;
-		TradePrimaryKey(TradeTable* tableOwner, size_t buckets = 1000);
+		TradeTablePrimaryKey(TradeTable* tableOwner, size_t buckets = 1000);
 		Trade* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const TradeIdType& TradeId, const DirectionType& Direction);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -383,11 +383,11 @@ namespace QuantTrading
 		std::unordered_set<Trade*, TradeHashForTradePrimaryKey, TradeEqualForTradePrimaryKey> index_;
 	};
 	class AccountLoginSessionTable;
-	class AccountLoginSessionPrimaryKey
+	class AccountLoginSessionTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<AccountLoginSession*, AccountLoginSessionHashForAccountLoginSessionPrimaryKey, AccountLoginSessionEqualForAccountLoginSessionPrimaryKey>::iterator;
-		AccountLoginSessionPrimaryKey(AccountLoginSessionTable* tableOwner, size_t buckets = 1000);
+		AccountLoginSessionTablePrimaryKey(AccountLoginSessionTable* tableOwner, size_t buckets = 1000);
 		AccountLoginSession* Select(const AccountIdType& AccountId, const SessionIdType& SessionId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -404,11 +404,11 @@ namespace QuantTrading
 		std::unordered_set<AccountLoginSession*, AccountLoginSessionHashForAccountLoginSessionPrimaryKey, AccountLoginSessionEqualForAccountLoginSessionPrimaryKey> index_;
 	};
 	class PrimaryAccountLoginSessionTable;
-	class PrimaryAccountLoginSessionPrimaryKey
+	class PrimaryAccountLoginSessionTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey>::iterator;
-		PrimaryAccountLoginSessionPrimaryKey(PrimaryAccountLoginSessionTable* tableOwner, size_t buckets = 1000);
+		PrimaryAccountLoginSessionTablePrimaryKey(PrimaryAccountLoginSessionTable* tableOwner, size_t buckets = 1000);
 		PrimaryAccountLoginSession* Select(const AccountIdType& PrimaryAccountId, const SessionIdType& SessionId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -425,11 +425,11 @@ namespace QuantTrading
 		std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey> index_;
 	};
 	class CommissionGroupTable;
-	class CommissionGroupPrimaryKey
+	class CommissionGroupTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<CommissionGroup*, CommissionGroupHashForCommissionGroupPrimaryKey, CommissionGroupEqualForCommissionGroupPrimaryKey>::iterator;
-		CommissionGroupPrimaryKey(CommissionGroupTable* tableOwner, size_t buckets = 1000);
+		CommissionGroupTablePrimaryKey(CommissionGroupTable* tableOwner, size_t buckets = 1000);
 		CommissionGroup* Select(const GroupIdType& CommissionGroupId);
 		std::pair<iterator, iterator> SelectAll();
 		
@@ -446,11 +446,11 @@ namespace QuantTrading
 		std::unordered_set<CommissionGroup*, CommissionGroupHashForCommissionGroupPrimaryKey, CommissionGroupEqualForCommissionGroupPrimaryKey> index_;
 	};
 	class BaseCommissionTable;
-	class BaseCommissionPrimaryKey
+	class BaseCommissionTablePrimaryKey
 	{
 	public:
 		using iterator = std::unordered_set<BaseCommission*, BaseCommissionHashForBaseCommissionPrimaryKey, BaseCommissionEqualForBaseCommissionPrimaryKey>::iterator;
-		BaseCommissionPrimaryKey(BaseCommissionTable* tableOwner, size_t buckets = 1000);
+		BaseCommissionTablePrimaryKey(BaseCommissionTable* tableOwner, size_t buckets = 1000);
 		BaseCommission* Select(const GroupIdType& CommissionGroupId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DirectionType& Direction);
 		std::pair<iterator, iterator> SelectAll();
 		

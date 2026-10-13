@@ -33,11 +33,11 @@ namespace QuantTrading::Settlement
 	void PositionMaintenance::UpdateOnTrade(QuantTrading::Trade* trade)
 	{
 		auto posiDirection = QuantTrading::GetPosiDirection(trade->OffsetFlag, trade->Direction);
-		auto position = mdb_->Position->PrimaryKey->Select(trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, posiDirection);
+		auto position = mdb_->Positions->PrimaryKey->Select(trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, posiDirection);
 		if (position == nullptr)
 		{
 			position = QuantTrading::OrderMatch::CreatePosition(trade, posiDirection);
-			mdb_->Position->Insert(position);
+			mdb_->Positions->Insert(position);
 		}
 		else
 		{
@@ -58,12 +58,12 @@ namespace QuantTrading::Settlement
 		if (trade->OffsetFlag == OffsetFlagType::Open)
 		{
 			auto positionDetail = QuantTrading::OrderMatch::CreatePositionDetail(trade, posiDirection);
-			mdb_->PositionDetail->Insert(positionDetail);
+			mdb_->PositionDetails->Insert(positionDetail);
 		}
 		else
 		{
 			std::set<QuantTrading::PositionDetail*, PositionDetailLessForOpenDate> positionDetails;
-			auto itPair = mdb_->PositionDetail->TradeMatchIndex->EqualRange(position->TradingDay, position->AccountId, position->ExchangeId,
+			auto itPair = mdb_->PositionDetails->TradeMatchIndex->EqualRange(position->TradingDay, position->AccountId, position->ExchangeId,
 				position->InstrumentId, position->PosiDirection);
 			for (auto& it = itPair.first; it != itPair.second; ++it)
 			{

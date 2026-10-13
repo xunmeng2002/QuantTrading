@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """回测基本数据种子库生成器（**手工补种用**；生产路径已退役为历史遗留）。
 
-`Product` / `CommissionGroup` / `BaseCommission` 三张表此后由 QuantPlatform 在每轮回测开始前
+`Products` / `CommissionGroups` / `BaseCommissions` 三张表此后由 QuantPlatform 在每轮回测开始前
 从 catalog 现造、落进该轮作业目录；本脚本只在需要手工补一份 `bin/<Config>/BackTestInit.db`
 时使用（退役说明见 `docs/backtest-run-contract.md` §4.1）。
 
@@ -66,7 +66,7 @@ def build_a_share_commission_rows(exchange_id: str, instrument_id: str) -> tuple
 
 
 COMMISSION_GROUP_TABLE = SeedTable(
-    table_name="CommissionGroup",
+    table_name="CommissionGroups",
     columns=(("CommissionGroupId", "int"), ("CommissionGroupName", "char(64)")),
     primary_key_columns=("CommissionGroupId",),
     default_rows=((COMMISSION_GROUP_DEFAULT_ID, "Default"),),
@@ -75,7 +75,7 @@ COMMISSION_GROUP_TABLE = SeedTable(
 # 品种只登记到三位代码，且 ProductClass 必须是 Stock：InitMainInstrument 只对 Future
 # 造 .Hot/.Second/.Third，写成 Future 会凭空多出一批主力合约
 PRODUCT_TABLE = SeedTable(
-    table_name="Product",
+    table_name="Products",
     columns=(
         ("ExchangeId", "char(8)"),
         ("ProductId", "char(32)"),
@@ -97,7 +97,7 @@ PRODUCT_TABLE = SeedTable(
 )
 
 BASE_COMMISSION_TABLE = SeedTable(
-    table_name="BaseCommission",
+    table_name="BaseCommissions",
     columns=(
         ("CommissionGroupId", "int"),
         ("ExchangeId", "char(8)"),

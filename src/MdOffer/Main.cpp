@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
         Utility::Strcpy(mdUser->MdUserId, config.MdUserId.c_str());
         Utility::Strcpy(mdUser->MdUserName, "");
         Utility::Strcpy(mdUser->Password, config.MdPassword.c_str());
-        mdb->MdUser->Insert(mdUser);
+        mdb->MdUsers->Insert(mdUser);
     }
 
 	MdKernel* mdKernel = new MdKernel(mdb, tradeSessions, config.SubscribeInstruments);

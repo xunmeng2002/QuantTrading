@@ -10,11 +10,11 @@ using namespace Spark::Core;
 
 namespace QuantTrading
 {
-	TradingDayPrimaryKey::TradingDayPrimaryKey(TradingDayTable* tableOwner, size_t buckets)
+	TradingDayTablePrimaryKey::TradingDayTablePrimaryKey(TradingDayTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	TradingDay* TradingDayPrimaryKey::Select(const Int32Type& Pk)
+	TradingDay* TradingDayTablePrimaryKey::Select(const Int32Type& Pk)
 	{
 		CompareTradingDay.Pk = Pk;
 		
@@ -26,32 +26,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<TradingDayPrimaryKey::iterator, TradingDayPrimaryKey::iterator> TradingDayPrimaryKey::SelectAll()
+	std::pair<TradingDayTablePrimaryKey::iterator, TradingDayTablePrimaryKey::iterator> TradingDayTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool TradingDayPrimaryKey::Insert(TradingDay* const record)
+	bool TradingDayTablePrimaryKey::Insert(TradingDay* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void TradingDayPrimaryKey::Erase(TradingDay* const  record)
+	void TradingDayTablePrimaryKey::Erase(TradingDay* const  record)
 	{
 		index_.erase(record);
 	}
-	bool TradingDayPrimaryKey::CheckInsert(TradingDay* const record)
+	bool TradingDayTablePrimaryKey::CheckInsert(TradingDay* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool TradingDayPrimaryKey::CheckUpdate(const TradingDay* const oldRecord, const TradingDay* const newRecord)
+	bool TradingDayTablePrimaryKey::CheckUpdate(const TradingDay* const oldRecord, const TradingDay* const newRecord)
 	{
 		return TradingDayEqualForTradingDayPrimaryKey()(oldRecord, newRecord);
 	}
-	ExchangePrimaryKey::ExchangePrimaryKey(ExchangeTable* tableOwner, size_t buckets)
+	ExchangeTablePrimaryKey::ExchangeTablePrimaryKey(ExchangeTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Exchange* ExchangePrimaryKey::Select(const ExchangeIdType& ExchangeId)
+	Exchange* ExchangeTablePrimaryKey::Select(const ExchangeIdType& ExchangeId)
 	{
 		Utility::Strcpy(CompareExchange.ExchangeId, ExchangeId);
 		
@@ -63,32 +63,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<ExchangePrimaryKey::iterator, ExchangePrimaryKey::iterator> ExchangePrimaryKey::SelectAll()
+	std::pair<ExchangeTablePrimaryKey::iterator, ExchangeTablePrimaryKey::iterator> ExchangeTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool ExchangePrimaryKey::Insert(Exchange* const record)
+	bool ExchangeTablePrimaryKey::Insert(Exchange* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void ExchangePrimaryKey::Erase(Exchange* const  record)
+	void ExchangeTablePrimaryKey::Erase(Exchange* const  record)
 	{
 		index_.erase(record);
 	}
-	bool ExchangePrimaryKey::CheckInsert(Exchange* const record)
+	bool ExchangeTablePrimaryKey::CheckInsert(Exchange* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool ExchangePrimaryKey::CheckUpdate(const Exchange* const oldRecord, const Exchange* const newRecord)
+	bool ExchangeTablePrimaryKey::CheckUpdate(const Exchange* const oldRecord, const Exchange* const newRecord)
 	{
 		return ExchangeEqualForExchangePrimaryKey()(oldRecord, newRecord);
 	}
-	ProductPrimaryKey::ProductPrimaryKey(ProductTable* tableOwner, size_t buckets)
+	ProductTablePrimaryKey::ProductTablePrimaryKey(ProductTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Product* ProductPrimaryKey::Select(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId)
+	Product* ProductTablePrimaryKey::Select(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId)
 	{
 		Utility::Strcpy(CompareProduct.ExchangeId, ExchangeId);
 		Utility::Strcpy(CompareProduct.ProductId, ProductId);
@@ -101,32 +101,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<ProductPrimaryKey::iterator, ProductPrimaryKey::iterator> ProductPrimaryKey::SelectAll()
+	std::pair<ProductTablePrimaryKey::iterator, ProductTablePrimaryKey::iterator> ProductTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool ProductPrimaryKey::Insert(Product* const record)
+	bool ProductTablePrimaryKey::Insert(Product* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void ProductPrimaryKey::Erase(Product* const  record)
+	void ProductTablePrimaryKey::Erase(Product* const  record)
 	{
 		index_.erase(record);
 	}
-	bool ProductPrimaryKey::CheckInsert(Product* const record)
+	bool ProductTablePrimaryKey::CheckInsert(Product* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool ProductPrimaryKey::CheckUpdate(const Product* const oldRecord, const Product* const newRecord)
+	bool ProductTablePrimaryKey::CheckUpdate(const Product* const oldRecord, const Product* const newRecord)
 	{
 		return ProductEqualForProductPrimaryKey()(oldRecord, newRecord);
 	}
-	HotInstrumentPrimaryKey::HotInstrumentPrimaryKey(HotInstrumentTable* tableOwner, size_t buckets)
+	HotInstrumentTablePrimaryKey::HotInstrumentTablePrimaryKey(HotInstrumentTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	HotInstrument* HotInstrumentPrimaryKey::Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank)
+	HotInstrument* HotInstrumentTablePrimaryKey::Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank)
 	{
 		Utility::Strcpy(CompareHotInstrument.TradingDay, TradingDay);
 		Utility::Strcpy(CompareHotInstrument.ExchangeId, ExchangeId);
@@ -141,32 +141,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<HotInstrumentPrimaryKey::iterator, HotInstrumentPrimaryKey::iterator> HotInstrumentPrimaryKey::SelectAll()
+	std::pair<HotInstrumentTablePrimaryKey::iterator, HotInstrumentTablePrimaryKey::iterator> HotInstrumentTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool HotInstrumentPrimaryKey::Insert(HotInstrument* const record)
+	bool HotInstrumentTablePrimaryKey::Insert(HotInstrument* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void HotInstrumentPrimaryKey::Erase(HotInstrument* const  record)
+	void HotInstrumentTablePrimaryKey::Erase(HotInstrument* const  record)
 	{
 		index_.erase(record);
 	}
-	bool HotInstrumentPrimaryKey::CheckInsert(HotInstrument* const record)
+	bool HotInstrumentTablePrimaryKey::CheckInsert(HotInstrument* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool HotInstrumentPrimaryKey::CheckUpdate(const HotInstrument* const oldRecord, const HotInstrument* const newRecord)
+	bool HotInstrumentTablePrimaryKey::CheckUpdate(const HotInstrument* const oldRecord, const HotInstrument* const newRecord)
 	{
 		return HotInstrumentEqualForHotInstrumentPrimaryKey()(oldRecord, newRecord);
 	}
-	InstrumentPrimaryKey::InstrumentPrimaryKey(InstrumentTable* tableOwner, size_t buckets)
+	InstrumentTablePrimaryKey::InstrumentTablePrimaryKey(InstrumentTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Instrument* InstrumentPrimaryKey::Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId)
+	Instrument* InstrumentTablePrimaryKey::Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId)
 	{
 		Utility::Strcpy(CompareInstrument.ExchangeId, ExchangeId);
 		Utility::Strcpy(CompareInstrument.InstrumentId, InstrumentId);
@@ -179,32 +179,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<InstrumentPrimaryKey::iterator, InstrumentPrimaryKey::iterator> InstrumentPrimaryKey::SelectAll()
+	std::pair<InstrumentTablePrimaryKey::iterator, InstrumentTablePrimaryKey::iterator> InstrumentTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool InstrumentPrimaryKey::Insert(Instrument* const record)
+	bool InstrumentTablePrimaryKey::Insert(Instrument* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void InstrumentPrimaryKey::Erase(Instrument* const  record)
+	void InstrumentTablePrimaryKey::Erase(Instrument* const  record)
 	{
 		index_.erase(record);
 	}
-	bool InstrumentPrimaryKey::CheckInsert(Instrument* const record)
+	bool InstrumentTablePrimaryKey::CheckInsert(Instrument* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool InstrumentPrimaryKey::CheckUpdate(const Instrument* const oldRecord, const Instrument* const newRecord)
+	bool InstrumentTablePrimaryKey::CheckUpdate(const Instrument* const oldRecord, const Instrument* const newRecord)
 	{
 		return InstrumentEqualForInstrumentPrimaryKey()(oldRecord, newRecord);
 	}
-	DepthMarketDataPrimaryKey::DepthMarketDataPrimaryKey(DepthMarketDataTable* tableOwner, size_t buckets)
+	DepthMarketDataTablePrimaryKey::DepthMarketDataTablePrimaryKey(DepthMarketDataTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	DepthMarketData* DepthMarketDataPrimaryKey::Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId)
+	DepthMarketData* DepthMarketDataTablePrimaryKey::Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId)
 	{
 		Utility::Strcpy(CompareDepthMarketData.TradingDay, TradingDay);
 		Utility::Strcpy(CompareDepthMarketData.ExchangeId, ExchangeId);
@@ -218,32 +218,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<DepthMarketDataPrimaryKey::iterator, DepthMarketDataPrimaryKey::iterator> DepthMarketDataPrimaryKey::SelectAll()
+	std::pair<DepthMarketDataTablePrimaryKey::iterator, DepthMarketDataTablePrimaryKey::iterator> DepthMarketDataTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool DepthMarketDataPrimaryKey::Insert(DepthMarketData* const record)
+	bool DepthMarketDataTablePrimaryKey::Insert(DepthMarketData* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void DepthMarketDataPrimaryKey::Erase(DepthMarketData* const  record)
+	void DepthMarketDataTablePrimaryKey::Erase(DepthMarketData* const  record)
 	{
 		index_.erase(record);
 	}
-	bool DepthMarketDataPrimaryKey::CheckInsert(DepthMarketData* const record)
+	bool DepthMarketDataTablePrimaryKey::CheckInsert(DepthMarketData* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool DepthMarketDataPrimaryKey::CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord)
+	bool DepthMarketDataTablePrimaryKey::CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord)
 	{
 		return DepthMarketDataEqualForDepthMarketDataPrimaryKey()(oldRecord, newRecord);
 	}
-	BarMarketDataPrimaryKey::BarMarketDataPrimaryKey(BarMarketDataTable* tableOwner, size_t buckets)
+	BarMarketDataTablePrimaryKey::BarMarketDataTablePrimaryKey(BarMarketDataTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	BarMarketData* BarMarketDataPrimaryKey::Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const BarPrecesType& BarPreces, const Int32Type& BarPeriod, const Int64Type& BarTime)
+	BarMarketData* BarMarketDataTablePrimaryKey::Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const BarPrecesType& BarPreces, const Int32Type& BarPeriod, const Int64Type& BarTime)
 	{
 		Utility::Strcpy(CompareBarMarketData.TradingDay, TradingDay);
 		Utility::Strcpy(CompareBarMarketData.ExchangeId, ExchangeId);
@@ -260,32 +260,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<BarMarketDataPrimaryKey::iterator, BarMarketDataPrimaryKey::iterator> BarMarketDataPrimaryKey::SelectAll()
+	std::pair<BarMarketDataTablePrimaryKey::iterator, BarMarketDataTablePrimaryKey::iterator> BarMarketDataTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool BarMarketDataPrimaryKey::Insert(BarMarketData* const record)
+	bool BarMarketDataTablePrimaryKey::Insert(BarMarketData* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void BarMarketDataPrimaryKey::Erase(BarMarketData* const  record)
+	void BarMarketDataTablePrimaryKey::Erase(BarMarketData* const  record)
 	{
 		index_.erase(record);
 	}
-	bool BarMarketDataPrimaryKey::CheckInsert(BarMarketData* const record)
+	bool BarMarketDataTablePrimaryKey::CheckInsert(BarMarketData* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool BarMarketDataPrimaryKey::CheckUpdate(const BarMarketData* const oldRecord, const BarMarketData* const newRecord)
+	bool BarMarketDataTablePrimaryKey::CheckUpdate(const BarMarketData* const oldRecord, const BarMarketData* const newRecord)
 	{
 		return BarMarketDataEqualForBarMarketDataPrimaryKey()(oldRecord, newRecord);
 	}
-	MdSubscribePrimaryKey::MdSubscribePrimaryKey(MdSubscribeTable* tableOwner, size_t buckets)
+	MdSubscribeTablePrimaryKey::MdSubscribeTablePrimaryKey(MdSubscribeTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	MdSubscribe* MdSubscribePrimaryKey::Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DateType& StartTradingDay)
+	MdSubscribe* MdSubscribeTablePrimaryKey::Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DateType& StartTradingDay)
 	{
 		Utility::Strcpy(CompareMdSubscribe.ExchangeId, ExchangeId);
 		Utility::Strcpy(CompareMdSubscribe.InstrumentId, InstrumentId);
@@ -299,32 +299,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<MdSubscribePrimaryKey::iterator, MdSubscribePrimaryKey::iterator> MdSubscribePrimaryKey::SelectAll()
+	std::pair<MdSubscribeTablePrimaryKey::iterator, MdSubscribeTablePrimaryKey::iterator> MdSubscribeTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool MdSubscribePrimaryKey::Insert(MdSubscribe* const record)
+	bool MdSubscribeTablePrimaryKey::Insert(MdSubscribe* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void MdSubscribePrimaryKey::Erase(MdSubscribe* const  record)
+	void MdSubscribeTablePrimaryKey::Erase(MdSubscribe* const  record)
 	{
 		index_.erase(record);
 	}
-	bool MdSubscribePrimaryKey::CheckInsert(MdSubscribe* const record)
+	bool MdSubscribeTablePrimaryKey::CheckInsert(MdSubscribe* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool MdSubscribePrimaryKey::CheckUpdate(const MdSubscribe* const oldRecord, const MdSubscribe* const newRecord)
+	bool MdSubscribeTablePrimaryKey::CheckUpdate(const MdSubscribe* const oldRecord, const MdSubscribe* const newRecord)
 	{
 		return MdSubscribeEqualForMdSubscribePrimaryKey()(oldRecord, newRecord);
 	}
-	MdUserPrimaryKey::MdUserPrimaryKey(MdUserTable* tableOwner, size_t buckets)
+	MdUserTablePrimaryKey::MdUserTablePrimaryKey(MdUserTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	MdUser* MdUserPrimaryKey::Select(const UserIdType& MdUserId)
+	MdUser* MdUserTablePrimaryKey::Select(const UserIdType& MdUserId)
 	{
 		Utility::Strcpy(CompareMdUser.MdUserId, MdUserId);
 		
@@ -336,32 +336,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<MdUserPrimaryKey::iterator, MdUserPrimaryKey::iterator> MdUserPrimaryKey::SelectAll()
+	std::pair<MdUserTablePrimaryKey::iterator, MdUserTablePrimaryKey::iterator> MdUserTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool MdUserPrimaryKey::Insert(MdUser* const record)
+	bool MdUserTablePrimaryKey::Insert(MdUser* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void MdUserPrimaryKey::Erase(MdUser* const  record)
+	void MdUserTablePrimaryKey::Erase(MdUser* const  record)
 	{
 		index_.erase(record);
 	}
-	bool MdUserPrimaryKey::CheckInsert(MdUser* const record)
+	bool MdUserTablePrimaryKey::CheckInsert(MdUser* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool MdUserPrimaryKey::CheckUpdate(const MdUser* const oldRecord, const MdUser* const newRecord)
+	bool MdUserTablePrimaryKey::CheckUpdate(const MdUser* const oldRecord, const MdUser* const newRecord)
 	{
 		return MdUserEqualForMdUserPrimaryKey()(oldRecord, newRecord);
 	}
-	MdUserLoginSessionPrimaryKey::MdUserLoginSessionPrimaryKey(MdUserLoginSessionTable* tableOwner, size_t buckets)
+	MdUserLoginSessionTablePrimaryKey::MdUserLoginSessionTablePrimaryKey(MdUserLoginSessionTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	MdUserLoginSession* MdUserLoginSessionPrimaryKey::Select(const UserIdType& MdUserId, const SessionIdType& SessionId)
+	MdUserLoginSession* MdUserLoginSessionTablePrimaryKey::Select(const UserIdType& MdUserId, const SessionIdType& SessionId)
 	{
 		Utility::Strcpy(CompareMdUserLoginSession.MdUserId, MdUserId);
 		CompareMdUserLoginSession.SessionId = SessionId;
@@ -374,32 +374,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<MdUserLoginSessionPrimaryKey::iterator, MdUserLoginSessionPrimaryKey::iterator> MdUserLoginSessionPrimaryKey::SelectAll()
+	std::pair<MdUserLoginSessionTablePrimaryKey::iterator, MdUserLoginSessionTablePrimaryKey::iterator> MdUserLoginSessionTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool MdUserLoginSessionPrimaryKey::Insert(MdUserLoginSession* const record)
+	bool MdUserLoginSessionTablePrimaryKey::Insert(MdUserLoginSession* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void MdUserLoginSessionPrimaryKey::Erase(MdUserLoginSession* const  record)
+	void MdUserLoginSessionTablePrimaryKey::Erase(MdUserLoginSession* const  record)
 	{
 		index_.erase(record);
 	}
-	bool MdUserLoginSessionPrimaryKey::CheckInsert(MdUserLoginSession* const record)
+	bool MdUserLoginSessionTablePrimaryKey::CheckInsert(MdUserLoginSession* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool MdUserLoginSessionPrimaryKey::CheckUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord)
+	bool MdUserLoginSessionTablePrimaryKey::CheckUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord)
 	{
 		return MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey()(oldRecord, newRecord);
 	}
-	PrimaryAccountPrimaryKey::PrimaryAccountPrimaryKey(PrimaryAccountTable* tableOwner, size_t buckets)
+	PrimaryAccountTablePrimaryKey::PrimaryAccountTablePrimaryKey(PrimaryAccountTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	PrimaryAccount* PrimaryAccountPrimaryKey::Select(const AccountIdType& PrimaryAccountId)
+	PrimaryAccount* PrimaryAccountTablePrimaryKey::Select(const AccountIdType& PrimaryAccountId)
 	{
 		Utility::Strcpy(ComparePrimaryAccount.PrimaryAccountId, PrimaryAccountId);
 		
@@ -411,32 +411,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<PrimaryAccountPrimaryKey::iterator, PrimaryAccountPrimaryKey::iterator> PrimaryAccountPrimaryKey::SelectAll()
+	std::pair<PrimaryAccountTablePrimaryKey::iterator, PrimaryAccountTablePrimaryKey::iterator> PrimaryAccountTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool PrimaryAccountPrimaryKey::Insert(PrimaryAccount* const record)
+	bool PrimaryAccountTablePrimaryKey::Insert(PrimaryAccount* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void PrimaryAccountPrimaryKey::Erase(PrimaryAccount* const  record)
+	void PrimaryAccountTablePrimaryKey::Erase(PrimaryAccount* const  record)
 	{
 		index_.erase(record);
 	}
-	bool PrimaryAccountPrimaryKey::CheckInsert(PrimaryAccount* const record)
+	bool PrimaryAccountTablePrimaryKey::CheckInsert(PrimaryAccount* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool PrimaryAccountPrimaryKey::CheckUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord)
+	bool PrimaryAccountTablePrimaryKey::CheckUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord)
 	{
 		return PrimaryAccountEqualForPrimaryAccountPrimaryKey()(oldRecord, newRecord);
 	}
-	AccountPrimaryKey::AccountPrimaryKey(AccountTable* tableOwner, size_t buckets)
+	AccountTablePrimaryKey::AccountTablePrimaryKey(AccountTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Account* AccountPrimaryKey::Select(const AccountIdType& AccountId)
+	Account* AccountTablePrimaryKey::Select(const AccountIdType& AccountId)
 	{
 		Utility::Strcpy(CompareAccount.AccountId, AccountId);
 		
@@ -448,32 +448,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<AccountPrimaryKey::iterator, AccountPrimaryKey::iterator> AccountPrimaryKey::SelectAll()
+	std::pair<AccountTablePrimaryKey::iterator, AccountTablePrimaryKey::iterator> AccountTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool AccountPrimaryKey::Insert(Account* const record)
+	bool AccountTablePrimaryKey::Insert(Account* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void AccountPrimaryKey::Erase(Account* const  record)
+	void AccountTablePrimaryKey::Erase(Account* const  record)
 	{
 		index_.erase(record);
 	}
-	bool AccountPrimaryKey::CheckInsert(Account* const record)
+	bool AccountTablePrimaryKey::CheckInsert(Account* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool AccountPrimaryKey::CheckUpdate(const Account* const oldRecord, const Account* const newRecord)
+	bool AccountTablePrimaryKey::CheckUpdate(const Account* const oldRecord, const Account* const newRecord)
 	{
 		return AccountEqualForAccountPrimaryKey()(oldRecord, newRecord);
 	}
-	CapitalPrimaryKey::CapitalPrimaryKey(CapitalTable* tableOwner, size_t buckets)
+	CapitalTablePrimaryKey::CapitalTablePrimaryKey(CapitalTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Capital* CapitalPrimaryKey::Select(const DateType& TradingDay, const AccountIdType& AccountId)
+	Capital* CapitalTablePrimaryKey::Select(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
 		Utility::Strcpy(CompareCapital.TradingDay, TradingDay);
 		Utility::Strcpy(CompareCapital.AccountId, AccountId);
@@ -486,32 +486,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<CapitalPrimaryKey::iterator, CapitalPrimaryKey::iterator> CapitalPrimaryKey::SelectAll()
+	std::pair<CapitalTablePrimaryKey::iterator, CapitalTablePrimaryKey::iterator> CapitalTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool CapitalPrimaryKey::Insert(Capital* const record)
+	bool CapitalTablePrimaryKey::Insert(Capital* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void CapitalPrimaryKey::Erase(Capital* const  record)
+	void CapitalTablePrimaryKey::Erase(Capital* const  record)
 	{
 		index_.erase(record);
 	}
-	bool CapitalPrimaryKey::CheckInsert(Capital* const record)
+	bool CapitalTablePrimaryKey::CheckInsert(Capital* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool CapitalPrimaryKey::CheckUpdate(const Capital* const oldRecord, const Capital* const newRecord)
+	bool CapitalTablePrimaryKey::CheckUpdate(const Capital* const oldRecord, const Capital* const newRecord)
 	{
 		return CapitalEqualForCapitalPrimaryKey()(oldRecord, newRecord);
 	}
-	PositionPrimaryKey::PositionPrimaryKey(PositionTable* tableOwner, size_t buckets)
+	PositionTablePrimaryKey::PositionTablePrimaryKey(PositionTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Position* PositionPrimaryKey::Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
+	Position* PositionTablePrimaryKey::Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
 	{
 		Utility::Strcpy(ComparePosition.TradingDay, TradingDay);
 		Utility::Strcpy(ComparePosition.AccountId, AccountId);
@@ -527,32 +527,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<PositionPrimaryKey::iterator, PositionPrimaryKey::iterator> PositionPrimaryKey::SelectAll()
+	std::pair<PositionTablePrimaryKey::iterator, PositionTablePrimaryKey::iterator> PositionTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool PositionPrimaryKey::Insert(Position* const record)
+	bool PositionTablePrimaryKey::Insert(Position* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void PositionPrimaryKey::Erase(Position* const  record)
+	void PositionTablePrimaryKey::Erase(Position* const  record)
 	{
 		index_.erase(record);
 	}
-	bool PositionPrimaryKey::CheckInsert(Position* const record)
+	bool PositionTablePrimaryKey::CheckInsert(Position* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool PositionPrimaryKey::CheckUpdate(const Position* const oldRecord, const Position* const newRecord)
+	bool PositionTablePrimaryKey::CheckUpdate(const Position* const oldRecord, const Position* const newRecord)
 	{
 		return PositionEqualForPositionPrimaryKey()(oldRecord, newRecord);
 	}
-	PositionDetailPrimaryKey::PositionDetailPrimaryKey(PositionDetailTable* tableOwner, size_t buckets)
+	PositionDetailTablePrimaryKey::PositionDetailTablePrimaryKey(PositionDetailTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	PositionDetail* PositionDetailPrimaryKey::Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIdType& TradeId)
+	PositionDetail* PositionDetailTablePrimaryKey::Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIdType& TradeId)
 	{
 		Utility::Strcpy(ComparePositionDetail.TradingDay, TradingDay);
 		Utility::Strcpy(ComparePositionDetail.AccountId, AccountId);
@@ -570,32 +570,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<PositionDetailPrimaryKey::iterator, PositionDetailPrimaryKey::iterator> PositionDetailPrimaryKey::SelectAll()
+	std::pair<PositionDetailTablePrimaryKey::iterator, PositionDetailTablePrimaryKey::iterator> PositionDetailTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool PositionDetailPrimaryKey::Insert(PositionDetail* const record)
+	bool PositionDetailTablePrimaryKey::Insert(PositionDetail* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void PositionDetailPrimaryKey::Erase(PositionDetail* const  record)
+	void PositionDetailTablePrimaryKey::Erase(PositionDetail* const  record)
 	{
 		index_.erase(record);
 	}
-	bool PositionDetailPrimaryKey::CheckInsert(PositionDetail* const record)
+	bool PositionDetailTablePrimaryKey::CheckInsert(PositionDetail* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool PositionDetailPrimaryKey::CheckUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord)
+	bool PositionDetailTablePrimaryKey::CheckUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord)
 	{
 		return PositionDetailEqualForPositionDetailPrimaryKey()(oldRecord, newRecord);
 	}
-	OrderPrimaryKey::OrderPrimaryKey(OrderTable* tableOwner, size_t buckets)
+	OrderTablePrimaryKey::OrderTablePrimaryKey(OrderTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Order* OrderPrimaryKey::Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const OrderIdType& OrderId)
+	Order* OrderTablePrimaryKey::Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const OrderIdType& OrderId)
 	{
 		Utility::Strcpy(CompareOrder.TradingDay, TradingDay);
 		Utility::Strcpy(CompareOrder.AccountId, AccountId);
@@ -611,32 +611,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<OrderPrimaryKey::iterator, OrderPrimaryKey::iterator> OrderPrimaryKey::SelectAll()
+	std::pair<OrderTablePrimaryKey::iterator, OrderTablePrimaryKey::iterator> OrderTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool OrderPrimaryKey::Insert(Order* const record)
+	bool OrderTablePrimaryKey::Insert(Order* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void OrderPrimaryKey::Erase(Order* const  record)
+	void OrderTablePrimaryKey::Erase(Order* const  record)
 	{
 		index_.erase(record);
 	}
-	bool OrderPrimaryKey::CheckInsert(Order* const record)
+	bool OrderTablePrimaryKey::CheckInsert(Order* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool OrderPrimaryKey::CheckUpdate(const Order* const oldRecord, const Order* const newRecord)
+	bool OrderTablePrimaryKey::CheckUpdate(const Order* const oldRecord, const Order* const newRecord)
 	{
 		return OrderEqualForOrderPrimaryKey()(oldRecord, newRecord);
 	}
-	OrderUniqueKeyClientOrderId::OrderUniqueKeyClientOrderId(OrderTable* tableOwner, size_t buckets)
+	OrderTableUniqueKeyClientOrderId::OrderTableUniqueKeyClientOrderId(OrderTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Order* OrderUniqueKeyClientOrderId::Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const SessionIdType& SessionId, const ClientOrderIdType& ClientOrderId)
+	Order* OrderTableUniqueKeyClientOrderId::Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const SessionIdType& SessionId, const ClientOrderIdType& ClientOrderId)
 	{
 		Utility::Strcpy(CompareOrder.TradingDay, TradingDay);
 		Utility::Strcpy(CompareOrder.AccountId, AccountId);
@@ -652,28 +652,28 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	bool OrderUniqueKeyClientOrderId::Insert(Order* const record)
+	bool OrderTableUniqueKeyClientOrderId::Insert(Order* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void OrderUniqueKeyClientOrderId::Erase(Order* const  record)
+	void OrderTableUniqueKeyClientOrderId::Erase(Order* const  record)
 	{
 		index_.erase(record);
 	}
-	bool OrderUniqueKeyClientOrderId::CheckInsert(Order* const record)
+	bool OrderTableUniqueKeyClientOrderId::CheckInsert(Order* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool OrderUniqueKeyClientOrderId::CheckUpdate(const Order* const oldRecord, const Order* const newRecord)
+	bool OrderTableUniqueKeyClientOrderId::CheckUpdate(const Order* const oldRecord, const Order* const newRecord)
 	{
 		return OrderEqualForClientOrderIdUniqueKey()(oldRecord, newRecord);
 	}
 	
-	TradePrimaryKey::TradePrimaryKey(TradeTable* tableOwner, size_t buckets)
+	TradeTablePrimaryKey::TradeTablePrimaryKey(TradeTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	Trade* TradePrimaryKey::Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const TradeIdType& TradeId, const DirectionType& Direction)
+	Trade* TradeTablePrimaryKey::Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const TradeIdType& TradeId, const DirectionType& Direction)
 	{
 		Utility::Strcpy(CompareTrade.TradingDay, TradingDay);
 		Utility::Strcpy(CompareTrade.ExchangeId, ExchangeId);
@@ -688,32 +688,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<TradePrimaryKey::iterator, TradePrimaryKey::iterator> TradePrimaryKey::SelectAll()
+	std::pair<TradeTablePrimaryKey::iterator, TradeTablePrimaryKey::iterator> TradeTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool TradePrimaryKey::Insert(Trade* const record)
+	bool TradeTablePrimaryKey::Insert(Trade* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void TradePrimaryKey::Erase(Trade* const  record)
+	void TradeTablePrimaryKey::Erase(Trade* const  record)
 	{
 		index_.erase(record);
 	}
-	bool TradePrimaryKey::CheckInsert(Trade* const record)
+	bool TradeTablePrimaryKey::CheckInsert(Trade* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool TradePrimaryKey::CheckUpdate(const Trade* const oldRecord, const Trade* const newRecord)
+	bool TradeTablePrimaryKey::CheckUpdate(const Trade* const oldRecord, const Trade* const newRecord)
 	{
 		return TradeEqualForTradePrimaryKey()(oldRecord, newRecord);
 	}
-	AccountLoginSessionPrimaryKey::AccountLoginSessionPrimaryKey(AccountLoginSessionTable* tableOwner, size_t buckets)
+	AccountLoginSessionTablePrimaryKey::AccountLoginSessionTablePrimaryKey(AccountLoginSessionTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	AccountLoginSession* AccountLoginSessionPrimaryKey::Select(const AccountIdType& AccountId, const SessionIdType& SessionId)
+	AccountLoginSession* AccountLoginSessionTablePrimaryKey::Select(const AccountIdType& AccountId, const SessionIdType& SessionId)
 	{
 		Utility::Strcpy(CompareAccountLoginSession.AccountId, AccountId);
 		CompareAccountLoginSession.SessionId = SessionId;
@@ -726,32 +726,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<AccountLoginSessionPrimaryKey::iterator, AccountLoginSessionPrimaryKey::iterator> AccountLoginSessionPrimaryKey::SelectAll()
+	std::pair<AccountLoginSessionTablePrimaryKey::iterator, AccountLoginSessionTablePrimaryKey::iterator> AccountLoginSessionTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool AccountLoginSessionPrimaryKey::Insert(AccountLoginSession* const record)
+	bool AccountLoginSessionTablePrimaryKey::Insert(AccountLoginSession* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void AccountLoginSessionPrimaryKey::Erase(AccountLoginSession* const  record)
+	void AccountLoginSessionTablePrimaryKey::Erase(AccountLoginSession* const  record)
 	{
 		index_.erase(record);
 	}
-	bool AccountLoginSessionPrimaryKey::CheckInsert(AccountLoginSession* const record)
+	bool AccountLoginSessionTablePrimaryKey::CheckInsert(AccountLoginSession* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool AccountLoginSessionPrimaryKey::CheckUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord)
+	bool AccountLoginSessionTablePrimaryKey::CheckUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord)
 	{
 		return AccountLoginSessionEqualForAccountLoginSessionPrimaryKey()(oldRecord, newRecord);
 	}
-	PrimaryAccountLoginSessionPrimaryKey::PrimaryAccountLoginSessionPrimaryKey(PrimaryAccountLoginSessionTable* tableOwner, size_t buckets)
+	PrimaryAccountLoginSessionTablePrimaryKey::PrimaryAccountLoginSessionTablePrimaryKey(PrimaryAccountLoginSessionTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	PrimaryAccountLoginSession* PrimaryAccountLoginSessionPrimaryKey::Select(const AccountIdType& PrimaryAccountId, const SessionIdType& SessionId)
+	PrimaryAccountLoginSession* PrimaryAccountLoginSessionTablePrimaryKey::Select(const AccountIdType& PrimaryAccountId, const SessionIdType& SessionId)
 	{
 		Utility::Strcpy(ComparePrimaryAccountLoginSession.PrimaryAccountId, PrimaryAccountId);
 		ComparePrimaryAccountLoginSession.SessionId = SessionId;
@@ -764,32 +764,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<PrimaryAccountLoginSessionPrimaryKey::iterator, PrimaryAccountLoginSessionPrimaryKey::iterator> PrimaryAccountLoginSessionPrimaryKey::SelectAll()
+	std::pair<PrimaryAccountLoginSessionTablePrimaryKey::iterator, PrimaryAccountLoginSessionTablePrimaryKey::iterator> PrimaryAccountLoginSessionTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool PrimaryAccountLoginSessionPrimaryKey::Insert(PrimaryAccountLoginSession* const record)
+	bool PrimaryAccountLoginSessionTablePrimaryKey::Insert(PrimaryAccountLoginSession* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void PrimaryAccountLoginSessionPrimaryKey::Erase(PrimaryAccountLoginSession* const  record)
+	void PrimaryAccountLoginSessionTablePrimaryKey::Erase(PrimaryAccountLoginSession* const  record)
 	{
 		index_.erase(record);
 	}
-	bool PrimaryAccountLoginSessionPrimaryKey::CheckInsert(PrimaryAccountLoginSession* const record)
+	bool PrimaryAccountLoginSessionTablePrimaryKey::CheckInsert(PrimaryAccountLoginSession* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool PrimaryAccountLoginSessionPrimaryKey::CheckUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
+	bool PrimaryAccountLoginSessionTablePrimaryKey::CheckUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord)
 	{
 		return PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey()(oldRecord, newRecord);
 	}
-	CommissionGroupPrimaryKey::CommissionGroupPrimaryKey(CommissionGroupTable* tableOwner, size_t buckets)
+	CommissionGroupTablePrimaryKey::CommissionGroupTablePrimaryKey(CommissionGroupTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	CommissionGroup* CommissionGroupPrimaryKey::Select(const GroupIdType& CommissionGroupId)
+	CommissionGroup* CommissionGroupTablePrimaryKey::Select(const GroupIdType& CommissionGroupId)
 	{
 		CompareCommissionGroup.CommissionGroupId = CommissionGroupId;
 		
@@ -801,32 +801,32 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<CommissionGroupPrimaryKey::iterator, CommissionGroupPrimaryKey::iterator> CommissionGroupPrimaryKey::SelectAll()
+	std::pair<CommissionGroupTablePrimaryKey::iterator, CommissionGroupTablePrimaryKey::iterator> CommissionGroupTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool CommissionGroupPrimaryKey::Insert(CommissionGroup* const record)
+	bool CommissionGroupTablePrimaryKey::Insert(CommissionGroup* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void CommissionGroupPrimaryKey::Erase(CommissionGroup* const  record)
+	void CommissionGroupTablePrimaryKey::Erase(CommissionGroup* const  record)
 	{
 		index_.erase(record);
 	}
-	bool CommissionGroupPrimaryKey::CheckInsert(CommissionGroup* const record)
+	bool CommissionGroupTablePrimaryKey::CheckInsert(CommissionGroup* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool CommissionGroupPrimaryKey::CheckUpdate(const CommissionGroup* const oldRecord, const CommissionGroup* const newRecord)
+	bool CommissionGroupTablePrimaryKey::CheckUpdate(const CommissionGroup* const oldRecord, const CommissionGroup* const newRecord)
 	{
 		return CommissionGroupEqualForCommissionGroupPrimaryKey()(oldRecord, newRecord);
 	}
-	BaseCommissionPrimaryKey::BaseCommissionPrimaryKey(BaseCommissionTable* tableOwner, size_t buckets)
+	BaseCommissionTablePrimaryKey::BaseCommissionTablePrimaryKey(BaseCommissionTable* tableOwner, size_t buckets)
 		:table_(tableOwner), index_(buckets)
 	{
 	}
-	BaseCommission* BaseCommissionPrimaryKey::Select(const GroupIdType& CommissionGroupId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DirectionType& Direction)
+	BaseCommission* BaseCommissionTablePrimaryKey::Select(const GroupIdType& CommissionGroupId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DirectionType& Direction)
 	{
 		CompareBaseCommission.CommissionGroupId = CommissionGroupId;
 		Utility::Strcpy(CompareBaseCommission.ExchangeId, ExchangeId);
@@ -841,24 +841,24 @@ namespace QuantTrading
 		}
 		return *it;
 	}
-	std::pair<BaseCommissionPrimaryKey::iterator, BaseCommissionPrimaryKey::iterator> BaseCommissionPrimaryKey::SelectAll()
+	std::pair<BaseCommissionTablePrimaryKey::iterator, BaseCommissionTablePrimaryKey::iterator> BaseCommissionTablePrimaryKey::SelectAll()
 	{
 		std::shared_lock guard(table_->SharedMutex);
 		return std::pair<iterator, iterator>(index_.begin(), index_.end());
 	}
-	bool BaseCommissionPrimaryKey::Insert(BaseCommission* const record)
+	bool BaseCommissionTablePrimaryKey::Insert(BaseCommission* const record)
 	{
 		return index_.insert(record).second;
 	}
-	void BaseCommissionPrimaryKey::Erase(BaseCommission* const  record)
+	void BaseCommissionTablePrimaryKey::Erase(BaseCommission* const  record)
 	{
 		index_.erase(record);
 	}
-	bool BaseCommissionPrimaryKey::CheckInsert(BaseCommission* const record)
+	bool BaseCommissionTablePrimaryKey::CheckInsert(BaseCommission* const record)
 	{
 		return index_.find(record) == index_.end();
 	}
-	bool BaseCommissionPrimaryKey::CheckUpdate(const BaseCommission* const oldRecord, const BaseCommission* const newRecord)
+	bool BaseCommissionTablePrimaryKey::CheckUpdate(const BaseCommission* const oldRecord, const BaseCommission* const newRecord)
 	{
 		return BaseCommissionEqualForBaseCommissionPrimaryKey()(oldRecord, newRecord);
 	}

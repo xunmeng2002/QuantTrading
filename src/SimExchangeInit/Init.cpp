@@ -14,7 +14,7 @@ void InitTradingDay(Mdb* mdb, const std::string& currTradingDay)
 	tradingDay->Pk = 1;
 	strcpy(tradingDay->CurrTradingDay, currTradingDay.c_str());
     TimeUtility::GetPreTradingDay(tradingDay->CurrTradingDay, tradingDay->PreTradingDay);
-	mdb->TradingDay->Insert(tradingDay);
+	mdb->TradingDays->Insert(tradingDay);
 }
 void InitExchange(Mdb* mdb)
 {
@@ -38,12 +38,12 @@ void InitExchange(Mdb* mdb)
 	strcpy(exchange6->ExchangeId, "GFEX");
 	strcpy(exchange6->ExchangeName, (const char*)(u8"广州期货交易所"));
 
-	mdb->Exchange->Insert(exchange1);
-	mdb->Exchange->Insert(exchange2);
-	mdb->Exchange->Insert(exchange3);
-	mdb->Exchange->Insert(exchange4);
-	mdb->Exchange->Insert(exchange5);
-	mdb->Exchange->Insert(exchange6);
+	mdb->Exchanges->Insert(exchange1);
+	mdb->Exchanges->Insert(exchange2);
+	mdb->Exchanges->Insert(exchange3);
+	mdb->Exchanges->Insert(exchange4);
+	mdb->Exchanges->Insert(exchange5);
+	mdb->Exchanges->Insert(exchange6);
 }
 void InitHotInstrument(Mdb* mdb)
 {
@@ -70,7 +70,7 @@ void InitPrimaryAccount(Mdb* mdb, AccountInfo* accountInfo)
 	record1->IsSimulateAccount = true;
 	record1->LoginStatus = LoginStatusType::NotLog;
 	record1->InitStatus = InitStatusType::Initialized;
-	mdb->PrimaryAccount->Insert(record1);
+	mdb->PrimaryAccounts->Insert(record1);
 }
 Account* InitAccount(Mdb* mdb, AccountInfo* accountInfo)
 {
@@ -83,7 +83,7 @@ Account* InitAccount(Mdb* mdb, AccountInfo* accountInfo)
 	account->TradeGroupId = 1;
 	account->RiskGroupId = 1;
 	account->CommissionGroupId = 1;
-	mdb->Account->Insert(account);
+	mdb->Accounts->Insert(account);
 	return account;
 }
 void InitCapital(Mdb* mdb, Account* account, const std::string& currTradingDay)
@@ -112,7 +112,7 @@ void InitCapital(Mdb* mdb, Account* account, const std::string& currTradingDay)
 	capital->Withdraw = 0;
 	capital->StampTax = 0;
 	capital->TransferFee = 0;
-	mdb->Capital->Insert(capital);
+	mdb->Capitals->Insert(capital);
 }
 void InitPosition(Mdb* mdb, Account* account)
 {

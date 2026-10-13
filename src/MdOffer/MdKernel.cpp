@@ -66,14 +66,14 @@ namespace QuantTrading::MdOffer
     {
         BarMarketData* barMarketData = ::Allocate<BarMarketData>();
         FieldToMdb(bar, barMarketData);
-        auto oldBarMarketData = mdb_->BarMarketData->PrimaryKey->Select(barMarketData->TradingDay, barMarketData->ExchangeId, barMarketData->InstrumentId, barMarketData->BarPreces, barMarketData->BarPeriod, barMarketData->BarTime);
+        auto oldBarMarketData = mdb_->BarMarketDatas->PrimaryKey->Select(barMarketData->TradingDay, barMarketData->ExchangeId, barMarketData->InstrumentId, barMarketData->BarPreces, barMarketData->BarPeriod, barMarketData->BarTime);
         if (oldBarMarketData == nullptr)
         {
-            mdb_->BarMarketData->Insert(barMarketData);
+            mdb_->BarMarketDatas->Insert(barMarketData);
         }
         else
         {
-            mdb_->BarMarketData->Update(oldBarMarketData, barMarketData);
+            mdb_->BarMarketDatas->Update(oldBarMarketData, barMarketData);
         }
 
         barMdPackage_->BarMarketData = bar;
@@ -137,7 +137,7 @@ namespace QuantTrading::MdOffer
         sessionSubscribeInstruments_.erase(package->NotifyDisConnect->SessionId);
 
         // 同步清理持久化会话记录，否则同 SessionId 重连会命中 ErrorSessionAlreadyLogin。
-        mdb_->MdUserLoginSession->EraseBySessionIdIndex(package->NotifyDisConnect->SessionId);
+        mdb_->MdUserLoginSessions->EraseBySessionIdIndex(package->NotifyDisConnect->SessionId);
         return 0;
     }
     int MdKernel::HandleNotifyDbConnect(NotifyDbConnectPackage* package)
@@ -182,7 +182,7 @@ namespace QuantTrading::MdOffer
         }
         else
         {
-            auto mdUser = mdb_->MdUser->PrimaryKey->Select(reqMdUserLogin->UserId);
+            auto mdUser = mdb_->MdUsers->PrimaryKey->Select(reqMdUserLogin->UserId);
             if (mdUser == nullptr)
             {
                 errorId = ErrorUserNotExist;
@@ -193,7 +193,7 @@ namespace QuantTrading::MdOffer
             }
             else
             {
-                auto mdUserLoginSession = mdb_->MdUserLoginSession->PrimaryKey->Select(mdUser->MdUserId, package->SessionId);
+                auto mdUserLoginSession = mdb_->MdUserLoginSessions->PrimaryKey->Select(mdUser->MdUserId, package->SessionId);
                 if (mdUserLoginSession != nullptr)
                 {
                     errorId = ErrorSessionAlreadyLogin;
@@ -205,7 +205,7 @@ namespace QuantTrading::MdOffer
                     Utility::Strcpy(mdUserLoginSession->MdUserId, mdUser->MdUserId);
                     mdUserLoginSession->SessionId = package->SessionId;
                     Utility::Strcpy(mdUserLoginSession->IpAddress, package->IpAddress);
-                    if (mdb_->MdUserLoginSession->Insert(mdUserLoginSession))
+                    if (mdb_->MdUserLoginSessions->Insert(mdUserLoginSession))
                     {
                         errorId = ErrorNone;
                     }
@@ -246,7 +246,7 @@ namespace QuantTrading::MdOffer
         sessionSubscribeInstruments_.erase(package->SessionId);
 
         // 同步清理持久化会话记录，否则同 SessionId 重登会命中 ErrorSessionAlreadyLogin。
-        mdb_->MdUserLoginSession->EraseBySessionIdIndex(package->SessionId);
+        mdb_->MdUserLoginSessions->EraseBySessionIdIndex(package->SessionId);
 
         RspMdUserLogoutPackage* rspPackage = RspMdUserLogoutPackage::Allocate();
         rspPackage->Prepare(package->SessionId, false, package->Head.MsgSeqNum);
@@ -344,14 +344,14 @@ namespace QuantTrading::MdOffer
 
         DepthMarketData* depthMarketData = ::Allocate<DepthMarketData>();
         FieldToMdb(package->DepthMarketData, depthMarketData);
-        auto oldDepthMarketData = mdb_->DepthMarketData->PrimaryKey->Select(depthMarketData->TradingDay, depthMarketData->ExchangeId, depthMarketData->InstrumentId);
+        auto oldDepthMarketData = mdb_->DepthMarketDatas->PrimaryKey->Select(depthMarketData->TradingDay, depthMarketData->ExchangeId, depthMarketData->InstrumentId);
         if (oldDepthMarketData == nullptr)
         {
-            mdb_->DepthMarketData->Insert(depthMarketData);
+            mdb_->DepthMarketDatas->Insert(depthMarketData);
         }
         else
         {
-            mdb_->DepthMarketData->Update(oldDepthMarketData, depthMarketData);
+            mdb_->DepthMarketDatas->Update(oldDepthMarketData, depthMarketData);
         }
 
         package = MdSnap::GetInstance().AddDepthMd(package);
@@ -363,7 +363,7 @@ namespace QuantTrading::MdOffer
 
     bool MdKernel::IsSessionLoggedIn(const SessionIdType& sessionId)
     {
-        auto sessionIDRange = mdb_->MdUserLoginSession->SessionIdIndex->EqualRange(sessionId);
+        auto sessionIDRange = mdb_->MdUserLoginSessions->SessionIdIndex->EqualRange(sessionId);
         return sessionIDRange.first != sessionIDRange.second;
     }
 

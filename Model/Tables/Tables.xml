@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tables>
-	<table name="TradingDay" id="0x0001" desc="交易日" batch="" session="">
+	<table name="TradingDay" dbname="TradingDays" id="0x0001" desc="交易日" batch="" session="">
 		<items>
 			<item name="Pk" id="0x2901" type="Int32" desc="主键"/>
 			<item name="CurrTradingDay" id="0x300F" type="Date" desc="当前交易日"/>
@@ -12,7 +12,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Exchange" id="0x0002" desc="交易所" batch="" session="">
+	<table name="Exchange" dbname="Exchanges" id="0x0002" desc="交易所" batch="" session="">
 		<items>
 			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
 			<item name="ExchangeName" id="0x2005" type="ExchangeName" desc="交易所名称"/>
@@ -23,7 +23,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Product" id="0x0003" desc="品种表" batch="" session="">
+	<table name="Product" dbname="Products" id="0x0003" desc="品种表" batch="" session="">
 		<items>
 			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
 			<item name="ProductId" id="0x1015" type="ProductId" desc="品种代码"/>
@@ -44,7 +44,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="HotInstrument" id="0x0004" desc="主力合约表" batch="" session="">
+	<table name="HotInstrument" dbname="HotInstruments" id="0x0004" desc="主力合约表" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
@@ -75,7 +75,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Instrument" id="0x0005" desc="合约" batch="true" session="">
+	<table name="Instrument" dbname="Instruments" id="0x0005" desc="合约" batch="true" session="">
 		<items>
 			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
 			<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
@@ -104,7 +104,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="DepthMarketData" id="0x2001" desc="深度行情" batch="" session="">
+	<table name="DepthMarketData" dbname="DepthMarketDatas" id="0x2001" desc="深度行情" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
@@ -176,7 +176,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="BarMarketData" id="0x2002" desc="Bar行情" batch="" session="">
+	<table name="BarMarketData" dbname="BarMarketDatas" id="0x2002" desc="Bar行情" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
@@ -210,7 +210,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="MdSubscribe" id="0x2003" desc="行情订阅" batch="" session="">
+	<table name="MdSubscribe" dbname="MdSubscribes" id="0x2003" desc="行情订阅" batch="" session="">
 		<items>
 			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>
 			<item name="InstrumentId" id="0x100D" type="InstrumentId" desc="合约代码"/>
@@ -228,7 +228,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="MdUser" id="0x2004" desc="账户" batch="" session="">
+	<table name="MdUser" dbname="MdUsers" id="0x2004" desc="账户" batch="" session="">
 		<items>
 			<item name="MdUserId" id="0x100F" type="UserId" desc="行情用户代码"/>
 			<item name="MdUserName" id="0x2007" type="UserName" desc="行情用户名称"/>
@@ -240,7 +240,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="MdUserLoginSession" id="0x2005" desc="行情用户登录会话" batch="" session="true">
+	<table name="MdUserLoginSession" dbname="MdUserLoginSessions" id="0x2005" desc="行情用户登录会话" batch="" session="true">
 		<items>
 			<item name="MdUserId" id="0x100F" type="UserId" desc="行情用户代码"/>
 			<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
@@ -260,7 +260,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="PrimaryAccount" id="0x3001" desc="主账户" batch="" session="">
+	<table name="PrimaryAccount" dbname="PrimaryAccounts" id="0x3001" desc="主账户" batch="" session="">
 		<items>
 			<item name="PrimaryAccountId" id="0x1014" type="AccountId" desc="主账户代码"/>
 			<item name="PrimaryAccountName" id="0x2009" type="AccountName" desc="主账户名称"/>
@@ -282,7 +282,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Account" id="0x3002" desc="账户" batch="" session="">
+	<table name="Account" dbname="Accounts" id="0x3002" desc="账户" batch="" session="">
 		<items>
 			<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 			<item name="AccountName" id="0x2001" type="AccountName" desc="账户名称"/>
@@ -299,7 +299,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="Capital" id="0x3003" desc="资金" batch="" session="">
+	<table name="Capital" dbname="Capitals" id="0x3003" desc="资金" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
@@ -335,7 +335,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Position" id="0x3004" desc="持仓" batch="" session="">
+	<table name="Position" dbname="Positions" id="0x3004" desc="持仓" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
@@ -383,7 +383,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="PositionDetail" id="0x3005" desc="持仓明细" batch="" session="">
+	<table name="PositionDetail" dbname="PositionDetails" id="0x3005" desc="持仓明细" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
@@ -436,7 +436,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Order" id="0x3006" desc="委托" batch="" session="">
+	<table name="Order" dbname="Orders" id="0x3006" desc="委托" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
@@ -496,7 +496,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Trade" id="0x3007" desc="成交" batch="" session="">
+	<table name="Trade" dbname="Trades" id="0x3007" desc="成交" batch="" session="">
 		<items>
 			<item name="TradingDay" id="0x3001" type="Date" desc="交易日"/>
 			<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
@@ -533,7 +533,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="AccountLoginSession" id="0x3008" desc="账户登录会话" batch="" session="true">
+	<table name="AccountLoginSession" dbname="AccountLoginSessions" id="0x3008" desc="账户登录会话" batch="" session="true">
 		<items>
 			<item name="AccountId" id="0x1001" type="AccountId" desc="账户代码"/>
 			<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
@@ -553,7 +553,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="PrimaryAccountLoginSession" id="0x3009" desc="主账户登录会话" batch="" session="true">
+	<table name="PrimaryAccountLoginSession" dbname="PrimaryAccountLoginSessions" id="0x3009" desc="主账户登录会话" batch="" session="true">
 		<items>
 			<item name="PrimaryAccountId" id="0x1014" type="AccountId" desc="主账户代码"/>
 			<item name="SessionId" id="0x101E" type="SessionId" desc="会话编号"/>
@@ -573,7 +573,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="CommissionGroup" id="0x300A" desc="手续费组" batch="" session="">
+	<table name="CommissionGroup" dbname="CommissionGroups" id="0x300A" desc="手续费组" batch="" session="">
 		<items>
 			<item name="CommissionGroupId" id="0x1007" type="GroupId" desc="交易组代码"/>
 			<item name="CommissionGroupName" id="0x2003" type="GroupName" desc="手续费组名称"/>
@@ -584,7 +584,7 @@
 		<uniquekeys/>
 		<indexes/>
 	</table>
-	<table name="BaseCommission" id="0x300B" desc="基础手续费" batch="" session="">
+	<table name="BaseCommission" dbname="BaseCommissions" id="0x300B" desc="基础手续费" batch="" session="">
 		<items>
 			<item name="CommissionGroupId" id="0x1007" type="GroupId" desc="交易组代码"/>
 			<item name="ExchangeId" id="0x100A" type="ExchangeId" desc="交易所代码"/>

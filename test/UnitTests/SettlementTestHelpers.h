@@ -57,7 +57,7 @@ namespace QuantTrading::UnitTest
         position->TotalPosition = totalPosition;
         position->VolumeMultiple = 300;
         position->SettlementPrice = settlementPrice;
-        if (!settlementMdb->Position->Insert(position))
+        if (!settlementMdb->Positions->Insert(position))
         {
             return nullptr;
         }
@@ -84,7 +84,7 @@ namespace QuantTrading::UnitTest
         detail->OpenPrice = openPrice;
         detail->PreSettlementPrice = preSettlementPrice;
         detail->VolumeMultiple = 300;
-        if (!settlementMdb->PositionDetail->Insert(detail))
+        if (!settlementMdb->PositionDetails->Insert(detail))
         {
             return nullptr;
         }
@@ -100,7 +100,7 @@ namespace QuantTrading::UnitTest
         CopyString(capital->AccountId, "test");
         capital->PreBalance = preBalance;
         capital->Balance = balance;
-        if (!settlementMdb->Capital->Insert(capital))
+        if (!settlementMdb->Capitals->Insert(capital))
         {
             return nullptr;
         }
@@ -119,7 +119,7 @@ namespace QuantTrading::UnitTest
         CopyString(exchangeIDBuffer, "CFFEX");
         InstrumentIdType instrumentIDBuffer;
         CopyString(instrumentIDBuffer, instrumentId);
-        return settlementMdb->Position->PrimaryKey->Select(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer, instrumentIDBuffer, posiDirection);
+        return settlementMdb->Positions->PrimaryKey->Select(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer, instrumentIDBuffer, posiDirection);
     }
 
     // 主键查持仓明细（键含开仓日期与成交编号）
@@ -138,7 +138,7 @@ namespace QuantTrading::UnitTest
         CopyString(openDateBuffer, openDate);
         TradeIdType tradeIDBuffer;
         CopyString(tradeIDBuffer, tradeID);
-        return settlementMdb->PositionDetail->PrimaryKey->Select(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer, instrumentIDBuffer,
+        return settlementMdb->PositionDetails->PrimaryKey->Select(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer, instrumentIDBuffer,
             posiDirection, openDateBuffer, tradeIDBuffer);
     }
 
@@ -153,7 +153,7 @@ namespace QuantTrading::UnitTest
         CopyString(exchangeIDBuffer, "CFFEX");
         InstrumentIdType instrumentIDBuffer;
         CopyString(instrumentIDBuffer, "IF2503");
-        auto itPair = settlementMdb->PositionDetail->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer,
+        auto itPair = settlementMdb->PositionDetails->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer,
             instrumentIDBuffer, posiDirection);
         return static_cast<long long>(std::distance(itPair.first, itPair.second));
     }

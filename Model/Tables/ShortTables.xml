@@ -1,5 +1,5 @@
 <tables project="QuantTrading">
-	<table name="TradingDay" 					id="0x0001" desc="交易日">
+	<table name="TradingDay" 					id="0x0001" dbname="TradingDays" desc="交易日">
 		<items>
 			<item name="Pk"/>
 			<item name="CurrTradingDay"/>
@@ -11,7 +11,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Exchange" 						desc="交易所">
+	<table name="Exchange" 						dbname="Exchanges"	desc="交易所">
 		<items>
 			<item name="ExchangeId"/>
 			<item name="ExchangeName"/>
@@ -22,7 +22,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Product" 						desc="品种表">
+	<table name="Product" 						dbname="Products" desc="品种表">
 		<items>
 			<item name="ExchangeId"/>
 			<item name="ProductId"/>
@@ -43,7 +43,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="HotInstrument" 				desc="主力合约表">
+	<table name="HotInstrument" 				dbname="HotInstruments" desc="主力合约表">
 		<items>
 			<item name="TradingDay"/>
 			<item name="ExchangeId"/>
@@ -74,7 +74,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Instrument" 					desc="合约" batch="true">
+	<table name="Instrument" 					dbname="Instruments" desc="合约" batch="true">
 		<items>
 			<item name="ExchangeId"/>
 			<item name="InstrumentId"/>
@@ -104,7 +104,7 @@
 		</indexes>
 	</table>
 
-	<table name="DepthMarketData" 				id="0x2001" desc="深度行情">
+	<table name="DepthMarketData" 				id="0x2001" dbname="DepthMarketDatas" desc="深度行情">
 		<items>
 			<item name="TradingDay"/>
 			<item name="ExchangeId"/>
@@ -176,7 +176,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="BarMarketData" 				desc="Bar行情">
+	<table name="BarMarketData" 				dbname="BarMarketDatas" desc="Bar行情">
 		<items>
 			<item name="TradingDay"/>
 			<item name="ExchangeId"/>
@@ -210,7 +210,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="MdSubscribe" 					desc="行情订阅">
+	<table name="MdSubscribe" 					dbname="MdSubscribes" desc="行情订阅">
 		<items>
 			<item name="ExchangeId"/>
 			<item name="InstrumentId"/>
@@ -228,7 +228,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="MdUser" 						desc="账户">
+	<table name="MdUser" 						dbname="MdUsers" desc="账户">
 		<items>
 			<item name="MdUserId"/>
 			<item name="MdUserName"/>
@@ -240,7 +240,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="MdUserLoginSession" 			desc="行情用户登录会话" session="true">
+	<table name="MdUserLoginSession" 			dbname="MdUserLoginSessions" desc="行情用户登录会话" session="true">
 		<items>
 			<item name="MdUserId"/>
 			<item name="SessionId"/>
@@ -262,7 +262,7 @@
 		</indexes>
 	</table>
 	
-	<table name="PrimaryAccount" 				id="0x3001" desc="主账户">
+	<table name="PrimaryAccount" 				id="0x3001" dbname="PrimaryAccounts" desc="主账户">
 		<items>
 			<item name="PrimaryAccountId"/>
 			<item name="PrimaryAccountName"/>
@@ -284,7 +284,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Account" 						desc="账户">
+	<table name="Account" 						dbname="Accounts" desc="账户">
 		<items>
 			<item name="AccountId"/>
 			<item name="AccountName"/>
@@ -301,7 +301,7 @@
 		<uniquekeys></uniquekeys>
 		<indexes></indexes>
 	</table>
-	<table name="Capital" 						desc="资金">
+	<table name="Capital" 						dbname="Capitals" desc="资金">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountId"/>
@@ -337,7 +337,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Position" 						desc="持仓">
+	<table name="Position" 						dbname="Positions" desc="持仓">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountId"/>
@@ -385,7 +385,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="PositionDetail" 				desc="持仓明细">
+	<table name="PositionDetail" 				dbname="PositionDetails" desc="持仓明细">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountId"/>
@@ -438,7 +438,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Order" 						desc="委托">
+	<table name="Order" 						dbname="Orders" desc="委托">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountId"/>
@@ -498,7 +498,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="Trade" 						desc="成交">
+	<table name="Trade" 						dbname="Trades" desc="成交">
 		<items>
 			<item name="TradingDay"/>
 			<item name="AccountId"/>
@@ -535,7 +535,7 @@
 			</index>
 		</indexes>
 	</table>
-	<table name="AccountLoginSession" 			desc="账户登录会话" session="true">
+	<table name="AccountLoginSession" 			dbname="AccountLoginSessions" desc="账户登录会话" session="true">
 		<items>
 			<item name="AccountId"/>
 			<item name="SessionId"/>
@@ -556,7 +556,7 @@
 			</index>
 		</indexes>
 	</table>
-    <table name="PrimaryAccountLoginSession" 	desc="主账户登录会话" session="true">
+    <table name="PrimaryAccountLoginSession" 	dbname="PrimaryAccountLoginSessions" desc="主账户登录会话" session="true">
         <items>
             <item name="PrimaryAccountId"/>
             <item name="SessionId"/>
@@ -577,7 +577,7 @@
             </index>
         </indexes>
     </table>
-    <table name="CommissionGroup" id="0x300A" desc="手续费组">
+    <table name="CommissionGroup" 				dbname="CommissionGroups" desc="手续费组">
         <items>
             <item name="CommissionGroupId"/>
             <item name="CommissionGroupName"/>
@@ -588,7 +588,7 @@
         <uniquekeys></uniquekeys>
         <indexes></indexes>
     </table>
-    <table name="BaseCommission" id="0x300B" desc="基础手续费">
+    <table name="BaseCommission" 				dbname="BaseCommissions" desc="基础手续费">
         <items>
             <item name="CommissionGroupId"/>
             <item name="ExchangeId"/>

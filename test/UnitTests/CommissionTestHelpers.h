@@ -11,7 +11,7 @@ namespace QuantTrading::UnitTest
 {
     // 计费单测专用的最小表清单：只列计费链路上真被触碰的表。
     // 刻意不复用 SimExchangeTableList —— 实盘清单不含 CommissionGroup/BaseCommission，
-    // 复用会让 mdb->BaseCommission 恒为 nullptr，CommissionCalculator::Apply 一步都跑不进去。
+    // 复用会让 mdb->BaseCommissions 恒为 nullptr，CommissionCalculator::Apply 一步都跑不进去。
     inline const unsigned int CommissionTableIds[] =
     {
         TradingDay::TableId,
@@ -35,7 +35,7 @@ namespace QuantTrading::UnitTest
         std::memset(account, 0, sizeof(QuantTrading::Account));
         CopyString(account->AccountId, accountId);
         account->CommissionGroupId = commissionGroupId;
-        if (!commissionMdb->Account->Insert(account))
+        if (!commissionMdb->Accounts->Insert(account))
         {
             return nullptr;
         }
@@ -53,7 +53,7 @@ namespace QuantTrading::UnitTest
         CopyString(rate->ExchangeId, exchangeId);
         CopyString(rate->InstrumentId, instrumentId);
         rate->Direction = direction;
-        if (!commissionMdb->BaseCommission->Insert(rate))
+        if (!commissionMdb->BaseCommissions->Insert(rate))
         {
             return nullptr;
         }
@@ -96,7 +96,7 @@ namespace QuantTrading::UnitTest
         InstrumentIdType instrumentIdBuffer;
         CopyString(instrumentIdBuffer, instrumentId);
         std::vector<QuantTrading::PositionDetail*> positionDetails;
-        auto itPair = commissionMdb->PositionDetail->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIdBuffer, exchangeIdBuffer,
+        auto itPair = commissionMdb->PositionDetails->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIdBuffer, exchangeIdBuffer,
             instrumentIdBuffer, posiDirection);
         for (auto it = itPair.first; it != itPair.second; ++it)
         {
