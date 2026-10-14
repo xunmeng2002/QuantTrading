@@ -53,10 +53,15 @@ ForbiddenPackageNames=(libMysqlWrapper.so libMariadbWrapper.so)
 
 ExpectedPackageFileCount=22
 
-# 已知的绝对路径依赖（契约 §2.3，2026-10-13 实测）：CTP 的导入库没有 SONAME，链结期把完整路径
-# 写进了 DT_NEEDED，同机可跑、跨机不可用。逐条列名是为了让「记警告放行」只覆盖已知项——将来
-# 别的产物出现绝对路径，同一条检查照样抓得到并判不合格
-KnownAbsoluteNeededNames=(MdOffer)
+# 依赖解析的放行名单：解析**不到**发布目录里、也不在系统库目录的依赖，必须逐条列在这里。CTP 的 SDK
+# 按再分发边界不随包（契约 §2.3），目标机自备——放进发布目录或走 LD_LIBRARY_PATH 都行。未列名却出现
+# 在包外即不合格：那意味着换一台机器就找不到。与 Windows 侧 package_windows_release.py 的
+# UNPACKAGED_DEPENDENCY_NAMES 同语义
+NotPackagedDependencyNames=(libthostmduserapi_se.so libthosttraderapi_se.so)
+
+# 系统库目录：解析到这里的依赖由目标机的操作系统提供，不归发布包管。只列 OS 自身的库目录——
+# /usr/local/lib 不在内，那儿装的是本机自建软件，目标机上未必有，正是这条判据要抓的一类
+SystemLibraryDirectories=(/lib /lib64 /usr/lib /usr/lib64)
 
 # 直接打印文件头部的注释块，用法文本只维护一处（表头内不得出现非 # 开头的行）
 PrintUsage() {
@@ -108,12 +113,6 @@ ReportSelfCheckWarning() {
     SelfCheckWarningCount=$((SelfCheckWarningCount + 1))
 }
 
-# 「已知缺陷」单列一档：它不像「不通过」那样拦下交付，也不该混进不阻断的警告里被忽略
-ReportKnownDefectWarning() {
-    printf '  [已知缺陷] %s\n' "$1" >&2
-    KnownDefectWarningCount=$((KnownDefectWarningCount + 1))
-}
-
 IsEngineOwnedArtifact() {
     local ArtifactName=$1 CandidateName
     for CandidateName in "${EngineOwnedLibraryNames[@]}" "${EngineBinExecutableNames[@]}"; do
@@ -163,6 +162,46 @@ SelfCheckResolvableDependencies() {
     ForEachPackageArtifact CheckArtifactDependenciesResolvable
 }
 
+IsSystemLibraryPath() {
+    local DependencyPath=$1 SystemDirectory
+    for SystemDirectory in "${SystemLibraryDirectories[@]}"; do
+        case "$DependencyPath" in
+            "$SystemDirectory"/*) return 0 ;;
+        esac
+    done
+    return 1
+}
+
+IsNotPackagedDependencyName() {
+    local DependencyName=$1 CandidateName
+    for CandidateName in "${NotPackagedDependencyNames[@]}"; do
+        if [ "$CandidateName" = "$DependencyName" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# 「ldd 里没有 not found」在构建机上不等于「换机可跑」：构建机的 RUNPATH 本来就带着 Libs 安装树的
+# 绝对目录，包外依赖在这台机器上照样解析成功，那条绿没有信息量。故对引擎自有产物再判一遍**解析到了
+# 哪里**——每条依赖要么落在发布目录内、要么是系统库、要么在 NotPackagedDependencyNames 里列着
+ReportDependenciesOutsidePackage() {
+    local ArtifactName=$1 LddOutput=$2 DependencyName DependencyPath
+    while read -r DependencyName DependencyPath; do
+        case "$DependencyPath" in
+            "$OutputDirectory"/*) continue ;;
+        esac
+        if IsSystemLibraryPath "$DependencyPath"; then
+            continue
+        fi
+        if IsNotPackagedDependencyName "$DependencyName"; then
+            continue
+        fi
+        ReportSelfCheckFailure "$ArtifactName 的依赖 $DependencyName 解析到包外（$DependencyPath）：该机之外不存在"
+    done < <(printf '%s\n' "$LddOutput" |
+        sed -n 's/^[[:space:]]*\([^[:space:]]*\) => \(.*\) (0x[0-9a-fA-F]*)$/\1 \2/p')
+}
+
 CheckArtifactDependenciesResolvable() {
     local ArtifactPath=$1 ArtifactName LddOutput NotFoundLibrary
     ArtifactName=$(basename -- "$ArtifactPath")
@@ -172,14 +211,16 @@ CheckArtifactDependenciesResolvable() {
         return 0
     fi
     NotFoundLibrary=$(printf '%s\n' "$LddOutput" | grep -i 'not found' || true)
-    if [ -z "$NotFoundLibrary" ]; then
+    if ! IsEngineOwnedArtifact "$ArtifactName"; then
+        if [ -n "$NotFoundLibrary" ]; then
+            ReportSelfCheckWarning "$ArtifactName 无 RUNPATH，单独分析时看不见同目录兄弟库：$NotFoundLibrary"
+        fi
         return 0
     fi
-    if IsEngineOwnedArtifact "$ArtifactName"; then
+    if [ -n "$NotFoundLibrary" ]; then
         ReportSelfCheckFailure "$ArtifactName 的依赖未解析：$NotFoundLibrary"
-    else
-        ReportSelfCheckWarning "$ArtifactName 无 RUNPATH，单独分析时看不见同目录兄弟库：$NotFoundLibrary"
     fi
+    ReportDependenciesOutsidePackage "$ArtifactName" "$LddOutput"
 }
 
 # 判据（2026-10-09 裁定）：引擎自己的产物必须含 $ORIGIN，缺即不合格；Spark / DbAdapters
@@ -219,19 +260,10 @@ CheckArtifactOriginRunpath() {
     esac
 }
 
-# 契约 §2.3：CTP 的导入库没有 SONAME，链结期把绝对路径写进了 DT_NEEDED。带斜杠的 NEEDED 由
-# ld.so 按那条路径**直接**加载、不走 RUNPATH，所以往包目录里放一份同名库救不了它——只有目标机
-# 上那条路径真存在才能跑。已知项逐条列名后记警告放行，其余产物出现绝对路径一律不合格。
-IsKnownAbsoluteNeededName() {
-    local ArtifactName=$1 CandidateName
-    for CandidateName in "${KnownAbsoluteNeededNames[@]}"; do
-        if [ "$CandidateName" = "$ArtifactName" ]; then
-            return 0
-        fi
-    done
-    return 1
-}
-
+# 契约 §2.3：带斜杠的 NEEDED 由 ld.so 按那条路径**直接**加载、不走 RUNPATH，往包目录里放一份同名库
+# 也救不了它——只有目标机上那条路径真存在才能跑。2026-10-13 实测 22 个产物里只有 MdOffer 带绝对路径
+# （CTP 的导入库没有 SONAME），2026-10-14 已在 CMakeLists.txt 给 CTP 的两个导入目标置 IMPORTED_NO_SONAME
+# 修掉，放行档随之删除：本条对**全部**产物一律是硬闸
 SelfCheckAbsoluteNeededPaths() {
     ForEachPackageArtifact CheckArtifactAbsoluteNeededPaths
 }
@@ -244,11 +276,7 @@ CheckArtifactAbsoluteNeededPaths() {
     if [ -z "$AbsoluteNeededPath" ]; then
         return 0
     fi
-    if IsKnownAbsoluteNeededName "$ArtifactName"; then
-        ReportKnownDefectWarning "$ArtifactName 记着 CTP SDK 的绝对路径依赖（同机可跑，跨机不可用）：$AbsoluteNeededPath"
-    else
-        ReportSelfCheckFailure "$ArtifactName 的 DT_NEEDED 出现绝对路径（跨机不可用，须改成库名）：$AbsoluteNeededPath"
-    fi
+    ReportSelfCheckFailure "$ArtifactName 的 DT_NEEDED 出现绝对路径（跨机不可用，须改成库名）：$AbsoluteNeededPath"
 }
 
 # 决定性的一条：它同时验证扩展模块能找到 libBackTest.so、后者能找到它的兄弟（契约 §8）
@@ -448,7 +476,6 @@ fi
 
 SelfCheckFailureCount=0
 SelfCheckWarningCount=0
-KnownDefectWarningCount=0
 SelfCheckPackageContent
 SelfCheckResolvableDependencies
 SelfCheckOriginRunpath
@@ -469,9 +496,6 @@ if [ "$CreateZipArchive" -eq 1 ]; then
     CreateReleaseZipArchive
 fi
 printf '\n自检全过（契约 §8）'
-if [ "$KnownDefectWarningCount" -gt 0 ]; then
-    printf '，另有 %s 条已知缺陷（契约 §2.3，不阻断）' "$KnownDefectWarningCount"
-fi
 if [ "$SelfCheckWarningCount" -gt 0 ]; then
     printf '，另有 %s 条警告（不阻断）' "$SelfCheckWarningCount"
 fi

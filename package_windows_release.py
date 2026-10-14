@@ -8,22 +8,23 @@
   这是本脚本多出 `sqlite3.dll` 一项的原因——Linux 上它由系统提供。
 - Linux 侧的产物从 `bin/<配置>` 与 `../Libs/*/x64-linux/lib` 两处取；Windows 侧 CMake
   已把 Spark / DbAdapters 的 DLL 拷进 `bin/<配置>`，故本脚本只有一个来源目录。
-- 契约同见 `docs/engine-linux-release-package.md`：§7 的通用要求（显式白名单、缺项点名并
-  非零退出、扁平单目录、版本只取自 `engine-version.txt`、zip 在自检全过之后）两边一致；
-  §2 的清单按平台替换，Windows 侧即本文件的常量元组。
+- 契约：本平台见 `docs/engine-windows-release-package.md`（与 Linux 那份同骨架、同口径）。
+  §7 的通用要求（显式白名单、缺项点名并非零退出、扁平单目录、版本只取自 `engine-version.txt`、
+  zip 在自检全过之后）两边一致，§2 的清单按平台替换，Windows 侧即本文件的常量元组。
 
 **目标机前提**：MSVC 运行库（`MSVCP140.dll` / `VCRUNTIME140.dll` / `VCRUNTIME140_1.dll`）与
 系统 API 集（`KERNEL32.dll` / `api-ms-win-crt-*.dll` 等）由目标机提供，本包不含——装了
 Visual C++ 2015-2022 可再发行包或装过带它的程序即可。自检只能判「构建目录里有的依赖有没
 有进包」，判不了这一层，故单列成前提。
 
-三处**刻意不进包**的依赖，自检认得它们、不误报：
+两处**刻意不进包**的依赖，自检认得它们、不误报：
 
 - `python314.dll`：宿主解释器进程里已加载同名模块，包内再放一份既无用、又会在解释器补丁
   版本不一致时被优先命中。
 - `thostmduserapi_se.dll`（CTP 行情 SDK）：`MdOffer.exe` 静态导入它，但第三方 SDK 的再分发
   责任不背（2026-10-13 就 Linux 侧定的同一条边界）。要用 `MdOffer` 的机器，把该 DLL 放进
-  发布目录即可，Windows 侧没有 Linux 上那条「绝对路径绕开搜索」的毛病。
+  发布目录即可——PE 按镜像同目录解析，本就没有「绝对路径绕开搜索」的余地，与 Linux 侧
+  2026-10-14 修掉绝对路径 `DT_NEEDED` 之后的口径一致。
 
 用法：`py -3.14 package_windows_release.py [选项]`
 

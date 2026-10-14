@@ -4,6 +4,10 @@
 Linux Release 包长什么样、怎么打、怎么自检。满足本文的包，平台侧只需把
 `ENGINE_ROOT` 指向包内唯一目录即可挂载运行。
 
+本文**只管 Linux**。Windows 包的对应契约见
+[`engine-windows-release-package.md`](engine-windows-release-package.md)：两份文档同骨架、
+同口径，差异只写在各平台真有差异的地方（依赖解析机制、文件清单、自检条目）。
+
 与 [`backtest-run-contract.md`](backtest-run-contract.md) 并列：那份约定**怎么跑**
 （一次性进程 + 退出码 + `result.json` + 相对写入路径），本源约定**怎么打包**。
 
@@ -16,7 +20,7 @@ Linux Release 包长什么样、怎么打、怎么自检。满足本文的包，
 - Python 扩展模块（`QuantTrading.*.so`）；
 - **全部**运行时 `.so`（来自三个仓，见 §2）；
 - `engine-version.txt`；
-- 两个模板 json。
+- 四个模板 json（引擎的 `BackTest.json`、`Sessions.json`，两个应用各一，见 §2）。
 
 该目录之外，运行时不再有任何依赖。
 
@@ -130,21 +134,24 @@ libTraderApi.so  libTraderGbkApi.so
 | `SimExchange` | `SimExchange.json` | 包内自含：`libMdApi.so` + Spark 三件 + DbAdapters 的 `libAsyncDbWriter.so` |
 | `MdOffer` | `MdOffer.json` | 同上但**不含** `libMdApi.so`，**另加** CTP 的 `libthostmduserapi_se.so` |
 
-`MdOffer` 那个 CTP 依赖记的是**绝对路径**（`/home/<构建机用户>/.vs/Libs/Ctp/x64-linux/lib/…`）：
-CTP 的导入库没有 SONAME，链结期把完整路径写进了 `DT_NEEDED`。带斜杠的 `DT_NEEDED` 由 `ld.so`
-按该路径**直接**加载，**不走 `RUNPATH`**，于是：
+`MdOffer` 那个 CTP 依赖**不随包**，由目标机自备：把 `libthostmduserapi_se.so` 放进发布目录、
+或让它出现在 `LD_LIBRARY_PATH` 里，`MdOffer` 即可启动。两平台口径一致——Windows 侧
+`MdOffer.exe` 同样由目标机自备 `thostmduserapi_se.dll`（`engine-windows-release-package.md` §2.3）。
 
-- 构建机上照跑不误（那个路径真存在），本次同机部署即属此列；
-- 换机器就得让那条路径存在（拷一份 CTP SDK 过去，或按原名建软链）；
-- **在本包目录里放一份同名库救不了它**（绝对路径优先，`$ORIGIN` 轮不到）。故本包**不复制** CTP
-  的两个 `.so`（`libthostmduserapi_se.so` 5.0 MB、`libthosttraderapi_se.so` 5.6 MB）：放进去
-  既不生效、又平白多背一份第三方 SDK 的再分发责任。日后若要它跨机自含，正解是重链接时给 CTP 的
-  导入目标置 `IMPORTED_NO_SONAME`，让 `DT_NEEDED` 记库名而非路径。
+> **2026-10-14：修掉一条真缺陷（原记作「已知缺陷」）**。CTP 的导入库没有 SONAME，CMake 对
+> imported SHARED 库默认按**完整路径**链接，`ld` 于是把 `/home/<构建机用户>/.vs/Libs/Ctp/…`
+> 写进了 `DT_NEEDED`。带斜杠的 `DT_NEEDED` 由 `ld.so` 按该路径**直接**加载、**不走 `RUNPATH`**，
+> 后果是：同机照跑、**换机必挂**，且往包目录里放一份同名库也救不回来（绝对路径优先，
+> `$ORIGIN` 轮不到）。修法是给 CTP 的两个导入目标置 `IMPORTED_NO_SONAME`
+> （`CMakeLists.txt` 的 Linux 分支），让链接改走 `-l` 形式，`DT_NEEDED` 落成**裸名**；此后按
+> 上一段的「目标机自备」即能起。该属性由 `CMAKE_PLATFORM_USES_PATH_WHEN_NO_SONAME` 驱动，而它
+> 只由 `Modules/Platform/Linux.cmake` 设定，故**在 Windows 上不可达**，Windows 产物零影响。
 
-打包脚本把这一条记成**已知缺陷警告**（§8）：已知项只警告、不阻断；将来别的产物出现绝对路径，
-同一条检查即判不合格。
+本包**不复制** CTP 的两个 `.so`（`libthostmduserapi_se.so` 5.0 MB、`libthosttraderapi_se.so`
+5.6 MB）：2026-10-13 定的再分发边界不变——第三方 SDK 的责任不由本包背。故 §8 的自检把这两个
+名字写进 `NotPackagedDependencyNames` 显式放行，**未列名的包外依赖一律不合格**。
 
-`SimExchangeInit`（模拟撮合初始化工具，同样依赖 CTP 交易 API 的绝对路径）与 `BackTestInit.*`
+`SimExchangeInit`（模拟撮合初始化工具，同样依赖 CTP 交易 API）与 `BackTestInit.*`
 暂不进包；需要时按本节口径补名进白名单即可。
 
 ## 3. 只有一类产物进发布包
@@ -267,7 +274,7 @@ Spark 与 DbAdapters 的 ship 库**无需重建即可工作**，但原因是两�
 
 ### 5.1 改前的两层结构
 
-引擎原先输出到两个目录（`QuantTrading/CMakeLists.txt:59-61`）：扩展模块进
+引擎原先输出到两个目录（`QuantTrading/CMakeLists.txt:61-63`）：扩展模块进
 `bin/$<CONFIG>`，7 个 `.so` 与 15 个 `.a` 进 `lib/$<CONFIG>`。如此，`$ORIGIN` 会推出
 `$ORIGIN/../lib/Release`，包成两层，且 `.a` 混在同一目录里。
 
@@ -296,11 +303,17 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/$<CONFIG>)
 ## 6. `engine-version.txt` 必须在 Linux 侧产出
 
 平台用它标识「这一轮跑的是哪个引擎构建」（取首个非空行）。引擎侧现行写法
-（`QuantTrading/CMakeLists.txt:28`）：
+（`QuantTrading/CMakeLists.txt:29`）：
 
 ```cmake
-file(GENERATE OUTPUT ${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/engine-version.txt CONTENT "${PROJECT_VERSION}\n")
+file(GENERATE OUTPUT ${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/engine-version.txt CONTENT "${PROJECT_VERSION}\n"
+    NEWLINE_STYLE UNIX)
 ```
+
+**两平台字节一致（2026-10-14）**：`file(GENERATE)` 不写 `NEWLINE_STYLE` 时按平台换行风格落盘——
+同一个版本号在 Windows 包里是 CRLF、Linux 包里是 LF。两侧读者都取「首个非空行 + 去空白」，故
+此前无故障；写死 `UNIX` 是把这份一致性从「读者恰好宽容」变成「文件本身相同」。该选项自
+CMake 3.20 起可用，与本仓 `cmake_minimum_required(VERSION 3.20)` 正好对齐，不抬高下限。
 
 **2026-10-09 实测结案**：此前 Linux 构建树与 Windows `bin/Debug` 里都没有该文件，
 原因是**这两棵树在该行落地之后还没重新 configure**——不是写法问题。对同一个
@@ -336,7 +349,7 @@ file(GENERATE OUTPUT ${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/engine-version.txt CONTEN
   「数据库只需要 sqlite 和 duckdb」，故连「按需另定」的余地也不留）；
 - 排除：测试程序（`Test*`）、`SimExchangeInit`、`BackTestInit.*`、跑测残留（`*.db`、`log/`、
   `Dump/`）——它们既不服务平台，也不服务接入面；
-- 排除：CTP SDK 的两个 `.so`（放进包目录对绝对路径 `DT_NEEDED` 无效，理由见 §2.3）；
+- 排除：CTP SDK 的两个 `.so`（再分发边界不背第三方 SDK；`MdOffer` 由目标机自备即可，理由见 §2.3）；
 - 输出：**一个目录**，无子目录（这是**发布目录**的形态，即下面 `--zip` 解压出来的那一层）；
 - 白名单任一文件缺失即**非零退出并点名**，不得静默少文件；
 - 版本号只从 `engine-version.txt` 读，脚本不得手写（见 §6）。
@@ -373,7 +386,7 @@ python -c "import QuantTrading; print(QuantTrading.__file__)"
 # 4. 版本文件在: 应打印一行版本号
 cat engine-version.txt
 
-# 5. 无绝对路径 DT_NEEDED: 只应命中已知的那一个（§2.3 的 MdOffer）
+# 5. 无绝对路径 DT_NEEDED: 应无任何输出（2026-10-14 起是硬判据）
 readelf -d ./*.so MdOffer SimExchange | grep -E '\(NEEDED\).*\[/'
 ```
 
@@ -381,9 +394,9 @@ readelf -d ./*.so MdOffer SimExchange | grep -E '\(NEEDED\).*\[/'
 
 | 条目 | 引擎自己的产物 | Spark / DbAdapters ship 库 |
 | :--- | :--- | :--- |
-| 第 1 条（依赖解析） | 有缺失即不合格 | 缺 `libCore.so` 只记警告 |
+| 第 1 条（依赖解析） | 有缺失即不合格；解析到包外且未列名也不合格 | 缺 `libCore.so` 只记警告 |
 | 第 2 条（含 `$ORIGIN`） | 缺即不合格 | 缺只记警告 |
-| 第 5 条（绝对 `DT_NEEDED`） | `MdOffer` 记**已知缺陷**、其余产物不合格 | 无此情形 |
+| 第 5 条（绝对 `DT_NEEDED`） | 有即不合格 | 无此情形 |
 
 - 第 3 条是**决定性**的：它同时验证扩展模块能找到 `libBackTest.so`、
   `libBackTest.so` 能找到它的兄弟——即整套 `$ORIGIN` 链是否真的成立。
@@ -396,24 +409,34 @@ readelf -d ./*.so MdOffer SimExchange | grep -E '\(NEEDED\).*\[/'
   `DT_NEEDED` 闭包；§2.1 那 6 个 API 中间层不是 `dlopen` 库——它们在 `SimExchange`
   的 `DT_NEEDED` 里，第 1 条照常查得到（但也只有 `SimExchange` 拉其中一个，
   §2.1 的「没有自家代码会去加载」说的是引擎源码树，别把两句记混）。
+- **第 1 条自 2026-10-14 起多判一层**：光「`ldd` 无缺失」在**构建机上**说明不了什么——构建机的
+  `RUNPATH` 里本来就带着 `Libs` 安装树的绝对目录，包外依赖在这台机器上照样解析成功。故脚本另判
+  「解析到了**哪里**」：引擎自有产物的每条依赖，路径要么在发布目录内、要么是系统库目录
+  （`/lib`、`/lib64`、`/usr/lib`、`/usr/lib64`；`/usr/local/lib` 不在内——那里装的是本机自建
+  软件，目标机上未必有），要么在 `NotPackagedDependencyNames` 里列着。未列名却落在包外即不合格。
 
 > **引擎侧实现**：仓根 `PackageLinuxRelease.sh` 已内嵌这些判据（分档同上）。
-> 注意它的「四条自检」与本节 1–4 **不是同一组编号**，对应关系见下表。
+> 注意它的「五条自检」与本节 1–5 **不是同一组编号**，对应关系见下表。
 > 2026-10-09 实测：12 项文件、四条全过，另有 9 条警告（6 条 ship 库无 `$ORIGIN`、
 > 3 条 ship 库单独 `ldd` 假阳性），exit 0。
 > **2026-10-13 实测**（扩到 22 项之后重打）：22 项文件、自检全过，另有 **1 条已知缺陷**
 > （`MdOffer` 的 CTP 绝对路径）与 **1 条警告**（`libduckdb.so` 无 `$ORIGIN`），exit 0，
 > zip 28,203,609 B。同批顺带证实：Spark / DbAdapters 的 ship 库这轮已带上 `$ORIGIN`，
 > 2026-10-09 那 6 条警告与 3 条 `ldd` 假阳性随之消失。
+> **2026-10-14 实测**（修掉 `MdOffer` 的绝对路径 `DT_NEEDED` 之后重打）：22 项文件、自检全过，
+> 只有 **1 条警告**（`libduckdb.so` 无 `$ORIGIN`）；「已知缺陷」那一条归零，zip 28,203,076 B、
+> sha256 `c679898705688ca880bb7ae738beea9edfb0a98b030efd2f30e7c169c151144a`，exit 0。
+> 同批验证：新加的「解析到包外」判据**确实认出了** `libthostmduserapi_se.so` 解析到构建机的 CTP
+> 安装树，因在 `NotPackagedDependencyNames` 里而放行——是显式列名放行，不是没看见（探针见附录 B）。
 
 脚本的自检（执行顺序）与本节手工验法的对应：
 
 | 脚本内嵌的检查 | 对应本节 |
 | :--- | :--- |
 | 包内容（§7 白名单与排除项 + 文件数 22 + 无子目录） | 本节未列，手工看 §7 |
-| 依赖解析（`ldd` 无缺失） | 第 1 条 |
+| 依赖解析（`ldd` 无缺失；解析路径须在包内 / 系统库 / 列名之内） | 第 1 条 |
 | RUNPATH 含 `$ORIGIN` | 第 2 条 |
-| 绝对路径 `DT_NEEDED`（已知项记缺陷，其余不合格） | 第 5 条 |
+| 绝对路径 `DT_NEEDED`（一律不合格） | 第 5 条 |
 | 解释器 `import` | 第 3 条 |
 
 「`engine-version.txt` 读不到版本行」在脚本里**先于自检**按硬失败处理（exit 3），
@@ -429,7 +452,7 @@ readelf -d ./*.so MdOffer SimExchange | grep -E '\(NEEDED\).*\[/'
 
 | 依赖 | 来源 | 版本锚点（2026-10-13 实测） |
 | :--- | :--- | :--- |
-| 引擎 QuantTrading | 仓 `xunmeng2002/QuantTrading` | `1.0.0`；发布构建源为 WSL 克隆 `~/.vs/QuantTrading`，HEAD `91c4459`（2026-10-10） |
+| 引擎 QuantTrading | 仓 `xunmeng2002/QuantTrading` | `1.0.0`；发布构建源为 WSL 克隆 `~/.vs/QuantTrading`，HEAD `91c4459`（2026-10-10）；2026-10-14 那一版另含当日改动（`CMakeLists.txt` 的两处、`PackageLinuxRelease.sh` 的自检加固，见附录 B.1） |
 | Spark | 仓 `xunmeng2002/Spark` | `v1.0.0-17-g881d744`（`881d744`，2026-10-09） |
 | DbAdapters | 仓 `xunmeng2002/DbAdapters` | `v1.0.0-5-gf57e9b8`（`f57e9b8`，2026-10-09） |
 | duckdb | 预构建树 `~/.vs/Libs/duckdb`（**不走 vcpkg**） | `v1.5.3`（`duckdb.hpp` 的 `DUCKDB_VERSION`，`.so` 内同串） |
@@ -550,3 +573,48 @@ bash PackageLinuxRelease.sh --zip --force
 同批发现：`libduckdb.so` 是这轮唯一缺 `$ORIGIN` 的产物（它只依赖系统库，无碍）；
 2026-10-09 那 6 条 ship 库警告与 3 条 `ldd` 假阳性都没有复现——Spark / DbAdapters 的安装树
 已带上家规。
+
+### 附录 B.1 修掉绝对路径 `DT_NEEDED` 后重打（2026-10-14，WSL）
+
+改 `CMakeLists.txt` 给 CTP 的两个导入目标置 `IMPORTED_NO_SONAME` 后，只重链接两个目标
+（`cmake --build out/build/WSL-GCC-Release --target MdOffer SimExchangeInit`，无重编译）：
+
+```text
+readelf -d bin/Release/MdOffer | grep NEEDED | grep thost
+  (NEEDED)  Shared library: [libthostmduserapi_se.so]      ← 裸名，斜杠没了
+
+readelf -d bin/Release/MdOffer bin/Release/SimExchangeInit | grep -E '\(NEEDED\).*\[/'
+  （无输出）
+
+ldd bin/Release/MdOffer | grep -i thost
+  libthostmduserapi_se.so => /home/xunmeng/.vs/Libs/Ctp/x64-linux/lib/libthostmduserapi_se.so
+```
+
+第三行正是「构建机绿、目标机未必绿」的实证：裸名在**构建机上**被 `RUNPATH` 里那条绝对项命中
+（真加载时才轮到 `$ORIGIN`）。故 §8 第 1 条另判「解析到了哪里」——同目录下单独跑一遍该判据：
+
+```text
+（只看既不在发布目录、也不在系统库目录的项）
+libthostmduserapi_se.so /home/xunmeng/.vs/Libs/Ctp/x64-linux/lib/libthostmduserapi_se.so
+在 NotPackagedDependencyNames 里的命中数：1
+```
+
+重打发布包：
+
+```text
+bash PackageLinuxRelease.sh --force --zip
+  覆盖：清空输出目录 ~/.vs/QuantTrading/dist/linux-engine
+  [警告] libduckdb.so 无 $ORIGIN（三方 ship 库，本批次暂可接受）：无 RPATH/RUNPATH
+  [提示] 10 个产物保留了构建机绝对路径（$ORIGIN 在最前，目标机上不存在即跳过）
+  [提示] 7 个产物的 RUNPATH 含空元素（等于当前目录，属 Libs 安装树遗留）
+
+  文件数：22
+  zip 大小：28,203,076 字节
+  自检全过（契约 §8），另有 1 条警告（不阻断）
+  exit=0
+```
+
+`[已知缺陷]` 那一行没再出现；zip 比上一版少 7 字节（`MdOffer` 重链接后体积微变，
+其余 21 项字节不变）。同日 Windows 侧以同一版 `CMakeLists.txt` 重新 configure 后重打：
+23 项、13,660,618 字节（比上一版少 1 字节，正是 `engine-version.txt` 由 CRLF 改 LF 的那一字节），
+两侧 `engine-version.txt` 的 sha256 相同（`59854984…ce03`）。

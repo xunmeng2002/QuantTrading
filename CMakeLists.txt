@@ -25,7 +25,9 @@ message(STATUS "Project version: ${PROJECT_VERSION}")
 
 # 引擎根版本标识：QuantPlatform 的 engine_probe.py 优先读本文件的首个非空行来记 Runs.EngineVersion，
 # 取不到才退化为「.pyd + 三个运行时 DLL 的内容摘要」。与 project() VERSION 同源，故每次 configure 重写。
-file(GENERATE OUTPUT ${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/engine-version.txt CONTENT "${PROJECT_VERSION}\n")
+# NEWLINE_STYLE 必须写明：不写则按平台换行风格落盘，同一个版本号在 Windows 包里是 CRLF、Linux 包里是 LF。
+file(GENERATE OUTPUT ${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/engine-version.txt CONTENT "${PROJECT_VERSION}\n"
+    NEWLINE_STYLE UNIX)
 
 include(GNUInstallDirs)
 include(GenerateExportHeader)
@@ -75,6 +77,10 @@ else()
     find_package(DbAdapters CONFIG REQUIRED PATHS "../Libs/DbAdapters/x64-linux")
     find_package(duckdb CONFIG REQUIRED PATHS "../Libs/duckdb/x64-linux")
     find_package(CTP CONFIG REQUIRED PATHS "../Libs/Ctp/x64-linux")
+    # CTP 的两个导入库没有 SONAME：CMake 对 imported SHARED 库默认按完整路径链接，ld 会把该路径原样
+    # 写进 DT_NEEDED，而带斜杠的 DT_NEEDED 由 ld.so 按路径直接加载、不走 RUNPATH——于是发布包里的
+    # MdOffer 换机即起不来。置此属性让 CMake 改用 -l 形式，DT_NEEDED 落成裸名，运行时按 $ORIGIN 解析。
+    set_target_properties(CTP::mdapi CTP::traderapi PROPERTIES IMPORTED_NO_SONAME TRUE)
 endif()
 # doctest 是纯头文件, 无平台差异, 故不随上面的 triplet 分支走.
 find_package(doctest CONFIG REQUIRED PATHS "../Libs/doctest")

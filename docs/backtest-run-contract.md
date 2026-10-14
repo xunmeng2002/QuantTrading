@@ -29,6 +29,7 @@ VS WSL 源码副本的那一份由其源码同步带来）。引擎不为此做�
 `BackTest.dll` 及其运行时 DLL 住在**引擎根**（本仓的 `bin/<CONFIG>`），由调度侧经 `PYTHONPATH`
 指向，**不**拷进 job 工作目录。引擎根里另有一份构建期生成的 `engine-version.txt`（首行即版本号，
 与 `CMakeLists.txt` 的 `project() VERSION` 同源），供调度侧记录「这一轮跑的是哪个引擎构建」。
+该文件写死 `NEWLINE_STYLE UNIX`，故同一版本号在 Windows 包与 Linux 包里**字节一致**（含行尾）。
 
 ---
 

@@ -331,8 +331,9 @@ executables so a release package can locate them relatively via `$ORIGIN` (see "
 Flatten the runtime `.so` files of all three repos plus the engine artifacts into a single directory,
 producing a directly distributable backtest package (output to `dist/linux-engine` by default). The
 full contract (22-file manifest and five self-checks) is in
-[Engine Linux Release Package Requirements](docs/engine-linux-release-package.md) (the §2 manifest is
-per platform; see below for Windows).
+[Engine Linux Release Package Requirements](docs/engine-linux-release-package.md); the Windows
+counterpart (23 files) is [Engine Windows Release Package
+Requirements](docs/engine-windows-release-package.md), used in §5.8 below.
 
 ```bash
 bash PackageLinuxRelease.sh                      # Release by default
@@ -376,19 +377,22 @@ py -3.14 package_windows_release.py --force         REM clear a non-empty dir fi
 ```
 
 Same shape as the Linux side (explicit whitelist, zip emitted only after every self-check passes). The
-three platform differences live in the script's module docstring:
+full contract for the 23-file manifest, the three self-checks and the target-machine prerequisites is in
+[Engine Windows Release Package
+Requirements](docs/engine-windows-release-package.md); the three platform differences in brief:
 
 - **Third-party DLLs must travel inside the package**: PE has no RPATH, so dependencies always resolve
-  from the image's own directory (extension modules use `LOAD_WITH_ALTERED_SEARCH_PATH`). That is why
-  this manifest carries one entry the Linux one does not — `sqlite3.dll`, which Linux takes from the
-  system.
+  from the image's own directory (extension modules are loaded with `LOAD_WITH_ALTERED_SEARCH_PATH`, so
+  the `.pyd`'s directory comes first). That is why this manifest carries one entry the Linux one does not
+  — `sqlite3.dll`, which Linux takes from the system (contract §4).
 - **Self-check 2 changes method**: Windows has no `ldd`, so it reads the PE import table instead and
   reports only dependencies that **exist next to the build but did not make it into the package**. The
   MSVC runtime (`MSVCP140` / `VCRUNTIME140*`) and the system API set are expected from the **target
-  machine** and are not bundled.
-- **`MdOffer.exe` cannot start from the package**: it statically imports CTP's `thostmduserapi_se.dll`,
-  and that SDK is not shipped (the same redistribution boundary as on Linux). A machine that needs it
-  just drops the DLL into the release directory.
+  machine** and are not bundled (contract §8, §9).
+- **`MdOffer.exe` needs CTP's `thostmduserapi_se.dll` from the target machine**: that SDK is not shipped
+  (the same redistribution boundary as on Linux). A machine that needs it just drops the DLL into the
+  release directory — PE resolves from the image's own directory, so dropping it in is enough
+  (contract §2.3).
 
 ## 6. Basic Usage Examples
 

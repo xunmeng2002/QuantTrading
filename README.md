@@ -317,7 +317,8 @@ cmake --build out/build/WSL-GCC-Release
 
 把三个仓的运行时 `.so` 与引擎产物**平铺**进一个目录，产出可直接分发的回测包（默认输出到
 `dist/linux-engine`）。22 文件清单与自检五条的完整契约见
-[引擎 Linux 发布包要求](docs/engine-linux-release-package.md)（§2 的清单按平台替换，Windows 侧见下）。
+[引擎 Linux 发布包要求](docs/engine-linux-release-package.md)；Windows 侧的对应契约（23 文件）见
+[引擎 Windows 发布包要求](docs/engine-windows-release-package.md)，用法见下面 §8。
 
 ```bash
 bash PackageLinuxRelease.sh                      # 默认 Release
@@ -351,14 +352,18 @@ py -3.14 package_windows_release.py --config Debug
 py -3.14 package_windows_release.py --force         REM 目录非空时先清空再写
 ```
 
-与 Linux 侧同形（同样显式白名单、同样在自检全过后才打 zip），三处平台差异写在脚本的模块说明里：
+与 Linux 侧同形（同样显式白名单、同样在自检全过后才打 zip）。23 文件清单、自检三条与目标机前提的
+完整契约见[引擎 Windows 发布包要求](docs/engine-windows-release-package.md)，三处平台差异的要点：
 
-- **三方 DLL 必须随包**：PE 没有 RPATH，依赖一律按「与镜像同目录」解析（扩展模块走
-  `LOAD_WITH_ALTERED_SEARCH_PATH`），故比 Linux 侧多一项 `sqlite3.dll`——那一侧由系统提供。
+- **三方 DLL 必须随包**：PE 没有 RPATH，依赖一律按「与镜像同目录」解析（扩展模块由解释器以
+  `LOAD_WITH_ALTERED_SEARCH_PATH` 加载，故 `.pyd` 所在目录优先），比 Linux 侧多一项 `sqlite3.dll`
+  ——那一侧由系统提供（契约 §4）。
 - **自检第 2 条换判定方式**：Windows 没有 `ldd`，改读 PE 导入表，只报「构建目录里**有**、却没进包」
-  的依赖；MSVC 运行库（`MSVCP140` / `VCRUNTIME140*`）与系统 API 集由**目标机**提供，包内不含。
-- **`MdOffer.exe` 无法从包内启动**：它静态导入 CTP 的 `thostmduserapi_se.dll`，而该 SDK 不进包
-  （再分发边界，与 Linux 侧同一条裁定）。要用它的机器把该 DLL 放进发布目录即可。
+  的依赖；MSVC 运行库（`MSVCP140` / `VCRUNTIME140*`）与系统 API 集由**目标机**提供，包内不含
+  （契约 §8、§9）。
+- **`MdOffer.exe` 需目标机自备 CTP 的 `thostmduserapi_se.dll`**：该 SDK 不进包（再分发边界，与
+  Linux 侧同一条裁定）。要用它的机器把该 DLL 放进发布目录即可——PE 按同目录解析，放进去即生效
+  （契约 §2.3）。
 
 ## 六、基础使用示例
 
