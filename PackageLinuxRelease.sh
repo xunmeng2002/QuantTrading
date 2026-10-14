@@ -134,6 +134,7 @@ CopyWhitelistFile() {
     fi
     cp -f -- "$SourcePath" "$OutputDirectory/$FileName"
     CopiedFileCount=$((CopiedFileCount + 1))
+    PackagedFileNames+=("$FileName")
 }
 
 CopyWhitelistNames() {
@@ -294,60 +295,15 @@ SelfCheckPackageContent() {
     fi
 }
 
-# 把发布目录打成一个 zip：包内是**一个**顶层目录，12 个文件平铺其下（解压即得「按版本留」的那一层）。
-# 只用解释器自带的 zipfile：zip(1) / unzip(1) 不保证每台机器都有，而解释器是本引擎的硬要求。
-# 打完立刻重开校验（能读出、条目数一致、无嵌套目录）——包坏了要在脚本里就报出来，不能留到部署时。
+# 打 zip 的实现与 Windows 打包脚本共用一份（release_zip.py，跨平台）：按白名单取件、不扫目录，
+# 包内是**一个**顶层目录，写完立刻重开复验。这里只管算包名、转述摘要、映射退出码。
 CreateReleaseZipArchive() {
     local ArchiveRootName ArchivePath ArchiveResult
     ArchiveRootName="$ProjectName-$EngineVersion-linux-$(uname -m)"
     ArchivePath="$(dirname -- "$OutputDirectory")/$ArchiveRootName.zip"
-    if [ -e "$ArchivePath" ]; then
-        printf '覆盖既有 zip：%s\n' "$ArchivePath" >&2
-    fi
-    if ! ArchiveResult=$("$PythonExecutable" - "$ArchivePath" "$ArchiveRootName" "$OutputDirectory" <<'PYTHON_ARCHIVE_SCRIPT'
-import os
-import sys
-import zipfile
-
-archive_path = sys.argv[1]
-archive_root_name = sys.argv[2]
-source_directory = os.path.realpath(sys.argv[3])
-
-file_names = sorted(
-    name for name in os.listdir(source_directory)
-    if os.path.isfile(os.path.join(source_directory, name))
-)
-if not file_names:
-    sys.exit(f"发布目录里没有文件，拒绝打出空包：{source_directory}")
-
-with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
-    for file_name in file_names:
-        file_path = os.path.join(source_directory, file_name)
-        entry = zipfile.ZipInfo.from_file(file_path, f"{archive_root_name}/{file_name}")
-        entry.compress_type = zipfile.ZIP_DEFLATED
-        with open(file_path, "rb") as source_file, archive.open(entry, "w") as archived_file:
-            while chunk := source_file.read(1024 * 1024):
-                archived_file.write(chunk)
-
-with zipfile.ZipFile(archive_path) as archive:
-    broken_name = archive.testzip()
-    if broken_name is not None:
-        sys.exit(f"zip 校验失败，首个损坏条目：{broken_name}")
-    archived_names = [name for name in archive.namelist() if not name.endswith("/")]
-    if len(archived_names) != len(file_names):
-        sys.exit(f"zip 里条目数 {len(archived_names)} 与发布文件数 {len(file_names)} 不符")
-    stray_names = [
-        name for name in archived_names
-        if name.count("/") != 1 or name.split("/")[0] != archive_root_name
-    ]
-    if stray_names:
-        sys.exit(f"zip 里出现不在顶层目录下的条目：{stray_names}")
-
-print(f"zip 包：{archive_path}")
-print(f"包内顶层目录：{archive_root_name}/（{len(file_names)} 个文件）")
-print(f"zip 大小：{os.path.getsize(archive_path)} 字节")
-PYTHON_ARCHIVE_SCRIPT
-    ); then
+    if ! ArchiveResult=$("$PythonExecutable" "$ScriptDirectory/release_zip.py" \
+        --source "$OutputDirectory" --archive "$ArchivePath" --root-name "$ArchiveRootName" \
+        "${PackagedFileNames[@]}"); then
         Fail "打 zip 失败：$ArchiveResult" 5
     fi
     printf '\n%s\n' "$ArchiveResult"
@@ -450,6 +406,8 @@ OutputDirectory=$ResolvedOutputDirectory
 
 MissingSourcePaths=()
 CopiedFileCount=0
+# 已进包的文件名（与复制同一处登记）：打 zip 时按清单取件，不再回头扫目录
+PackagedFileNames=()
 
 CopyWhitelistNames "$BinDirectory" "${EngineBinRuntimeNames[@]}"
 CopyWhitelistNames "$BinDirectory" "${EngineBinExecutableNames[@]}"

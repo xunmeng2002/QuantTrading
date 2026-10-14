@@ -44,7 +44,8 @@ import shutil
 import struct
 import subprocess
 import sys
-import zipfile
+
+import release_zip
 
 SCRIPT_DIRECTORY = pathlib.Path(__file__).resolve().parent
 PROJECT_NAME = "QuantTrading"
@@ -235,33 +236,6 @@ def read_engine_version(version_file_path: pathlib.Path) -> str:
     return ""
 
 
-def create_release_zip(output_directory: pathlib.Path, file_names: list[str], engine_version: str) -> None:
-    """按白名单打 zip，不扫描目录。打完立刻重开校验，坏包要在这一步就报出来。"""
-    archive_root_name = f"{PROJECT_NAME}-{engine_version}-windows-x86_64"
-    archive_path = output_directory.parent / f"{archive_root_name}.zip"
-    if not file_names:
-        raise ValueError(f"清单为空，拒绝打出空包：{output_directory}")
-    with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
-        for file_name in file_names:
-            archive.write(output_directory / file_name, f"{archive_root_name}/{file_name}")
-    with zipfile.ZipFile(archive_path) as archive:
-        broken_name = archive.testzip()
-        if broken_name is not None:
-            raise ValueError(f"zip 校验失败，首个损坏条目：{broken_name}")
-        archived_names = [name for name in archive.namelist() if not name.endswith("/")]
-        if len(archived_names) != len(file_names):
-            raise ValueError(f"zip 里条目数 {len(archived_names)} 与发布文件数 {len(file_names)} 不符")
-        stray_names = [
-            name for name in archived_names
-            if name.count("/") != 1 or name.split("/")[0] != archive_root_name
-        ]
-        if stray_names:
-            raise ValueError(f"zip 里出现不在顶层目录下的条目：{stray_names}")
-    print(f"zip 包：{archive_path}")
-    print(f"包内顶层目录：{archive_root_name}/（{len(file_names)} 个文件）")
-    print(f"zip 大小：{archive_path.stat().st_size} 字节")
-
-
 def is_path_same_or_ancestor_of(candidate_path: pathlib.Path, target_path: pathlib.Path) -> bool:
     return candidate_path == target_path or candidate_path in target_path.parents
 
@@ -366,7 +340,10 @@ def main() -> int:
     if arguments.create_zip:
         try:
             print()
-            create_release_zip(output_directory, list(whitelist_names), engine_version)
+            archive_root_name = f"{PROJECT_NAME}-{engine_version}-windows-x86_64"
+            release_zip.create_release_zip(
+                output_directory, list(whitelist_names), output_directory.parent / f"{archive_root_name}.zip", archive_root_name
+            )
         except (ValueError, OSError) as error:
             print(f"打包中止：{error}", file=sys.stderr)
             return 5
