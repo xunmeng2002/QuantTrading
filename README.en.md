@@ -226,9 +226,11 @@ Only the CTP clients need these (`TestMdApi` / `TestTraderApi` / `MdOffer` / `Si
 ### Python Bindings (Optional)
 
 `src/PythonBindings/` produces `QuantTrading.<abi>.pyd` (`.so` on WSL / Linux) for Python-side strategies.
-It is **not shipped in the Release package**: a `.pyd` is locked to the CPython **minor** ABI (one built
-for 3.14 can only be imported by 3.14), so bundling it would pin the package to a single minor version.
-Build it yourself when needed:
+It **ships inside the Release package** — it is item 1 of the manifest (`docs/engine-linux-release-package.md`
+§2) and the entry point the interpreter's `import QuantTrading` resolves. The price is that **package and
+interpreter must both be CPython 3.14**: a `.pyd` is locked to the CPython **minor** ABI (one built for 3.14
+can only be imported by 3.14), so a minor-version bump means rebuilding this one artifact. Building from
+source:
 
 1. Install pybind11 for the target interpreter: `pip install pybind11`. Without it the configure step
    fails outright with a message starting `QUANTTRADING_ENABLE_PYTHON=ON requires pybind11`.
@@ -328,8 +330,9 @@ executables so a release package can locate them relatively via `$ORIGIN` (see "
 
 Flatten the runtime `.so` files of all three repos plus the engine artifacts into a single directory,
 producing a directly distributable backtest package (output to `dist/linux-engine` by default). The
-full contract (12-file manifest and four self-checks) is in
-[Engine Linux Release Package Requirements](docs/engine-linux-release-package.md).
+full contract (22-file manifest and five self-checks) is in
+[Engine Linux Release Package Requirements](docs/engine-linux-release-package.md) (the §2 manifest is
+per platform; see below for Windows).
 
 ```bash
 bash PackageLinuxRelease.sh                      # Release by default
@@ -341,25 +344,51 @@ bash PackageLinuxRelease.sh --force              # clear a non-empty dir first
 
 - **Prerequisite**: run it only inside a WSL / Linux build tree — artifacts are `.so`, and `../Libs`
   must hold an `x64-linux` install tree.
-- **Selection**: files are taken by an explicit **whitelist**, never a directory scan; the six API
-  middle layers and the MySQL / MariaDB backends are excluded.
-- **Built-in self-checks**: right after packaging it runs four checks — package content (whitelist /
-  file count / no subdirectories), `ldd` with no missing entries, RUNPATH contains `$ORIGIN`, and the
-  interpreter `import` resolving inside the package; any failure exits non-zero. An unreadable
-  `engine-version.txt` aborts earlier (a precondition, not one of the four). Note these four differ in
-  numbering from the contract's acceptance items.
+- **Selection**: files are taken by an explicit **whitelist**, never a directory scan; only the MySQL /
+  MariaDB backends are explicitly excluded (contract §7).
+- **Built-in self-checks**: right after packaging it runs five checks — package content (whitelist /
+  file count / no subdirectories), `ldd` with no missing entries, RUNPATH contains `$ORIGIN`, no absolute
+  paths in `DT_NEEDED`, and the interpreter `import` resolving inside the package; any failure exits
+  non-zero. An unreadable `engine-version.txt` aborts earlier (a precondition, not one of the five). Note
+  these five differ in numbering from the contract's acceptance items.
 - **`--zip` archive form**: once every self-check passes, the release directory is packed into
   `QuantTrading-<version>-linux-<arch>.zip`, written **beside** the release directory (in `dist/` by
   default). Inside the archive there is a **single top-level directory** (the same name minus `.zip`)
-  holding the 12 files flat — extracting it yields exactly one directory to point `QUANT_ENGINE_ROOT`
+  holding the 22 files flat — extracting it yields exactly one directory to point `QUANT_ENGINE_ROOT`
   at, matching the platform's "keep one versioned directory per release, never overwrite in place"
-  convention. Packing and archive verification use only the interpreter's built-in `zipfile` (no
-  dependency on `zip(1)` / `unzip(1)`); any failure exits non-zero, so a bad package is never dressed
-  up as a deliverable.
+  convention. Packing and verification go through the shared `release_zip.py` at the repo root (the
+  interpreter's built-in `zipfile`, no dependency on `zip(1)` / `unzip(1)`; both platform scripts use
+  this one implementation instead of each writing its own); any failure exits non-zero, so a bad package
+  is never dressed up as a deliverable.
 - **Refuses to overwrite by default**: a non-empty output directory requires an explicit `--force`;
   `--force`'s recursive delete affects only its own output directory, never any other path.
 - **Invocation**: every `.sh` in this repo is `100644` (`core.filemode=false`), so call it as
   `bash <script>`.
+
+### 5.8 Package a Windows Release
+
+On Windows use `package_windows_release.py` (Python 3.14, no bash needed):
+
+```bat
+py -3.14 package_windows_release.py --zip           REM artifacts in dist\windows-engine, zip beside it
+py -3.14 package_windows_release.py --config Debug
+py -3.14 package_windows_release.py --force         REM clear a non-empty dir first
+```
+
+Same shape as the Linux side (explicit whitelist, zip emitted only after every self-check passes). The
+three platform differences live in the script's module docstring:
+
+- **Third-party DLLs must travel inside the package**: PE has no RPATH, so dependencies always resolve
+  from the image's own directory (extension modules use `LOAD_WITH_ALTERED_SEARCH_PATH`). That is why
+  this manifest carries one entry the Linux one does not — `sqlite3.dll`, which Linux takes from the
+  system.
+- **Self-check 2 changes method**: Windows has no `ldd`, so it reads the PE import table instead and
+  reports only dependencies that **exist next to the build but did not make it into the package**. The
+  MSVC runtime (`MSVCP140` / `VCRUNTIME140*`) and the system API set are expected from the **target
+  machine** and are not bundled.
+- **`MdOffer.exe` cannot start from the package**: it statically imports CTP's `thostmduserapi_se.dll`,
+  and that SDK is not shipped (the same redistribution boundary as on Linux). A machine that needs it
+  just drops the DLL into the release directory.
 
 ## 6. Basic Usage Examples
 

@@ -221,8 +221,9 @@ export CTP_SIMNOW24_AUTHCODE=<认证码>
 ### Python 绑定（可选）
 
 `src/PythonBindings/` 产出 `QuantTrading.<abi>.pyd`（WSL / Linux 下为 `.so`），供 Python 侧策略使用。
-它**不进 Release 包**：`.pyd` 受 CPython **次版本 ABI 锁定**（3.14 编出的只能被 3.14 导入），
-打进通用包会把包锁死在某一个次版本上。按需自建：
+它**随 Release 包发运**——是发布清单的第 1 项（`docs/engine-linux-release-package.md` §2），也是解释器
+`import QuantTrading` 的入口。代价是**包与解释器同为 CPython 3.14**：`.pyd` 受次版本 ABI 锁定（3.14 编出
+的只能被 3.14 导入），换次版本要重编这一个产物。从源码自建时：
 
 1. 给目标解释器安装 pybind11：`pip install pybind11`。缺失时配置阶段直接失败，报错文案以
    `QUANTTRADING_ENABLE_PYTHON=ON requires pybind11` 开头。
@@ -315,8 +316,8 @@ cmake --build out/build/WSL-GCC-Release
 ### 7. 打 Linux 发布包
 
 把三个仓的运行时 `.so` 与引擎产物**平铺**进一个目录，产出可直接分发的回测包（默认输出到
-`dist/linux-engine`）。12 文件清单与自检四条的完整契约见
-[引擎 Linux 发布包要求](docs/engine-linux-release-package.md)。
+`dist/linux-engine`）。22 文件清单与自检五条的完整契约见
+[引擎 Linux 发布包要求](docs/engine-linux-release-package.md)（§2 的清单按平台替换，Windows 侧见下）。
 
 ```bash
 bash PackageLinuxRelease.sh                      # 默认 Release
@@ -327,18 +328,37 @@ bash PackageLinuxRelease.sh --force              # 目录非空时先清空再�
 ```
 
 - **运行前提**：只能在 WSL / Linux 构建树里跑——产物是 `.so`，且 `../Libs` 下需有 `x64-linux` 安装树。
-- **取用方式**：按**白名单**逐条取文件，不做目录扫描；六个 API 中间层与 MySQL / MariaDB 后端不进包。
-- **自带自检**：打包后立即跑四条——包内容（白名单 / 文件数 / 无子目录）、`ldd` 无缺失、RUNPATH 含
-  `$ORIGIN`、解释器 `import` 落在包内；任一不过即非零退出。`engine-version.txt` 读不出会在自检**之前**
-  就中止（属前置校验，不在这四条内）。注意：脚本这四条与契约的验收项**编号不同**。
+- **取用方式**：按**白名单**逐条取文件，不做目录扫描；只有 MySQL / MariaDB 两个后端明令不进包（契约 §7）。
+- **自带自检**：打包后立即跑五条——包内容（白名单 / 文件数 / 无子目录）、`ldd` 无缺失、RUNPATH 含
+  `$ORIGIN`、`DT_NEEDED` 无绝对路径、解释器 `import` 落在包内；任一不过即非零退出。`engine-version.txt`
+  读不出会在自检**之前**就中止（属前置校验，不在这五条内）。注意：脚本这五条与契约的验收项**编号不同**。
 - **`--zip` 出包形态**：自检全过后，把发布目录打成 `QuantTrading-<版本>-linux-<架构>.zip`，落在发布
-  目录的**同级**（默认 `dist/`）；包内是**一个顶层目录**（同名去 `.zip`），12 个文件平铺其下——解压
+  目录的**同级**（默认 `dist/`）；包内是**一个顶层目录**（同名去 `.zip`），22 个文件平铺其下——解压
   即得一层可直接 `QUANT_ENGINE_ROOT` 指过去的目录，与平台侧「换版按版本留目录、不原地覆盖」的约定一致。
-  打包与包内校验只用解释器自带的 `zipfile`，不依赖 `zip(1)` / `unzip(1)`；失败即非零退出（不合格的包
-  不会被封装成"可交付的样子"）。
+  打包与包内校验走仓根共享模块 `release_zip.py`（只用解释器自带的 `zipfile`，不依赖 `zip(1)` / `unzip(1)`；
+  两个平台的脚本共用这一份，不各写一遍）；失败即非零退出（不合格的包不会被封装成"可交付的样子"）。
 - **默认拒绝覆盖**：输出目录已存在且非空时须显式 `--force`；`--force` 的递归删除只作用于它自己的
   输出目录，脚本不碰任何其它路径。
 - **调用方式**：本仓 `.sh` 一律 `100644`（`core.filemode=false`），须用 `bash <脚本>` 显式调用。
+
+### 8. 打 Windows 发布包
+
+Windows 侧用 `package_windows_release.py`（Python 3.14，不需要 bash）：
+
+```bat
+py -3.14 package_windows_release.py --zip           REM 产物在 dist\windows-engine，zip 落在同级
+py -3.14 package_windows_release.py --config Debug
+py -3.14 package_windows_release.py --force         REM 目录非空时先清空再写
+```
+
+与 Linux 侧同形（同样显式白名单、同样在自检全过后才打 zip），三处平台差异写在脚本的模块说明里：
+
+- **三方 DLL 必须随包**：PE 没有 RPATH，依赖一律按「与镜像同目录」解析（扩展模块走
+  `LOAD_WITH_ALTERED_SEARCH_PATH`），故比 Linux 侧多一项 `sqlite3.dll`——那一侧由系统提供。
+- **自检第 2 条换判定方式**：Windows 没有 `ldd`，改读 PE 导入表，只报「构建目录里**有**、却没进包」
+  的依赖；MSVC 运行库（`MSVCP140` / `VCRUNTIME140*`）与系统 API 集由**目标机**提供，包内不含。
+- **`MdOffer.exe` 无法从包内启动**：它静态导入 CTP 的 `thostmduserapi_se.dll`，而该 SDK 不进包
+  （再分发边界，与 Linux 侧同一条裁定）。要用它的机器把该 DLL 放进发布目录即可。
 
 ## 六、基础使用示例
 
