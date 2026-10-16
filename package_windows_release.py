@@ -62,6 +62,10 @@ ENGINE_BIN_RUNTIME_NAMES = (
 )
 ENGINE_BIN_EXECUTABLE_NAMES = ("MdOffer.exe", "SimExchange.exe")
 ENGINE_BIN_DATA_NAMES = ("engine-version.txt", "BackTest.json", "Sessions.json", "MdOffer.json", "SimExchange.json")
+# Python 策略源码：平台把它当作**内置策略**的源码播种进策略库（QuantPlatform 的
+# `app/builtin_strategy.py`），故它随引擎包走 —— 引擎换版时策略跟着换，平台不另存副本。配套的
+# 参数模板**不在包里**：引擎侧那份写着真实资金账号，模板由平台包自己出一份占位版本。
+STRATEGY_SCRIPT_NAMES = ("grid_strategy.py",)
 SPARK_RUNTIME_NAMES = ("Core.dll", "Network.dll", "Serialization.dll")
 DB_ADAPTERS_RUNTIME_NAMES = ("AsyncDbWriter.dll", "DuckdbWrapper.dll", "SqliteWrapper.dll", "duckdb.dll", "sqlite3.dll")
 
@@ -301,7 +305,7 @@ def main() -> int:
         extension_module_name = collect_extension_module_name(bin_directory, arguments.config)
         output_directory = resolve_output_directory(arguments.output, arguments.force_overwrite)
         whitelist_names = (
-            ENGINE_BIN_RUNTIME_NAMES + ENGINE_BIN_EXECUTABLE_NAMES + ENGINE_BIN_DATA_NAMES
+            ENGINE_BIN_RUNTIME_NAMES + ENGINE_BIN_EXECUTABLE_NAMES + ENGINE_BIN_DATA_NAMES + STRATEGY_SCRIPT_NAMES
             + SPARK_RUNTIME_NAMES + DB_ADAPTERS_RUNTIME_NAMES + (extension_module_name,)
         )
         missing_names = copy_whitelist_files(bin_directory, whitelist_names, output_directory)

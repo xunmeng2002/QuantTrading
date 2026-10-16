@@ -50,10 +50,11 @@ engine/
 ├── libduckdb.so                                    ← DbAdapters 转发
 ├── engine-version.txt
 ├── BackTest.json
-└── Sessions.json
+├── Sessions.json
+└── grid_strategy.py                                ← 引擎：内置策略源码（见 §2.4）
 ```
 
-22 项（扩展模块按实际名计 1 项）。
+23 项（扩展模块按实际名计 1 项）。
 
 | 文件 | 归属 | 角色 |
 | :--- | :--- | :--- |
@@ -64,6 +65,7 @@ engine/
 | `libSimExchangeApi.so`、`libSimExchangeGbkApi.so` | 引擎 | 模拟撮合接入面，同上 |
 | `MdOffer`、`MdOffer.json` | 引擎 | 行情分发应用与其配置，见 §2.3 |
 | `SimExchange`、`SimExchange.json` | 引擎 | 模拟撮合应用与其配置，同上 |
+| `grid_strategy.py` | 引擎 | Python 策略源码，平台播种成内置策略，见 §2.4 |
 | `libCore.so` | Spark | 基础库，**多个 `.so` 共用的直接依赖** |
 | `libNetwork.so` | Spark | 网络，依赖 `libCore.so` |
 | `libSerialization.so` | Spark | 序列化 |
@@ -153,6 +155,18 @@ libTraderApi.so  libTraderGbkApi.so
 
 `SimExchangeInit`（模拟撮合初始化工具，同样依赖 CTP 交易 API）与 `BackTestInit.*`
 暂不进包；需要时按本节口径补名进白名单即可。
+
+### 2.4 Python 策略源码：**进包**（2026-10-16 新增）
+
+`grid_strategy.py` 是成对网格策略的 Python 源码（与 `test/TestStrategyGrid/GridStrategy.cpp`
+同源），构建期由 `src/PythonBindings/CMakeLists.txt` 从 `test/PythonStrategyGrid/` 拷进
+`bin/$<CONFIG>`。引擎自己不加载它；**平台**把它当作内置策略的源码播种进策略库
+（QuantPlatform 的 `app/builtin_strategy.py`）。进包的理由是「引擎换版时策略跟着换」：同一份
+策略只能在**一个**仓里存着，平台侧不另存副本。
+
+**参数模板不进包**。引擎侧那份 `Configs/TestStrategyGrid.json` 里写着真实资金账号（`AccountId`），
+随包发出去会成为每个用户提交页上的预填值、并落进平台的运行记录；模板由平台包自己出一份
+（占位账号），落进策略库时的文件名仍取 `TestStrategyGrid.json` —— 那是策略源码里 `open()` 的名字。
 
 ## 3. 只有一类产物进发布包
 
@@ -339,11 +353,11 @@ CMake 3.20 起可用，与本仓 `cmake_minimum_required(VERSION 3.20)` 正好�
 
 | 来源 | 取用（白名单，逐条列名） |
 | :--- | :--- |
-| `QuantTrading/bin/$<CONFIG>` | 扩展模块 `QuantTrading.*`（后缀按 §2.2 认）、`libBackTest.so`、六个 API 中间层（§2.1）、`MdOffer` 与 `SimExchange` 两个应用（§2.3）、`engine-version.txt`、`BackTest.json`、`Sessions.json`、`MdOffer.json`、`SimExchange.json` |
+| `QuantTrading/bin/$<CONFIG>` | 扩展模块 `QuantTrading.*`（后缀按 §2.2 认）、`libBackTest.so`、六个 API 中间层（§2.1）、`MdOffer` 与 `SimExchange` 两个应用（§2.3）、`grid_strategy.py`（§2.4）、`engine-version.txt`、`BackTest.json`、`Sessions.json`、`MdOffer.json`、`SimExchange.json` |
 | `Libs/Spark/x64-linux/lib` | `libCore.so`、`libNetwork.so`、`libSerialization.so` |
 | `Libs/DbAdapters/x64-linux/lib` | `libAsyncDbWriter.so`、`libDuckdbWrapper.so`、`libSqliteWrapper.so`、`libduckdb.so` |
 
-- 白名单共 **22 项**（扩展模块按实际名计 1 项），与 §2 的清单一一对应；
+- 白名单共 **23 项**（扩展模块按实际名计 1 项），与 §2 的清单一一对应；
 - 排除：`*.a`、`*.pdb`、`include/`、`lib/cmake/`、任何 `.so.*` 调试拆分；
 - 排除：`libMysqlWrapper.so`、`libMariadbWrapper.so`（各 11–15 MB；2026-10-13 用户裁定
   「数据库只需要 sqlite 和 duckdb」，故连「按需另定」的余地也不留）；
@@ -433,7 +447,7 @@ readelf -d ./*.so MdOffer SimExchange | grep -E '\(NEEDED\).*\[/'
 
 | 脚本内嵌的检查 | 对应本节 |
 | :--- | :--- |
-| 包内容（§7 白名单与排除项 + 文件数 22 + 无子目录） | 本节未列，手工看 §7 |
+| 包内容（§7 白名单与排除项 + 文件数 23 + 无子目录） | 本节未列，手工看 §7 |
 | 依赖解析（`ldd` 无缺失；解析路径须在包内 / 系统库 / 列名之内） | 第 1 条 |
 | RUNPATH 含 `$ORIGIN` | 第 2 条 |
 | 绝对路径 `DT_NEEDED`（一律不合格） | 第 5 条 |

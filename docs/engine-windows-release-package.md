@@ -53,10 +53,11 @@ engine/
 ├── sqlite3.dll                       ← 三方
 ├── engine-version.txt
 ├── BackTest.json
-└── Sessions.json
+├── Sessions.json
+└── grid_strategy.py                  ← 引擎：内置策略源码（见 §2.4）
 ```
 
-23 项（扩展模块按实际名计 1 项）。
+24 项（扩展模块按实际名计 1 项）。
 
 | 文件 | 归属 | 角色 |
 | :--- | :--- | :--- |
@@ -78,7 +79,7 @@ engine/
 | `engine-version.txt` | 引擎 | 版本标识，一行文本，见 §6 |
 | `BackTest.json` | 引擎 | 引擎主配置模板 |
 | `Sessions.json` | 引擎 | 会话模板，平台逐作业拷贝 |
-
+| `grid_strategy.py` | 引擎 | Python 策略源码，平台播种成内置策略，见 §2.4 |
 > **警告**：数据库后端（`DuckdbWrapper` / `SqliteWrapper`）由 `BackTest.json` 的 `DbType` 决定
 > 是否按名 `LoadLibrary` 加载，因此**不进 PE 的静态导入表**。清单必须「导入表 + 已知按名加载名单」
 > 两者合并，只看导入表会漏掉它们。本包两者都带（§2.1 的裁定），故不影响清单。
@@ -135,6 +136,13 @@ PE 按同目录解析（§4），**Windows 侧本就没有 Linux 那条「绝对
 
 两平台口径因此对称：Windows 自备 `thostmduserapi_se.dll`，Linux 自备
 `libthostmduserapi_se.so`（`engine-linux-release-package.md` §2.3）。
+
+### 2.4 Python 策略源码：**进包**（2026-10-16 新增）
+
+`grid_strategy.py` 是成对网格策略的 Python 源码，构建期由 `src/PythonBindings/CMakeLists.txt`
+拷进 `bin/$<CONFIG>`。引擎自己不加载它；平台把它当作内置策略的源码播种进策略库
+（QuantPlatform 的 `app/builtin_strategy.py`），进包的理由是「引擎换版时策略跟着换」。
+完整的理由与「参数模板为什么不进包」见 `engine-linux-release-package.md` §2.4，两平台口径一致。
 
 ## 3. 只有一类产物进发布包
 
@@ -206,9 +214,9 @@ Windows 侧**无需**任何额外处理：`CMakeLists.txt` 已把 Spark / DbAdap
 
 | 来源 | 取用（白名单，逐条列名） |
 | :--- | :--- |
-| `QuantTrading/bin/$<CONFIG>` | 扩展模块 `QuantTrading.*`（后缀按 §2.2 认）、`BackTest.dll`、六个 API 中间层（§2.1）、`MdOffer.exe` 与 `SimExchange.exe` 两个应用（§2.3）、Spark 三件（`Core.dll` / `Network.dll` / `Serialization.dll`）、DbAdapters 五件（`AsyncDbWriter.dll` / `DuckdbWrapper.dll` / `SqliteWrapper.dll` / `duckdb.dll` / `sqlite3.dll`）、`engine-version.txt`、四个 json |
+| `QuantTrading/bin/$<CONFIG>` | 扩展模块 `QuantTrading.*`（后缀按 §2.2 认）、`BackTest.dll`、六个 API 中间层（§2.1）、`MdOffer.exe` 与 `SimExchange.exe` 两个应用（§2.3）、`grid_strategy.py`（§2.4）、Spark 三件（`Core.dll` / `Network.dll` / `Serialization.dll`）、DbAdapters 五件（`AsyncDbWriter.dll` / `DuckdbWrapper.dll` / `SqliteWrapper.dll` / `duckdb.dll` / `sqlite3.dll`）、`engine-version.txt`、四个 json |
 
-- 白名单共 **23 项**（扩展模块按实际名计 1 项），与 §2 的清单一一对应；
+- 白名单共 **24 项**（扩展模块按实际名计 1 项），与 §2 的清单一一对应；
 - 排除：`*.pdb`、`*.lib`、`*.exp`、`*.obj`、`*.ilk`、`include/`、`lib/cmake/`；
 - 排除：`MariadbWrapper.dll`、`MysqlWrapper.dll`、`mariadbcpp.dll`、`mysqlcppconnx-2-vs14.dll`、
   `libmariadb.dll`（2026-10-13 用户裁定「数据库只需要 sqlite 和 duckdb」，故连「按需另定」的
@@ -249,7 +257,7 @@ dir
 
 | 条目 | 判据 | 不合格 |
 | :--- | :--- | :--- |
-| 包内容 | 禁项不在、无子目录、无调试产物、文件数恰为 23 | 报出并拦下交付 |
+| 包内容 | 禁项不在、无子目录、无调试产物、文件数恰为 24 | 报出并拦下交付 |
 | 导入表覆盖 | 包内每个 `.dll` / `.exe` / `.pyd` 的**静态导入名**，若在构建目录 `bin/<配置>` 里存在，就必须已进包（`python314.dll` 与 `thostmduserapi_se.dll` 例外，见下） | 报出并拦下交付 |
 | 解释器 `import` | `import QuantTrading` 成功，且 `QuantTrading.__file__` 落在发布目录内 | 报出并拦下交付 |
 

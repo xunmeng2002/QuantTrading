@@ -5,7 +5,8 @@
 #
 # 取用一律走**白名单**，绝不写成「取该目录下全部 .so」：拍平输出目录之后，bin/$CONFIG 里
 # 还躺着测试程序、MySQL/MariaDB 后端与跑测留下的 *.db —— 目录扫描分不出取舍，白名单才分得
-# （契约 §7）。六个 API 中间层与两个应用自 2026-10-13 起进包（契约 §2.1、§2.3）。
+# （契约 §7）。六个 API 中间层与两个应用自 2026-10-13 起进包，Python 策略源码自 2026-10-16 起
+# 进包（契约 §2.1、§2.3、§2.4）。
 #
 # 用法：bash PackageLinuxRelease.sh [选项]（本仓 .sh 一律 100644，靠 bash 显式调用）
 #   --config <Release|Debug>  取哪套构建产物（默认 Release）
@@ -44,6 +45,10 @@ EngineOwnedLibraryNames=(libBackTest.so
 # 引擎自己的应用（可执行文件）：与引擎自有库同档，只是名字不带 .so，故另列
 EngineBinExecutableNames=(MdOffer SimExchange)
 EngineBinDataNames=(engine-version.txt BackTest.json Sessions.json MdOffer.json SimExchange.json)
+# Python 策略源码：平台把它当**内置策略**的源码播种进策略库（QuantPlatform 的
+# `app/builtin_strategy.py`），故它随引擎包走 —— 引擎换版时策略跟着换，平台不另存副本。配套的
+# 参数模板**不在包里**：引擎侧那份写着真实资金账号，模板由平台包自己出一份占位版本。
+StrategyScriptNames=(grid_strategy.py)
 SparkRuntimeNames=(libCore.so libNetwork.so libSerialization.so)
 DbAdaptersRuntimeNames=(libAsyncDbWriter.so libDuckdbWrapper.so libSqliteWrapper.so libduckdb.so)
 
@@ -51,7 +56,7 @@ DbAdaptersRuntimeNames=(libAsyncDbWriter.so libDuckdbWrapper.so libSqliteWrapper
 # 和 duckdb」，故连「按需另定」的余地也不留（契约 §7）
 ForbiddenPackageNames=(libMysqlWrapper.so libMariadbWrapper.so)
 
-ExpectedPackageFileCount=22
+ExpectedPackageFileCount=23
 
 # 依赖解析的放行名单：解析**不到**发布目录里、也不在系统库目录的依赖，必须逐条列在这里。CTP 的 SDK
 # 按再分发边界不随包（契约 §2.3），目标机自备——放进发布目录或走 LD_LIBRARY_PATH 都行。未列名却出现
@@ -440,6 +445,7 @@ PackagedFileNames=()
 CopyWhitelistNames "$BinDirectory" "${EngineBinRuntimeNames[@]}"
 CopyWhitelistNames "$BinDirectory" "${EngineBinExecutableNames[@]}"
 CopyWhitelistNames "$BinDirectory" "${EngineBinDataNames[@]}"
+CopyWhitelistNames "$BinDirectory" "${StrategyScriptNames[@]}"
 CopyWhitelistNames "$LibsRoot/Spark/x64-linux/lib" "${SparkRuntimeNames[@]}"
 CopyWhitelistNames "$LibsRoot/DbAdapters/x64-linux/lib" "${DbAdaptersRuntimeNames[@]}"
 
