@@ -8,8 +8,8 @@
 #include "Environment.h"
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Utility/Utility.h>
-#include "Mdb.h"
-#include "MdbTableRegistry.h"
+#include "LockBased/Mdb.h"
+#include "Model/MdbTableRegistry.h"
 #include "MdOfferTableList.h"
 #include <DbAdapters/DbInterface/Db.h>
 #include <DbAdapters/DbInterface/TypedTable.h>
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
     Mdb* mdb = new Mdb(MdOfferTableList);
     QuantTrading::MdbTableRegistry schemaRegistry(MdOfferTableList);
     AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &schemaRegistry);
-    mdb->Subscribe(dbWriter);
+    mdb->SubscribeReplica(dbWriter);
     dbWriter->Subscribe(mdb);
 
     if (!config.MdUserId.empty())
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 
 	MdKernel* mdKernel = new MdKernel(mdb, tradeSessions, config.SubscribeInstruments);
 	dbWriter->Subscribe(mdKernel);
-	MdFront* mdFront = new MdFront(IoModelType::Select, serverConfig.MdOfferAddress.c_str(), 100);
+	MdFront* mdFront = new MdFront(Spark::IoModelType::Select, serverConfig.MdOfferAddress.c_str(), 100);
 
 	CThostFtdcMdApi* mdApi = CThostFtdcMdApiMiddle::CreateFtdcMdApi();
 	cout << "API Version:" << mdApi->GetApiVersion() << endl;

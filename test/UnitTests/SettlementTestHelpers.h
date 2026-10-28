@@ -5,7 +5,9 @@
 #include "SettlementPriceSource.h"
 #include "PositionMaintenance.h"
 #include <map>
+#include <optional>
 #include <string>
+#include <type_traits>
 
 namespace QuantTrading::UnitTest
 {
@@ -108,7 +110,7 @@ namespace QuantTrading::UnitTest
     }
 
     // 主键查持仓（mdb 键接口以定长数组引用收参，字符串字面量须转缓冲）
-    inline QuantTrading::Position* SelectSettlementPosition(QuantTrading::Mdb* settlementMdb, const char* tradingDay, const char* instrumentId,
+    inline std::optional<QuantTrading::Position> SelectSettlementPosition(QuantTrading::Mdb* settlementMdb, const char* tradingDay, const char* instrumentId,
         PosiDirectionType posiDirection)
     {
         DateType tradingDayBuffer;
@@ -123,7 +125,7 @@ namespace QuantTrading::UnitTest
     }
 
     // 主键查持仓明细（键含开仓日期与成交编号）
-    inline QuantTrading::PositionDetail* SelectSettlementPositionDetail(QuantTrading::Mdb* settlementMdb, const char* tradingDay, const char* instrumentId,
+    inline std::optional<QuantTrading::PositionDetail> SelectSettlementPositionDetail(QuantTrading::Mdb* settlementMdb, const char* tradingDay, const char* instrumentId,
         PosiDirectionType posiDirection, const char* openDate, const char* tradeID)
     {
         DateType tradingDayBuffer;
@@ -153,9 +155,9 @@ namespace QuantTrading::UnitTest
         CopyString(exchangeIDBuffer, "CFFEX");
         InstrumentIdType instrumentIDBuffer;
         CopyString(instrumentIDBuffer, "IF2503");
-        auto itPair = settlementMdb->PositionDetails->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer,
+        auto range = settlementMdb->PositionDetails->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIDBuffer, exchangeIDBuffer,
             instrumentIDBuffer, posiDirection);
-        return static_cast<long long>(std::distance(itPair.first, itPair.second));
+        return static_cast<long long>(std::distance(range.begin(), range.end()));
     }
 
     // 按交易日索引统计/取首行（表模板参数由实参推导）
@@ -164,17 +166,18 @@ namespace QuantTrading::UnitTest
     {
         DateType tradingDayBuffer;
         CopyString(tradingDayBuffer, tradingDay);
-        auto itPair = table->TradingDayIndex->EqualRange(tradingDayBuffer);
-        return static_cast<long long>(std::distance(itPair.first, itPair.second));
+        auto range = table->TradingDayIndex->EqualRange(tradingDayBuffer);
+        return static_cast<long long>(std::distance(range.begin(), range.end()));
     }
 
     template <typename Table>
-    inline auto* FirstByTradingDay(Table* table, const char* tradingDay)
+    inline auto FirstByTradingDay(Table* table, const char* tradingDay)
     {
         DateType tradingDayBuffer;
         CopyString(tradingDayBuffer, tradingDay);
-        auto itPair = table->TradingDayIndex->EqualRange(tradingDayBuffer);
-        return itPair.first != itPair.second ? *itPair.first : nullptr;
+        auto range = table->TradingDayIndex->EqualRange(tradingDayBuffer);
+        using Record = std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<decltype(*range.begin())>>>;
+        return range.empty() ? std::optional<Record>{} : std::optional<Record>{ **range.begin() };
     }
 
     // 结算入口包装（Settle/RollToNextDay 以 DateType 引用收参）

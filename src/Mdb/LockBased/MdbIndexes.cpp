@@ -1,8 +1,9 @@
-﻿// 本文件由 ../Templates/Cpp/Mdb/MdbIndexes.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Mdb/LockBased/MdbIndexes.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdbIndexes.h"
 #include "MdbTables.h"
 #include <Spark/Core/Utility/Utility.h>
 #include <string.h>
+#include <utility>
 
 
 using namespace Spark::Core;
@@ -12,23 +13,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	HotInstrumentTableIndexTradingDay::iterator HotInstrumentTableIndexTradingDay::LowerBound(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay)
+	TableRangeLease<HotInstrumentTableIndexTradingDay::iterator> HotInstrumentTableIndexTradingDay::Range(const ExchangeIdType& lowerExchangeId, const ProductIdType& lowerProductId, const Int32Type& lowerRank, const DateType& lowerTradingDay, const ExchangeIdType& upperExchangeId, const ProductIdType& upperProductId, const Int32Type& upperRank, const DateType& upperTradingDay)
 	{
-		FillCompareRecord(ExchangeId, ProductId, Rank, TradingDay);
+		FillCompareRecord(lowerExchangeId, lowerProductId, lowerRank, lowerTradingDay);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareHotInstrument);
+		auto first = index_.lower_bound(&CompareHotInstrument);
+		FillCompareRecord(upperExchangeId, upperProductId, upperRank, upperTradingDay);
+		auto last = index_.upper_bound(&CompareHotInstrument);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	HotInstrumentTableIndexTradingDay::iterator HotInstrumentTableIndexTradingDay::UpperBound(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay)
+	TableRangeLease<HotInstrumentTableIndexTradingDay::iterator> HotInstrumentTableIndexTradingDay::EqualRange(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay)
 	{
 		FillCompareRecord(ExchangeId, ProductId, Rank, TradingDay);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareHotInstrument);
-	}
-	std::pair<HotInstrumentTableIndexTradingDay::iterator, HotInstrumentTableIndexTradingDay::iterator> HotInstrumentTableIndexTradingDay::EqualRange(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay)
-	{
-		FillCompareRecord(ExchangeId, ProductId, Rank, TradingDay);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareHotInstrument);
+		auto range = index_.equal_range(&CompareHotInstrument);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void HotInstrumentTableIndexTradingDay::Insert(HotInstrument* const record)
 	{
@@ -73,23 +72,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	InstrumentTableIndexExchangeId::iterator InstrumentTableIndexExchangeId::LowerBound(const ExchangeIdType& ExchangeId)
+	TableRangeLease<InstrumentTableIndexExchangeId::iterator> InstrumentTableIndexExchangeId::Range(const ExchangeIdType& lowerExchangeId, const ExchangeIdType& upperExchangeId)
 	{
-		FillCompareRecord(ExchangeId);
+		FillCompareRecord(lowerExchangeId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareInstrument);
+		auto first = index_.lower_bound(&CompareInstrument);
+		FillCompareRecord(upperExchangeId);
+		auto last = index_.upper_bound(&CompareInstrument);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	InstrumentTableIndexExchangeId::iterator InstrumentTableIndexExchangeId::UpperBound(const ExchangeIdType& ExchangeId)
+	TableRangeLease<InstrumentTableIndexExchangeId::iterator> InstrumentTableIndexExchangeId::EqualRange(const ExchangeIdType& ExchangeId)
 	{
 		FillCompareRecord(ExchangeId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareInstrument);
-	}
-	std::pair<InstrumentTableIndexExchangeId::iterator, InstrumentTableIndexExchangeId::iterator> InstrumentTableIndexExchangeId::EqualRange(const ExchangeIdType& ExchangeId)
-	{
-		FillCompareRecord(ExchangeId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareInstrument);
+		auto range = index_.equal_range(&CompareInstrument);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void InstrumentTableIndexExchangeId::Insert(Instrument* const record)
 	{
@@ -131,23 +128,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	MdUserLoginSessionTableIndexSessionId::iterator MdUserLoginSessionTableIndexSessionId::LowerBound(const SessionIdType& SessionId)
+	TableRangeLease<MdUserLoginSessionTableIndexSessionId::iterator> MdUserLoginSessionTableIndexSessionId::Range(const SessionIdType& lowerSessionId, const SessionIdType& upperSessionId)
 	{
-		FillCompareRecord(SessionId);
+		FillCompareRecord(lowerSessionId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareMdUserLoginSession);
+		auto first = index_.lower_bound(&CompareMdUserLoginSession);
+		FillCompareRecord(upperSessionId);
+		auto last = index_.upper_bound(&CompareMdUserLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	MdUserLoginSessionTableIndexSessionId::iterator MdUserLoginSessionTableIndexSessionId::UpperBound(const SessionIdType& SessionId)
+	TableRangeLease<MdUserLoginSessionTableIndexSessionId::iterator> MdUserLoginSessionTableIndexSessionId::EqualRange(const SessionIdType& SessionId)
 	{
 		FillCompareRecord(SessionId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareMdUserLoginSession);
-	}
-	std::pair<MdUserLoginSessionTableIndexSessionId::iterator, MdUserLoginSessionTableIndexSessionId::iterator> MdUserLoginSessionTableIndexSessionId::EqualRange(const SessionIdType& SessionId)
-	{
-		FillCompareRecord(SessionId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareMdUserLoginSession);
+		auto range = index_.equal_range(&CompareMdUserLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void MdUserLoginSessionTableIndexSessionId::Insert(MdUserLoginSession* const record)
 	{
@@ -189,23 +184,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	MdUserLoginSessionTableIndexMdUserId::iterator MdUserLoginSessionTableIndexMdUserId::LowerBound(const UserIdType& MdUserId)
+	TableRangeLease<MdUserLoginSessionTableIndexMdUserId::iterator> MdUserLoginSessionTableIndexMdUserId::Range(const UserIdType& lowerMdUserId, const UserIdType& upperMdUserId)
 	{
-		FillCompareRecord(MdUserId);
+		FillCompareRecord(lowerMdUserId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareMdUserLoginSession);
+		auto first = index_.lower_bound(&CompareMdUserLoginSession);
+		FillCompareRecord(upperMdUserId);
+		auto last = index_.upper_bound(&CompareMdUserLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	MdUserLoginSessionTableIndexMdUserId::iterator MdUserLoginSessionTableIndexMdUserId::UpperBound(const UserIdType& MdUserId)
+	TableRangeLease<MdUserLoginSessionTableIndexMdUserId::iterator> MdUserLoginSessionTableIndexMdUserId::EqualRange(const UserIdType& MdUserId)
 	{
 		FillCompareRecord(MdUserId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareMdUserLoginSession);
-	}
-	std::pair<MdUserLoginSessionTableIndexMdUserId::iterator, MdUserLoginSessionTableIndexMdUserId::iterator> MdUserLoginSessionTableIndexMdUserId::EqualRange(const UserIdType& MdUserId)
-	{
-		FillCompareRecord(MdUserId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareMdUserLoginSession);
+		auto range = index_.equal_range(&CompareMdUserLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void MdUserLoginSessionTableIndexMdUserId::Insert(MdUserLoginSession* const record)
 	{
@@ -247,23 +240,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	PrimaryAccountTableIndexOfferId::iterator PrimaryAccountTableIndexOfferId::LowerBound(const OfferIdType& OfferId)
+	TableRangeLease<PrimaryAccountTableIndexOfferId::iterator> PrimaryAccountTableIndexOfferId::Range(const OfferIdType& lowerOfferId, const OfferIdType& upperOfferId)
 	{
-		FillCompareRecord(OfferId);
+		FillCompareRecord(lowerOfferId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&ComparePrimaryAccount);
+		auto first = index_.lower_bound(&ComparePrimaryAccount);
+		FillCompareRecord(upperOfferId);
+		auto last = index_.upper_bound(&ComparePrimaryAccount);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	PrimaryAccountTableIndexOfferId::iterator PrimaryAccountTableIndexOfferId::UpperBound(const OfferIdType& OfferId)
+	TableRangeLease<PrimaryAccountTableIndexOfferId::iterator> PrimaryAccountTableIndexOfferId::EqualRange(const OfferIdType& OfferId)
 	{
 		FillCompareRecord(OfferId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&ComparePrimaryAccount);
-	}
-	std::pair<PrimaryAccountTableIndexOfferId::iterator, PrimaryAccountTableIndexOfferId::iterator> PrimaryAccountTableIndexOfferId::EqualRange(const OfferIdType& OfferId)
-	{
-		FillCompareRecord(OfferId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&ComparePrimaryAccount);
+		auto range = index_.equal_range(&ComparePrimaryAccount);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void PrimaryAccountTableIndexOfferId::Insert(PrimaryAccount* const record)
 	{
@@ -305,23 +296,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	CapitalTableIndexTradingDay::iterator CapitalTableIndexTradingDay::LowerBound(const DateType& TradingDay)
+	TableRangeLease<CapitalTableIndexTradingDay::iterator> CapitalTableIndexTradingDay::Range(const DateType& lowerTradingDay, const DateType& upperTradingDay)
 	{
-		FillCompareRecord(TradingDay);
+		FillCompareRecord(lowerTradingDay);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareCapital);
+		auto first = index_.lower_bound(&CompareCapital);
+		FillCompareRecord(upperTradingDay);
+		auto last = index_.upper_bound(&CompareCapital);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	CapitalTableIndexTradingDay::iterator CapitalTableIndexTradingDay::UpperBound(const DateType& TradingDay)
+	TableRangeLease<CapitalTableIndexTradingDay::iterator> CapitalTableIndexTradingDay::EqualRange(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareCapital);
-	}
-	std::pair<CapitalTableIndexTradingDay::iterator, CapitalTableIndexTradingDay::iterator> CapitalTableIndexTradingDay::EqualRange(const DateType& TradingDay)
-	{
-		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareCapital);
+		auto range = index_.equal_range(&CompareCapital);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void CapitalTableIndexTradingDay::Insert(Capital* const record)
 	{
@@ -363,23 +352,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	PositionTableIndexAccount::iterator PositionTableIndexAccount::LowerBound(const DateType& TradingDay, const AccountIdType& AccountId)
+	TableRangeLease<PositionTableIndexAccount::iterator> PositionTableIndexAccount::Range(const DateType& lowerTradingDay, const AccountIdType& lowerAccountId, const DateType& upperTradingDay, const AccountIdType& upperAccountId)
 	{
-		FillCompareRecord(TradingDay, AccountId);
+		FillCompareRecord(lowerTradingDay, lowerAccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&ComparePosition);
+		auto first = index_.lower_bound(&ComparePosition);
+		FillCompareRecord(upperTradingDay, upperAccountId);
+		auto last = index_.upper_bound(&ComparePosition);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	PositionTableIndexAccount::iterator PositionTableIndexAccount::UpperBound(const DateType& TradingDay, const AccountIdType& AccountId)
+	TableRangeLease<PositionTableIndexAccount::iterator> PositionTableIndexAccount::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
 		FillCompareRecord(TradingDay, AccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&ComparePosition);
-	}
-	std::pair<PositionTableIndexAccount::iterator, PositionTableIndexAccount::iterator> PositionTableIndexAccount::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
-	{
-		FillCompareRecord(TradingDay, AccountId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&ComparePosition);
+		auto range = index_.equal_range(&ComparePosition);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void PositionTableIndexAccount::Insert(Position* const record)
 	{
@@ -422,23 +409,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	PositionTableIndexTradingDay::iterator PositionTableIndexTradingDay::LowerBound(const DateType& TradingDay)
+	TableRangeLease<PositionTableIndexTradingDay::iterator> PositionTableIndexTradingDay::Range(const DateType& lowerTradingDay, const DateType& upperTradingDay)
 	{
-		FillCompareRecord(TradingDay);
+		FillCompareRecord(lowerTradingDay);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&ComparePosition);
+		auto first = index_.lower_bound(&ComparePosition);
+		FillCompareRecord(upperTradingDay);
+		auto last = index_.upper_bound(&ComparePosition);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	PositionTableIndexTradingDay::iterator PositionTableIndexTradingDay::UpperBound(const DateType& TradingDay)
+	TableRangeLease<PositionTableIndexTradingDay::iterator> PositionTableIndexTradingDay::EqualRange(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&ComparePosition);
-	}
-	std::pair<PositionTableIndexTradingDay::iterator, PositionTableIndexTradingDay::iterator> PositionTableIndexTradingDay::EqualRange(const DateType& TradingDay)
-	{
-		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&ComparePosition);
+		auto range = index_.equal_range(&ComparePosition);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void PositionTableIndexTradingDay::Insert(Position* const record)
 	{
@@ -480,23 +465,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	PositionDetailTableIndexTradeMatch::iterator PositionDetailTableIndexTradeMatch::LowerBound(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
+	TableRangeLease<PositionDetailTableIndexTradeMatch::iterator> PositionDetailTableIndexTradeMatch::Range(const DateType& lowerTradingDay, const AccountIdType& lowerAccountId, const ExchangeIdType& lowerExchangeId, const InstrumentIdType& lowerInstrumentId, const PosiDirectionType& lowerPosiDirection, const DateType& upperTradingDay, const AccountIdType& upperAccountId, const ExchangeIdType& upperExchangeId, const InstrumentIdType& upperInstrumentId, const PosiDirectionType& upperPosiDirection)
 	{
-		FillCompareRecord(TradingDay, AccountId, ExchangeId, InstrumentId, PosiDirection);
+		FillCompareRecord(lowerTradingDay, lowerAccountId, lowerExchangeId, lowerInstrumentId, lowerPosiDirection);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&ComparePositionDetail);
+		auto first = index_.lower_bound(&ComparePositionDetail);
+		FillCompareRecord(upperTradingDay, upperAccountId, upperExchangeId, upperInstrumentId, upperPosiDirection);
+		auto last = index_.upper_bound(&ComparePositionDetail);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	PositionDetailTableIndexTradeMatch::iterator PositionDetailTableIndexTradeMatch::UpperBound(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
+	TableRangeLease<PositionDetailTableIndexTradeMatch::iterator> PositionDetailTableIndexTradeMatch::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
 	{
 		FillCompareRecord(TradingDay, AccountId, ExchangeId, InstrumentId, PosiDirection);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&ComparePositionDetail);
-	}
-	std::pair<PositionDetailTableIndexTradeMatch::iterator, PositionDetailTableIndexTradeMatch::iterator> PositionDetailTableIndexTradeMatch::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection)
-	{
-		FillCompareRecord(TradingDay, AccountId, ExchangeId, InstrumentId, PosiDirection);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&ComparePositionDetail);
+		auto range = index_.equal_range(&ComparePositionDetail);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void PositionDetailTableIndexTradeMatch::Insert(PositionDetail* const record)
 	{
@@ -542,23 +525,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	PositionDetailTableIndexTradingDay::iterator PositionDetailTableIndexTradingDay::LowerBound(const DateType& TradingDay)
+	TableRangeLease<PositionDetailTableIndexTradingDay::iterator> PositionDetailTableIndexTradingDay::Range(const DateType& lowerTradingDay, const DateType& upperTradingDay)
 	{
-		FillCompareRecord(TradingDay);
+		FillCompareRecord(lowerTradingDay);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&ComparePositionDetail);
+		auto first = index_.lower_bound(&ComparePositionDetail);
+		FillCompareRecord(upperTradingDay);
+		auto last = index_.upper_bound(&ComparePositionDetail);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	PositionDetailTableIndexTradingDay::iterator PositionDetailTableIndexTradingDay::UpperBound(const DateType& TradingDay)
+	TableRangeLease<PositionDetailTableIndexTradingDay::iterator> PositionDetailTableIndexTradingDay::EqualRange(const DateType& TradingDay)
 	{
 		FillCompareRecord(TradingDay);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&ComparePositionDetail);
-	}
-	std::pair<PositionDetailTableIndexTradingDay::iterator, PositionDetailTableIndexTradingDay::iterator> PositionDetailTableIndexTradingDay::EqualRange(const DateType& TradingDay)
-	{
-		FillCompareRecord(TradingDay);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&ComparePositionDetail);
+		auto range = index_.equal_range(&ComparePositionDetail);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void PositionDetailTableIndexTradingDay::Insert(PositionDetail* const record)
 	{
@@ -600,23 +581,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	OrderTableIndexAccountId::iterator OrderTableIndexAccountId::LowerBound(const DateType& TradingDay, const AccountIdType& AccountId)
+	TableRangeLease<OrderTableIndexAccountId::iterator> OrderTableIndexAccountId::Range(const DateType& lowerTradingDay, const AccountIdType& lowerAccountId, const DateType& upperTradingDay, const AccountIdType& upperAccountId)
 	{
-		FillCompareRecord(TradingDay, AccountId);
+		FillCompareRecord(lowerTradingDay, lowerAccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareOrder);
+		auto first = index_.lower_bound(&CompareOrder);
+		FillCompareRecord(upperTradingDay, upperAccountId);
+		auto last = index_.upper_bound(&CompareOrder);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	OrderTableIndexAccountId::iterator OrderTableIndexAccountId::UpperBound(const DateType& TradingDay, const AccountIdType& AccountId)
+	TableRangeLease<OrderTableIndexAccountId::iterator> OrderTableIndexAccountId::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
 		FillCompareRecord(TradingDay, AccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareOrder);
-	}
-	std::pair<OrderTableIndexAccountId::iterator, OrderTableIndexAccountId::iterator> OrderTableIndexAccountId::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
-	{
-		FillCompareRecord(TradingDay, AccountId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareOrder);
+		auto range = index_.equal_range(&CompareOrder);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void OrderTableIndexAccountId::Insert(Order* const record)
 	{
@@ -659,23 +638,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	TradeTableIndexAccountId::iterator TradeTableIndexAccountId::LowerBound(const DateType& TradingDay, const AccountIdType& AccountId)
+	TableRangeLease<TradeTableIndexAccountId::iterator> TradeTableIndexAccountId::Range(const DateType& lowerTradingDay, const AccountIdType& lowerAccountId, const DateType& upperTradingDay, const AccountIdType& upperAccountId)
 	{
-		FillCompareRecord(TradingDay, AccountId);
+		FillCompareRecord(lowerTradingDay, lowerAccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareTrade);
+		auto first = index_.lower_bound(&CompareTrade);
+		FillCompareRecord(upperTradingDay, upperAccountId);
+		auto last = index_.upper_bound(&CompareTrade);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	TradeTableIndexAccountId::iterator TradeTableIndexAccountId::UpperBound(const DateType& TradingDay, const AccountIdType& AccountId)
+	TableRangeLease<TradeTableIndexAccountId::iterator> TradeTableIndexAccountId::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
 	{
 		FillCompareRecord(TradingDay, AccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareTrade);
-	}
-	std::pair<TradeTableIndexAccountId::iterator, TradeTableIndexAccountId::iterator> TradeTableIndexAccountId::EqualRange(const DateType& TradingDay, const AccountIdType& AccountId)
-	{
-		FillCompareRecord(TradingDay, AccountId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareTrade);
+		auto range = index_.equal_range(&CompareTrade);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void TradeTableIndexAccountId::Insert(Trade* const record)
 	{
@@ -718,23 +695,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	AccountLoginSessionTableIndexSessionId::iterator AccountLoginSessionTableIndexSessionId::LowerBound(const SessionIdType& SessionId)
+	TableRangeLease<AccountLoginSessionTableIndexSessionId::iterator> AccountLoginSessionTableIndexSessionId::Range(const SessionIdType& lowerSessionId, const SessionIdType& upperSessionId)
 	{
-		FillCompareRecord(SessionId);
+		FillCompareRecord(lowerSessionId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareAccountLoginSession);
+		auto first = index_.lower_bound(&CompareAccountLoginSession);
+		FillCompareRecord(upperSessionId);
+		auto last = index_.upper_bound(&CompareAccountLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	AccountLoginSessionTableIndexSessionId::iterator AccountLoginSessionTableIndexSessionId::UpperBound(const SessionIdType& SessionId)
+	TableRangeLease<AccountLoginSessionTableIndexSessionId::iterator> AccountLoginSessionTableIndexSessionId::EqualRange(const SessionIdType& SessionId)
 	{
 		FillCompareRecord(SessionId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareAccountLoginSession);
-	}
-	std::pair<AccountLoginSessionTableIndexSessionId::iterator, AccountLoginSessionTableIndexSessionId::iterator> AccountLoginSessionTableIndexSessionId::EqualRange(const SessionIdType& SessionId)
-	{
-		FillCompareRecord(SessionId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareAccountLoginSession);
+		auto range = index_.equal_range(&CompareAccountLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void AccountLoginSessionTableIndexSessionId::Insert(AccountLoginSession* const record)
 	{
@@ -776,23 +751,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	AccountLoginSessionTableIndexAccountId::iterator AccountLoginSessionTableIndexAccountId::LowerBound(const AccountIdType& AccountId)
+	TableRangeLease<AccountLoginSessionTableIndexAccountId::iterator> AccountLoginSessionTableIndexAccountId::Range(const AccountIdType& lowerAccountId, const AccountIdType& upperAccountId)
 	{
-		FillCompareRecord(AccountId);
+		FillCompareRecord(lowerAccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&CompareAccountLoginSession);
+		auto first = index_.lower_bound(&CompareAccountLoginSession);
+		FillCompareRecord(upperAccountId);
+		auto last = index_.upper_bound(&CompareAccountLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	AccountLoginSessionTableIndexAccountId::iterator AccountLoginSessionTableIndexAccountId::UpperBound(const AccountIdType& AccountId)
+	TableRangeLease<AccountLoginSessionTableIndexAccountId::iterator> AccountLoginSessionTableIndexAccountId::EqualRange(const AccountIdType& AccountId)
 	{
 		FillCompareRecord(AccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&CompareAccountLoginSession);
-	}
-	std::pair<AccountLoginSessionTableIndexAccountId::iterator, AccountLoginSessionTableIndexAccountId::iterator> AccountLoginSessionTableIndexAccountId::EqualRange(const AccountIdType& AccountId)
-	{
-		FillCompareRecord(AccountId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&CompareAccountLoginSession);
+		auto range = index_.equal_range(&CompareAccountLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void AccountLoginSessionTableIndexAccountId::Insert(AccountLoginSession* const record)
 	{
@@ -834,23 +807,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	PrimaryAccountLoginSessionTableIndexSessionId::iterator PrimaryAccountLoginSessionTableIndexSessionId::LowerBound(const SessionIdType& SessionId)
+	TableRangeLease<PrimaryAccountLoginSessionTableIndexSessionId::iterator> PrimaryAccountLoginSessionTableIndexSessionId::Range(const SessionIdType& lowerSessionId, const SessionIdType& upperSessionId)
 	{
-		FillCompareRecord(SessionId);
+		FillCompareRecord(lowerSessionId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&ComparePrimaryAccountLoginSession);
+		auto first = index_.lower_bound(&ComparePrimaryAccountLoginSession);
+		FillCompareRecord(upperSessionId);
+		auto last = index_.upper_bound(&ComparePrimaryAccountLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	PrimaryAccountLoginSessionTableIndexSessionId::iterator PrimaryAccountLoginSessionTableIndexSessionId::UpperBound(const SessionIdType& SessionId)
+	TableRangeLease<PrimaryAccountLoginSessionTableIndexSessionId::iterator> PrimaryAccountLoginSessionTableIndexSessionId::EqualRange(const SessionIdType& SessionId)
 	{
 		FillCompareRecord(SessionId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&ComparePrimaryAccountLoginSession);
-	}
-	std::pair<PrimaryAccountLoginSessionTableIndexSessionId::iterator, PrimaryAccountLoginSessionTableIndexSessionId::iterator> PrimaryAccountLoginSessionTableIndexSessionId::EqualRange(const SessionIdType& SessionId)
-	{
-		FillCompareRecord(SessionId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&ComparePrimaryAccountLoginSession);
+		auto range = index_.equal_range(&ComparePrimaryAccountLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void PrimaryAccountLoginSessionTableIndexSessionId::Insert(PrimaryAccountLoginSession* const record)
 	{
@@ -892,23 +863,21 @@ namespace QuantTrading
 		:table_(tableOwner)
 	{
 	}
-	PrimaryAccountLoginSessionTableIndexPrimaryAccountId::iterator PrimaryAccountLoginSessionTableIndexPrimaryAccountId::LowerBound(const AccountIdType& PrimaryAccountId)
+	TableRangeLease<PrimaryAccountLoginSessionTableIndexPrimaryAccountId::iterator> PrimaryAccountLoginSessionTableIndexPrimaryAccountId::Range(const AccountIdType& lowerPrimaryAccountId, const AccountIdType& upperPrimaryAccountId)
 	{
-		FillCompareRecord(PrimaryAccountId);
+		FillCompareRecord(lowerPrimaryAccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.lower_bound(&ComparePrimaryAccountLoginSession);
+		auto first = index_.lower_bound(&ComparePrimaryAccountLoginSession);
+		FillCompareRecord(upperPrimaryAccountId);
+		auto last = index_.upper_bound(&ComparePrimaryAccountLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), first, last);
 	}
-	PrimaryAccountLoginSessionTableIndexPrimaryAccountId::iterator PrimaryAccountLoginSessionTableIndexPrimaryAccountId::UpperBound(const AccountIdType& PrimaryAccountId)
+	TableRangeLease<PrimaryAccountLoginSessionTableIndexPrimaryAccountId::iterator> PrimaryAccountLoginSessionTableIndexPrimaryAccountId::EqualRange(const AccountIdType& PrimaryAccountId)
 	{
 		FillCompareRecord(PrimaryAccountId);
 		std::shared_lock guard(table_->SharedMutex);
-		return index_.upper_bound(&ComparePrimaryAccountLoginSession);
-	}
-	std::pair<PrimaryAccountLoginSessionTableIndexPrimaryAccountId::iterator, PrimaryAccountLoginSessionTableIndexPrimaryAccountId::iterator> PrimaryAccountLoginSessionTableIndexPrimaryAccountId::EqualRange(const AccountIdType& PrimaryAccountId)
-	{
-		FillCompareRecord(PrimaryAccountId);
-		std::shared_lock guard(table_->SharedMutex);
-		return index_.equal_range(&ComparePrimaryAccountLoginSession);
+		auto range = index_.equal_range(&ComparePrimaryAccountLoginSession);
+		return TableRangeLease<iterator>(std::move(guard), range.first, range.second);
 	}
 	void PrimaryAccountLoginSessionTableIndexPrimaryAccountId::Insert(PrimaryAccountLoginSession* const record)
 	{

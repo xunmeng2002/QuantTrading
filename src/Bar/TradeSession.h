@@ -1,5 +1,5 @@
 #pragma once
-#include <Spark/Types.h>
+#include <QuantTrading/Types.h>
 #include <list>
 #include <map>
 #include <memory>

@@ -2,9 +2,9 @@
 #include "ThostFtdcTraderApiMiddle.h"
 #include "ThostFtdcTraderSpiImpl.h"
 #include "Environment.h"
-#include "Mdb.h"
-#include "TableList.h"
-#include "MdbTableRegistry.h"
+#include "LockBased/Mdb.h"
+#include "Model/TableList.h"
+#include "Model/MdbTableRegistry.h"
 #include "SimExchangeTableList.h"
 #include "Init.h"
 #include "Config/Config.h"
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     QuantTrading::MdbTableRegistry registry(SimExchangeTableList);
 	AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &registry);
 	Mdb* mdb = new Mdb(SimExchangeTableList);
-	mdb->Subscribe(dbWriter);
+	mdb->SubscribeReplica(dbWriter);
 	dbWriter->Subscribe(mdb);
 
 	Init(mdb, environment->Accounts[0], config.TradingDay);

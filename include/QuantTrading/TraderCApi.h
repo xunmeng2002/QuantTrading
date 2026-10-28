@@ -1,4 +1,4 @@
-﻿// 本文件由 ../Templates/Cpp/Api/CApi.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Api/CApi.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include "Fields.h"
 #include <QuantTrading/TraderApi/TraderApiExport.h>
@@ -14,23 +14,23 @@ extern "C"
 {
 	typedef void (TRADERAPI_CALL *OnConnected)();
 	typedef void (TRADERAPI_CALL *OnDisConnected)();
-	typedef void (TRADERAPI_CALL *OnRspAccountLogin)(const RspAccountLoginField* rspAccountLogin, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspAccountLogout)(const RspAccountLogoutField* rspAccountLogout, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryHolderAccount)(const HolderAccountField* holderAccount, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryCapital)(const CapitalField* capital, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryPosition)(const PositionField* position, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryOrder)(const OrderField* order, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryTrade)(const TradeField* trade, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryInstrument)(const InstrumentField* instrument, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryOptionInstrument)(const OptionInstrumentField* optionInstrument, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryCommissionRate)(const CommissionRateField* commissionRate, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspQryMoneyTransfer)(const MoneyTransferField* moneyTransfer, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspInsertOrder)(const ReqInsertOrderField* reqInsertOrder, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRspCancelOrder)(const ReqCancelOrderField* reqCancelOrder, const RspInfoField* rspInfo, int requestId, bool isLast);
-	typedef void (TRADERAPI_CALL *OnRtnOrder)(const OrderField* order);
-	typedef void (TRADERAPI_CALL *OnRtnTrade)(const TradeField* trade);
-	typedef void (TRADERAPI_CALL *OnRtnMoneyTransfer)(const MoneyTransferField* moneyTransfer);
-	typedef void (TRADERAPI_CALL *OnRtnAccountLogout)(const AccountLogoutField* accountLogout);
+	typedef void (TRADERAPI_CALL *OnRspAccountLogin)(const QuantTrading::RspAccountLoginField* rspAccountLogin, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspAccountLogout)(const QuantTrading::RspAccountLogoutField* rspAccountLogout, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryHolderAccount)(const QuantTrading::HolderAccountField* holderAccount, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryCapital)(const QuantTrading::CapitalField* capital, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryPosition)(const QuantTrading::PositionField* position, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryOrder)(const QuantTrading::OrderField* order, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryTrade)(const QuantTrading::TradeField* trade, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryInstrument)(const QuantTrading::InstrumentField* instrument, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryOptionInstrument)(const QuantTrading::OptionInstrumentField* optionInstrument, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryCommissionRate)(const QuantTrading::CommissionRateField* commissionRate, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspQryMoneyTransfer)(const QuantTrading::MoneyTransferField* moneyTransfer, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspInsertOrder)(const QuantTrading::ReqInsertOrderField* reqInsertOrder, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRspCancelOrder)(const QuantTrading::ReqCancelOrderField* reqCancelOrder, const QuantTrading::RspInfoField* rspInfo, int requestId, bool isLast);
+	typedef void (TRADERAPI_CALL *OnRtnOrder)(const QuantTrading::OrderField* order);
+	typedef void (TRADERAPI_CALL *OnRtnTrade)(const QuantTrading::TradeField* trade);
+	typedef void (TRADERAPI_CALL *OnRtnMoneyTransfer)(const QuantTrading::MoneyTransferField* moneyTransfer);
+	typedef void (TRADERAPI_CALL *OnRtnAccountLogout)(const QuantTrading::AccountLogoutField* accountLogout);
 	
 	struct TraderCSpi
 	{
@@ -63,17 +63,17 @@ extern "C"
 	TRADERAPI_EXPORTS void TRADERAPI_CALL Release();
 	TRADERAPI_EXPORTS void TRADERAPI_CALL RegisterFront(const char* address);
 	TRADERAPI_EXPORTS void TRADERAPI_CALL RegisterSpi(TraderCSpi* spi);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqAccountLogin(const ReqAccountLoginField* reqAccountLogin, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqAccountLogout(const ReqAccountLogoutField* reqAccountLogout, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryHolderAccount(const ReqQryHolderAccountField* reqQryHolderAccount, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryCapital(const ReqQryCapitalField* reqQryCapital, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryPosition(const ReqQryPositionField* reqQryPosition, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryOrder(const ReqQryOrderField* reqQryOrder, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryTrade(const ReqQryTradeField* reqQryTrade, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryInstrument(const ReqQryInstrumentField* reqQryInstrument, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryOptionInstrument(const ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryCommissionRate(const ReqQryCommissionRateField* reqQryCommissionRate, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryMoneyTransfer(const ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqInsertOrder(const ReqInsertOrderField* reqInsertOrder, int requestId);
-	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqCancelOrder(const ReqCancelOrderField* reqCancelOrder, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqAccountLogin(const QuantTrading::ReqAccountLoginField* reqAccountLogin, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqAccountLogout(const QuantTrading::ReqAccountLogoutField* reqAccountLogout, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryHolderAccount(const QuantTrading::ReqQryHolderAccountField* reqQryHolderAccount, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryCapital(const QuantTrading::ReqQryCapitalField* reqQryCapital, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryPosition(const QuantTrading::ReqQryPositionField* reqQryPosition, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryOrder(const QuantTrading::ReqQryOrderField* reqQryOrder, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryTrade(const QuantTrading::ReqQryTradeField* reqQryTrade, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryInstrument(const QuantTrading::ReqQryInstrumentField* reqQryInstrument, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryOptionInstrument(const QuantTrading::ReqQryOptionInstrumentField* reqQryOptionInstrument, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryCommissionRate(const QuantTrading::ReqQryCommissionRateField* reqQryCommissionRate, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqQryMoneyTransfer(const QuantTrading::ReqQryMoneyTransferField* reqQryMoneyTransfer, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqInsertOrder(const QuantTrading::ReqInsertOrderField* reqInsertOrder, int requestId);
+	TRADERAPI_EXPORTS int TRADERAPI_CALL ReqCancelOrder(const QuantTrading::ReqCancelOrderField* reqCancelOrder, int requestId);
 }

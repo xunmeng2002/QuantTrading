@@ -5,7 +5,7 @@
 #include "FieldsCompare.h"
 #include "BarInterface.h"
 #include "MinuteBar.h"
-#include "Mdb.h"
+#include "LockBased/Mdb.h"
 #include <Spark/Core/Thread/ThreadBase.h>
 #include <Spark/Core/ConfigStructs/ConfigStructs.h>
 #include <Spark/Network/Protocol/ProtocolSubscriber.h>

@@ -1,7 +1,7 @@
 #pragma once
 #include "TestHelpers.h"
-#include "TableList.h"
-#include "MdbStructs.h"
+#include "Model/TableList.h"
+#include "Model/MdbStructs.h"
 #include "CommissionCalculator.h"
 #include "PositionMaintenance.h"
 #include <cstring>
@@ -96,11 +96,11 @@ namespace QuantTrading::UnitTest
         InstrumentIdType instrumentIdBuffer;
         CopyString(instrumentIdBuffer, instrumentId);
         std::vector<QuantTrading::PositionDetail*> positionDetails;
-        auto itPair = commissionMdb->PositionDetails->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIdBuffer, exchangeIdBuffer,
+        auto range = commissionMdb->PositionDetails->TradeMatchIndex->EqualRange(tradingDayBuffer, accountIdBuffer, exchangeIdBuffer,
             instrumentIdBuffer, posiDirection);
-        for (auto it = itPair.first; it != itPair.second; ++it)
+        for (auto positionDetail : range)
         {
-            positionDetails.push_back(*it);
+            positionDetails.push_back(positionDetail);
         }
         return positionDetails;
     }

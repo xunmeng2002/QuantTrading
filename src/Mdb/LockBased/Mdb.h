@@ -1,8 +1,8 @@
-﻿// 本文件由 ../Templates/Cpp/Mdb/Mdb.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Mdb/LockBased/Mdb.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include "MdbTables.h"
-#include "MdbTableBase.h"
-#include "TableList.h"
+#include "Model/MdbTableBase.h"
+#include "Model/TableList.h"
 #include <DbAdapters/DbInterface/MdbSubscriber.h>
 #include <DbAdapters/DbInterface/DbSubscriber.h>
 #include <vector>
@@ -14,10 +14,14 @@ namespace QuantTrading
 	{
 	public:
 		explicit Mdb(const TableList& tableList);
+		~Mdb();
+		Mdb(const Mdb&) = delete;
+		Mdb& operator=(const Mdb&) = delete;
 		void Subscribe(MdbSubscriber* subscriber);
+		void Subscribe(MdbSubscriber* subscriber, const std::vector<unsigned int>& tableIds);
+		void SubscribeReplica(MdbReplicaSubscriber* replica);
 		void UnSubscribe();
 		void InitDb();
-		void SetInitStatus(bool initStatus);
 		void Dump(const char* dir);
 		void CreateTables();
 		void DropTables();
@@ -49,7 +53,9 @@ namespace QuantTrading
 		BaseCommissionTable* BaseCommissions = nullptr;
 
 	private:
-		MdbSubscriber* mdbSubscriber_;
+		MdbTableBase* FindTable(unsigned int tableId);
+
+		MdbReplicaSubscriber* replicaSubscriber_;
 		std::vector<MdbTableBase*> tables_;
 	};
 }

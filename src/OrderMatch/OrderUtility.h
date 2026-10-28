@@ -1,6 +1,6 @@
 #pragma once
-#include "MdbStructs.h"
-#include "MdbTables.h"
+#include "Model/MdbStructs.h"
+#include "LockBased/MdbTables.h"
 #include "Packages.h"
 
 

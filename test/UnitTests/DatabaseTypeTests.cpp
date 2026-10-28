@@ -12,10 +12,10 @@ TEST_SUITE("DatabaseType")
 
 TEST_CASE("配置里的DbType整数映射到后端种类")
 {
-    CHECK(ParseDatabaseType(0) == DbTypeType::DuckDb);
-    CHECK(ParseDatabaseType(1) == DbTypeType::SqliteDb);
-    CHECK(ParseDatabaseType(2) == DbTypeType::MysqlDb);
-    CHECK(ParseDatabaseType(3) == DbTypeType::MariaDb);
+    CHECK(ParseDatabaseType(0) == DbAdapters::DbTypeType::DuckDb);
+    CHECK(ParseDatabaseType(1) == DbAdapters::DbTypeType::SqliteDb);
+    CHECK(ParseDatabaseType(2) == DbAdapters::DbTypeType::MysqlDb);
+    CHECK(ParseDatabaseType(3) == DbAdapters::DbTypeType::MariaDb);
 }
 
 TEST_CASE("越界的DbType一律解析失败而不静默退化成某个后端")

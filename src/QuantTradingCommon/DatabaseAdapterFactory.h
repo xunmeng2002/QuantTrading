@@ -12,8 +12,8 @@
 
 #include <DbAdapters/BackendLoader/DbBackendLoader.h>
 #include <DbAdapters/DbInterface/Db.h>
+#include <DbAdapters/Types.h>
 #include <Spark/Core/Logger/Logger.h>
-#include <Spark/Types.h>
 
 #include <optional>
 #include <string>
@@ -24,14 +24,14 @@ namespace QuantTrading
     // 声明成 int, 生成的 Config 逐字读它), 故这里只剩"校验 + 恒等转换", 没有自己的字面量表.
     // 越界一律返回空 optional —— 若静默退化成缺省, 一个写错的 DbType 会跑出一份看着正常的回测
     // 结果, 那是查不出来的.
-    inline std::optional<DbTypeType> ParseDatabaseType(int dbType)
+    inline std::optional<DbAdapters::DbTypeType> ParseDatabaseType(int dbType)
     {
         switch (dbType)
         {
-        case static_cast<int>(DbTypeType::DuckDb):   return DbTypeType::DuckDb;
-        case static_cast<int>(DbTypeType::SqliteDb): return DbTypeType::SqliteDb;
-        case static_cast<int>(DbTypeType::MysqlDb):  return DbTypeType::MysqlDb;
-        case static_cast<int>(DbTypeType::MariaDb):  return DbTypeType::MariaDb;
+        case static_cast<int>(DbAdapters::DbTypeType::DuckDb):   return DbAdapters::DbTypeType::DuckDb;
+        case static_cast<int>(DbAdapters::DbTypeType::SqliteDb): return DbAdapters::DbTypeType::SqliteDb;
+        case static_cast<int>(DbAdapters::DbTypeType::MysqlDb):  return DbAdapters::DbTypeType::MysqlDb;
+        case static_cast<int>(DbAdapters::DbTypeType::MariaDb):  return DbAdapters::DbTypeType::MariaDb;
         default: return std::nullopt;
         }
     }
@@ -41,10 +41,10 @@ namespace QuantTrading
     inline std::string UnknownDatabaseTypeMessage(int dbType)
     {
         return "配置 DbType = " + std::to_string(dbType) + " 不是已知的后端: 合法取值为 "
-            + std::to_string(static_cast<int>(DbTypeType::DuckDb)) + " (DuckDB) / "
-            + std::to_string(static_cast<int>(DbTypeType::SqliteDb)) + " (SQLite, 缺省) / "
-            + std::to_string(static_cast<int>(DbTypeType::MysqlDb)) + " (MySQL) / "
-            + std::to_string(static_cast<int>(DbTypeType::MariaDb)) + " (MariaDB).";
+            + std::to_string(static_cast<int>(DbAdapters::DbTypeType::DuckDb)) + " (DuckDB) / "
+            + std::to_string(static_cast<int>(DbAdapters::DbTypeType::SqliteDb)) + " (SQLite, 缺省) / "
+            + std::to_string(static_cast<int>(DbAdapters::DbTypeType::MysqlDb)) + " (MySQL) / "
+            + std::to_string(static_cast<int>(DbAdapters::DbTypeType::MariaDb)) + " (MariaDB).";
     }
 
     // 失败出口: 文案落日志并交出空指针. 两件事绑在一处, 免得某个失败分支只记不发或只发不记.
@@ -62,7 +62,7 @@ namespace QuantTrading
         const std::string& dbUser,
         const std::string& dbPassword)
     {
-        const std::optional<DbTypeType> databaseType = ParseDatabaseType(dbType);
+        const std::optional<DbAdapters::DbTypeType> databaseType = ParseDatabaseType(dbType);
         if (!databaseType.has_value())
         {
             return ReportDatabaseAdapterFailure(UnknownDatabaseTypeMessage(dbType));
@@ -77,7 +77,7 @@ namespace QuantTrading
             return ReportDatabaseAdapterFailure(
                 std::string("数据库适配器加载失败: 该后端由配置 DbType = ") + std::to_string(dbType)
                 + " 选中, 但未能取到它 —— " + loadFailure.what()
-                + "; 请补齐该模块, 或把 DbType 改回 " + std::to_string(static_cast<int>(DbTypeType::SqliteDb)) + ".");
+                + "; 请补齐该模块, 或把 DbType 改回 " + std::to_string(static_cast<int>(DbAdapters::DbTypeType::SqliteDb)) + ".");
         }
     }
 }

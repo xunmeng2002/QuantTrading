@@ -1,4 +1,4 @@
-<tables project="QuantTrading">
+<tables project="QuantTrading" typesInclude="QuantTrading/Types.h">
 	<table name="TradingDay" 					id="0x0001" dbname="TradingDays" desc="交易日">
 		<items>
 			<item name="Pk"/>

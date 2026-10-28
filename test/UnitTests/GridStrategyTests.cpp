@@ -5,6 +5,7 @@
 #include <limits>
 #include <stdexcept>
 
+using namespace QuantTrading;
 using namespace QuantTrading::UnitTest;
 
 // GridStep 是比例：GridStep × GridCount 到 1 时最远一档档位价落到 <= 0，构造期拒启

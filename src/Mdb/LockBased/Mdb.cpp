@@ -1,10 +1,10 @@
-﻿// 本文件由 ../Templates/Cpp/Mdb/Mdb.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Mdb/LockBased/Mdb.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "Mdb.h"
 
 
 namespace QuantTrading
 {
-	Mdb::Mdb(const TableList& tableList): mdbSubscriber_(nullptr)
+	Mdb::Mdb(const TableList& tableList): replicaSubscriber_(nullptr)
 	{
 		for (int i = 0; i < tableList.Count; ++i)
 		{
@@ -35,12 +35,37 @@ namespace QuantTrading
 			}
 		}
 	}
+	Mdb::~Mdb()
+	{
+		for (auto table : tables_)
+		{
+			delete table;
+		}
+	}
 	void Mdb::Subscribe(MdbSubscriber* subscriber)
 	{
-		mdbSubscriber_ = subscriber;
 		for (auto table : tables_)
 		{
 			table->Subscribe(subscriber);
+		}
+	}
+	void Mdb::Subscribe(MdbSubscriber* subscriber, const std::vector<unsigned int>& tableIds)
+	{
+		for (unsigned int tableId : tableIds)
+		{
+			MdbTableBase* table = FindTable(tableId);
+			if (table != nullptr)
+			{
+				table->Subscribe(subscriber);
+			}
+		}
+	}
+	void Mdb::SubscribeReplica(MdbReplicaSubscriber* replica)
+	{
+		replicaSubscriber_ = replica;
+		for (auto table : tables_)
+		{
+			table->SubscribeReplica(replica);
 		}
 	}
 	void Mdb::UnSubscribe()
@@ -49,6 +74,7 @@ namespace QuantTrading
 		{
 			table->UnSubscribe();
 		}
+		replicaSubscriber_ = nullptr;
 	}
 	void Mdb::InitDb()
 	{
@@ -56,13 +82,6 @@ namespace QuantTrading
 		for (auto table : tables_)
 		{
 			table->InitDb();
-		}
-	}
-	void Mdb::SetInitStatus(bool initStatus)
-	{
-		for (auto table : tables_)
-		{
-			table->DbInited = initStatus;
 		}
 	}
 	void Mdb::Dump(const char* dir)
@@ -74,28 +93,39 @@ namespace QuantTrading
 	}
 	void Mdb::CreateTables()
 	{
-		if (mdbSubscriber_ != nullptr)
+		if (replicaSubscriber_ != nullptr)
 		{
-			mdbSubscriber_->OnTableOp(DbOperateType::CreateTables);
+			replicaSubscriber_->OnTableOp(DbAdapters::DbOperateType::CreateTables);
 		}
 	}
 	void Mdb::DropTables()
 	{
-		if (mdbSubscriber_ != nullptr)
+		if (replicaSubscriber_ != nullptr)
 		{
-			mdbSubscriber_->OnTableOp(DbOperateType::DropTables);
+			replicaSubscriber_->OnTableOp(DbAdapters::DbOperateType::DropTables);
 		}
 	}
 	void Mdb::TruncateTables()
 	{
-		if (mdbSubscriber_ != nullptr)
+		if (replicaSubscriber_ != nullptr)
 		{
-			mdbSubscriber_->OnTableOp(DbOperateType::TruncateTables);
+			replicaSubscriber_->OnTableOp(DbAdapters::DbOperateType::TruncateTables);
 		}
 		for (auto table : tables_)
 		{
 			table->TruncateTables();
 		}
+	}
+	MdbTableBase* Mdb::FindTable(unsigned int tableId)
+	{
+		for (auto table : tables_)
+		{
+			if (table->GetTableId() == tableId)
+			{
+				return table;
+			}
+		}
+		return nullptr;
 	}
 
 	void Mdb::OnDbConnected()
@@ -104,9 +134,6 @@ namespace QuantTrading
 	}
 	void Mdb::OnDbDisConnected()
 	{
-		for (auto table : tables_)
-		{
-			table->DbInited = false;
-		}
+		// 就绪位与待写队列由写库端在同一个临界区内清理，内存表不参与连接状态
 	}
 }

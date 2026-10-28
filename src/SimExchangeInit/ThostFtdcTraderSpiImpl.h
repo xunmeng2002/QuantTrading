@@ -2,8 +2,8 @@
 
 #include "ThostFtdcTraderSpiMiddle.h"
 #include "Environment.h"
-#include "Mdb.h"
-#include "MdbStructs.h"
+#include "LockBased/Mdb.h"
+#include "Model/MdbStructs.h"
 #include <atomic>
 #include <vector>
 #include <string>

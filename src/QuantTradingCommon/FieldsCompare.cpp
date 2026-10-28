@@ -1,7 +1,7 @@
 #include "FieldsCompare.h"
 #include <string.h>
 
-bool std::less<ReqSubMarketDataField>::operator()(const ReqSubMarketDataField* left, const ReqSubMarketDataField* right) const
+bool std::less<QuantTrading::ReqSubMarketDataField>::operator()(const QuantTrading::ReqSubMarketDataField* left, const QuantTrading::ReqSubMarketDataField* right) const
 {
     int exchangeCmp = strcmp(left->ExchangeId, right->ExchangeId);
     if (exchangeCmp < 0)
@@ -14,7 +14,7 @@ bool std::less<ReqSubMarketDataField>::operator()(const ReqSubMarketDataField* l
     }
     return strcmp(left->InstrumentId, right->InstrumentId) < 0;
 }
-bool std::less<ReqSubMarketDataField>::operator()(const ReqSubMarketDataField left, const ReqSubMarketDataField right) const
+bool std::less<QuantTrading::ReqSubMarketDataField>::operator()(const QuantTrading::ReqSubMarketDataField left, const QuantTrading::ReqSubMarketDataField right) const
 {
     int exchangeCmp = strcmp(left.ExchangeId, right.ExchangeId);
     if (exchangeCmp < 0)

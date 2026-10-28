@@ -1,5 +1,5 @@
 #include "PositionMaintenance.h"
-#include "Mdb.h"
+#include "LockBased/Mdb.h"
 #include "CommissionCalculator.h"
 #include "OrderUtility.h"
 #include "QuantUtility.h"
@@ -33,7 +33,8 @@ namespace QuantTrading::Settlement
 	void PositionMaintenance::UpdateOnTrade(QuantTrading::Trade* trade)
 	{
 		auto posiDirection = QuantTrading::GetPosiDirection(trade->OffsetFlag, trade->Direction);
-		auto position = mdb_->Positions->PrimaryKey->Select(trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, posiDirection);
+		auto storedPosition = mdb_->Positions->PrimaryKey->Select(trade->TradingDay, trade->AccountId, trade->ExchangeId, trade->InstrumentId, posiDirection);
+		QuantTrading::Position* position = storedPosition.has_value() ? &*storedPosition : nullptr;
 		if (position == nullptr)
 		{
 			position = QuantTrading::OrderMatch::CreatePosition(trade, posiDirection);
@@ -53,6 +54,7 @@ namespace QuantTrading::Settlement
 				}
 				position->TotalPosition -= trade->Volume;
 			}
+			mdb_->Positions->Update(*storedPosition);
 		}
 
 		if (trade->OffsetFlag == OffsetFlagType::Open)
@@ -63,11 +65,11 @@ namespace QuantTrading::Settlement
 		else
 		{
 			std::set<QuantTrading::PositionDetail*, PositionDetailLessForOpenDate> positionDetails;
-			auto itPair = mdb_->PositionDetails->TradeMatchIndex->EqualRange(position->TradingDay, position->AccountId, position->ExchangeId,
+			auto positionDetailRange = mdb_->PositionDetails->TradeMatchIndex->EqualRange(position->TradingDay, position->AccountId, position->ExchangeId,
 				position->InstrumentId, position->PosiDirection);
-			for (auto& it = itPair.first; it != itPair.second; ++it)
+			for (auto positionDetail : positionDetailRange)
 			{
-				positionDetails.insert(*it);
+				positionDetails.insert(positionDetail);
 			}
 			auto flag = position->PosiDirection == PosiDirectionType::Long ? 1 : -1;
 			auto remainVolume = trade->Volume;

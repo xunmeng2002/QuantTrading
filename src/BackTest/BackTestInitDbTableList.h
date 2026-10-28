@@ -1,6 +1,6 @@
 #pragma once
-#include "TableList.h"
-#include "MdbStructs.h"
+#include "Model/TableList.h"
+#include "Model/MdbStructs.h"
 
 // 手写、非生成文件：回测 InitDb 的装载清单。BackTestTableList.h 是 pump 产物会被覆盖，故清单另立一份。
 // 只含「基本数据」三张表，刻意不含 Account/Capital/Position/Order/Trade——那些由引擎按需自建

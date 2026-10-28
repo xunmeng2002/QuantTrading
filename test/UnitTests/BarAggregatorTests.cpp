@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+using namespace QuantTrading;
 using namespace QuantTrading::Bar;
 using namespace QuantTrading::UnitTest;
 

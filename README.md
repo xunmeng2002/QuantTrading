@@ -163,6 +163,10 @@ QuantTrading/
 
 `<triplet>` 在 Windows 下为 `x64-windows`，Linux / WSL 下为 `x64-linux`。
 
+CTP 官方包**不带** CMake 配置文件，`<triplet>` 目录下那份 `CTPConfig.cmake` 是手写的（`Libs` 仓的
+`CTP/x64-windows/CTPConfig.cmake`）：它不复制文件，只把同级的 `CTP/<版本>/` 目录（头文件、`*.lib` / `*.dll`、代码生成用的
+XML 模型都在那里）映射成上表两个导入目标。换 SDK 版本改该文件里的 `CTP_SDK_VERSION` 一行。
+
 ### 单元测试依赖（doctest）
 
 单元测试目标另需 `../Libs/doctest`（doctest 单头，v2.5.3，**无 triplet 子目录**，只落盘不入库）。

@@ -1,5 +1,5 @@
 #include "Settlement.h"
-#include "Mdb.h"
+#include "LockBased/Mdb.h"
 #include <cstring>
 #include <vector>
 
@@ -15,10 +15,12 @@ namespace QuantTrading::Settlement
 	{
 		InitPosition(tradingDay, nextTradingDay);
 		std::vector<QuantTrading::Capital*> capitals;
-		auto capitalItPair = mdb_->Capitals->TradingDayIndex->EqualRange(tradingDay);
-		for (auto& capitalIt = capitalItPair.first; capitalIt != capitalItPair.second; ++capitalIt)
 		{
-			capitals.push_back(*capitalIt);
+			auto capitalRange = mdb_->Capitals->TradingDayIndex->EqualRange(tradingDay);
+			for (auto capital : capitalRange)
+			{
+				capitals.push_back(capital);
+			}
 		}
 		for (auto capital : capitals)
 		{
@@ -46,10 +48,12 @@ namespace QuantTrading::Settlement
 	{
 		InitPositionDetail(tradingDay, nextTradingDay);
 		std::vector<QuantTrading::Position*> positions;
-		auto positionItPair = mdb_->Positions->TradingDayIndex->EqualRange(tradingDay);
-		for (auto& positionIt = positionItPair.first; positionIt != positionItPair.second; ++positionIt)
 		{
-			positions.push_back(*positionIt);
+			auto positionRange = mdb_->Positions->TradingDayIndex->EqualRange(tradingDay);
+			for (auto position : positionRange)
+			{
+				positions.push_back(position);
+			}
 		}
 		for (auto position : positions)
 		{
@@ -79,10 +83,12 @@ namespace QuantTrading::Settlement
 	void Settlement::InitPositionDetail(const DateType& tradingDay, const DateType& nextTradingDay)
 	{
 		std::vector<QuantTrading::PositionDetail*> positionDetails;
-		auto positionDetailItPair = mdb_->PositionDetails->TradingDayIndex->EqualRange(tradingDay);
-		for (auto& positionDetailIt = positionDetailItPair.first; positionDetailIt != positionDetailItPair.second; ++positionDetailIt)
 		{
-			positionDetails.push_back(*positionDetailIt);
+			auto positionDetailRange = mdb_->PositionDetails->TradingDayIndex->EqualRange(tradingDay);
+			for (auto positionDetail : positionDetailRange)
+			{
+				positionDetails.push_back(positionDetail);
+			}
 		}
 		for (auto positionDetail : positionDetails)
 		{

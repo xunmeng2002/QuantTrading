@@ -8,6 +8,7 @@
 #include <cstring>
 #include <vector>
 
+using namespace QuantTrading;
 using namespace QuantTrading::OrderMatch;
 using namespace QuantTrading::UnitTest;
 

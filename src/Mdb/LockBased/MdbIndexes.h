@@ -1,7 +1,8 @@
-﻿// 本文件由 ../Templates/Cpp/Mdb/MdbIndexes.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Mdb/LockBased/MdbIndexes.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
-#include "MdbStructs.h"
-#include "MdbIndexComp.h"
+#include "Model/MdbStructs.h"
+#include "Model/MdbIndexComp.h"
+#include "Model/MdbReadLease.h"
 #include <set>
 
 using std::multiset;
@@ -13,12 +14,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<HotInstrument*, HotInstrumentLessForTradingDayIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = HotInstrument::IndexTradingDayId;
 	
 		HotInstrumentTableIndexTradingDay(HotInstrumentTable* tableOwner);
-		iterator LowerBound(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay);
-		iterator UpperBound(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay);
-		std::pair<iterator, iterator> EqualRange(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay);
+		TableRangeLease<iterator> Range(const ExchangeIdType& lowerExchangeId, const ProductIdType& lowerProductId, const Int32Type& lowerRank, const DateType& lowerTradingDay, const ExchangeIdType& upperExchangeId, const ProductIdType& upperProductId, const Int32Type& upperRank, const DateType& upperTradingDay);
+		TableRangeLease<iterator> EqualRange(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank, const DateType& TradingDay);
 	
 	protected:
 		void Insert(HotInstrument* const record);
@@ -40,12 +40,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<Instrument*, InstrumentLessForExchangeIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = Instrument::IndexExchangeIdId;
 	
 		InstrumentTableIndexExchangeId(InstrumentTable* tableOwner);
-		iterator LowerBound(const ExchangeIdType& ExchangeId);
-		iterator UpperBound(const ExchangeIdType& ExchangeId);
-		std::pair<iterator, iterator> EqualRange(const ExchangeIdType& ExchangeId);
+		TableRangeLease<iterator> Range(const ExchangeIdType& lowerExchangeId, const ExchangeIdType& upperExchangeId);
+		TableRangeLease<iterator> EqualRange(const ExchangeIdType& ExchangeId);
 	
 	protected:
 		void Insert(Instrument* const record);
@@ -67,12 +66,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<MdUserLoginSession*, MdUserLoginSessionLessForSessionIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = MdUserLoginSession::IndexSessionIdId;
 	
 		MdUserLoginSessionTableIndexSessionId(MdUserLoginSessionTable* tableOwner);
-		iterator LowerBound(const SessionIdType& SessionId);
-		iterator UpperBound(const SessionIdType& SessionId);
-		std::pair<iterator, iterator> EqualRange(const SessionIdType& SessionId);
+		TableRangeLease<iterator> Range(const SessionIdType& lowerSessionId, const SessionIdType& upperSessionId);
+		TableRangeLease<iterator> EqualRange(const SessionIdType& SessionId);
 	
 	protected:
 		void Insert(MdUserLoginSession* const record);
@@ -93,12 +91,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<MdUserLoginSession*, MdUserLoginSessionLessForMdUserIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0001;
+		static constexpr unsigned int IndexID = MdUserLoginSession::IndexMdUserIdId;
 	
 		MdUserLoginSessionTableIndexMdUserId(MdUserLoginSessionTable* tableOwner);
-		iterator LowerBound(const UserIdType& MdUserId);
-		iterator UpperBound(const UserIdType& MdUserId);
-		std::pair<iterator, iterator> EqualRange(const UserIdType& MdUserId);
+		TableRangeLease<iterator> Range(const UserIdType& lowerMdUserId, const UserIdType& upperMdUserId);
+		TableRangeLease<iterator> EqualRange(const UserIdType& MdUserId);
 	
 	protected:
 		void Insert(MdUserLoginSession* const record);
@@ -120,12 +117,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<PrimaryAccount*, PrimaryAccountLessForOfferIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = PrimaryAccount::IndexOfferIdId;
 	
 		PrimaryAccountTableIndexOfferId(PrimaryAccountTable* tableOwner);
-		iterator LowerBound(const OfferIdType& OfferId);
-		iterator UpperBound(const OfferIdType& OfferId);
-		std::pair<iterator, iterator> EqualRange(const OfferIdType& OfferId);
+		TableRangeLease<iterator> Range(const OfferIdType& lowerOfferId, const OfferIdType& upperOfferId);
+		TableRangeLease<iterator> EqualRange(const OfferIdType& OfferId);
 	
 	protected:
 		void Insert(PrimaryAccount* const record);
@@ -147,12 +143,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<Capital*, CapitalLessForTradingDayIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = Capital::IndexTradingDayId;
 	
 		CapitalTableIndexTradingDay(CapitalTable* tableOwner);
-		iterator LowerBound(const DateType& TradingDay);
-		iterator UpperBound(const DateType& TradingDay);
-		std::pair<iterator, iterator> EqualRange(const DateType& TradingDay);
+		TableRangeLease<iterator> Range(const DateType& lowerTradingDay, const DateType& upperTradingDay);
+		TableRangeLease<iterator> EqualRange(const DateType& TradingDay);
 	
 	protected:
 		void Insert(Capital* const record);
@@ -174,12 +169,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<Position*, PositionLessForAccountIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = Position::IndexAccountId;
 	
 		PositionTableIndexAccount(PositionTable* tableOwner);
-		iterator LowerBound(const DateType& TradingDay, const AccountIdType& AccountId);
-		iterator UpperBound(const DateType& TradingDay, const AccountIdType& AccountId);
-		std::pair<iterator, iterator> EqualRange(const DateType& TradingDay, const AccountIdType& AccountId);
+		TableRangeLease<iterator> Range(const DateType& lowerTradingDay, const AccountIdType& lowerAccountId, const DateType& upperTradingDay, const AccountIdType& upperAccountId);
+		TableRangeLease<iterator> EqualRange(const DateType& TradingDay, const AccountIdType& AccountId);
 	
 	protected:
 		void Insert(Position* const record);
@@ -200,12 +194,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<Position*, PositionLessForTradingDayIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0001;
+		static constexpr unsigned int IndexID = Position::IndexTradingDayId;
 	
 		PositionTableIndexTradingDay(PositionTable* tableOwner);
-		iterator LowerBound(const DateType& TradingDay);
-		iterator UpperBound(const DateType& TradingDay);
-		std::pair<iterator, iterator> EqualRange(const DateType& TradingDay);
+		TableRangeLease<iterator> Range(const DateType& lowerTradingDay, const DateType& upperTradingDay);
+		TableRangeLease<iterator> EqualRange(const DateType& TradingDay);
 	
 	protected:
 		void Insert(Position* const record);
@@ -227,12 +220,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<PositionDetail*, PositionDetailLessForTradeMatchIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = PositionDetail::IndexTradeMatchId;
 	
 		PositionDetailTableIndexTradeMatch(PositionDetailTable* tableOwner);
-		iterator LowerBound(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
-		iterator UpperBound(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
-		std::pair<iterator, iterator> EqualRange(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
+		TableRangeLease<iterator> Range(const DateType& lowerTradingDay, const AccountIdType& lowerAccountId, const ExchangeIdType& lowerExchangeId, const InstrumentIdType& lowerInstrumentId, const PosiDirectionType& lowerPosiDirection, const DateType& upperTradingDay, const AccountIdType& upperAccountId, const ExchangeIdType& upperExchangeId, const InstrumentIdType& upperInstrumentId, const PosiDirectionType& upperPosiDirection);
+		TableRangeLease<iterator> EqualRange(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
 	
 	protected:
 		void Insert(PositionDetail* const record);
@@ -253,12 +245,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<PositionDetail*, PositionDetailLessForTradingDayIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0001;
+		static constexpr unsigned int IndexID = PositionDetail::IndexTradingDayId;
 	
 		PositionDetailTableIndexTradingDay(PositionDetailTable* tableOwner);
-		iterator LowerBound(const DateType& TradingDay);
-		iterator UpperBound(const DateType& TradingDay);
-		std::pair<iterator, iterator> EqualRange(const DateType& TradingDay);
+		TableRangeLease<iterator> Range(const DateType& lowerTradingDay, const DateType& upperTradingDay);
+		TableRangeLease<iterator> EqualRange(const DateType& TradingDay);
 	
 	protected:
 		void Insert(PositionDetail* const record);
@@ -280,12 +271,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<Order*, OrderLessForAccountIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = Order::IndexAccountIdId;
 	
 		OrderTableIndexAccountId(OrderTable* tableOwner);
-		iterator LowerBound(const DateType& TradingDay, const AccountIdType& AccountId);
-		iterator UpperBound(const DateType& TradingDay, const AccountIdType& AccountId);
-		std::pair<iterator, iterator> EqualRange(const DateType& TradingDay, const AccountIdType& AccountId);
+		TableRangeLease<iterator> Range(const DateType& lowerTradingDay, const AccountIdType& lowerAccountId, const DateType& upperTradingDay, const AccountIdType& upperAccountId);
+		TableRangeLease<iterator> EqualRange(const DateType& TradingDay, const AccountIdType& AccountId);
 	
 	protected:
 		void Insert(Order* const record);
@@ -307,12 +297,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<Trade*, TradeLessForAccountIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = Trade::IndexAccountIdId;
 	
 		TradeTableIndexAccountId(TradeTable* tableOwner);
-		iterator LowerBound(const DateType& TradingDay, const AccountIdType& AccountId);
-		iterator UpperBound(const DateType& TradingDay, const AccountIdType& AccountId);
-		std::pair<iterator, iterator> EqualRange(const DateType& TradingDay, const AccountIdType& AccountId);
+		TableRangeLease<iterator> Range(const DateType& lowerTradingDay, const AccountIdType& lowerAccountId, const DateType& upperTradingDay, const AccountIdType& upperAccountId);
+		TableRangeLease<iterator> EqualRange(const DateType& TradingDay, const AccountIdType& AccountId);
 	
 	protected:
 		void Insert(Trade* const record);
@@ -334,12 +323,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<AccountLoginSession*, AccountLoginSessionLessForSessionIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = AccountLoginSession::IndexSessionIdId;
 	
 		AccountLoginSessionTableIndexSessionId(AccountLoginSessionTable* tableOwner);
-		iterator LowerBound(const SessionIdType& SessionId);
-		iterator UpperBound(const SessionIdType& SessionId);
-		std::pair<iterator, iterator> EqualRange(const SessionIdType& SessionId);
+		TableRangeLease<iterator> Range(const SessionIdType& lowerSessionId, const SessionIdType& upperSessionId);
+		TableRangeLease<iterator> EqualRange(const SessionIdType& SessionId);
 	
 	protected:
 		void Insert(AccountLoginSession* const record);
@@ -360,12 +348,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<AccountLoginSession*, AccountLoginSessionLessForAccountIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0001;
+		static constexpr unsigned int IndexID = AccountLoginSession::IndexAccountIdId;
 	
 		AccountLoginSessionTableIndexAccountId(AccountLoginSessionTable* tableOwner);
-		iterator LowerBound(const AccountIdType& AccountId);
-		iterator UpperBound(const AccountIdType& AccountId);
-		std::pair<iterator, iterator> EqualRange(const AccountIdType& AccountId);
+		TableRangeLease<iterator> Range(const AccountIdType& lowerAccountId, const AccountIdType& upperAccountId);
+		TableRangeLease<iterator> EqualRange(const AccountIdType& AccountId);
 	
 	protected:
 		void Insert(AccountLoginSession* const record);
@@ -387,12 +374,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionLessForSessionIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0000;
+		static constexpr unsigned int IndexID = PrimaryAccountLoginSession::IndexSessionIdId;
 	
 		PrimaryAccountLoginSessionTableIndexSessionId(PrimaryAccountLoginSessionTable* tableOwner);
-		iterator LowerBound(const SessionIdType& SessionId);
-		iterator UpperBound(const SessionIdType& SessionId);
-		std::pair<iterator, iterator> EqualRange(const SessionIdType& SessionId);
+		TableRangeLease<iterator> Range(const SessionIdType& lowerSessionId, const SessionIdType& upperSessionId);
+		TableRangeLease<iterator> EqualRange(const SessionIdType& SessionId);
 	
 	protected:
 		void Insert(PrimaryAccountLoginSession* const record);
@@ -413,12 +399,11 @@ namespace QuantTrading
 	{
 	public:
 		using iterator = std::multiset<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionLessForPrimaryAccountIdIndex>::iterator;
-		static constexpr unsigned int IndexID = 0x0001;
+		static constexpr unsigned int IndexID = PrimaryAccountLoginSession::IndexPrimaryAccountIdId;
 	
 		PrimaryAccountLoginSessionTableIndexPrimaryAccountId(PrimaryAccountLoginSessionTable* tableOwner);
-		iterator LowerBound(const AccountIdType& PrimaryAccountId);
-		iterator UpperBound(const AccountIdType& PrimaryAccountId);
-		std::pair<iterator, iterator> EqualRange(const AccountIdType& PrimaryAccountId);
+		TableRangeLease<iterator> Range(const AccountIdType& lowerPrimaryAccountId, const AccountIdType& upperPrimaryAccountId);
+		TableRangeLease<iterator> EqualRange(const AccountIdType& PrimaryAccountId);
 	
 	protected:
 		void Insert(PrimaryAccountLoginSession* const record);

@@ -1,6 +1,6 @@
 #include "SimExchange.h"
 #include "MdbTickSettlementPriceSource.h"
-#include "MdbTableRegistry.h"
+#include "Model/MdbTableRegistry.h"
 #include "BackTestTableList.h"
 #include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
 #include "DatabaseAdapterFactory.h"
@@ -8,8 +8,8 @@
 #include "QuantUtility.h"
 #include "OrderUtility.h"
 #include "BackTestInitDbTableList.h"
-#include "InitMdbFromCsv.h"
-#include "InitMdbFromDb.h"
+#include "LockBased/InitMdbFromCsv.h"
+#include "LockBased/InitMdbFromDb.h"
 #include "MdbFieldConverter.h"
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Logger/Logger.h>
@@ -64,12 +64,12 @@ static std::string DeriveRunDbHost(const std::string& dbHost, const std::string&
 static void InsertInstrumentOrUpdate(InstrumentTable* instrumentTable, Instrument* instrument)
 {
     auto oldInstrument = instrumentTable->PrimaryKey->Select(instrument->ExchangeId, instrument->InstrumentId);
-    if (oldInstrument == nullptr)
+    if (!oldInstrument.has_value())
     {
         instrumentTable->Insert(instrument);
         return;
     }
-    instrumentTable->Update(oldInstrument, instrument);
+    instrumentTable->Update(*instrument);
 }
 
 // 行数一律取自内存表：dbWriter_ 是异步的，去查输出库会读到本轮尚未写完的产物
@@ -80,8 +80,8 @@ static int CountTableRows(TableType* table)
 	{
 		return 0;
 	}
-	auto itPair = table->PrimaryKey->SelectAll();
-	return static_cast<int>(std::distance(itPair.first, itPair.second));
+	auto records = table->PrimaryKey->SelectAll();
+	return static_cast<int>(std::distance(records.begin(), records.end()));
 }
 
 static const char* GetErrorReason(unsigned int errorId)
@@ -161,7 +161,7 @@ bool SimExchange::Init()
 		WriteLog(LogLevel::Error, "Load trade sessions failed. SessionFile:%s", sessionFile_.c_str());
 		return false;
 	}
-	mdb_->Subscribe(dbWriter_);
+	mdb_->SubscribeReplica(dbWriter_);
 
 	mdReader_->Init();
 	InitMdInstrument();
@@ -201,7 +201,7 @@ void SimExchange::OnOrder(QuantTrading::Order* order)
 }
 void SimExchange::OnOrderUpdate(QuantTrading::Order* order, QuantTrading::Order* newOrder)
 {
-    mdb_->Orders->Update(order, newOrder);
+    mdb_->Orders->Update(*newOrder);
     SendRtnOrder(order);
 }
 void SimExchange::OnTrade(QuantTrading::Trade* trade)
@@ -389,10 +389,9 @@ void SimExchange::SetError(unsigned int errorId)
 QuantTrading::Settlement::TradeFee SimExchange::AccumulateAccountFee() const
 {
 	QuantTrading::Settlement::TradeFee feeTotal;
-	auto itPair = mdb_->Capitals->PrimaryKey->SelectAll();
-	for (auto it = itPair.first; it != itPair.second; ++it)
+	auto capitals = mdb_->Capitals->PrimaryKey->SelectAll();
+	for (auto capital : capitals)
 	{
-		auto capital = *it;
 		if (strcmp(capital->AccountId, accountId_) != 0)
 		{
 			continue;
@@ -425,8 +424,8 @@ RunResult SimExchange::BuildRunResult() const
 	runResult.OrderCount = CountTableRows(mdb_->Orders);
 	runResult.TradeCount = CountTableRows(mdb_->Trades);
 	auto capital = mdb_->Capitals->PrimaryKey->Select(tradingDay_, accountId_);
-	runResult.HasCapital = capital != nullptr;
-	if (capital != nullptr)
+	runResult.HasCapital = capital.has_value();
+	if (capital.has_value())
 	{
 		runResult.Balance = capital->Balance;
 		runResult.Available = capital->Available;
@@ -502,13 +501,13 @@ void SimExchange::PushNextTick(QuantTrading::DepthMarketData* mdTick)
 	orderMatch_->OnTick(mdTick);
 	SendRtnDepthMarketData(mdTick);
 	auto oldMdTick = mdb_->DepthMarketDatas->PrimaryKey->Select(mdTick->TradingDay, mdTick->ExchangeId, mdTick->InstrumentId);
-	if (oldMdTick == nullptr)
+	if (!oldMdTick.has_value())
 	{
 		mdb_->DepthMarketDatas->Insert(mdTick);
 	}
 	else
 	{
-		mdb_->DepthMarketDatas->Update(oldMdTick, mdTick);
+		mdb_->DepthMarketDatas->Update(*mdTick);
 	}
 }
 void SimExchange::PushNextBar(QuantTrading::BarMarketData* mdBar)
@@ -608,7 +607,7 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		instrumentBarPeriods[reqSubMd->InstrumentId] = *reqSubMd;
 		auto& mdSubscribes = instrumentMdSubscribes[reqSubMd->InstrumentId];
 		auto instrument = mdb_->Instruments->PrimaryKey->Select(reqSubMd->ExchangeId, reqSubMd->InstrumentId);
-		if (instrument == nullptr)
+		if (!instrument.has_value())
 		{
 			WriteLog(LogLevel::Error, "Cannot Find Instrument While SubMarketData. ExchangeId:%s, InstrumentId:%s", reqSubMd->ExchangeId, reqSubMd->InstrumentId);
 			::Deallocate(reqSubMd);
@@ -630,9 +629,9 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 		}
 		else
 		{
-			auto startIt = mdb_->HotInstruments->TradingDayIndex->LowerBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, startTradingDay_);
-			auto endIt = mdb_->HotInstruments->TradingDayIndex->UpperBound(instrument->ExchangeId, instrument->ProductId, instrument->Rank, endTradingDay_);
-			if (startIt == endIt)
+			auto hotInstrumentRange = mdb_->HotInstruments->TradingDayIndex->Range(instrument->ExchangeId, instrument->ProductId, instrument->Rank, startTradingDay_,
+				instrument->ExchangeId, instrument->ProductId, instrument->Rank, endTradingDay_);
+			if (hotInstrumentRange.empty())
 			{
 				WriteLog(LogLevel::Warning, "Cannot Find HotInstrument While SubMarketData. ExchangeId:%s, ProductId:%s, Rank:%d, StartTradingDay:%s, EndTradingDay:%s",
 					instrument->ExchangeId, instrument->ProductId, instrument->Rank, startTradingDay_, endTradingDay_);
@@ -643,14 +642,13 @@ void SimExchange::HandleSubMarketDataFinished(ReqSubMarketDataFinishedPackage* r
 			memset(mdSubscribe, 0, sizeof(MdSubscribe));
 			strcpy(mdSubscribe->ExchangeId, instrument->ExchangeId);
 			strcpy(mdSubscribe->InstrumentId, instrument->InstrumentId);
-			strcpy(mdSubscribe->RealInstrumentId, (*startIt)->InstrumentId);
+			strcpy(mdSubscribe->RealInstrumentId, (*hotInstrumentRange.begin())->InstrumentId);
 			strcpy(mdSubscribe->ProductId, instrument->ProductId);
 			mdSubscribe->ProductClass = instrument->ProductClass;
-			strcpy(mdSubscribe->StartTradingDay, (*startIt)->TradingDay);
-			strcpy(mdSubscribe->EndTradingDay, (*startIt)->TradingDay);
-			for (auto& it = startIt; it != endIt; ++it)
+			strcpy(mdSubscribe->StartTradingDay, (*hotInstrumentRange.begin())->TradingDay);
+			strcpy(mdSubscribe->EndTradingDay, (*hotInstrumentRange.begin())->TradingDay);
+			for (auto hotInstrument : hotInstrumentRange)
 			{
-				auto hotInstrument = *it;
 				if (strcmp(mdSubscribe->RealInstrumentId, hotInstrument->InstrumentId) == 0)
 				{
 					strcpy(mdSubscribe->EndTradingDay, hotInstrument->TradingDay);
@@ -773,24 +771,24 @@ void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 	auto reqRegisterAccount = reqPackage->ReqRegisterAccount;
 	strcpy(accountId_, reqRegisterAccount->AccountId);
 	auto account = mdb_->Accounts->PrimaryKey->Select(reqRegisterAccount->AccountId);
-	if (account == nullptr)
+	if (!account.has_value())
 	{
 		// 回测账户按需自建：资金账目由日终结算按日滚动，首日以 InitialCapital 开局
-		account = QuantTrading::Account::Allocate();
-		memset(account, 0, sizeof(QuantTrading::Account));
-		strcpy(account->AccountId, reqRegisterAccount->AccountId);
-		strcpy(account->AccountName, reqRegisterAccount->AccountId);
-		account->AccountType = AccountTypeType::Primary;
-		account->AccountStatus = AccountStatusType::Normal;
-		account->TradeGroupId = 1;
-		account->RiskGroupId = 1;
-		account->CommissionGroupId = commissionGroupId_;
-		mdb_->Accounts->Insert(account);
+		auto newAccount = QuantTrading::Account::Allocate();
+		memset(newAccount, 0, sizeof(QuantTrading::Account));
+		strcpy(newAccount->AccountId, reqRegisterAccount->AccountId);
+		strcpy(newAccount->AccountName, reqRegisterAccount->AccountId);
+		newAccount->AccountType = AccountTypeType::Primary;
+		newAccount->AccountStatus = AccountStatusType::Normal;
+		newAccount->TradeGroupId = 1;
+		newAccount->RiskGroupId = 1;
+		newAccount->CommissionGroupId = commissionGroupId_;
+		mdb_->Accounts->Insert(newAccount);
 
 		auto capital = QuantTrading::Capital::Allocate();
 		memset(capital, 0, sizeof(QuantTrading::Capital));
 		strcpy(capital->TradingDay, tradingDay_);
-		strcpy(capital->AccountId, account->AccountId);
+		strcpy(capital->AccountId, newAccount->AccountId);
 		capital->AccountType = AccountTypeType::Primary;
 		// 结算链以 PreBalance 为起点：Balance = PreBalance + 盈亏 - 三项费用，故四项同置为初始资金
 		capital->PreBalance = initialCapital_;
@@ -798,7 +796,7 @@ void SimExchange::HandleRegisterAccount(ReqRegisterAccountPackage* reqPackage)
 		capital->Available = initialCapital_;
 		capital->Deposit = initialCapital_;
 		mdb_->Capitals->Insert(capital);
-		WriteLog(LogLevel::Info, "Account registered, AccountId:%s, TradingDay:%s, InitialCapital:%f", account->AccountId, tradingDay_, initialCapital_);
+		WriteLog(LogLevel::Info, "Account registered, AccountId:%s, TradingDay:%s, InitialCapital:%f", newAccount->AccountId, tradingDay_, initialCapital_);
 	}
 	else
 	{
@@ -812,25 +810,25 @@ void SimExchange::HandleInsertOrder(ReqInsertOrderPackage* reqPackage)
 	auto reqInsertOrder = reqPackage->ReqInsertOrder;
 	int errorId = ErrorNone;
 	auto instrument = mdb_->Instruments->PrimaryKey->Select(reqInsertOrder->ExchangeId, reqInsertOrder->InstrumentId);
-	if (instrument == nullptr)
+	if (!instrument.has_value())
 	{
 		SendRspOrderInsert(reqPackage, ErrorInstrumentNotExist);
 		return;
 	}
 	auto account = mdb_->Accounts->PrimaryKey->Select(reqInsertOrder->AccountId);
-	if (account == nullptr)
+	if (!account.has_value())
 	{
 		SendRspOrderInsert(reqPackage, ErrorAccountNotExist);
 		return;
 	}
-	errorId = CheckForInsertOrder(reqInsertOrder, instrument);
+	errorId = CheckForInsertOrder(reqInsertOrder, &*instrument);
 	SendRspOrderInsert(reqPackage, errorId);
 	if (errorId != ErrorNone)
 	{
 		return;
 	}
 	
-	auto order = CreateOrder(reqPackage, account, instrument, tradingDay_, currDate_, currTime_);
+	auto order = CreateOrder(reqPackage, &*account, &*instrument, tradingDay_, currDate_, currTime_);
 	mdb_->Orders->Insert(order);
 	orderMatch_->InsertOrder(order);
 }
@@ -840,25 +838,25 @@ void SimExchange::HandleCancelOrder(ReqCancelOrderPackage* reqPackage)
 	int errorId = ErrorNone;
 	auto order = mdb_->Orders->PrimaryKey->Select(tradingDay_, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId, 
 		reqPackage->ReqCancelOrder->InstrumentId, reqPackage->ReqCancelOrder->OrderId);
-	if (order == nullptr)
+	if (!order.has_value())
 	{
 		order = mdb_->Orders->ClientOrderIdUniqueKey->Select(tradingDay_, reqPackage->ReqCancelOrder->AccountId, reqPackage->ReqCancelOrder->ExchangeId,
 			reqPackage->ReqCancelOrder->InstrumentId, reqPackage->ReqCancelOrder->SessionId, reqPackage->ReqCancelOrder->ClientOrderId);
-		if (order == nullptr)
+		if (!order.has_value())
 		{
 			errorId = ErrorOrderNotExist;
 		}
 	}
-	if (order != nullptr)
+	if (order.has_value())
 	{
-		errorId = CheckForCancelOrder(order);
+		errorId = CheckForCancelOrder(&*order);
 	}
 	SendRspCancelOrder(reqPackage, errorId);
 	if (errorId != ErrorNone)
 	{
 		return;
 	}
-	orderMatch_->CancelOrder(order);
+	orderMatch_->CancelOrder(&*order);
 }
 
 void SimExchange::InitMdInstrument()
@@ -879,7 +877,7 @@ void SimExchange::InitMdInstrument()
 		ProductIdType productId;
 		strcpy(productId, it.first.c_str());
 		auto product = mdb_->Products->PrimaryKey->Select(exchangeId, productId);
-		if (product != nullptr)
+		if (product.has_value())
 		{
 			for (auto instrument : it.second)
 			{
@@ -925,10 +923,9 @@ void SimExchange::InitMdInstrument()
 }
 void SimExchange::InitMainInstrument()
 {
-	auto productPair = mdb_->Products->PrimaryKey->SelectAll();
-	for (auto& it = productPair.first; it != productPair.second; ++it)
+	auto products = mdb_->Products->PrimaryKey->SelectAll();
+	for (auto product : products)
 	{
-		auto product = *it;
 		if (product->ProductClass != ProductClassType::Future)
 			continue;
 		auto instrument1 = ::Allocate<QuantTrading::Instrument>();

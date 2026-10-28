@@ -3,8 +3,8 @@
 #include <string>
 
 template <>
-struct std::less<ReqSubMarketDataField>
+struct std::less<QuantTrading::ReqSubMarketDataField>
 {
-	bool operator()(const ReqSubMarketDataField* left, const ReqSubMarketDataField* right) const;
-    bool operator()(const ReqSubMarketDataField left, const ReqSubMarketDataField right) const;
+	bool operator()(const QuantTrading::ReqSubMarketDataField* left, const QuantTrading::ReqSubMarketDataField* right) const;
+    bool operator()(const QuantTrading::ReqSubMarketDataField left, const QuantTrading::ReqSubMarketDataField right) const;
 };

@@ -1,5 +1,5 @@
 #include "CommissionCalculator.h"
-#include "Mdb.h"
+#include "LockBased/Mdb.h"
 
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Core/Utility/DoubleUtility.h>
@@ -64,12 +64,12 @@ namespace QuantTrading::Settlement
 		}
 		const auto commissionGroupId = SelectCommissionGroupId(trade->AccountId);
 		auto rate = mdb_->BaseCommissions->PrimaryKey->Select(commissionGroupId, trade->ExchangeId, trade->InstrumentId, trade->Direction);
-		if (rate == nullptr)
+		if (!rate.has_value())
 		{
 			RecordMissingRate(commissionGroupId, trade);
 			return;
 		}
-		const auto tradeFee = CalcTradeFee(rate, trade);
+		const auto tradeFee = CalcTradeFee(&*rate, trade);
 		trade->Commission = tradeFee.Commission;
 		trade->StampTax = tradeFee.StampTax;
 		trade->TransferFee = tradeFee.TransferFee;
@@ -121,7 +121,7 @@ namespace QuantTrading::Settlement
 			return 0;
 		}
 		auto account = mdb_->Accounts->PrimaryKey->Select(accountId);
-		return account == nullptr ? 0 : account->CommissionGroupId;
+		return account.has_value() ? account->CommissionGroupId : 0;
 	}
 
 	void CommissionCalculator::RecordMissingRate(const GroupIdType commissionGroupId, const QuantTrading::Trade* trade)

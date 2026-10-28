@@ -1,5 +1,5 @@
 #include "ThostFtdcTraderSpiImpl.h"
-#include "MdbStructs.h"
+#include "Model/MdbStructs.h"
 #include <Spark/Core/Logger/Logger.h>
 #include <Spark/Core/Utility/Utility.h>
 #include <Spark/Serialization/Encode/Encode.h>

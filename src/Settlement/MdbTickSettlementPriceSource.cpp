@@ -1,6 +1,6 @@
 #include "MdbTickSettlementPriceSource.h"
 
-#include "Mdb.h"
+#include "LockBased/Mdb.h"
 
 #include <cmath>
 
@@ -22,7 +22,7 @@ namespace QuantTrading::Settlement
 	PriceType MdbTickSettlementPriceSource::GetSettlementPrice(const QuantTrading::PositionDetail* positionDetail)
 	{
 		auto mdTick = mdb_->DepthMarketDatas->PrimaryKey->Select(positionDetail->TradingDay, positionDetail->ExchangeId, positionDetail->InstrumentId);
-		if (mdTick == nullptr)
+		if (!mdTick.has_value())
 		{
 			return positionDetail->PreSettlementPrice;
 		}

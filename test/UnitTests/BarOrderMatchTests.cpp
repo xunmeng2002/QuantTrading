@@ -3,6 +3,7 @@
 
 #include "doctest/doctest.h"
 
+using namespace QuantTrading;
 using namespace QuantTrading::OrderMatch;
 using namespace QuantTrading::UnitTest;
 

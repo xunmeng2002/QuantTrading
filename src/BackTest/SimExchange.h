@@ -9,8 +9,8 @@
 #include "CommissionCalculator.h"
 #include "MdReader.h"
 #include "RunResult.h"
-#include "Mdb.h"
-#include "MdbTableRegistry.h"
+#include "LockBased/Mdb.h"
+#include "Model/MdbTableRegistry.h"
 #include "BarAggregator.h"
 #include "TradeSession.h"
 #include <QuantTrading/Fields.h>

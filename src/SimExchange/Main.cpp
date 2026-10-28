@@ -2,9 +2,9 @@
 #include "Config/Config.h"
 #include "DatabaseAdapterFactory.h"
 #include "ServerConfig.h"
-#include "Mdb.h"
-#include "InitMdbFromDb.h"
-#include "MdbTableRegistry.h"
+#include "LockBased/Mdb.h"
+#include "LockBased/InitMdbFromDb.h"
+#include "Model/MdbTableRegistry.h"
 #include "SimExchangeTableList.h"
 #include "MdSpiImpl.h"
 #include "MdFront.h"
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	initDb->DisConnect();
 	delete initDb;
 
-	mdb->Subscribe(dbWriter);
+	mdb->SubscribeReplica(dbWriter);
 	dbWriter->Subscribe(mdb);
 
 

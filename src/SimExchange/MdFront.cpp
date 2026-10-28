@@ -8,17 +8,17 @@ using namespace Spark::Network;
 namespace QuantTrading::SimExchange
 {
 MdFront::MdFront(const char* address, int milliSecond)
-	:Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IoModelType::Select,  milliSecond, new PackageFactory())
+	:Protocol(Spark::ProtocolTypeType::Xtp, Spark::ServerTypeType::Server, Spark::IoModelType::Select,  milliSecond, new PackageFactory())
 {
 	RegisterFront(address);
 	ioThread_ = new IoThread("MdFront");
 	SetIoThread(ioThread_);
 }
-void MdFront::OnProtocolConnect(SessionIdType sessionId, const char* ip, int port)
+void MdFront::OnProtocolConnect(Spark::SessionIdType sessionId, const char* ip, int port)
 {
 	WriteLog(LogLevel::Info, "MdFront::OnProtocolConnect SessionId:[%lld], IP:[%s], port:[%d]", sessionId, ip, port);
 }
-void MdFront::OnProtocolDisConnect(SessionIdType sessionId, const char* ip, int port)
+void MdFront::OnProtocolDisConnect(Spark::SessionIdType sessionId, const char* ip, int port)
 {
 	WriteLog(LogLevel::Info, "MdFront::OnProtocolDisConnect SessionId:[%lld], IP:[%s], port:[%d]", sessionId, ip, port);
 }

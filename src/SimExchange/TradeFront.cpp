@@ -7,7 +7,7 @@ using namespace Spark::Network;
 namespace QuantTrading::SimExchange
 {
     TradeFront::TradeFront(const char* address, int milliSecond)
-        :Protocol(ProtocolTypeType::Xtp, ServerTypeType::Server, IoModelType::Select, milliSecond, new QuantTrading::Packages::PackageFactory())
+        :Protocol(Spark::ProtocolTypeType::Xtp, Spark::ServerTypeType::Server, Spark::IoModelType::Select, milliSecond, new QuantTrading::Packages::PackageFactory())
     {
         RegisterFront(address);
         ioThread_ = new IoThread("TradeFront");

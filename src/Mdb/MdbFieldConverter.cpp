@@ -1,7 +1,9 @@
-#include "MdbFieldConverter.h"
+﻿#include "MdbFieldConverter.h"
 
 #include <cstring>
 #include <type_traits>
+
+using namespace QuantTrading;
 
 namespace detail
 {

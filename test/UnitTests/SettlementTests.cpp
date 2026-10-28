@@ -1,9 +1,10 @@
-#include "Mdb.h"
+#include "LockBased/Mdb.h"
 #include "MdbTickSettlementPriceSource.h"
 #include "doctest/doctest.h"
 #include "SettlementTestHelpers.h"
 #include <limits>
 
+using namespace QuantTrading;
 using namespace QuantTrading::UnitTest;
 using QuantTrading::Settlement::MdbTickSettlementPriceSource;
 
@@ -107,23 +108,23 @@ TEST_CASE("RollToNextDay结转未平记录并过滤已平与零持仓")
     RollDay(settlement, "20240301", "20240302");
 
     CHECK(CountByTradingDay(settlementMdb.Positions, "20240302") == 1);
-    auto* nextPosition = FirstByTradingDay(settlementMdb.Positions, "20240302");
-    REQUIRE(nextPosition != nullptr);
+    auto nextPosition = FirstByTradingDay(settlementMdb.Positions, "20240302");
+    REQUIRE(nextPosition.has_value());
     CHECK(nextPosition->TotalPosition == 2);
     CHECK(nextPosition->TodayPosition == 0);
     CHECK(nextPosition->PreSettlementPrice == doctest::Approx(3100.0));
 
     CHECK(CountByTradingDay(settlementMdb.PositionDetails, "20240302") == 1);
-    auto* nextDetail = FirstByTradingDay(settlementMdb.PositionDetails, "20240302");
-    REQUIRE(nextDetail != nullptr);
+    auto nextDetail = FirstByTradingDay(settlementMdb.PositionDetails, "20240302");
+    REQUIRE(nextDetail.has_value());
     CHECK(std::string(nextDetail->OpenDate) == "20240301");
     CHECK(nextDetail->Volume == 2);
     CHECK(nextDetail->CloseVolume == 1);
     CHECK(nextDetail->PreSettlementPrice == doctest::Approx(3100.0));
 
     CHECK(CountByTradingDay(settlementMdb.Capitals, "20240302") == 1);
-    auto* nextCapital = FirstByTradingDay(settlementMdb.Capitals, "20240302");
-    REQUIRE(nextCapital != nullptr);
+    auto nextCapital = FirstByTradingDay(settlementMdb.Capitals, "20240302");
+    REQUIRE(nextCapital.has_value());
     CHECK(nextCapital->PreBalance == doctest::Approx(1100000.0));
     CHECK(nextCapital->MarketValue == doctest::Approx(0.0));
 }

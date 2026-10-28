@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 
+using namespace QuantTrading;
 using namespace QuantTrading::UnitTest;
 using QuantTrading::TestBackTest::BackTestSpiImpl;
 using QuantTrading::TestBackTest::BackTestSpiParams;

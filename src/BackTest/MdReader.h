@@ -1,7 +1,7 @@
 #pragma once
 #include <DbAdapters/DuckdbWrapper/DuckdbWrapper.h>
-#include <Spark/Types.h>
-#include "MdbStructs.h"
+#include <QuantTrading/Types.h>
+#include "Model/MdbStructs.h"
 #include "Config/Config.h"
 #include <list>
 #include <memory>

@@ -1,5 +1,5 @@
 #include "BackTestTableList.h"
-#include "Mdb.h"
+#include "LockBased/Mdb.h"
 #include "doctest/doctest.h"
 #include "CommissionTestHelpers.h"
 
@@ -7,6 +7,7 @@
 #include <cstring>
 #include <string>
 
+using namespace QuantTrading;
 using namespace QuantTrading::UnitTest;
 
 

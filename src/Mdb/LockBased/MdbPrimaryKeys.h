@@ -1,8 +1,10 @@
-﻿// 本文件由 ../Templates/Cpp/Mdb/MdbPrimaryKeys.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Mdb/LockBased/MdbPrimaryKeys.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
+#include <optional>
 #include <unordered_set>
-#include "MdbStructs.h"
-#include "MdbPrimaryKeyComp.h"
+#include "Model/MdbStructs.h"
+#include "Model/MdbPrimaryKeyComp.h"
+#include "Model/MdbReadLease.h"
 
 namespace QuantTrading
 {
@@ -12,14 +14,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<TradingDay*, TradingDayHashForTradingDayPrimaryKey, TradingDayEqualForTradingDayPrimaryKey>::iterator;
 		TradingDayTablePrimaryKey(TradingDayTable* tableOwner, size_t buckets = 1000);
-		TradingDay* Select(const Int32Type& Pk);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<TradingDay> Select(const Int32Type& Pk);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(TradingDay* const record);
 		void Erase(TradingDay* const record);
 		bool CheckInsert(TradingDay* const record);
-		bool CheckUpdate(const TradingDay* const oldRecord, const TradingDay* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		TradingDay* Find(const TradingDay* record);
 
 	private:
 		friend class TradingDayTable;
@@ -33,14 +36,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<Exchange*, ExchangeHashForExchangePrimaryKey, ExchangeEqualForExchangePrimaryKey>::iterator;
 		ExchangeTablePrimaryKey(ExchangeTable* tableOwner, size_t buckets = 1000);
-		Exchange* Select(const ExchangeIdType& ExchangeId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<Exchange> Select(const ExchangeIdType& ExchangeId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(Exchange* const record);
 		void Erase(Exchange* const record);
 		bool CheckInsert(Exchange* const record);
-		bool CheckUpdate(const Exchange* const oldRecord, const Exchange* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		Exchange* Find(const Exchange* record);
 
 	private:
 		friend class ExchangeTable;
@@ -54,14 +58,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<Product*, ProductHashForProductPrimaryKey, ProductEqualForProductPrimaryKey>::iterator;
 		ProductTablePrimaryKey(ProductTable* tableOwner, size_t buckets = 1000);
-		Product* Select(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<Product> Select(const ExchangeIdType& ExchangeId, const ProductIdType& ProductId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(Product* const record);
 		void Erase(Product* const record);
 		bool CheckInsert(Product* const record);
-		bool CheckUpdate(const Product* const oldRecord, const Product* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		Product* Find(const Product* record);
 
 	private:
 		friend class ProductTable;
@@ -75,14 +80,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<HotInstrument*, HotInstrumentHashForHotInstrumentPrimaryKey, HotInstrumentEqualForHotInstrumentPrimaryKey>::iterator;
 		HotInstrumentTablePrimaryKey(HotInstrumentTable* tableOwner, size_t buckets = 1000);
-		HotInstrument* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<HotInstrument> Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const ProductIdType& ProductId, const Int32Type& Rank);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(HotInstrument* const record);
 		void Erase(HotInstrument* const record);
 		bool CheckInsert(HotInstrument* const record);
-		bool CheckUpdate(const HotInstrument* const oldRecord, const HotInstrument* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		HotInstrument* Find(const HotInstrument* record);
 
 	private:
 		friend class HotInstrumentTable;
@@ -96,14 +102,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<Instrument*, InstrumentHashForInstrumentPrimaryKey, InstrumentEqualForInstrumentPrimaryKey>::iterator;
 		InstrumentTablePrimaryKey(InstrumentTable* tableOwner, size_t buckets = 1000);
-		Instrument* Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<Instrument> Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(Instrument* const record);
 		void Erase(Instrument* const record);
 		bool CheckInsert(Instrument* const record);
-		bool CheckUpdate(const Instrument* const oldRecord, const Instrument* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		Instrument* Find(const Instrument* record);
 
 	private:
 		friend class InstrumentTable;
@@ -117,14 +124,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<DepthMarketData*, DepthMarketDataHashForDepthMarketDataPrimaryKey, DepthMarketDataEqualForDepthMarketDataPrimaryKey>::iterator;
 		DepthMarketDataTablePrimaryKey(DepthMarketDataTable* tableOwner, size_t buckets = 1000);
-		DepthMarketData* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<DepthMarketData> Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(DepthMarketData* const record);
 		void Erase(DepthMarketData* const record);
 		bool CheckInsert(DepthMarketData* const record);
-		bool CheckUpdate(const DepthMarketData* const oldRecord, const DepthMarketData* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		DepthMarketData* Find(const DepthMarketData* record);
 
 	private:
 		friend class DepthMarketDataTable;
@@ -138,14 +146,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<BarMarketData*, BarMarketDataHashForBarMarketDataPrimaryKey, BarMarketDataEqualForBarMarketDataPrimaryKey>::iterator;
 		BarMarketDataTablePrimaryKey(BarMarketDataTable* tableOwner, size_t buckets = 1000);
-		BarMarketData* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const BarPrecesType& BarPreces, const Int32Type& BarPeriod, const Int64Type& BarTime);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<BarMarketData> Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const BarPrecesType& BarPreces, const Int32Type& BarPeriod, const Int64Type& BarTime);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(BarMarketData* const record);
 		void Erase(BarMarketData* const record);
 		bool CheckInsert(BarMarketData* const record);
-		bool CheckUpdate(const BarMarketData* const oldRecord, const BarMarketData* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		BarMarketData* Find(const BarMarketData* record);
 
 	private:
 		friend class BarMarketDataTable;
@@ -159,14 +168,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<MdSubscribe*, MdSubscribeHashForMdSubscribePrimaryKey, MdSubscribeEqualForMdSubscribePrimaryKey>::iterator;
 		MdSubscribeTablePrimaryKey(MdSubscribeTable* tableOwner, size_t buckets = 1000);
-		MdSubscribe* Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DateType& StartTradingDay);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<MdSubscribe> Select(const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DateType& StartTradingDay);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(MdSubscribe* const record);
 		void Erase(MdSubscribe* const record);
 		bool CheckInsert(MdSubscribe* const record);
-		bool CheckUpdate(const MdSubscribe* const oldRecord, const MdSubscribe* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		MdSubscribe* Find(const MdSubscribe* record);
 
 	private:
 		friend class MdSubscribeTable;
@@ -180,14 +190,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<MdUser*, MdUserHashForMdUserPrimaryKey, MdUserEqualForMdUserPrimaryKey>::iterator;
 		MdUserTablePrimaryKey(MdUserTable* tableOwner, size_t buckets = 1000);
-		MdUser* Select(const UserIdType& MdUserId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<MdUser> Select(const UserIdType& MdUserId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(MdUser* const record);
 		void Erase(MdUser* const record);
 		bool CheckInsert(MdUser* const record);
-		bool CheckUpdate(const MdUser* const oldRecord, const MdUser* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		MdUser* Find(const MdUser* record);
 
 	private:
 		friend class MdUserTable;
@@ -201,14 +212,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<MdUserLoginSession*, MdUserLoginSessionHashForMdUserLoginSessionPrimaryKey, MdUserLoginSessionEqualForMdUserLoginSessionPrimaryKey>::iterator;
 		MdUserLoginSessionTablePrimaryKey(MdUserLoginSessionTable* tableOwner, size_t buckets = 1000);
-		MdUserLoginSession* Select(const UserIdType& MdUserId, const SessionIdType& SessionId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<MdUserLoginSession> Select(const UserIdType& MdUserId, const SessionIdType& SessionId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(MdUserLoginSession* const record);
 		void Erase(MdUserLoginSession* const record);
 		bool CheckInsert(MdUserLoginSession* const record);
-		bool CheckUpdate(const MdUserLoginSession* const oldRecord, const MdUserLoginSession* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		MdUserLoginSession* Find(const MdUserLoginSession* record);
 
 	private:
 		friend class MdUserLoginSessionTable;
@@ -222,14 +234,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<PrimaryAccount*, PrimaryAccountHashForPrimaryAccountPrimaryKey, PrimaryAccountEqualForPrimaryAccountPrimaryKey>::iterator;
 		PrimaryAccountTablePrimaryKey(PrimaryAccountTable* tableOwner, size_t buckets = 1000);
-		PrimaryAccount* Select(const AccountIdType& PrimaryAccountId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<PrimaryAccount> Select(const AccountIdType& PrimaryAccountId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(PrimaryAccount* const record);
 		void Erase(PrimaryAccount* const record);
 		bool CheckInsert(PrimaryAccount* const record);
-		bool CheckUpdate(const PrimaryAccount* const oldRecord, const PrimaryAccount* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		PrimaryAccount* Find(const PrimaryAccount* record);
 
 	private:
 		friend class PrimaryAccountTable;
@@ -243,14 +256,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<Account*, AccountHashForAccountPrimaryKey, AccountEqualForAccountPrimaryKey>::iterator;
 		AccountTablePrimaryKey(AccountTable* tableOwner, size_t buckets = 1000);
-		Account* Select(const AccountIdType& AccountId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<Account> Select(const AccountIdType& AccountId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(Account* const record);
 		void Erase(Account* const record);
 		bool CheckInsert(Account* const record);
-		bool CheckUpdate(const Account* const oldRecord, const Account* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		Account* Find(const Account* record);
 
 	private:
 		friend class AccountTable;
@@ -264,14 +278,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<Capital*, CapitalHashForCapitalPrimaryKey, CapitalEqualForCapitalPrimaryKey>::iterator;
 		CapitalTablePrimaryKey(CapitalTable* tableOwner, size_t buckets = 1000);
-		Capital* Select(const DateType& TradingDay, const AccountIdType& AccountId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<Capital> Select(const DateType& TradingDay, const AccountIdType& AccountId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(Capital* const record);
 		void Erase(Capital* const record);
 		bool CheckInsert(Capital* const record);
-		bool CheckUpdate(const Capital* const oldRecord, const Capital* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		Capital* Find(const Capital* record);
 
 	private:
 		friend class CapitalTable;
@@ -285,14 +300,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<Position*, PositionHashForPositionPrimaryKey, PositionEqualForPositionPrimaryKey>::iterator;
 		PositionTablePrimaryKey(PositionTable* tableOwner, size_t buckets = 1000);
-		Position* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<Position> Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(Position* const record);
 		void Erase(Position* const record);
 		bool CheckInsert(Position* const record);
-		bool CheckUpdate(const Position* const oldRecord, const Position* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		Position* Find(const Position* record);
 
 	private:
 		friend class PositionTable;
@@ -306,14 +322,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<PositionDetail*, PositionDetailHashForPositionDetailPrimaryKey, PositionDetailEqualForPositionDetailPrimaryKey>::iterator;
 		PositionDetailTablePrimaryKey(PositionDetailTable* tableOwner, size_t buckets = 1000);
-		PositionDetail* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIdType& TradeId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<PositionDetail> Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const PosiDirectionType& PosiDirection, const DateType& OpenDate, const TradeIdType& TradeId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(PositionDetail* const record);
 		void Erase(PositionDetail* const record);
 		bool CheckInsert(PositionDetail* const record);
-		bool CheckUpdate(const PositionDetail* const oldRecord, const PositionDetail* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		PositionDetail* Find(const PositionDetail* record);
 
 	private:
 		friend class PositionDetailTable;
@@ -327,14 +344,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<Order*, OrderHashForOrderPrimaryKey, OrderEqualForOrderPrimaryKey>::iterator;
 		OrderTablePrimaryKey(OrderTable* tableOwner, size_t buckets = 1000);
-		Order* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const OrderIdType& OrderId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<Order> Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const OrderIdType& OrderId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(Order* const record);
 		void Erase(Order* const record);
 		bool CheckInsert(Order* const record);
-		bool CheckUpdate(const Order* const oldRecord, const Order* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		Order* Find(const Order* record);
 
 	private:
 		friend class OrderTable;
@@ -346,8 +364,8 @@ namespace QuantTrading
 	{
 	public:
 		OrderTableUniqueKeyClientOrderId(OrderTable* tableOwner, size_t buckets = 1000);
-		Order* Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const SessionIdType& SessionId, const ClientOrderIdType& ClientOrderId);
-		
+		std::optional<Order> Select(const DateType& TradingDay, const AccountIdType& AccountId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const SessionIdType& SessionId, const ClientOrderIdType& ClientOrderId);
+
 	protected:
 		bool Insert(Order* const record);
 		void Erase(Order* const record);
@@ -367,14 +385,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<Trade*, TradeHashForTradePrimaryKey, TradeEqualForTradePrimaryKey>::iterator;
 		TradeTablePrimaryKey(TradeTable* tableOwner, size_t buckets = 1000);
-		Trade* Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const TradeIdType& TradeId, const DirectionType& Direction);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<Trade> Select(const DateType& TradingDay, const ExchangeIdType& ExchangeId, const TradeIdType& TradeId, const DirectionType& Direction);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(Trade* const record);
 		void Erase(Trade* const record);
 		bool CheckInsert(Trade* const record);
-		bool CheckUpdate(const Trade* const oldRecord, const Trade* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		Trade* Find(const Trade* record);
 
 	private:
 		friend class TradeTable;
@@ -388,14 +407,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<AccountLoginSession*, AccountLoginSessionHashForAccountLoginSessionPrimaryKey, AccountLoginSessionEqualForAccountLoginSessionPrimaryKey>::iterator;
 		AccountLoginSessionTablePrimaryKey(AccountLoginSessionTable* tableOwner, size_t buckets = 1000);
-		AccountLoginSession* Select(const AccountIdType& AccountId, const SessionIdType& SessionId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<AccountLoginSession> Select(const AccountIdType& AccountId, const SessionIdType& SessionId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(AccountLoginSession* const record);
 		void Erase(AccountLoginSession* const record);
 		bool CheckInsert(AccountLoginSession* const record);
-		bool CheckUpdate(const AccountLoginSession* const oldRecord, const AccountLoginSession* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		AccountLoginSession* Find(const AccountLoginSession* record);
 
 	private:
 		friend class AccountLoginSessionTable;
@@ -409,14 +429,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<PrimaryAccountLoginSession*, PrimaryAccountLoginSessionHashForPrimaryAccountLoginSessionPrimaryKey, PrimaryAccountLoginSessionEqualForPrimaryAccountLoginSessionPrimaryKey>::iterator;
 		PrimaryAccountLoginSessionTablePrimaryKey(PrimaryAccountLoginSessionTable* tableOwner, size_t buckets = 1000);
-		PrimaryAccountLoginSession* Select(const AccountIdType& PrimaryAccountId, const SessionIdType& SessionId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<PrimaryAccountLoginSession> Select(const AccountIdType& PrimaryAccountId, const SessionIdType& SessionId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(PrimaryAccountLoginSession* const record);
 		void Erase(PrimaryAccountLoginSession* const record);
 		bool CheckInsert(PrimaryAccountLoginSession* const record);
-		bool CheckUpdate(const PrimaryAccountLoginSession* const oldRecord, const PrimaryAccountLoginSession* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		PrimaryAccountLoginSession* Find(const PrimaryAccountLoginSession* record);
 
 	private:
 		friend class PrimaryAccountLoginSessionTable;
@@ -430,14 +451,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<CommissionGroup*, CommissionGroupHashForCommissionGroupPrimaryKey, CommissionGroupEqualForCommissionGroupPrimaryKey>::iterator;
 		CommissionGroupTablePrimaryKey(CommissionGroupTable* tableOwner, size_t buckets = 1000);
-		CommissionGroup* Select(const GroupIdType& CommissionGroupId);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<CommissionGroup> Select(const GroupIdType& CommissionGroupId);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(CommissionGroup* const record);
 		void Erase(CommissionGroup* const record);
 		bool CheckInsert(CommissionGroup* const record);
-		bool CheckUpdate(const CommissionGroup* const oldRecord, const CommissionGroup* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		CommissionGroup* Find(const CommissionGroup* record);
 
 	private:
 		friend class CommissionGroupTable;
@@ -451,14 +473,15 @@ namespace QuantTrading
 	public:
 		using iterator = std::unordered_set<BaseCommission*, BaseCommissionHashForBaseCommissionPrimaryKey, BaseCommissionEqualForBaseCommissionPrimaryKey>::iterator;
 		BaseCommissionTablePrimaryKey(BaseCommissionTable* tableOwner, size_t buckets = 1000);
-		BaseCommission* Select(const GroupIdType& CommissionGroupId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DirectionType& Direction);
-		std::pair<iterator, iterator> SelectAll();
-		
+		std::optional<BaseCommission> Select(const GroupIdType& CommissionGroupId, const ExchangeIdType& ExchangeId, const InstrumentIdType& InstrumentId, const DirectionType& Direction);
+		TableRangeLease<iterator> SelectAll();
+
 	protected:
 		bool Insert(BaseCommission* const record);
 		void Erase(BaseCommission* const record);
 		bool CheckInsert(BaseCommission* const record);
-		bool CheckUpdate(const BaseCommission* const oldRecord, const BaseCommission* const newRecord);
+		// 调用方必须已持有 SharedMutex；返回表内活记录，不存在则为空
+		BaseCommission* Find(const BaseCommission* record);
 
 	private:
 		friend class BaseCommissionTable;

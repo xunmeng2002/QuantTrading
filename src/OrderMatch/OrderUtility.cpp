@@ -1,6 +1,6 @@
 #include "OrderUtility.h"
 #include "Error.h"
-#include "MdbTables.h"
+#include "LockBased/MdbTables.h"
 #include <Spark/Core/Utility/Utility.h>
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <string>
@@ -49,12 +49,12 @@ namespace QuantTrading::OrderMatch
     void SeedNextOrderIDFromOrders(QuantTrading::OrderTable* orderTable)
     {
         OrderIdType maxOrderId = 0;
-        auto orderPair = orderTable->PrimaryKey->SelectAll();
-        for (auto& it = orderPair.first; it != orderPair.second; ++it)
+        auto orders = orderTable->PrimaryKey->SelectAll();
+        for (auto order : orders)
         {
-            if ((*it)->OrderId > maxOrderId)
+            if (order->OrderId > maxOrderId)
             {
-                maxOrderId = (*it)->OrderId;
+                maxOrderId = order->OrderId;
             }
         }
         SeedNextOrderIDFromMaxOrderID(maxOrderId);

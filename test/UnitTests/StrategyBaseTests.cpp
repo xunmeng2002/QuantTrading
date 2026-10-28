@@ -5,6 +5,7 @@
 
 #include <string>
 
+using namespace QuantTrading;
 using namespace QuantTrading::UnitTest;
 
 namespace QuantTrading::UnitTest

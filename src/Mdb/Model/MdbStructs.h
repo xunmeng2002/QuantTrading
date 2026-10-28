@@ -1,7 +1,7 @@
-﻿// 本文件由 ../Templates/Cpp/Mdb/MdbStructs.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Mdb/Model/MdbStructs.h.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #pragma once
 #include <DbAdapters/DbInterface/Schema.h>
-#include <Spark/Types.h>
+#include <QuantTrading/Types.h>
 
 using DbAdapters::TableSchema;
 
@@ -76,6 +76,7 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x0004;
+		static constexpr unsigned int IndexTradingDayId = 0x0000;
 		//交易日
 		DateType TradingDay;
 		//交易所代码
@@ -111,6 +112,7 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x0005;
+		static constexpr unsigned int IndexExchangeIdId = 0x0000;
 		//交易所代码
 		ExchangeIdType ExchangeId;
 		//合约代码
@@ -378,6 +380,8 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x2005;
+		static constexpr unsigned int IndexSessionIdId = 0x0000;
+		static constexpr unsigned int IndexMdUserIdId = 0x0001;
 		//行情用户代码
 		UserIdType MdUserId;
 		//会话编号
@@ -395,6 +399,7 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x3001;
+		static constexpr unsigned int IndexOfferIdId = 0x0000;
 		//主账户代码
 		AccountIdType PrimaryAccountId;
 		//主账户名称
@@ -451,6 +456,7 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x3003;
+		static constexpr unsigned int IndexTradingDayId = 0x0000;
 		//交易日
 		DateType TradingDay;
 		//账户代码
@@ -506,6 +512,8 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x3004;
+		static constexpr unsigned int IndexAccountId = 0x0000;
+		static constexpr unsigned int IndexTradingDayId = 0x0001;
 		//交易日
 		DateType TradingDay;
 		//账户代码
@@ -571,6 +579,8 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x3005;
+		static constexpr unsigned int IndexTradeMatchId = 0x0000;
+		static constexpr unsigned int IndexTradingDayId = 0x0001;
 		//交易日
 		DateType TradingDay;
 		//账户代码
@@ -636,6 +646,7 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x3006;
+		static constexpr unsigned int IndexAccountIdId = 0x0000;
 		//交易日
 		DateType TradingDay;
 		//账户代码
@@ -713,6 +724,7 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x3007;
+		static constexpr unsigned int IndexAccountIdId = 0x0000;
 		//交易日
 		DateType TradingDay;
 		//账户代码
@@ -764,6 +776,8 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x3008;
+		static constexpr unsigned int IndexSessionIdId = 0x0000;
+		static constexpr unsigned int IndexAccountIdId = 0x0001;
 		//账户代码
 		AccountIdType AccountId;
 		//会话编号
@@ -781,6 +795,8 @@ namespace QuantTrading
 	{
 	public:
 		static constexpr unsigned int TableId = 0x3009;
+		static constexpr unsigned int IndexSessionIdId = 0x0000;
+		static constexpr unsigned int IndexPrimaryAccountIdId = 0x0001;
 		//主账户代码
 		AccountIdType PrimaryAccountId;
 		//会话编号

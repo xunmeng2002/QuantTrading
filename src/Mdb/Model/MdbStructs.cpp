@@ -1,6 +1,5 @@
-﻿// 本文件由 ../Templates/Cpp/Mdb/MdbStructs.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
+// 本文件由 ../Templates/Cpp/Mdb/Model/MdbStructs.cpp.tpl 生成；请勿手改，改动请改模板后重跑 pumpall.py
 #include "MdbStructs.h"
-#include "MdbIndexes.h"
 #include <Spark/TemplateLib/TemplateLib.h>
 #include <string>
 #include <cstring>
@@ -128,7 +127,7 @@ namespace QuantTrading
 	static const int HotInstrumentPKIndices[] = { 0, 1, 2, 11 };
 	static const int HotInstrumentIdxTradingDay[] = { 1, 2, 11, 0 };
 	static const IndexDefinition HotInstrumentIndices[] = {
-		{HotInstrumentTableIndexTradingDay::IndexID, HotInstrumentIdxTradingDay, 4},
+		{HotInstrument::IndexTradingDayId, HotInstrumentIdxTradingDay, 4},
 	};
 	HotInstrument* HotInstrument::Allocate()
 	{
@@ -175,7 +174,7 @@ namespace QuantTrading
 	static const int InstrumentPKIndices[] = { 0, 1 };
 	static const int InstrumentIdxExchangeId[] = { 0 };
 	static const IndexDefinition InstrumentIndices[] = {
-		{InstrumentTableIndexExchangeId::IndexID, InstrumentIdxExchangeId, 1},
+		{Instrument::IndexExchangeIdId, InstrumentIdxExchangeId, 1},
 	};
 	Instrument* Instrument::Allocate()
 	{
@@ -414,8 +413,8 @@ namespace QuantTrading
 	static const int MdUserLoginSessionIdxSessionId[] = { 1 };
 	static const int MdUserLoginSessionIdxMdUserId[] = { 0 };
 	static const IndexDefinition MdUserLoginSessionIndices[] = {
-		{MdUserLoginSessionTableIndexSessionId::IndexID, MdUserLoginSessionIdxSessionId, 1},
-		{MdUserLoginSessionTableIndexMdUserId::IndexID, MdUserLoginSessionIdxMdUserId, 1},
+		{MdUserLoginSession::IndexSessionIdId, MdUserLoginSessionIdxSessionId, 1},
+		{MdUserLoginSession::IndexMdUserIdId, MdUserLoginSessionIdxMdUserId, 1},
 	};
 	MdUserLoginSession* MdUserLoginSession::Allocate()
 	{
@@ -456,7 +455,7 @@ namespace QuantTrading
 	static const int PrimaryAccountPKIndices[] = { 0 };
 	static const int PrimaryAccountIdxOfferId[] = { 4 };
 	static const IndexDefinition PrimaryAccountIndices[] = {
-		{PrimaryAccountTableIndexOfferId::IndexID, PrimaryAccountIdxOfferId, 1},
+		{PrimaryAccount::IndexOfferIdId, PrimaryAccountIdxOfferId, 1},
 	};
 	PrimaryAccount* PrimaryAccount::Allocate()
 	{
@@ -546,7 +545,7 @@ namespace QuantTrading
 	static const int CapitalPKIndices[] = { 0, 1 };
 	static const int CapitalIdxTradingDay[] = { 0 };
 	static const IndexDefinition CapitalIndices[] = {
-		{CapitalTableIndexTradingDay::IndexID, CapitalIdxTradingDay, 1},
+		{Capital::IndexTradingDayId, CapitalIdxTradingDay, 1},
 	};
 	Capital* Capital::Allocate()
 	{
@@ -606,8 +605,8 @@ namespace QuantTrading
 	static const int PositionIdxAccount[] = { 0, 1 };
 	static const int PositionIdxTradingDay[] = { 0 };
 	static const IndexDefinition PositionIndices[] = {
-		{PositionTableIndexAccount::IndexID, PositionIdxAccount, 2},
-		{PositionTableIndexTradingDay::IndexID, PositionIdxTradingDay, 1},
+		{Position::IndexAccountId, PositionIdxAccount, 2},
+		{Position::IndexTradingDayId, PositionIdxTradingDay, 1},
 	};
 	Position* Position::Allocate()
 	{
@@ -667,8 +666,8 @@ namespace QuantTrading
 	static const int PositionDetailIdxTradeMatch[] = { 0, 1, 3, 4, 6 };
 	static const int PositionDetailIdxTradingDay[] = { 0 };
 	static const IndexDefinition PositionDetailIndices[] = {
-		{PositionDetailTableIndexTradeMatch::IndexID, PositionDetailIdxTradeMatch, 5},
-		{PositionDetailTableIndexTradingDay::IndexID, PositionDetailIdxTradingDay, 1},
+		{PositionDetail::IndexTradeMatchId, PositionDetailIdxTradeMatch, 5},
+		{PositionDetail::IndexTradingDayId, PositionDetailIdxTradingDay, 1},
 	};
 	PositionDetail* PositionDetail::Allocate()
 	{
@@ -733,7 +732,7 @@ namespace QuantTrading
 	static const int OrderPKIndices[] = { 0, 1, 3, 4, 6 };
 	static const int OrderIdxAccountId[] = { 0, 1 };
 	static const IndexDefinition OrderIndices[] = {
-		{OrderTableIndexAccountId::IndexID, OrderIdxAccountId, 2},
+		{Order::IndexAccountIdId, OrderIdxAccountId, 2},
 	};
 	Order* Order::Allocate()
 	{
@@ -785,7 +784,7 @@ namespace QuantTrading
 	static const int TradePKIndices[] = { 0, 3, 8, 9 };
 	static const int TradeIdxAccountId[] = { 0, 1 };
 	static const IndexDefinition TradeIndices[] = {
-		{TradeTableIndexAccountId::IndexID, TradeIdxAccountId, 2},
+		{Trade::IndexAccountIdId, TradeIdxAccountId, 2},
 	};
 	Trade* Trade::Allocate()
 	{
@@ -821,8 +820,8 @@ namespace QuantTrading
 	static const int AccountLoginSessionIdxSessionId[] = { 1 };
 	static const int AccountLoginSessionIdxAccountId[] = { 0 };
 	static const IndexDefinition AccountLoginSessionIndices[] = {
-		{AccountLoginSessionTableIndexSessionId::IndexID, AccountLoginSessionIdxSessionId, 1},
-		{AccountLoginSessionTableIndexAccountId::IndexID, AccountLoginSessionIdxAccountId, 1},
+		{AccountLoginSession::IndexSessionIdId, AccountLoginSessionIdxSessionId, 1},
+		{AccountLoginSession::IndexAccountIdId, AccountLoginSessionIdxAccountId, 1},
 	};
 	AccountLoginSession* AccountLoginSession::Allocate()
 	{
@@ -858,8 +857,8 @@ namespace QuantTrading
 	static const int PrimaryAccountLoginSessionIdxSessionId[] = { 1 };
 	static const int PrimaryAccountLoginSessionIdxPrimaryAccountId[] = { 0 };
 	static const IndexDefinition PrimaryAccountLoginSessionIndices[] = {
-		{PrimaryAccountLoginSessionTableIndexSessionId::IndexID, PrimaryAccountLoginSessionIdxSessionId, 1},
-		{PrimaryAccountLoginSessionTableIndexPrimaryAccountId::IndexID, PrimaryAccountLoginSessionIdxPrimaryAccountId, 1},
+		{PrimaryAccountLoginSession::IndexSessionIdId, PrimaryAccountLoginSessionIdxSessionId, 1},
+		{PrimaryAccountLoginSession::IndexPrimaryAccountIdId, PrimaryAccountLoginSessionIdxPrimaryAccountId, 1},
 	};
 	PrimaryAccountLoginSession* PrimaryAccountLoginSession::Allocate()
 	{
