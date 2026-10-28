@@ -60,7 +60,7 @@ def GetFields(fieldFile, items, fields):
 def GetPackages(packageFile, fields, packages, destFields):
     dom = xml.dom.minidom.parse(packageFile)
     root = dom.documentElement
-    projectName = root.getAttribute("project")
+    rootAttributes = dict(root.attributes.items())
     lastId = 0
     for packageNode in root.getElementsByTagName("package"):
         package = Package()
@@ -78,7 +78,7 @@ def GetPackages(packageFile, fields, packages, destFields):
             package.Fields.append(fields[fieldName])
             destFields[fieldName] = fields[fieldName]
         packages.append(package)
-    return projectName
+    return rootAttributes
 	
 def AddItemNode(dom, parentNode, item):
     itemNode = dom.createElement('item')
@@ -113,14 +113,15 @@ def ReadXml(packageFile, fieldFile, itemFile):
     destFields = {}
     GetItems(itemFile, items)
     fieldRootAttributes = GetFields(fieldFile, items, fields)
-    projectName = GetPackages(packageFile, fields, packages, destFields)
-    return projectName, packages, destFields, fieldRootAttributes
+    packageRootAttributes = GetPackages(packageFile, fields, packages, destFields)
+    return packages, destFields, fieldRootAttributes, packageRootAttributes
 
-def WritePackagesFile(destPackageFile, projectName, packages):
+def WritePackagesFile(destPackageFile, packages, sourceRootAttributes):
     impl = xml.dom.minidom.getDOMImplementation()
     dom = impl.createDocument(None, 'packages', None)
     root = dom.documentElement
-    root.setAttribute("project", projectName)
+    for name, value in sourceRootAttributes.items():
+        root.setAttribute(name, value)
     for package in packages:
         AddPackageNode(dom, root, package)
     f = open(destPackageFile, 'w', encoding="UTF-8")
@@ -163,7 +164,7 @@ if __name__ == "__main__":
     srcFieldFile = sys.argv[5]
     srcItemFile = sys.argv[6]
 
-    projectName, packages, fields, fieldRootAttributes = ReadXml(srcPackageFile, srcFieldFile, srcItemFile)
-    WritePackagesFile(destPackageFile, projectName, packages)
+    packages, fields, fieldRootAttributes, packageRootAttributes = ReadXml(srcPackageFile, srcFieldFile, srcItemFile)
+    WritePackagesFile(destPackageFile, packages, packageRootAttributes)
     WriteFullApiPackagesFile(fullApiPackageFile, packages)
     WriteFieldsFile(destFieldFile, fields, fieldRootAttributes)
