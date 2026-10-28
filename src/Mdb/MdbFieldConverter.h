@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <QuantTrading/Fields.h>
-#include "Model/MdbStructs.h"
+#include "Common/MdbStructs.h"
 
 void FieldToMdb(const QuantTrading::DepthMarketDataField* field, QuantTrading::DepthMarketData* dbStruct);
 void MdbToField(const QuantTrading::DepthMarketData* dbStruct, QuantTrading::DepthMarketDataField* field);

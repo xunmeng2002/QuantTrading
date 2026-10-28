@@ -1,5 +1,5 @@
 #pragma once
-#include "Model/MdbStructs.h"
+#include "Common/MdbStructs.h"
 
 namespace QuantTrading
 {

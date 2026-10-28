@@ -10,7 +10,7 @@
 #include "MdReader.h"
 #include "RunResult.h"
 #include "LockBased/Mdb.h"
-#include "Model/MdbTableRegistry.h"
+#include "Common/MdbTableRegistry.h"
 #include "BarAggregator.h"
 #include "TradeSession.h"
 #include <QuantTrading/Fields.h>

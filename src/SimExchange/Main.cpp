@@ -4,7 +4,7 @@
 #include "ServerConfig.h"
 #include "LockBased/Mdb.h"
 #include "LockBased/InitMdbFromDb.h"
-#include "Model/MdbTableRegistry.h"
+#include "Common/MdbTableRegistry.h"
 #include "SimExchangeTableList.h"
 #include "MdSpiImpl.h"
 #include "MdFront.h"

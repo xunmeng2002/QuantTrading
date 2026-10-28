@@ -1,6 +1,6 @@
 #include "SimExchange.h"
 #include "MdbTickSettlementPriceSource.h"
-#include "Model/MdbTableRegistry.h"
+#include "Common/MdbTableRegistry.h"
 #include "BackTestTableList.h"
 #include <Spark/TemplateLib/ObjectPool/ObjectPool.h>
 #include "DatabaseAdapterFactory.h"

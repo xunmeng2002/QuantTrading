@@ -1,6 +1,6 @@
 #pragma once
 #include "OrderUtility.h"
-#include "Model/MdbStructs.h"
+#include "Common/MdbStructs.h"
 #include <string>
 #include <map>
 #include <set>

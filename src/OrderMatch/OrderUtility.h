@@ -1,5 +1,5 @@
 #pragma once
-#include "Model/MdbStructs.h"
+#include "Common/MdbStructs.h"
 #include "LockBased/MdbTables.h"
 #include "Packages.h"
 

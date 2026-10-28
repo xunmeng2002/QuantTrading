@@ -9,7 +9,7 @@
 #include <Spark/Core/Utility/TimeUtility.h>
 #include <Spark/Core/Utility/Utility.h>
 #include "LockBased/Mdb.h"
-#include "Model/MdbTableRegistry.h"
+#include "Common/MdbTableRegistry.h"
 #include "MdOfferTableList.h"
 #include <DbAdapters/DbInterface/Db.h>
 #include <DbAdapters/DbInterface/TypedTable.h>

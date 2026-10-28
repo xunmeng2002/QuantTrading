@@ -1,7 +1,7 @@
 #pragma once
 #include "TestHelpers.h"
-#include "Model/TableList.h"
-#include "Model/MdbStructs.h"
+#include "Common/TableList.h"
+#include "Common/MdbStructs.h"
 #include "CommissionCalculator.h"
 #include "PositionMaintenance.h"
 #include <cstring>
