@@ -9,6 +9,7 @@
 #include <string>
 
 namespace py = pybind11;
+using namespace QuantTrading;
 using namespace Spark::Core;
 using QuantTrading::strategy::StrategyBase;
 

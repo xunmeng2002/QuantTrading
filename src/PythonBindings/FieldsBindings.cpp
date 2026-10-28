@@ -4,6 +4,8 @@
 
 #include <string>
 
+using namespace QuantTrading;
+
 namespace
 {
 namespace py = pybind11;
