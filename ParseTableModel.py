@@ -43,7 +43,7 @@ def GetTables(tableFile, items, tables) -> tuple[str, dict[str, str]]:
     for tableNode in root.getElementsByTagName("table"):
         table = Table()
         table.Name = tableNode.getAttribute("name")
-        table.DbName = tableNode.getAttribute("dbname")
+        table.DbName = tableNode.getAttribute("dbname") or table.Name
         tableId = tableNode.getAttribute("id")
         if tableId:
             table.Id = int(tableId, 16)

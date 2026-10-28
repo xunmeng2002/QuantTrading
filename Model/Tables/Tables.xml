@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tables project="QuantTrading" typesInclude="QuantTrading/Types.h">
+<tables project="QuantTrading">
 	<table name="TradingDay" dbname="TradingDays" id="0x0001" desc="交易日" batch="" session="">
 		<items>
 			<item name="Pk" id="0x2901" type="Int32" desc="主键"/>
