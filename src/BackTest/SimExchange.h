@@ -124,7 +124,6 @@ private:
 	QuantTrading::Mdb* mdb_;
 	// 成交计费器：声明在 mdb_ 之后，构造初始化列表按声明序取到已建好的 mdb_
 	QuantTrading::Settlement::CommissionCalculator commissionCalculator_;
-    DbAdapters::Db* db_;
 	QuantTrading::MdbTableRegistry registry_;
     DbAdapters::AsyncDbWriter* dbWriter_;
 	bool hasSubMd_;

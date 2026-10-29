@@ -16,6 +16,7 @@
 #include <chrono>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string.h>
 #include <thread>
 
@@ -48,15 +49,15 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Db* db = QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
-	if (db == nullptr)
+	std::unique_ptr<Db> database(QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword));
+	if (database == nullptr)
 	{
 		Logger::GetInstance().Stop();
 		Logger::GetInstance().Join();
 		return -1;
 	}
     QuantTrading::MdbTableRegistry registry(SimExchangeTableList);
-	AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &registry);
+	AsyncDbWriter* dbWriter = new AsyncDbWriter(std::move(database), &registry);
 	Mdb* mdb = new Mdb(SimExchangeTableList);
 	mdb->SubscribeReplica(dbWriter);
 	dbWriter->Subscribe(mdb);

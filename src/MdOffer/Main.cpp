@@ -21,6 +21,7 @@
 #include "TradeSession.h"
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <string.h>
 #include <thread>
 
@@ -71,15 +72,15 @@ int main(int argc, char* argv[])
 		return Exit();
 	}
 
-    Db* db = QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
-    if (db == nullptr)
+    std::unique_ptr<Db> database(QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword));
+    if (database == nullptr)
     {
         return Exit();
     }
 
     Mdb* mdb = new Mdb(MdOfferTableList);
     QuantTrading::MdbTableRegistry schemaRegistry(MdOfferTableList);
-    AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &schemaRegistry);
+    AsyncDbWriter* dbWriter = new AsyncDbWriter(std::move(database), &schemaRegistry);
     mdb->SubscribeReplica(dbWriter);
     dbWriter->Subscribe(mdb);
 

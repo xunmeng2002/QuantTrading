@@ -121,11 +121,11 @@ SimExchange::SimExchange(const Config& config)
 	std::error_code dumpDirError;
 	std::filesystem::create_directories(dumpPath_, dumpDirError);
 	runDbHost_ = DeriveRunDbHost(config.DbHost, runId_);
-	db_ = QuantTrading::CreateDatabaseAdapter(config.DbType, runDbHost_, config.DbUser, config.DbPassword);
+	unique_ptr<Db> database(QuantTrading::CreateDatabaseAdapter(config.DbType, runDbHost_, config.DbUser, config.DbPassword));
 	WriteLog(LogLevel::Info, "RunID:%s, DbHost:%s, DumpPath:%s", runId_.c_str(), runDbHost_.c_str(), dumpPath_.c_str());
 	// 种子必须在 Subscribe 之前灌：种子行不逐行入队，避免与收尾 mdb_->InitDb() 的批量入队重复写库
 	basicDataLoaded_ = LoadBasicDataFromInitDb(config);
-    dbWriter_ = new AsyncDbWriter(db_, &registry_);
+    dbWriter_ = new AsyncDbWriter(move(database), &registry_);
 	dbWriter_->Subscribe(this);
 	orderMatch_ = QuantTrading::OrderMatch::OrderMatch::CreateOrderMatch(matchMode, tradingDay_);
 	orderMatch_->Subscribe(this);
@@ -150,7 +150,7 @@ SimExchange::~SimExchange()
 }
 bool SimExchange::Init()
 {
-	if (db_ == nullptr)
+	if (dbWriter_->GetDb() == nullptr)
 	{
 		WriteLog(LogLevel::Error, "Create Db Failed.");
 		return false;

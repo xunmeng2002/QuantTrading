@@ -16,6 +16,7 @@
 #include <DbAdapters/AsyncDbWriter/AsyncDbWriter.h>
 #include <DbAdapters/DbInterface/Db.h>
 #include <chrono>
+#include <memory>
 #include <string.h>
 #include <thread>
 
@@ -49,14 +50,14 @@ int main(int argc, char* argv[])
 	ShutdownSignal::InstallHandlers();
 
 	Db* initDb = QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbInitHost, config.DbUser, config.DbPassword);
-	Db* db = QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword);
-	if (initDb == nullptr || db == nullptr)
+	std::unique_ptr<Db> database(QuantTrading::CreateDatabaseAdapter(config.DbType, config.DbHost, config.DbUser, config.DbPassword));
+	if (initDb == nullptr || database == nullptr)
 	{
 		return Exit();
 	}
 	Mdb* mdb = new Mdb(SimExchangeTableList);
 	QuantTrading::MdbTableRegistry schemaRegistry(SimExchangeTableList);
-	AsyncDbWriter* dbWriter = new AsyncDbWriter(db, &schemaRegistry);
+	AsyncDbWriter* dbWriter = new AsyncDbWriter(std::move(database), &schemaRegistry);
 	if (!initDb->Connect())
 	{
 		WriteLog(LogLevel::Error, "InitDb Connect Failed.");
