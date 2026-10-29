@@ -150,7 +150,7 @@ SimExchange::~SimExchange()
 }
 bool SimExchange::Init()
 {
-	if (dbWriter_->GetDb() == nullptr)
+	if (!dbWriter_->HasDb())
 	{
 		WriteLog(LogLevel::Error, "Create Db Failed.");
 		return false;
