@@ -267,6 +267,12 @@ target_include_directories(UnitTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/Bac
 target_compile_definitions(UnitTests PRIVATE BACKTEST_STATIC_DEFINE)
 copy_dll_file(UnitTests)
 
+# 基准：单次操作成本；数值只在 Release 下有效，Debug 运行会自报警告
+option(BUILD_BENCHMARKS "Build benchmarks (Release build gives meaningful numbers)" ON)
+if(BUILD_BENCHMARKS)
+    add_subdirectory(test/Benchmarks)
+endif()
+
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(TARGETS
