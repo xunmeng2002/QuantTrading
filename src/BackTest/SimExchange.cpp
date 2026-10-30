@@ -39,10 +39,10 @@ static std::string MakeRunId()
     const long long milliSecondSinceEpoch = now.time_since_epoch().count();
     // 毫秒取模在负纪元（系统时钟早于 1970）下得负值，补正后再格式化，避免 '-' 混入目录名
     const long long milliSecondOfSecond = (milliSecondSinceEpoch % 1000 + 1000) % 1000;
-    const std::tm* localTm = TimeUtility::GetLocalTm();
+    const std::tm localTm = TimeUtility::GetLocalTm();
     return std::format("{:04}{:02}{:02}_{:02}{:02}{:02}_{:03}",
-        localTm->tm_year + 1900, localTm->tm_mon + 1, localTm->tm_mday,
-        localTm->tm_hour, localTm->tm_min, localTm->tm_sec, milliSecondOfSecond);
+        localTm.tm_year + 1900, localTm.tm_mon + 1, localTm.tm_mday,
+        localTm.tm_hour, localTm.tm_min, localTm.tm_sec, milliSecondOfSecond);
 }
 
 // 输出库文件名派生：在扩展名前插入 _<RunID>（./BackTest.db → ./BackTest_<RunID>.db）

@@ -127,7 +127,7 @@ namespace QuantTrading
     {
         auto localTm = TimeUtility::GetLocalTm();
         Environment* environment = nullptr;
-        if (localTm->tm_hour >= 16 || localTm->tm_hour < 9)
+        if (localTm.tm_hour >= 16 || localTm.tm_hour < 9)
         {
             environment = environments[environmentName24];
             if (environment == nullptr)
